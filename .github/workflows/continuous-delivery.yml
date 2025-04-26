@@ -1,0 +1,85 @@
+name: Continuous Delivery
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+  pages: write
+
+jobs:
+  build:
+    name: Build Site
+    runs-on: ubuntu-latest
+
+    # Only run this job if it was done manually or the PR was merged
+    if: |
+      (github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.merged == true) &&
+      github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      # prettier-ignore
+      - name: Restore Cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install Dependencies
+        id: install
+        run: npm ci
+
+      - name: Build
+        id: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build
+
+      - name: Upload Pages Artifact
+        id: upload
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
