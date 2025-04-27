@@ -7,4 +7,5 @@ out/
 .DS_Store
 .env*
 *.tsbuildinfo
+campaign.json
 next-env.d.ts

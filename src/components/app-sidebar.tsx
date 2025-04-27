@@ -48,8 +48,8 @@ const data = {
       icon: PersonStanding,
       items: [
         {
-          title: 'TODO',
-          url: '/kdm/survivors'
+          title: 'Create',
+          url: '/kdm/survivors/create'
         }
       ]
     },
