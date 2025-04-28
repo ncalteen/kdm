@@ -24,7 +24,7 @@ export function SurvivalCard(
     <Card className="mt-4">
       <CardContent className="pt-2 pb-2">
         <div className="flex">
-          {/* Left side - Survival input and canSpendSurvival */}
+          {/* Left - Survival and cannot spend survival inputs */}
           <div className="flex-1">
             <div className="flex flex-col">
               <FormField
@@ -32,12 +32,12 @@ export function SurvivalCard(
                 name="survival"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <FormControl>
                         <Input
                           placeholder="1"
                           type="number"
-                          className="w-16 text-center"
+                          className="w-12 text-center no-spinners"
                           {...field}
                           value={field.value ?? '1'}
                           onChange={(e) => {
@@ -45,7 +45,7 @@ export function SurvivalCard(
                           }}
                         />
                       </FormControl>
-                      <FormLabel className="min-w-24 text-right text-2xl">
+                      <FormLabel className="min-w-20 text-right text-xl">
                         Survival
                       </FormLabel>
                     </div>
@@ -56,7 +56,7 @@ export function SurvivalCard(
 
               <br />
 
-              <div className="ml-20 -mt-1">
+              <div className="-mt-1">
                 <FormField
                   control={form.control}
                   name="canSpendSurvival"
@@ -79,19 +79,156 @@ export function SurvivalCard(
                   )}
                 />
               </div>
+            </div>
+          </div>
 
-              {isArcCampaign && (
+          {/* Middle - Survival actions checkboxes */}
+          <div className="flex">
+            <div className="flex flex-col space-y-2">
+              <FormField
+                control={form.control}
+                name="canDodge"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          form.setValue(field.name, !!checked)
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel className="text-xs font-medium leading-none">
+                      Dodge
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="canEncourage"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          form.setValue(field.name, !!checked)
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel className="text-xs font-medium leading-none">
+                      Encourage
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="canSurge"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          form.setValue(field.name, !!checked)
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel className="text-xs font-medium leading-none">
+                      Surge
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="canDash"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          form.setValue(field.name, !!checked)
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel className="text-xs font-medium leading-none">
+                      Dash
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {isArcCampaign ? (
                 <FormField
                   control={form.control}
-                  name="systemicPressure"
+                  name="canFistPump"
                   render={({ field }) => (
-                    <FormItem className="mt-4">
-                      <div className="flex items-center gap-4">
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            form.setValue(field.name, !!checked)
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-xs font-medium leading-none">
+                        Fist Pump
+                      </FormLabel>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="canEndure"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            form.setValue(field.name, !!checked)
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-xs font-medium leading-none">
+                        Endure
+                      </FormLabel>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+
+            {/* Right - (Arc) Systemic pressure */}
+            {isArcCampaign && (
+              <>
+                <div className="mx-4 w-px bg-border"></div>
+                <div className="ml-4">
+                  <FormField
+                    control={form.control}
+                    name="systemicPressure"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col items-center">
                         <FormControl>
                           <Input
                             placeholder="0"
                             type="number"
-                            className="w-16 text-center"
+                            className="w-12 text-center no-spinners"
                             {...field}
                             value={field.value ?? '0'}
                             onChange={(e) => {
@@ -102,146 +239,17 @@ export function SurvivalCard(
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="text-sm font-medium">
-                          Systemic Pressure
+                        <FormLabel className="mt-1 text-xs font-medium">
+                          Systemic
+                          <br />
+                          Pressure
                         </FormLabel>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Right side - Survival actions checkboxes */}
-          <div className="ml-6 flex flex-col space-y-2">
-            <FormField
-              control={form.control}
-              name="canDodge"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={(checked) => {
-                        form.setValue(field.name, !!checked)
-                      }}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-medium leading-none">
-                    Dodge
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="canEncourage"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={(checked) => {
-                        form.setValue(field.name, !!checked)
-                      }}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-medium leading-none">
-                    Encourage
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="canSurge"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={(checked) => {
-                        form.setValue(field.name, !!checked)
-                      }}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-medium leading-none">
-                    Surge
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="canDash"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={(checked) => {
-                        form.setValue(field.name, !!checked)
-                      }}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-medium leading-none">
-                    Dash
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {isArcCampaign ? (
-              <FormField
-                control={form.control}
-                name="canFistPump"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          form.setValue(field.name, !!checked)
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-sm font-medium leading-none">
-                      Fist Pump
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : (
-              <FormField
-                control={form.control}
-                name="canEndure"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          form.setValue(field.name, !!checked)
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-sm font-medium leading-none">
-                      Endure
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </>
             )}
           </div>
         </div>

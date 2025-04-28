@@ -15,23 +15,24 @@ import { Input } from '../input'
 export function AttributeCard(
   form: UseFormReturn<z.infer<typeof SURVIVOR_SCHEMA>>
 ) {
-  const isArcCampaign = form.getValues('type') === CampaignType.ARC
+  const campaignType = form.watch('type')
+  const isArcCampaign = campaignType === CampaignType.ARC
 
   return (
     <Card className="mt-4">
       <CardContent className="pt-2 pb-2">
-        <div className="flex flex-row flex-wrap gap-4">
+        <div className="flex flex-row flex-wrap gap-3">
           <FormField
             control={form.control}
             name="movement"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-left gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <FormControl>
                     <Input
                       placeholder="1"
                       type="number"
-                      className="w-16 text-center"
+                      className="w-12 text-center no-spinners"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
@@ -39,24 +40,26 @@ export function AttributeCard(
                       }}
                     />
                   </FormControl>
-                  <FormLabel className="text-sm">Movement</FormLabel>
+                  <FormLabel className="text-xs">Movement</FormLabel>
                 </div>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          <div className="w-px bg-border"></div>
+
           <FormField
             control={form.control}
             name="accuracy"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-left gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-16 text-center"
+                      className="w-12 text-center no-spinners"
                       {...field}
                       value={field.value ?? '0'}
                       onChange={(e) => {
@@ -64,7 +67,7 @@ export function AttributeCard(
                       }}
                     />
                   </FormControl>
-                  <FormLabel className="text-sm">Accuracy</FormLabel>
+                  <FormLabel className="text-xs">Accuracy</FormLabel>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -76,12 +79,12 @@ export function AttributeCard(
             name="strength"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-left gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-16 text-center"
+                      className="w-12 text-center no-spinners"
                       {...field}
                       value={field.value ?? '0'}
                       onChange={(e) => {
@@ -89,7 +92,7 @@ export function AttributeCard(
                       }}
                     />
                   </FormControl>
-                  <FormLabel className="text-sm">Strength</FormLabel>
+                  <FormLabel className="text-xs">Strength</FormLabel>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -101,12 +104,12 @@ export function AttributeCard(
             name="evasion"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-left gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-16 text-center"
+                      className="w-12 text-center no-spinners"
                       {...field}
                       value={field.value ?? '0'}
                       onChange={(e) => {
@@ -114,7 +117,7 @@ export function AttributeCard(
                       }}
                     />
                   </FormControl>
-                  <FormLabel className="text-sm">Evasion</FormLabel>
+                  <FormLabel className="text-xs">Evasion</FormLabel>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -126,12 +129,12 @@ export function AttributeCard(
             name="luck"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-left gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-16 text-center"
+                      className="w-12 text-center no-spinners"
                       {...field}
                       value={field.value ?? '0'}
                       onChange={(e) => {
@@ -139,7 +142,7 @@ export function AttributeCard(
                       }}
                     />
                   </FormControl>
-                  <FormLabel className="text-sm">Luck</FormLabel>
+                  <FormLabel className="text-xs">Luck</FormLabel>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -151,12 +154,12 @@ export function AttributeCard(
             name="speed"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-left gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-16 text-center"
+                      className="w-12 text-center no-spinners"
                       {...field}
                       value={field.value ?? '0'}
                       onChange={(e) => {
@@ -164,7 +167,7 @@ export function AttributeCard(
                       }}
                     />
                   </FormControl>
-                  <FormLabel className="text-sm">Speed</FormLabel>
+                  <FormLabel className="text-xs">Speed</FormLabel>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -172,30 +175,33 @@ export function AttributeCard(
           />
 
           {isArcCampaign && (
-            <FormField
-              control={form.control}
-              name="lumi"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex flex-col items-left gap-2">
-                    <FormControl>
-                      <Input
-                        placeholder="0"
-                        type="number"
-                        className="w-16 text-center"
-                        {...field}
-                        value={field.value ?? '0'}
-                        onChange={(e) => {
-                          form.setValue(field.name, parseInt(e.target.value))
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-sm">Lumi</FormLabel>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <>
+              <div className="w-px bg-border"></div>
+              <FormField
+                control={form.control}
+                name="lumi"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex flex-col items-center gap-2">
+                      <FormControl>
+                        <Input
+                          placeholder="0"
+                          type="number"
+                          className="w-12 text-center no-spinners"
+                          {...field}
+                          value={field.value ?? '0'}
+                          onChange={(e) => {
+                            form.setValue(field.name, parseInt(e.target.value))
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-xs">Lumi</FormLabel>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
           )}
         </div>
       </CardContent>

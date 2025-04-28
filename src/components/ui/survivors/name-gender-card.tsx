@@ -28,9 +28,7 @@ export function NameGenderCard(
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <div className="flex items-center gap-4">
-                    <FormLabel className="min-w-24 text-left text-2xl">
-                      Name
-                    </FormLabel>
+                    <FormLabel className="text-left text-xl">Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Survivor Name"
@@ -52,8 +50,13 @@ export function NameGenderCard(
               name="gender"
               render={({ field }) => (
                 <FormItem className="ml-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1">
+                      <label
+                        htmlFor="male-checkbox"
+                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        M
+                      </label>
                       <Checkbox
                         id="male-checkbox"
                         checked={field.value === Gender.MALE}
@@ -61,13 +64,13 @@ export function NameGenderCard(
                           form.setValue('gender', Gender.MALE)
                         }}
                       />
-                      <label
-                        htmlFor="male-checkbox"
-                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        M
-                      </label>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
+                      <label
+                        htmlFor="female-checkbox"
+                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        F
+                      </label>
                       <Checkbox
                         id="female-checkbox"
                         checked={field.value === Gender.FEMALE}
@@ -75,11 +78,6 @@ export function NameGenderCard(
                           form.setValue('gender', Gender.FEMALE)
                         }}
                       />
-                      <label
-                        htmlFor="female-checkbox"
-                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                        F
-                      </label>
                     </div>
                   </div>
                   <FormMessage />
