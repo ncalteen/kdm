@@ -18,7 +18,6 @@ export function SurvivalCard(
   form: UseFormReturn<z.infer<typeof SURVIVOR_SCHEMA>>
 ) {
   const campaignType = form.watch('type')
-  const isArcCampaign = campaignType === CampaignType.ARC
 
   return (
     <Card className="mt-4">
@@ -169,7 +168,7 @@ export function SurvivalCard(
                 )}
               />
 
-              {isArcCampaign ? (
+              {campaignType === CampaignType.ARC ? (
                 <FormField
                   control={form.control}
                   name="canFistPump"
@@ -215,7 +214,7 @@ export function SurvivalCard(
             </div>
 
             {/* Right - (Arc) Systemic pressure */}
-            {isArcCampaign && (
+            {campaignType === CampaignType.ARC && (
               <>
                 <div className="mx-4 w-px bg-border"></div>
                 <div className="ml-4">

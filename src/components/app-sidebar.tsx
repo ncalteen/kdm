@@ -20,9 +20,7 @@ import {
   DockIcon,
   type LucideIcon,
   MapPinHouse,
-  PersonStanding,
-  Search,
-  Swords
+  PersonStanding
 } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
@@ -37,8 +35,8 @@ const data = {
       isActive: true,
       items: [
         {
-          title: 'TODO',
-          url: '/kdm/settlement'
+          title: 'Create',
+          url: '/kdm/settlement/create'
         }
       ]
     },
@@ -52,29 +50,29 @@ const data = {
           url: '/kdm/survivors/create'
         }
       ]
-    },
-    {
-      title: 'Hunt',
-      url: '#',
-      icon: Search,
-      items: [
-        {
-          title: 'TODO',
-          url: '/kdm/hunt'
-        }
-      ]
-    },
-    {
-      title: 'Showdown',
-      url: '#',
-      icon: Swords,
-      items: [
-        {
-          title: 'TODO',
-          url: '/kdm/showdown'
-        }
-      ]
     }
+    // {
+    //   title: 'Hunt',
+    //   url: '#',
+    //   icon: Search,
+    //   items: [
+    //     {
+    //       title: 'TODO',
+    //       url: '/kdm/hunt'
+    //     }
+    //   ]
+    // },
+    // {
+    //   title: 'Showdown',
+    //   url: '#',
+    //   icon: Swords,
+    //   items: [
+    //     {
+    //       title: 'TODO',
+    //       url: '/kdm/showdown'
+    //     }
+    //   ]
+    // }
   ]
 }
 

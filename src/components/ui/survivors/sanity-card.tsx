@@ -18,7 +18,6 @@ export function SanityCard(
   form: UseFormReturn<z.infer<typeof SURVIVOR_SCHEMA>>
 ) {
   const campaignType = form.watch('type')
-  const isArcCampaign = campaignType === CampaignType.ARC
 
   return (
     <Card className="mt-4">
@@ -57,33 +56,33 @@ export function SanityCard(
 
           <div className="mx-4 w-px bg-border"></div>
 
-          <div>
+          <div className="relative flex-1">
             <div className="font-bold">Brain</div>
             <br />
-            <div className="text-xs mt-1">
+            <div className="text-xs mt-1 pr-28">
               If your insanity is 3+, you are <strong>insane</strong>.
             </div>
 
-            <FormField
-              control={form.control}
-              name="brainLightDamage"
-              render={({ field }) => (
-                <FormItem className="absolute top-2 right-2 space-y-0 flex items-center">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="ml-2 text-sm font-medium">
-                    Light Damage
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
+            <div className="absolute top-0 right-0 flex items-center">
+              <FormField
+                control={form.control}
+                name="brainLightDamage"
+                render={({ field }) => (
+                  <FormItem className="space-y-0 flex flex-col items-center">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="text-xs mt-1">L</FormLabel>
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
-          {isArcCampaign && (
+          {campaignType === CampaignType.ARC && (
             <>
               <div className="mx-4 w-px bg-border"></div>
 

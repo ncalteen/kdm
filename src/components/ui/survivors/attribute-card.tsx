@@ -16,12 +16,11 @@ export function AttributeCard(
   form: UseFormReturn<z.infer<typeof SURVIVOR_SCHEMA>>
 ) {
   const campaignType = form.watch('type')
-  const isArcCampaign = campaignType === CampaignType.ARC
 
   return (
     <Card className="mt-4">
       <CardContent className="pt-2 pb-2">
-        <div className="flex flex-row flex-wrap gap-3">
+        <div className="flex flex-row flex-wrap gap-4">
           <FormField
             control={form.control}
             name="movement"
@@ -174,7 +173,7 @@ export function AttributeCard(
             )}
           />
 
-          {isArcCampaign && (
+          {campaignType === CampaignType.ARC && (
             <>
               <div className="w-px bg-border"></div>
               <FormField
