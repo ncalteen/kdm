@@ -27,6 +27,7 @@ import { NemesisCard } from '../ui/settlement/nemesis-card'
 import { PopulationCard } from '../ui/settlement/population-card'
 import { QuarryCard } from '../ui/settlement/quarry-card'
 import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
+import { SettlementSurvivorsCard } from '../ui/settlement/settlement-survivors-card'
 import { TimelineCard } from '../ui/settlement/timeline-card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
@@ -171,7 +172,10 @@ export function CreateSettlementForm() {
                 </div>
               </TabsContent>
               <TabsContent value="survivors">
-                <PopulationCard {...form} />
+                <div className="grid grid-cols-1 gap-2">
+                  <PopulationCard {...form} />
+                  <SettlementSurvivorsCard {...form} />
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
