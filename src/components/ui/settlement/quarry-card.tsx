@@ -121,12 +121,89 @@ function QuarryItem({
   )
 }
 
+function NewQuarryItem({
+  index,
+  form,
+  handleRemoveQuarry
+}: {
+  index: number
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  handleRemoveQuarry: (quarryName: string) => void
+}) {
+  const [name, setName] = useState('')
+  const [node, setNode] = useState('Node 1')
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value)
+  }
+
+  const handleNodeChange = (value: string) => {
+    setNode(value)
+  }
+
+  const handleBlur = () => {
+    if (name.trim() !== '') {
+      const updatedQuarries = [...(form.watch('quarries') || [])]
+      updatedQuarries[index] = {
+        ...updatedQuarries[index],
+        name: name.trim(),
+        node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
+      }
+      form.setValue('quarries', updatedQuarries)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const inputElement = e.target as HTMLInputElement
+      inputElement.blur()
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+      </div>
+
+      <Input
+        placeholder="Add a quarry..."
+        value={name}
+        onChange={handleNameChange}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+      />
+
+      <Select value={node} onValueChange={handleNodeChange}>
+        <SelectTrigger className="w-24">
+          <SelectValue placeholder="Node" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="Node 1">Node 1</SelectItem>
+          <SelectItem value="Node 2">Node 2</SelectItem>
+          <SelectItem value="Node 3">Node 3</SelectItem>
+          <SelectItem value="Node 4">Node 4</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0"
+        onClick={() => handleRemoveQuarry('new-quarry-' + index)}>
+        <XIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function QuarryCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const quarries = form.watch('quarries') || []
-  const [newQuarryName, setNewQuarryName] = useState('')
-  const [newQuarryNode, setNewQuarryNode] = useState('Node 1')
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -135,23 +212,29 @@ export function QuarryCard(
     })
   )
 
-  const handleAddQuarry = () => {
-    if (newQuarryName && !quarries.some((q) => q.name === newQuarryName)) {
-      const newQuarry = {
-        name: newQuarryName,
-        completed: false,
-        node: newQuarryNode as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
-      }
-      const updatedQuarries = [...quarries, newQuarry]
-      form.setValue('quarries', updatedQuarries)
-      setNewQuarryName('')
-      setNewQuarryNode('Node 1')
+  const addQuarry = () => {
+    // Add a new empty quarry
+    const newQuarry = {
+      name: '',
+      completed: false,
+      node: 'Node 1' as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
     }
+    const updatedQuarries = [...quarries, newQuarry]
+    form.setValue('quarries', updatedQuarries)
   }
 
   const handleRemoveQuarry = (quarryName: string) => {
-    const updatedQuarries = quarries.filter((q) => q.name !== quarryName)
-    form.setValue('quarries', updatedQuarries)
+    if (quarryName.startsWith('new-quarry-')) {
+      // Remove by index for new unsaved items
+      const index = parseInt(quarryName.replace('new-quarry-', ''))
+      const updatedQuarries = [...quarries]
+      updatedQuarries.splice(index, 1)
+      form.setValue('quarries', updatedQuarries)
+    } else {
+      // Remove by name for existing items
+      const updatedQuarries = quarries.filter((q) => q.name !== quarryName)
+      form.setValue('quarries', updatedQuarries)
+    }
   }
 
   const handleToggleCompleted = (quarryName: string, completed: boolean) => {
@@ -208,46 +291,36 @@ export function QuarryCard(
             <SortableContext
               items={quarries.map((q) => q.name)}
               strategy={verticalListSortingStrategy}>
-              {quarries.map((quarry) => (
-                <QuarryItem
-                  key={quarry.name}
-                  id={quarry.name}
-                  quarry={quarry}
-                  handleToggleCompleted={handleToggleCompleted}
-                  updateQuarryNode={updateQuarryNode}
-                  handleRemoveQuarry={handleRemoveQuarry}
-                />
-              ))}
+              {quarries.map((quarry, index) =>
+                quarry.name ? (
+                  <QuarryItem
+                    key={quarry.name}
+                    id={quarry.name}
+                    quarry={quarry}
+                    handleToggleCompleted={handleToggleCompleted}
+                    updateQuarryNode={updateQuarryNode}
+                    handleRemoveQuarry={handleRemoveQuarry}
+                  />
+                ) : (
+                  <NewQuarryItem
+                    key={`new-quarry-${index}`}
+                    index={index}
+                    form={form}
+                    handleRemoveQuarry={handleRemoveQuarry}
+                  />
+                )
+              )}
             </SortableContext>
           </DndContext>
 
-          <div className="pt-2 flex items-center gap-2">
-            <Input
-              placeholder="Add a quarry..."
-              value={newQuarryName}
-              onChange={(e) => setNewQuarryName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleAddQuarry()
-                }
-              }}
-              className="flex-1"
-            />
-            <Select value={newQuarryNode} onValueChange={setNewQuarryNode}>
-              <SelectTrigger className="w-24">
-                <SelectValue placeholder="Node" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Node 1">Node 1</SelectItem>
-                <SelectItem value="Node 2">Node 2</SelectItem>
-                <SelectItem value="Node 3">Node 3</SelectItem>
-                <SelectItem value="Node 4">Node 4</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button type="button" size="sm" onClick={handleAddQuarry}>
+          <div className="pt-2 flex justify-center">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addQuarry}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add
+              Add Quarry
             </Button>
           </div>
         </div>

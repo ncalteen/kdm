@@ -154,11 +154,71 @@ function NemesisItem({
   )
 }
 
+function NewNemesisItem({
+  index,
+  form,
+  handleRemoveNemesis
+}: {
+  index: number
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  handleRemoveNemesis: (nemesisName: string) => void
+}) {
+  const [name, setName] = useState('')
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value)
+  }
+
+  const handleBlur = () => {
+    if (name.trim() !== '') {
+      const updatedNemeses = [...(form.watch('nemesis') || [])]
+      updatedNemeses[index] = {
+        ...updatedNemeses[index],
+        name: name.trim()
+      }
+      form.setValue('nemesis', updatedNemeses)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const inputElement = e.target as HTMLInputElement
+      inputElement.blur()
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+      </div>
+
+      <Input
+        placeholder="Add a nemesis..."
+        value={name}
+        onChange={handleNameChange}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+      />
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0"
+        onClick={() => handleRemoveNemesis('new-nemesis-' + index)}>
+        <XIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function NemesisCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const nemeses = form.watch('nemesis') || []
-  const [newNemesisName, setNewNemesisName] = useState('')
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -167,23 +227,30 @@ export function NemesisCard(
     })
   )
 
-  const handleAddNemesis = () => {
-    if (newNemesisName && !nemeses.some((n) => n.name === newNemesisName)) {
-      const newNemesis = {
-        name: newNemesisName,
-        level1: false,
-        level2: false,
-        level3: false
-      }
-      const updatedNemeses = [...nemeses, newNemesis]
-      form.setValue('nemesis', updatedNemeses)
-      setNewNemesisName('')
+  const addNemesis = () => {
+    // Add a new empty nemesis with a temporary ID that will be replaced when saved
+    const newNemesis = {
+      name: '',
+      level1: false,
+      level2: false,
+      level3: false
     }
+    const updatedNemeses = [...nemeses, newNemesis]
+    form.setValue('nemesis', updatedNemeses)
   }
 
   const handleRemoveNemesis = (nemesisName: string) => {
-    const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
-    form.setValue('nemesis', updatedNemeses)
+    if (nemesisName.startsWith('new-nemesis-')) {
+      // Remove by index for new unsaved items
+      const index = parseInt(nemesisName.replace('new-nemesis-', ''))
+      const updatedNemeses = [...nemeses]
+      updatedNemeses.splice(index, 1)
+      form.setValue('nemesis', updatedNemeses)
+    } else {
+      // Remove by name for existing items
+      const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
+      form.setValue('nemesis', updatedNemeses)
+    }
   }
 
   const handleToggleLevel = (
@@ -231,34 +298,35 @@ export function NemesisCard(
             <SortableContext
               items={nemeses.map((n) => n.name)}
               strategy={verticalListSortingStrategy}>
-              {nemeses.map((nemesis) => (
-                <NemesisItem
-                  key={nemesis.name}
-                  id={nemesis.name}
-                  nemesis={nemesis}
-                  handleToggleLevel={handleToggleLevel}
-                  handleRemoveNemesis={handleRemoveNemesis}
-                />
-              ))}
+              {nemeses.map((nemesis, index) =>
+                nemesis.name ? (
+                  <NemesisItem
+                    key={nemesis.name}
+                    id={nemesis.name}
+                    nemesis={nemesis}
+                    handleToggleLevel={handleToggleLevel}
+                    handleRemoveNemesis={handleRemoveNemesis}
+                  />
+                ) : (
+                  <NewNemesisItem
+                    key={`new-nemesis-${index}`}
+                    index={index}
+                    form={form}
+                    handleRemoveNemesis={handleRemoveNemesis}
+                  />
+                )
+              )}
             </SortableContext>
           </DndContext>
 
-          <div className="pt-2 flex items-center gap-2">
-            <Input
-              placeholder="Add a nemesis..."
-              value={newNemesisName}
-              onChange={(e) => setNewNemesisName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleAddNemesis()
-                }
-              }}
-              className="flex-1"
-            />
-            <Button type="button" size="sm" onClick={handleAddNemesis}>
+          <div className="pt-2 flex justify-center">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addNemesis}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add
+              Add Nemesis
             </Button>
           </div>
         </div>
