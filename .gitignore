@@ -1,6 +1,7 @@
 .next/
 build/
 coverage/
+local/
 node_modules/
 out/
 
