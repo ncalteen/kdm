@@ -1,5 +1,5 @@
-import { CampaignType } from '@/lib/enums'
-import { SURVIVOR_SCHEMA } from '@/schemas/survivor'
+import { SettlementType } from '@/lib/enums'
+import { SurvivorSchema } from '@/schemas/survivor'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Card, CardContent } from '../card'
@@ -13,9 +13,9 @@ import {
 import { Input } from '../input'
 
 export function AttributeCard(
-  form: UseFormReturn<z.infer<typeof SURVIVOR_SCHEMA>>
+  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
 ) {
-  const campaignType = form.watch('type')
+  const settlementType = form.watch('settlementType')
 
   return (
     <Card className="mt-4">
@@ -173,7 +173,7 @@ export function AttributeCard(
             )}
           />
 
-          {campaignType === CampaignType.ARC && (
+          {settlementType === SettlementType.ARC && (
             <>
               <div className="w-px bg-border"></div>
               <FormField

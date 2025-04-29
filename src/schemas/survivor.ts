@@ -1,20 +1,18 @@
-import { CampaignType, Gender, Philosophy, WeaponType } from '@/lib/enums'
+import { Gender, Philosophy, WeaponType } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
  * Survivor Schema
  *
- * All survivor attributes and properties across all campaign types. Depending
- * on the campaign type, some properties may be optional or different.
+ * All survivor attributes and properties across all settlement types. Depending
+ * on the settlement type, some properties may be optional or different.
  */
-export const SURVIVOR_SCHEMA = z.object({
+export const SurvivorSchema = z.object({
   // Main
   id: z.number(),
-  type: z.enum(Object.keys(CampaignType) as [CampaignType, ...CampaignType[]]),
+  settlementId: z.number(),
   name: z.string().describe('Name').min(1),
-  gender: z.enum(Object.keys(Gender) as [Gender, ...Gender[]], {
-    required_error: 'Required Field: Gender'
-  }),
+  gender: z.enum(Object.keys(Gender) as [Gender, ...Gender[]]),
 
   // Hunt XP
   huntXP: z.number().min(0).max(16),
@@ -93,7 +91,7 @@ export const SURVIVOR_SCHEMA = z.object({
   legHeavyDamage: z.boolean(),
 
   // Weapon Proficiency
-  weaponType: z
+  weaponProficiencyType: z
     .enum(Object.keys(WeaponType) as [WeaponType, ...WeaponType[]])
     .optional(),
   weaponProficiency: z.number().min(0).max(8),
@@ -129,6 +127,10 @@ export const SURVIVOR_SCHEMA = z.object({
   // Once Per Lifetime
   oncePerLifetime: z.array(z.string()),
   rerollUsed: z.boolean(),
+
+  // Custom
+  dead: z.boolean(),
+  retired: z.boolean(),
 
   /**
    * Arc Survivors

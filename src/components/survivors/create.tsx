@@ -12,10 +12,10 @@ import {
   canEndure,
   canFistPump,
   canSurge,
-  getCampaign,
-  getNextSurvivorId
+  getNextSurvivorId,
+  getSettlement
 } from '@/lib/utils'
-import { SURVIVOR_SCHEMA } from '@/schemas/survivor'
+import { SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -28,7 +28,7 @@ import { SurvivalCard } from '../ui/survivors/survival-card'
 
 export function CreateSurvivorForm() {
   const [defaultValues, setDefaultValues] = useState<
-    Partial<z.infer<typeof SURVIVOR_SCHEMA>>
+    Partial<z.infer<typeof SurvivorSchema>>
   >({
     // Hunt XP
     huntXP: 0,
@@ -101,7 +101,7 @@ export function CreateSurvivorForm() {
     legHeavyDamage: false,
 
     // Weapon Proficiency
-    weaponType: undefined,
+    weaponProficiencyType: undefined,
     weaponProficiency: 0,
 
     // Courage
@@ -190,27 +190,27 @@ export function CreateSurvivorForm() {
   })
 
   useEffect(() => {
-    // Get the current campaign type from localStorage.
-    const campaign = getCampaign()
-    console.log('Campaign:', campaign)
+    // Get the current settlement from localStorage.
+    // TODO: The settlement ID is in the URL path (/kdm/settlement/[settlementId]).
+    const settlement = getSettlement()
 
-    if (!campaign) {
-      // TODO: If no campaign is found, show an error message and block the
+    console.log('Settlement:', settlement)
+
+    if (!settlement) {
+      // TODO: If no settlement is found, show an error message and block the
       //       user from creating a survivor.
-      toast.error('No campaign found. Did you create one?')
-      return
+      toast.error('No settlement found. Did you create one?')
     }
 
     setDefaultValues({
       // Main
       id: getNextSurvivorId(),
-      type: campaign.type,
 
       // Hunt XP
       huntXPRankUp: [
-        CampaignType.CORE,
+        CampaignType.PEOPLE_OF_THE_LANTERN,
         CampaignType.PEOPLE_OF_THE_STARS
-      ].includes(campaign.type)
+      ].includes(settlement.campaignType)
         ? [1, 5, 9, 14] // Core and PotStars
         : [], // Arc
 
@@ -226,13 +226,13 @@ export function CreateSurvivorForm() {
     })
   }, [])
 
-  const form = useForm<z.infer<typeof SURVIVOR_SCHEMA>>({
-    resolver: zodResolver(SURVIVOR_SCHEMA),
+  const form = useForm<z.infer<typeof SurvivorSchema>>({
+    resolver: zodResolver(SurvivorSchema),
     defaultValues
   })
 
   // Define a submit handler with the correct schema type
-  function onSubmit(values: z.infer<typeof SURVIVOR_SCHEMA>) {
+  function onSubmit(values: z.infer<typeof SurvivorSchema>) {
     // Do something with the form values.
     console.log(values)
     toast.success('Survivor created successfully!')

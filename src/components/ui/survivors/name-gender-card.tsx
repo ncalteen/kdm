@@ -1,5 +1,5 @@
 import { Gender } from '@/lib/enums'
-import { SURVIVOR_SCHEMA } from '@/schemas/survivor'
+import { SurvivorSchema } from '@/schemas/survivor'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Card, CardContent } from '../card'
@@ -15,7 +15,7 @@ import {
 import { Input } from '../input'
 
 export function NameGenderCard(
-  form: UseFormReturn<z.infer<typeof SURVIVOR_SCHEMA>>
+  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
 ) {
   return (
     <Card>

@@ -1,8 +1,11 @@
 import type {
   CampaignType,
+  Gender,
+  Philosophy,
   ResourceCategory,
   ResourceType,
-  SurvivorType
+  SurvivorType,
+  WeaponType
 } from './enums.js'
 
 /**
@@ -154,8 +157,132 @@ export type Settlement = {
  */
 export type Survivor = {
   id: number
-  dead: boolean
   settlementId: number
+  name: string
+  gender: Gender
+  huntXP: number
+  huntXPRankUp: number[]
+  survival: number
+  canSpendSurvival: boolean
+  canDodge: boolean
+  canEncourage: boolean
+  canSurge: boolean
+  canDash: boolean
+  canFistPump: boolean
+  canEndure: boolean // Arc Survivors
+  systemicPressure: number // Arc Survivors
+  movement: number
+  accuracy: number
+  strength: number
+  evasion: number
+  luck: number
+  speed: number
+  lumi: number // Arc Survivors
+  insanity: number
+  brainLightDamage: boolean
+  torment: number // Arc Survivors
+  headArmor: number
+  headIntracranialHemorrhage: boolean
+  headDeaf: boolean
+  headBlindLeft: boolean
+  headBlindRight: boolean
+  headShatteredJaw: boolean
+  headHeavyDamage: boolean
+  armArmor: number
+  armDismemberedLeft: boolean
+  armDismemberedRight: boolean
+  armRupturedMuscle: boolean
+  armContracture: number
+  armBrokenLeft: boolean
+  armBrokenRight: boolean
+  armLightDamage: boolean
+  armHeavyDamage: boolean
+  bodyArmor: number
+  bodyGapingChestWound: number
+  bodyDestroyedBack: boolean
+  bodyBrokenRib: number
+  bodyLightDamage: boolean
+  bodyHeavyDamage: boolean
+  waistArmor: number
+  waistIntestinalProlapse: boolean
+  waistWarpedPelvis: number
+  waistDestroyedGenitals: boolean
+  waistBrokenHip: boolean
+  waistLightDamage: boolean
+  waistHeavyDamage: boolean
+  legArmor: number
+  legDismemberedLeft: boolean
+  legDismemberedRight: boolean
+  legHamstrung: boolean
+  legBrokenLeft: boolean
+  legBrokenRight: boolean
+  legLightDamage: boolean
+  legHeavyDamage: boolean
+  weaponProficiencyType?: WeaponType
+  weaponProficiency: number
+  courage: number
+  hasStalwart: boolean
+  hasPrepared: boolean
+  hasMatchmaker: boolean
+  understanding: number
+  hasAnalyze: boolean
+  hasExplore: boolean
+  hasTinker: boolean
+  nextDeparture?: string
+  canUseFightingArtsOrKnowledges: boolean
+  fightingArts: string[]
+  secretFightingArts: string[]
+  disorders: string[]
+  abilitiesAndImpairments: string[]
+  skipNextHunt: boolean
+  oncePerLifetime: string[]
+  rerollUsed: boolean
+  dead: boolean
+  retired: boolean
+  notes?: string
+
+  /**
+   * Arc Survivors
+   */
+
+  philosophy?: Philosophy
+  neurosis?: string
+  tenetKnowledge?: string
+  tenetKnowledgeObservationRank?: number
+  tenetKnowledgeRules?: string
+  tenetKnowledgeObservationConditions?: string
+  tenetKnowledgeRankUp?: number
+  knowledge1?: string
+  knowledge1ObservationRank?: number
+  knowledge1Rules?: string
+  knowledge1ObservationConditions?: string
+  knowledge1RankUp?: number
+  knowledge2?: string
+  knowledge2ObservationRank?: number
+  knowledge2Rules?: string
+  knowledge2ObservationConditions?: string
+  knowledge2RankUp?: number
+
+  /**
+   * People of the Stars Survivors Only
+   */
+
+  hasGamblerWitch: boolean
+  hasGamblerRust: boolean
+  hasGamblerStorm: boolean
+  hasGamblerReaper: boolean
+  hasAbsoluteWitch: boolean
+  hasAbsoluteRust: boolean
+  hasAbsoluteStorm: boolean
+  hasAbsoluteReaper: boolean
+  hasSculptorWitch: boolean
+  hasSculptorRust: boolean
+  hasSculptorStorm: boolean
+  hasSculptorReaper: boolean
+  hasGoblinWitch: boolean
+  hasGoblinRust: boolean
+  hasGoblinStorm: boolean
+  hasGoblinReaper: boolean
 }
 
 /**
