@@ -146,16 +146,14 @@ export function CreateSettlementForm() {
           <CardHeader />
           <CardContent>
             <SettlementNameCard {...form} />
-            <TimelineCard {...form} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <QuarryCard {...form} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+              <TimelineCard {...form} />
               <div className="space-y-4">
+                <QuarryCard {...form} />
                 <NemesisCard {...form} />
+                <MilestonesCard {...form} />
+                <DepartingBonusesCard {...form} />
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <MilestonesCard {...form} />
-              <DepartingBonusesCard {...form} />
             </div>
           </CardContent>
           <CardFooter>
