@@ -2,22 +2,73 @@
 
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { Campaign } from './types'
+import type { Campaign, Settlement } from './types.js'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 /**
- * Gets the current campaign type from localStorage.
+ * Gets the next settlement ID based on the existing settlements.
  *
- * @returns The current campaign type from localStorage.
+ * @returns Next Settlement ID
  */
-export function getCampaign(): Campaign | undefined {
-  const campaign = localStorage.getItem('campaign')
+export function getNextSettlementId(): number {
+  const campaign = JSON.parse(
+    window.localStorage.getItem('campaign') ||
+      JSON.stringify({
+        settlements: [],
+        survivors: []
+      })
+  ) as Campaign
 
-  if (!campaign) return undefined
-  else return JSON.parse(campaign)
+  // If this is the first settlement, return 1.
+  if (campaign.settlements.length === 0) return 1
+
+  // Otherwise, return the latest settlement ID + 1.
+  return (
+    Math.max(...campaign.settlements.map((settlement) => settlement.id)) + 1
+  )
+}
+
+/**
+ * Gets the number of lost settlements from localStorage.
+ *
+ * @returns Lost Settlement Count
+ */
+export function getLostSettlementCount(): number {
+  const campaign = JSON.parse(
+    window.localStorage.getItem('campaign') ||
+      JSON.stringify({
+        settlements: [],
+        survivors: []
+      })
+  ) as Campaign
+
+  // If this is the first settlement, return 0.
+  if (campaign.settlements.length === 0) return 0
+
+  // Otherwise, return the number of lost settlements. This is determined by
+  // counting the number of settlements that have the "Population reaches 0"
+  // milestone completed.
+  return campaign.settlements.filter(
+    (settlement) =>
+      settlement.milestones.filter(
+        (m) => m.complete && m.name === 'Population reaches 0'
+      ).length > 0
+  ).length
+}
+
+/**
+ * Gets the current settlement from localStorage.
+ *
+ * @returns The current settlement from localStorage.
+ */
+export function getSettlement(): Settlement | undefined {
+  const settlement = localStorage.getItem('settlement')
+
+  if (!settlement) return undefined
+  else return JSON.parse(settlement) as Settlement
 }
 
 /**
