@@ -25,6 +25,7 @@ import { DepartingBonusesCard } from '../ui/settlement/departing-bonuses-card'
 import { MilestonesCard } from '../ui/settlement/milestones-card'
 import { NemesisCard } from '../ui/settlement/nemesis-card'
 import { PopulationCard } from '../ui/settlement/population-card'
+import { PrinciplesCard } from '../ui/settlement/principles-card'
 import { QuarryCard } from '../ui/settlement/quarry-card'
 import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
 import { SettlementSurvivorsCard } from '../ui/settlement/settlement-survivors-card'
@@ -158,6 +159,12 @@ export function CreateSettlementForm() {
                 <TabsTrigger value="survivors" className="flex-1">
                   Survivors
                 </TabsTrigger>
+                <TabsTrigger value="society" className="flex-1">
+                  Society
+                </TabsTrigger>
+                <TabsTrigger value="arc" className="flex-1">
+                  Arc
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="timeline">
                 <SettlementNameCard {...form} />
@@ -176,6 +183,14 @@ export function CreateSettlementForm() {
                   <PopulationCard {...form} />
                   <SettlementSurvivorsCard {...form} />
                 </div>
+              </TabsContent>
+              <TabsContent value="society">
+                <div className="grid grid-cols-1 gap-4">
+                  <PrinciplesCard {...form} />
+                </div>
+              </TabsContent>
+              <TabsContent value="arc">
+                <div className="grid grid-cols-1 gap-2"></div>
               </TabsContent>
             </Tabs>
           </CardContent>
