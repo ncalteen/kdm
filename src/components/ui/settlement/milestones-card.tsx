@@ -173,8 +173,10 @@ export function MilestonesCard(
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Settlement Milestones</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg flex items-center gap-1">
+          Settlement Milestones
+        </CardTitle>
+        <CardDescription className="text-left">
           Trigger these effects when the milestone condition is met.
         </CardDescription>
       </CardHeader>

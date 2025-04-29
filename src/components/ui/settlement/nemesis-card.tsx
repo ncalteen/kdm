@@ -285,7 +285,7 @@ export function NemesisCard(
         <CardTitle className="text-lg flex items-center gap-1">
           Nemesis
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-left">
           The nemesis monsters your settlement can encounter.
         </CardDescription>
       </CardHeader>

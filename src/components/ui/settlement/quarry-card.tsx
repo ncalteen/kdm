@@ -278,7 +278,7 @@ export function QuarryCard(
         <CardTitle className="text-lg flex items-center gap-1">
           Quarries
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-left">
           The monsters your settlement can select to hunt.
         </CardDescription>
       </CardHeader>

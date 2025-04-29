@@ -124,8 +124,10 @@ export function DepartingBonusesCard(
   return (
     <Card className="mt-4">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Departing Survivor Bonuses</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg flex items-center gap-1">
+          Departing Survivor Bonuses
+        </CardTitle>
+        <CardDescription className="text-left">
           Departing survivors gain these bonuses.
         </CardDescription>
       </CardHeader>
