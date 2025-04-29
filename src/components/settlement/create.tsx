@@ -148,7 +148,7 @@ export function CreateSettlementForm() {
             <SettlementNameCard {...form} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <TimelineCard {...form} />
-              <div className="space-y-4">
+              <div className="space-y-4 pt-4">
                 <QuarryCard {...form} />
                 <NemesisCard {...form} />
                 <MilestonesCard {...form} />
