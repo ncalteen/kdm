@@ -1,5 +1,22 @@
 import { SettlementSchema } from '@/schemas/settlement'
-import { PlusCircleIcon, XIcon } from 'lucide-react'
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -15,11 +32,140 @@ import { Checkbox } from '../checkbox'
 import { FormControl, FormField, FormItem, FormLabel } from '../form'
 import { Input } from '../input'
 
+interface NemesisItemProps {
+  nemesis: {
+    name: string
+    level1: boolean
+    level2: boolean
+    level3: boolean
+  }
+  handleToggleLevel: (
+    nemesisName: string,
+    level: 'level1' | 'level2' | 'level3',
+    checked: boolean
+  ) => void
+  handleRemoveNemesis: (nemesisName: string) => void
+}
+
+function NemesisItem({
+  nemesis,
+  handleToggleLevel,
+  handleRemoveNemesis,
+  id
+}: NemesisItemProps & { id: string }) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </div>
+
+      <FormField
+        name="nemesis"
+        render={() => (
+          <FormItem className="flex-shrink-0">
+            <FormLabel className="text-sm font-medium mr-2">
+              {nemesis.name}
+            </FormLabel>
+          </FormItem>
+        )}
+      />
+
+      <div className="flex items-center gap-2 ml-auto">
+        <FormField
+          name="nemesis"
+          render={() => (
+            <FormItem className="flex items-center space-x-1">
+              <FormControl>
+                <Checkbox
+                  checked={nemesis.level1}
+                  className="mt-2"
+                  onCheckedChange={(checked) => {
+                    if (checked !== 'indeterminate') {
+                      handleToggleLevel(nemesis.name, 'level1', checked)
+                    }
+                  }}
+                />
+              </FormControl>
+              <FormLabel className="text-xs">Lvl 1</FormLabel>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          name="nemesis"
+          render={() => (
+            <FormItem className="flex items-center space-x-1">
+              <FormControl>
+                <Checkbox
+                  checked={nemesis.level2}
+                  className="mt-2"
+                  onCheckedChange={(checked) => {
+                    if (checked !== 'indeterminate') {
+                      handleToggleLevel(nemesis.name, 'level2', checked)
+                    }
+                  }}
+                />
+              </FormControl>
+              <FormLabel className="text-xs">Lvl 2</FormLabel>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          name="nemesis"
+          render={() => (
+            <FormItem className="flex items-center space-x-1">
+              <FormControl>
+                <Checkbox
+                  checked={nemesis.level3}
+                  className="mt-2"
+                  onCheckedChange={(checked) => {
+                    if (checked !== 'indeterminate') {
+                      handleToggleLevel(nemesis.name, 'level3', checked)
+                    }
+                  }}
+                />
+              </FormControl>
+              <FormLabel className="text-xs">Lvl 3</FormLabel>
+            </FormItem>
+          )}
+        />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={() => handleRemoveNemesis(nemesis.name)}>
+          <XIcon className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export function NemesisCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const nemeses = form.watch('nemesis') || []
   const [newNemesisName, setNewNemesisName] = useState('')
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   const handleAddNemesis = () => {
     if (newNemesisName && !nemeses.some((n) => n.name === newNemesisName)) {
@@ -54,6 +200,18 @@ export function NemesisCard(
     form.setValue('nemesis', updatedNemeses)
   }
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      const oldIndex = nemeses.findIndex((n) => n.name === active.id)
+      const newIndex = nemeses.findIndex((n) => n.name === over.id)
+
+      const newOrder = arrayMove(nemeses, oldIndex, newIndex)
+      form.setValue('nemesis', newOrder)
+    }
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -66,91 +224,24 @@ export function NemesisCard(
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2">
-          {nemeses.map((nemesis) => (
-            <div key={nemesis.name} className="flex items-center gap-2">
-              <FormField
-                control={form.control}
-                name="nemesis"
-                render={() => (
-                  <FormItem className="flex-shrink-0">
-                    <FormLabel className="text-sm font-medium mr-2">
-                      {nemesis.name}
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex items-center gap-2 ml-auto">
-                <FormField
-                  control={form.control}
-                  name="nemesis"
-                  render={() => (
-                    <FormItem className="flex items-center space-x-1 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={nemesis.level1}
-                          onCheckedChange={(checked) => {
-                            if (checked !== 'indeterminate') {
-                              handleToggleLevel(nemesis.name, 'level1', checked)
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-xs">Lvl 1</FormLabel>
-                    </FormItem>
-                  )}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={nemeses.map((n) => n.name)}
+              strategy={verticalListSortingStrategy}>
+              {nemeses.map((nemesis) => (
+                <NemesisItem
+                  key={nemesis.name}
+                  id={nemesis.name}
+                  nemesis={nemesis}
+                  handleToggleLevel={handleToggleLevel}
+                  handleRemoveNemesis={handleRemoveNemesis}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="nemesis"
-                  render={() => (
-                    <FormItem className="flex items-center space-x-1 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={nemesis.level2}
-                          onCheckedChange={(checked) => {
-                            if (checked !== 'indeterminate') {
-                              handleToggleLevel(nemesis.name, 'level2', checked)
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-xs">Lvl 2</FormLabel>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="nemesis"
-                  render={() => (
-                    <FormItem className="flex items-center space-x-1 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={nemesis.level3}
-                          onCheckedChange={(checked) => {
-                            if (checked !== 'indeterminate') {
-                              handleToggleLevel(nemesis.name, 'level3', checked)
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-xs">Lvl 3</FormLabel>
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={() => handleRemoveNemesis(nemesis.name)}>
-                  <XIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
+              ))}
+            </SortableContext>
+          </DndContext>
 
           <div className="pt-2 flex items-center gap-2">
             <Input
