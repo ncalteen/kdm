@@ -2,14 +2,14 @@
 
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import type { Campaign, Settlement } from './types.js'
+import type { Campaign, Settlement, Survivor } from './types.js'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 /**
- * Gets the next settlement ID based on the existing settlements.
+ * Calculates the next settlement ID.
  *
  * @returns Next Settlement ID
  */
@@ -32,6 +32,29 @@ export function getNextSettlementId(): number {
 }
 
 /**
+ * Calculates the next survivor ID.
+ *
+ * @returns Next Survivor ID
+ */
+export function getNextSurvivorId(): number {
+  const campaign = JSON.parse(
+    window.localStorage.getItem('campaign') ||
+      JSON.stringify({
+        settlements: [],
+        survivors: []
+      })
+  ) as Campaign
+
+  // If this is the first survivor, return 1.
+  if (campaign.survivors.length === 0) return 1
+
+  // Otherwise, return the latest survivor ID + 1.
+  // This is done by getting the survivors from localStorage and finding the
+  // maximum ID.
+  return Math.max(...campaign.survivors.map((survivor) => survivor.id)) + 1
+}
+
+/**
  * Gets the number of lost settlements from localStorage.
  *
  * @returns Lost Settlement Count
@@ -45,7 +68,7 @@ export function getLostSettlementCount(): number {
       })
   ) as Campaign
 
-  // If this is the first settlement, return 0.
+  // If the user is creating their first settlement, return 0.
   if (campaign.settlements.length === 0) return 0
 
   // Otherwise, return the number of lost settlements. This is determined by
@@ -60,32 +83,43 @@ export function getLostSettlementCount(): number {
 }
 
 /**
- * Gets the current settlement from localStorage.
+ * Gets the current survivors of a settlement from localStorage.
  *
- * @returns The current settlement from localStorage.
+ * @param settlementId Settlement ID
+ * @returns Survivors
  */
-export function getSettlement(): Settlement | undefined {
-  const settlement = localStorage.getItem('settlement')
+export function getSurvivors(settlementId: number): Survivor[] {
+  const campaign = JSON.parse(
+    window.localStorage.getItem('campaign') ||
+      JSON.stringify({
+        settlements: [],
+        survivors: []
+      })
+  ) as Campaign
 
-  if (!settlement) return undefined
-  else return JSON.parse(settlement) as Settlement
+  return campaign.survivors.filter(
+    (survivor) => survivor.settlementId === settlementId
+  )
 }
 
 /**
- * Gets the next survivor ID based on the existing survivors in localStorage.
+ * Gets a settlement from localStorage.
  *
- * @returns The next survivor ID based on the existing survivors.
+ * @param settlementId Settlement ID
+ * @returns Settlement
  */
-export function getNextSurvivorId(): number {
-  const survivors = JSON.parse(
-    window.localStorage.getItem('survivors') || '[]'
-  ) as {
-    id: number
-  }[]
+export function getSettlement(settlementId: number): Settlement | undefined {
+  const campaign = JSON.parse(
+    window.localStorage.getItem('campaign') ||
+      JSON.stringify({
+        settlements: [],
+        survivors: []
+      })
+  ) as Campaign
 
-  if (survivors.length === 0) return 1
-
-  return Math.max(...survivors.map((survivor) => survivor.id)) + 1
+  return campaign.settlements.find(
+    (settlement) => settlement.id === settlementId
+  ) as Settlement
 }
 
 /**

@@ -88,6 +88,7 @@ export function CreateSettlementForm() {
       resources: [],
       gear: [],
       notes: undefined,
+      population: 0,
 
       // Arc Survivor Settlements
       ccQuarryVictories:

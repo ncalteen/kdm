@@ -149,7 +149,21 @@ export type Settlement = {
   suspicions?: SquireSuspicion[]
 }
 
+/**
+ * Survivor
+ */
+export type Survivor = {
+  id: number
+  dead: boolean
+  settlementId: number
+}
+
+/**
+ * Campaign
+ *
+ * This is the main campaign object that is read from localStorage.
+ */
 export type Campaign = {
   settlements: Settlement[]
-  // survivors: Survivor[]
+  survivors: Survivor[]
 }

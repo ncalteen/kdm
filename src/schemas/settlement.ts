@@ -168,6 +168,9 @@ export const SettlementSchema = z.object({
   gear: z.array(z.string()),
   notes: z.string().optional(),
 
+  // Custom
+  population: z.number().min(0),
+
   /**
    * Arc Survivor Settlements
    */
