@@ -21,6 +21,8 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { SelectCampaignCombobox } from '../ui/menu/select-campaign-combobox'
+import { SelectSurvivorTypeCombobox } from '../ui/menu/select-survivor-type-combobox'
 import { DepartingBonusesCard } from '../ui/settlement/departing-bonuses-card'
 import { MilestonesCard } from '../ui/settlement/milestones-card'
 import { NemesisCard } from '../ui/settlement/nemesis-card'
@@ -45,11 +47,21 @@ export function CreateSettlementForm() {
   const campaignType = form.watch('campaignType')
   const survivorType = form.watch('survivorType')
 
+  // Handle campaign type change from the combobox
+  const handleCampaignChange = (value: CampaignType) => {
+    form.setValue('campaignType', value)
+  }
+
+  // Handle survivor type change from the combobox
+  const handleSurvivorTypeChange = (value: SurvivorType) => {
+    form.setValue('survivorType', value)
+  }
+
   useEffect(() => {
     setDefaultValues({
       id: getNextSettlementId(),
-      campaignType: CampaignType.PEOPLE_OF_THE_LANTERN, // TODO: Get from a dropdown
-      survivorType: SurvivorType.ARC, // TODO: Get from a dropdown
+      campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
+      survivorType: SurvivorType.ARC,
       survivalLimit: 1,
       lostSettlements: getLostSettlementCount(),
 
@@ -146,6 +158,17 @@ export function CreateSettlementForm() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <div className="flex justify-center gap-4 mb-4">
+        <SelectCampaignCombobox
+          value={campaignType}
+          onChange={handleCampaignChange}
+        />
+        <SelectSurvivorTypeCombobox
+          value={survivorType}
+          onChange={handleSurvivorTypeChange}
+        />
+      </div>
+
       <Form {...form}>
         <Card className="min-w-[800px] max-w-[800px] mx-auto">
           <CardContent className="w-full">
