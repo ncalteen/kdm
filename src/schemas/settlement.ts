@@ -15,6 +15,15 @@ export const TimelineEntrySchema = z.object({
 })
 
 /**
+ * Quarry Entry Schema
+ */
+export const QuarryEntrySchema = z.object({
+  name: z.string(),
+  completed: z.boolean(),
+  node: z.enum(['Node 1', 'Node 2', 'Node 3', 'Node 4'])
+})
+
+/**
  * Nemesis Entry Schema
  */
 export const NemesisEntrySchema = z.object({
@@ -138,7 +147,7 @@ export const SettlementSchema = z.object({
   timeline: z.array(TimelineEntrySchema),
 
   // Quarries
-  quarries: z.array(z.string()),
+  quarries: z.array(QuarryEntrySchema),
 
   // Nemesis
   nemesis: z.array(NemesisEntrySchema),
