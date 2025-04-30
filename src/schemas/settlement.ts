@@ -10,7 +10,7 @@ import { z } from 'zod'
  * Timeline Entry Schema
  */
 export const TimelineEntrySchema = z.object({
-  completed: z.boolean(),
+  completed: z.boolean().optional(),
   entries: z.array(z.string())
 })
 
@@ -140,7 +140,7 @@ export const SettlementSchema = z.object({
     Object.keys(SurvivorType) as [SurvivorType, ...SurvivorType[]]
   ),
   survivalLimit: z.number().min(0),
-  lostSettlements: z.number().min(0),
+  lostSettlements: z.number().min(0).optional(),
   name: z.string().describe('Settlement Name').min(1),
 
   // Timeline
@@ -162,6 +162,7 @@ export const SettlementSchema = z.object({
   deathCount: z.number().min(0),
   principles: z.array(PrincipleEntrySchema),
   patterns: z.array(z.string()),
+  seedPatterns: z.array(z.string()),
   innovations: z.array(z.string()),
   locations: z.array(LocationEntrySchema),
   resources: z.array(ResourceEntrySchema),

@@ -20,38 +20,9 @@ export function SettlementNameCard(
         <div className="flex flex-row flex-wrap gap-4">
           <FormField
             control={form.control}
-            name="survivalLimit"
-            render={({ field }) => (
-              <FormItem className="flex-none">
-                <div className="flex flex-col items-center gap-2 h-full">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="1"
-                      className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
-                      }}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-left text-xs">
-                    Survival Limit
-                  </FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="w-px bg-border"></div>
-
-          <FormField
-            control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="flex-1 w-max">
                 <div className="flex items-center gap-2">
                   <FormLabel className="w-max text-left">
                     Settlement Name
@@ -59,7 +30,7 @@ export function SettlementNameCard(
                   <FormControl>
                     <Input
                       placeholder="Settlement Name"
-                      className="w-max"
+                      className="w-full"
                       {...field}
                       value={field.value ?? ''}
                       onChange={(e) => {
@@ -68,35 +39,9 @@ export function SettlementNameCard(
                     />
                   </FormControl>
                 </div>
-                <div className="text-sm text-muted-foreground mt-2">
+                <div className="text-xs text-muted-foreground mt-2">
                   When the settlement is named for the first time,{' '}
                   <strong>returning survivors</strong> gain +1 survival.
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="w-px bg-border mx-4"></div>
-          <FormField
-            control={form.control}
-            name="lostSettlements"
-            render={({ field }) => (
-              <FormItem className="flex-none">
-                <div className="flex flex-col items-center gap-2 h-full">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? ''}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormLabel className="text-left text-xs">
-                    Lost Settlements
-                  </FormLabel>
                 </div>
                 <FormMessage />
               </FormItem>

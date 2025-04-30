@@ -24,11 +24,14 @@ import { z } from 'zod'
 import { SelectCampaignCombobox } from '../ui/menu/select-campaign-combobox'
 import { SelectSurvivorTypeCombobox } from '../ui/menu/select-survivor-type-combobox'
 import { DepartingBonusesCard } from '../ui/settlement/departing-bonuses-card'
+import { InnovationsCard } from '../ui/settlement/innovations-card'
 import { MilestonesCard } from '../ui/settlement/milestones-card'
 import { NemesisCard } from '../ui/settlement/nemesis-card'
+import { PatternsCard } from '../ui/settlement/patterns-card'
 import { PopulationCard } from '../ui/settlement/population-card'
 import { PrinciplesCard } from '../ui/settlement/principles-card'
 import { QuarryCard } from '../ui/settlement/quarry-card'
+import { SeedPatternsCard } from '../ui/settlement/seed-patterns-card'
 import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
 import { SettlementSurvivorsCard } from '../ui/settlement/settlement-survivors-card'
 import { TimelineCard } from '../ui/settlement/timeline-card'
@@ -171,7 +174,9 @@ export function CreateSettlementForm() {
 
       <Form {...form}>
         <Card className="min-w-[800px] max-w-[800px] mx-auto">
-          <CardContent className="w-full">
+          <CardContent className="w-full pt-2">
+            <SettlementNameCard {...form} />
+            <PopulationCard {...form} />
             <Tabs
               defaultValue="timeline"
               className="text-center pt-2 pb-4 w-full">
@@ -179,42 +184,47 @@ export function CreateSettlementForm() {
                 <TabsTrigger value="timeline" className="flex-1">
                   Timeline
                 </TabsTrigger>
+                <TabsTrigger value="combat" className="flex-1">
+                  Combat
+                </TabsTrigger>
                 <TabsTrigger value="survivors" className="flex-1">
                   Survivors
                 </TabsTrigger>
                 <TabsTrigger value="society" className="flex-1">
                   Society
                 </TabsTrigger>
+                <TabsTrigger value="crafting" className="flex-1">
+                  Crafting
+                </TabsTrigger>
                 <TabsTrigger value="arc" className="flex-1">
                   Arc
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="timeline">
-                <SettlementNameCard {...form} />
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                  <TimelineCard {...form} />
-                  <div className="space-y-4 pt-4">
-                    <QuarryCard {...form} />
-                    <NemesisCard {...form} />
-                    <MilestonesCard {...form} />
-                    <DepartingBonusesCard {...form} />
-                  </div>
-                </div>
+                <TimelineCard {...form} />
+              </TabsContent>
+              <TabsContent value="combat">
+                <QuarryCard {...form} />
+                <NemesisCard {...form} />
+                <DepartingBonusesCard {...form} />
               </TabsContent>
               <TabsContent value="survivors">
-                <div className="grid grid-cols-1 gap-2">
-                  <PopulationCard {...form} />
-                  <SettlementSurvivorsCard {...form} />
-                </div>
+                <SettlementSurvivorsCard {...form} />
               </TabsContent>
               <TabsContent value="society">
-                <div className="grid grid-cols-1 gap-4">
-                  <PrinciplesCard {...form} />
+                <MilestonesCard {...form} />
+                <PrinciplesCard {...form} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InnovationsCard {...form} />
                 </div>
               </TabsContent>
-              <TabsContent value="arc">
-                <div className="grid grid-cols-1 gap-2"></div>
+              <TabsContent value="crafting">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <SeedPatternsCard {...form} />
+                  <PatternsCard {...form} />
+                </div>
               </TabsContent>
+              <TabsContent value="arc"></TabsContent>
             </Tabs>
           </CardContent>
           <CardFooter>

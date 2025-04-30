@@ -122,7 +122,7 @@ export function DepartingBonusesCard(
   }
 
   return (
-    <Card className="mt-4">
+    <Card className="mt-2">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-1">
           Departing Survivor Bonuses

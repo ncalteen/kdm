@@ -37,28 +37,29 @@ export function PopulationCard(
   }, [settlementId, form])
 
   return (
-    <Card>
+    <Card className="mt-2">
       <CardContent className="pt-2 pb-2">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row items-center justify-between">
           <FormField
             control={form.control}
-            name="population"
+            name="survivalLimit"
             render={({ field }) => (
-              <FormItem className="flex-none">
-                <div className="flex flex-col items-center gap-2 h-full">
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="w-12 text-center no-spinners"
-                        {...field}
-                        value={field.value ?? '0'}
-                        disabled
-                      />
-                    </FormControl>
-                  </div>
-                  <FormLabel className="text-left text-xs">
-                    Population
+              <FormItem className="flex-1 flex justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="1"
+                      className="w-12 text-center no-spinners"
+                      {...field}
+                      value={field.value ?? ''}
+                      onChange={(e) => {
+                        form.setValue(field.name, parseInt(e.target.value))
+                      }}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-center text-xs">
+                    Survival Limit
                   </FormLabel>
                 </div>
                 <FormMessage />
@@ -66,12 +67,14 @@ export function PopulationCard(
             )}
           />
 
+          <div className="h-10 w-px bg-border"></div>
+
           <FormField
             control={form.control}
-            name="deathCount"
+            name="population"
             render={({ field }) => (
-              <FormItem className="flex-none">
-                <div className="flex flex-col items-center gap-2 h-full">
+              <FormItem className="flex-1 flex justify-center">
+                <div className="flex flex-col items-center gap-2">
                   <FormControl>
                     <Input
                       type="number"
@@ -81,8 +84,61 @@ export function PopulationCard(
                       disabled
                     />
                   </FormControl>
-                  <FormLabel className="text-left text-xs">
+                  <FormLabel className="text-center text-xs">
+                    Population
+                  </FormLabel>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="h-10 w-px bg-border"></div>
+
+          <FormField
+            control={form.control}
+            name="deathCount"
+            render={({ field }) => (
+              <FormItem className="flex-1 flex justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <FormControl>
+                    <Input
+                      type="number"
+                      className="w-12 text-center no-spinners"
+                      {...field}
+                      value={field.value ?? '0'}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormLabel className="text-center text-xs">
                     Death Count
+                  </FormLabel>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="h-10 w-px bg-border"></div>
+
+          <FormField
+            control={form.control}
+            name="lostSettlements"
+            render={({ field }) => (
+              <FormItem className="flex-1 flex justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      className="w-12 text-center no-spinners"
+                      {...field}
+                      value={field.value ?? ''}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormLabel className="text-center text-xs">
+                    Lost Settlements
                   </FormLabel>
                 </div>
                 <FormMessage />

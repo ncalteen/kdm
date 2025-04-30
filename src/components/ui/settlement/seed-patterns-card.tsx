@@ -16,7 +16,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { BookOpen, GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import { GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '../button'
@@ -27,27 +27,22 @@ import {
   CardHeader,
   CardTitle
 } from '../card'
-import { Checkbox } from '../checkbox'
 import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
-interface MilestoneItemProps {
-  milestone: {
-    name: string
-    complete: boolean
-    event: string
-  }
+interface SeedPatternItemProps {
   index: number
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  handleRemoveMilestone: (index: number) => void
+  handleRemoveSeedPattern: (index: number) => void
+  id: string
 }
 
-function MilestoneItem({
+function SeedPatternItem({
   index,
   form,
-  handleRemoveMilestone,
+  handleRemoveSeedPattern,
   id
-}: MilestoneItemProps & { id: string }) {
+}: SeedPatternItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -67,55 +62,16 @@ function MilestoneItem({
 
       <FormField
         control={form.control}
-        name={`milestones.${index}.complete`}
-        render={({ field }) => (
-          <FormItem className="flex items-center space-x-2">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                className="mt-2"
-                onCheckedChange={(checked) => {
-                  form.setValue(`milestones.${index}.complete`, !!checked)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name={`milestones.${index}.name`}
+        name={`seedPatterns.${index}`}
         render={({ field }) => (
           <FormItem className="flex-1">
             <FormControl>
               <Input
-                placeholder="Milestone"
+                placeholder="Seed Pattern"
                 {...field}
                 value={field.value || ''}
                 onChange={(e) => {
-                  form.setValue(`milestones.${index}.name`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-
-      <BookOpen />
-
-      <FormField
-        control={form.control}
-        name={`milestones.${index}.event`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Event"
-                {...field}
-                value={field.value || ''}
-                onChange={(e) => {
-                  form.setValue(`milestones.${index}.event`, e.target.value)
+                  form.setValue(`seedPatterns.${index}`, e.target.value)
                 }}
               />
             </FormControl>
@@ -127,17 +83,17 @@ function MilestoneItem({
         variant="ghost"
         size="sm"
         className="h-8 w-8 p-0 ml-2"
-        onClick={() => handleRemoveMilestone(index)}>
+        onClick={() => handleRemoveSeedPattern(index)}>
         <XIcon className="h-4 w-4" />
       </Button>
     </div>
   )
 }
 
-export function MilestonesCard(
+export function SeedPatternsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const milestones = form.watch('milestones') || []
+  const seedPatterns = form.watch('seedPatterns') || []
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -146,16 +102,16 @@ export function MilestonesCard(
     })
   )
 
-  const addMilestone = () => {
-    const currentMilestones = [...milestones]
-    currentMilestones.push({ name: '', complete: false, event: '' })
-    form.setValue('milestones', currentMilestones)
+  const addSeedPattern = () => {
+    const currentSeedPatterns = [...seedPatterns]
+    currentSeedPatterns.push('')
+    form.setValue('seedPatterns', currentSeedPatterns)
   }
 
-  const handleRemoveMilestone = (index: number) => {
-    const currentMilestones = [...milestones]
-    currentMilestones.splice(index, 1)
-    form.setValue('milestones', currentMilestones)
+  const handleRemoveSeedPattern = (index: number) => {
+    const currentSeedPatterns = [...seedPatterns]
+    currentSeedPatterns.splice(index, 1)
+    form.setValue('seedPatterns', currentSeedPatterns)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -165,8 +121,8 @@ export function MilestonesCard(
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
 
-      const newOrder = arrayMove(milestones, oldIndex, newIndex)
-      form.setValue('milestones', newOrder)
+      const newOrder = arrayMove(seedPatterns, oldIndex, newIndex)
+      form.setValue('seedPatterns', newOrder)
     }
   }
 
@@ -174,10 +130,10 @@ export function MilestonesCard(
     <Card className="mt-2">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-1">
-          Settlement Milestones
+          Seed Patterns
         </CardTitle>
         <CardDescription className="text-left">
-          Trigger these effects when the milestone condition is met.
+          Patterns gained when survivors reach 3 understanding.
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0 pb-2">
@@ -187,16 +143,15 @@ export function MilestonesCard(
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}>
             <SortableContext
-              items={milestones.map((_, index) => index.toString())}
+              items={seedPatterns.map((_, index) => index.toString())}
               strategy={verticalListSortingStrategy}>
-              {milestones.map((milestone, index) => (
-                <MilestoneItem
+              {seedPatterns.map((seedPattern, index) => (
+                <SeedPatternItem
                   key={index}
                   id={index.toString()}
-                  milestone={milestone}
                   index={index}
                   form={form}
-                  handleRemoveMilestone={handleRemoveMilestone}
+                  handleRemoveSeedPattern={handleRemoveSeedPattern}
                 />
               ))}
             </SortableContext>
@@ -207,9 +162,9 @@ export function MilestonesCard(
               type="button"
               size="sm"
               variant="outline"
-              onClick={addMilestone}>
+              onClick={addSeedPattern}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Milestone
+              Add Seed Pattern
             </Button>
           </div>
         </div>

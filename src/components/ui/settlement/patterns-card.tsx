@@ -16,38 +16,27 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { BookOpen, GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import { GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '../button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '../card'
-import { Checkbox } from '../checkbox'
+import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
-interface MilestoneItemProps {
-  milestone: {
-    name: string
-    complete: boolean
-    event: string
-  }
+interface PatternItemProps {
   index: number
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  handleRemoveMilestone: (index: number) => void
+  handleRemovePattern: (index: number) => void
+  id: string
 }
 
-function MilestoneItem({
+function PatternItem({
   index,
   form,
-  handleRemoveMilestone,
+  handleRemovePattern,
   id
-}: MilestoneItemProps & { id: string }) {
+}: PatternItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -67,55 +56,16 @@ function MilestoneItem({
 
       <FormField
         control={form.control}
-        name={`milestones.${index}.complete`}
-        render={({ field }) => (
-          <FormItem className="flex items-center space-x-2">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                className="mt-2"
-                onCheckedChange={(checked) => {
-                  form.setValue(`milestones.${index}.complete`, !!checked)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name={`milestones.${index}.name`}
+        name={`patterns.${index}`}
         render={({ field }) => (
           <FormItem className="flex-1">
             <FormControl>
               <Input
-                placeholder="Milestone"
+                placeholder="Pattern"
                 {...field}
                 value={field.value || ''}
                 onChange={(e) => {
-                  form.setValue(`milestones.${index}.name`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-
-      <BookOpen />
-
-      <FormField
-        control={form.control}
-        name={`milestones.${index}.event`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Event"
-                {...field}
-                value={field.value || ''}
-                onChange={(e) => {
-                  form.setValue(`milestones.${index}.event`, e.target.value)
+                  form.setValue(`patterns.${index}`, e.target.value)
                 }}
               />
             </FormControl>
@@ -127,17 +77,17 @@ function MilestoneItem({
         variant="ghost"
         size="sm"
         className="h-8 w-8 p-0 ml-2"
-        onClick={() => handleRemoveMilestone(index)}>
+        onClick={() => handleRemovePattern(index)}>
         <XIcon className="h-4 w-4" />
       </Button>
     </div>
   )
 }
 
-export function MilestonesCard(
+export function PatternsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const milestones = form.watch('milestones') || []
+  const patterns = form.watch('patterns') || []
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -146,16 +96,16 @@ export function MilestonesCard(
     })
   )
 
-  const addMilestone = () => {
-    const currentMilestones = [...milestones]
-    currentMilestones.push({ name: '', complete: false, event: '' })
-    form.setValue('milestones', currentMilestones)
+  const addPattern = () => {
+    const currentPatterns = [...patterns]
+    currentPatterns.push('')
+    form.setValue('patterns', currentPatterns)
   }
 
-  const handleRemoveMilestone = (index: number) => {
-    const currentMilestones = [...milestones]
-    currentMilestones.splice(index, 1)
-    form.setValue('milestones', currentMilestones)
+  const handleRemovePattern = (index: number) => {
+    const currentPatterns = [...patterns]
+    currentPatterns.splice(index, 1)
+    form.setValue('patterns', currentPatterns)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -165,8 +115,8 @@ export function MilestonesCard(
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
 
-      const newOrder = arrayMove(milestones, oldIndex, newIndex)
-      form.setValue('milestones', newOrder)
+      const newOrder = arrayMove(patterns, oldIndex, newIndex)
+      form.setValue('patterns', newOrder)
     }
   }
 
@@ -174,11 +124,8 @@ export function MilestonesCard(
     <Card className="mt-2">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-1">
-          Settlement Milestones
+          Patterns
         </CardTitle>
-        <CardDescription className="text-left">
-          Trigger these effects when the milestone condition is met.
-        </CardDescription>
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2">
@@ -187,16 +134,15 @@ export function MilestonesCard(
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}>
             <SortableContext
-              items={milestones.map((_, index) => index.toString())}
+              items={patterns.map((_, index) => index.toString())}
               strategy={verticalListSortingStrategy}>
-              {milestones.map((milestone, index) => (
-                <MilestoneItem
+              {patterns.map((Pattern, index) => (
+                <PatternItem
                   key={index}
                   id={index.toString()}
-                  milestone={milestone}
                   index={index}
                   form={form}
-                  handleRemoveMilestone={handleRemoveMilestone}
+                  handleRemovePattern={handleRemovePattern}
                 />
               ))}
             </SortableContext>
@@ -207,9 +153,9 @@ export function MilestonesCard(
               type="button"
               size="sm"
               variant="outline"
-              onClick={addMilestone}>
+              onClick={addPattern}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Milestone
+              Add Pattern
             </Button>
           </div>
         </div>
