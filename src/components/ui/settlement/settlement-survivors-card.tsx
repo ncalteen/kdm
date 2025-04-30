@@ -1,3 +1,5 @@
+'use client'
+
 import { SurvivorType } from '@/lib/enums'
 import { Survivor } from '@/lib/types'
 import { getSurvivors } from '@/lib/utils'

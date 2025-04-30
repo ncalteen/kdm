@@ -1,3 +1,5 @@
+'use client'
+
 import { ResourceCategory, ResourceType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'

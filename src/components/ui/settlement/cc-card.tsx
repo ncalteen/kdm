@@ -1,3 +1,5 @@
+'use client'
+
 import { SettlementSchema } from '@/schemas/settlement'
 import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'

@@ -1,3 +1,5 @@
+'use client'
+
 import { CampaignType } from '@/lib/enums'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
@@ -263,7 +265,7 @@ export function TimelineCard(
                         return (
                           <Badge
                             key={entryIndex}
-                            className="cursor-pointer"
+                            className="cursor-pointer mt-1"
                             onClick={() => editEvent(yearIndex, entryIndex)}>
                             {entry.startsWith('Nemesis') ? (
                               <SwordsIcon className="h-4 w-4 mr-1" />

@@ -52,18 +52,56 @@ import { TimelineCard } from '../ui/settlement/timeline-card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
 export function CreateSettlementForm() {
-  const [defaultValues, setDefaultValues] = useState<
-    Partial<z.infer<typeof SettlementSchema>>
-  >({
-    campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-    survivorType: SurvivorType.CORE
-  })
+  // Use lazy initialization for the default values
+  const [defaultValues] = useState<Partial<z.infer<typeof SettlementSchema>>>(
+    () => ({
+      campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
+      survivorType: SurvivorType.CORE
+    })
+  )
+
   const [selectedTab, setSelectedTab] = useState<string>('timeline')
+
+  // Use state to store the ID and lost settlement count to ensure they're only calculated on the client side
+  const [settlementId, setSettlementId] = useState(1)
+  const [lostSettlementCount, setLostSettlementCount] = useState(0)
 
   const form = useForm<z.infer<typeof SettlementSchema>>({
     resolver: zodResolver(SettlementSchema),
-    defaultValues
+    defaultValues: {
+      ...defaultValues,
+      id: settlementId,
+      survivalLimit: 1,
+      lostSettlements: lostSettlementCount,
+      timeline: PotLTimeline,
+      quarries: [],
+      nemesis: [],
+      milestones: PotLMilestones,
+      departingBonuses: [],
+      deathCount: 0,
+      principles: [],
+      patterns: [],
+      innovations: ['Language'],
+      locations: [],
+      resources: [],
+      gear: [],
+      population: 0,
+      lanternResearchLevel: 0,
+      monsterVolumes: []
+    }
   })
+
+  useEffect(() => {
+    // Get the next settlement ID from localStorage
+    setSettlementId(getNextSettlementId())
+    defaultValues.id = getNextSettlementId()
+    form.setValue('id', getNextSettlementId())
+
+    // Get the lost settlement count from localStorage
+    setLostSettlementCount(getLostSettlementCount())
+    defaultValues.lostSettlements = getLostSettlementCount()
+    form.setValue('lostSettlements', getLostSettlementCount())
+  }, [form, defaultValues])
 
   const campaignType = form.watch('campaignType')
   const survivorType = form.watch('survivorType')
@@ -79,136 +117,104 @@ export function CreateSettlementForm() {
     form.setValue('campaignType', value)
     setSelectedTab('timeline') // Reset to timeline tab when campaign type changes
 
-    // Set the appropriate timeline based on campaign type
-    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
-      form.setValue('timeline', SquiresTimeline)
-      form.setValue('survivorType', SurvivorType.CORE)
-    } else if (value === CampaignType.PEOPLE_OF_THE_LANTERN) {
-      form.setValue('timeline', PotLTimeline)
-    } else if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
-      form.setValue('timeline', PotDKTimeline)
-    } else if (value === CampaignType.PEOPLE_OF_THE_STARS) {
-      form.setValue('timeline', PotStarsTimeline)
-    } else if (value === CampaignType.PEOPLE_OF_THE_SUN) {
-      form.setValue('timeline', PotSunTimeline)
-    } else {
-      form.setValue('timeline', EmptyTimeline)
-    }
+    // Set survival limit
+    form.setValue(
+      'survivalLimit',
+      value === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
+    )
 
     // If People of the Dream Keeper is selected, set survivor type to Arc and disable editing
     if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
       form.setValue('survivorType', SurvivorType.ARC)
+    }
+
+    // Set appropriate timeline based on campaign type (without deep nesting)
+    const timeline =
+      value === CampaignType.SQUIRES_OF_THE_CITADEL
+        ? SquiresTimeline
+        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+          ? PotDKTimeline
+          : value === CampaignType.PEOPLE_OF_THE_LANTERN
+            ? PotLTimeline
+            : value === CampaignType.PEOPLE_OF_THE_STARS
+              ? PotStarsTimeline
+              : value === CampaignType.PEOPLE_OF_THE_SUN
+                ? PotSunTimeline
+                : EmptyTimeline
+
+    form.setValue('timeline', timeline)
+
+    // Set appropriate milestones
+    const milestones =
+      value === CampaignType.SQUIRES_OF_THE_CITADEL
+        ? []
+        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+          ? PotDKMilestones
+          : value === CampaignType.PEOPLE_OF_THE_LANTERN
+            ? PotLMilestones
+            : value === CampaignType.PEOPLE_OF_THE_STARS
+              ? PotStarsMilestones
+              : value === CampaignType.PEOPLE_OF_THE_SUN
+                ? PotSunMilestones
+                : []
+
+    form.setValue('milestones', milestones)
+
+    // Set appropriate innovations
+    const innovations =
+      value === CampaignType.PEOPLE_OF_THE_LANTERN
+        ? ['Language']
+        : value === CampaignType.PEOPLE_OF_THE_STARS
+          ? ['Dragon Speech']
+          : value === CampaignType.PEOPLE_OF_THE_SUN
+            ? ['Sun Language']
+            : []
+
+    form.setValue('innovations', innovations)
+
+    // Set suspicions for Squires campaign
+    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
+      form.setValue('suspicions', DefaultSquiresSuspicion)
+    }
+
+    // Set lantern research for appropriate campaigns
+    const hasLanternResearch =
+      value === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      value === CampaignType.PEOPLE_OF_THE_SUN
+
+    form.setValue('lanternResearchLevel', hasLanternResearch ? 0 : undefined)
+    form.setValue('monsterVolumes', hasLanternResearch ? [] : undefined)
+
+    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
+      form.setValue('survivorType', SurvivorType.CORE)
     }
   }
 
   // Handle survivor type change from the combobox
   const handleSurvivorTypeChange = (value: SurvivorType) => {
     form.setValue('survivorType', value)
-    setSelectedTab('timeline') // Reset to timeline tab when survivor type changes
+    setSelectedTab('timeline')
+
+    // Set Arc-specific data when survivor type is Arc
+    if (value === SurvivorType.ARC) {
+      form.setValue('ccQuarryVictories', DefaultCcQuarryVictories)
+      form.setValue('ccNemesisVictories', DefaultCcNemesisVictories)
+      form.setValue('ccRewards', [])
+      form.setValue('philosophies', [])
+      form.setValue('knowledges', [])
+    } else {
+      form.setValue('ccQuarryVictories', undefined)
+      form.setValue('ccNemesisVictories', undefined)
+      form.setValue('ccRewards', undefined)
+      form.setValue('philosophies', undefined)
+      form.setValue('knowledges', undefined)
+    }
   }
 
   // Check if a campaign that requires a specific survivor type is selected
   const isSpecificSurvivorRequired =
     campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
     campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-
-  useEffect(() => {
-    setDefaultValues({
-      id: getNextSettlementId(),
-      campaignType: campaignType,
-      survivorType: survivorType,
-      survivalLimit:
-        campaignType === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1,
-      lostSettlements: getLostSettlementCount(),
-
-      // Timeline
-      timeline:
-        campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-          ? SquiresTimeline
-          : campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-            ? PotDKTimeline
-            : campaignType === CampaignType.PEOPLE_OF_THE_LANTERN
-              ? PotLTimeline
-              : campaignType === CampaignType.PEOPLE_OF_THE_STARS
-                ? PotStarsTimeline
-                : campaignType === CampaignType.PEOPLE_OF_THE_SUN
-                  ? PotSunTimeline
-                  : EmptyTimeline,
-
-      quarries: [],
-      nemesis: [],
-      milestones:
-        campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-          ? []
-          : campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-            ? PotDKMilestones
-            : campaignType === CampaignType.PEOPLE_OF_THE_LANTERN
-              ? PotLMilestones
-              : campaignType === CampaignType.PEOPLE_OF_THE_STARS
-                ? PotStarsMilestones
-                : campaignType === CampaignType.PEOPLE_OF_THE_SUN
-                  ? PotSunMilestones
-                  : [],
-      departingBonuses: [],
-      deathCount: 0,
-      principles: [],
-      patterns: [],
-      innovations:
-        campaignType === CampaignType.PEOPLE_OF_THE_LANTERN
-          ? ['Language']
-          : campaignType === CampaignType.PEOPLE_OF_THE_STARS
-            ? ['Dragon Speech']
-            : campaignType === CampaignType.PEOPLE_OF_THE_SUN
-              ? ['Sun Language']
-              : [],
-      locations: [], // TODO: Pre-populate based on the campaign type?
-      resources: [],
-      gear: [],
-      notes: undefined,
-      population: 0,
-
-      // Arc Survivor Settlements
-      ccQuarryVictories:
-        survivorType !== SurvivorType.ARC
-          ? undefined
-          : DefaultCcQuarryVictories,
-      ccNemesisVictories:
-        survivorType !== SurvivorType.ARC
-          ? undefined
-          : DefaultCcNemesisVictories,
-      ccRewards: survivorType !== SurvivorType.ARC ? undefined : [], // TODO: Pre-populate based on the campaign type?
-      philosophies: survivorType !== SurvivorType.ARC ? undefined : [],
-      knowledges: survivorType !== SurvivorType.ARC ? undefined : [],
-
-      /**
-       * People of the Lantern and People of the Sun
-       */
-      lanternResearchLevel:
-        campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-        campaignType === CampaignType.PEOPLE_OF_THE_SUN
-          ? 0
-          : undefined,
-      monsterVolumes:
-        campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-        campaignType === CampaignType.PEOPLE_OF_THE_SUN
-          ? []
-          : undefined,
-
-      /**
-       * Squires of the Citadel
-       */
-      suspicions:
-        campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-          ? DefaultSquiresSuspicion
-          : undefined
-    })
-  }, [campaignType, survivorType])
-
-  useEffect(() => {
-    if (Object.keys(defaultValues).length > 0) {
-      form.reset(defaultValues)
-    }
-  }, [defaultValues, form])
 
   // Define a submit handler with the correct schema type
   function onSubmit(values: z.infer<typeof SettlementSchema>) {

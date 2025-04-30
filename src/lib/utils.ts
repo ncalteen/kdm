@@ -15,7 +15,7 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function getNextSettlementId(): number {
   const campaign = JSON.parse(
-    window.localStorage.getItem('campaign') ||
+    localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
@@ -38,7 +38,7 @@ export function getNextSettlementId(): number {
  */
 export function getNextSurvivorId(): number {
   const campaign = JSON.parse(
-    window.localStorage.getItem('campaign') ||
+    localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
@@ -61,7 +61,7 @@ export function getNextSurvivorId(): number {
  */
 export function getLostSettlementCount(): number {
   const campaign = JSON.parse(
-    window.localStorage.getItem('campaign') ||
+    localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
@@ -90,7 +90,7 @@ export function getLostSettlementCount(): number {
  */
 export function getSurvivors(settlementId: number): Survivor[] {
   const campaign = JSON.parse(
-    window.localStorage.getItem('campaign') ||
+    localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
@@ -110,7 +110,7 @@ export function getSurvivors(settlementId: number): Survivor[] {
  */
 export function getSettlement(settlementId: number): Settlement | undefined {
   const campaign = JSON.parse(
-    window.localStorage.getItem('campaign') ||
+    localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []

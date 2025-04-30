@@ -1,3 +1,5 @@
+'use client'
+
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,

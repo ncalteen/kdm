@@ -1,3 +1,5 @@
+'use client'
+
 import { Gender, Philosophy, WeaponType } from '@/lib/enums'
 import { z } from 'zod'
 

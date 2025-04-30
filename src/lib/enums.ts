@@ -1,3 +1,5 @@
+'use client'
+
 /** Campaign Type */
 export enum CampaignType {
   /** People of the Dream Keeper */

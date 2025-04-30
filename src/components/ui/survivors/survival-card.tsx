@@ -1,3 +1,5 @@
+'use client'
+
 import { SettlementType } from '@/lib/enums'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { Lock } from 'lucide-react'

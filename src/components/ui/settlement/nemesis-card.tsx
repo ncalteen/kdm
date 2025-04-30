@@ -1,3 +1,5 @@
+'use client'
+
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -23,7 +25,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -259,7 +261,7 @@ function NewNemesisItem({
 export function NemesisCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const nemeses = form.watch('nemesis') || []
+  const nemeses = useMemo(() => form.watch('nemesis') || [], [form])
 
   // Track which inputs are disabled (saved)
   const [disabledInputs, setDisabledInputs] = useState<{

@@ -1,3 +1,5 @@
+'use client'
+
 import { getSurvivors } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useEffect } from 'react'

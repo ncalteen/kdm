@@ -1,3 +1,5 @@
+'use client'
+
 import { Gender } from '@/lib/enums'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { UseFormReturn } from 'react-hook-form'
