@@ -6,6 +6,7 @@ import { Form } from '@/components/ui/form'
 import {
   DefaultCcNemesisVictories,
   DefaultCcQuarryVictories,
+  DefaultSquiresSuspicion,
   EmptyTimeline,
   PotDKMilestones,
   PotLMilestones,
@@ -49,7 +50,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 export function CreateSettlementForm() {
   const [defaultValues, setDefaultValues] = useState<
     Partial<z.infer<typeof SettlementSchema>>
-  >({})
+  >({
+    campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
+    survivorType: SurvivorType.CORE
+  })
+  const [selectedTab, setSelectedTab] = useState<string>('timeline')
 
   const form = useForm<z.infer<typeof SettlementSchema>>({
     resolver: zodResolver(SettlementSchema),
@@ -68,6 +73,7 @@ export function CreateSettlementForm() {
   // Handle campaign type change from the combobox
   const handleCampaignChange = (value: CampaignType) => {
     form.setValue('campaignType', value)
+    setSelectedTab('timeline') // Reset to timeline tab when campaign type changes
 
     // If People of the Dream Keeper is selected, set survivor type to Arc and disable editing
     if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
@@ -83,6 +89,7 @@ export function CreateSettlementForm() {
   // Handle survivor type change from the combobox
   const handleSurvivorTypeChange = (value: SurvivorType) => {
     form.setValue('survivorType', value)
+    setSelectedTab('timeline') // Reset to timeline tab when survivor type changes
   }
 
   // Check if a campaign that requires a specific survivor type is selected
@@ -93,8 +100,8 @@ export function CreateSettlementForm() {
   useEffect(() => {
     setDefaultValues({
       id: getNextSettlementId(),
-      campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-      survivorType: SurvivorType.ARC,
+      campaignType: campaignType,
+      survivorType: survivorType,
       survivalLimit: 1,
       lostSettlements: getLostSettlementCount(),
 
@@ -169,15 +176,7 @@ export function CreateSettlementForm() {
        */
       suspicions:
         campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-          ? [
-              {
-                name: 'Cain',
-                level1: false,
-                level2: false,
-                level3: false,
-                level4: false
-              }
-            ]
+          ? DefaultSquiresSuspicion
           : undefined
     })
   }, [campaignType, survivorType])
@@ -215,7 +214,8 @@ export function CreateSettlementForm() {
             <SettlementNameCard {...form} />
             <PopulationCard {...form} />
             <Tabs
-              defaultValue="timeline"
+              value={selectedTab}
+              onValueChange={setSelectedTab}
               className="text-center pt-2 pb-4 w-full">
               <TabsList className="w-full">
                 <TabsTrigger value="timeline" className="flex-1">
@@ -256,7 +256,11 @@ export function CreateSettlementForm() {
               </TabsContent>
               {isSquiresCampaign ? (
                 <TabsContent value="squires">
-                  <SquireSuspicionsCard {...form} />
+                  <SquireSuspicionsCard
+                    control={form.control}
+                    setValue={form.setValue}
+                    watch={form.watch}
+                  />
                   <SquireCards />
                 </TabsContent>
               ) : (
