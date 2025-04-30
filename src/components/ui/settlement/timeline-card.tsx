@@ -8,7 +8,7 @@ import {
   SwordsIcon,
   TrashIcon
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { KeyboardEvent, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -152,6 +152,18 @@ export function TimelineCard(
     return !!editingEvents[inputKey]
   }
 
+  const handleKeyDown = (
+    e: KeyboardEvent<HTMLInputElement>,
+    yearIndex: number,
+    entryIndex: number
+  ) => {
+    // If the user presses Enter, save the event instead of submitting the form
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      saveEvent(yearIndex, entryIndex)
+    }
+  }
+
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
@@ -258,6 +270,9 @@ export function TimelineCard(
                                       e.target.value
                                     )
                                   }}
+                                  onKeyDown={(e) =>
+                                    handleKeyDown(e, yearIndex, entryIndex)
+                                  }
                                   autoFocus
                                 />
                               </FormControl>
