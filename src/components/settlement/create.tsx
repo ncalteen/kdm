@@ -182,6 +182,12 @@ export function CreateSettlementForm() {
     })
   }, [campaignType, survivorType])
 
+  useEffect(() => {
+    if (Object.keys(defaultValues).length > 0) {
+      form.reset(defaultValues)
+    }
+  }, [defaultValues, form])
+
   // Define a submit handler with the correct schema type
   function onSubmit(values: z.infer<typeof SettlementSchema>) {
     // Do something with the form values.
@@ -269,10 +275,12 @@ export function CreateSettlementForm() {
                 <InnovationsCard {...form} />
               </TabsContent>
               <TabsContent value="crafting">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <SeedPatternsCard {...form} />
-                  <PatternsCard {...form} />
-                </div>
+                {!isSquiresCampaign && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <SeedPatternsCard {...form} />
+                    <PatternsCard {...form} />
+                  </div>
+                )}
                 <ResourcesCard {...form} />
                 <GearCard {...form} />
               </TabsContent>
