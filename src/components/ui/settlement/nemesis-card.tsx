@@ -16,9 +16,16 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import {
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon
+} from 'lucide-react'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import {
@@ -45,13 +52,19 @@ interface NemesisItemProps {
     checked: boolean
   ) => void
   handleRemoveNemesis: (nemesisName: string) => void
+  isDisabled: boolean
+  onSave: (nemesisName: string) => void
+  onEdit: (nemesisName: string) => void
 }
 
 function NemesisItem({
   nemesis,
   handleToggleLevel,
   handleRemoveNemesis,
-  id
+  id,
+  isDisabled,
+  onSave,
+  onEdit
 }: NemesisItemProps & { id: string }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -90,6 +103,7 @@ function NemesisItem({
                 <Checkbox
                   checked={nemesis.level1}
                   className="mt-2"
+                  disabled={isDisabled}
                   onCheckedChange={(checked) => {
                     if (checked !== 'indeterminate') {
                       handleToggleLevel(nemesis.name, 'level1', checked)
@@ -110,6 +124,7 @@ function NemesisItem({
                 <Checkbox
                   checked={nemesis.level2}
                   className="mt-2"
+                  disabled={isDisabled}
                   onCheckedChange={(checked) => {
                     if (checked !== 'indeterminate') {
                       handleToggleLevel(nemesis.name, 'level2', checked)
@@ -130,6 +145,7 @@ function NemesisItem({
                 <Checkbox
                   checked={nemesis.level3}
                   className="mt-2"
+                  disabled={isDisabled}
                   onCheckedChange={(checked) => {
                     if (checked !== 'indeterminate') {
                       handleToggleLevel(nemesis.name, 'level3', checked)
@@ -142,12 +158,32 @@ function NemesisItem({
           )}
         />
 
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(nemesis.name)}
+            title="Edit nemesis">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onSave(nemesis.name)}
+            title="Save nemesis">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
+
         <Button
+          type="button"
           variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
+          size="icon"
           onClick={() => handleRemoveNemesis(nemesis.name)}>
-          <XIcon className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>
@@ -156,12 +192,13 @@ function NemesisItem({
 
 function NewNemesisItem({
   index,
-  form,
-  handleRemoveNemesis
+  handleRemoveNemesis,
+  onSave
 }: {
   index: number
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
   handleRemoveNemesis: (nemesisName: string) => void
+  onSave: (name: string) => void
 }) {
   const [name, setName] = useState('')
 
@@ -169,22 +206,18 @@ function NewNemesisItem({
     setName(e.target.value)
   }
 
-  const handleBlur = () => {
+  const handleSave = () => {
     if (name.trim() !== '') {
-      const updatedNemeses = [...(form.watch('nemesis') || [])]
-      updatedNemeses[index] = {
-        ...updatedNemeses[index],
-        name: name.trim()
-      }
-      form.setValue('nemesis', updatedNemeses)
+      onSave(name.trim())
+    } else {
+      toast.warning('Cannot save a nemesis without a name')
     }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      const inputElement = e.target as HTMLInputElement
-      inputElement.blur()
+      handleSave()
     }
   }
 
@@ -198,18 +231,26 @@ function NewNemesisItem({
         placeholder="Add a nemesis..."
         value={name}
         onChange={handleNameChange}
-        onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
       />
 
       <Button
+        type="button"
         variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0"
+        size="icon"
+        onClick={handleSave}
+        title="Save nemesis">
+        <CheckIcon className="h-4 w-4" />
+      </Button>
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
         onClick={() => handleRemoveNemesis('new-nemesis-' + index)}>
-        <XIcon className="h-4 w-4" />
+        <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
   )
@@ -220,6 +261,13 @@ export function NemesisCard(
 ) {
   const nemeses = form.watch('nemesis') || []
 
+  // Track which inputs are disabled (saved)
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: string]: boolean
+  }>({})
+
+  const [isAddingNew, setIsAddingNew] = useState(false)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -228,28 +276,21 @@ export function NemesisCard(
   )
 
   const addNemesis = () => {
-    // Add a new empty nemesis with a temporary ID that will be replaced when saved
-    const newNemesis = {
-      name: '',
-      level1: false,
-      level2: false,
-      level3: false
-    }
-    const updatedNemeses = [...nemeses, newNemesis]
-    form.setValue('nemesis', updatedNemeses)
+    setIsAddingNew(true)
   }
 
   const handleRemoveNemesis = (nemesisName: string) => {
     if (nemesisName.startsWith('new-nemesis-')) {
-      // Remove by index for new unsaved items
-      const index = parseInt(nemesisName.replace('new-nemesis-', ''))
-      const updatedNemeses = [...nemeses]
-      updatedNemeses.splice(index, 1)
-      form.setValue('nemesis', updatedNemeses)
+      setIsAddingNew(false)
     } else {
       // Remove by name for existing items
       const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
       form.setValue('nemesis', updatedNemeses)
+
+      // Remove from disabled inputs
+      const updatedDisabledInputs = { ...disabledInputs }
+      delete updatedDisabledInputs[nemesisName]
+      setDisabledInputs(updatedDisabledInputs)
     }
   }
 
@@ -265,6 +306,57 @@ export function NemesisCard(
       return n
     })
     form.setValue('nemesis', updatedNemeses)
+  }
+
+  const saveNemesis = (nemesisName: string) => {
+    if (!nemesisName || nemesisName.trim() === '') {
+      toast.warning('Cannot save a nemesis without a name')
+      return
+    }
+
+    // Mark this nemesis as disabled (saved)
+    setDisabledInputs({
+      ...disabledInputs,
+      [nemesisName]: true
+    })
+
+    toast.success('Nemesis saved')
+  }
+
+  const saveNewNemesis = (name: string) => {
+    // Check if a nemesis with this name already exists
+    if (nemeses.some((n) => n.name === name)) {
+      toast.warning('A nemesis with this name already exists')
+      return
+    }
+
+    // Add the new nemesis to the list
+    const newNemesis = {
+      name,
+      level1: false,
+      level2: false,
+      level3: false
+    }
+    const updatedNemeses = [...nemeses, newNemesis]
+    form.setValue('nemesis', updatedNemeses)
+
+    // Mark as saved/disabled
+    setDisabledInputs({
+      ...disabledInputs,
+      [name]: true
+    })
+
+    setIsAddingNew(false)
+    toast.success('New nemesis added')
+  }
+
+  const editNemesis = (nemesisName: string) => {
+    // Mark this nemesis as enabled (editable)
+    const updatedDisabledInputs = { ...disabledInputs }
+    updatedDisabledInputs[nemesisName] = false
+    setDisabledInputs(updatedDisabledInputs)
+
+    toast.info('Editing nemesis')
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -298,7 +390,7 @@ export function NemesisCard(
             <SortableContext
               items={nemeses.map((n) => n.name)}
               strategy={verticalListSortingStrategy}>
-              {nemeses.map((nemesis, index) =>
+              {nemeses.map((nemesis) =>
                 nemesis.name ? (
                   <NemesisItem
                     key={nemesis.name}
@@ -306,25 +398,31 @@ export function NemesisCard(
                     nemesis={nemesis}
                     handleToggleLevel={handleToggleLevel}
                     handleRemoveNemesis={handleRemoveNemesis}
+                    isDisabled={!!disabledInputs[nemesis.name]}
+                    onSave={saveNemesis}
+                    onEdit={editNemesis}
                   />
-                ) : (
-                  <NewNemesisItem
-                    key={`new-nemesis-${index}`}
-                    index={index}
-                    form={form}
-                    handleRemoveNemesis={handleRemoveNemesis}
-                  />
-                )
+                ) : null
               )}
             </SortableContext>
           </DndContext>
+
+          {isAddingNew && (
+            <NewNemesisItem
+              index={nemeses.length}
+              form={form}
+              handleRemoveNemesis={handleRemoveNemesis}
+              onSave={saveNewNemesis}
+            />
+          )}
 
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={addNemesis}>
+              onClick={addNemesis}
+              disabled={isAddingNew}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Nemesis
             </Button>
