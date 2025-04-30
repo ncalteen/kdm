@@ -23,6 +23,8 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { SelectCampaignCombobox } from '../ui/menu/select-campaign-combobox'
 import { SelectSurvivorTypeCombobox } from '../ui/menu/select-survivor-type-combobox'
+import { CcCard } from '../ui/settlement/cc-card'
+import { CcVictoriesCard } from '../ui/settlement/cc-victories-card'
 import { DepartingBonusesCard } from '../ui/settlement/departing-bonuses-card'
 import { InnovationsCard } from '../ui/settlement/innovations-card'
 import { MilestonesCard } from '../ui/settlement/milestones-card'
@@ -31,6 +33,7 @@ import { PatternsCard } from '../ui/settlement/patterns-card'
 import { PopulationCard } from '../ui/settlement/population-card'
 import { PrinciplesCard } from '../ui/settlement/principles-card'
 import { QuarryCard } from '../ui/settlement/quarry-card'
+import { ResourcesCard } from '../ui/settlement/resources-card'
 import { SeedPatternsCard } from '../ui/settlement/seed-patterns-card'
 import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
 import { SettlementSurvivorsCard } from '../ui/settlement/settlement-survivors-card'
@@ -184,8 +187,8 @@ export function CreateSettlementForm() {
                 <TabsTrigger value="timeline" className="flex-1">
                   Timeline
                 </TabsTrigger>
-                <TabsTrigger value="combat" className="flex-1">
-                  Combat
+                <TabsTrigger value="monsters" className="flex-1">
+                  Monsters
                 </TabsTrigger>
                 <TabsTrigger value="survivors" className="flex-1">
                   Survivors
@@ -203,12 +206,12 @@ export function CreateSettlementForm() {
               <TabsContent value="timeline">
                 <TimelineCard {...form} />
               </TabsContent>
-              <TabsContent value="combat">
+              <TabsContent value="monsters">
                 <QuarryCard {...form} />
                 <NemesisCard {...form} />
-                <DepartingBonusesCard {...form} />
               </TabsContent>
               <TabsContent value="survivors">
+                <DepartingBonusesCard {...form} />
                 <SettlementSurvivorsCard {...form} />
               </TabsContent>
               <TabsContent value="society">
@@ -223,8 +226,12 @@ export function CreateSettlementForm() {
                   <SeedPatternsCard {...form} />
                   <PatternsCard {...form} />
                 </div>
+                <ResourcesCard {...form} />
               </TabsContent>
-              <TabsContent value="arc"></TabsContent>
+              <TabsContent value="arc">
+                <CcCard {...form} />
+                <CcVictoriesCard {...form} />
+              </TabsContent>
             </Tabs>
           </CardContent>
           <CardFooter>
