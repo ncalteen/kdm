@@ -1,9 +1,11 @@
 import { CampaignType } from '@/lib/enums'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
+  BookOpenIcon,
   CheckIcon,
   HourglassIcon,
   PlusCircleIcon,
+  SwordsIcon,
   TrashIcon
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -215,6 +217,11 @@ export function TimelineCard(
                             key={entryIndex}
                             className="cursor-pointer"
                             onClick={() => editEvent(yearIndex, entryIndex)}>
+                            {entry.startsWith('Nemesis') ? (
+                              <SwordsIcon className="h-4 w-4 mr-1" />
+                            ) : (
+                              <BookOpenIcon className="h-4 w-4 mr-1" />
+                            )}
                             {entry}
                           </Badge>
                         )
