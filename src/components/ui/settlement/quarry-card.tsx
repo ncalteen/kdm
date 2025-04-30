@@ -27,6 +27,7 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { Badge } from '../badge'
 import { Button } from '../button'
 import {
   Card,
@@ -141,20 +142,28 @@ function QuarryItem({
       )}
 
       <div className="flex items-center gap-2 ml-auto">
-        <Select
-          value={quarry.node}
-          onValueChange={(value) => updateQuarryNode(quarry.name, value)}
-          disabled={isDisabled}>
-          <SelectTrigger className="h-8 w-24">
-            <SelectValue placeholder={quarry.node} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Node 1">Node 1</SelectItem>
-            <SelectItem value="Node 2">Node 2</SelectItem>
-            <SelectItem value="Node 3">Node 3</SelectItem>
-            <SelectItem value="Node 4">Node 4</SelectItem>
-          </SelectContent>
-        </Select>
+        {isDisabled ? (
+          <Badge
+            variant="secondary"
+            className="h-8 px-3 flex items-center justify-center">
+            {quarry.node}
+          </Badge>
+        ) : (
+          <Select
+            value={quarry.node}
+            onValueChange={(value) => updateQuarryNode(quarry.name, value)}
+            disabled={isDisabled}>
+            <SelectTrigger className="h-8 w-24">
+              <SelectValue placeholder={quarry.node} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Node 1">Node 1</SelectItem>
+              <SelectItem value="Node 2">Node 2</SelectItem>
+              <SelectItem value="Node 3">Node 3</SelectItem>
+              <SelectItem value="Node 4">Node 4</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
         {isDisabled ? (
           <Button

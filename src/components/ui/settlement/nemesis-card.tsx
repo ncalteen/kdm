@@ -23,7 +23,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -267,6 +267,17 @@ export function NemesisCard(
   }>({})
 
   const [isAddingNew, setIsAddingNew] = useState(false)
+
+  useEffect(() => {
+    const initialDisabledInputs = nemeses.reduce(
+      (acc, nemesis) => {
+        acc[nemesis.name] = true
+        return acc
+      },
+      {} as { [key: string]: boolean }
+    )
+    setDisabledInputs(initialDisabledInputs)
+  }, [nemeses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
