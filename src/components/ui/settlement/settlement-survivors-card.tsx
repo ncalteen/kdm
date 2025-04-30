@@ -32,7 +32,7 @@ export function SettlementSurvivorsCard(
   const isArcSurvivorType = survivorType === SurvivorType.ARC
 
   return (
-    <Card className="pt-0">
+    <Card className="mt-2">
       <CardHeader className="text-left">
         <CardTitle>Survivors</CardTitle>
       </CardHeader>

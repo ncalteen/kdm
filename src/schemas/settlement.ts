@@ -66,16 +66,9 @@ export const PrincipleEntrySchema = z.object({
  */
 export const ResourceEntrySchema = z.object({
   name: z.string(),
-  category: z
-    .array(
-      z.enum(
-        Object.keys(ResourceCategory) as [
-          ResourceCategory,
-          ...ResourceCategory[]
-        ]
-      )
-    )
-    .min(1),
+  category: z.enum(
+    Object.keys(ResourceCategory) as [ResourceCategory, ...ResourceCategory[]]
+  ),
   types: z
     .array(
       z.enum(Object.keys(ResourceType) as [ResourceType, ...ResourceType[]])
@@ -171,6 +164,7 @@ export const SettlementSchema = z.object({
 
   // Custom
   population: z.number().min(0),
+  ccValue: z.number().min(0).optional(),
 
   /**
    * Arc Survivor Settlements
