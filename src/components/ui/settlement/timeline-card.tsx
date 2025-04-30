@@ -8,7 +8,7 @@ import {
   SwordsIcon,
   TrashIcon
 } from 'lucide-react'
-import { KeyboardEvent, useEffect, useState } from 'react'
+import { KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -39,14 +39,18 @@ export function TimelineCard(
     [key: string]: boolean
   }>({})
 
+  // Use refs to store input values instead of state
+  const inputRefs = useRef<{
+    [key: string]: HTMLInputElement | null
+  }>({})
+
   // Update timeline when form timeline changes
   useEffect(() => {
     if (formTimeline) {
       setTimeline(formTimeline)
 
       // When timeline is first loaded or changed, all events should be in non-editing mode (badges)
-      const newEditingEvents: { [key: string]: boolean } = {}
-      setEditingEvents(newEditingEvents)
+      setEditingEvents({})
     }
   }, [formTimeline])
 
@@ -89,6 +93,7 @@ export function TimelineCard(
       ''
     ]
 
+    // Update the timeline state and form state
     setTimeline(updatedTimeline)
     form.setValue(
       `timeline.${yearIndex}.entries`,
@@ -111,7 +116,7 @@ export function TimelineCard(
     setTimeline(updatedTimeline)
     form.setValue(`timeline.${yearIndex}.entries`, events)
 
-    // Remove from editing events
+    // Remove from tracking
     const inputKey = `${yearIndex}-${eventIndex}`
     const newEditingEvents = { ...editingEvents }
     delete newEditingEvents[inputKey]
@@ -119,16 +124,34 @@ export function TimelineCard(
   }
 
   const saveEvent = (yearIndex: number, entryIndex: number) => {
-    const currentEvent = form.getValues(
-      `timeline.${yearIndex}.entries.${entryIndex}`
-    )
+    const inputKey = `${yearIndex}-${entryIndex}`
+    const inputElement = inputRefs.current[inputKey]
+
+    if (!inputElement) {
+      return
+    }
+
+    const currentEvent = inputElement.value
+
     if (!currentEvent || currentEvent.trim() === '') {
       toast.warning('Cannot save an empty event')
       return
     }
 
+    // Create a shallow copy of the timeline to avoid direct state mutation
+    const updatedTimeline = [...timeline]
+    if (!updatedTimeline[yearIndex].entries) {
+      updatedTimeline[yearIndex].entries = []
+    }
+
+    // Update the specific entry in our local timeline
+    updatedTimeline[yearIndex].entries[entryIndex] = currentEvent
+
+    // Update both the local state and form state in one go
+    setTimeline(updatedTimeline)
+    form.setValue(`timeline.${yearIndex}.entries.${entryIndex}`, currentEvent)
+
     // Mark this input as no longer being edited (converted to badge)
-    const inputKey = `${yearIndex}-${entryIndex}`
     const newEditingEvents = { ...editingEvents }
     delete newEditingEvents[inputKey]
     setEditingEvents(newEditingEvents)
@@ -137,12 +160,15 @@ export function TimelineCard(
   }
 
   const editEvent = (yearIndex: number, entryIndex: number) => {
-    // Mark this event as being edited
     const inputKey = `${yearIndex}-${entryIndex}`
+
+    // Mark this event as being edited
     setEditingEvents({
       ...editingEvents,
       [inputKey]: true
     })
+
+    // After the input is rendered, it will get the value from the form/timeline
 
     toast.info('Editing event')
   }
@@ -162,6 +188,16 @@ export function TimelineCard(
       e.preventDefault()
       saveEvent(yearIndex, entryIndex)
     }
+  }
+
+  // Function to set the ref for an input element
+  const setInputRef = (
+    element: HTMLInputElement | null,
+    yearIndex: number,
+    entryIndex: number
+  ) => {
+    const inputKey = `${yearIndex}-${entryIndex}`
+    inputRefs.current[inputKey] = element
   }
 
   return (
@@ -243,7 +279,7 @@ export function TimelineCard(
                   </div>
                 )}
 
-                {/* Display editable fields for events that are being edited */}
+                {/* Display editable fields for events that are being edited - Using uncontrolled inputs */}
                 {(yearData.entries || []).map((entry, entryIndex) => {
                   if (isEventBeingEdited(yearIndex, entryIndex)) {
                     return (
@@ -251,7 +287,7 @@ export function TimelineCard(
                         <FormField
                           control={form.control}
                           name={`timeline.${yearIndex}.entries.${entryIndex}`}
-                          render={({ field }) => (
+                          render={() => (
                             <FormItem className="flex-1 m-0">
                               <FormControl>
                                 <Input
@@ -262,14 +298,10 @@ export function TimelineCard(
                                         ? `Year ${yearIndex + 1}`
                                         : `Year ${yearIndex}`
                                   } event...`}
-                                  {...field}
-                                  value={field.value || ''}
-                                  onChange={(e) => {
-                                    form.setValue(
-                                      `timeline.${yearIndex}.entries.${entryIndex}`,
-                                      e.target.value
-                                    )
-                                  }}
+                                  defaultValue={entry || ''}
+                                  ref={(element) =>
+                                    setInputRef(element, yearIndex, entryIndex)
+                                  }
                                   onKeyDown={(e) =>
                                     handleKeyDown(e, yearIndex, entryIndex)
                                   }
