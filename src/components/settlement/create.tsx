@@ -75,14 +75,17 @@ export function CreateSettlementForm() {
     form.setValue('campaignType', value)
     setSelectedTab('timeline') // Reset to timeline tab when campaign type changes
 
+    // Immediately update the timeline based on the campaign type
+    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
+      form.setValue('timeline', SquiresTimeline)
+      form.setValue('survivorType', SurvivorType.CORE)
+    } else {
+      form.setValue('timeline', EmptyTimeline)
+    }
+
     // If People of the Dream Keeper is selected, set survivor type to Arc and disable editing
     if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
       form.setValue('survivorType', SurvivorType.ARC)
-    }
-
-    // If Squires of the Citadel is selected, set survivor type to Core and disable editing
-    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
-      form.setValue('survivorType', SurvivorType.CORE)
     }
   }
 

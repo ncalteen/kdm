@@ -21,10 +21,11 @@ export function TimelineCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const campaignType = form.watch('campaignType')
+  const formTimeline = form.watch('timeline')
   const isSquiresCampaign = campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
 
   const [timeline, setTimeline] = useState(
-    form.getValues('timeline') ||
+    formTimeline ||
       Array.from({ length: isSquiresCampaign ? 5 : 40 }, () => ({
         completed: false,
         entries: []
@@ -35,6 +36,11 @@ export function TimelineCard(
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
   }>({})
+
+  // Update timeline when form timeline changes
+  useEffect(() => {
+    setTimeline(formTimeline)
+  }, [formTimeline])
 
   // Update timeline when campaign type changes
   useEffect(() => {
