@@ -108,6 +108,14 @@ export const CcRewardEntrySchema = z.object({
 })
 
 /**
+ * Knowledge Entry Schema
+ */
+export const KnowledgeEntrySchema = z.object({
+  name: z.string(),
+  philosophy: z.string().optional()
+})
+
+/**
  * Squires of the Citadel Suspicion Entry Schema
  */
 export const SquireSuspicionEntrySchema = z.object({
@@ -173,7 +181,7 @@ export const SettlementSchema = z.object({
   ccNemesisVictories: z.array(CcNemesisVictoryEntrySchema).optional(),
   ccRewards: z.array(CcRewardEntrySchema).optional(),
   philosophies: z.array(z.string()).optional(),
-  knowledges: z.array(z.string()).optional(),
+  knowledges: z.array(KnowledgeEntrySchema).optional(),
 
   /**
    * Campaign Types:

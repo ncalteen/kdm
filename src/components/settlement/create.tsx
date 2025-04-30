@@ -24,12 +24,16 @@ import { z } from 'zod'
 import { SelectCampaignCombobox } from '../ui/menu/select-campaign-combobox'
 import { SelectSurvivorTypeCombobox } from '../ui/menu/select-survivor-type-combobox'
 import { CcCard } from '../ui/settlement/cc-card'
+import { CcRewardsCard } from '../ui/settlement/cc-rewards-card'
 import { CcVictoriesCard } from '../ui/settlement/cc-victories-card'
 import { DepartingBonusesCard } from '../ui/settlement/departing-bonuses-card'
+import { GearCard } from '../ui/settlement/gear-card'
 import { InnovationsCard } from '../ui/settlement/innovations-card'
+import { KnowledgesCard } from '../ui/settlement/knowledges-card'
 import { MilestonesCard } from '../ui/settlement/milestones-card'
 import { NemesisCard } from '../ui/settlement/nemesis-card'
 import { PatternsCard } from '../ui/settlement/patterns-card'
+import { PhilosophiesCard } from '../ui/settlement/philosophies-card'
 import { PopulationCard } from '../ui/settlement/population-card'
 import { PrinciplesCard } from '../ui/settlement/principles-card'
 import { QuarryCard } from '../ui/settlement/quarry-card'
@@ -227,10 +231,16 @@ export function CreateSettlementForm() {
                   <PatternsCard {...form} />
                 </div>
                 <ResourcesCard {...form} />
+                <GearCard {...form} />
               </TabsContent>
               <TabsContent value="arc">
                 <CcCard {...form} />
                 <CcVictoriesCard {...form} />
+                <CcRewardsCard {...form} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <PhilosophiesCard {...form} />
+                  <KnowledgesCard {...form} />
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
