@@ -9,9 +9,13 @@ import {
   DefaultSquiresSuspicion,
   EmptyTimeline,
   PotDKMilestones,
+  PotDKTimeline,
   PotLMilestones,
+  PotLTimeline,
   PotStarsMilestones,
+  PotStarsTimeline,
   PotSunMilestones,
+  PotSunTimeline,
   SquiresTimeline
 } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
@@ -75,10 +79,18 @@ export function CreateSettlementForm() {
     form.setValue('campaignType', value)
     setSelectedTab('timeline') // Reset to timeline tab when campaign type changes
 
-    // Immediately update the timeline based on the campaign type
+    // Set the appropriate timeline based on campaign type
     if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
       form.setValue('timeline', SquiresTimeline)
       form.setValue('survivorType', SurvivorType.CORE)
+    } else if (value === CampaignType.PEOPLE_OF_THE_LANTERN) {
+      form.setValue('timeline', PotLTimeline)
+    } else if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
+      form.setValue('timeline', PotDKTimeline)
+    } else if (value === CampaignType.PEOPLE_OF_THE_STARS) {
+      form.setValue('timeline', PotStarsTimeline)
+    } else if (value === CampaignType.PEOPLE_OF_THE_SUN) {
+      form.setValue('timeline', PotSunTimeline)
     } else {
       form.setValue('timeline', EmptyTimeline)
     }
@@ -105,15 +117,23 @@ export function CreateSettlementForm() {
       id: getNextSettlementId(),
       campaignType: campaignType,
       survivorType: survivorType,
-      survivalLimit: 1,
+      survivalLimit:
+        campaignType === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1,
       lostSettlements: getLostSettlementCount(),
 
       // Timeline
-      // TODO: Pre-populate based on the campaign type?
       timeline:
-        campaignType !== CampaignType.SQUIRES_OF_THE_CITADEL
-          ? EmptyTimeline
-          : SquiresTimeline,
+        campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+          ? SquiresTimeline
+          : campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+            ? PotDKTimeline
+            : campaignType === CampaignType.PEOPLE_OF_THE_LANTERN
+              ? PotLTimeline
+              : campaignType === CampaignType.PEOPLE_OF_THE_STARS
+                ? PotStarsTimeline
+                : campaignType === CampaignType.PEOPLE_OF_THE_SUN
+                  ? PotSunTimeline
+                  : EmptyTimeline,
 
       quarries: [],
       nemesis: [],
