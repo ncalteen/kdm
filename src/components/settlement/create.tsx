@@ -57,6 +57,9 @@ export function CreateSettlementForm() {
   const campaignType = form.watch('campaignType')
   const survivorType = form.watch('survivorType')
 
+  // Check if Arc-specific content should be shown
+  const showArcContent = survivorType === SurvivorType.ARC
+
   // Handle campaign type change from the combobox
   const handleCampaignChange = (value: CampaignType) => {
     form.setValue('campaignType', value)
@@ -65,6 +68,11 @@ export function CreateSettlementForm() {
     if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
       form.setValue('survivorType', SurvivorType.ARC)
     }
+
+    // If Squires of the Citadel is selected, set survivor type to Core and disable editing
+    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
+      form.setValue('survivorType', SurvivorType.CORE)
+    }
   }
 
   // Handle survivor type change from the combobox
@@ -72,8 +80,10 @@ export function CreateSettlementForm() {
     form.setValue('survivorType', value)
   }
 
-  // Check if Dream Keeper campaign is selected to disable survivor type selection
-  const isDreamKeeper = campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+  // Check if a campaign that requires a specific survivor type is selected
+  const isSpecificSurvivorRequired =
+    campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
+    campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
 
   useEffect(() => {
     setDefaultValues({
@@ -184,7 +194,7 @@ export function CreateSettlementForm() {
         <SelectSurvivorTypeCombobox
           value={survivorType}
           onChange={handleSurvivorTypeChange}
-          disabled={isDreamKeeper}
+          disabled={isSpecificSurvivorRequired}
         />
       </div>
 
@@ -212,9 +222,11 @@ export function CreateSettlementForm() {
                 <TabsTrigger value="crafting" className="flex-1">
                   Crafting
                 </TabsTrigger>
-                <TabsTrigger value="arc" className="flex-1">
-                  Arc
-                </TabsTrigger>
+                {showArcContent && (
+                  <TabsTrigger value="arc" className="flex-1">
+                    Arc
+                  </TabsTrigger>
+                )}
               </TabsList>
               <TabsContent value="timeline">
                 <TimelineCard {...form} />
@@ -242,15 +254,17 @@ export function CreateSettlementForm() {
                 <ResourcesCard {...form} />
                 <GearCard {...form} />
               </TabsContent>
-              <TabsContent value="arc">
-                <CcCard {...form} />
-                <CcVictoriesCard {...form} />
-                <CcRewardsCard {...form} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <PhilosophiesCard {...form} />
-                  <KnowledgesCard {...form} />
-                </div>
-              </TabsContent>
+              {showArcContent && (
+                <TabsContent value="arc">
+                  <CcCard {...form} />
+                  <CcVictoriesCard {...form} />
+                  <CcRewardsCard {...form} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <PhilosophiesCard {...form} />
+                    <KnowledgesCard {...form} />
+                  </div>
+                </TabsContent>
+              )}
             </Tabs>
           </CardContent>
           <CardFooter>

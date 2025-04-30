@@ -1,3 +1,4 @@
+import { CampaignType } from '@/lib/enums'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   CheckIcon,
@@ -15,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import { Checkbox } from '../checkbox'
 import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
-import { CampaignType } from '@/lib/enums'
 
 export function TimelineCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
@@ -25,7 +25,10 @@ export function TimelineCard(
 
   const [timeline, setTimeline] = useState(
     form.getValues('timeline') ||
-      Array.from({ length: isSquiresCampaign ? 5 : 40 }, () => ({ completed: false, entries: [] }))
+      Array.from({ length: isSquiresCampaign ? 5 : 40 }, () => ({
+        completed: false,
+        entries: []
+      }))
   )
 
   // Track which inputs are disabled (saved)
@@ -36,7 +39,7 @@ export function TimelineCard(
   // Update timeline when campaign type changes
   useEffect(() => {
     const currentTimeline = form.getValues('timeline') || []
-    
+
     if (isSquiresCampaign && currentTimeline.length > 5) {
       // Trim timeline to 5 rows for Squires campaign
       const trimmedTimeline = currentTimeline.slice(0, 5)
@@ -47,9 +50,9 @@ export function TimelineCard(
       // Preserve existing timeline entries and add empty ones to reach 40
       const expandedTimeline = [
         ...currentTimeline,
-        ...Array.from({ length: 40 - currentTimeline.length }, () => ({ 
-          completed: false, 
-          entries: [] 
+        ...Array.from({ length: 40 - currentTimeline.length }, () => ({
+          completed: false,
+          entries: []
         }))
       ]
       setTimeline(expandedTimeline)
