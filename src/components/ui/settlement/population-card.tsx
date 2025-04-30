@@ -50,10 +50,9 @@ export function PopulationCard(
                     <Input
                       type="number"
                       placeholder="1"
-                      defaultValue={1}
                       className="w-12 text-center no-spinners"
                       {...field}
-                      value={field.value ?? ''}
+                      value={field.value ?? '1'}
                       onChange={(e) => {
                         form.setValue(field.name, parseInt(e.target.value))
                       }}

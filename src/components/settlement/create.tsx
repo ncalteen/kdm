@@ -60,12 +60,20 @@ export function CreateSettlementForm() {
   // Handle campaign type change from the combobox
   const handleCampaignChange = (value: CampaignType) => {
     form.setValue('campaignType', value)
+
+    // If People of the Dream Keeper is selected, set survivor type to Arc and disable editing
+    if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
+      form.setValue('survivorType', SurvivorType.ARC)
+    }
   }
 
   // Handle survivor type change from the combobox
   const handleSurvivorTypeChange = (value: SurvivorType) => {
     form.setValue('survivorType', value)
   }
+
+  // Check if Dream Keeper campaign is selected to disable survivor type selection
+  const isDreamKeeper = campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
 
   useEffect(() => {
     setDefaultValues({
@@ -176,6 +184,7 @@ export function CreateSettlementForm() {
         <SelectSurvivorTypeCombobox
           value={survivorType}
           onChange={handleSurvivorTypeChange}
+          disabled={isDreamKeeper}
         />
       </div>
 

@@ -1,7 +1,14 @@
 import { SettlementSchema } from '@/schemas/settlement'
-import { HourglassIcon, PlusCircleIcon, TrashIcon } from 'lucide-react'
+import {
+  CheckIcon,
+  HourglassIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon
+} from 'lucide-react'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
@@ -16,6 +23,11 @@ export function TimelineCard(
     form.getValues('timeline') ||
       Array.from({ length: 30 }, () => ({ completed: false, entries: [] }))
   )
+
+  // Track which inputs are disabled (saved)
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: string]: boolean
+  }>({})
 
   const addTimelineEvent = () => {
     setTimeline([...timeline, { completed: false, entries: [] }])
@@ -41,6 +53,36 @@ export function TimelineCard(
     updatedTimeline[yearIndex].entries = events
     setTimeline(updatedTimeline)
     form.setValue(`timeline.${yearIndex}.entries`, events)
+  }
+
+  const saveEvent = (yearIndex: number, entryIndex: number) => {
+    const currentEvent = form.getValues(
+      `timeline.${yearIndex}.entries.${entryIndex}`
+    )
+    if (!currentEvent || currentEvent.trim() === '') {
+      toast.warning('Cannot save an empty event')
+      return
+    }
+
+    // Mark this input as disabled (saved)
+    const inputKey = `${yearIndex}-${entryIndex}`
+    setDisabledInputs({
+      ...disabledInputs,
+      [inputKey]: true
+    })
+
+    toast.success('Event saved to timeline')
+  }
+
+  const editEvent = (yearIndex: number, entryIndex: number) => {
+    // Mark this input as enabled (editable)
+    const inputKey = `${yearIndex}-${entryIndex}`
+    setDisabledInputs({
+      ...disabledInputs,
+      [inputKey]: false
+    })
+
+    toast.info('Editing event')
   }
 
   return (
@@ -91,40 +133,65 @@ export function TimelineCard(
                 {(yearData.entries || []).length === 0 ? (
                   <div className="text-sm text-gray-500 italic">No events</div>
                 ) : (
-                  (yearData.entries || []).map((entry, entryIndex) => (
-                    <div key={entryIndex} className="flex items-center gap-2">
-                      <FormField
-                        control={form.control}
-                        name={`timeline.${yearIndex}.entries.${entryIndex}`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1 m-0">
-                            <FormControl>
-                              <Input
-                                placeholder={`Year ${yearIndex + 1} event...`}
-                                {...field}
-                                value={field.value || ''}
-                                onChange={(e) => {
-                                  form.setValue(
-                                    `timeline.${yearIndex}.entries.${entryIndex}`,
-                                    e.target.value
-                                  )
-                                }}
-                              />
-                            </FormControl>
-                          </FormItem>
+                  (yearData.entries || []).map((entry, entryIndex) => {
+                    const inputKey = `${yearIndex}-${entryIndex}`
+                    const isDisabled = !!disabledInputs[inputKey]
+
+                    return (
+                      <div key={entryIndex} className="flex items-center">
+                        <FormField
+                          control={form.control}
+                          name={`timeline.${yearIndex}.entries.${entryIndex}`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1 m-0">
+                              <FormControl>
+                                <Input
+                                  placeholder={`Year ${yearIndex + 1} event...`}
+                                  {...field}
+                                  value={field.value || ''}
+                                  disabled={isDisabled}
+                                  onChange={(e) => {
+                                    form.setValue(
+                                      `timeline.${yearIndex}.entries.${entryIndex}`,
+                                      e.target.value
+                                    )
+                                  }}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        {isDisabled ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => editEvent(yearIndex, entryIndex)}
+                            title="Edit event">
+                            <PencilIcon className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => saveEvent(yearIndex, entryIndex)}
+                            title="Save event">
+                            <CheckIcon className="h-4 w-4" />
+                          </Button>
                         )}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          removeEventFromYear(yearIndex, entryIndex)
-                        }>
-                        <TrashIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            removeEventFromYear(yearIndex, entryIndex)
+                          }>
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )
+                  })
                 )}
 
                 <Button

@@ -29,11 +29,13 @@ const survivorTypeOptions = Object.values(SurvivorType).map((survivorType) => ({
 interface SelectSurvivorTypeComboboxProps {
   onChange?: (value: SurvivorType) => void
   value?: SurvivorType
+  disabled?: boolean
 }
 
 export function SelectSurvivorTypeCombobox({
   onChange,
-  value: propValue
+  value: propValue,
+  disabled = false
 }: SelectSurvivorTypeComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(propValue || '')
@@ -45,6 +47,9 @@ export function SelectSurvivorTypeCombobox({
   }, [propValue])
 
   const handleSelect = (currentValue: string) => {
+    // Don't allow changes if disabled
+    if (disabled) return
+
     const newValue = currentValue === value ? '' : currentValue
     setValue(newValue)
     setOpen(false)
@@ -55,13 +60,16 @@ export function SelectSurvivorTypeCombobox({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open && !disabled}
+      onOpenChange={(isOpen) => !disabled && setOpen(isOpen)}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between">
+          disabled={disabled}
+          className={cn('w-[200px] justify-between', disabled && 'opacity-70')}>
           {value
             ? survivorTypeOptions.find((option) => option.value === value)
                 ?.label
