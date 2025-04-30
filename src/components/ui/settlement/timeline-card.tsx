@@ -6,7 +6,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -15,19 +15,47 @@ import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import { Checkbox } from '../checkbox'
 import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
+import { CampaignType } from '@/lib/enums'
 
 export function TimelineCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
+  const campaignType = form.watch('campaignType')
+  const isSquiresCampaign = campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+
   const [timeline, setTimeline] = useState(
     form.getValues('timeline') ||
-      Array.from({ length: 30 }, () => ({ completed: false, entries: [] }))
+      Array.from({ length: isSquiresCampaign ? 5 : 40 }, () => ({ completed: false, entries: [] }))
   )
 
   // Track which inputs are disabled (saved)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
   }>({})
+
+  // Update timeline when campaign type changes
+  useEffect(() => {
+    const currentTimeline = form.getValues('timeline') || []
+    
+    if (isSquiresCampaign && currentTimeline.length > 5) {
+      // Trim timeline to 5 rows for Squires campaign
+      const trimmedTimeline = currentTimeline.slice(0, 5)
+      setTimeline(trimmedTimeline)
+      form.setValue('timeline', trimmedTimeline)
+    } else if (!isSquiresCampaign && currentTimeline.length < 40) {
+      // Expand timeline to 40 rows for other campaigns
+      // Preserve existing timeline entries and add empty ones to reach 40
+      const expandedTimeline = [
+        ...currentTimeline,
+        ...Array.from({ length: 40 - currentTimeline.length }, () => ({ 
+          completed: false, 
+          entries: [] 
+        }))
+      ]
+      setTimeline(expandedTimeline)
+      form.setValue('timeline', expandedTimeline)
+    }
+  }, [campaignType, isSquiresCampaign, form])
 
   const addTimelineEvent = () => {
     setTimeline([...timeline, { completed: false, entries: [] }])
