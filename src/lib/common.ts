@@ -190,6 +190,89 @@ export const DefaultCcNemesisVictories: CcNemesisVictory[] = [
 ]
 
 /**
+ * Squire Card Data
+ */
+export const SquireCardData = [
+  {
+    name: 'Squire Cain',
+    rows: [
+      { name: 'Age 1', value: '-' },
+      { name: 'Age 2', value: '-' },
+      {
+        name: 'Age 3',
+        value: '+3 grand or +3 sword weapon proficiency levels.'
+      },
+      {
+        name: 'Age 4',
+        value:
+          'Cain is older than he lets on. Suffer -2 strength and -1 evasion.'
+      },
+      {
+        name: 'Retired',
+        value: 'The quest cannot be abandoned; you still hunt.'
+      }
+    ]
+  },
+  {
+    name: 'Squire Elle',
+    rows: [
+      { name: 'Age 1', value: '-' },
+      { name: 'Age 2', value: '[Fighting Art] Piercer' },
+      {
+        name: 'Age 3',
+        value: '+3 weapon proficiency levels in any weapon type.'
+      },
+      {
+        name: 'Age 4',
+        value: '[Story] Black Roots'
+      },
+      {
+        name: 'Retired',
+        value: 'The quest cannot be abandoned; you still hunt.'
+      }
+    ]
+  },
+  {
+    name: 'Owen',
+    rows: [
+      { name: 'Age 1', value: '-' },
+      { name: 'Age 2', value: '[Fighting Art] Escape Artist' },
+      {
+        name: 'Age 3',
+        value: '+1 strength.'
+      },
+      {
+        name: 'Age 4',
+        value: '[Story Event] Old Body, old Mind'
+      },
+      {
+        name: 'Retired',
+        value: 'The quest cannot be abandoned; you still hunt.'
+      }
+    ]
+  },
+  {
+    name: 'Iola',
+    rows: [
+      { name: 'Age 1', value: '-' },
+      { name: 'Age 2', value: '-' },
+      {
+        name: 'Age 3',
+        value: '[Fighting Art] Feral Strength'
+      },
+      {
+        name: 'Age 4',
+        value: '+3 club weapon proficiency levels.'
+      },
+      {
+        name: 'Retired',
+        value: 'The quest cannot be abandoned; you still hunt.'
+      }
+    ]
+  }
+]
+
+/**
  * Default Squires of the Citadel Suspicion
  */
 export const DefaultSquiresSuspicion = [
@@ -208,7 +291,7 @@ export const DefaultSquiresSuspicion = [
     level4: false
   },
   {
-    name: 'Lola',
+    name: 'Iola',
     level1: false,
     level2: false,
     level3: false,

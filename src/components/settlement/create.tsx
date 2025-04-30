@@ -41,6 +41,8 @@ import { ResourcesCard } from '../ui/settlement/resources-card'
 import { SeedPatternsCard } from '../ui/settlement/seed-patterns-card'
 import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
 import { SettlementSurvivorsCard } from '../ui/settlement/settlement-survivors-card'
+import { SquireCards } from '../ui/settlement/squire-cards'
+import { SquireSuspicionsCard } from '../ui/settlement/squire-suspicions-card'
 import { TimelineCard } from '../ui/settlement/timeline-card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
@@ -59,6 +61,9 @@ export function CreateSettlementForm() {
 
   // Check if Arc-specific content should be shown
   const showArcContent = survivorType === SurvivorType.ARC
+
+  // Check if this is a Squires of the Citadel campaign
+  const isSquiresCampaign = campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
 
   // Handle campaign type change from the combobox
   const handleCampaignChange = (value: CampaignType) => {
@@ -210,12 +215,20 @@ export function CreateSettlementForm() {
                 <TabsTrigger value="timeline" className="flex-1">
                   Timeline
                 </TabsTrigger>
-                <TabsTrigger value="monsters" className="flex-1">
-                  Monsters
-                </TabsTrigger>
-                <TabsTrigger value="survivors" className="flex-1">
-                  Survivors
-                </TabsTrigger>
+                {!isSquiresCampaign && (
+                  <TabsTrigger value="monsters" className="flex-1">
+                    Monsters
+                  </TabsTrigger>
+                )}
+                {isSquiresCampaign ? (
+                  <TabsTrigger value="squires" className="flex-1">
+                    Squires
+                  </TabsTrigger>
+                ) : (
+                  <TabsTrigger value="survivors" className="flex-1">
+                    Survivors
+                  </TabsTrigger>
+                )}
                 <TabsTrigger value="society" className="flex-1">
                   Society
                 </TabsTrigger>
@@ -235,16 +248,25 @@ export function CreateSettlementForm() {
                 <QuarryCard {...form} />
                 <NemesisCard {...form} />
               </TabsContent>
-              <TabsContent value="survivors">
-                <DepartingBonusesCard {...form} />
-                <SettlementSurvivorsCard {...form} />
-              </TabsContent>
+              {isSquiresCampaign ? (
+                <TabsContent value="squires">
+                  <SquireSuspicionsCard {...form} />
+                  <SquireCards />
+                </TabsContent>
+              ) : (
+                <TabsContent value="survivors">
+                  <DepartingBonusesCard {...form} />
+                  <SettlementSurvivorsCard {...form} />
+                </TabsContent>
+              )}
               <TabsContent value="society">
-                <MilestonesCard {...form} />
-                <PrinciplesCard {...form} />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <InnovationsCard {...form} />
-                </div>
+                {!isSquiresCampaign && (
+                  <>
+                    <MilestonesCard {...form} />
+                    <PrinciplesCard {...form} />
+                  </>
+                )}
+                <InnovationsCard {...form} />
               </TabsContent>
               <TabsContent value="crafting">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
