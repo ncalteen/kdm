@@ -21,7 +21,6 @@ import {
   useState
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { FixedSizeList as List } from 'react-window'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { Badge } from '../badge'
@@ -255,7 +254,7 @@ const TimelineContent = memo(
   }) => {
     // Virtualized row renderer for timeline years
     const Row = useCallback(
-      ({ index, style }: { index: number; style: React.CSSProperties }) => {
+      ({ index }: { index: number }) => {
         // Skip header row which is rendered separately
         const yearIndex = index
         const yearData = timeline[yearIndex]
@@ -269,7 +268,6 @@ const TimelineContent = memo(
 
         return (
           <div
-            style={style}
             className={`grid ${showScrollIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} gap-4 items-start border-t border-border py-1`}>
             <div className="flex items-center">
               <FormField
@@ -363,15 +361,11 @@ const TimelineContent = memo(
         </div>
 
         {timeline.length > 0 && (
-          <List
-            height={Math.min(600, timeline.length * 100)} // Limit height to prevent overly large components
-            itemCount={timeline.length}
-            itemSize={100} // Approximate height for each timeline entry
-            width="100%"
-            className="scrollbar-thin" // Apply thin scrollbar styling
-          >
-            {Row}
-          </List>
+          <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin">
+            {timeline.map((_, index) => (
+              <Row key={index} index={index} />
+            ))}
+          </div>
         )}
       </div>
     )
