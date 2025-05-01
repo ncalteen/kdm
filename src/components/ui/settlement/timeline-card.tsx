@@ -220,6 +220,7 @@ const TimelineContent = memo(
                         type="button"
                         variant="ghost"
                         size="icon"
+                        className="ml-2"
                         onClick={() => saveEvent(yearIndex, entryIndex)}
                         title="Save event">
                         <CheckIcon className="h-4 w-4" />
@@ -336,6 +337,15 @@ export function TimelineCard(
     [key: string]: boolean
   }>({})
 
+  // Helper function to check if an event is being edited - defined before it's used
+  const isEventBeingEdited = useCallback(
+    (yearIndex: number, entryIndex: number) => {
+      const inputKey = `${yearIndex}-${entryIndex}`
+      return !!editingEvents[inputKey]
+    },
+    [editingEvents]
+  )
+
   // Use refs to store input values instead of state
   const inputRefs = useRef<{
     [key: string]: HTMLInputElement | null
@@ -418,6 +428,15 @@ export function TimelineCard(
   // Optimize the addEventToYear function with useCallback to prevent recreation on each render
   const addEventToYear = useCallback(
     (yearIndex: number) => {
+      // First check if any event is currently being edited in this year
+      const yearEntries = timeline[yearIndex]?.entries || []
+      const hasActiveEditingEvent = yearEntries.some((_, entryIndex) =>
+        isEventBeingEdited(yearIndex, entryIndex)
+      )
+
+      // If there is already an event being edited, show a toast and don't add a new one
+      if (hasActiveEditingEvent) return
+
       // Use requestAnimationFrame to defer the state updates to the next frame
       requestAnimationFrame(() => {
         const updatedTimeline = [...timeline]
@@ -447,7 +466,13 @@ export function TimelineCard(
         }))
       })
     },
-    [timeline, debouncedSetTimeline, debouncedSetFormValue, setEditingEvents]
+    [
+      timeline,
+      debouncedSetTimeline,
+      debouncedSetFormValue,
+      setEditingEvents,
+      isEventBeingEdited
+    ]
   )
 
   const removeEventFromYear = useCallback(
@@ -548,14 +573,6 @@ export function TimelineCard(
       }))
     },
     [setEditingEvents]
-  )
-
-  const isEventBeingEdited = useCallback(
-    (yearIndex: number, entryIndex: number) => {
-      const inputKey = `${yearIndex}-${entryIndex}`
-      return !!editingEvents[inputKey]
-    },
-    [editingEvents]
   )
 
   const handleKeyDown = useCallback(
