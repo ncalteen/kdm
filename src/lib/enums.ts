@@ -11,7 +11,9 @@ export enum CampaignType {
   /** People of the Sun */
   PEOPLE_OF_THE_SUN = 'People of the Sun',
   /** Squires of the Citadel */
-  SQUIRES_OF_THE_CITADEL = 'Squires of the Citadel'
+  SQUIRES_OF_THE_CITADEL = 'Squires of the Citadel',
+  /** Custom */
+  CUSTOM = 'Custom'
 }
 
 /** Survivor Type */

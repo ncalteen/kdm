@@ -4,19 +4,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import {
+  CustomCampaign,
   DefaultCcNemesisVictories,
   DefaultCcQuarryVictories,
   DefaultSquiresSuspicion,
-  EmptyTimeline,
-  PotDKMilestones,
-  PotDKTimeline,
-  PotLMilestones,
-  PotLTimeline,
-  PotStarsMilestones,
-  PotStarsTimeline,
-  PotSunMilestones,
-  PotSunTimeline,
-  SquiresTimeline
+  PeopleOfTheDreamKeeperCampaign,
+  PeopleOfTheLanternCampaign,
+  PeopleOfTheStarsCampaign,
+  PeopleOfTheSunCampaign,
+  SquiresOfTheCitadelCampaign
 } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getLostSettlementCount, getNextSettlementId } from '@/lib/utils'
@@ -73,10 +69,10 @@ export function CreateSettlementForm() {
       id: settlementId,
       survivalLimit: 1,
       lostSettlements: lostSettlementCount,
-      timeline: PotLTimeline,
+      timeline: PeopleOfTheLanternCampaign.timeline,
       quarries: [],
       nemesis: [],
-      milestones: PotLMilestones,
+      milestones: PeopleOfTheLanternCampaign.milestones,
       departingBonuses: [],
       deathCount: 0,
       principles: [],
@@ -131,32 +127,32 @@ export function CreateSettlementForm() {
     // Set appropriate timeline based on campaign type (without deep nesting)
     const timeline =
       value === CampaignType.SQUIRES_OF_THE_CITADEL
-        ? SquiresTimeline
+        ? SquiresOfTheCitadelCampaign.timeline
         : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PotDKTimeline
+          ? PeopleOfTheDreamKeeperCampaign.timeline
           : value === CampaignType.PEOPLE_OF_THE_LANTERN
-            ? PotLTimeline
+            ? PeopleOfTheLanternCampaign.timeline
             : value === CampaignType.PEOPLE_OF_THE_STARS
-              ? PotStarsTimeline
+              ? PeopleOfTheStarsCampaign.timeline
               : value === CampaignType.PEOPLE_OF_THE_SUN
-                ? PotSunTimeline
-                : EmptyTimeline
+                ? PeopleOfTheSunCampaign.timeline
+                : CustomCampaign.timeline
 
     form.setValue('timeline', timeline)
 
     // Set appropriate milestones
     const milestones =
       value === CampaignType.SQUIRES_OF_THE_CITADEL
-        ? []
+        ? SquiresOfTheCitadelCampaign.milestones
         : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PotDKMilestones
+          ? PeopleOfTheDreamKeeperCampaign.milestones
           : value === CampaignType.PEOPLE_OF_THE_LANTERN
-            ? PotLMilestones
+            ? PeopleOfTheLanternCampaign.milestones
             : value === CampaignType.PEOPLE_OF_THE_STARS
-              ? PotStarsMilestones
+              ? PeopleOfTheStarsCampaign.milestones
               : value === CampaignType.PEOPLE_OF_THE_SUN
-                ? PotSunMilestones
-                : []
+                ? PeopleOfTheSunCampaign.milestones
+                : CustomCampaign.milestones
 
     form.setValue('milestones', milestones)
 

@@ -1,30 +1,6 @@
 'use client'
 
-import {
-  CcNemesisVictory,
-  CcQuarryVictory,
-  Milestone,
-  TimelineEvent
-} from './types'
-
-/**
- * Empty Timeline
- */
-export const EmptyTimeline: TimelineEvent[] = Array(40).fill({
-  completed: false,
-  entries: []
-})
-
-/**
- * Squires of the Citadel Timeline
- */
-export const SquiresTimeline: TimelineEvent[] = [
-  { completed: false, entries: ['The Feral Guardian'] },
-  { completed: false, entries: ['Mountain Lion'] },
-  { completed: false, entries: ['The Quest'] },
-  { completed: false, entries: ['Glimpse into the Future'] },
-  { completed: false, entries: ['Secrets, Secrets'] }
-]
+import { CcNemesisVictory, CcQuarryVictory, Milestone } from './types'
 
 /**
  * Core Campaign Milestones
@@ -53,64 +29,298 @@ export const CoreMilestones: Milestone[] = [
 ]
 
 /**
- * People of the Lantern Campaign Milestones
+ * Custom Campaign Data
  */
-export const PotLMilestones: Milestone[] = [
-  ...CoreMilestones,
-  {
-    name: 'Settlement has 5 innovations',
-    complete: false,
-    event: 'Hooded Knight'
-  }
-]
+export const CustomCampaign = {
+  milestones: CoreMilestones,
+  timeline: Array(40).fill({
+    completed: false,
+    entries: []
+  })
+}
 
 /**
- * People of the Dream Keeper Campaign Milestones
+ * People of the Lantern Campaign Data
  */
-export const PotDKMilestones: Milestone[] = [
-  ...CoreMilestones,
-  {
-    name: 'First survivor to reach 3 understanding',
-    complete: false,
-    event: 'Designs & Dandelions'
-  }
-]
+export const PeopleOfTheLanternCampaign = {
+  milestones: [
+    ...CoreMilestones,
+    {
+      name: 'Settlement has 5 innovations',
+      complete: false,
+      event: 'Hooded Knight'
+    }
+  ],
+  timeline: [
+    { completed: false, entries: ['White Lion'] },
+    { completed: false, entries: ['First Day', 'Returning Survivors'] },
+    { completed: false, entries: ['Endless Screams'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 1'] },
+    { completed: false, entries: ['Hands of heat'] },
+    { completed: false, entries: ['Armored Strangers'] },
+    { completed: false, entries: ['Phoenix Feather'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 1"] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Regal Visit'] },
+    { completed: false, entries: ['Principle: Conviction'] },
+    { completed: false, entries: ['Nemesis Encounter - The Hand Lvl 1'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 2'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 2"] },
+    { completed: false, entries: ['Watched'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 3'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Watcher'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 3"] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Gold Smoke Knight'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] }
+  ]
+}
 
 /**
- * People of the Stars Campaign Milestones
+ * People of the Dream Keeper Campaign Data
  */
-export const PotStarsMilestones: Milestone[] = [...CoreMilestones]
+export const PeopleOfTheDreamKeeperCampaign = {
+  milestones: [
+    ...CoreMilestones,
+    {
+      name: 'First survivor to reach 3 understanding',
+      complete: false,
+      event: 'Designs & Dandelions'
+    }
+  ],
+  timeline: [
+    { completed: false, entries: ['Crimson Crocodile'] },
+    {
+      completed: false,
+      entries: [
+        'First Crimson Day',
+        'Dreamless Respite',
+        'First Meal',
+        'Extinguished Guidepost'
+      ]
+    },
+    { completed: false, entries: ['Death of Song'] },
+    { completed: false, entries: ['Missing Statue'] },
+    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 1'] },
+    { completed: false, entries: ['Stained'] },
+    { completed: false, entries: ['Unwanted Gifts'] },
+    { completed: false, entries: ['Phoenix Feather'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Atnas Lvl 1'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['The Game'] },
+    { completed: false, entries: ['Principle: Conviction'] },
+    { completed: false, entries: ['Nemesis Encounter - The Hand Lvl 1'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Wondrous Design'] },
+    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 2'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Atnas Lvl 2'] },
+    { completed: false, entries: [] },
+    {
+      completed: false,
+      entries: ['Perfect Punt', 'Nemesis Encounter - The Gambler']
+    },
+    { completed: false, entries: ['Lantern Festival'] },
+    { completed: false, entries: ['The Awaited'] },
+    {
+      completed: false,
+      entries: ['Wanderer - Luck', 'Nemesis Encounter - Butcher Lvl 3']
+    },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Atnas Lvl 3'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemesis Encounter - Godhand'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] }
+  ]
+}
 
 /**
- * People of the Sun Campaign Milestones
+ * People of the Stars Campaign Data
  */
-export const PotSunMilestones: Milestone[] = [
-  {
-    name: 'First time death count is updated',
-    complete: false,
-    event: 'Principle: Death'
-  },
-  {
-    name: 'Population reaches 15',
-    complete: false,
-    event: 'Principle: Society'
-  },
-  {
-    name: 'Settlement has 8 innovations',
-    complete: false,
-    event: 'Edged Tonometry'
-  },
-  {
-    name: 'Population reaches 0',
-    complete: false,
-    event: 'Game Over'
-  },
-  {
-    name: 'Not Victorious against Nemesis',
-    complete: false,
-    event: 'Game Over'
-  }
-]
+export const PeopleOfTheStarsCampaign = {
+  milestones: CoreMilestones,
+  timeline: [
+    { completed: false, entries: ['Foundlings'] },
+    { completed: false, entries: ['Endless Screams'] },
+    { completed: false, entries: [] },
+    {
+      completed: false,
+      entries: ['Nemesis Encounter - Dragon King Tyrant Lvl 1']
+    },
+    { completed: false, entries: ["Midnight's Children"] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Phoenix Feather'] },
+    { completed: false, entries: [] },
+    {
+      completed: false,
+      entries: ['Nemesis Encounter - Dragon King Tyrant Lvl 2']
+    },
+    { completed: false, entries: ['Unveil the Sky'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Principle: Conviction'] },
+    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 2'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemeis Encounter - Lvl 2'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    {
+      completed: false,
+      entries: ['Nemesis Encounter - Dragon King Tyrant Lvl 3']
+    },
+    { completed: false, entries: ["The Dragon's Tomb"] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Nemeis Encounter - Lvl 3'] },
+    { completed: false, entries: [] },
+    {
+      completed: false,
+      entries: ['Nemesis Encounter - Death of the Dragon King']
+    },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] }
+  ]
+}
+
+/**
+ * People of the Sun Campaign Data
+ */
+export const PeopleOfTheSunCampaign = {
+  milestones: [
+    {
+      name: 'First time death count is updated',
+      complete: false,
+      event: 'Principle: Death'
+    },
+    {
+      name: 'Population reaches 15',
+      complete: false,
+      event: 'Principle: Society'
+    },
+    {
+      name: 'Settlement has 8 innovations',
+      complete: false,
+      event: 'Edged Tonometry'
+    },
+    {
+      name: 'Population reaches 0',
+      complete: false,
+      event: 'Game Over'
+    },
+    {
+      name: 'Not Victorious against Nemesis',
+      complete: false,
+      event: 'Game Over'
+    }
+  ],
+  timeline: [
+    { completed: false, entries: ['The Pool and the Sun'] },
+    { completed: false, entries: ['Endless Screams'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Sun Dipping'] },
+    { completed: false, entries: ['The Great Sky Gift'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Phoenix Feather'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Birth of Color'] },
+    { completed: false, entries: ['Principle: Conviction'] },
+    { completed: false, entries: ['Sun Dipping'] },
+    { completed: false, entries: ['The Great Sky Gift'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: ['Sun Dipping'] },
+    { completed: false, entries: ['Final Gift'] },
+    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 2"] },
+    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 3'] },
+    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 3"] },
+    { completed: false, entries: ['Nemesis Encounter - The Hand Lvl 3'] },
+    { completed: false, entries: ['Nemesis Encounter - The Great Devourer'] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] },
+    { completed: false, entries: [] }
+  ]
+}
+
+/**
+ * Squires of the Citadel Campaign Data
+ */
+export const SquiresOfTheCitadelCampaign = {
+  milestones: [],
+  timeline: [
+    { completed: false, entries: ['The Feral Guardian'] },
+    { completed: false, entries: ['Mountain Lion'] },
+    { completed: false, entries: ['The Quest'] },
+    { completed: false, entries: ['Glimpse into the Future'] },
+    { completed: false, entries: ['Secrets, Secrets'] }
+  ]
+}
 
 /**
  * Default Collective Cognition Quarry Victories
@@ -306,221 +516,4 @@ export const DefaultSquiresSuspicion = [
     level3: false,
     level4: false
   }
-]
-
-/**
- * People of the Lantern Timeline
- */
-export const PotLTimeline: TimelineEvent[] = [
-  { completed: false, entries: ['White Lion'] },
-  { completed: false, entries: ['First Day', 'Returning Survivors'] },
-  { completed: false, entries: ['Endless Screams'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 1'] },
-  { completed: false, entries: ['Hands of heat'] },
-  { completed: false, entries: ['Armored Strangers'] },
-  { completed: false, entries: ['Phoenix Feather'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 1"] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Regal Visit'] },
-  { completed: false, entries: ['Principle: Conviction'] },
-  { completed: false, entries: ['Nemesis Encounter - The Hand Lvl 1'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 2'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 2"] },
-  { completed: false, entries: ['Watched'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 3'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Watcher'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 3"] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Gold Smoke Knight'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] }
-]
-
-/**
- * People of the Dream Keeper Timeline
- */
-export const PotDKTimeline: TimelineEvent[] = [
-  { completed: false, entries: ['Crimson Crocodile'] },
-  {
-    completed: false,
-    entries: [
-      'First Crimson Day',
-      'Dreamless Respite',
-      'First Meal',
-      'Extinguished Guidepost'
-    ]
-  },
-  { completed: false, entries: ['Death of Song'] },
-  { completed: false, entries: ['Missing Statue'] },
-  { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 1'] },
-  { completed: false, entries: ['Stained'] },
-  { completed: false, entries: ['Unwanted Gifts'] },
-  { completed: false, entries: ['Phoenix Feather'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Atnas Lvl 1'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['The Game'] },
-  { completed: false, entries: ['Principle: Conviction'] },
-  { completed: false, entries: ['Nemesis Encounter - The Hand Lvl 1'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Wondrous Design'] },
-  { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 2'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Atnas Lvl 2'] },
-  { completed: false, entries: [] },
-  {
-    completed: false,
-    entries: ['Perfect Punt', 'Nemesis Encounter - The Gambler']
-  },
-  { completed: false, entries: ['Lantern Festival'] },
-  { completed: false, entries: ['The Awaited'] },
-  {
-    completed: false,
-    entries: ['Wanderer - Luck', 'Nemesis Encounter - Butcher Lvl 3']
-  },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Atnas Lvl 3'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemesis Encounter - Godhand'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] }
-]
-
-/**
- * People of the Stars Timeline
- */
-export const PotStarsTimeline: TimelineEvent[] = [
-  { completed: false, entries: ['Foundlings'] },
-  { completed: false, entries: ['Endless Screams'] },
-  { completed: false, entries: [] },
-  {
-    completed: false,
-    entries: ['Nemesis Encounter - Dragon King Tyrant Lvl 1']
-  },
-  { completed: false, entries: ["Midnight's Children"] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Phoenix Feather'] },
-  { completed: false, entries: [] },
-  {
-    completed: false,
-    entries: ['Nemesis Encounter - Dragon King Tyrant Lvl 2']
-  },
-  { completed: false, entries: ['Unveil the Sky'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Principle: Conviction'] },
-  { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 2'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemeis Encounter - Lvl 2'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  {
-    completed: false,
-    entries: ['Nemesis Encounter - Dragon King Tyrant Lvl 3']
-  },
-  { completed: false, entries: ["The Dragon's Tomb"] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Nemeis Encounter - Lvl 3'] },
-  { completed: false, entries: [] },
-  {
-    completed: false,
-    entries: ['Nemesis Encounter - Death of the Dragon King']
-  },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] }
-]
-
-/**
- * People of the Sun Timeline
- */
-export const PotSunTimeline: TimelineEvent[] = [
-  { completed: false, entries: ['The Pool and the Sun'] },
-  { completed: false, entries: ['Endless Screams'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Sun Dipping'] },
-  { completed: false, entries: ['The Great Sky Gift'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Phoenix Feather'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Birth of Color'] },
-  { completed: false, entries: ['Principle: Conviction'] },
-  { completed: false, entries: ['Sun Dipping'] },
-  { completed: false, entries: ['The Great Sky Gift'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: ['Sun Dipping'] },
-  { completed: false, entries: ['Final Gift'] },
-  { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 2"] },
-  { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 3'] },
-  { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 3"] },
-  { completed: false, entries: ['Nemesis Encounter - The Hand Lvl 3'] },
-  { completed: false, entries: ['Nemesis Encounter - The Great Devourer'] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] },
-  { completed: false, entries: [] }
 ]
