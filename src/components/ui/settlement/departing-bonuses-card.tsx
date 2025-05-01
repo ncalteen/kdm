@@ -18,8 +18,16 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import {
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  XIcon
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import {
@@ -29,23 +37,48 @@ import {
   CardHeader,
   CardTitle
 } from '../card'
-import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
-interface BonusItemProps {
+function BonusItem({
+  index,
+  value,
+  isDisabled,
+  onSave,
+  onEdit,
+  onRemove,
+  onChange
+}: {
   index: number
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  handleRemoveBonus: (index: number) => void
-  id: string
-}
-
-function BonusItem({ index, form, handleRemoveBonus, id }: BonusItemProps) {
+  value: string
+  isDisabled: boolean
+  onSave: (index: number) => void
+  onEdit: (index: number) => void
+  onRemove: (index: number) => void
+  onChange: (index: number, value: string) => void
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
+    useSortable({ id: index.toString() })
+  const [inputValue, setInputValue] = useState(value)
+
+  useEffect(() => {
+    setInputValue(value)
+  }, [value])
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+    onChange(index, e.target.value)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(index)
+    }
   }
 
   return (
@@ -56,33 +89,46 @@ function BonusItem({ index, form, handleRemoveBonus, id }: BonusItemProps) {
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-
-      <FormField
-        control={form.control}
-        name={`departingBonuses.${index}`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Bonus"
-                {...field}
-                value={field.value || ''}
-                onChange={(e) => {
-                  form.setValue(`departingBonuses.${index}`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
+      {isDisabled ? (
+        <Input value={inputValue} disabled className="flex-1" />
+      ) : (
+        <Input
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+          autoFocus
+        />
+      )}
+      <div className="flex items-center gap-2 ml-auto">
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(index)}
+            title="Edit bonus">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onSave(index)}
+            title="Save bonus">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
         )}
-      />
-
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0 ml-2"
-        onClick={() => handleRemoveBonus(index)}>
-        <XIcon className="h-4 w-4" />
-      </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onRemove(index)}
+          title="Remove bonus">
+          <XIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }
@@ -90,7 +136,20 @@ function BonusItem({ index, form, handleRemoveBonus, id }: BonusItemProps) {
 export function DepartingBonusesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const bonuses = form.watch('departingBonuses') || []
+  const bonuses = useMemo(() => form.watch('departingBonuses') || [], [form])
+
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      bonuses.forEach((_, i) => {
+        next[i] = prev[i] ?? true
+      })
+      return next
+    })
+  }, [bonuses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -99,29 +158,73 @@ export function DepartingBonusesCard(
     })
   )
 
-  const addBonus = () => {
-    const currentBonuses = [...bonuses]
-    currentBonuses.push('')
-    form.setValue('departingBonuses', currentBonuses)
-  }
+  const addBonus = useCallback(() => {
+    form.setValue('departingBonuses', [...bonuses, ''])
+    setDisabledInputs((prev) => ({ ...prev, [bonuses.length]: false }))
+  }, [bonuses, form])
 
-  const handleRemoveBonus = (index: number) => {
-    const currentBonuses = [...bonuses]
-    currentBonuses.splice(index, 1)
-    form.setValue('departingBonuses', currentBonuses)
-  }
+  const handleRemoveBonus = useCallback(
+    (index: number) => {
+      const updatedBonuses = [...bonuses]
+      updatedBonuses.splice(index, 1)
+      form.setValue('departingBonuses', updatedBonuses)
+      setDisabledInputs((prev) => {
+        const next = { ...prev }
+        delete next[index]
+        const reindexed: { [key: number]: boolean } = {}
+        Object.keys(next).forEach((k) => {
+          const num = parseInt(k)
+          if (num > index) {
+            reindexed[num - 1] = next[num]
+          } else if (num < index) {
+            reindexed[num] = next[num]
+          }
+        })
+        return reindexed
+      })
+    },
+    [bonuses, form]
+  )
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
+  const handleEdit = useCallback((index: number) => {
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+  }, [])
 
-    if (over && active.id !== over.id) {
-      const oldIndex = parseInt(active.id.toString())
-      const newIndex = parseInt(over.id.toString())
+  const handleSave = useCallback(
+    (index: number) => {
+      if (!bonuses[index] || bonuses[index].trim() === '') {
+        toast.warning('Cannot save an empty bonus')
+        return
+      }
+      setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+      toast.success('Bonus saved')
+    },
+    [bonuses]
+  )
 
-      const newOrder = arrayMove(bonuses, oldIndex, newIndex)
-      form.setValue('departingBonuses', newOrder)
-    }
-  }
+  const handleChange = useCallback(
+    (index: number, value: string) => {
+      const updatedBonuses = [...bonuses]
+      updatedBonuses[index] = value
+      form.setValue('departingBonuses', updatedBonuses)
+    },
+    [bonuses, form]
+  )
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (over && active.id !== over.id) {
+        requestAnimationFrame(() => {
+          const oldIndex = parseInt(active.id.toString())
+          const newIndex = parseInt(over.id.toString())
+          const newOrder = arrayMove(bonuses, oldIndex, newIndex)
+          form.setValue('departingBonuses', newOrder)
+        })
+      }
+    },
+    [bonuses, form]
+  )
 
   return (
     <Card className="mt-2">
@@ -145,10 +248,13 @@ export function DepartingBonusesCard(
               {bonuses.map((bonus, index) => (
                 <BonusItem
                   key={index}
-                  id={index.toString()}
                   index={index}
-                  form={form}
-                  handleRemoveBonus={handleRemoveBonus}
+                  value={bonus}
+                  isDisabled={!!disabledInputs[index]}
+                  onSave={handleSave}
+                  onEdit={handleEdit}
+                  onRemove={handleRemoveBonus}
+                  onChange={handleChange}
                 />
               ))}
             </SortableContext>
@@ -159,7 +265,8 @@ export function DepartingBonusesCard(
               type="button"
               size="sm"
               variant="outline"
-              onClick={addBonus}>
+              onClick={addBonus}
+              disabled={Object.values(disabledInputs).some((v) => v === false)}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Bonus
             </Button>
