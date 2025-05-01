@@ -251,7 +251,7 @@ const TimelineContent = memo(
               )}
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end mr-5">
               <Button
                 type="button"
                 variant="outline"
@@ -624,11 +624,14 @@ export function TimelineCard(
             />
             <Button
               type="button"
+              variant="outline"
+              className="mt-4 w-full"
+              size="lg"
               onClick={() => {
                 // Use startTransition for non-urgent state update
                 startTransition(addTimelineEvent)
               }}>
-              Add Lantern Year
+              <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Lantern Year
             </Button>
           </>
         ) : (
