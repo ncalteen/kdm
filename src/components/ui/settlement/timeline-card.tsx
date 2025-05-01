@@ -135,7 +135,7 @@ const TimelineContent = memo(
                   <FormItem className="flex items-center m-0">
                     <FormControl>
                       <Checkbox
-                        className="mt-2"
+                        className="mt-1"
                         checked={field.value}
                         disabled={true}
                       />
@@ -143,7 +143,7 @@ const TimelineContent = memo(
                   </FormItem>
                 )}
               />
-              <span className="text-sm font-medium ml-2 inline-flex items-center">
+              <span className="text-sm font-medium ml-2 mb-1 inline-flex items-center">
                 {yearIndex === 0 && !usesNormalNumbering
                   ? 'Prologue'
                   : usesNormalNumbering
@@ -623,7 +623,7 @@ export function TimelineCard(
   const cachedTimeline = useMemo(() => timeline, [timeline])
 
   return (
-    <Card className="mt-2" ref={cardRef}>
+    <Card ref={cardRef}>
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-1">
           <HourglassIcon className="h-5 w-5" /> Timeline
@@ -652,8 +652,7 @@ export function TimelineCard(
               onClick={() => {
                 // Add a small delay to prevent blocking the UI
                 setTimeout(addTimelineEvent, 0)
-              }}
-              className="mt-2">
+              }}>
               Add Lantern Year
             </Button>
           </>
