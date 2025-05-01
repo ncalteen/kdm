@@ -7,6 +7,7 @@ import {
   CheckIcon,
   HourglassIcon,
   PlusCircleIcon,
+  ScrollIcon,
   SwordsIcon,
   TrashIcon
 } from 'lucide-react'
@@ -83,7 +84,8 @@ const TimelineContent = memo(
     removeEventFromYear,
     addEventToYear,
     form,
-    editEvent
+    editEvent,
+    showScrollIcon
   }: {
     timeline: TimelineEntry[]
     usesNormalNumbering: boolean
@@ -112,6 +114,7 @@ const TimelineContent = memo(
       value: boolean | string | string[] | TimelineEntry[]
     ) => void
     editEvent: (yearIndex: number, entryIndex: number) => void
+    showScrollIcon: boolean
   }) => {
     // Virtualized row renderer for timeline years
     const Row = useCallback(
@@ -123,7 +126,7 @@ const TimelineContent = memo(
         return (
           <div
             style={style}
-            className="grid grid-cols-[80px_1fr_auto] gap-4 items-start border-t border-border py-1">
+            className={`grid ${showScrollIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} gap-4 items-start border-t border-border py-1`}>
             <div className="flex items-center">
               <FormField
                 control={form.control}
@@ -149,7 +152,13 @@ const TimelineContent = memo(
               </span>
             </div>
 
-            <div className="flex flex-col gap-2 pt-1 pl-20">
+            {showScrollIcon && (
+              <div className="flex justify-center items-center mt-1">
+                <ScrollIcon className="h-5 w-5 text-muted-foreground" />
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2">
               {/* Display event badges for saved events */}
               {(yearData.entries || []).length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
@@ -262,14 +271,17 @@ const TimelineContent = memo(
         saveEvent,
         removeEventFromYear,
         addEventToYear,
-        editEvent
+        editEvent,
+        showScrollIcon
       ]
     )
 
     return (
       <div className="space-y-2">
-        <div className="grid grid-cols-[80px_1fr_auto] gap-4 px-2 py-1 font-medium text-sm">
+        <div
+          className={`grid ${showScrollIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} gap-4 px-2 py-1 font-medium text-sm`}>
           <div>Year</div>
+          {showScrollIcon && <div className="text-center" />}
           <div>Events</div>
           <div></div>
         </div>
@@ -307,6 +319,14 @@ export function TimelineCard(
     () =>
       isSquiresCampaign || isStarsCampaign || isSunCampaign || isCustomCampaign,
     [isSquiresCampaign, isStarsCampaign, isSunCampaign, isCustomCampaign]
+  )
+
+  // Check if this campaign type should show the scroll icon
+  const showScrollIcon = useMemo(
+    () =>
+      campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+    [campaignType]
   )
 
   const [timeline, setTimeline] = useState(formTimeline || [])
@@ -625,6 +645,7 @@ export function TimelineCard(
               form={form}
               debouncedSetFormValue={debouncedSetFormValue}
               editEvent={editEvent}
+              showScrollIcon={showScrollIcon}
             />
             <Button
               type="button"
