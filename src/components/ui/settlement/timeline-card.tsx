@@ -36,225 +36,55 @@ type TimelineEntry = {
   entries: string[]
 }
 
-// Inline Add Event component
-const InlineAddEvent = memo(
+// Memoize the TimelineEventBadge component to prevent unnecessary re-renders
+const TimelineEventBadge = memo(
   ({
-    yearIndex,
-    yearLabel,
-    addEventToYear,
-    isAdding,
-    setIsAdding
-  }: {
-    yearIndex: number
-    yearLabel: string
-    addEventToYear: (yearIndex: number, event: string) => void
-    isAdding: boolean
-    setIsAdding: (isAdding: boolean) => void
-  }) => {
-    const [newEvent, setNewEvent] = useState('')
-    const inputRef = useRef<HTMLInputElement>(null)
-
-    useEffect(() => {
-      // Focus the input when it becomes visible
-      if (isAdding && inputRef.current) {
-        inputRef.current.focus()
-      }
-    }, [isAdding])
-
-    const handleAddEvent = () => {
-      if (newEvent.trim() === '') {
-        toast.warning('Cannot add an empty event')
-        return
-      }
-
-      addEventToYear(yearIndex, newEvent.trim())
-      setNewEvent('')
-      setIsAdding(false)
-    }
-
-    const handleCancelAdd = () => {
-      setNewEvent('')
-      setIsAdding(false)
-    }
-
-    if (!isAdding) {
-      return (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="mr-5"
-          onClick={() => setIsAdding(true)}>
-          <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
-        </Button>
-      )
-    }
-
-    return (
-      <div className="flex gap-2 w-full">
-        <Input
-          ref={inputRef}
-          placeholder={`${yearLabel} event...`}
-          value={newEvent}
-          onChange={(e) => setNewEvent(e.target.value)}
-          className="flex-1"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              handleAddEvent()
-            } else if (e.key === 'Escape') {
-              e.preventDefault()
-              handleCancelAdd()
-            }
-          }}
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleAddEvent}
-          title="Add event">
-          <CheckIcon className="h-5 w-5 text-primary" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleCancelAdd}
-          title="Cancel">
-          <TrashIcon className="h-5 w-5 text-destructive" />
-        </Button>
-      </div>
-    )
-  }
-)
-
-InlineAddEvent.displayName = 'InlineAddEvent'
-
-// Inline Edit Event component
-const InlineEditEvent = memo(
-  ({
-    yearIndex,
-    yearLabel,
-    entryIndex,
     entry,
-    saveEvent,
-    removeEventFromYear,
-    isEditing,
-    setIsEditing
+    yearIndex,
+    entryIndex,
+    onEdit
   }: {
-    yearIndex: number
-    yearLabel: string
-    entryIndex: number
     entry: string
-    saveEvent: (yearIndex: number, entryIndex: number, event: string) => void
-    removeEventFromYear: (yearIndex: number, eventIndex: number) => void
-    isEditing: boolean
-    setIsEditing: (isEditing: boolean) => void
+    yearIndex: number
+    entryIndex: number
+    onEdit: (yearIndex: number, entryIndex: number) => void
   }) => {
-    const [eventText, setEventText] = useState(entry)
-    const inputRef = useRef<HTMLInputElement>(null)
-
-    useEffect(() => {
-      // Focus the input when editing starts
-      if (isEditing && inputRef.current) {
-        inputRef.current.focus()
-      }
-    }, [isEditing])
-
-    useEffect(() => {
-      // Reset the input when the entry changes
-      setEventText(entry)
-    }, [entry])
-
-    const handleSaveEvent = () => {
-      if (eventText.trim() === '') {
-        toast.warning('Cannot save an empty event')
-        return
-      }
-
-      saveEvent(yearIndex, entryIndex, eventText.trim())
-      setIsEditing(false)
-    }
-
-    const handleRemoveEvent = () => {
-      removeEventFromYear(yearIndex, entryIndex)
-      setIsEditing(false)
-    }
-
-    const handleCancelEdit = () => {
-      setEventText(entry)
-      setIsEditing(false)
-    }
-
-    if (!isEditing) {
-      return (
-        <Badge
-          className="cursor-pointer mt-1"
-          onClick={() => setIsEditing(true)}>
-          {entry.startsWith('Nemesis') ? (
-            <SwordsIcon className="h-4 w-4 mr-1" />
-          ) : (
-            <BookOpenIcon className="h-4 w-4 mr-1" />
-          )}
-          {entry}
-        </Badge>
-      )
-    }
+    const handleClick = useCallback(() => {
+      onEdit(yearIndex, entryIndex)
+    }, [yearIndex, entryIndex, onEdit])
 
     return (
-      <div className="flex gap-2 w-full mt-1">
-        <Input
-          ref={inputRef}
-          placeholder={`${yearLabel} event...`}
-          value={eventText}
-          onChange={(e) => setEventText(e.target.value)}
-          className="flex-1"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              handleSaveEvent()
-            } else if (e.key === 'Escape') {
-              e.preventDefault()
-              handleCancelEdit()
-            }
-          }}
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleSaveEvent}
-          title="Save event">
-          <CheckIcon className="h-5 w-5 text-primary" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={handleRemoveEvent}
-          title="Delete event">
-          <TrashIcon className="h-5 w-5 text-destructive" />
-        </Button>
-      </div>
+      <Badge
+        key={entryIndex}
+        className="cursor-pointer my-1 inline-flex items-center"
+        onClick={handleClick}>
+        {entry.startsWith('Nemesis') ? (
+          <SwordsIcon className="h-4 w-4 mr-1" />
+        ) : (
+          <BookOpenIcon className="h-4 w-4 mr-1" />
+        )}
+        {entry}
+      </Badge>
     )
   }
 )
 
-InlineEditEvent.displayName = 'InlineEditEvent'
+TimelineEventBadge.displayName = 'TimelineEventBadge'
 
 // Split TimelineContent into a separate component to allow for lazy loading
 const TimelineContent = memo(
   ({
     timeline,
     usesNormalNumbering,
+    isEventBeingEdited,
+    setInputRef,
+    handleKeyDown,
     saveEvent,
     removeEventFromYear,
     addEventToYear,
     form,
-    showScrollIcon,
-    isVisible,
-    setIsVisible
+    editEvent,
+    showScrollIcon
   }: {
     timeline: TimelineEntry[]
     usesNormalNumbering: boolean
@@ -270,9 +100,9 @@ const TimelineContent = memo(
       yearIndex: number,
       entryIndex: number
     ) => void
-    saveEvent: (yearIndex: number, entryIndex: number, event?: string) => void
+    saveEvent: (yearIndex: number, entryIndex: number) => void
     removeEventFromYear: (yearIndex: number, eventIndex: number) => void
-    addEventToYear: (yearIndex: number, event: string) => void
+    addEventToYear: (yearIndex: number) => void
     form: UseFormReturn<z.infer<typeof SettlementSchema>>
     debouncedSetFormValue: (
       path:
@@ -284,76 +114,22 @@ const TimelineContent = memo(
     ) => void
     editEvent: (yearIndex: number, entryIndex: number) => void
     showScrollIcon: boolean
-    isVisible: { visible: boolean; visibleCount: number }
-    setIsVisible: React.Dispatch<
-      React.SetStateAction<{ visible: boolean; visibleCount: number }>
-    >
   }) => {
-    // Track which rows are in the "adding" state
-    const [addingStates, setAddingStates] = useState<{
-      [key: string]: boolean
-    }>({})
-
-    // Track which rows are in the "editing" state
-    const [editingStates, setEditingStates] = useState<{
-      [key: string]: boolean
-    }>({})
-
-    // Helper function to check if a row is in adding state
-    const isRowAdding = useCallback(
-      (yearIndex: number) => {
-        return !!addingStates[yearIndex]
-      },
-      [addingStates]
-    )
-
-    // Helper function to set a row's adding state
-    const setRowAdding = useCallback((yearIndex: number, isAdding: boolean) => {
-      setAddingStates((prev) => ({
-        ...prev,
-        [yearIndex]: isAdding
-      }))
-    }, [])
-
-    // Helper function to check if an event is in editing state
-    const isEventEditing = useCallback(
-      (yearIndex: number, entryIndex: number) => {
-        return !!editingStates[`${yearIndex}-${entryIndex}`]
-      },
-      [editingStates]
-    )
-
-    // Helper function to set an event's editing state
-    const setEventEditing = useCallback(
-      (yearIndex: number, entryIndex: number, isEditing: boolean) => {
-        setEditingStates((prev) => ({
-          ...prev,
-          [`${yearIndex}-${entryIndex}`]: isEditing
-        }))
-      },
-      []
-    )
-
     // Virtualized row renderer for timeline years
     const Row = useCallback(
-      ({ index }: { index: number }) => {
+      ({ index, style }: { index: number; style: React.CSSProperties }) => {
         // Skip header row which is rendered separately
         const yearIndex = index
         const yearData = timeline[yearIndex]
 
-        const yearLabel =
-          yearIndex === 0 && !usesNormalNumbering
-            ? 'Prologue'
-            : usesNormalNumbering
-              ? `${yearIndex + 1}`
-              : `${yearIndex}`
-
-        const isAdding = isRowAdding(yearIndex)
-        const setIsAdding = (adding: boolean) => setRowAdding(yearIndex, adding)
-
         return (
           <div
-            className={`grid ${showScrollIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} gap-4 items-start border-t border-border py-1`}>
+            style={style}
+            className={`grid ${
+              showScrollIcon
+                ? 'grid-cols-[80px_40px_1fr_auto]'
+                : 'grid-cols-[80px_1fr_auto]'
+            } gap-4 items-start border-t border-border py-1`}>
             <div className="flex items-center">
               <FormField
                 control={form.control}
@@ -371,7 +147,11 @@ const TimelineContent = memo(
                 )}
               />
               <span className="text-sm font-medium ml-2 mb-1 inline-flex items-center">
-                {yearLabel}
+                {yearIndex === 0 && !usesNormalNumbering
+                  ? 'Prologue'
+                  : usesNormalNumbering
+                    ? yearIndex + 1
+                    : yearIndex}
               </span>
             </div>
 
@@ -384,23 +164,21 @@ const TimelineContent = memo(
             <div className="flex flex-col gap-2">
               {/* Display event badges for saved events */}
               {(yearData.entries || []).length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-2">
+                <div className="flex flex-wrap gap-1 mb-1">
                   {(yearData.entries || []).map((entry, entryIndex) => {
-                    // Only show badges if the entry has content
-                    if (entry && entry.trim() !== '') {
+                    // Only show as badge if not being edited and has content
+                    if (
+                      !isEventBeingEdited(yearIndex, entryIndex) &&
+                      entry &&
+                      entry.trim() !== ''
+                    ) {
                       return (
-                        <InlineEditEvent
+                        <TimelineEventBadge
                           key={entryIndex}
-                          yearIndex={yearIndex}
-                          yearLabel={yearLabel}
-                          entryIndex={entryIndex}
                           entry={entry}
-                          saveEvent={saveEvent}
-                          removeEventFromYear={removeEventFromYear}
-                          isEditing={isEventEditing(yearIndex, entryIndex)}
-                          setIsEditing={(isEditing) =>
-                            setEventEditing(yearIndex, entryIndex, isEditing)
-                          }
+                          yearIndex={yearIndex}
+                          entryIndex={entryIndex}
+                          onEdit={editEvent}
                         />
                       )
                     }
@@ -409,6 +187,63 @@ const TimelineContent = memo(
                 </div>
               )}
 
+              {/* Display editable fields for events that are being edited */}
+              {(yearData.entries || []).map((entry, entryIndex) => {
+                if (isEventBeingEdited(yearIndex, entryIndex)) {
+                  return (
+                    <div key={entryIndex} className="flex items-center">
+                      <FormField
+                        control={form.control}
+                        name={`timeline.${yearIndex}.entries.${entryIndex}`}
+                        render={() => (
+                          <FormItem className="flex-1 m-0">
+                            <FormControl>
+                              <Input
+                                placeholder={`${
+                                  yearIndex === 0 && !usesNormalNumbering
+                                    ? 'Prologue'
+                                    : usesNormalNumbering
+                                      ? `Year ${yearIndex + 1}`
+                                      : `Year ${yearIndex}`
+                                } event...`}
+                                defaultValue={entry || ''}
+                                ref={(element) =>
+                                  setInputRef(element, yearIndex, entryIndex)
+                                }
+                                onKeyDown={(e) =>
+                                  handleKeyDown(e, yearIndex, entryIndex)
+                                }
+                                autoFocus
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="ml-2"
+                        onClick={() => saveEvent(yearIndex, entryIndex)}
+                        title="Save event">
+                        <CheckIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          removeEventFromYear(yearIndex, entryIndex)
+                        }
+                        title="Remove event">
+                        <TrashIcon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )
+                }
+                return null
+              })}
+
               {/* Display "No events" message when there are no events */}
               {(yearData.entries || []).length === 0 && (
                 <div className="text-sm text-gray-500 italic">No events</div>
@@ -416,16 +251,16 @@ const TimelineContent = memo(
             </div>
 
             <div className="flex justify-end">
-              <InlineAddEvent
-                yearIndex={yearIndex}
-                yearLabel={yearLabel}
-                addEventToYear={(yearIndex, event) => {
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
                   // Add a small delay to prevent blocking the UI
-                  setTimeout(() => addEventToYear(yearIndex, event), 0)
-                }}
-                isAdding={isAdding}
-                setIsAdding={setIsAdding}
-              />
+                  setTimeout(() => addEventToYear(yearIndex), 0)
+                }}>
+                <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
+              </Button>
             </div>
           </div>
         )
@@ -434,14 +269,14 @@ const TimelineContent = memo(
         timeline,
         form,
         usesNormalNumbering,
+        isEventBeingEdited,
+        setInputRef,
+        handleKeyDown,
         saveEvent,
         removeEventFromYear,
         addEventToYear,
-        showScrollIcon,
-        isRowAdding,
-        setRowAdding,
-        isEventEditing,
-        setEventEditing
+        editEvent,
+        showScrollIcon
       ]
     )
 
@@ -456,38 +291,10 @@ const TimelineContent = memo(
         </div>
 
         {timeline.length > 0 && (
-          <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin">
-            {/* Use windowing approach to only render visible items */}
-            {timeline.slice(0, isVisible.visibleCount).map((_, index) => (
-              <Row key={index} index={index} />
+          <div className="max-h-[600px] overflow-y-auto scrollbar-thin">
+            {timeline.map((yearData, yearIndex) => (
+              <Row key={yearIndex} index={yearIndex} style={{}} />
             ))}
-            {timeline.length > isVisible.visibleCount && (
-              <div
-                ref={(el) => {
-                  if (!el) return
-                  // Use Intersection Observer to load more items when scrolling
-                  const observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting) {
-                      // Load more items when the user scrolls near the bottom
-                      observer.disconnect()
-                      setIsVisible((prev) => ({
-                        ...prev,
-                        visibleCount: Math.min(
-                          timeline.length,
-                          prev.visibleCount + 20
-                        )
-                      }))
-                    }
-                  })
-                  observer.observe(el)
-                }}
-                className="h-8 w-full">
-                {/* Loading indicator */}
-                <div className="py-2 text-center text-xs text-muted-foreground">
-                  Scroll to load more...
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
@@ -619,14 +426,26 @@ export function TimelineCard(
 
   // Optimize the addEventToYear function with useCallback to prevent recreation on each render
   const addEventToYear = useCallback(
-    (yearIndex: number, event: string) => {
+    (yearIndex: number) => {
+      // First check if any event is currently being edited in this year
+      const yearEntries = timeline[yearIndex]?.entries || []
+      const hasActiveEditingEvent = yearEntries.some((_, entryIndex) =>
+        isEventBeingEdited(yearIndex, entryIndex)
+      )
+
+      // If there is already an event being edited, show a toast and don't add a new one
+      if (hasActiveEditingEvent) return
+
+      // Use requestAnimationFrame to defer the state updates to the next frame
       requestAnimationFrame(() => {
         const updatedTimeline = [...timeline]
+        const newEntryIndex = updatedTimeline[yearIndex].entries
+          ? updatedTimeline[yearIndex].entries.length
+          : 0
 
-        // Add the new event to the entries array
         updatedTimeline[yearIndex].entries = [
           ...(updatedTimeline[yearIndex].entries || []),
-          event
+          ''
         ]
 
         // Update the timeline state
@@ -638,12 +457,21 @@ export function TimelineCard(
           updatedTimeline[yearIndex].entries
         )
 
-        // Since we're adding from the dialog, we don't need to mark it for editing
-        // The event text is already provided and validated
-        toast.success('Event added to timeline')
+        // Set this new event as being edited
+        const inputKey = `${yearIndex}-${newEntryIndex}`
+        setEditingEvents((prev) => ({
+          ...prev,
+          [inputKey]: true
+        }))
       })
     },
-    [timeline, debouncedSetTimeline, debouncedSetFormValue]
+    [
+      timeline,
+      debouncedSetTimeline,
+      debouncedSetFormValue,
+      setEditingEvents,
+      isEventBeingEdited
+    ]
   )
 
   const removeEventFromYear = useCallback(
@@ -673,16 +501,33 @@ export function TimelineCard(
   )
 
   const saveEvent = useCallback(
-    (yearIndex: number, entryIndex: number, event?: string) => {
-      // For dialog-based editing, we'll receive the event text directly
-      const newEventValue = event?.trim()
+    (yearIndex: number, entryIndex: number) => {
+      const inputKey = `${yearIndex}-${entryIndex}`
+      const inputElement = inputRefs.current[inputKey]
 
-      if (!newEventValue || newEventValue === '') {
+      if (!inputElement) {
+        return
+      }
+
+      const currentEvent = inputElement.value
+
+      if (!currentEvent || currentEvent.trim() === '') {
         toast.warning('Cannot save an empty event')
         return
       }
 
-      // Update in a single requestAnimationFrame for better performance
+      // Break the heavy operations into smaller chunks using multiple requestAnimationFrame calls
+      // First, get the value from the input
+      const newEventValue = currentEvent.trim()
+
+      // Step 1: Update the UI to show we're processing (mark as non-editing immediately)
+      setEditingEvents((prev) => {
+        const newEditingEvents = { ...prev }
+        delete newEditingEvents[inputKey]
+        return newEditingEvents
+      })
+
+      // Step 2: Update the form value (this is likely the heaviest operation)
       requestAnimationFrame(() => {
         // Create a shallow copy of the timeline to avoid direct state mutation
         const updatedTimeline = [...timeline]
@@ -693,19 +538,27 @@ export function TimelineCard(
         // Update the specific entry in our local timeline
         updatedTimeline[yearIndex].entries[entryIndex] = newEventValue
 
-        // Update the local state
-        debouncedSetTimeline(updatedTimeline)
+        // Step 3: Update the local timeline state in the next frame
+        requestAnimationFrame(() => {
+          // Update the local state
+          debouncedSetTimeline(updatedTimeline)
 
-        // Update the form state
-        debouncedSetFormValue(
-          `timeline.${yearIndex}.entries.${entryIndex}`,
-          newEventValue
-        )
+          // Step 4: Update the form state in yet another frame
+          requestAnimationFrame(() => {
+            debouncedSetFormValue(
+              `timeline.${yearIndex}.entries.${entryIndex}`,
+              newEventValue
+            )
 
-        toast.success('Event saved to timeline')
+            // Final step: Show success toast
+            requestAnimationFrame(() => {
+              toast.success('Event saved to timeline')
+            })
+          })
+        })
       })
     },
-    [timeline, debouncedSetTimeline, debouncedSetFormValue]
+    [timeline, debouncedSetTimeline, debouncedSetFormValue, inputRefs]
   )
 
   const editEvent = useCallback(
@@ -750,10 +603,7 @@ export function TimelineCard(
   )
 
   // Add a visibility state for progressive loading when switching tabs
-  const [isVisible, setIsVisible] = useState<{
-    visible: boolean
-    visibleCount: number
-  }>({ visible: false, visibleCount: 20 })
+  const [isVisible, setIsVisible] = useState(false)
 
   // Use IntersectionObserver to detect when the component becomes visible (tab switched)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -766,7 +616,7 @@ export function TimelineCard(
         if (entries[0].isIntersecting) {
           // Small delay to ensure UI remains responsive during tab switch
           setTimeout(() => {
-            setIsVisible({ visible: true, visibleCount: 20 })
+            setIsVisible(true)
           }, 50)
         }
       },
@@ -796,7 +646,7 @@ export function TimelineCard(
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">
-        {isVisible.visible ? (
+        {isVisible ? (
           <>
             <TimelineContent
               timeline={cachedTimeline}
@@ -812,8 +662,6 @@ export function TimelineCard(
               debouncedSetFormValue={debouncedSetFormValue}
               editEvent={editEvent}
               showScrollIcon={showScrollIcon}
-              isVisible={isVisible}
-              setIsVisible={setIsVisible}
             />
             <Button
               type="button"
