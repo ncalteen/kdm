@@ -427,9 +427,7 @@ export function QuarryCard(
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true)
-          }, 50)
+          setIsVisible(true)
         }
       },
       { threshold: 0.1 }

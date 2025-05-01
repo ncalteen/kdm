@@ -535,10 +535,7 @@ export function TimelineCard(
       (entries) => {
         // When the timeline becomes visible, set isVisible to true with a small delay
         if (entries[0].isIntersecting) {
-          // Small delay to ensure UI remains responsive during tab switch
-          setTimeout(() => {
-            setIsVisible(true)
-          }, 50)
+          setIsVisible(true)
         }
       },
       { threshold: 0.1 } // Trigger when 10% of the component is visible
