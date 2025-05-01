@@ -120,19 +120,56 @@ function PrincipleItem({
           className="cursor-grab active:cursor-grabbing p-1">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-        {isDisabled ? (
-          <Input value={nameValue} disabled className="flex-1" />
-        ) : (
-          <Input
-            placeholder="Name"
-            className="flex-1"
-            value={nameValue}
-            onChange={handleNameChange}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-        )}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex-1 flex flex-col gap-2">
+          {isDisabled ? (
+            <Input value={nameValue} disabled className="w-full" />
+          ) : (
+            <Input
+              placeholder="Name"
+              className="w-full"
+              value={nameValue}
+              onChange={handleNameChange}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+          )}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={principle.option1Selected}
+              onCheckedChange={() => handleSelectOption(index, 1)}
+              disabled={true}
+            />
+            {isDisabled ? (
+              <Input value={option1Value} disabled className="flex-1" />
+            ) : (
+              <Input
+                placeholder="Option 1"
+                value={option1Value}
+                className="flex-1"
+                onChange={handleOption1Change}
+                onKeyDown={handleKeyDown}
+              />
+            )}
+            <strong>or</strong>
+            <Checkbox
+              checked={principle.option2Selected}
+              onCheckedChange={() => handleSelectOption(index, 2)}
+              disabled={true}
+            />
+            {isDisabled ? (
+              <Input value={option2Value} disabled className="flex-1" />
+            ) : (
+              <Input
+                placeholder="Option 2"
+                value={option2Value}
+                className="flex-1"
+                onChange={handleOption2Change}
+                onKeyDown={handleKeyDown}
+              />
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 ml-2 self-stretch">
           {isDisabled ? (
             <Button
               type="button"
@@ -157,47 +194,12 @@ function PrincipleItem({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 ml-2"
+            className="h-8 w-8 p-0"
             type="button"
             onClick={() => handleRemovePrinciple(index)}>
             <TrashIcon className="h-4 w-4" />
           </Button>
         </div>
-      </div>
-      <div className="flex items-center gap-2 pl-8">
-        <Checkbox
-          checked={principle.option1Selected}
-          onCheckedChange={() => handleSelectOption(index, 1)}
-          disabled={true}
-        />
-        {isDisabled ? (
-          <Input value={option1Value} disabled className="flex-1" />
-        ) : (
-          <Input
-            placeholder="Option 1"
-            value={option1Value}
-            className="flex-1"
-            onChange={handleOption1Change}
-            onKeyDown={handleKeyDown}
-          />
-        )}
-        <strong>or</strong>
-        <Checkbox
-          checked={principle.option2Selected}
-          onCheckedChange={() => handleSelectOption(index, 2)}
-          disabled={true}
-        />
-        {isDisabled ? (
-          <Input value={option2Value} disabled className="flex-1 mr-10" />
-        ) : (
-          <Input
-            placeholder="Option 2"
-            value={option2Value}
-            className="flex-1 mr-10"
-            onChange={handleOption2Change}
-            onKeyDown={handleKeyDown}
-          />
-        )}
       </div>
     </div>
   )
