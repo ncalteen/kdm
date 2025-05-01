@@ -26,14 +26,13 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import { Checkbox } from '../checkbox'
-import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
 interface LocationItemProps {
@@ -42,7 +41,7 @@ interface LocationItemProps {
   handleRemoveLocation: (index: number) => void
   id: string
   isDisabled: boolean
-  onSave: (index: number) => void
+  onSave: (index: number, name: string, unlocked: boolean) => void
   onEdit: (index: number) => void
 }
 
@@ -58,9 +57,30 @@ function LocationItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
+  // Local state for editing
+  const [nameValue, setNameValue] = useState(
+    form.getValues(`locations.${index}.name`) || ''
+  )
+  const [unlockedValue, setUnlockedValue] = useState(
+    form.getValues(`locations.${index}.unlocked`) || false
+  )
+
+  // Keep local state in sync when switching between edit/saved
+  useEffect(() => {
+    setNameValue(form.getValues(`locations.${index}.name`) || '')
+    setUnlockedValue(form.getValues(`locations.${index}.unlocked`) || false)
+  }, [form, isDisabled, index])
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(index, nameValue, unlockedValue)
+    }
   }
 
   return (
@@ -71,45 +91,23 @@ function LocationItem({
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-
-      <FormField
-        control={form.control}
-        name={`locations.${index}.unlocked`}
-        render={({ field }) => (
-          <FormItem className="flex items-center m-0 mt-2">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                disabled={isDisabled}
-                onCheckedChange={(checked) => {
-                  form.setValue(`locations.${index}.unlocked`, !!checked)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
+      <Checkbox
+        checked={unlockedValue}
+        disabled={isDisabled}
+        onCheckedChange={(checked) => {
+          if (!isDisabled) setUnlockedValue(!!checked)
+        }}
       />
-
-      <FormField
-        control={form.control}
-        name={`locations.${index}.name`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Location Name"
-                {...field}
-                value={field.value || ''}
-                disabled={isDisabled}
-                onChange={(e) => {
-                  form.setValue(`locations.${index}.name`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
+      <Input
+        placeholder="Location Name"
+        value={nameValue}
+        disabled={isDisabled}
+        onChange={(e) => {
+          if (!isDisabled) setNameValue(e.target.value)
+        }}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
       />
-
       {isDisabled ? (
         <Button
           type="button"
@@ -124,12 +122,11 @@ function LocationItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index)}
+          onClick={() => onSave(index, nameValue, unlockedValue)}
           title="Save location">
           <CheckIcon className="h-4 w-4" />
         </Button>
       )}
-
       <Button
         type="button"
         variant="ghost"
@@ -145,12 +142,26 @@ function LocationItem({
 export function SettlementLocationsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const locations = form.watch('locations') || []
+  const locations = useMemo(() => form.watch('locations') || [], [form])
 
   // Track which inputs are disabled (saved)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+
+  // Ensure disabledInputs is always in sync with locations
+  // On first load, all initial locations are disabled (saved)
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      locations.forEach((_, i) => {
+        // If this location existed on first render, default to true (disabled/saved)
+        // If it was added later, keep its previous state (false = editable)
+        next[i] = prev[i] !== undefined ? prev[i] : true
+      })
+      return next
+    })
+  }, [locations])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -163,6 +174,10 @@ export function SettlementLocationsCard(
     const currentLocations = [...locations]
     currentLocations.push({ name: '', unlocked: false })
     form.setValue('locations', currentLocations)
+    setDisabledInputs((prev) => ({
+      ...prev,
+      [currentLocations.length - 1]: false
+    }))
   }
 
   const handleRemoveLocation = (index: number) => {
@@ -170,74 +185,53 @@ export function SettlementLocationsCard(
     currentLocations.splice(index, 1)
     form.setValue('locations', currentLocations)
 
-    // Remove from disabled inputs
-    const updatedDisabledInputs = { ...disabledInputs }
-    delete updatedDisabledInputs[index]
-
-    // Reindex the disabled inputs for the remaining items
-    const newDisabledInputs: { [key: number]: boolean } = {}
-    Object.keys(updatedDisabledInputs).forEach((key) => {
-      const numKey = parseInt(key)
-      if (numKey > index) {
-        newDisabledInputs[numKey - 1] = updatedDisabledInputs[numKey]
-      } else {
-        newDisabledInputs[numKey] = updatedDisabledInputs[numKey]
-      }
+    // Remove from disabled inputs and reindex
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+      return next
     })
-
-    setDisabledInputs(newDisabledInputs)
   }
 
-  const saveLocation = (index: number) => {
-    const currentLocation = form.getValues(`locations.${index}`)
-    if (!currentLocation.name || currentLocation.name.trim() === '') {
+  const saveLocation = (index: number, name: string, unlocked: boolean) => {
+    if (!name || name.trim() === '') {
       toast.warning('Cannot save a location without a name')
       return
     }
-
-    // Mark this input as disabled (saved)
-    setDisabledInputs({
-      ...disabledInputs,
-      [index]: true
-    })
-
+    form.setValue(`locations.${index}.name`, name)
+    form.setValue(`locations.${index}.unlocked`, unlocked)
+    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
     toast.success('Location saved')
   }
 
   const editLocation = (index: number) => {
-    // Mark this input as enabled (editable)
-    const updatedDisabledInputs = { ...disabledInputs }
-    updatedDisabledInputs[index] = false
-    setDisabledInputs(updatedDisabledInputs)
-
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
     toast.info('Editing location')
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-
       const newOrder = arrayMove(locations, oldIndex, newIndex)
       form.setValue('locations', newOrder)
-
       // Reorder the disabled inputs state
-      const newDisabledInputs: { [key: number]: boolean } = {}
-      Object.keys(disabledInputs).forEach((key) => {
-        const numKey = parseInt(key)
-        if (numKey === oldIndex) {
-          newDisabledInputs[newIndex] = disabledInputs[numKey]
-        } else if (numKey >= newIndex && numKey < oldIndex) {
-          newDisabledInputs[numKey + 1] = disabledInputs[numKey]
-        } else if (numKey <= newIndex && numKey > oldIndex) {
-          newDisabledInputs[numKey - 1] = disabledInputs[numKey]
-        } else {
-          newDisabledInputs[numKey] = disabledInputs[numKey]
-        }
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+        return next
       })
-      setDisabledInputs(newDisabledInputs)
     }
   }
 
@@ -277,7 +271,8 @@ export function SettlementLocationsCard(
               type="button"
               size="sm"
               variant="outline"
-              onClick={addLocation}>
+              onClick={addLocation}
+              disabled={Object.values(disabledInputs).some((v) => v === false)}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Location
             </Button>
