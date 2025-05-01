@@ -481,10 +481,7 @@ export function NemesisCard(
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          // Delay rendering to keep tab switching smooth
-          setTimeout(() => {
-            setIsVisible(true)
-          }, 50)
+          setIsVisible(true)
         }
       },
       { threshold: 0.1 }
