@@ -4,15 +4,15 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import {
-  CustomCampaign,
+  CustomCampaignData,
   DefaultCcNemesisVictories,
   DefaultCcQuarryVictories,
   DefaultSquiresSuspicion,
-  PeopleOfTheDreamKeeperCampaign,
-  PeopleOfTheLanternCampaign,
-  PeopleOfTheStarsCampaign,
-  PeopleOfTheSunCampaign,
-  SquiresOfTheCitadelCampaign
+  PeopleOfTheDreamKeeperCampaignData,
+  PeopleOfTheLanternCampaignData,
+  PeopleOfTheStarsCampaignData,
+  PeopleOfTheSunCampaignData,
+  SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getLostSettlementCount, getNextSettlementId } from '@/lib/utils'
@@ -40,6 +40,7 @@ import { PrinciplesCard } from '../ui/settlement/principles-card'
 import { QuarryCard } from '../ui/settlement/quarry-card'
 import { ResourcesCard } from '../ui/settlement/resources-card'
 import { SeedPatternsCard } from '../ui/settlement/seed-patterns-card'
+import { SettlementLocationsCard } from '../ui/settlement/settlement-locations-card'
 import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
 import { SettlementSurvivorsCard } from '../ui/settlement/settlement-survivors-card'
 import { SquireCards } from '../ui/settlement/squire-cards'
@@ -69,16 +70,16 @@ export function CreateSettlementForm() {
       id: settlementId,
       survivalLimit: 1,
       lostSettlements: lostSettlementCount,
-      timeline: PeopleOfTheLanternCampaign.timeline,
-      quarries: [],
-      nemesis: [],
-      milestones: PeopleOfTheLanternCampaign.milestones,
+      timeline: PeopleOfTheLanternCampaignData.timeline,
+      quarries: PeopleOfTheLanternCampaignData.quarries,
+      nemesis: PeopleOfTheLanternCampaignData.nemesis,
+      milestones: PeopleOfTheLanternCampaignData.milestones,
       departingBonuses: [],
       deathCount: 0,
-      principles: [],
+      principles: PeopleOfTheLanternCampaignData.principles,
       patterns: [],
-      innovations: ['Language'],
-      locations: [],
+      innovations: PeopleOfTheLanternCampaignData.innovations,
+      locations: PeopleOfTheLanternCampaignData.locations, // Add Forum if using ARC survivors
       resources: [],
       gear: [],
       population: 0,
@@ -125,48 +126,52 @@ export function CreateSettlementForm() {
     }
 
     // Set appropriate timeline based on campaign type (without deep nesting)
-    const timeline =
+    form.setValue(
+      'timeline',
       value === CampaignType.SQUIRES_OF_THE_CITADEL
-        ? SquiresOfTheCitadelCampaign.timeline
+        ? SquiresOfTheCitadelCampaignData.timeline
         : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PeopleOfTheDreamKeeperCampaign.timeline
+          ? PeopleOfTheDreamKeeperCampaignData.timeline
           : value === CampaignType.PEOPLE_OF_THE_LANTERN
-            ? PeopleOfTheLanternCampaign.timeline
+            ? PeopleOfTheLanternCampaignData.timeline
             : value === CampaignType.PEOPLE_OF_THE_STARS
-              ? PeopleOfTheStarsCampaign.timeline
+              ? PeopleOfTheStarsCampaignData.timeline
               : value === CampaignType.PEOPLE_OF_THE_SUN
-                ? PeopleOfTheSunCampaign.timeline
-                : CustomCampaign.timeline
-
-    form.setValue('timeline', timeline)
+                ? PeopleOfTheSunCampaignData.timeline
+                : CustomCampaignData.timeline
+    )
 
     // Set appropriate milestones
-    const milestones =
+    form.setValue(
+      'milestones',
       value === CampaignType.SQUIRES_OF_THE_CITADEL
-        ? SquiresOfTheCitadelCampaign.milestones
+        ? SquiresOfTheCitadelCampaignData.milestones
         : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PeopleOfTheDreamKeeperCampaign.milestones
+          ? PeopleOfTheDreamKeeperCampaignData.milestones
           : value === CampaignType.PEOPLE_OF_THE_LANTERN
-            ? PeopleOfTheLanternCampaign.milestones
+            ? PeopleOfTheLanternCampaignData.milestones
             : value === CampaignType.PEOPLE_OF_THE_STARS
-              ? PeopleOfTheStarsCampaign.milestones
+              ? PeopleOfTheStarsCampaignData.milestones
               : value === CampaignType.PEOPLE_OF_THE_SUN
-                ? PeopleOfTheSunCampaign.milestones
-                : CustomCampaign.milestones
-
-    form.setValue('milestones', milestones)
+                ? PeopleOfTheSunCampaignData.milestones
+                : CustomCampaignData.milestones
+    )
 
     // Set appropriate innovations
-    const innovations =
-      value === CampaignType.PEOPLE_OF_THE_LANTERN
-        ? ['Language']
-        : value === CampaignType.PEOPLE_OF_THE_STARS
-          ? ['Dragon Speech']
-          : value === CampaignType.PEOPLE_OF_THE_SUN
-            ? ['Sun Language']
-            : []
-
-    form.setValue('innovations', innovations)
+    form.setValue(
+      'innovations',
+      value === CampaignType.SQUIRES_OF_THE_CITADEL
+        ? SquiresOfTheCitadelCampaignData.innovations
+        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+          ? PeopleOfTheDreamKeeperCampaignData.innovations
+          : value === CampaignType.PEOPLE_OF_THE_LANTERN
+            ? PeopleOfTheLanternCampaignData.innovations
+            : value === CampaignType.PEOPLE_OF_THE_STARS
+              ? PeopleOfTheStarsCampaignData.innovations
+              : value === CampaignType.PEOPLE_OF_THE_SUN
+                ? PeopleOfTheSunCampaignData.innovations
+                : CustomCampaignData.innovations
+    )
 
     // Set suspicions for Squires campaign
     if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
@@ -299,6 +304,7 @@ export function CreateSettlementForm() {
                   <>
                     <MilestonesCard {...form} />
                     <PrinciplesCard {...form} />
+                    <SettlementLocationsCard {...form} />
                   </>
                 )}
                 <InnovationsCard {...form} />

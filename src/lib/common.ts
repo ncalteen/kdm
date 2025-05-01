@@ -1,6 +1,11 @@
 'use client'
 
-import { CcNemesisVictory, CcQuarryVictory, Milestone } from './types'
+import {
+  CampaignData,
+  CcNemesisVictory,
+  CcQuarryVictory,
+  Milestone
+} from './types'
 
 /**
  * Core Campaign Milestones
@@ -31,7 +36,13 @@ export const CoreMilestones: Milestone[] = [
 /**
  * Custom Campaign Data
  */
-export const CustomCampaign = {
+export const CustomCampaignData: CampaignData = {
+  ccRewards: [],
+  innovations: [],
+  locations: [],
+  nemesis: [],
+  principles: [],
+  quarries: [],
   milestones: CoreMilestones,
   timeline: Array(40).fill({
     completed: false,
@@ -42,13 +53,157 @@ export const CustomCampaign = {
 /**
  * People of the Lantern Campaign Data
  */
-export const PeopleOfTheLanternCampaign = {
+export const PeopleOfTheLanternCampaignData: CampaignData = {
+  ccRewards: [
+    {
+      name: 'Facets of Existence',
+      cc: 1,
+      unlocked: false
+    },
+    {
+      name: 'Pleasing Plating',
+      cc: 2,
+      unlocked: false
+    },
+    {
+      name: 'Comprehensive Construction',
+      cc: 5,
+      unlocked: false
+    },
+    {
+      name: 'White Lion Cuisine',
+      cc: 6,
+      unlocked: false
+    },
+    {
+      name: 'Communal Larder',
+      cc: 8,
+      unlocked: false
+    },
+    {
+      name: 'Sated Enlightenment',
+      cc: 13,
+      unlocked: false
+    },
+    {
+      name: 'Screaming Antelope Cuisine',
+      cc: 16,
+      unlocked: false
+    },
+    {
+      name: 'Metabolic Improvements',
+      cc: 21,
+      unlocked: false
+    },
+    {
+      name: 'Phoenix Cuisine',
+      cc: 26,
+      unlocked: false
+    },
+    {
+      name: 'Shared Illumination',
+      cc: 30,
+      unlocked: false
+    },
+    {
+      name: 'Culinary Ingenuity',
+      cc: 46,
+      unlocked: false
+    }
+  ],
+  innovations: ['Language'],
+  locations: [
+    { name: 'Barber Surgeon', unlocked: false },
+    { name: 'Blacksmith', unlocked: false },
+    { name: 'Bone Smith', unlocked: false },
+    { name: 'Catarium', unlocked: false },
+    { name: 'Exhausted Lantern Hoard', unlocked: false },
+    { name: 'Lantern Hoard', unlocked: true },
+    { name: 'Leather Worker', unlocked: false },
+    { name: 'Mask Maker', unlocked: false },
+    { name: 'Organ Grinder', unlocked: false },
+    { name: 'Plumery', unlocked: false },
+    { name: 'Skinnery', unlocked: false },
+    { name: 'Stone Circle', unlocked: false },
+    { name: 'Weapon Crafter', unlocked: false }
+  ],
   milestones: [
     ...CoreMilestones,
     {
       name: 'Settlement has 5 innovations',
       complete: false,
       event: 'Hooded Knight'
+    }
+  ],
+  nemesis: [
+    {
+      name: 'Butcher',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+    {
+      name: "King's Man",
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+
+    {
+      name: 'The Hand',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    }
+  ],
+  principles: [
+    {
+      name: 'New Life',
+      option1Name: 'Protect the Young',
+      option1Selected: false,
+      option2Name: 'Survival of the Fittest',
+      option2Selected: false
+    },
+    {
+      name: 'Death',
+      option1Name: 'Graves',
+      option1Selected: false,
+      option2Name: 'Cannibalize',
+      option2Selected: false
+    },
+    {
+      name: 'Society',
+      option1Name: 'Collective Toil',
+      option1Selected: false,
+      option2Name: 'Accept Darkness',
+      option2Selected: false
+    },
+    {
+      name: 'Conviction',
+      option1Name: 'Romantic',
+      option1Selected: false,
+      option2Name: 'Barbaric',
+      option2Selected: false
+    }
+  ],
+  quarries: [
+    {
+      name: 'White Lion',
+      node: 'Node 1',
+      unlocked: false
+    },
+    {
+      name: 'Screaming Antelope',
+      node: 'Node 2',
+      unlocked: false
+    },
+    {
+      name: 'Phoenix',
+      node: 'Node 3',
+      unlocked: false
     }
   ],
   timeline: [
@@ -98,13 +253,169 @@ export const PeopleOfTheLanternCampaign = {
 /**
  * People of the Dream Keeper Campaign Data
  */
-export const PeopleOfTheDreamKeeperCampaign = {
+export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
+  ccRewards: [
+    {
+      name: 'Facets of Power',
+      cc: 1,
+      unlocked: false
+    },
+    {
+      name: 'Pleasing Plating',
+      cc: 2,
+      unlocked: false
+    },
+    {
+      name: 'Comprehensive Construction',
+      cc: 5,
+      unlocked: false
+    },
+    {
+      name: 'Crimson Crocodile Cuisine',
+      cc: 6,
+      unlocked: false
+    },
+    {
+      name: 'Communal Larder',
+      cc: 8,
+      unlocked: false
+    },
+    {
+      name: 'Sated Enlightenment',
+      cc: 13,
+      unlocked: false
+    },
+    {
+      name: 'Smog Singer Cuisine',
+      cc: 16,
+      unlocked: false
+    },
+    {
+      name: 'Metabolic Improvements',
+      cc: 21,
+      unlocked: false
+    },
+    {
+      name: 'Phoenix Cuisine',
+      cc: 26,
+      unlocked: false
+    },
+    {
+      name: 'Shared Illumination',
+      cc: 30,
+      unlocked: false
+    },
+    {
+      name: 'King Cuisine',
+      cc: 36,
+      unlocked: false
+    },
+    {
+      name: 'Culinary Ingenuity',
+      cc: 46,
+      unlocked: false
+    }
+  ],
+  innovations: [],
+  locations: [
+    { name: 'Barber Surgeon', unlocked: false },
+    { name: 'Blacksmith', unlocked: false },
+    { name: 'Bone Smith', unlocked: false },
+    { name: 'Chorusseum', unlocked: false },
+    { name: 'Crimson Crockery', unlocked: false },
+    { name: 'Forum', unlocked: false },
+    { name: 'Keeper of Dreams', unlocked: true },
+    { name: 'Kingsmith', unlocked: false },
+    { name: 'Leather Worker', unlocked: false },
+    { name: 'Mask Maker', unlocked: false },
+    { name: 'Organ Grinder', unlocked: false },
+    { name: 'Outskirts', unlocked: false },
+    { name: 'Plumery', unlocked: false },
+    { name: 'Skinnery', unlocked: false },
+    { name: 'Weapon Crafter', unlocked: false }
+  ],
   milestones: [
     ...CoreMilestones,
     {
       name: 'First survivor to reach 3 understanding',
       complete: false,
       event: 'Designs & Dandelions'
+    }
+  ],
+  nemesis: [
+    {
+      name: 'Butcher',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+    {
+      name: 'Atnas',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+
+    {
+      name: 'The Hand',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    }
+  ],
+  principles: [
+    {
+      name: 'New Life',
+      option1Name: 'Protect the Young',
+      option1Selected: false,
+      option2Name: 'Survival of the Fittest',
+      option2Selected: false
+    },
+    {
+      name: 'Death',
+      option1Name: 'Graves',
+      option1Selected: false,
+      option2Name: 'Cannibalize',
+      option2Selected: false
+    },
+    {
+      name: 'Society',
+      option1Name: 'Collective Toil',
+      option1Selected: false,
+      option2Name: 'Accept Darkness',
+      option2Selected: false
+    },
+    {
+      name: 'Conviction',
+      option1Name: 'Romantic',
+      option1Selected: false,
+      option2Name: 'Barbaric',
+      option2Selected: false
+    }
+  ],
+  quarries: [
+    {
+      name: 'Crimson Crocodile',
+      node: 'Node 1',
+      unlocked: false
+    },
+    {
+      name: 'Smog Singers',
+      node: 'Node 2',
+      unlocked: false
+    },
+    {
+      name: 'Phoenix',
+      node: 'Node 3',
+      unlocked: false
+    },
+    {
+      name: 'The King',
+      node: 'Node 4',
+      unlocked: false
     }
   ],
   timeline: [
@@ -169,8 +480,95 @@ export const PeopleOfTheDreamKeeperCampaign = {
 /**
  * People of the Stars Campaign Data
  */
-export const PeopleOfTheStarsCampaign = {
+export const PeopleOfTheStarsCampaignData: CampaignData = {
+  ccRewards: [],
+  innovations: ['Dragon Speech'],
+  locations: [
+    { name: 'Barber Surgeon', unlocked: false },
+    { name: 'Blacksmith', unlocked: false },
+    { name: 'Bone Smith', unlocked: false },
+    { name: 'Catarium', unlocked: false },
+    { name: 'Leather Worker', unlocked: false },
+    { name: 'Mask Maker', unlocked: false },
+    { name: 'Organ Grinder', unlocked: false },
+    { name: 'Plumery', unlocked: false },
+    { name: 'Skinnery', unlocked: false },
+    { name: 'Stone Circle', unlocked: false },
+    { name: 'Throne', unlocked: true },
+    { name: 'Weapon Crafter', unlocked: false }
+  ],
   milestones: CoreMilestones,
+  nemesis: [
+    {
+      name: 'Butcher',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+    {
+      name: "King's Man",
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+
+    {
+      name: 'The Hand',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    }
+  ],
+  principles: [
+    {
+      name: 'New Life',
+      option1Name: 'Protect the Young',
+      option1Selected: false,
+      option2Name: 'Survival of the Fittest',
+      option2Selected: false
+    },
+    {
+      name: 'Death',
+      option1Name: 'Graves',
+      option1Selected: false,
+      option2Name: 'Cannibalize',
+      option2Selected: false
+    },
+    {
+      name: 'Society',
+      option1Name: 'Collective Toil',
+      option1Selected: false,
+      option2Name: 'Accept Darkness',
+      option2Selected: false
+    },
+    {
+      name: 'Conviction',
+      option1Name: 'Romantic',
+      option1Selected: false,
+      option2Name: 'Barbaric',
+      option2Selected: false
+    }
+  ],
+  quarries: [
+    {
+      name: 'White Lion',
+      node: 'Node 1',
+      unlocked: false
+    },
+    {
+      name: 'Screaming Antelope',
+      node: 'Node 2',
+      unlocked: false
+    },
+    {
+      name: 'Phoenix',
+      node: 'Node 3',
+      unlocked: false
+    }
+  ],
   timeline: [
     { completed: false, entries: ['Foundlings'] },
     { completed: false, entries: ['Endless Screams'] },
@@ -236,7 +634,80 @@ export const PeopleOfTheStarsCampaign = {
 /**
  * People of the Sun Campaign Data
  */
-export const PeopleOfTheSunCampaign = {
+export const PeopleOfTheSunCampaignData: CampaignData = {
+  ccRewards: [
+    {
+      name: 'Facets of Existence',
+      cc: 1,
+      unlocked: false
+    },
+    {
+      name: 'Pleasing Plating',
+      cc: 2,
+      unlocked: false
+    },
+    {
+      name: 'Comprehensive Construction',
+      cc: 5,
+      unlocked: false
+    },
+    {
+      name: 'White Lion Cuisine',
+      cc: 6,
+      unlocked: false
+    },
+    {
+      name: 'Communal Larder',
+      cc: 8,
+      unlocked: false
+    },
+    {
+      name: 'Sated Enlightenment',
+      cc: 13,
+      unlocked: false
+    },
+    {
+      name: 'Screaming Antelope Cuisine',
+      cc: 16,
+      unlocked: false
+    },
+    {
+      name: 'Metabolic Improvements',
+      cc: 21,
+      unlocked: false
+    },
+    {
+      name: 'Phoenix Cuisine',
+      cc: 26,
+      unlocked: false
+    },
+    {
+      name: 'Shared Illumination',
+      cc: 30,
+      unlocked: false
+    },
+    {
+      name: 'Culinary Ingenuity',
+      cc: 46,
+      unlocked: false
+    }
+  ],
+  innovations: ['Language'],
+  locations: [
+    { name: 'Barber Surgeon', unlocked: false },
+    { name: 'Blacksmith', unlocked: false },
+    { name: 'Bone Smith', unlocked: false },
+    { name: 'Catarium', unlocked: false },
+    { name: 'Leather Worker', unlocked: false },
+    { name: 'Mask Maker', unlocked: false },
+    { name: 'Organ Grinder', unlocked: false },
+    { name: 'Plumery', unlocked: false },
+    { name: 'Sacred Pool', unlocked: true },
+    { name: 'Skinnery', unlocked: false },
+    { name: 'Stone Circle', unlocked: false },
+    { name: 'The Sun', unlocked: true },
+    { name: 'Weapon Crafter', unlocked: false }
+  ],
   milestones: [
     {
       name: 'First time death count is updated',
@@ -262,6 +733,77 @@ export const PeopleOfTheSunCampaign = {
       name: 'Not Victorious against Nemesis',
       complete: false,
       event: 'Game Over'
+    }
+  ],
+  nemesis: [
+    {
+      name: 'Butcher',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+    {
+      name: "King's Man",
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    },
+
+    {
+      name: 'The Hand',
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    }
+  ],
+  principles: [
+    {
+      name: 'New Life',
+      option1Name: 'Protect the Young',
+      option1Selected: false,
+      option2Name: 'Survival of the Fittest',
+      option2Selected: true
+    },
+    {
+      name: 'Death',
+      option1Name: 'Graves',
+      option1Selected: false,
+      option2Name: 'Cannibalize',
+      option2Selected: false
+    },
+    {
+      name: 'Society',
+      option1Name: 'Collective Toil',
+      option1Selected: false,
+      option2Name: 'Accept Darkness',
+      option2Selected: false
+    },
+    {
+      name: 'Conviction',
+      option1Name: 'Romantic',
+      option1Selected: false,
+      option2Name: 'Barbaric',
+      option2Selected: false
+    }
+  ],
+  quarries: [
+    {
+      name: 'White Lion',
+      node: 'Node 1',
+      unlocked: false
+    },
+    {
+      name: 'Screaming Antelope',
+      node: 'Node 2',
+      unlocked: false
+    },
+    {
+      name: 'Phoenix',
+      node: 'Node 3',
+      unlocked: false
     }
   ],
   timeline: [
@@ -311,8 +853,14 @@ export const PeopleOfTheSunCampaign = {
 /**
  * Squires of the Citadel Campaign Data
  */
-export const SquiresOfTheCitadelCampaign = {
+export const SquiresOfTheCitadelCampaignData: CampaignData = {
+  ccRewards: [],
+  innovations: [],
+  locations: [],
   milestones: [],
+  nemesis: [],
+  principles: [],
+  quarries: [],
   timeline: [
     { completed: false, entries: ['The Feral Guardian'] },
     { completed: false, entries: ['Mountain Lion'] },

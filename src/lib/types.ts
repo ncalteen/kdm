@@ -26,6 +26,7 @@ export type Nemesis = {
   level1: boolean
   level2: boolean
   level3: boolean
+  unlocked: boolean
 }
 
 /**
@@ -64,6 +65,15 @@ export type Resource = {
   category: ResourceCategory
   types: ResourceType[]
   amount: number
+}
+
+/**
+ * Quarry
+ */
+export type Quarry = {
+  name: string
+  node: 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
+  unlocked: boolean
 }
 
 /**
@@ -115,7 +125,7 @@ export type Settlement = {
   lostSettlements: number
   name: string
   timeline: TimelineEvent[]
-  quarries: string[]
+  quarries: Quarry[]
   nemesis: Nemesis[]
   milestones: Milestone[]
   departingBonuses: string[]
@@ -295,4 +305,20 @@ export type Survivor = {
 export type Campaign = {
   settlements: Settlement[]
   survivors: Survivor[]
+}
+
+/**
+ * Campaign Data
+ *
+ * Data used to generate a new settlement based on the campaign type.
+ */
+export type CampaignData = {
+  ccRewards: CcReward[]
+  innovations: string[]
+  locations: Location[]
+  milestones: Milestone[]
+  nemesis: Nemesis[]
+  principles: Principle[]
+  quarries: Quarry[]
+  timeline: TimelineEvent[]
 }

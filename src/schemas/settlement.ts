@@ -21,7 +21,7 @@ export const TimelineEntrySchema = z.object({
  */
 export const QuarryEntrySchema = z.object({
   name: z.string(),
-  completed: z.boolean(),
+  unlocked: z.boolean(),
   node: z.enum(['Node 1', 'Node 2', 'Node 3', 'Node 4'])
 })
 
@@ -30,6 +30,7 @@ export const QuarryEntrySchema = z.object({
  */
 export const NemesisEntrySchema = z.object({
   name: z.string(),
+  unlocked: z.boolean(),
   level1: z.boolean(),
   level2: z.boolean(),
   level3: z.boolean()
