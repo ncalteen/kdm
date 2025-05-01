@@ -27,14 +27,6 @@ import { Badge } from '../badge'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import { Checkbox } from '../checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '../dialog'
 import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
@@ -44,19 +36,30 @@ type TimelineEntry = {
   entries: string[]
 }
 
-// Add Event Dialog component
-const AddEventDialog = memo(
+// Inline Add Event component
+const InlineAddEvent = memo(
   ({
     yearIndex,
     yearLabel,
-    addEventToYear
+    addEventToYear,
+    isAdding,
+    setIsAdding
   }: {
     yearIndex: number
     yearLabel: string
     addEventToYear: (yearIndex: number, event: string) => void
+    isAdding: boolean
+    setIsAdding: (isAdding: boolean) => void
   }) => {
     const [newEvent, setNewEvent] = useState('')
-    const [open, setOpen] = useState(false)
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    useEffect(() => {
+      // Focus the input when it becomes visible
+      if (isAdding && inputRef.current) {
+        inputRef.current.focus()
+      }
+    }, [isAdding])
 
     const handleAddEvent = () => {
       if (newEvent.trim() === '') {
@@ -66,62 +69,79 @@ const AddEventDialog = memo(
 
       addEventToYear(yearIndex, newEvent.trim())
       setNewEvent('')
-      setOpen(false)
+      setIsAdding(false)
+    }
+
+    const handleCancelAdd = () => {
+      setNewEvent('')
+      setIsAdding(false)
+    }
+
+    if (!isAdding) {
+      return (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mr-5"
+          onClick={() => setIsAdding(true)}>
+          <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
+        </Button>
+      )
     }
 
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button type="button" variant="outline" size="sm" className="mr-5">
-            <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add Event to {yearLabel}</DialogTitle>
-          </DialogHeader>
-          <div className="flex items-center">
-            <Input
-              placeholder={`${yearLabel} event...`}
-              value={newEvent}
-              onChange={(e) => setNewEvent(e.target.value)}
-              className="flex-1"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleAddEvent()
-                }
-              }}
-              autoFocus
-            />
-          </div>
-          <DialogFooter className="flex justify-end">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleAddEvent}
-              title="Add event">
-              <CheckIcon className="h-5 w-5 text-primary" />
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <div className="flex gap-2 w-full">
+        <Input
+          ref={inputRef}
+          placeholder={`${yearLabel} event...`}
+          value={newEvent}
+          onChange={(e) => setNewEvent(e.target.value)}
+          className="flex-1"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              handleAddEvent()
+            } else if (e.key === 'Escape') {
+              e.preventDefault()
+              handleCancelAdd()
+            }
+          }}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleAddEvent}
+          title="Add event">
+          <CheckIcon className="h-5 w-5 text-primary" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleCancelAdd}
+          title="Cancel">
+          <TrashIcon className="h-5 w-5 text-destructive" />
+        </Button>
+      </div>
     )
   }
 )
 
-AddEventDialog.displayName = 'AddEventDialog'
+InlineAddEvent.displayName = 'InlineAddEvent'
 
-// Edit Event Dialog component
-const EditEventDialog = memo(
+// Inline Edit Event component
+const InlineEditEvent = memo(
   ({
     yearIndex,
     yearLabel,
     entryIndex,
     entry,
     saveEvent,
-    removeEventFromYear
+    removeEventFromYear,
+    isEditing,
+    setIsEditing
   }: {
     yearIndex: number
     yearLabel: string
@@ -129,16 +149,23 @@ const EditEventDialog = memo(
     entry: string
     saveEvent: (yearIndex: number, entryIndex: number, event: string) => void
     removeEventFromYear: (yearIndex: number, eventIndex: number) => void
+    isEditing: boolean
+    setIsEditing: (isEditing: boolean) => void
   }) => {
     const [eventText, setEventText] = useState(entry)
-    const [open, setOpen] = useState(false)
+    const inputRef = useRef<HTMLInputElement>(null)
 
-    // Reset the input when the dialog opens
     useEffect(() => {
-      if (open) {
-        setEventText(entry)
+      // Focus the input when editing starts
+      if (isEditing && inputRef.current) {
+        inputRef.current.focus()
       }
-    }, [open, entry])
+    }, [isEditing])
+
+    useEffect(() => {
+      // Reset the input when the entry changes
+      setEventText(entry)
+    }, [entry])
 
     const handleSaveEvent = () => {
       if (eventText.trim() === '') {
@@ -147,70 +174,74 @@ const EditEventDialog = memo(
       }
 
       saveEvent(yearIndex, entryIndex, eventText.trim())
-      setOpen(false)
+      setIsEditing(false)
     }
 
     const handleRemoveEvent = () => {
       removeEventFromYear(yearIndex, entryIndex)
-      setOpen(false)
+      setIsEditing(false)
+    }
+
+    const handleCancelEdit = () => {
+      setEventText(entry)
+      setIsEditing(false)
+    }
+
+    if (!isEditing) {
+      return (
+        <Badge
+          className="cursor-pointer mt-1"
+          onClick={() => setIsEditing(true)}>
+          {entry.startsWith('Nemesis') ? (
+            <SwordsIcon className="h-4 w-4 mr-1" />
+          ) : (
+            <BookOpenIcon className="h-4 w-4 mr-1" />
+          )}
+          {entry}
+        </Badge>
+      )
     }
 
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Badge className="cursor-pointer mt-1">
-            {entry.startsWith('Nemesis') ? (
-              <SwordsIcon className="h-4 w-4 mr-1" />
-            ) : (
-              <BookOpenIcon className="h-4 w-4 mr-1" />
-            )}
-            {entry}
-          </Badge>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Event for {yearLabel}</DialogTitle>
-          </DialogHeader>
-          <div className="flex items-center">
-            <Input
-              placeholder={`${yearLabel} event...`}
-              value={eventText}
-              onChange={(e) => setEventText(e.target.value)}
-              className="flex-1"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleSaveEvent()
-                }
-              }}
-              autoFocus
-            />
-          </div>
-          <DialogFooter className="flex justify-between">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleRemoveEvent}
-              title="Delete event">
-              <TrashIcon className="h-5 w-5 text-destructive" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleSaveEvent}
-              title="Save event">
-              <CheckIcon className="h-5 w-5 text-primary" />
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <div className="flex gap-2 w-full mt-1">
+        <Input
+          ref={inputRef}
+          placeholder={`${yearLabel} event...`}
+          value={eventText}
+          onChange={(e) => setEventText(e.target.value)}
+          className="flex-1"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              handleSaveEvent()
+            } else if (e.key === 'Escape') {
+              e.preventDefault()
+              handleCancelEdit()
+            }
+          }}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleSaveEvent}
+          title="Save event">
+          <CheckIcon className="h-5 w-5 text-primary" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleRemoveEvent}
+          title="Delete event">
+          <TrashIcon className="h-5 w-5 text-destructive" />
+        </Button>
+      </div>
     )
   }
 )
 
-EditEventDialog.displayName = 'EditEventDialog'
+InlineEditEvent.displayName = 'InlineEditEvent'
 
 // Split TimelineContent into a separate component to allow for lazy loading
 const TimelineContent = memo(
@@ -258,6 +289,51 @@ const TimelineContent = memo(
       React.SetStateAction<{ visible: boolean; visibleCount: number }>
     >
   }) => {
+    // Track which rows are in the "adding" state
+    const [addingStates, setAddingStates] = useState<{
+      [key: string]: boolean
+    }>({})
+
+    // Track which rows are in the "editing" state
+    const [editingStates, setEditingStates] = useState<{
+      [key: string]: boolean
+    }>({})
+
+    // Helper function to check if a row is in adding state
+    const isRowAdding = useCallback(
+      (yearIndex: number) => {
+        return !!addingStates[yearIndex]
+      },
+      [addingStates]
+    )
+
+    // Helper function to set a row's adding state
+    const setRowAdding = useCallback((yearIndex: number, isAdding: boolean) => {
+      setAddingStates((prev) => ({
+        ...prev,
+        [yearIndex]: isAdding
+      }))
+    }, [])
+
+    // Helper function to check if an event is in editing state
+    const isEventEditing = useCallback(
+      (yearIndex: number, entryIndex: number) => {
+        return !!editingStates[`${yearIndex}-${entryIndex}`]
+      },
+      [editingStates]
+    )
+
+    // Helper function to set an event's editing state
+    const setEventEditing = useCallback(
+      (yearIndex: number, entryIndex: number, isEditing: boolean) => {
+        setEditingStates((prev) => ({
+          ...prev,
+          [`${yearIndex}-${entryIndex}`]: isEditing
+        }))
+      },
+      []
+    )
+
     // Virtualized row renderer for timeline years
     const Row = useCallback(
       ({ index }: { index: number }) => {
@@ -271,6 +347,9 @@ const TimelineContent = memo(
             : usesNormalNumbering
               ? `${yearIndex + 1}`
               : `${yearIndex}`
+
+        const isAdding = isRowAdding(yearIndex)
+        const setIsAdding = (adding: boolean) => setRowAdding(yearIndex, adding)
 
         return (
           <div
@@ -310,7 +389,7 @@ const TimelineContent = memo(
                     // Only show badges if the entry has content
                     if (entry && entry.trim() !== '') {
                       return (
-                        <EditEventDialog
+                        <InlineEditEvent
                           key={entryIndex}
                           yearIndex={yearIndex}
                           yearLabel={yearLabel}
@@ -318,6 +397,10 @@ const TimelineContent = memo(
                           entry={entry}
                           saveEvent={saveEvent}
                           removeEventFromYear={removeEventFromYear}
+                          isEditing={isEventEditing(yearIndex, entryIndex)}
+                          setIsEditing={(isEditing) =>
+                            setEventEditing(yearIndex, entryIndex, isEditing)
+                          }
                         />
                       )
                     }
@@ -333,13 +416,15 @@ const TimelineContent = memo(
             </div>
 
             <div className="flex justify-end">
-              <AddEventDialog
+              <InlineAddEvent
                 yearIndex={yearIndex}
                 yearLabel={yearLabel}
                 addEventToYear={(yearIndex, event) => {
                   // Add a small delay to prevent blocking the UI
                   setTimeout(() => addEventToYear(yearIndex, event), 0)
                 }}
+                isAdding={isAdding}
+                setIsAdding={setIsAdding}
               />
             </div>
           </div>
@@ -352,7 +437,11 @@ const TimelineContent = memo(
         saveEvent,
         removeEventFromYear,
         addEventToYear,
-        showScrollIcon
+        showScrollIcon,
+        isRowAdding,
+        setRowAdding,
+        isEventEditing,
+        setEventEditing
       ]
     )
 
