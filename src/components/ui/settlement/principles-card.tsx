@@ -18,8 +18,16 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { CheckIcon, GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import {
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon
+} from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import {
@@ -29,6 +37,7 @@ import {
   CardHeader,
   CardTitle
 } from '../card'
+import { Checkbox } from '../checkbox'
 import { Input } from '../input'
 
 interface PrincipleItemProps {
@@ -49,17 +58,54 @@ interface PrincipleItemProps {
 function PrincipleItem({
   index,
   principle,
+  isDisabled,
+  onEdit,
+  onSave,
   handleRemovePrinciple,
   handleSelectOption,
-  handleUpdatePrinciple,
   id
-}: PrincipleItemProps & { id: string }) {
+}: PrincipleItemProps & {
+  id: string
+  isDisabled: boolean
+  onEdit: (index: number) => void
+  onSave: (
+    index: number,
+    name: string,
+    option1Name: string,
+    option2Name: string
+  ) => void
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+  const [nameValue, setNameValue] = useState(principle.name)
+  const [option1Value, setOption1Value] = useState(principle.option1Name)
+  const [option2Value, setOption2Value] = useState(principle.option2Name)
+
+  useEffect(() => {
+    setNameValue(principle.name)
+    setOption1Value(principle.option1Name)
+    setOption2Value(principle.option2Name)
+  }, [principle.name, principle.option1Name, principle.option2Name])
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
+  }
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNameValue(e.target.value)
+  }
+  const handleOption1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOption1Value(e.target.value)
+  }
+  const handleOption2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOption2Value(e.target.value)
+  }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(index, nameValue, option1Value, option2Value)
+    }
   }
 
   return (
@@ -74,59 +120,84 @@ function PrincipleItem({
           className="cursor-grab active:cursor-grabbing p-1">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-
-        <Input
-          placeholder="Name"
-          className="flex-1"
-          value={principle.name}
-          onChange={(e) => handleUpdatePrinciple(index, 'name', e.target.value)}
-        />
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => handleRemovePrinciple(index)}>
-          <XIcon className="h-4 w-4" />
-        </Button>
+        {isDisabled ? (
+          <Input value={nameValue} disabled className="flex-1" />
+        ) : (
+          <Input
+            placeholder="Name"
+            className="flex-1"
+            value={nameValue}
+            onChange={handleNameChange}
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
+        )}
+        <div className="flex items-center gap-2 ml-auto">
+          {isDisabled ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => onEdit(index)}
+              title="Edit principle">
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                onSave(index, nameValue, option1Value, option2Value)
+              }
+              title="Save principle">
+              <CheckIcon className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 ml-2"
+            type="button"
+            onClick={() => handleRemovePrinciple(index)}>
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-
       <div className="flex items-center gap-2 pl-8">
-        <Button
-          type="button"
-          size="sm"
-          variant={principle.option1Selected ? 'default' : 'outline'}
-          className="h-8 min-w-8 p-1"
-          onClick={() => handleSelectOption(index, 1)}>
-          {principle.option1Selected && <CheckIcon className="h-4 w-4" />}
-        </Button>
-
-        <Input
-          placeholder="Option 1"
-          value={principle.option1Name}
-          className="flex-1"
-          onChange={(e) =>
-            handleUpdatePrinciple(index, 'option1Name', e.target.value)
-          }
+        <Checkbox
+          checked={principle.option1Selected}
+          onCheckedChange={() => handleSelectOption(index, 1)}
+          disabled={true}
         />
-
-        <Button
-          type="button"
-          size="sm"
-          variant={principle.option2Selected ? 'default' : 'outline'}
-          className="h-8 min-w-8 p-1 ml-2"
-          onClick={() => handleSelectOption(index, 2)}>
-          {principle.option2Selected && <CheckIcon className="h-4 w-4" />}
-        </Button>
-
-        <Input
-          placeholder="Option 2"
-          value={principle.option2Name}
-          className="flex-1 mr-10"
-          onChange={(e) =>
-            handleUpdatePrinciple(index, 'option2Name', e.target.value)
-          }
+        {isDisabled ? (
+          <Input value={option1Value} disabled className="flex-1" />
+        ) : (
+          <Input
+            placeholder="Option 1"
+            value={option1Value}
+            className="flex-1"
+            onChange={handleOption1Change}
+            onKeyDown={handleKeyDown}
+          />
+        )}
+        <strong>or</strong>
+        <Checkbox
+          checked={principle.option2Selected}
+          onCheckedChange={() => handleSelectOption(index, 2)}
+          disabled={true}
         />
+        {isDisabled ? (
+          <Input value={option2Value} disabled className="flex-1 mr-10" />
+        ) : (
+          <Input
+            placeholder="Option 2"
+            value={option2Value}
+            className="flex-1 mr-10"
+            onChange={handleOption2Change}
+            onKeyDown={handleKeyDown}
+          />
+        )}
       </div>
     </div>
   )
@@ -135,7 +206,19 @@ function PrincipleItem({
 export function PrinciplesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const principles = form.watch('principles') || []
+  const principles = useMemo(() => form.watch('principles') || [], [form])
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      principles.forEach((_, i) => {
+        next[i] = prev[i] ?? true
+      })
+      return next
+    })
+  }, [principles])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -145,8 +228,7 @@ export function PrinciplesCard(
   )
 
   const handleAddPrinciple = () => {
-    // Add a new empty principle directly to the list
-    const updatedPrinciples = [
+    form.setValue('principles', [
       ...principles,
       {
         name: '',
@@ -155,61 +237,75 @@ export function PrinciplesCard(
         option1Selected: false,
         option2Selected: false
       }
-    ]
-
-    form.setValue('principles', updatedPrinciples)
+    ])
+    setDisabledInputs((prev) => ({ ...prev, [principles.length]: false }))
   }
 
   const handleRemovePrinciple = (index: number) => {
-    const updatedPrinciples = [...principles]
-    updatedPrinciples.splice(index, 1)
-    form.setValue('principles', updatedPrinciples)
+    const updated = [...principles]
+    updated.splice(index, 1)
+    form.setValue('principles', updated)
+    setDisabledInputs((prev) => {
+      const next = { ...prev }
+      delete next[index]
+      const reindexed: { [key: number]: boolean } = {}
+      Object.keys(next).forEach((k) => {
+        const num = parseInt(k)
+        if (num > index) {
+          reindexed[num - 1] = next[num]
+        } else if (num < index) {
+          reindexed[num] = next[num]
+        }
+      })
+      return reindexed
+    })
+  }
+
+  const handleEdit = (index: number) => {
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+  }
+
+  const handleSave = (
+    index: number,
+    name: string,
+    option1Name: string,
+    option2Name: string
+  ) => {
+    if (!name || name.trim() === '') {
+      toast.warning('Cannot save a principle without a name')
+      return
+    }
+    const updated = [...principles]
+    updated[index] = { ...updated[index], name, option1Name, option2Name }
+    form.setValue('principles', updated)
+    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    toast.success('Principle saved')
   }
 
   const handleSelectOption = (index: number, option: 1 | 2) => {
+    if (disabledInputs[index]) return
     const updatedPrinciples = [...principles]
-
     if (option === 1) {
       updatedPrinciples[index].option1Selected =
         !updatedPrinciples[index].option1Selected
-
-      // If option 1 is selected, deselect option 2
       if (updatedPrinciples[index].option1Selected) {
         updatedPrinciples[index].option2Selected = false
       }
     } else {
       updatedPrinciples[index].option2Selected =
         !updatedPrinciples[index].option2Selected
-
-      // If option 2 is selected, deselect option 1
       if (updatedPrinciples[index].option2Selected) {
         updatedPrinciples[index].option1Selected = false
       }
-    }
-
-    form.setValue('principles', updatedPrinciples)
-  }
-
-  const handleUpdatePrinciple = (
-    index: number,
-    field: string,
-    value: string
-  ) => {
-    const updatedPrinciples = [...principles]
-    updatedPrinciples[index] = {
-      ...updatedPrinciples[index],
-      [field]: value
     }
     form.setValue('principles', updatedPrinciples)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-
       const newOrder = arrayMove(principles, oldIndex, newIndex)
       form.setValue('principles', newOrder)
     }
@@ -225,7 +321,6 @@ export function PrinciplesCard(
           The settlement&apos;s established principles.
         </CardDescription>
       </CardHeader>
-
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2 mb-4">
           {principles.length === 0 ? (
@@ -247,22 +342,25 @@ export function PrinciplesCard(
                     principle={principle}
                     index={index}
                     form={form}
+                    isDisabled={!!disabledInputs[index]}
+                    onEdit={handleEdit}
+                    onSave={handleSave}
                     handleRemovePrinciple={handleRemovePrinciple}
                     handleSelectOption={handleSelectOption}
-                    handleUpdatePrinciple={handleUpdatePrinciple}
+                    handleUpdatePrinciple={() => {}}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           )}
         </div>
-
         <div className="flex justify-center">
           <Button
             type="button"
             size="sm"
             variant="outline"
-            onClick={handleAddPrinciple}>
+            onClick={handleAddPrinciple}
+            disabled={Object.values(disabledInputs).some((v) => v === false)}>
             <PlusCircleIcon className="h-4 w-4 mr-1" />
             Add Principle
           </Button>

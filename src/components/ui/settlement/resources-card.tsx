@@ -25,7 +25,7 @@ import {
   ChevronsUpDown,
   GripVertical,
   PlusCircleIcon,
-  XIcon
+  TrashIcon
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -331,7 +331,7 @@ function ResourceItem({
             size="sm"
             className="h-9 w-9 p-0"
             onClick={() => handleRemoveResource(index)}>
-            <XIcon className="h-4 w-4" />
+            <TrashIcon className="h-4 w-4" />
           </Button>
         </div>
       </div>

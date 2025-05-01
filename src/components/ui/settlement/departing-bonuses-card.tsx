@@ -23,7 +23,7 @@ import {
   GripVertical,
   PencilIcon,
   PlusCircleIcon,
-  XIcon
+  TrashIcon
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -126,7 +126,7 @@ function BonusItem({
           size="icon"
           onClick={() => onRemove(index)}
           title="Remove bonus">
-          <XIcon className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>

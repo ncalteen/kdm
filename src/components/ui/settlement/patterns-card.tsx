@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import { GripVertical, PlusCircleIcon, TrashIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '../button'
@@ -80,7 +80,7 @@ function PatternItem({
         size="sm"
         className="h-8 w-8 p-0 ml-2"
         onClick={() => handleRemovePattern(index)}>
-        <XIcon className="h-4 w-4" />
+        <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
   )

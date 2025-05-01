@@ -24,7 +24,7 @@ import {
   GripVertical,
   PencilIcon,
   PlusCircleIcon,
-  XIcon
+  TrashIcon
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -169,7 +169,7 @@ function MilestoneItem({
           className="h-8 w-8 p-0 ml-2"
           type="button"
           onClick={() => onRemove(index)}>
-          <XIcon className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>

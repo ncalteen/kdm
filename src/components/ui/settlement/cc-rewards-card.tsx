@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import { GripVertical, PlusCircleIcon, TrashIcon } from 'lucide-react'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -95,7 +95,7 @@ function RewardItem({
         size="sm"
         className="h-8 w-8 p-0"
         onClick={() => handleRemoveReward(reward.name)}>
-        <XIcon className="h-4 w-4" />
+        <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
   )
