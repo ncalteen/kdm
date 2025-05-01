@@ -221,7 +221,9 @@ const TimelineContent = memo(
     removeEventFromYear,
     addEventToYear,
     form,
-    showScrollIcon
+    showScrollIcon,
+    isVisible,
+    setIsVisible
   }: {
     timeline: TimelineEntry[]
     usesNormalNumbering: boolean
@@ -251,6 +253,10 @@ const TimelineContent = memo(
     ) => void
     editEvent: (yearIndex: number, entryIndex: number) => void
     showScrollIcon: boolean
+    isVisible: { visible: boolean; visibleCount: number }
+    setIsVisible: React.Dispatch<
+      React.SetStateAction<{ visible: boolean; visibleCount: number }>
+    >
   }) => {
     // Virtualized row renderer for timeline years
     const Row = useCallback(
@@ -362,9 +368,37 @@ const TimelineContent = memo(
 
         {timeline.length > 0 && (
           <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin">
-            {timeline.map((_, index) => (
+            {/* Use windowing approach to only render visible items */}
+            {timeline.slice(0, isVisible.visibleCount).map((_, index) => (
               <Row key={index} index={index} />
             ))}
+            {timeline.length > isVisible.visibleCount && (
+              <div
+                ref={(el) => {
+                  if (!el) return
+                  // Use Intersection Observer to load more items when scrolling
+                  const observer = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting) {
+                      // Load more items when the user scrolls near the bottom
+                      observer.disconnect()
+                      setIsVisible((prev) => ({
+                        ...prev,
+                        visibleCount: Math.min(
+                          timeline.length,
+                          prev.visibleCount + 20
+                        )
+                      }))
+                    }
+                  })
+                  observer.observe(el)
+                }}
+                className="h-8 w-full">
+                {/* Loading indicator */}
+                <div className="py-2 text-center text-xs text-muted-foreground">
+                  Scroll to load more...
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -627,7 +661,10 @@ export function TimelineCard(
   )
 
   // Add a visibility state for progressive loading when switching tabs
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState<{
+    visible: boolean
+    visibleCount: number
+  }>({ visible: false, visibleCount: 20 })
 
   // Use IntersectionObserver to detect when the component becomes visible (tab switched)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -640,7 +677,7 @@ export function TimelineCard(
         if (entries[0].isIntersecting) {
           // Small delay to ensure UI remains responsive during tab switch
           setTimeout(() => {
-            setIsVisible(true)
+            setIsVisible({ visible: true, visibleCount: 20 })
           }, 50)
         }
       },
@@ -670,7 +707,7 @@ export function TimelineCard(
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">
-        {isVisible ? (
+        {isVisible.visible ? (
           <>
             <TimelineContent
               timeline={cachedTimeline}
@@ -686,6 +723,8 @@ export function TimelineCard(
               debouncedSetFormValue={debouncedSetFormValue}
               editEvent={editEvent}
               showScrollIcon={showScrollIcon}
+              isVisible={isVisible}
+              setIsVisible={setIsVisible}
             />
             <Button
               type="button"
