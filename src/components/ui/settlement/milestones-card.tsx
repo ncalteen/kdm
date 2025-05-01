@@ -18,8 +18,17 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { BookOpen, GripVertical, PlusCircleIcon, XIcon } from 'lucide-react'
+import {
+  BookOpen,
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  XIcon
+} from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import {
@@ -41,21 +50,50 @@ interface MilestoneItemProps {
   }
   index: number
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  handleRemoveMilestone: (index: number) => void
 }
 
 function MilestoneItem({
+  milestone,
   index,
   form,
-  handleRemoveMilestone,
+  isDisabled,
+  onSave,
+  onEdit,
+  onRemove,
   id
-}: MilestoneItemProps & { id: string }) {
+}: MilestoneItemProps & {
+  isDisabled: boolean
+  onSave: (index: number, name: string, event: string) => void
+  onEdit: (index: number) => void
+  onRemove: (index: number) => void
+  id: string
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+  const [nameValue, setNameValue] = useState(milestone.name)
+  const [eventValue, setEventValue] = useState(milestone.event)
+
+  useEffect(() => {
+    setNameValue(milestone.name)
+    setEventValue(milestone.event)
+  }, [milestone.name, milestone.event])
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
+  }
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNameValue(e.target.value)
+  }
+  const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEventValue(e.target.value)
+  }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(index, nameValue, eventValue)
+    }
   }
 
   return (
@@ -66,7 +104,6 @@ function MilestoneItem({
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-
       <FormField
         control={form.control}
         name={`milestones.${index}.complete`}
@@ -84,54 +121,57 @@ function MilestoneItem({
           </FormItem>
         )}
       />
-
-      <FormField
-        control={form.control}
-        name={`milestones.${index}.name`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Milestone"
-                {...field}
-                value={field.value || ''}
-                onChange={(e) => {
-                  form.setValue(`milestones.${index}.name`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-
+      {isDisabled ? (
+        <Input value={nameValue} disabled className="flex-1" />
+      ) : (
+        <Input
+          value={nameValue}
+          onChange={handleNameChange}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+          autoFocus
+        />
+      )}
       <BookOpen />
-
-      <FormField
-        control={form.control}
-        name={`milestones.${index}.event`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Event"
-                {...field}
-                value={field.value || ''}
-                onChange={(e) => {
-                  form.setValue(`milestones.${index}.event`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
+      {isDisabled ? (
+        <Input value={eventValue} disabled className="flex-1" />
+      ) : (
+        <Input
+          value={eventValue}
+          onChange={handleEventChange}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+        />
+      )}
+      <div className="flex items-center gap-2 ml-auto">
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(index)}
+            title="Edit milestone">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onSave(index, nameValue, eventValue)}
+            title="Save milestone">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
         )}
-      />
-
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0 ml-2"
-        onClick={() => handleRemoveMilestone(index)}>
-        <XIcon className="h-4 w-4" />
-      </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 ml-2"
+          type="button"
+          onClick={() => onRemove(index)}>
+          <XIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }
@@ -139,7 +179,19 @@ function MilestoneItem({
 export function MilestonesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const milestones = form.watch('milestones') || []
+  const milestones = useMemo(() => form.watch('milestones') || [], [form])
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      milestones.forEach((_, i) => {
+        next[i] = prev[i] ?? true
+      })
+      return next
+    })
+  }, [milestones])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -148,29 +200,70 @@ export function MilestonesCard(
     })
   )
 
-  const addMilestone = () => {
-    const currentMilestones = [...milestones]
-    currentMilestones.push({ name: '', complete: false, event: '' })
-    form.setValue('milestones', currentMilestones)
-  }
+  const addMilestone = useCallback(() => {
+    form.setValue('milestones', [
+      ...milestones,
+      { name: '', complete: false, event: '' }
+    ])
+    setDisabledInputs((prev) => ({ ...prev, [milestones.length]: false }))
+  }, [milestones, form])
 
-  const handleRemoveMilestone = (index: number) => {
-    const currentMilestones = [...milestones]
-    currentMilestones.splice(index, 1)
-    form.setValue('milestones', currentMilestones)
-  }
+  const handleRemoveMilestone = useCallback(
+    (index: number) => {
+      const updated = [...milestones]
+      updated.splice(index, 1)
+      form.setValue('milestones', updated)
+      setDisabledInputs((prev) => {
+        const next = { ...prev }
+        delete next[index]
+        const reindexed: { [key: number]: boolean } = {}
+        Object.keys(next).forEach((k) => {
+          const num = parseInt(k)
+          if (num > index) {
+            reindexed[num - 1] = next[num]
+          } else if (num < index) {
+            reindexed[num] = next[num]
+          }
+        })
+        return reindexed
+      })
+    },
+    [milestones, form]
+  )
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
+  const handleEdit = useCallback((index: number) => {
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+  }, [])
 
-    if (over && active.id !== over.id) {
-      const oldIndex = parseInt(active.id.toString())
-      const newIndex = parseInt(over.id.toString())
+  const handleSave = useCallback(
+    (index: number, name: string, event: string) => {
+      if (!name || name.trim() === '') {
+        toast.warning('Cannot save a milestone without a name')
+        return
+      }
+      const updated = [...milestones]
+      updated[index] = { ...updated[index], name, event }
+      form.setValue('milestones', updated)
+      setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+      toast.success('Milestone saved')
+    },
+    [milestones, form]
+  )
 
-      const newOrder = arrayMove(milestones, oldIndex, newIndex)
-      form.setValue('milestones', newOrder)
-    }
-  }
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (over && active.id !== over.id) {
+        requestAnimationFrame(() => {
+          const oldIndex = parseInt(active.id.toString())
+          const newIndex = parseInt(over.id.toString())
+          const newOrder = arrayMove(milestones, oldIndex, newIndex)
+          form.setValue('milestones', newOrder)
+        })
+      }
+    },
+    [milestones, form]
+  )
 
   return (
     <Card className="mt-2">
@@ -198,18 +291,21 @@ export function MilestonesCard(
                   milestone={milestone}
                   index={index}
                   form={form}
-                  handleRemoveMilestone={handleRemoveMilestone}
+                  isDisabled={!!disabledInputs[index]}
+                  onSave={handleSave}
+                  onEdit={handleEdit}
+                  onRemove={handleRemoveMilestone}
                 />
               ))}
             </SortableContext>
           </DndContext>
-
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={addMilestone}>
+              onClick={addMilestone}
+              disabled={Object.values(disabledInputs).some((v) => v === false)}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Milestone
             </Button>
