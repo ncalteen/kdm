@@ -28,7 +28,15 @@ import {
   SwordIcon,
   TrashIcon
 } from 'lucide-react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  memo,
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -336,7 +344,7 @@ const QuarryContent = memo(
           return false
         }
 
-        requestAnimationFrame(() => {
+        startTransition(() => {
           const newQuarry = {
             name,
             unlocked,
@@ -447,13 +455,16 @@ export function QuarryCard(
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
-  }>(() => {
-    const initialDisabled: { [key: string]: boolean } = {}
-    quarries.forEach((quarry) => {
-      initialDisabled[quarry.name] = true
+  }>({})
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: string]: boolean } = {}
+      quarries.forEach((quarry) => {
+        next[quarry.name] = prev[quarry.name] ?? true
+      })
+      return next
     })
-    return initialDisabled
-  })
+  }, [quarries])
 
   const [isAddingNew, setIsAddingNew] = useState(false)
 
@@ -464,40 +475,35 @@ export function QuarryCard(
     })
   )
 
-  const addQuarry = useCallback(() => {
-    setIsAddingNew(true)
-  }, [])
+  const addQuarry = useCallback(() => setIsAddingNew(true), [])
 
   const handleRemoveQuarry = useCallback(
     (quarryName: string) => {
       if (quarryName.startsWith('new-quarry-')) {
         setIsAddingNew(false)
       } else {
-        requestAnimationFrame(() => {
+        startTransition(() => {
           const updatedQuarries = quarries.filter((q) => q.name !== quarryName)
           form.setValue('quarries', updatedQuarries)
-
-          const updatedDisabledInputs = { ...disabledInputs }
-          delete updatedDisabledInputs[quarryName]
-          setDisabledInputs(updatedDisabledInputs)
+          setDisabledInputs((prev) => {
+            const updated = { ...prev }
+            delete updated[quarryName]
+            return updated
+          })
         })
       }
     },
-    [quarries, disabledInputs, form]
+    [quarries, form]
   )
 
   const updateQuarryNode = useCallback(
     (quarryName: string, node: string) => {
-      requestAnimationFrame(() => {
-        const updatedQuarries = quarries.map((q) => {
-          if (q.name === quarryName) {
-            return {
-              ...q,
-              node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
-            }
-          }
-          return q
-        })
+      startTransition(() => {
+        const updatedQuarries = quarries.map((q) =>
+          q.name === quarryName
+            ? { ...q, node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4' }
+            : q
+        )
         form.setValue('quarries', updatedQuarries)
       })
     },
@@ -506,22 +512,20 @@ export function QuarryCard(
 
   const updateQuarryName = useCallback(
     (originalName: string, newName: string) => {
-      requestAnimationFrame(() => {
-        const updatedQuarries = quarries.map((q) => {
-          if (q.name === originalName) {
-            return { ...q, name: newName }
-          }
-          return q
-        })
+      startTransition(() => {
+        const updatedQuarries = quarries.map((q) =>
+          q.name === originalName ? { ...q, name: newName } : q
+        )
         form.setValue('quarries', updatedQuarries)
-
-        const updatedDisabledInputs = { ...disabledInputs }
-        delete updatedDisabledInputs[originalName]
-        updatedDisabledInputs[newName] = true
-        setDisabledInputs(updatedDisabledInputs)
+        setDisabledInputs((prev) => {
+          const updated = { ...prev }
+          delete updated[originalName]
+          updated[newName] = true
+          return updated
+        })
       })
     },
-    [quarries, disabledInputs, form]
+    [quarries, form]
   )
 
   const saveQuarry = useCallback((quarryName: string) => {
@@ -529,21 +533,12 @@ export function QuarryCard(
       toast.warning('Cannot save a quarry without a name')
       return
     }
-
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [quarryName]: true
-    }))
-
+    setDisabledInputs((prev) => ({ ...prev, [quarryName]: true }))
     toast.success('Quarry saved')
   }, [])
 
   const editQuarry = useCallback((quarryName: string) => {
-    setDisabledInputs((prev) => {
-      const updatedDisabledInputs = { ...prev }
-      updatedDisabledInputs[quarryName] = false
-      return updatedDisabledInputs
-    })
+    setDisabledInputs((prev) => ({ ...prev, [quarryName]: false }))
   }, [])
 
   const handleDragEnd = useCallback(
@@ -564,22 +559,38 @@ export function QuarryCard(
   )
 
   const cachedQuarries = useMemo(() => quarries, [quarries])
-  const contentProps = {
-    quarries: cachedQuarries,
-    disabledInputs,
-    isAddingNew,
-    sensors,
-    updateQuarryNode,
-    handleRemoveQuarry,
-    saveQuarry,
-    editQuarry,
-    updateQuarryName,
-    addQuarry,
-    handleDragEnd,
-    form,
-    setDisabledInputs,
-    setIsAddingNew
-  }
+  const contentProps = useMemo(
+    () => ({
+      quarries: cachedQuarries,
+      disabledInputs,
+      isAddingNew,
+      sensors,
+      updateQuarryNode,
+      handleRemoveQuarry,
+      saveQuarry,
+      editQuarry,
+      updateQuarryName,
+      addQuarry,
+      handleDragEnd,
+      form,
+      setDisabledInputs,
+      setIsAddingNew
+    }),
+    [
+      cachedQuarries,
+      disabledInputs,
+      isAddingNew,
+      sensors,
+      updateQuarryNode,
+      handleRemoveQuarry,
+      saveQuarry,
+      editQuarry,
+      updateQuarryName,
+      addQuarry,
+      handleDragEnd,
+      form
+    ]
+  )
 
   return (
     <Card className="mt-2" ref={cardRef}>
