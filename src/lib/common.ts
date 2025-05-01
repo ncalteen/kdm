@@ -212,7 +212,7 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
     { completed: false, entries: ['Endless Screams'] },
     { completed: false, entries: [] },
     { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 1'] },
-    { completed: false, entries: ['Hands of heat'] },
+    { completed: false, entries: ['Hands of Heat'] },
     { completed: false, entries: ['Armored Strangers'] },
     { completed: false, entries: ['Phoenix Feather'] },
     { completed: false, entries: [] },

@@ -76,8 +76,7 @@ const MemoizedQuarryItem = memo(
     isDisabled,
     onSave,
     onEdit,
-    updateQuarryName,
-    form
+    updateQuarryName
   }: QuarryItemProps & { id: string }) => {
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({ id })
@@ -130,29 +129,7 @@ const MemoizedQuarryItem = memo(
                   <Checkbox
                     checked={quarry.unlocked}
                     className="mt-2"
-                    disabled={false}
-                    onCheckedChange={(checked) => {
-                      if (checked !== 'indeterminate') {
-                        // Update the unlocked status without causing duplicates
-                        requestAnimationFrame(() => {
-                          // Use form helper to prevent state inconsistencies
-                          const currentQuarries = form.getValues('quarries')
-                          const updatedQuarries = currentQuarries.map((q) => {
-                            if (q.name === quarry.name) {
-                              return {
-                                ...q,
-                                unlocked: !!checked
-                              }
-                            }
-                            return q
-                          })
-                          form.setValue('quarries', updatedQuarries, {
-                            shouldDirty: true,
-                            shouldTouch: true
-                          })
-                        })
-                      }
-                    }}
+                    disabled={true}
                   />
                 </FormControl>
                 <FormLabel className="text-sm font-medium">

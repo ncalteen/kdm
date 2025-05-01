@@ -128,12 +128,7 @@ const MemoizedNemesisItem = memo(
                   <Checkbox
                     checked={nemesis.unlocked}
                     className="mt-2"
-                    disabled={false}
-                    onCheckedChange={(checked) => {
-                      if (checked !== 'indeterminate') {
-                        toggleUnlocked(nemesis.name, !!checked)
-                      }
-                    }}
+                    disabled={true}
                   />
                 </FormControl>
                 <FormLabel className="text-sm font-medium mr-2">
