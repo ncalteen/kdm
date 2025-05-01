@@ -14,6 +14,7 @@ import {
 import {
   KeyboardEvent,
   memo,
+  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -256,8 +257,8 @@ const TimelineContent = memo(
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  // Add a small delay to prevent blocking the UI
-                  setTimeout(() => addEventToYear(yearIndex), 0)
+                  // Use startTransition for non-urgent state update
+                  startTransition(() => addEventToYear(yearIndex))
                 }}>
                 <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
               </Button>
@@ -424,54 +425,35 @@ export function TimelineCard(
     debouncedSetTimeline([...timeline, { completed: false, entries: [] }])
   }
 
-  // Optimize the addEventToYear function with useCallback to prevent recreation on each render
   const addEventToYear = useCallback(
     (yearIndex: number) => {
-      // First check if any event is currently being edited in this year
       const yearEntries = timeline[yearIndex]?.entries || []
       const hasActiveEditingEvent = yearEntries.some((_, entryIndex) =>
         isEventBeingEdited(yearIndex, entryIndex)
       )
-
-      // If there is already an event being edited, show a toast and don't add a new one
       if (hasActiveEditingEvent) return
 
-      // Use requestAnimationFrame to defer the state updates to the next frame
-      requestAnimationFrame(() => {
-        const updatedTimeline = [...timeline]
-        const newEntryIndex = updatedTimeline[yearIndex].entries
-          ? updatedTimeline[yearIndex].entries.length
-          : 0
-
-        updatedTimeline[yearIndex].entries = [
-          ...(updatedTimeline[yearIndex].entries || []),
-          ''
-        ]
-
-        // Update the timeline state
-        debouncedSetTimeline(updatedTimeline)
-
-        // Update the form state after the timeline state is updated
-        debouncedSetFormValue(
-          `timeline.${yearIndex}.entries`,
-          updatedTimeline[yearIndex].entries
-        )
-
-        // Set this new event as being edited
-        const inputKey = `${yearIndex}-${newEntryIndex}`
-        setEditingEvents((prev) => ({
-          ...prev,
-          [inputKey]: true
-        }))
+      // Only update the affected year, not the whole timeline
+      setTimeline((prevTimeline) => {
+        const updatedTimeline = prevTimeline.slice()
+        const year = { ...updatedTimeline[yearIndex] }
+        year.entries = [...(year.entries || [])]
+        year.entries.push('')
+        updatedTimeline[yearIndex] = year
+        return updatedTimeline
       })
+
+      // Update the form state for just the affected year
+      form.setValue(`timeline.${yearIndex}.entries`, [...yearEntries, ''])
+
+      // Set this new event as being edited
+      const inputKey = `${yearIndex}-${yearEntries.length}`
+      setEditingEvents((prev) => ({
+        ...prev,
+        [inputKey]: true
+      }))
     },
-    [
-      timeline,
-      debouncedSetTimeline,
-      debouncedSetFormValue,
-      setEditingEvents,
-      isEventBeingEdited
-    ]
+    [timeline, form, setEditingEvents, isEventBeingEdited]
   )
 
   const removeEventFromYear = useCallback(
@@ -504,72 +486,49 @@ export function TimelineCard(
     (yearIndex: number, entryIndex: number) => {
       const inputKey = `${yearIndex}-${entryIndex}`
       const inputElement = inputRefs.current[inputKey]
-
-      if (!inputElement) {
-        return
-      }
-
+      if (!inputElement) return
       const currentEvent = inputElement.value
-
       if (!currentEvent || currentEvent.trim() === '') {
         toast.warning('Cannot save an empty event')
         return
       }
-
-      // Break the heavy operations into smaller chunks using multiple requestAnimationFrame calls
-      // First, get the value from the input
       const newEventValue = currentEvent.trim()
 
-      // Step 1: Update the UI to show we're processing (mark as non-editing immediately)
-      setEditingEvents((prev) => {
-        const newEditingEvents = { ...prev }
-        delete newEditingEvents[inputKey]
-        return newEditingEvents
-      })
-
-      // Step 2: Update the form value (this is likely the heaviest operation)
-      requestAnimationFrame(() => {
-        // Create a shallow copy of the timeline to avoid direct state mutation
-        const updatedTimeline = [...timeline]
-        if (!updatedTimeline[yearIndex].entries) {
-          updatedTimeline[yearIndex].entries = []
-        }
-
-        // Update the specific entry in our local timeline
-        updatedTimeline[yearIndex].entries[entryIndex] = newEventValue
-
-        // Step 3: Update the local timeline state in the next frame
-        requestAnimationFrame(() => {
-          // Update the local state
-          debouncedSetTimeline(updatedTimeline)
-
-          // Step 4: Update the form state in yet another frame
-          requestAnimationFrame(() => {
-            debouncedSetFormValue(
-              `timeline.${yearIndex}.entries.${entryIndex}`,
-              newEventValue
-            )
-
-            // Final step: Show success toast
-            requestAnimationFrame(() => {
-              toast.success('Event saved to timeline')
-            })
-          })
+      // Batch all updates in a transition to keep UI responsive
+      startTransition(() => {
+        setEditingEvents((prev) => {
+          const newEditingEvents = { ...prev }
+          delete newEditingEvents[inputKey]
+          return newEditingEvents
         })
+        setTimeline((prevTimeline) => {
+          const updatedTimeline = prevTimeline.slice()
+          const year = { ...updatedTimeline[yearIndex] }
+          year.entries = [...(year.entries || [])]
+          year.entries[entryIndex] = newEventValue
+          updatedTimeline[yearIndex] = year
+          return updatedTimeline
+        })
+        form.setValue(
+          `timeline.${yearIndex}.entries.${entryIndex}`,
+          newEventValue
+        )
+        toast.success('Event saved to timeline')
       })
     },
-    [timeline, debouncedSetTimeline, debouncedSetFormValue, inputRefs]
+    [form, setEditingEvents, inputRefs]
   )
 
   const editEvent = useCallback(
     (yearIndex: number, entryIndex: number) => {
       const inputKey = `${yearIndex}-${entryIndex}`
-
-      // Mark this event as being edited
-      setEditingEvents((prev) => ({
-        ...prev,
-        [inputKey]: true
-      }))
+      // Batch the state update to avoid blocking the main thread
+      startTransition(() => {
+        setEditingEvents((prev) => ({
+          ...prev,
+          [inputKey]: true
+        }))
+      })
     },
     [setEditingEvents]
   )
@@ -666,8 +625,8 @@ export function TimelineCard(
             <Button
               type="button"
               onClick={() => {
-                // Add a small delay to prevent blocking the UI
-                setTimeout(addTimelineEvent, 0)
+                // Use startTransition for non-urgent state update
+                startTransition(addTimelineEvent)
               }}>
               Add Lantern Year
             </Button>
