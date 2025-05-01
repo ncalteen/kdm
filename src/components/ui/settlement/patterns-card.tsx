@@ -18,12 +18,19 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, TrashIcon } from 'lucide-react'
+import {
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon
+} from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
-import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
 interface PatternItemProps {
@@ -37,16 +44,28 @@ function PatternItem({
   index,
   form,
   handleRemovePattern,
-  id
-}: PatternItemProps) {
+  id,
+  isDisabled,
+  onSave,
+  onEdit
+}: PatternItemProps & {
+  isDisabled: boolean
+  onSave: (index: number, value: string) => void
+  onEdit: (index: number) => void
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
+  const [value, setValue] = useState(form.getValues(`patterns.${index}`) || '')
+  useEffect(() => {
+    setValue(form.getValues(`patterns.${index}`) || '')
+  }, [form, isDisabled, index])
+  const style = { transform: CSS.Transform.toString(transform), transition }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(index, value)
+    }
   }
-
   return (
     <div ref={setNodeRef} style={style} className="flex items-center gap-2">
       <div
@@ -55,29 +74,37 @@ function PatternItem({
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-
-      <FormField
-        control={form.control}
-        name={`patterns.${index}`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Pattern"
-                {...field}
-                value={field.value || ''}
-                onChange={(e) => {
-                  form.setValue(`patterns.${index}`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
+      <Input
+        placeholder="Pattern"
+        value={value}
+        disabled={isDisabled}
+        onChange={(e) => !isDisabled && setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
       />
-
+      {isDisabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(index)}
+          title="Edit pattern">
+          <PencilIcon className="h-4 w-4" />
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(index, value)}
+          title="Save pattern">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+      )}
       <Button
         variant="ghost"
         size="sm"
+        type="button"
         className="h-8 w-8 p-0 ml-2"
         onClick={() => handleRemovePattern(index)}>
         <TrashIcon className="h-4 w-4" />
@@ -89,39 +116,80 @@ function PatternItem({
 export function PatternsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const patterns = form.watch('patterns') || []
-
+  const patterns = useMemo(() => form.watch('patterns') || [], [form])
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      patterns.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
+      })
+      return next
+    })
+  }, [patterns])
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
   const addPattern = () => {
     const currentPatterns = [...patterns]
     currentPatterns.push('')
     form.setValue('patterns', currentPatterns)
+    setDisabledInputs((prev) => ({
+      ...prev,
+      [currentPatterns.length - 1]: false
+    }))
   }
-
   const handleRemovePattern = (index: number) => {
     const currentPatterns = [...patterns]
     currentPatterns.splice(index, 1)
     form.setValue('patterns', currentPatterns)
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+      return next
+    })
   }
-
+  const savePattern = (index: number, value: string) => {
+    if (!value || value.trim() === '') {
+      toast.warning('Cannot save a pattern without a name')
+      return
+    }
+    form.setValue(`patterns.${index}`, value)
+    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    toast.success('Pattern saved')
+  }
+  const editPattern = (index: number) => {
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+  }
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-
       const newOrder = arrayMove(patterns, oldIndex, newIndex)
       form.setValue('patterns', newOrder)
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+        return next
+      })
     }
   }
-
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
@@ -131,31 +199,40 @@ export function PatternsCard(
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={patterns.map((_, index) => index.toString())}
-              strategy={verticalListSortingStrategy}>
-              {patterns.map((Pattern, index) => (
-                <PatternItem
-                  key={index}
-                  id={index.toString()}
-                  index={index}
-                  form={form}
-                  handleRemovePattern={handleRemovePattern}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-
+          {patterns.length === 0 ? (
+            <div className="text-center text-muted-foreground py-4">
+              No patterns added yet.
+            </div>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={patterns.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {patterns.map((pattern, index) => (
+                  <PatternItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    handleRemovePattern={handleRemovePattern}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={savePattern}
+                    onEdit={editPattern}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={addPattern}>
+              onClick={addPattern}
+              disabled={Object.values(disabledInputs).some((v) => v === false)}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Pattern
             </Button>

@@ -18,8 +18,16 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, TrashIcon } from 'lucide-react'
+import {
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon
+} from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import {
@@ -29,7 +37,6 @@ import {
   CardHeader,
   CardTitle
 } from '../card'
-import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
 interface SeedPatternItemProps {
@@ -43,16 +50,30 @@ function SeedPatternItem({
   index,
   form,
   handleRemoveSeedPattern,
-  id
-}: SeedPatternItemProps) {
+  id,
+  isDisabled,
+  onSave,
+  onEdit
+}: SeedPatternItemProps & {
+  isDisabled: boolean
+  onSave: (index: number, value: string) => void
+  onEdit: (index: number) => void
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
+  const [value, setValue] = useState(
+    form.getValues(`seedPatterns.${index}`) || ''
+  )
+  useEffect(() => {
+    setValue(form.getValues(`seedPatterns.${index}`) || '')
+  }, [form, isDisabled, index])
+  const style = { transform: CSS.Transform.toString(transform), transition }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(index, value)
+    }
   }
-
   return (
     <div ref={setNodeRef} style={style} className="flex items-center gap-2">
       <div
@@ -61,29 +82,37 @@ function SeedPatternItem({
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-
-      <FormField
-        control={form.control}
-        name={`seedPatterns.${index}`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Seed Pattern"
-                {...field}
-                value={field.value || ''}
-                onChange={(e) => {
-                  form.setValue(`seedPatterns.${index}`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
+      <Input
+        placeholder="Seed Pattern"
+        value={value}
+        disabled={isDisabled}
+        onChange={(e) => !isDisabled && setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
       />
-
+      {isDisabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(index)}
+          title="Edit seed pattern">
+          <PencilIcon className="h-4 w-4" />
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(index, value)}
+          title="Save seed pattern">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+      )}
       <Button
         variant="ghost"
         size="sm"
+        type="button"
         className="h-8 w-8 p-0 ml-2"
         onClick={() => handleRemoveSeedPattern(index)}>
         <TrashIcon className="h-4 w-4" />
@@ -95,39 +124,80 @@ function SeedPatternItem({
 export function SeedPatternsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const seedPatterns = form.watch('seedPatterns') || []
-
+  const seedPatterns = useMemo(() => form.watch('seedPatterns') || [], [form])
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      seedPatterns.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
+      })
+      return next
+    })
+  }, [seedPatterns])
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
   const addSeedPattern = () => {
     const currentSeedPatterns = [...seedPatterns]
     currentSeedPatterns.push('')
     form.setValue('seedPatterns', currentSeedPatterns)
+    setDisabledInputs((prev) => ({
+      ...prev,
+      [currentSeedPatterns.length - 1]: false
+    }))
   }
-
   const handleRemoveSeedPattern = (index: number) => {
     const currentSeedPatterns = [...seedPatterns]
     currentSeedPatterns.splice(index, 1)
     form.setValue('seedPatterns', currentSeedPatterns)
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+      return next
+    })
   }
-
+  const saveSeedPattern = (index: number, value: string) => {
+    if (!value || value.trim() === '') {
+      toast.warning('Cannot save a seed pattern without a name')
+      return
+    }
+    form.setValue(`seedPatterns.${index}`, value)
+    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    toast.success('Seed pattern saved')
+  }
+  const editSeedPattern = (index: number) => {
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+  }
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-
       const newOrder = arrayMove(seedPatterns, oldIndex, newIndex)
       form.setValue('seedPatterns', newOrder)
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+        return next
+      })
     }
   }
-
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
@@ -140,31 +210,40 @@ export function SeedPatternsCard(
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={seedPatterns.map((_, index) => index.toString())}
-              strategy={verticalListSortingStrategy}>
-              {seedPatterns.map((seedPattern, index) => (
-                <SeedPatternItem
-                  key={index}
-                  id={index.toString()}
-                  index={index}
-                  form={form}
-                  handleRemoveSeedPattern={handleRemoveSeedPattern}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-
+          {seedPatterns.length === 0 ? (
+            <div className="text-center text-muted-foreground py-4">
+              No seed patterns added yet.
+            </div>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={seedPatterns.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {seedPatterns.map((seedPattern, index) => (
+                  <SeedPatternItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    handleRemoveSeedPattern={handleRemoveSeedPattern}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={saveSeedPattern}
+                    onEdit={editSeedPattern}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={addSeedPattern}>
+              onClick={addSeedPattern}
+              disabled={Object.values(disabledInputs).some((v) => v === false)}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Seed Pattern
             </Button>

@@ -22,13 +22,16 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import {
   Check,
+  CheckIcon,
   ChevronsUpDown,
   GripVertical,
+  PencilIcon,
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
@@ -40,7 +43,6 @@ import {
   CommandItem,
   CommandList
 } from '../command'
-import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 
@@ -193,6 +195,15 @@ interface ResourceItemProps {
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
   handleRemoveResource: (index: number) => void
   id: string
+  isDisabled: boolean
+  onSave: (
+    index: number,
+    name: string,
+    category: ResourceCategory,
+    types: ResourceType[],
+    amount: number
+  ) => void
+  onEdit: (index: number) => void
 }
 
 // Component for a single resource item in the drag and drop list
@@ -200,7 +211,10 @@ function ResourceItem({
   index,
   form,
   handleRemoveResource,
-  id
+  id,
+  isDisabled,
+  onSave,
+  onEdit
 }: ResourceItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -210,131 +224,115 @@ function ResourceItem({
     transition
   }
 
+  // Local state for editing
   const resource = form.watch(`resources.${index}`)
-
-  // Initialize state only once with the current resource values
-  const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>([])
+  const [nameValue, setNameValue] = useState(resource?.name || '')
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
-    ResourceCategory.BASIC
+    resource?.category || ResourceCategory.BASIC
   )
+  const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
+    resource?.types || [ResourceType.BONE]
+  )
+  const [amountValue, setAmountValue] = useState(resource?.amount || 0)
 
-  // Initialize the local state with resource values once when component mounts
-  // or when resource changes significantly (like when reordered)
   useEffect(() => {
-    if (resource) {
-      setSelectedTypes(resource.types || [])
-      if (resource.category) {
-        // Handle both array (old format) and string (new format)
-        if (Array.isArray(resource.category)) {
-          setSelectedCategory(resource.category[0] || ResourceCategory.BASIC)
-        } else {
-          setSelectedCategory(resource.category)
-        }
-      }
+    setNameValue(resource?.name || '')
+    setSelectedCategory(resource?.category || ResourceCategory.BASIC)
+    setSelectedTypes(resource?.types || [ResourceType.BONE])
+    setAmountValue(resource?.amount || 0)
+  }, [resource, isDisabled, index])
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(index, nameValue, selectedCategory, selectedTypes, amountValue)
     }
-  }, [resource]) // Only re-run if the resource name changes, which happens on reorder or new resource
-
-  // Handle category selection changes
-  const handleCategoryChange = (category: ResourceCategory) => {
-    setSelectedCategory(category)
-    form.setValue(`resources.${index}.category`, category)
-  }
-
-  // Handle types selection changes
-  const handleTypesChange = (types: ResourceType[]) => {
-    setSelectedTypes(types)
-    form.setValue(`resources.${index}.types`, types)
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center mb-2">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center mb-2 gap-2">
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-
       <div className="flex-1 flex items-center gap-2">
-        {/* Resource Name */}
         <div className="w-[30%]">
-          <FormField
-            control={form.control}
-            name={`resources.${index}.name`}
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormControl>
-                  <Input
-                    placeholder="Resource Name"
-                    {...field}
-                    value={field.value || ''}
-                    onChange={(e) => {
-                      form.setValue(`resources.${index}.name`, e.target.value)
-                    }}
-                    className="h-9"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+          <Input
+            placeholder="Resource Name"
+            value={nameValue}
+            disabled={isDisabled}
+            onChange={(e) => !isDisabled && setNameValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="h-9"
           />
         </div>
-
-        {/* Resource Category - Using the Combobox */}
         <div className="w-[25%]">
           <ResourceCategoryCombobox
             selectedCategory={selectedCategory}
-            onChange={handleCategoryChange}
+            onChange={(cat) => !isDisabled && setSelectedCategory(cat)}
           />
         </div>
-
-        {/* Resource Types - Using the multi-select Combobox */}
         <div className="w-[30%]">
           <ResourceTypesCombobox
             selectedTypes={selectedTypes}
-            onChange={handleTypesChange}
+            onChange={(types) => !isDisabled && setSelectedTypes(types)}
           />
         </div>
-
-        {/* Resource Amount */}
         <div className="w-[10%] flex items-center">
-          <FormField
-            control={form.control}
-            name={`resources.${index}.amount`}
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <Input
-                    type="number"
-                    min={0}
-                    placeholder="0"
-                    className="w-12 text-center no-spinners"
-                    {...field}
-                    value={field.value || 0}
-                    onChange={(e) => {
-                      form.setValue(
-                        `resources.${index}.amount`,
-                        parseInt(e.target.value)
-                      )
-                    }}
-                    // className="h-9 w-full"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+          <Input
+            type="number"
+            min={0}
+            placeholder="0"
+            className="w-12 text-center no-spinners"
+            value={amountValue}
+            disabled={isDisabled}
+            onChange={(e) =>
+              !isDisabled && setAmountValue(Number(e.target.value))
+            }
+            onKeyDown={handleKeyDown}
           />
-        </div>
-
-        {/* Delete Button */}
-        <div className="flex-shrink-0">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 w-9 p-0"
-            onClick={() => handleRemoveResource(index)}>
-            <TrashIcon className="h-4 w-4" />
-          </Button>
         </div>
       </div>
+      {isDisabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(index)}
+          title="Edit resource">
+          <PencilIcon className="h-4 w-4" />
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() =>
+            onSave(
+              index,
+              nameValue,
+              selectedCategory,
+              selectedTypes,
+              amountValue
+            )
+          }
+          title="Save resource">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+      )}
+      <Button
+        variant="ghost"
+        size="sm"
+        type="button"
+        className="h-9 w-9 p-0"
+        onClick={() => handleRemoveResource(index)}>
+        <TrashIcon className="h-4 w-4" />
+      </Button>
     </div>
   )
 }
@@ -343,7 +341,20 @@ function ResourceItem({
 export function ResourcesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const resources = form.watch('resources') || []
+  const resources = useMemo(() => form.watch('resources') || [], [form])
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      resources.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
+      })
+      return next
+    })
+  }, [resources])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -352,7 +363,6 @@ export function ResourcesCard(
     })
   )
 
-  // Add a new empty resource
   const addResource = () => {
     const newResource = {
       name: '',
@@ -362,25 +372,68 @@ export function ResourcesCard(
     }
     const updatedResources = [...resources, newResource]
     form.setValue('resources', updatedResources)
+    setDisabledInputs((prev) => ({
+      ...prev,
+      [updatedResources.length - 1]: false
+    }))
   }
 
-  // Remove a resource by index
   const handleRemoveResource = (index: number) => {
     const updatedResources = [...resources]
     updatedResources.splice(index, 1)
     form.setValue('resources', updatedResources)
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+      return next
+    })
   }
 
-  // Handle drag-and-drop reordering
+  const saveResource = (
+    index: number,
+    name: string,
+    category: ResourceCategory,
+    types: ResourceType[],
+    amount: number
+  ) => {
+    if (!name || name.trim() === '') {
+      toast.warning('Cannot save a resource without a name')
+      return
+    }
+    form.setValue(`resources.${index}.name`, name)
+    form.setValue(`resources.${index}.category`, category)
+    form.setValue(`resources.${index}.types`, types)
+    form.setValue(`resources.${index}.amount`, amount)
+    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    toast.success('Resource saved')
+  }
+
+  const editResource = (index: number) => {
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-
       const newOrder = arrayMove(resources, oldIndex, newIndex)
       form.setValue('resources', newOrder)
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+        return next
+      })
     }
   }
 
@@ -410,7 +463,6 @@ export function ResourcesCard(
             </div>
           </div>
         )}
-
         <div className="space-y-2">
           <DndContext
             sensors={sensors}
@@ -426,17 +478,20 @@ export function ResourcesCard(
                   index={index}
                   form={form}
                   handleRemoveResource={handleRemoveResource}
+                  isDisabled={!!disabledInputs[index]}
+                  onSave={saveResource}
+                  onEdit={editResource}
                 />
               ))}
             </SortableContext>
           </DndContext>
-
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={addResource}>
+              onClick={addResource}
+              disabled={Object.values(disabledInputs).some((v) => v === false)}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Resource
             </Button>
