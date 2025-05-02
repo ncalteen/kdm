@@ -376,7 +376,11 @@ const QuarryContent = memo(
           const newQuarry = {
             name,
             unlocked,
-            node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
+            node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4',
+            ccPrologue: false,
+            ccLevel1: false,
+            ccLevel2: [false, false],
+            ccLevel3: [false, false, false]
           }
           const updatedQuarries = [...quarries, newQuarry]
           form.setValue('quarries', updatedQuarries)

@@ -5,8 +5,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import {
   CustomCampaignData,
-  DefaultCcNemesisVictories,
-  DefaultCcQuarryVictories,
   DefaultSquiresSuspicion,
   PeopleOfTheDreamKeeperCampaignData,
   PeopleOfTheLanternCampaignData,
@@ -198,14 +196,10 @@ export function CreateSettlementForm() {
 
     // Set Arc-specific data when survivor type is Arc
     if (value === SurvivorType.ARC) {
-      form.setValue('ccQuarryVictories', DefaultCcQuarryVictories)
-      form.setValue('ccNemesisVictories', DefaultCcNemesisVictories)
       form.setValue('ccRewards', [])
       form.setValue('philosophies', [])
       form.setValue('knowledges', [])
     } else {
-      form.setValue('ccQuarryVictories', undefined)
-      form.setValue('ccNemesisVictories', undefined)
       form.setValue('ccRewards', undefined)
       form.setValue('philosophies', undefined)
       form.setValue('knowledges', undefined)

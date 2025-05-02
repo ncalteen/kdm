@@ -12,39 +12,29 @@ export function CcCard(form: UseFormReturn<z.infer<typeof SettlementSchema>>) {
   const [ccValue, setCcValue] = useState(0)
 
   // Watch for changes to nemesis victories, quarry victories, and cc rewards
-  const nemesisVictories = useMemo(
-    () => form.watch('ccNemesisVictories') || [],
-    [form]
-  )
-  const quarryVictories = useMemo(
-    () => form.watch('ccQuarryVictories') || [],
-    [form]
-  )
+  const nemeses = useMemo(() => form.watch('nemesis') || [], [form])
+  const quarries = useMemo(() => form.watch('quarries') || [], [form])
   const ccRewards = useMemo(() => form.watch('ccRewards') || [], [form])
 
   useEffect(() => {
     // Calculate CC value based on nemesis and quarry victories
     let totalCc = 0
 
-    // Calculate CC from nemesis victories
-    for (const nemesis of nemesisVictories) {
-      if (nemesis.level1) totalCc += 3
-      if (nemesis.level2) totalCc += 3
-      if (nemesis.level3) totalCc += 3
+    // Calculate CC from nemesis victories (from nemesis array)
+    for (const nemesis of nemeses) {
+      if (nemesis.ccLevel1) totalCc += 3
+      if (nemesis.ccLevel2) totalCc += 3
+      if (nemesis.ccLevel3) totalCc += 3
     }
 
-    // Calculate CC from quarry victories
-    for (const quarry of quarryVictories) {
-      if (quarry.prologue) totalCc += 1
-      if (quarry.level1) totalCc += 1
-
-      // Add 2 for each true value in level2 array
-      for (const level2Victory of quarry.level2 || []) {
+    // Calculate CC from quarry victories (use ccPrologue, ccLevel1, ccLevel2, ccLevel3)
+    for (const quarry of quarries) {
+      if (quarry.ccPrologue) totalCc += 1
+      if (quarry.ccLevel1) totalCc += 1
+      for (const level2Victory of quarry.ccLevel2 || []) {
         if (level2Victory) totalCc += 2
       }
-
-      // Add 3 for each true value in level3 array
-      for (const level3Victory of quarry.level3 || []) {
+      for (const level3Victory of quarry.ccLevel3 || []) {
         if (level3Victory) totalCc += 3
       }
     }
@@ -57,10 +47,8 @@ export function CcCard(form: UseFormReturn<z.infer<typeof SettlementSchema>>) {
     }
 
     setCcValue(totalCc)
-
-    // Update the form's ccValue field with the calculated value
     form.setValue('ccValue', totalCc)
-  }, [nemesisVictories, quarryVictories, ccRewards, form])
+  }, [nemeses, quarries, ccRewards, form])
 
   return (
     <Card className="mt-2">

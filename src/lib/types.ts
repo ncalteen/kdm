@@ -27,6 +27,9 @@ export type Nemesis = {
   level2: boolean
   level3: boolean
   unlocked: boolean
+  ccLevel1: boolean
+  ccLevel2: boolean
+  ccLevel3: boolean
 }
 
 /**
@@ -74,27 +77,10 @@ export type Quarry = {
   name: string
   node: 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
   unlocked: boolean
-}
-
-/**
- * Collective Cognition Quarry Victory
- */
-export type CcQuarryVictory = {
-  name: string
-  prologue?: boolean
-  level1: boolean
-  level2: boolean[]
-  level3: boolean[]
-}
-
-/**
- * Collective Cognition Nemesis Victory
- */
-export type CcNemesisVictory = {
-  name: string
-  level1: boolean
-  level2: boolean
-  level3: boolean
+  ccPrologue: boolean
+  ccLevel1: boolean
+  ccLevel2: boolean[]
+  ccLevel3: boolean[]
 }
 
 /**
@@ -141,8 +127,6 @@ export type Settlement = {
   /**
    * Arc Survivor Settlements
    */
-  ccQuarryVictories?: CcQuarryVictory[]
-  ccNemesisVictoryEntrySchema?: CcNemesisVictory[]
   ccRewards?: CcReward[]
   philosophies?: string[]
   knowledges?: string[]

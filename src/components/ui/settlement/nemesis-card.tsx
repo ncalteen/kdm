@@ -348,7 +348,10 @@ const NemesisContent = memo(
             unlocked: false,
             level1: false,
             level2: false,
-            level3: false
+            level3: false,
+            ccLevel1: false,
+            ccLevel2: false,
+            ccLevel3: false
           }
           const updatedNemeses = [...nemeses, newNemesis]
           form.setValue('nemesis', updatedNemeses)

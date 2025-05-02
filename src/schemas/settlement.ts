@@ -22,7 +22,11 @@ export const TimelineEntrySchema = z.object({
 export const QuarryEntrySchema = z.object({
   name: z.string(),
   unlocked: z.boolean(),
-  node: z.enum(['Node 1', 'Node 2', 'Node 3', 'Node 4'])
+  node: z.enum(['Node 1', 'Node 2', 'Node 3', 'Node 4']),
+  ccPrologue: z.boolean(),
+  ccLevel1: z.boolean(),
+  ccLevel2: z.array(z.boolean()).min(2).max(2),
+  ccLevel3: z.array(z.boolean()).min(3).max(3)
 })
 
 /**
@@ -33,7 +37,10 @@ export const NemesisEntrySchema = z.object({
   unlocked: z.boolean(),
   level1: z.boolean(),
   level2: z.boolean(),
-  level3: z.boolean()
+  level3: z.boolean(),
+  ccLevel1: z.boolean(),
+  ccLevel2: z.boolean(),
+  ccLevel3: z.boolean()
 })
 
 /**
@@ -78,27 +85,6 @@ export const ResourceEntrySchema = z.object({
     )
     .min(1),
   amount: z.number().min(0)
-})
-
-/**
- * Collective Cognition Quarry Victory Entry Schema
- */
-export const CcQuarryVictoryEntrySchema = z.object({
-  name: z.string(),
-  prologue: z.boolean().optional(),
-  level1: z.boolean(),
-  level2: z.array(z.boolean()).min(2).max(2),
-  level3: z.array(z.boolean()).min(3).max(3)
-})
-
-/**
- * Collective Cognition Nemesis Victory Entry Schema
- */
-export const CcNemesisVictoryEntrySchema = z.object({
-  name: z.string(),
-  level1: z.boolean(),
-  level2: z.boolean(),
-  level3: z.boolean()
 })
 
 /**
@@ -180,8 +166,6 @@ export const SettlementSchema = z.object({
   /**
    * Arc Survivor Settlements
    */
-  ccQuarryVictories: z.array(CcQuarryVictoryEntrySchema).optional(),
-  ccNemesisVictories: z.array(CcNemesisVictoryEntrySchema).optional(),
   ccRewards: z.array(CcRewardEntrySchema).optional(),
   philosophies: z.array(z.string()).optional(),
   knowledges: z.array(KnowledgeEntrySchema).optional(),

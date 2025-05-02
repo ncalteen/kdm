@@ -1,12 +1,7 @@
 'use client'
 
 import { GrabIcon, ScrollIcon } from 'lucide-react'
-import {
-  CampaignData,
-  CcNemesisVictory,
-  CcQuarryVictory,
-  Milestone
-} from './types'
+import { CampaignData, Milestone } from './types'
 
 /**
  * Core Campaign Milestones
@@ -142,14 +137,20 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
     {
       name: "King's Man",
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
 
     {
@@ -157,7 +158,10 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     }
   ],
   principles: [
@@ -194,17 +198,29 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
     {
       name: 'White Lion',
       node: 'Node 1',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Screaming Antelope',
       node: 'Node 2',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Phoenix',
       node: 'Node 3',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     }
   ],
   timeline: [
@@ -349,14 +365,20 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
     {
       name: 'Atnas',
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
 
     {
@@ -364,7 +386,10 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     }
   ],
   principles: [
@@ -401,22 +426,38 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
     {
       name: 'Crimson Crocodile',
       node: 'Node 1',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Smog Singers',
       node: 'Node 2',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Phoenix',
       node: 'Node 3',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'The King',
       node: 'Node 4',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     }
   ],
   timeline: [
@@ -505,14 +546,20 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
     {
       name: "King's Man",
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
 
     {
@@ -520,7 +567,10 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     }
   ],
   principles: [
@@ -557,17 +607,29 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
     {
       name: 'White Lion',
       node: 'Node 1',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Screaming Antelope',
       node: 'Node 2',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Phoenix',
       node: 'Node 3',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     }
   ],
   timeline: [
@@ -742,14 +804,20 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
     {
       name: "King's Man",
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     },
 
     {
@@ -757,7 +825,10 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
       level1: false,
       level2: false,
       level3: false,
-      unlocked: false
+      unlocked: false,
+      ccLevel1: false,
+      ccLevel2: false,
+      ccLevel3: false
     }
   ],
   principles: [
@@ -794,17 +865,29 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
     {
       name: 'White Lion',
       node: 'Node 1',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Screaming Antelope',
       node: 'Node 2',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     },
     {
       name: 'Phoenix',
       node: 'Node 3',
-      unlocked: false
+      unlocked: false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
     }
   ],
   timeline: [
@@ -870,85 +953,6 @@ export const SquiresOfTheCitadelCampaignData: CampaignData = {
     { completed: false, entries: ['Secrets, Secrets'] }
   ]
 }
-
-/**
- * Default Collective Cognition Quarry Victories
- */
-export const DefaultCcQuarryVictories: CcQuarryVictory[] = [
-  {
-    name: '',
-    prologue: false,
-    level1: false,
-    level2: [false, false],
-    level3: [false, false, false]
-  },
-  {
-    name: '',
-    level1: false,
-    level2: [false, false],
-    level3: [false, false, false]
-  },
-  {
-    name: '',
-    level1: false,
-    level2: [false, false],
-    level3: [false, false, false]
-  },
-  {
-    name: '',
-    level1: false,
-    level2: [false, false],
-    level3: [false, false, false]
-  },
-  {
-    name: '',
-    level1: false,
-    level2: [false, false],
-    level3: [false, false, false]
-  },
-  {
-    name: '',
-    level1: false,
-    level2: [false, false],
-    level3: [false, false, false]
-  },
-  {
-    name: '',
-    level1: false,
-    level2: [false, false],
-    level3: [false, false, false]
-  }
-]
-
-/**
- * Default Collective Cognition Nemesis Victories
- */
-export const DefaultCcNemesisVictories: CcNemesisVictory[] = [
-  {
-    name: '',
-    level1: false,
-    level2: false,
-    level3: false
-  },
-  {
-    name: '',
-    level1: false,
-    level2: false,
-    level3: false
-  },
-  {
-    name: '',
-    level1: false,
-    level2: false,
-    level3: false
-  },
-  {
-    name: '',
-    level1: false,
-    level2: false,
-    level3: false
-  }
-]
 
 /**
  * Squire Card Data

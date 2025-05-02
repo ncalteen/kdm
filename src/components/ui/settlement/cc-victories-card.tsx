@@ -24,62 +24,62 @@ import {
 export function CcVictoriesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  // Watch for changes to nemesis and quarry victories for rendering
-  const quarryVictories = form.watch('ccQuarryVictories') || []
-  const nemesisVictories = form.watch('ccNemesisVictories') || []
+  // Use quarries array from the form instead of ccQuarryVictories
+  const quarries = form.watch('quarries') || []
+  const nemeses = form.watch('nemesis') || []
 
-  // Handle quarry victory toggle
+  // Handle quarry victory toggle (update quarries array)
   const handleQuarryToggle = (
     quarryIndex: number,
-    property: 'prologue' | 'level1' | string,
+    property: 'ccPrologue' | 'ccLevel1' | string,
     value: boolean
   ) => {
-    const updatedQuarryVictories = [...quarryVictories]
-
-    // Handle prologue and level1 which are direct booleans
-    if (property === 'prologue' || property === 'level1') {
-      updatedQuarryVictories[quarryIndex] = {
-        ...updatedQuarryVictories[quarryIndex],
+    const updatedQuarries = [...quarries]
+    if (property === 'ccPrologue' || property === 'ccLevel1') {
+      updatedQuarries[quarryIndex] = {
+        ...updatedQuarries[quarryIndex],
         [property]: value
       }
     } else {
-      // Handle level2[0], level2[1], level3[0], etc.
-      const [level, indexStr] = property.split('[')
+      // Handle ccLevel2[0], ccLevel2[1], ccLevel3[0], etc.
+      const [ccLevel, indexStr] = property.split('[')
       const index = parseInt(indexStr.replace(']', ''))
-
-      if (level === 'level2') {
-        const updatedLevel2 = [...updatedQuarryVictories[quarryIndex].level2]
-        updatedLevel2[index] = value
-        updatedQuarryVictories[quarryIndex] = {
-          ...updatedQuarryVictories[quarryIndex],
-          level2: updatedLevel2
+      if (ccLevel === 'ccLevel2') {
+        const updatedCcLevel2 = [
+          ...(updatedQuarries[quarryIndex].ccLevel2 || [false, false])
+        ]
+        updatedCcLevel2[index] = value
+        updatedQuarries[quarryIndex] = {
+          ...updatedQuarries[quarryIndex],
+          ccLevel2: updatedCcLevel2
         }
-      } else if (level === 'level3') {
-        const updatedLevel3 = [...updatedQuarryVictories[quarryIndex].level3]
-        updatedLevel3[index] = value
-        updatedQuarryVictories[quarryIndex] = {
-          ...updatedQuarryVictories[quarryIndex],
-          level3: updatedLevel3
+      } else if (ccLevel === 'ccLevel3') {
+        const updatedCcLevel3 = [
+          ...(updatedQuarries[quarryIndex].ccLevel3 || [false, false, false])
+        ]
+        updatedCcLevel3[index] = value
+        updatedQuarries[quarryIndex] = {
+          ...updatedQuarries[quarryIndex],
+          ccLevel3: updatedCcLevel3
         }
       }
     }
-
-    form.setValue('ccQuarryVictories', updatedQuarryVictories)
+    form.setValue('quarries', updatedQuarries)
   }
 
-  // Handle nemesis victory toggle
+  // Handle nemesis victory toggle (update nemesis array)
   const handleNemesisToggle = (
     nemesisIndex: number,
-    level: 'level1' | 'level2' | 'level3',
+    ccLevel: 'ccLevel1' | 'ccLevel2' | 'ccLevel3',
     value: boolean
   ) => {
-    const updatedNemesisVictories = [...nemesisVictories]
-    updatedNemesisVictories[nemesisIndex] = {
-      ...updatedNemesisVictories[nemesisIndex],
-      [level]: value
+    const updatedNemeses = [...nemeses]
+    updatedNemeses[nemesisIndex] = {
+      ...updatedNemeses[nemesisIndex],
+      [ccLevel]: value
     }
 
-    form.setValue('ccNemesisVictories', updatedNemesisVictories)
+    form.setValue('nemesis', updatedNemeses)
   }
 
   return (
@@ -117,23 +117,23 @@ export function CcVictoriesCard(
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {quarryVictories.map((quarry, index) => (
+                {quarries.map((quarry, index) => (
                   <TableRow key={index}>
                     <TableCell>{quarry.name || 'Unnamed Quarry'}</TableCell>
                     <TableCell className="text-center">
-                      {quarry.prologue !== undefined && (
+                      {index === 0 && (
                         <FormField
                           control={form.control}
-                          name={`ccQuarryVictories.${index}.prologue`}
+                          name={`quarries.${index}.ccPrologue`}
                           render={() => (
                             <FormItem className="flex justify-center">
                               <FormControl>
                                 <Checkbox
-                                  checked={quarry.prologue}
+                                  checked={quarry.ccPrologue}
                                   onCheckedChange={(value) =>
                                     handleQuarryToggle(
                                       index,
-                                      'prologue',
+                                      'ccPrologue',
                                       !!value
                                     )
                                   }
@@ -147,14 +147,14 @@ export function CcVictoriesCard(
                     <TableCell className="text-center">
                       <FormField
                         control={form.control}
-                        name={`ccQuarryVictories.${index}.level1`}
+                        name={`quarries.${index}.ccLevel1`}
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={quarry.level1}
+                                checked={quarry.ccLevel1}
                                 onCheckedChange={(value) =>
-                                  handleQuarryToggle(index, 'level1', !!value)
+                                  handleQuarryToggle(index, 'ccLevel1', !!value)
                                 }
                               />
                             </FormControl>
@@ -162,58 +162,62 @@ export function CcVictoriesCard(
                         )}
                       />
                     </TableCell>
-                    {quarry.level2.map((checked, lvl2Index) => (
-                      <TableCell
-                        key={`level2-${lvl2Index}`}
-                        className="text-center">
-                        <FormField
-                          control={form.control}
-                          name={`ccQuarryVictories.${index}.level2.${lvl2Index}`}
-                          render={() => (
-                            <FormItem className="flex justify-center">
-                              <FormControl>
-                                <Checkbox
-                                  checked={checked}
-                                  onCheckedChange={(value) =>
-                                    handleQuarryToggle(
-                                      index,
-                                      `level2[${lvl2Index}]`,
-                                      !!value
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                    ))}
-                    {quarry.level3.map((checked, lvl3Index) => (
-                      <TableCell
-                        key={`level3-${lvl3Index}`}
-                        className="text-center">
-                        <FormField
-                          control={form.control}
-                          name={`ccQuarryVictories.${index}.level3.${lvl3Index}`}
-                          render={() => (
-                            <FormItem className="flex justify-center">
-                              <FormControl>
-                                <Checkbox
-                                  checked={checked}
-                                  onCheckedChange={(value) =>
-                                    handleQuarryToggle(
-                                      index,
-                                      `level3[${lvl3Index}]`,
-                                      !!value
-                                    )
-                                  }
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                    ))}
+                    {(quarry.ccLevel2 || [false, false]).map(
+                      (checked, lvl2Index) => (
+                        <TableCell
+                          key={`ccLevel2-${lvl2Index}`}
+                          className="text-center">
+                          <FormField
+                            control={form.control}
+                            name={`quarries.${index}.ccLevel2.${lvl2Index}`}
+                            render={() => (
+                              <FormItem className="flex justify-center">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={checked}
+                                    onCheckedChange={(value) =>
+                                      handleQuarryToggle(
+                                        index,
+                                        `ccLevel2[${lvl2Index}]`,
+                                        !!value
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </TableCell>
+                      )
+                    )}
+                    {(quarry.ccLevel3 || [false, false, false]).map(
+                      (checked, lvl3Index) => (
+                        <TableCell
+                          key={`ccLevel3-${lvl3Index}`}
+                          className="text-center">
+                          <FormField
+                            control={form.control}
+                            name={`quarries.${index}.ccLevel3.${lvl3Index}`}
+                            render={() => (
+                              <FormItem className="flex justify-center">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={checked}
+                                    onCheckedChange={(value) =>
+                                      handleQuarryToggle(
+                                        index,
+                                        `ccLevel3[${lvl3Index}]`,
+                                        !!value
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </TableCell>
+                      )
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -238,20 +242,24 @@ export function CcVictoriesCard(
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {nemesisVictories.map((nemesis, index) => (
+                {nemeses.map((nemesis, index) => (
                   <TableRow key={index}>
                     <TableCell>{nemesis.name || 'Unnamed Nemesis'}</TableCell>
                     <TableCell className="text-center">
                       <FormField
                         control={form.control}
-                        name={`ccNemesisVictories.${index}.level1`}
+                        name={`nemesis.${index}.ccLevel1`}
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={nemesis.level1}
+                                checked={nemesis.ccLevel1}
                                 onCheckedChange={(value) =>
-                                  handleNemesisToggle(index, 'level1', !!value)
+                                  handleNemesisToggle(
+                                    index,
+                                    'ccLevel1',
+                                    !!value
+                                  )
                                 }
                               />
                             </FormControl>
@@ -262,14 +270,18 @@ export function CcVictoriesCard(
                     <TableCell className="text-center">
                       <FormField
                         control={form.control}
-                        name={`ccNemesisVictories.${index}.level2`}
+                        name={`nemesis.${index}.ccLevel2`}
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={nemesis.level2}
+                                checked={nemesis.ccLevel2}
                                 onCheckedChange={(value) =>
-                                  handleNemesisToggle(index, 'level2', !!value)
+                                  handleNemesisToggle(
+                                    index,
+                                    'ccLevel2',
+                                    !!value
+                                  )
                                 }
                               />
                             </FormControl>
@@ -280,14 +292,18 @@ export function CcVictoriesCard(
                     <TableCell className="text-center">
                       <FormField
                         control={form.control}
-                        name={`ccNemesisVictories.${index}.level3`}
+                        name={`nemesis.${index}.ccLevel3`}
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={nemesis.level3}
+                                checked={nemesis.ccLevel3}
                                 onCheckedChange={(value) =>
-                                  handleNemesisToggle(index, 'level3', !!value)
+                                  handleNemesisToggle(
+                                    index,
+                                    'ccLevel3',
+                                    !!value
+                                  )
                                 }
                               />
                             </FormControl>
