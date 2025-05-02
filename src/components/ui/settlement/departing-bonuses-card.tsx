@@ -30,6 +30,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -65,10 +66,17 @@ function BonusItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: index.toString() })
   const [inputValue, setInputValue] = useState(value)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setInputValue(value)
   }, [value])
+
+  useEffect(() => {
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [isDisabled])
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -99,6 +107,7 @@ function BonusItem({
         <Input value={inputValue} disabled className="flex-1" />
       ) : (
         <Input
+          ref={inputRef}
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
