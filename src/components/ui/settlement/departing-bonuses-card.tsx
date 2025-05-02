@@ -25,7 +25,13 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -133,11 +139,66 @@ function BonusItem({
   )
 }
 
+function NewBonusItem({
+  onSave,
+  onCancel
+}: {
+  onSave: (bonus: string) => void
+  onCancel: () => void
+}) {
+  const [value, setValue] = useState('')
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value)
+  }
+
+  const handleSave = () => {
+    if (value.trim() !== '') {
+      onSave(value.trim())
+    } else {
+      toast.warning('Cannot save an empty bonus')
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+      </div>
+      <Input
+        placeholder="Add a bonus..."
+        value={value}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={handleSave}
+        title="Save bonus">
+        <CheckIcon className="h-4 w-4" />
+      </Button>
+      <Button type="button" variant="ghost" size="icon" onClick={onCancel}>
+        <TrashIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function DepartingBonusesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const bonuses = useMemo(() => form.watch('departingBonuses') || [], [form])
-
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -151,44 +212,35 @@ export function DepartingBonusesCard(
     })
   }, [bonuses])
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
+  const [isAddingNew, setIsAddingNew] = useState(false)
 
-  const addBonus = useCallback(() => {
-    form.setValue('departingBonuses', [...bonuses, ''])
-    setDisabledInputs((prev) => ({ ...prev, [bonuses.length]: false }))
-  }, [bonuses, form])
+  const addBonus = useCallback(() => setIsAddingNew(true), [])
 
   const handleRemoveBonus = useCallback(
     (index: number) => {
-      const updatedBonuses = [...bonuses]
-      updatedBonuses.splice(index, 1)
-      form.setValue('departingBonuses', updatedBonuses)
-      setDisabledInputs((prev) => {
-        const next = { ...prev }
-        delete next[index]
-        const reindexed: { [key: number]: boolean } = {}
-        Object.keys(next).forEach((k) => {
-          const num = parseInt(k)
-          if (num > index) {
-            reindexed[num - 1] = next[num]
-          } else if (num < index) {
-            reindexed[num] = next[num]
-          }
+      startTransition(() => {
+        const updatedBonuses = [...bonuses]
+        updatedBonuses.splice(index, 1)
+        form.setValue('departingBonuses', updatedBonuses)
+        setDisabledInputs((prev) => {
+          const next = { ...prev }
+          delete next[index]
+          // Reindex
+          const reindexed: { [key: number]: boolean } = {}
+          Object.keys(next).forEach((k) => {
+            const num = parseInt(k)
+            if (num > index) {
+              reindexed[num - 1] = next[num]
+            } else if (num < index) {
+              reindexed[num] = next[num]
+            }
+          })
+          return reindexed
         })
-        return reindexed
       })
     },
     [bonuses, form]
   )
-
-  const handleEdit = useCallback((index: number) => {
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-  }, [])
 
   const handleSave = useCallback(
     (index: number) => {
@@ -202,6 +254,10 @@ export function DepartingBonusesCard(
     [bonuses]
   )
 
+  const handleEdit = useCallback((index: number) => {
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+  }, [])
+
   const handleChange = useCallback(
     (index: number, value: string) => {
       const updatedBonuses = [...bonuses]
@@ -209,6 +265,36 @@ export function DepartingBonusesCard(
       form.setValue('departingBonuses', updatedBonuses)
     },
     [bonuses, form]
+  )
+
+  // Save new bonus
+  const saveNewBonus = useCallback(
+    (bonus: string) => {
+      if (bonuses.includes(bonus)) {
+        toast.warning('This bonus already exists')
+        return
+      }
+      startTransition(() => {
+        const updatedBonuses = [...bonuses, bonus]
+        form.setValue('departingBonuses', updatedBonuses)
+        setDisabledInputs((prev) => ({
+          ...prev,
+          [updatedBonuses.length - 1]: true
+        }))
+        setIsAddingNew(false)
+        toast.success('Bonus added')
+      })
+    },
+    [bonuses, form]
+  )
+
+  const cancelNewBonus = useCallback(() => setIsAddingNew(false), [])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
   )
 
   const handleDragEnd = useCallback(
@@ -259,14 +345,16 @@ export function DepartingBonusesCard(
               ))}
             </SortableContext>
           </DndContext>
-
+          {isAddingNew && (
+            <NewBonusItem onSave={saveNewBonus} onCancel={cancelNewBonus} />
+          )}
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={addBonus}
-              disabled={Object.values(disabledInputs).some((v) => v === false)}>
+              disabled={isAddingNew}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Bonus
             </Button>
