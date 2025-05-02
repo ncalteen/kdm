@@ -28,15 +28,7 @@ import {
   SkullIcon,
   TrashIcon
 } from 'lucide-react'
-import {
-  memo,
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -536,10 +528,8 @@ export function NemesisCard(
       if (nemesisName.startsWith('new-nemesis-')) {
         setIsAddingNew(false)
       } else {
-        startTransition(() => {
-          const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
-          form.setValue('nemesis', updatedNemeses)
-        })
+        const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
+        form.setValue('nemesis', updatedNemeses)
         setDisabledInputs((prev) => {
           const updated = { ...prev }
           delete updated[nemesisName]
@@ -556,24 +546,20 @@ export function NemesisCard(
       level: 'level1' | 'level2' | 'level3',
       checked: boolean
     ) => {
-      startTransition(() => {
-        const updatedNemeses = nemeses.map((n) =>
-          n.name === nemesisName ? { ...n, [level]: checked } : n
-        )
-        form.setValue('nemesis', updatedNemeses)
-      })
+      const updatedNemeses = nemeses.map((n) =>
+        n.name === nemesisName ? { ...n, [level]: checked } : n
+      )
+      form.setValue('nemesis', updatedNemeses)
     },
     [nemeses, form]
   )
 
   const toggleUnlocked = useCallback(
     (nemesisName: string, checked: boolean) => {
-      startTransition(() => {
-        const updatedNemeses = nemeses.map((n) =>
-          n.name === nemesisName ? { ...n, unlocked: checked } : n
-        )
-        form.setValue('nemesis', updatedNemeses)
-      })
+      const updatedNemeses = nemeses.map((n) =>
+        n.name === nemesisName ? { ...n, unlocked: checked } : n
+      )
+      form.setValue('nemesis', updatedNemeses)
     },
     [nemeses, form]
   )
@@ -594,18 +580,15 @@ export function NemesisCard(
 
   const updateNemesisName = useCallback(
     (originalName: string, newName: string) => {
-      startTransition(() => {
-        const updatedNemeses = nemeses.map((n) =>
-          n.name === originalName ? { ...n, name: newName } : n
-        )
-        form.setValue('nemesis', updatedNemeses)
-
-        setDisabledInputs((prev) => {
-          const updated = { ...prev }
-          delete updated[originalName]
-          updated[newName] = true
-          return updated
-        })
+      const updatedNemeses = nemeses.map((n) =>
+        n.name === originalName ? { ...n, name: newName } : n
+      )
+      form.setValue('nemesis', updatedNemeses)
+      setDisabledInputs((prev) => {
+        const updated = { ...prev }
+        delete updated[originalName]
+        updated[newName] = true
+        return updated
       })
     },
     [nemeses, form]
