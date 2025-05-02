@@ -251,7 +251,12 @@ function NewMilestoneItem({
         id={`milestone-new-${index}-event`}
         name={`milestones[new-${index}].event`}
       />
-      <Button type="button" variant="ghost" size="icon" onClick={handleSave} title="Save milestone">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={handleSave}
+        title="Save milestone">
         <CheckIcon className="h-4 w-4" />
       </Button>
       <Button type="button" variant="ghost" size="icon" onClick={onCancel}>
@@ -412,7 +417,10 @@ export function MilestonesCard(
               size="sm"
               variant="outline"
               onClick={addMilestone}
-              disabled={isAddingNew || Object.values(disabledInputs).some((v) => v === false)}>
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Milestone
             </Button>

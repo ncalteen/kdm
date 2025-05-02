@@ -57,7 +57,6 @@ function LocationItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  // Local state for editing
   const [nameValue, setNameValue] = useState(
     form.getValues(`locations.${index}.name`) || ''
   )
@@ -65,7 +64,6 @@ function LocationItem({
     form.getValues(`locations.${index}.unlocked`) || false
   )
 
-  // Keep local state in sync when switching between edit/saved
   useEffect(() => {
     setNameValue(form.getValues(`locations.${index}.name`) || '')
     setUnlockedValue(form.getValues(`locations.${index}.unlocked`) || false)
@@ -143,28 +141,85 @@ function LocationItem({
   )
 }
 
+function NewLocationItem({
+  index,
+  onSave,
+  onCancel
+}: {
+  index: number
+  onSave: (name: string, unlocked: boolean) => void
+  onCancel: () => void
+}) {
+  const [name, setName] = useState('')
+  const [unlocked, setUnlocked] = useState(false)
+
+  const handleSave = () => {
+    onSave(name.trim(), unlocked)
+  }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    }
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <div className="p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+      </div>
+      <Checkbox
+        checked={unlocked}
+        onCheckedChange={(checked) => setUnlocked(checked === true)}
+        id={`location-new-${index}-unlocked`}
+        name={`locations[new-${index}].unlocked`}
+      />
+      <Input
+        placeholder="Add a location..."
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+        id={`location-new-${index}-name`}
+        name={`locations[new-${index}].name`}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={handleSave}
+        title="Save location">
+        <CheckIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onCancel}
+        title="Cancel">
+        <TrashIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function SettlementLocationsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const locations = useMemo(() => form.watch('locations') || [], [form])
-
-  // Track which inputs are disabled (saved)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-
-  // Ensure disabledInputs is always in sync with locations
-  // On first load, all initial locations are disabled (saved)
+  const [isAddingNew, setIsAddingNew] = useState(false)
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
       locations.forEach((_, i) => {
-        // If this location existed on first render, default to true (disabled/saved)
-        // If it was added later, keep its previous state (false = editable)
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
       return next
     })
+    setIsAddingNew(false)
   }, [locations])
 
   const sensors = useSensors(
@@ -175,21 +230,13 @@ export function SettlementLocationsCard(
   )
 
   const addLocation = () => {
-    const currentLocations = [...locations]
-    currentLocations.push({ name: '', unlocked: false })
-    form.setValue('locations', currentLocations)
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [currentLocations.length - 1]: false
-    }))
+    setIsAddingNew(true)
   }
 
   const handleRemoveLocation = (index: number) => {
     const currentLocations = [...locations]
     currentLocations.splice(index, 1)
     form.setValue('locations', currentLocations)
-
-    // Remove from disabled inputs and reindex
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
       Object.keys(prev).forEach((k) => {
@@ -201,7 +248,23 @@ export function SettlementLocationsCard(
     })
   }
 
-  const saveLocation = (index: number, name: string, unlocked: boolean) => {
+  const saveLocation = (name: string, unlocked: boolean) => {
+    if (!name || name.trim() === '') {
+      toast.warning('Cannot save a location without a name')
+      return
+    }
+    const updated = [...locations, { name, unlocked }]
+    form.setValue('locations', updated)
+    setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
+    setIsAddingNew(false)
+    toast.success('Location added')
+  }
+
+  const saveExistingLocation = (
+    index: number,
+    name: string,
+    unlocked: boolean
+  ) => {
     if (!name || name.trim() === '') {
       toast.warning('Cannot save a location without a name')
       return
@@ -224,7 +287,6 @@ export function SettlementLocationsCard(
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(locations, oldIndex, newIndex)
       form.setValue('locations', newOrder)
-      // Reorder the disabled inputs state
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
         Object.keys(prev).forEach((k) => {
@@ -263,20 +325,26 @@ export function SettlementLocationsCard(
                   form={form}
                   handleRemoveLocation={handleRemoveLocation}
                   isDisabled={!!disabledInputs[index]}
-                  onSave={saveLocation}
+                  onSave={saveExistingLocation}
                   onEdit={editLocation}
                 />
               ))}
             </SortableContext>
           </DndContext>
-
+          {isAddingNew && (
+            <NewLocationItem
+              index={locations.length}
+              onSave={saveLocation}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={addLocation}
-              disabled={Object.values(disabledInputs).some((v) => v === false)}>
+              disabled={isAddingNew}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Location
             </Button>

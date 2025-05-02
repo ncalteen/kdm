@@ -25,7 +25,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -240,6 +240,7 @@ export function PrinciplesCard(
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+  const [isAddingNew, setIsAddingNew] = useState(false)
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -248,6 +249,8 @@ export function PrinciplesCard(
       })
       return next
     })
+    // If principles array changes (e.g. tab switch), cancel new
+    setIsAddingNew(false)
   }, [principles])
 
   const sensors = useSensors(
@@ -258,17 +261,7 @@ export function PrinciplesCard(
   )
 
   const handleAddPrinciple = () => {
-    form.setValue('principles', [
-      ...principles,
-      {
-        name: '',
-        option1Name: '',
-        option2Name: '',
-        option1Selected: false,
-        option2Selected: false
-      }
-    ])
-    setDisabledInputs((prev) => ({ ...prev, [principles.length]: false }))
+    setIsAddingNew(true)
   }
 
   const handleRemovePrinciple = (index: number) => {
@@ -331,6 +324,33 @@ export function PrinciplesCard(
     form.setValue('principles', updatedPrinciples)
   }
 
+  const handleCancelNew = useCallback(() => setIsAddingNew(false), [])
+
+  const handleSaveNew = (
+    name: string,
+    option1Name: string,
+    option2Name: string
+  ) => {
+    if (!name || name.trim() === '') {
+      toast.warning('Cannot save a principle without a name')
+      return
+    }
+    const updated = [
+      ...principles,
+      {
+        name,
+        option1Name,
+        option2Name,
+        option1Selected: false,
+        option2Selected: false
+      }
+    ]
+    form.setValue('principles', updated)
+    setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
+    setIsAddingNew(false)
+    toast.success('Principle added')
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (over && active.id !== over.id) {
@@ -353,7 +373,7 @@ export function PrinciplesCard(
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2 mb-4">
-          {principles.length === 0 ? (
+          {principles.length === 0 && !isAddingNew ? (
             <div className="text-center text-muted-foreground py-4">
               No principles established yet.
             </div>
@@ -383,6 +403,13 @@ export function PrinciplesCard(
               </SortableContext>
             </DndContext>
           )}
+          {isAddingNew && (
+            <NewPrincipleItem
+              index={principles.length}
+              onSave={handleSaveNew}
+              onCancel={handleCancelNew}
+            />
+          )}
         </div>
         <div className="flex justify-center">
           <Button
@@ -390,12 +417,98 @@ export function PrinciplesCard(
             size="sm"
             variant="outline"
             onClick={handleAddPrinciple}
-            disabled={Object.values(disabledInputs).some((v) => v === false)}>
+            disabled={isAddingNew}>
             <PlusCircleIcon className="h-4 w-4 mr-1" />
             Add Principle
           </Button>
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+function NewPrincipleItem({
+  index,
+  onSave,
+  onCancel
+}: {
+  index: number
+  onSave: (name: string, option1Name: string, option2Name: string) => void
+  onCancel: () => void
+}) {
+  const [name, setName] = useState('')
+  const [option1, setOption1] = useState('')
+  const [option2, setOption2] = useState('')
+
+  const handleSave = () => {
+    onSave(name.trim(), option1.trim(), option2.trim())
+  }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    }
+  }
+  return (
+    <div className="flex flex-col gap-2 border rounded-md p-3 bg-muted/40">
+      <div className="flex items-center gap-2">
+        <div className="p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+        </div>
+        <div className="flex-1 flex flex-col gap-2">
+          <Input
+            placeholder="Name"
+            className="w-full"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoFocus
+            id={`principle-new-${index}-name`}
+            name={`principles[new-${index}].name`}
+          />
+          <div className="flex items-center gap-2">
+            <Checkbox checked={false} disabled className="mt-2" />
+            <Input
+              placeholder="Option 1"
+              value={option1}
+              className="flex-1"
+              onChange={(e) => setOption1(e.target.value)}
+              onKeyDown={handleKeyDown}
+              id={`principle-new-${index}-option1-name`}
+              name={`principles[new-${index}].option1Name`}
+            />
+            <strong>or</strong>
+            <Checkbox checked={false} disabled className="mt-2" />
+            <Input
+              placeholder="Option 2"
+              value={option2}
+              className="flex-1"
+              onChange={(e) => setOption2(e.target.value)}
+              onKeyDown={handleKeyDown}
+              id={`principle-new-${index}-option2-name`}
+              name={`principles[new-${index}].option2Name`}
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 ml-2 self-stretch">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleSave}
+            title="Save principle">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            type="button"
+            onClick={onCancel}>
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }
