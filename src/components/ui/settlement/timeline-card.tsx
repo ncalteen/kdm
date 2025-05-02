@@ -145,6 +145,8 @@ const TimelineContent = memo(
                           className="mt-1"
                           checked={field.value}
                           disabled={true}
+                          id={`timeline.${yearIndex}.completed`}
+                          name={`timeline.${yearIndex}.completed`}
                         />
                       </FormControl>
                     </FormItem>
@@ -217,6 +219,8 @@ const TimelineContent = memo(
                                     handleKeyDown(e, yearIndex, entryIndex)
                                   }
                                   autoFocus
+                                  id={`timeline.${yearIndex}.entries.${entryIndex}`}
+                                  name={`timeline.${yearIndex}.entries.${entryIndex}`}
                                 />
                               </FormControl>
                             </FormItem>
