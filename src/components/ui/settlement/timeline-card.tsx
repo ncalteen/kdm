@@ -295,7 +295,8 @@ export function TimelineCard(
   const showScrollIcon = useMemo(
     () =>
       campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+      campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
+      campaignType === CampaignType.CUSTOM,
     [campaignType]
   )
 
