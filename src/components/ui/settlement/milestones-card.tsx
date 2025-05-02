@@ -194,6 +194,73 @@ function MilestoneItem({
   )
 }
 
+function NewMilestoneItem({
+  index,
+  onSave,
+  onCancel
+}: {
+  index: number
+  onSave: (name: string, event: string) => void
+  onCancel: () => void
+}) {
+  const [name, setName] = useState('')
+  const [event, setEvent] = useState('')
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value)
+  }
+  const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEvent(e.target.value)
+  }
+  const handleSave = () => {
+    if (name.trim() !== '') {
+      onSave(name.trim(), event)
+    } else {
+      toast.warning('Cannot save a milestone without a name')
+    }
+  }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    }
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <div className="p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+      </div>
+      <Checkbox checked={false} disabled className="mt-2" />
+      <Input
+        placeholder="Add a milestone..."
+        value={name}
+        onChange={handleNameChange}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+        id={`milestone-new-${index}-name`}
+        name={`milestones[new-${index}].name`}
+      />
+      <BookOpen />
+      <Input
+        placeholder="Event..."
+        value={event}
+        onChange={handleEventChange}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        id={`milestone-new-${index}-event`}
+        name={`milestones[new-${index}].event`}
+      />
+      <Button type="button" variant="ghost" size="icon" onClick={handleSave} title="Save milestone">
+        <CheckIcon className="h-4 w-4" />
+      </Button>
+      <Button type="button" variant="ghost" size="icon" onClick={onCancel}>
+        <TrashIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function MilestonesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
@@ -211,6 +278,8 @@ export function MilestonesCard(
     })
   }, [milestones])
 
+  const [isAddingNew, setIsAddingNew] = useState(false)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -218,13 +287,26 @@ export function MilestonesCard(
     })
   )
 
-  const addMilestone = useCallback(() => {
-    form.setValue('milestones', [
-      ...milestones,
-      { name: '', complete: false, event: '' }
-    ])
-    setDisabledInputs((prev) => ({ ...prev, [milestones.length]: false }))
-  }, [milestones, form])
+  const addMilestone = useCallback(() => setIsAddingNew(true), [])
+
+  const saveNewMilestone = useCallback(
+    (name: string, event: string) => {
+      if (milestones.some((m) => m.name === name)) {
+        toast.warning('A milestone with this name already exists')
+        return false
+      }
+      const newMilestone = { name, complete: false, event }
+      const updated = [...milestones, newMilestone]
+      form.setValue('milestones', updated)
+      setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
+      setIsAddingNew(false)
+      toast.success('New milestone added')
+      return true
+    },
+    [milestones, form]
+  )
+
+  const cancelNewMilestone = useCallback(() => setIsAddingNew(false), [])
 
   const handleRemoveMilestone = useCallback(
     (index: number) => {
@@ -317,13 +399,20 @@ export function MilestonesCard(
               ))}
             </SortableContext>
           </DndContext>
+          {isAddingNew && (
+            <NewMilestoneItem
+              index={milestones.length}
+              onSave={saveNewMilestone}
+              onCancel={cancelNewMilestone}
+            />
+          )}
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={addMilestone}
-              disabled={Object.values(disabledInputs).some((v) => v === false)}>
+              disabled={isAddingNew || Object.values(disabledInputs).some((v) => v === false)}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Milestone
             </Button>
