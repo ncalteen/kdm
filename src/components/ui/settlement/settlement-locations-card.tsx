@@ -26,7 +26,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { startTransition, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -234,17 +234,19 @@ export function SettlementLocationsCard(
   }
 
   const handleRemoveLocation = (index: number) => {
-    const currentLocations = [...locations]
-    currentLocations.splice(index, 1)
-    form.setValue('locations', currentLocations)
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-      Object.keys(prev).forEach((k) => {
-        const num = parseInt(k)
-        if (num < index) next[num] = prev[num]
-        else if (num > index) next[num - 1] = prev[num]
+    startTransition(() => {
+      const currentLocations = [...locations]
+      currentLocations.splice(index, 1)
+      form.setValue('locations', currentLocations)
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num < index) next[num] = prev[num]
+          else if (num > index) next[num - 1] = prev[num]
+        })
+        return next
       })
-      return next
     })
   }
 
@@ -253,10 +255,12 @@ export function SettlementLocationsCard(
       toast.warning('Cannot save a location without a name')
       return
     }
-    const updated = [...locations, { name, unlocked }]
-    form.setValue('locations', updated)
-    setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
-    setIsAddingNew(false)
+    startTransition(() => {
+      const updated = [...locations, { name, unlocked }]
+      form.setValue('locations', updated)
+      setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
+      setIsAddingNew(false)
+    })
     toast.success('Location added')
   }
 
@@ -269,9 +273,11 @@ export function SettlementLocationsCard(
       toast.warning('Cannot save a location without a name')
       return
     }
-    form.setValue(`locations.${index}.name`, name)
-    form.setValue(`locations.${index}.unlocked`, unlocked)
-    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    startTransition(() => {
+      form.setValue(`locations.${index}.name`, name)
+      form.setValue(`locations.${index}.unlocked`, unlocked)
+      setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    })
     toast.success('Location saved')
   }
 

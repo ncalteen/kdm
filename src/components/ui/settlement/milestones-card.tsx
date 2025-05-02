@@ -26,7 +26,13 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -300,11 +306,13 @@ export function MilestonesCard(
         toast.warning('A milestone with this name already exists')
         return false
       }
-      const newMilestone = { name, complete: false, event }
-      const updated = [...milestones, newMilestone]
-      form.setValue('milestones', updated)
-      setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
-      setIsAddingNew(false)
+      startTransition(() => {
+        const newMilestone = { name, complete: false, event }
+        const updated = [...milestones, newMilestone]
+        form.setValue('milestones', updated)
+        setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
+        setIsAddingNew(false)
+      })
       toast.success('New milestone added')
       return true
     },
@@ -315,22 +323,24 @@ export function MilestonesCard(
 
   const handleRemoveMilestone = useCallback(
     (index: number) => {
-      const updated = [...milestones]
-      updated.splice(index, 1)
-      form.setValue('milestones', updated)
-      setDisabledInputs((prev) => {
-        const next = { ...prev }
-        delete next[index]
-        const reindexed: { [key: number]: boolean } = {}
-        Object.keys(next).forEach((k) => {
-          const num = parseInt(k)
-          if (num > index) {
-            reindexed[num - 1] = next[num]
-          } else if (num < index) {
-            reindexed[num] = next[num]
-          }
+      startTransition(() => {
+        const updated = [...milestones]
+        updated.splice(index, 1)
+        form.setValue('milestones', updated)
+        setDisabledInputs((prev) => {
+          const next = { ...prev }
+          delete next[index]
+          const reindexed: { [key: number]: boolean } = {}
+          Object.keys(next).forEach((k) => {
+            const num = parseInt(k)
+            if (num > index) {
+              reindexed[num - 1] = next[num]
+            } else if (num < index) {
+              reindexed[num] = next[num]
+            }
+          })
+          return reindexed
         })
-        return reindexed
       })
     },
     [milestones, form]
@@ -346,10 +356,12 @@ export function MilestonesCard(
         toast.warning('Cannot save a milestone without a name')
         return
       }
-      const updated = [...milestones]
-      updated[index] = { ...updated[index], name, event }
-      form.setValue('milestones', updated)
-      setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+      startTransition(() => {
+        const updated = [...milestones]
+        updated[index] = { ...updated[index], name, event }
+        form.setValue('milestones', updated)
+        setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+      })
       toast.success('Milestone saved')
     },
     [milestones, form]
