@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
@@ -71,10 +72,6 @@ export function SquireSuspicionsCard({
           Fill these milestone boxes as the squires observe suspicious behavior.
           <br />
           <br />
-          On <strong>Arrival</strong>, if the total suspicion is 8+, all
-          survivors gain +3 insanity.
-          <br />
-          <br />
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -125,6 +122,12 @@ export function SquireSuspicionsCard({
           </TableBody>
         </Table>
       </CardContent>
+      <CardFooter>
+        <CardDescription>
+          On <strong>Arrival</strong>, if the total suspicion is 8+, all
+          survivors gain +3 insanity.
+        </CardDescription>
+      </CardFooter>
     </Card>
   )
 }

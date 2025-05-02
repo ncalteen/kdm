@@ -1,5 +1,6 @@
 'use client'
 
+import { GrabIcon, ScrollIcon } from 'lucide-react'
 import {
   CampaignData,
   CcNemesisVictory,
@@ -977,7 +978,15 @@ export const SquireCardData = [
     name: 'Squire Elle',
     rows: [
       { name: 'Age 1', value: '-' },
-      { name: 'Age 2', value: '[Fighting Art] Piercer' },
+      {
+        name: 'Age 2',
+        value: (
+          <span className="flex items-center">
+            <GrabIcon className="h-4 w-4" />
+            &nbsp; Piercer
+          </span>
+        )
+      },
       {
         name: 'Age 3',
         value: '+3 weapon proficiency levels in any weapon type.'
@@ -996,14 +1005,27 @@ export const SquireCardData = [
     name: 'Owen',
     rows: [
       { name: 'Age 1', value: '-' },
-      { name: 'Age 2', value: '[Fighting Art] Escape Artist' },
+      {
+        name: 'Age 2',
+        value: (
+          <span className="flex items-center">
+            <GrabIcon className="h-4 w-4" />
+            &nbsp; Escape Artist
+          </span>
+        )
+      },
       {
         name: 'Age 3',
         value: '+1 strength.'
       },
       {
         name: 'Age 4',
-        value: '[Story Event] Old Body, old Mind'
+        value: (
+          <span className="flex items-center">
+            <ScrollIcon className="h-4 w-4" />
+            &nbsp; Old Body, Old Mind
+          </span>
+        )
       },
       {
         name: 'Retired',
@@ -1018,7 +1040,12 @@ export const SquireCardData = [
       { name: 'Age 2', value: '-' },
       {
         name: 'Age 3',
-        value: '[Fighting Art] Feral Strength'
+        value: (
+          <span className="flex items-center">
+            <GrabIcon className="h-4 w-4" />
+            &nbsp; Feral Strength
+          </span>
+        )
       },
       {
         name: 'Age 4',
