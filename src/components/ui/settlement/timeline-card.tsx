@@ -401,6 +401,17 @@ export function TimelineCard(
 
   const addEventToYear = useCallback(
     (yearIndex: number) => {
+      // Prevent adding another input if an empty event already exists in this year
+      const yearEntries = timeline[yearIndex]?.entries || []
+      // Check if any entry in this year is being edited
+      const isEditing = yearEntries.some(
+        (_, entryIndex) => editingEvents[`${yearIndex}-${entryIndex}`]
+      )
+      const hasEmpty = yearEntries.some((e) => !e || e.trim() === '')
+      if (isEditing || hasEmpty) {
+        toast.warning('Finish editing the current event before adding another.')
+        return
+      }
       setTimeline((prevTimeline) => {
         // Only update the affected year
         const updatedTimeline = [...prevTimeline]
@@ -411,7 +422,6 @@ export function TimelineCard(
       })
 
       // Update the form state for just the affected year
-      const yearEntries = timeline[yearIndex]?.entries || []
       form.setValue(`timeline.${yearIndex}.entries`, [...yearEntries, ''])
 
       // Set this new event as being edited
@@ -421,7 +431,7 @@ export function TimelineCard(
         [inputKey]: true
       }))
     },
-    [timeline, form]
+    [timeline, form, editingEvents]
   )
 
   const removeEventFromYear = useCallback(
@@ -488,16 +498,46 @@ export function TimelineCard(
 
   const editEvent = useCallback(
     (yearIndex: number, entryIndex: number) => {
-      const inputKey = `${yearIndex}-${entryIndex}`
-      // Batch the state update to avoid blocking the main thread
-      startTransition(() => {
-        setEditingEvents((prev) => ({
-          ...prev,
-          [inputKey]: true
-        }))
+      // Remove any empty (unsaved) event in this year before editing
+      setTimeline((prevTimeline) => {
+        const updatedTimeline = [...prevTimeline]
+        const year = { ...updatedTimeline[yearIndex] }
+        const entries = [...(year.entries || [])]
+        for (let i = entries.length - 1; i >= 0; i--) {
+          if (
+            (entries[i] === '' || entries[i]?.trim() === '') &&
+            i !== entryIndex
+          ) {
+            entries.splice(i, 1)
+          }
+        }
+        year.entries = entries
+        updatedTimeline[yearIndex] = year
+        return updatedTimeline
+      })
+      // Also update the form state
+      const yearEntries = timeline[yearIndex]?.entries || []
+      const filteredEntries = yearEntries.filter(
+        (e, i) => !(i !== entryIndex && (!e || e.trim() === ''))
+      )
+      form.setValue(`timeline.${yearIndex}.entries`, filteredEntries)
+      // Remove editing state for all other events in this year, only allow one editing input per year
+      setEditingEvents((prev) => {
+        const newEditingEvents = { ...prev }
+        Object.keys(newEditingEvents).forEach((key) => {
+          if (
+            key.startsWith(`${yearIndex}-`) &&
+            key !== `${yearIndex}-${entryIndex}`
+          ) {
+            delete newEditingEvents[key]
+          }
+        })
+        // Set the selected event as editing
+        newEditingEvents[`${yearIndex}-${entryIndex}`] = true
+        return newEditingEvents
       })
     },
-    [setEditingEvents]
+    [setEditingEvents, setTimeline, form, timeline]
   )
 
   const handleKeyDown = useCallback(
