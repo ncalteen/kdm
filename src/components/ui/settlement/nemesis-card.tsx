@@ -129,9 +129,13 @@ const MemoizedNemesisItem = memo(
                     checked={nemesis.unlocked}
                     className="mt-2"
                     disabled={true}
+                    id={`nemesis-${nemesis.name}-unlocked`}
+                    name={`nemesis[${nemesis.name}].unlocked`}
                   />
                 </FormControl>
-                <FormLabel className="text-sm font-medium mr-2">
+                <FormLabel
+                  className="text-sm font-medium mr-2"
+                  htmlFor={`nemesis-${nemesis.name}-unlocked`}>
                   {nemesis.name}
                 </FormLabel>
               </FormItem>
@@ -148,6 +152,8 @@ const MemoizedNemesisItem = memo(
                   toggleUnlocked(nemesis.name, !!checked)
                 }
               }}
+              id={`nemesis-${nemesis.name}-unlocked`}
+              name={`nemesis[${nemesis.name}].unlocked`}
             />
             <Input
               value={nameValue}
@@ -155,6 +161,8 @@ const MemoizedNemesisItem = memo(
               onKeyDown={handleKeyDown}
               className="w-[180px]"
               autoFocus
+              id={`nemesis-${nemesis.name}-name`}
+              name={`nemesis[${nemesis.name}].name`}
             />
           </div>
         )}
@@ -174,9 +182,15 @@ const MemoizedNemesisItem = memo(
                         handleToggleLevel(nemesis.name, 'level1', checked)
                       }
                     }}
+                    id={`nemesis-${nemesis.name}-level1`}
+                    name={`nemesis[${nemesis.name}].level1`}
                   />
                 </FormControl>
-                <FormLabel className="text-xs">Lvl 1</FormLabel>
+                <FormLabel
+                  className="text-xs"
+                  htmlFor={`nemesis-${nemesis.name}-level1`}>
+                  Lvl 1
+                </FormLabel>
               </FormItem>
             )}
           />
@@ -195,9 +209,15 @@ const MemoizedNemesisItem = memo(
                         handleToggleLevel(nemesis.name, 'level2', checked)
                       }
                     }}
+                    id={`nemesis-${nemesis.name}-level2`}
+                    name={`nemesis[${nemesis.name}].level2`}
                   />
                 </FormControl>
-                <FormLabel className="text-xs">Lvl 2</FormLabel>
+                <FormLabel
+                  className="text-xs"
+                  htmlFor={`nemesis-${nemesis.name}-level2`}>
+                  Lvl 2
+                </FormLabel>
               </FormItem>
             )}
           />
@@ -216,9 +236,15 @@ const MemoizedNemesisItem = memo(
                         handleToggleLevel(nemesis.name, 'level3', checked)
                       }
                     }}
+                    id={`nemesis-${nemesis.name}-level3`}
+                    name={`nemesis[${nemesis.name}].level3`}
                   />
                 </FormControl>
-                <FormLabel className="text-xs">Lvl 3</FormLabel>
+                <FormLabel
+                  className="text-xs"
+                  htmlFor={`nemesis-${nemesis.name}-level3`}>
+                  Lvl 3
+                </FormLabel>
               </FormItem>
             )}
           />
@@ -436,7 +462,12 @@ function NewNemesisItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
 
-      <Checkbox checked={false} disabled={true} />
+      <Checkbox
+        checked={false}
+        disabled={true}
+        id={`nemesis-new-${index}-unlocked`}
+        name={`nemesis[new-${index}].unlocked`}
+      />
 
       <Input
         placeholder="Add a nemesis..."
@@ -445,6 +476,8 @@ function NewNemesisItem({
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
+        id={`nemesis-new-${index}-name`}
+        name={`nemesis[new-${index}].name`}
       />
 
       <Button

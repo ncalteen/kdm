@@ -138,9 +138,13 @@ const MemoizedQuarryItem = memo(
                     checked={quarry.unlocked}
                     className="mt-2"
                     disabled={true}
+                    id={`quarry-${quarry.name}-unlocked`}
+                    name={`quarries[${quarry.name}].unlocked`}
                   />
                 </FormControl>
-                <FormLabel className="text-sm font-medium">
+                <FormLabel
+                  className="text-sm font-medium"
+                  htmlFor={`quarry-${quarry.name}-unlocked`}>
                   {quarry.name}
                 </FormLabel>
               </FormItem>
@@ -148,13 +152,20 @@ const MemoizedQuarryItem = memo(
           />
         ) : (
           <>
-            <Checkbox checked={quarry.unlocked} disabled={true} />
+            <Checkbox
+              checked={quarry.unlocked}
+              disabled={true}
+              id={`quarry-${quarry.name}-unlocked`}
+              name={`quarries[${quarry.name}].unlocked`}
+            />
             <Input
               value={nameValue}
               onChange={handleNameChange}
               onKeyDown={handleKeyDown}
               className="flex-1"
               autoFocus
+              id={`quarry-${quarry.name}-name`}
+              name={`quarries[${quarry.name}].name`}
             />
           </>
         )}
@@ -170,8 +181,12 @@ const MemoizedQuarryItem = memo(
             <Select
               value={quarry.node}
               onValueChange={(value) => updateQuarryNode(quarry.name, value)}
-              disabled={isDisabled}>
-              <SelectTrigger className="h-8 w-24">
+              disabled={isDisabled}
+              name={`quarries[${quarry.name}].node`}>
+              <SelectTrigger
+                className="h-8 w-24"
+                id={`quarry-${quarry.name}-node-trigger`}
+                name={`quarries[${quarry.name}].node`}>
                 <SelectValue placeholder={quarry.node} />
               </SelectTrigger>
               <SelectContent>
@@ -260,7 +275,12 @@ function NewQuarryItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
 
-      <Checkbox checked={false} disabled={true} />
+      <Checkbox
+        checked={false}
+        disabled={true}
+        id={`quarry-new-${index}-unlocked`}
+        name={`quarries[new-${index}].unlocked`}
+      />
 
       <Input
         placeholder="Add a quarry..."
@@ -269,10 +289,18 @@ function NewQuarryItem({
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
+        id={`quarry-new-${index}-name`}
+        name={`quarries[new-${index}].name`}
       />
 
-      <Select value={node} onValueChange={handleNodeChange}>
-        <SelectTrigger className="w-24">
+      <Select
+        value={node}
+        onValueChange={handleNodeChange}
+        name={`quarries[new-${index}].node`}>
+        <SelectTrigger
+          className="w-24"
+          id={`quarry-new-${index}-node-trigger`}
+          name={`quarries[new-${index}].node`}>
           <SelectValue placeholder="Node" />
         </SelectTrigger>
         <SelectContent>
