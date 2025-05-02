@@ -162,62 +162,64 @@ export function CcVictoriesCard(
                         )}
                       />
                     </TableCell>
-                    {(quarry.ccLevel2 || [false, false]).map(
-                      (checked, lvl2Index) => (
-                        <TableCell
-                          key={`ccLevel2-${lvl2Index}`}
-                          className="text-center">
-                          <FormField
-                            control={form.control}
-                            name={`quarries.${index}.ccLevel2.${lvl2Index}`}
-                            render={() => (
-                              <FormItem className="flex justify-center">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={checked}
-                                    onCheckedChange={(value) =>
-                                      handleQuarryToggle(
-                                        index,
-                                        `ccLevel2[${lvl2Index}]`,
-                                        !!value
-                                      )
-                                    }
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </TableCell>
-                      )
-                    )}
-                    {(quarry.ccLevel3 || [false, false, false]).map(
-                      (checked, lvl3Index) => (
-                        <TableCell
-                          key={`ccLevel3-${lvl3Index}`}
-                          className="text-center">
-                          <FormField
-                            control={form.control}
-                            name={`quarries.${index}.ccLevel3.${lvl3Index}`}
-                            render={() => (
-                              <FormItem className="flex justify-center">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={checked}
-                                    onCheckedChange={(value) =>
-                                      handleQuarryToggle(
-                                        index,
-                                        `ccLevel3[${lvl3Index}]`,
-                                        !!value
-                                      )
-                                    }
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </TableCell>
-                      )
-                    )}
+                    <TableCell className="text-center" colSpan={2}>
+                      <div className="flex flex-row justify-center gap-2">
+                        {(quarry.ccLevel2 || [false, false]).map(
+                          (checked, lvl2Index) => (
+                            <FormField
+                              key={`ccLevel2-${lvl2Index}`}
+                              control={form.control}
+                              name={`quarries.${index}.ccLevel2.${lvl2Index}`}
+                              render={() => (
+                                <FormItem className="flex justify-center">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={checked}
+                                      onCheckedChange={(value) =>
+                                        handleQuarryToggle(
+                                          index,
+                                          `ccLevel2[${lvl2Index}]`,
+                                          !!value
+                                        )
+                                      }
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          )
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center" colSpan={3}>
+                      <div className="flex flex-row justify-center gap-2">
+                        {(quarry.ccLevel3 || [false, false, false]).map(
+                          (checked, lvl3Index) => (
+                            <FormField
+                              key={`ccLevel3-${lvl3Index}`}
+                              control={form.control}
+                              name={`quarries.${index}.ccLevel3.${lvl3Index}`}
+                              render={() => (
+                                <FormItem className="flex justify-center">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={checked}
+                                      onCheckedChange={(value) =>
+                                        handleQuarryToggle(
+                                          index,
+                                          `ccLevel3[${lvl3Index}]`,
+                                          !!value
+                                        )
+                                      }
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          )
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

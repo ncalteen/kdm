@@ -18,9 +18,16 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, TrashIcon } from 'lucide-react'
-import { useState } from 'react'
+import {
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
@@ -32,16 +39,22 @@ interface RewardItemProps {
   reward: { name: string; cc: number; unlocked: boolean }
   handleToggleUnlocked: (rewardName: string, unlocked: boolean) => void
   handleRemoveReward: (rewardName: string) => void
-  handleUpdateRewardCC: (rewardName: string, cc: number) => void
   id: string
+  isEditing: boolean
+  onEdit: () => void
+  onSaveEdit: (name: string, cc: number) => void
+  onCancelEdit: () => void
 }
 
 function RewardItem({
   reward,
   handleToggleUnlocked,
   handleRemoveReward,
-  handleUpdateRewardCC,
-  id
+  id,
+  isEditing,
+  onEdit,
+  onSaveEdit,
+  onCancelEdit
 }: RewardItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -49,6 +62,30 @@ function RewardItem({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
+  }
+
+  const [editName, setEditName] = useState(reward.name)
+  const [editCC, setEditCC] = useState(reward.cc)
+
+  useEffect(() => {
+    setEditName(reward.name)
+    setEditCC(reward.cc)
+  }, [reward.name, reward.cc])
+
+  const handleEditSave = () => {
+    if (editName.trim() === '') {
+      toast.warning('Cannot save a reward without a name')
+      return
+    }
+    onSaveEdit(editName.trim(), editCC)
+    toast.success('Reward saved')
+  }
+
+  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleEditSave()
+    }
   }
 
   return (
@@ -70,51 +107,122 @@ function RewardItem({
             handleToggleUnlocked(reward.name, checked)
           }
         }}
+        disabled={isEditing}
       />
 
       <div className="flex items-center">
         <FormLabel className="mr-2 text-sm">CC:</FormLabel>
-        <Input
-          type="number"
-          className="w-16 h-8 text-sm no-spinners"
-          value={reward.cc}
-          onChange={(e) => {
-            const value = parseInt(e.target.value)
-            if (!isNaN(value) && value >= 0) {
-              handleUpdateRewardCC(reward.name, value)
-            }
-          }}
-          min={0}
-        />
+        {isEditing ? (
+          <Input
+            type="number"
+            className="w-16 h-8 text-sm no-spinners"
+            value={editCC}
+            onChange={(e) => {
+              const value = parseInt(e.target.value)
+              if (!isNaN(value) && value >= 0) {
+                setEditCC(value)
+              }
+            }}
+            min={0}
+            onKeyDown={handleEditKeyDown}
+            autoFocus
+          />
+        ) : (
+          <Input
+            type="number"
+            className="w-16 h-8 text-sm no-spinners"
+            value={reward.cc}
+            onChange={() => {}}
+            min={0}
+            disabled
+          />
+        )}
       </div>
 
-      <div className="flex-1 font-medium text-left">{reward.name}</div>
+      <div className="flex-1 font-medium text-left">
+        {isEditing ? (
+          <Input
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onKeyDown={handleEditKeyDown}
+            className="flex-1"
+            autoFocus
+          />
+        ) : (
+          reward.name
+        )}
+      </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0"
-        onClick={() => handleRemoveReward(reward.name)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      {isEditing ? (
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 p-0"
+            onClick={handleEditSave}
+            title="Save reward">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 p-0"
+            onClick={onCancelEdit}
+            title="Cancel edit">
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 p-0"
+            onClick={onEdit}
+            title="Edit reward">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 p-0"
+            onClick={() => handleRemoveReward(reward.name)}>
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        </>
+      )}
     </div>
   )
 }
 
 function NewRewardItem({
   form,
-  onAdd
+  onAdd,
+  onCancel
 }: {
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
   onAdd: () => void
+  onCancel: () => void
 }) {
   const [name, setName] = useState('')
   const [cc, setCc] = useState(1)
 
   const handleSubmit = () => {
-    if (name.trim() === '') return
+    if (name.trim() === '') {
+      toast.warning('Cannot save a reward without a name')
+      return
+    }
 
     const rewards = [...(form.watch('ccRewards') || [])]
+    if (rewards.some((r) => r.name === name.trim())) {
+      toast.warning('A reward with this name already exists')
+      return
+    }
+
     const newReward = {
       name: name.trim(),
       cc: cc,
@@ -127,6 +235,7 @@ function NewRewardItem({
     setName('')
     setCc(1)
     onAdd()
+    toast.success('New reward added')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -167,14 +276,26 @@ function NewRewardItem({
         onChange={(e) => setName(e.target.value)}
         className="flex-1"
         onKeyDown={handleKeyDown}
+        autoFocus
       />
 
       <Button
+        type="button"
         variant="ghost"
-        size="sm"
+        size="icon"
         className="h-8 w-8 p-0"
-        onClick={handleSubmit}>
-        <PlusCircleIcon className="h-4 w-4" />
+        onClick={handleSubmit}
+        title="Save reward">
+        <CheckIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 p-0"
+        onClick={onCancel}
+        title="Cancel add reward">
+        <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
   )
@@ -184,6 +305,7 @@ export function CcRewardsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const [showNewRewardForm, setShowNewRewardForm] = useState(false)
+  const [editingReward, setEditingReward] = useState<string | null>(null)
   const rewards = form.watch('ccRewards') || []
 
   const sensors = useSensors(
@@ -208,16 +330,6 @@ export function CcRewardsCard(
     form.setValue('ccRewards', updatedRewards)
   }
 
-  const handleUpdateRewardCC = (rewardName: string, cc: number) => {
-    const updatedRewards = rewards.map((r) => {
-      if (r.name === rewardName) {
-        return { ...r, cc }
-      }
-      return r
-    })
-    form.setValue('ccRewards', updatedRewards)
-  }
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -231,6 +343,10 @@ export function CcRewardsCard(
   }
 
   const addNewReward = () => {
+    setShowNewRewardForm(false)
+  }
+
+  const cancelNewReward = () => {
     setShowNewRewardForm(false)
   }
 
@@ -258,27 +374,41 @@ export function CcRewardsCard(
                     reward={reward}
                     handleToggleUnlocked={handleToggleUnlocked}
                     handleRemoveReward={handleRemoveReward}
-                    handleUpdateRewardCC={handleUpdateRewardCC}
+                    isEditing={editingReward === reward.name}
+                    onEdit={() => setEditingReward(reward.name)}
+                    onSaveEdit={(name, cc) => {
+                      const updatedRewards = rewards.map((r) =>
+                        r.name === reward.name ? { ...r, name, cc } : r
+                      )
+                      form.setValue('ccRewards', updatedRewards)
+                      setEditingReward(null)
+                    }}
+                    onCancelEdit={() => setEditingReward(null)}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           )}
 
-          {showNewRewardForm ? (
-            <NewRewardItem form={form} onAdd={addNewReward} />
-          ) : (
-            <div className="pt-2 flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => setShowNewRewardForm(true)}>
-                <PlusCircleIcon className="h-4 w-4 mr-1" />
-                Add Reward
-              </Button>
-            </div>
+          {showNewRewardForm && (
+            <NewRewardItem
+              form={form}
+              onAdd={addNewReward}
+              onCancel={cancelNewReward}
+            />
           )}
+
+          <div className="pt-2 flex justify-center">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setShowNewRewardForm(true)}
+              disabled={showNewRewardForm || editingReward !== null}>
+              <PlusCircleIcon className="h-4 w-4 mr-1" />
+              Add Reward
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

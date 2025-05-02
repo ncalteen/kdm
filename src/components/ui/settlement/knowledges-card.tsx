@@ -4,7 +4,6 @@ import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
-  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -18,20 +17,22 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, PlusCircleIcon, TrashIcon } from 'lucide-react'
-import { useState } from 'react'
+import {
+  CheckIcon,
+  GripVertical,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
+import { Badge } from '../badge'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import { Input } from '../input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '../select'
+import { SelectPhilosophyCombobox } from '../menu/select-philosophy-combobox'
 
 interface KnowledgeItemProps {
   knowledge: { name: string; philosophy?: string }
@@ -49,42 +50,47 @@ function KnowledgeItem({
   handleRemoveKnowledge,
   handleUpdateKnowledge,
   philosophies,
-  id
-}: KnowledgeItemProps) {
+  id,
+  isEditing,
+  onEdit,
+  onSaveEdit,
+  onCancelEdit
+}: KnowledgeItemProps & {
+  isEditing: boolean
+  onEdit: () => void
+  onSaveEdit: (name: string, philosophy?: string) => void
+  onCancelEdit: () => void
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
   const [value, setValue] = useState(knowledge.name)
-  const [initialValue] = useState(knowledge.name)
   const [philosophyValue, setPhilosophyValue] = useState<string | undefined>(
     knowledge.philosophy
   )
+
+  useEffect(() => {
+    setValue(knowledge.name)
+    setPhilosophyValue(knowledge.philosophy)
+  }, [knowledge.name, knowledge.philosophy])
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
   }
 
-  const handleBlur = () => {
-    if (value.trim() !== initialValue && value.trim() !== '') {
-      handleUpdateKnowledge(initialValue, {
-        name: value.trim(),
-        philosophy: philosophyValue
-      })
+  const handleEditSave = () => {
+    if (value.trim() === '') {
+      toast.warning('Cannot save a knowledge without a name')
+      return
     }
+    onSaveEdit(value.trim(), philosophyValue)
+    toast.success('Knowledge saved')
   }
 
-  const handlePhilosophyChange = (newPhilosophy: string) => {
-    setPhilosophyValue(newPhilosophy === 'none' ? undefined : newPhilosophy)
-    handleUpdateKnowledge(knowledge.name, {
-      name: knowledge.name,
-      philosophy: newPhilosophy === 'none' ? undefined : newPhilosophy
-    })
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      e.currentTarget.blur()
+      handleEditSave()
     }
   }
 
@@ -100,47 +106,82 @@ function KnowledgeItem({
           className="cursor-grab active:cursor-grabbing p-1">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-
-        <Input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          className="flex-1"
-        />
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => handleRemoveKnowledge(knowledge.name)}>
-          <TrashIcon className="h-4 w-4" />
-        </Button>
+        {isEditing ? (
+          <Input
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleEditKeyDown}
+            className="flex-1"
+            autoFocus
+          />
+        ) : (
+          <div className="flex-1 font-medium text-left">{knowledge.name}</div>
+        )}
+        {isEditing ? (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 p-0"
+              onClick={handleEditSave}
+              title="Save knowledge">
+              <CheckIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 p-0"
+              onClick={onCancelEdit}
+              title="Cancel edit">
+              <TrashIcon className="h-4 w-4" />
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 p-0"
+              onClick={onEdit}
+              title="Edit knowledge">
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 p-0"
+              onClick={() => handleRemoveKnowledge(knowledge.name)}>
+              <TrashIcon className="h-4 w-4" />
+            </Button>
+          </>
+        )}
       </div>
-
       <div className="flex items-center pl-8 gap-2">
-        <div className="text-sm text-muted-foreground">Philosophy:</div>
-        <Select
-          value={philosophyValue || undefined}
-          onValueChange={handlePhilosophyChange}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select philosophy" />
-          </SelectTrigger>
-          <SelectContent>
-            {philosophies.length > 0 ? (
-              <>
-                <SelectItem value="none">None</SelectItem>
-                {philosophies.map((philosophy) => (
-                  <SelectItem key={philosophy} value={philosophy}>
-                    {philosophy}
-                  </SelectItem>
-                ))}
-              </>
-            ) : (
-              <SelectItem value="none">No philosophies available</SelectItem>
-            )}
-          </SelectContent>
-        </Select>
+        {isEditing ? (
+          <SelectPhilosophyCombobox
+            value={philosophyValue || ''}
+            onChange={(newPhilosophy) => {
+              setPhilosophyValue(
+                newPhilosophy === 'none' ? undefined : newPhilosophy
+              )
+              if (isEditing) return
+              handleUpdateKnowledge(knowledge.name, {
+                name: knowledge.name,
+                philosophy: newPhilosophy === 'none' ? undefined : newPhilosophy
+              })
+            }}
+            options={philosophies}
+            disabled={!isEditing}
+          />
+        ) : (
+          <Badge variant="secondary">
+            {philosophyValue ? philosophyValue : 'None'}
+          </Badge>
+        )}
       </div>
     </div>
   )
@@ -149,30 +190,36 @@ function KnowledgeItem({
 function NewKnowledgeItem({
   form,
   onAdd,
-  philosophies
+  philosophies,
+  existingNames
 }: {
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
   onAdd: () => void
   philosophies: string[]
+  existingNames: string[]
 }) {
   const [name, setName] = useState('')
   const [philosophy, setPhilosophy] = useState<string>('')
 
   const handleSubmit = () => {
-    if (name.trim() === '') return
-
+    if (name.trim() === '') {
+      toast.warning('Cannot save a knowledge without a name')
+      return
+    }
+    if (existingNames.includes(name.trim())) {
+      toast.warning('A knowledge with this name already exists')
+      return
+    }
     const knowledges = [...(form.watch('knowledges') || [])]
     const newKnowledge = {
       name: name.trim(),
       philosophy: philosophy && philosophy !== 'none' ? philosophy : undefined
     }
-
     form.setValue('knowledges', [...knowledges, newKnowledge])
-
-    // Reset form
     setName('')
     setPhilosophy('')
     onAdd()
+    toast.success('New knowledge added')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -188,45 +235,39 @@ function NewKnowledgeItem({
         <div className="p-1">
           <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
         </div>
-
         <Input
           placeholder="Add a new knowledge..."
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="flex-1"
           onKeyDown={handleKeyDown}
+          autoFocus
         />
-
         <Button
+          type="button"
           variant="ghost"
-          size="sm"
+          size="icon"
           className="h-8 w-8 p-0"
-          onClick={handleSubmit}>
-          <PlusCircleIcon className="h-4 w-4" />
+          onClick={handleSubmit}
+          title="Save knowledge">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 p-0"
+          onClick={onAdd}
+          title="Cancel add knowledge">
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
-
       <div className="flex items-center pl-8 gap-2">
-        <div className="text-sm text-muted-foreground">Philosophy:</div>
-        <Select value={philosophy} onValueChange={setPhilosophy}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select philosophy" />
-          </SelectTrigger>
-          <SelectContent>
-            {philosophies.length > 0 ? (
-              <>
-                <SelectItem value="none">None</SelectItem>
-                {philosophies.map((philosophy) => (
-                  <SelectItem key={philosophy} value={philosophy}>
-                    {philosophy}
-                  </SelectItem>
-                ))}
-              </>
-            ) : (
-              <SelectItem value="none">No philosophies available</SelectItem>
-            )}
-          </SelectContent>
-        </Select>
+        <SelectPhilosophyCombobox
+          value={philosophy}
+          onChange={setPhilosophy}
+          options={philosophies}
+        />
       </div>
     </div>
   )
@@ -236,10 +277,9 @@ export function KnowledgesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const [showNewKnowledgeForm, setShowNewKnowledgeForm] = useState(false)
+  const [editingKnowledge, setEditingKnowledge] = useState<string | null>(null)
   const knowledges = form.watch('knowledges') || []
   const philosophies = form.watch('philosophies') || []
-
-  // This will ensure that we generate unique IDs for the sortable context
   const knowledgeIds = knowledges.map((k) => k.name)
 
   const sensors = useSensors(
@@ -267,16 +307,24 @@ export function KnowledgesCard(
     form.setValue('knowledges', updatedKnowledges)
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-
-    if (over && active.id !== over.id) {
-      const oldIndex = knowledgeIds.indexOf(active.id as string)
-      const newIndex = knowledgeIds.indexOf(over.id as string)
-
-      const newOrder = arrayMove(knowledges, oldIndex, newIndex)
-      form.setValue('knowledges', newOrder)
+  const handleSaveEdit = (
+    oldName: string,
+    newName: string,
+    philosophy?: string
+  ) => {
+    if (newName.trim() === '') {
+      toast.warning('Cannot save a knowledge without a name')
+      return
     }
+    if (
+      knowledges.some((k) => k.name === newName.trim() && k.name !== oldName)
+    ) {
+      toast.warning('A knowledge with this name already exists')
+      return
+    }
+    handleUpdateKnowledge(oldName, { name: newName.trim(), philosophy })
+    setEditingKnowledge(null)
+    toast.success('Knowledge saved')
   }
 
   const addNewKnowledge = () => {
@@ -296,7 +344,15 @@ export function KnowledgesCard(
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
+              onDragEnd={(event) => {
+                const { active, over } = event
+                if (over && active.id !== over.id) {
+                  const oldIndex = knowledgeIds.indexOf(active.id as string)
+                  const newIndex = knowledgeIds.indexOf(over.id as string)
+                  const newOrder = arrayMove(knowledges, oldIndex, newIndex)
+                  form.setValue('knowledges', newOrder)
+                }
+              }}>
               <SortableContext
                 items={knowledgeIds}
                 strategy={verticalListSortingStrategy}>
@@ -308,30 +364,38 @@ export function KnowledgesCard(
                     philosophies={philosophies}
                     handleRemoveKnowledge={handleRemoveKnowledge}
                     handleUpdateKnowledge={handleUpdateKnowledge}
+                    isEditing={editingKnowledge === knowledge.name}
+                    onEdit={() => setEditingKnowledge(knowledge.name)}
+                    onSaveEdit={(name, philosophy) =>
+                      handleSaveEdit(knowledge.name, name, philosophy)
+                    }
+                    onCancelEdit={() => setEditingKnowledge(null)}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           )}
 
-          {showNewKnowledgeForm ? (
+          {showNewKnowledgeForm && (
             <NewKnowledgeItem
               form={form}
               onAdd={addNewKnowledge}
               philosophies={philosophies}
+              existingNames={knowledges.map((k) => k.name)}
             />
-          ) : (
-            <div className="pt-2 flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => setShowNewKnowledgeForm(true)}>
-                <PlusCircleIcon className="h-4 w-4 mr-1" />
-                Add Knowledge
-              </Button>
-            </div>
           )}
+
+          <div className="pt-2 flex justify-center">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setShowNewKnowledgeForm(true)}
+              disabled={showNewKnowledgeForm || editingKnowledge !== null}>
+              <PlusCircleIcon className="h-4 w-4 mr-1" />
+              Add Knowledge
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

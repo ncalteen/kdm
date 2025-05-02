@@ -39,13 +39,6 @@ export function CcCard(form: UseFormReturn<z.infer<typeof SettlementSchema>>) {
       }
     }
 
-    // Add CC from CC rewards
-    for (const reward of ccRewards) {
-      if (reward.unlocked) {
-        totalCc += reward.cc
-      }
-    }
-
     setCcValue(totalCc)
     form.setValue('ccValue', totalCc)
   }, [nemeses, quarries, ccRewards, form])
