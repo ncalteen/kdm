@@ -539,11 +539,11 @@ export function NemesisCard(
         startTransition(() => {
           const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
           form.setValue('nemesis', updatedNemeses)
-          setDisabledInputs((prev) => {
-            const updated = { ...prev }
-            delete updated[nemesisName]
-            return updated
-          })
+        })
+        setDisabledInputs((prev) => {
+          const updated = { ...prev }
+          delete updated[nemesisName]
+          return updated
         })
       }
     },
