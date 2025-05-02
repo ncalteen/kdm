@@ -263,7 +263,11 @@ export function PatternsCard(
                     form={form}
                     handleRemovePattern={handleRemovePattern}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => form.setValue(`patterns.${i}`, value)}
+                    onSave={(i, value) => {
+                      form.setValue(`patterns.${i}`, value)
+                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
+                      toast.success('Pattern saved')
+                    }}
                     onEdit={editPattern}
                   />
                 ))}

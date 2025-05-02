@@ -277,9 +277,11 @@ export function SeedPatternsCard(
                     form={form}
                     handleRemoveSeedPattern={handleRemoveSeedPattern}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) =>
+                    onSave={(i, value) => {
                       form.setValue(`seedPatterns.${i}`, value)
-                    }
+                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
+                      toast.success('Seed pattern saved')
+                    }}
                     onEdit={editSeedPattern}
                   />
                 ))}

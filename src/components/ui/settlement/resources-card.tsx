@@ -33,6 +33,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { Badge } from '../badge'
 import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import {
@@ -267,7 +268,7 @@ function ResourceItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center mb-2 gap-2">
+      className="flex items-center mb-3 gap-2">
       <div
         {...attributes}
         {...listeners}
@@ -293,11 +294,21 @@ function ResourceItem({
           />
         </div>
         <div className="w-[30%]">
-          <ResourceTypesCombobox
-            selectedTypes={selectedTypes}
-            onChange={(types) => !isDisabled && setSelectedTypes(types)}
-            disabled={isDisabled}
-          />
+          {isDisabled ? (
+            <div className="flex flex-wrap gap-1">
+              {selectedTypes.map((type) => (
+                <Badge key={type} variant="secondary">
+                  {type}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <ResourceTypesCombobox
+              selectedTypes={selectedTypes}
+              onChange={(types) => !isDisabled && setSelectedTypes(types)}
+              disabled={isDisabled}
+            />
+          )}
         </div>
         <div className="w-[10%] flex items-center">
           <Input
@@ -569,14 +580,16 @@ export function ResourcesCard(
                   form={form}
                   handleRemoveResource={handleRemoveResource}
                   isDisabled={!!disabledInputs[index]}
-                  onSave={(i, name, category, types, amount) =>
+                  onSave={(i, name, category, types, amount) => {
                     form.setValue(`resources.${i}`, {
                       name,
                       category,
                       types,
                       amount
                     })
-                  }
+                    setDisabledInputs((prev) => ({ ...prev, [i]: true }))
+                    toast.success('Resource saved')
+                  }}
                   onEdit={editResource}
                 />
               ))}

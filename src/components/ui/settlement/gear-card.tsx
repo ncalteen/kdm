@@ -263,7 +263,11 @@ export function GearCard(
                     form={form}
                     handleRemoveGear={handleRemoveGear}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => form.setValue(`gear.${i}`, value)}
+                    onSave={(i, value) => {
+                      form.setValue(`gear.${i}`, value)
+                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
+                      toast.success('Gear saved')
+                    }}
                     onEdit={editGear}
                   />
                 ))}
