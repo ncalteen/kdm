@@ -49,13 +49,17 @@ export function SelectSurvivorTypeCombobox({
   const handleSelect = (currentValue: string) => {
     // Don't allow changes if disabled
     if (disabled) return
-
-    const newValue = currentValue === value ? '' : currentValue
-    setValue(newValue)
+    // Do not allow clearing the selection
+    if (!currentValue) return
+    if (currentValue === value) {
+      setOpen(false)
+      return
+    }
+    setValue(currentValue)
     setOpen(false)
 
-    if (onChange && newValue) {
-      onChange(newValue as SurvivorType)
+    if (onChange && currentValue) {
+      onChange(currentValue as SurvivorType)
     }
   }
 

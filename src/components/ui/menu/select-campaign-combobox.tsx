@@ -45,12 +45,17 @@ export function SelectCampaignCombobox({
   }, [propValue])
 
   const handleSelect = (currentValue: string) => {
-    const newValue = currentValue === value ? '' : currentValue
-    setValue(newValue)
+    // Do not allow clearing the selection
+    if (!currentValue) return
+    if (currentValue === value) {
+      setOpen(false)
+      return
+    }
+    setValue(currentValue)
     setOpen(false)
 
-    if (onChange && newValue) {
-      onChange(newValue as CampaignType)
+    if (onChange && currentValue) {
+      onChange(currentValue as CampaignType)
     }
   }
 
