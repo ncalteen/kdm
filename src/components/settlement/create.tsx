@@ -13,6 +13,7 @@ import {
   SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import { CampaignData } from '@/lib/types'
 import { getLostSettlementCount, getNextSettlementId } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -109,8 +110,22 @@ export function CreateSettlementForm() {
 
   // Handle campaign type change from the combobox
   const handleCampaignChange = (value: CampaignType) => {
+    // Set the new campaign type
     form.setValue('campaignType', value)
-    setSelectedTab('timeline') // Reset to timeline tab when campaign type changes
+
+    // Set campaign data based on selected campaign type
+    const campaignData: CampaignData =
+      value === CampaignType.PEOPLE_OF_THE_LANTERN
+        ? PeopleOfTheLanternCampaignData
+        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+          ? PeopleOfTheDreamKeeperCampaignData
+          : value === CampaignType.PEOPLE_OF_THE_STARS
+            ? PeopleOfTheStarsCampaignData
+            : value === CampaignType.PEOPLE_OF_THE_SUN
+              ? PeopleOfTheSunCampaignData
+              : value === CampaignType.SQUIRES_OF_THE_CITADEL
+                ? SquiresOfTheCitadelCampaignData
+                : CustomCampaignData
 
     // Set survival limit
     form.setValue(
@@ -118,62 +133,27 @@ export function CreateSettlementForm() {
       value === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
     )
 
-    // If People of the Dream Keeper is selected, set survivor type to Arc and disable editing
-    if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
-      form.setValue('survivorType', SurvivorType.ARC)
+    // Update ALL campaign-specific data
+    form.setValue('timeline', campaignData.timeline)
+    form.setValue('quarries', campaignData.quarries)
+    form.setValue('nemesis', campaignData.nemesis)
+    form.setValue('milestones', campaignData.milestones)
+    form.setValue('innovations', campaignData.innovations)
+    form.setValue('locations', campaignData.locations)
+    form.setValue('principles', campaignData.principles)
+
+    // Set CC rewards if available
+    if (campaignData.ccRewards && campaignData.ccRewards.length > 0) {
+      form.setValue('ccRewards', campaignData.ccRewards)
+    } else if (form.watch('survivorType') === SurvivorType.ARC) {
+      form.setValue('ccRewards', [])
     }
-
-    // Set appropriate timeline based on campaign type (without deep nesting)
-    form.setValue(
-      'timeline',
-      value === CampaignType.SQUIRES_OF_THE_CITADEL
-        ? SquiresOfTheCitadelCampaignData.timeline
-        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PeopleOfTheDreamKeeperCampaignData.timeline
-          : value === CampaignType.PEOPLE_OF_THE_LANTERN
-            ? PeopleOfTheLanternCampaignData.timeline
-            : value === CampaignType.PEOPLE_OF_THE_STARS
-              ? PeopleOfTheStarsCampaignData.timeline
-              : value === CampaignType.PEOPLE_OF_THE_SUN
-                ? PeopleOfTheSunCampaignData.timeline
-                : CustomCampaignData.timeline
-    )
-
-    // Set appropriate milestones
-    form.setValue(
-      'milestones',
-      value === CampaignType.SQUIRES_OF_THE_CITADEL
-        ? SquiresOfTheCitadelCampaignData.milestones
-        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PeopleOfTheDreamKeeperCampaignData.milestones
-          : value === CampaignType.PEOPLE_OF_THE_LANTERN
-            ? PeopleOfTheLanternCampaignData.milestones
-            : value === CampaignType.PEOPLE_OF_THE_STARS
-              ? PeopleOfTheStarsCampaignData.milestones
-              : value === CampaignType.PEOPLE_OF_THE_SUN
-                ? PeopleOfTheSunCampaignData.milestones
-                : CustomCampaignData.milestones
-    )
-
-    // Set appropriate innovations
-    form.setValue(
-      'innovations',
-      value === CampaignType.SQUIRES_OF_THE_CITADEL
-        ? SquiresOfTheCitadelCampaignData.innovations
-        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PeopleOfTheDreamKeeperCampaignData.innovations
-          : value === CampaignType.PEOPLE_OF_THE_LANTERN
-            ? PeopleOfTheLanternCampaignData.innovations
-            : value === CampaignType.PEOPLE_OF_THE_STARS
-              ? PeopleOfTheStarsCampaignData.innovations
-              : value === CampaignType.PEOPLE_OF_THE_SUN
-                ? PeopleOfTheSunCampaignData.innovations
-                : CustomCampaignData.innovations
-    )
 
     // Set suspicions for Squires campaign
     if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
       form.setValue('suspicions', DefaultSquiresSuspicion)
+    } else {
+      form.setValue('suspicions', undefined)
     }
 
     // Set lantern research for appropriate campaigns
@@ -184,9 +164,15 @@ export function CreateSettlementForm() {
     form.setValue('lanternResearchLevel', hasLanternResearch ? 0 : undefined)
     form.setValue('monsterVolumes', hasLanternResearch ? [] : undefined)
 
-    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
-      form.setValue('survivorType', SurvivorType.CORE)
-    }
+    // Clear user-editable collections to start fresh with the new campaign
+    form.setValue('departingBonuses', [])
+    form.setValue('patterns', [])
+    form.setValue('seedPatterns', [])
+    form.setValue('resources', [])
+    form.setValue('gear', [])
+    form.setValue('deathCount', 0)
+    form.setValue('population', 0)
+    form.setValue('ccValue', 0)
   }
 
   // Handle survivor type change from the combobox
