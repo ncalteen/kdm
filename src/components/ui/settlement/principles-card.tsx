@@ -122,7 +122,13 @@ function PrincipleItem({
         </div>
         <div className="flex-1 flex flex-col gap-2">
           {isDisabled ? (
-            <Input value={nameValue} disabled className="w-full" />
+            <Input
+              value={nameValue}
+              disabled
+              className="w-full"
+              id={`principle-${index}-name`}
+              name={`principles[${index}].name`}
+            />
           ) : (
             <Input
               placeholder="Name"
@@ -131,6 +137,8 @@ function PrincipleItem({
               onChange={handleNameChange}
               onKeyDown={handleKeyDown}
               autoFocus
+              id={`principle-${index}-name`}
+              name={`principles[${index}].name`}
             />
           )}
           <div className="flex items-center gap-2">
@@ -138,9 +146,17 @@ function PrincipleItem({
               checked={principle.option1Selected}
               onCheckedChange={() => handleSelectOption(index, 1)}
               disabled={true}
+              id={`principle-${index}-option1-selected`}
+              name={`principles[${index}].option1Selected`}
             />
             {isDisabled ? (
-              <Input value={option1Value} disabled className="flex-1" />
+              <Input
+                value={option1Value}
+                disabled
+                className="flex-1"
+                id={`principle-${index}-option1-name`}
+                name={`principles[${index}].option1Name`}
+              />
             ) : (
               <Input
                 placeholder="Option 1"
@@ -148,6 +164,8 @@ function PrincipleItem({
                 className="flex-1"
                 onChange={handleOption1Change}
                 onKeyDown={handleKeyDown}
+                id={`principle-${index}-option1-name`}
+                name={`principles[${index}].option1Name`}
               />
             )}
             <strong>or</strong>
@@ -155,9 +173,17 @@ function PrincipleItem({
               checked={principle.option2Selected}
               onCheckedChange={() => handleSelectOption(index, 2)}
               disabled={true}
+              id={`principle-${index}-option2-selected`}
+              name={`principles[${index}].option2Selected`}
             />
             {isDisabled ? (
-              <Input value={option2Value} disabled className="flex-1" />
+              <Input
+                value={option2Value}
+                disabled
+                className="flex-1"
+                id={`principle-${index}-option2-name`}
+                name={`principles[${index}].option2Name`}
+              />
             ) : (
               <Input
                 placeholder="Option 2"
@@ -165,6 +191,8 @@ function PrincipleItem({
                 className="flex-1"
                 onChange={handleOption2Change}
                 onKeyDown={handleKeyDown}
+                id={`principle-${index}-option2-name`}
+                name={`principles[${index}].option2Name`}
               />
             )}
           </div>

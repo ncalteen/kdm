@@ -116,13 +116,21 @@ function MilestoneItem({
                 onCheckedChange={(checked) => {
                   form.setValue(`milestones.${index}.complete`, !!checked)
                 }}
+                id={`milestone-${index}-complete`}
+                name={`milestones[${index}].complete`}
               />
             </FormControl>
           </FormItem>
         )}
       />
       {isDisabled ? (
-        <Input value={nameValue} disabled className="flex-1" />
+        <Input
+          value={nameValue}
+          disabled
+          className="flex-1"
+          id={`milestone-${index}-name`}
+          name={`milestones[${index}].name`}
+        />
       ) : (
         <Input
           value={nameValue}
@@ -130,17 +138,27 @@ function MilestoneItem({
           onKeyDown={handleKeyDown}
           className="flex-1"
           autoFocus
+          id={`milestone-${index}-name`}
+          name={`milestones[${index}].name`}
         />
       )}
       <BookOpen />
       {isDisabled ? (
-        <Input value={eventValue} disabled className="flex-1" />
+        <Input
+          value={eventValue}
+          disabled
+          className="flex-1"
+          id={`milestone-${index}-event`}
+          name={`milestones[${index}].event`}
+        />
       ) : (
         <Input
           value={eventValue}
           onChange={handleEventChange}
           onKeyDown={handleKeyDown}
           className="flex-1"
+          id={`milestone-${index}-event`}
+          name={`milestones[${index}].event`}
         />
       )}
       <div className="flex items-center gap-2 ml-auto">

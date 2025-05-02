@@ -97,6 +97,8 @@ function LocationItem({
         onCheckedChange={(checked) => {
           if (!isDisabled) setUnlockedValue(!!checked)
         }}
+        id={`location-${index}-unlocked`}
+        name={`locations[${index}].unlocked`}
       />
       <Input
         placeholder="Location Name"
@@ -107,6 +109,8 @@ function LocationItem({
         }}
         onKeyDown={handleKeyDown}
         className="flex-1"
+        id={`location-${index}-name`}
+        name={`locations[${index}].name`}
       />
       {isDisabled ? (
         <Button
