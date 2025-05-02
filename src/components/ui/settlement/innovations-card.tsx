@@ -211,6 +211,17 @@ export function InnovationsCard(
     setIsAddingNew(false)
   }, [innovations])
 
+  // Mark all loaded innovations as saved (disabled) if they are non-empty
+  useEffect(() => {
+    const initialDisabled: { [key: number]: boolean } = {}
+    innovations.forEach((innovation, idx) => {
+      if (innovation && innovation.trim() !== '') {
+        initialDisabled[idx] = true
+      }
+    })
+    setDisabledInputs(initialDisabled)
+  }, [innovations])
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -277,8 +288,6 @@ export function InnovationsCard(
     const updatedDisabledInputs = { ...disabledInputs }
     updatedDisabledInputs[index] = false
     setDisabledInputs(updatedDisabledInputs)
-
-    toast.info('Editing innovation')
   }
 
   const handleDragEnd = (event: DragEndEvent) => {

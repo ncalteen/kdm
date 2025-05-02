@@ -120,6 +120,7 @@ export function PatternsCard(
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+  const [isAddingNew, setIsAddingNew] = useState(false)
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -135,15 +136,7 @@ export function PatternsCard(
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-  const addPattern = () => {
-    const currentPatterns = [...patterns]
-    currentPatterns.push('')
-    form.setValue('patterns', currentPatterns)
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [currentPatterns.length - 1]: false
-    }))
-  }
+  const addPattern = () => setIsAddingNew(true)
   const handleRemovePattern = (index: number) => {
     const currentPatterns = [...patterns]
     currentPatterns.splice(index, 1)
@@ -158,13 +151,15 @@ export function PatternsCard(
       return next
     })
   }
-  const savePattern = (index: number, value: string) => {
+  const savePattern = (value: string) => {
     if (!value || value.trim() === '') {
       toast.warning('Cannot save a pattern without a name')
       return
     }
-    form.setValue(`patterns.${index}`, value)
-    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    const newPatterns = [...patterns, value]
+    form.setValue('patterns', newPatterns)
+    setDisabledInputs((prev) => ({ ...prev, [newPatterns.length - 1]: true }))
+    setIsAddingNew(false)
     toast.success('Pattern saved')
   }
   const editPattern = (index: number) => {
@@ -190,6 +185,55 @@ export function PatternsCard(
       })
     }
   }
+  // NewPatternItem component for temporary input
+  function NewPatternItem({
+    onSave,
+    onCancel
+  }: {
+    onSave: (value: string) => void
+    onCancel: () => void
+  }) {
+    const [value, setValue] = useState('')
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        onSave(value)
+      } else if (e.key === 'Escape') {
+        onCancel()
+      }
+    }
+    return (
+      <div className="flex items-center gap-2">
+        <div className="p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+        </div>
+        <Input
+          placeholder="Pattern"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+          autoFocus
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(value)}
+          title="Save pattern">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
+    )
+  }
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
@@ -199,7 +243,7 @@ export function PatternsCard(
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2">
-          {patterns.length === 0 ? (
+          {patterns.length === 0 && !isAddingNew ? (
             <div className="text-center text-muted-foreground py-4">
               No patterns added yet.
             </div>
@@ -219,12 +263,18 @@ export function PatternsCard(
                     form={form}
                     handleRemovePattern={handleRemovePattern}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={savePattern}
+                    onSave={(i, value) => form.setValue(`patterns.${i}`, value)}
                     onEdit={editPattern}
                   />
                 ))}
               </SortableContext>
             </DndContext>
+          )}
+          {isAddingNew && (
+            <NewPatternItem
+              onSave={savePattern}
+              onCancel={() => setIsAddingNew(false)}
+            />
           )}
           <div className="pt-2 flex justify-center">
             <Button
@@ -232,7 +282,10 @@ export function PatternsCard(
               size="sm"
               variant="outline"
               onClick={addPattern}
-              disabled={Object.values(disabledInputs).some((v) => v === false)}>
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Pattern
             </Button>

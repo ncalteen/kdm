@@ -61,17 +61,21 @@ const typeOptions = Object.values(ResourceType).map((type) => ({
 interface ResourceCategoryComboboxProps {
   selectedCategory: ResourceCategory
   onChange: (category: ResourceCategory) => void
+  disabled?: boolean
 }
 
 function ResourceCategoryCombobox({
   selectedCategory,
-  onChange
+  onChange,
+  disabled
 }: ResourceCategoryComboboxProps) {
   const [open, setOpen] = useState(false)
 
   const handleSelect = (category: ResourceCategory) => {
-    onChange(category)
-    setOpen(false)
+    if (!disabled) {
+      onChange(category)
+      setOpen(false)
+    }
   }
 
   return (
@@ -81,14 +85,18 @@ function ResourceCategoryCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-9">
+          className="w-full justify-between h-9"
+          disabled={disabled}>
           {selectedCategory || 'Select category...'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search categories..." />
+          <CommandInput
+            placeholder="Search categories..."
+            disabled={disabled}
+          />
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
@@ -96,7 +104,8 @@ function ResourceCategoryCombobox({
                 <CommandItem
                   key={option.value}
                   value={option.value}
-                  onSelect={() => handleSelect(option.value)}>
+                  onSelect={() => handleSelect(option.value)}
+                  disabled={disabled}>
                   <Check
                     className={cn(
                       'mr-2 h-4 w-4',
@@ -119,15 +128,18 @@ function ResourceCategoryCombobox({
 interface ResourceTypesComboboxProps {
   selectedTypes: ResourceType[]
   onChange: (types: ResourceType[]) => void
+  disabled?: boolean
 }
 
 function ResourceTypesCombobox({
   selectedTypes,
-  onChange
+  onChange,
+  disabled
 }: ResourceTypesComboboxProps) {
   const [open, setOpen] = useState(false)
 
   const handleSelect = (type: ResourceType) => {
+    if (disabled) return
     // Toggle selection
     const newSelection = selectedTypes.includes(type)
       ? selectedTypes.filter((t) => t !== type)
@@ -148,7 +160,8 @@ function ResourceTypesCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-9">
+          className="w-full justify-between h-9"
+          disabled={disabled}>
           {selectedTypes.length > 0
             ? `${selectedTypes.length} selected`
             : 'Select types...'}
@@ -157,7 +170,7 @@ function ResourceTypesCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search types..." />
+          <CommandInput placeholder="Search types..." disabled={disabled} />
           <CommandList>
             <CommandEmpty>No type found.</CommandEmpty>
             <CommandGroup>
@@ -165,7 +178,8 @@ function ResourceTypesCombobox({
                 <CommandItem
                   key={option.value}
                   value={option.value}
-                  onSelect={() => handleSelect(option.value)}>
+                  onSelect={() => handleSelect(option.value)}
+                  disabled={disabled}>
                   <div className="flex items-center">
                     <div
                       className={cn(
@@ -275,12 +289,14 @@ function ResourceItem({
           <ResourceCategoryCombobox
             selectedCategory={selectedCategory}
             onChange={(cat) => !isDisabled && setSelectedCategory(cat)}
+            disabled={isDisabled}
           />
         </div>
         <div className="w-[30%]">
           <ResourceTypesCombobox
             selectedTypes={selectedTypes}
             onChange={(types) => !isDisabled && setSelectedTypes(types)}
+            disabled={isDisabled}
           />
         </div>
         <div className="w-[10%] flex items-center">
@@ -345,6 +361,7 @@ export function ResourcesCard(
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+  const [isAddingNew, setIsAddingNew] = useState(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -363,20 +380,7 @@ export function ResourcesCard(
     })
   )
 
-  const addResource = () => {
-    const newResource = {
-      name: '',
-      category: ResourceCategory.BASIC,
-      types: [ResourceType.BONE],
-      amount: 0
-    }
-    const updatedResources = [...resources, newResource]
-    form.setValue('resources', updatedResources)
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [updatedResources.length - 1]: false
-    }))
-  }
+  const addResource = () => setIsAddingNew(true)
 
   const handleRemoveResource = (index: number) => {
     const updatedResources = [...resources]
@@ -394,7 +398,6 @@ export function ResourcesCard(
   }
 
   const saveResource = (
-    index: number,
     name: string,
     category: ResourceCategory,
     types: ResourceType[],
@@ -404,11 +407,14 @@ export function ResourcesCard(
       toast.warning('Cannot save a resource without a name')
       return
     }
-    form.setValue(`resources.${index}.name`, name)
-    form.setValue(`resources.${index}.category`, category)
-    form.setValue(`resources.${index}.types`, types)
-    form.setValue(`resources.${index}.amount`, amount)
-    setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    const newResource = { name, category, types, amount }
+    const updatedResources = [...resources, newResource]
+    form.setValue('resources', updatedResources)
+    setDisabledInputs((prev) => ({
+      ...prev,
+      [updatedResources.length - 1]: true
+    }))
+    setIsAddingNew(false)
     toast.success('Resource saved')
   }
 
@@ -437,6 +443,90 @@ export function ResourcesCard(
     }
   }
 
+  // NewResourceItem component for temporary input
+  function NewResourceItem({
+    onSave,
+    onCancel
+  }: {
+    onSave: (
+      name: string,
+      category: ResourceCategory,
+      types: ResourceType[],
+      amount: number
+    ) => void
+    onCancel: () => void
+  }) {
+    const [name, setName] = useState('')
+    const [category, setCategory] = useState(ResourceCategory.BASIC)
+    const [types, setTypes] = useState<ResourceType[]>([ResourceType.BONE])
+    const [amount, setAmount] = useState(0)
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        onSave(name, category, types, amount)
+      } else if (e.key === 'Escape') {
+        onCancel()
+      }
+    }
+
+    return (
+      <div className="flex items-center mb-2 gap-2">
+        <div className="p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+        </div>
+        <div className="flex-1 flex items-center gap-2">
+          <div className="w-[30%]">
+            <Input
+              placeholder="Resource Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="h-9"
+              autoFocus
+            />
+          </div>
+          <div className="w-[25%]">
+            <ResourceCategoryCombobox
+              selectedCategory={category}
+              onChange={setCategory}
+            />
+          </div>
+          <div className="w-[30%]">
+            <ResourceTypesCombobox selectedTypes={types} onChange={setTypes} />
+          </div>
+          <div className="w-[10%] flex items-center">
+            <Input
+              type="number"
+              min={0}
+              placeholder="0"
+              className="w-12 text-center no-spinners"
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value))}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(name, category, types, amount)}
+          title="Save resource">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <Card className="mt-2">
       <CardHeader className="pb-4">
@@ -445,7 +535,7 @@ export function ResourcesCard(
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">
-        {resources.length === 0 ? (
+        {resources.length === 0 && !isAddingNew ? (
           <div className="text-center text-muted-foreground py-4">
             No resources added yet.
           </div>
@@ -479,19 +569,35 @@ export function ResourcesCard(
                   form={form}
                   handleRemoveResource={handleRemoveResource}
                   isDisabled={!!disabledInputs[index]}
-                  onSave={saveResource}
+                  onSave={(i, name, category, types, amount) =>
+                    form.setValue(`resources.${i}`, {
+                      name,
+                      category,
+                      types,
+                      amount
+                    })
+                  }
                   onEdit={editResource}
                 />
               ))}
             </SortableContext>
           </DndContext>
+          {isAddingNew && (
+            <NewResourceItem
+              onSave={saveResource}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={addResource}
-              disabled={Object.values(disabledInputs).some((v) => v === false)}>
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Resource
             </Button>

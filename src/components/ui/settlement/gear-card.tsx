@@ -120,6 +120,7 @@ export function GearCard(
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+  const [isAddingNew, setIsAddingNew] = useState(false)
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -135,15 +136,7 @@ export function GearCard(
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-  const addGear = () => {
-    const currentGear = [...gear]
-    currentGear.push('')
-    form.setValue('gear', currentGear)
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [currentGear.length - 1]: false
-    }))
-  }
+  const addGear = () => setIsAddingNew(true)
   const handleRemoveGear = (index: number) => {
     const currentGear = [...gear]
     currentGear.splice(index, 1)
@@ -158,23 +151,19 @@ export function GearCard(
       return next
     })
   }
-  const saveGear = (index: number, value: string) => {
+  const saveGear = (value: string) => {
     if (!value || value.trim() === '') {
       toast.warning('Cannot save a gear item without a name')
       return
     }
-    form.setValue(`gear.${index}`, value)
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [index]: true
-    }))
+    const newGear = [...gear, value]
+    form.setValue('gear', newGear)
+    setDisabledInputs((prev) => ({ ...prev, [newGear.length - 1]: true }))
+    setIsAddingNew(false)
     toast.success('Gear saved')
   }
   const editGear = (index: number) => {
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [index]: false
-    }))
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
   }
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -196,6 +185,55 @@ export function GearCard(
       })
     }
   }
+  // NewGearItem component for temporary input
+  function NewGearItem({
+    onSave,
+    onCancel
+  }: {
+    onSave: (value: string) => void
+    onCancel: () => void
+  }) {
+    const [value, setValue] = useState('')
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        onSave(value)
+      } else if (e.key === 'Escape') {
+        onCancel()
+      }
+    }
+    return (
+      <div className="flex items-center gap-2">
+        <div className="p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+        </div>
+        <Input
+          placeholder="Gear item"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+          autoFocus
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(value)}
+          title="Save gear">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
+    )
+  }
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
@@ -205,7 +243,7 @@ export function GearCard(
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2">
-          {gear.length === 0 ? (
+          {gear.length === 0 && !isAddingNew ? (
             <div className="text-center text-muted-foreground py-4">
               No gear obtained yet.
             </div>
@@ -225,12 +263,18 @@ export function GearCard(
                     form={form}
                     handleRemoveGear={handleRemoveGear}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={saveGear}
+                    onSave={(i, value) => form.setValue(`gear.${i}`, value)}
                     onEdit={editGear}
                   />
                 ))}
               </SortableContext>
             </DndContext>
+          )}
+          {isAddingNew && (
+            <NewGearItem
+              onSave={saveGear}
+              onCancel={() => setIsAddingNew(false)}
+            />
           )}
           <div className="pt-2 flex justify-center">
             <Button
@@ -238,7 +282,10 @@ export function GearCard(
               size="sm"
               variant="outline"
               onClick={addGear}
-              disabled={Object.values(disabledInputs).some((v) => v === false)}>
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Gear
             </Button>
