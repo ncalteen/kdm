@@ -25,7 +25,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -63,7 +63,8 @@ function PrincipleItem({
   onSave,
   handleRemovePrinciple,
   handleSelectOption,
-  id
+  id,
+  autoFocus
 }: PrincipleItemProps & {
   id: string
   isDisabled: boolean
@@ -74,18 +75,26 @@ function PrincipleItem({
     option1Name: string,
     option2Name: string
   ) => void
+  autoFocus?: boolean
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
   const [nameValue, setNameValue] = useState(principle.name)
   const [option1Value, setOption1Value] = useState(principle.option1Name)
   const [option2Value, setOption2Value] = useState(principle.option2Name)
+  const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setNameValue(principle.name)
     setOption1Value(principle.option1Name)
     setOption2Value(principle.option2Name)
   }, [principle.name, principle.option1Name, principle.option2Name])
+
+  useEffect(() => {
+    if (autoFocus && nameInputRef.current) {
+      nameInputRef.current.focus()
+    }
+  }, [autoFocus])
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -136,9 +145,10 @@ function PrincipleItem({
               value={nameValue}
               onChange={handleNameChange}
               onKeyDown={handleKeyDown}
-              autoFocus
+              autoFocus={!!autoFocus}
               id={`principle-${index}-name`}
               name={`principles[${index}].name`}
+              ref={nameInputRef}
             />
           )}
           <div className="flex items-center gap-2">
@@ -241,6 +251,7 @@ export function PrinciplesCard(
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState(false)
+  const [isEditingIndex, setIsEditingIndex] = useState<number | null>(null)
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -249,8 +260,9 @@ export function PrinciplesCard(
       })
       return next
     })
-    // If principles array changes (e.g. tab switch), cancel new
+    // If principles array changes (e.g. tab switch), cancel new and editing
     setIsAddingNew(false)
+    setIsEditingIndex(null)
   }, [principles])
 
   const sensors = useSensors(
@@ -286,6 +298,7 @@ export function PrinciplesCard(
 
   const handleEdit = (index: number) => {
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+    setIsEditingIndex(index)
   }
 
   const handleSave = (
@@ -302,6 +315,7 @@ export function PrinciplesCard(
     updated[index] = { ...updated[index], name, option1Name, option2Name }
     form.setValue('principles', updated)
     setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+    setIsEditingIndex(null)
     toast.success('Principle saved')
   }
 
@@ -398,6 +412,7 @@ export function PrinciplesCard(
                     handleRemovePrinciple={handleRemovePrinciple}
                     handleSelectOption={handleSelectOption}
                     handleUpdatePrinciple={() => {}}
+                    autoFocus={isEditingIndex === index}
                   />
                 ))}
               </SortableContext>

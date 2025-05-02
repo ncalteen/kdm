@@ -25,7 +25,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -121,15 +121,95 @@ function InnovationItem({
   )
 }
 
+function NewInnovationItem({
+  onSave,
+  onCancel
+}: {
+  onSave: (value: string) => void
+  onCancel: () => void
+}) {
+  const [value, setValue] = useState('')
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value)
+  }
+
+  const handleSave = () => {
+    if (value.trim() !== '') {
+      onSave(value.trim())
+    } else {
+      toast.warning('Cannot save an empty innovation')
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
+  }
+
+  useEffect(() => {
+    // Focus input when shown
+    const input = document.getElementById(
+      'new-innovation-input'
+    ) as HTMLInputElement
+    if (input) input.focus()
+  }, [])
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+      </div>
+      <Input
+        id="new-innovation-input"
+        placeholder="Add an innovation..."
+        value={value}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={handleSave}
+        title="Save innovation">
+        <CheckIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onCancel}
+        title="Cancel">
+        <TrashIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function InnovationsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const innovations = form.watch('innovations') || []
+  const innovations = useMemo(() => form.watch('innovations') || [], [form])
 
   // Track which inputs are disabled (saved)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+
+  const [isAddingNew, setIsAddingNew] = useState(false)
+
+  // Remove isAddingNew if innovations change (e.g. tab switch resets form)
+  useEffect(() => {
+    setIsAddingNew(false)
+  }, [innovations])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -139,9 +219,18 @@ export function InnovationsCard(
   )
 
   const addInnovation = () => {
-    const currentInnovations = [...innovations]
-    currentInnovations.push('')
+    setIsAddingNew(true)
+  }
+
+  const saveNewInnovation = (value: string) => {
+    const currentInnovations = [...innovations, value]
     form.setValue('innovations', currentInnovations)
+    setIsAddingNew(false)
+    toast.success('Innovation added')
+  }
+
+  const cancelNewInnovation = () => {
+    setIsAddingNew(false)
   }
 
   const handleRemoveInnovation = (index: number) => {
@@ -250,13 +339,19 @@ export function InnovationsCard(
               ))}
             </SortableContext>
           </DndContext>
-
+          {isAddingNew && (
+            <NewInnovationItem
+              onSave={saveNewInnovation}
+              onCancel={cancelNewInnovation}
+            />
+          )}
           <div className="pt-2 flex justify-center">
             <Button
               type="button"
               size="sm"
               variant="outline"
-              onClick={addInnovation}>
+              onClick={addInnovation}
+              disabled={isAddingNew}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
               Add Innovation
             </Button>
