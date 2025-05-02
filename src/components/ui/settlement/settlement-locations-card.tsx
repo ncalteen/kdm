@@ -310,8 +310,8 @@ export function SettlementLocationsCard(
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          <HomeIcon className="h-5 w-5" /> Settlement Locations
+        <CardTitle className="text-md flex items-center gap-1">
+          <HomeIcon className="h-4 w-4" /> Settlement Locations
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">

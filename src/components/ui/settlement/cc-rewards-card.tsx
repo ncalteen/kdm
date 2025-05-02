@@ -19,6 +19,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
+  BrainIcon,
   CheckIcon,
   GripVertical,
   PencilIcon,
@@ -115,7 +116,7 @@ function RewardItem({
         {isEditing ? (
           <Input
             type="number"
-            className="w-16 h-8 text-sm no-spinners"
+            className="w-12 h-8 text-sm no-spinners"
             value={editCC}
             onChange={(e) => {
               const value = parseInt(e.target.value)
@@ -130,7 +131,7 @@ function RewardItem({
         ) : (
           <Input
             type="number"
-            className="w-16 h-8 text-sm no-spinners"
+            className="w-12 h-8 text-sm no-spinners"
             value={reward.cc}
             onChange={() => {}}
             min={0}
@@ -139,7 +140,7 @@ function RewardItem({
         )}
       </div>
 
-      <div className="flex-1 font-medium text-left">
+      <div className="flex-1 text-sm text-left">
         {isEditing ? (
           <Input
             value={editName}
@@ -257,7 +258,7 @@ function NewRewardItem({
         <FormLabel className="mr-2 text-sm">CC:</FormLabel>
         <Input
           type="number"
-          className="w-16 h-8 text-sm no-spinners"
+          className="w-12 h-8 text-sm no-spinners"
           value={cc}
           onChange={(e) => {
             const value = parseInt(e.target.value)
@@ -353,8 +354,8 @@ export function CcRewardsCard(
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Collective Cognition Rewards
+        <CardTitle className="text-md flex items-center gap-1">
+          <BrainIcon className="h-4 w-4" /> Collective Cognition Rewards
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">

@@ -1,6 +1,7 @@
 'use client'
 
 import { CampaignType } from '@/lib/enums'
+import { TimelineEvent } from '@/lib/types'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   BookOpenIcon,
@@ -31,12 +32,6 @@ import { Checkbox } from '../checkbox'
 import { FormControl, FormField, FormItem } from '../form'
 import { Input } from '../input'
 
-// Define type for TimelineEntry based on the schema
-type TimelineEntry = {
-  completed?: boolean
-  entries: string[]
-}
-
 // Memoize the TimelineEventBadge component to prevent unnecessary re-renders
 const TimelineEventBadge = memo(
   ({
@@ -60,9 +55,9 @@ const TimelineEventBadge = memo(
         className="cursor-pointer my-1 inline-flex items-center"
         onClick={handleClick}>
         {entry.startsWith('Nemesis') ? (
-          <SwordsIcon className="h-4 w-4 mr-1" />
+          <SwordsIcon className="h-4 w-4" />
         ) : (
-          <BookOpenIcon className="h-4 w-4 mr-1" />
+          <BookOpenIcon className="h-4 w-4" />
         )}
         {entry}
       </Badge>
@@ -87,7 +82,7 @@ const TimelineContent = memo(
     editEvent,
     showScrollIcon
   }: {
-    timeline: TimelineEntry[]
+    timeline: TimelineEvent[]
     usesNormalNumbering: boolean
     editingEvents: { [key: string]: boolean }
     isEventBeingEdited: (yearIndex: number, entryIndex: number) => boolean
@@ -111,7 +106,7 @@ const TimelineContent = memo(
         | `timeline.${number}.entries.${number}`
         | `timeline.${number}.completed`
         | 'timeline',
-      value: boolean | string | string[] | TimelineEntry[]
+      value: boolean | string | string[] | TimelineEvent[]
     ) => void
     editEvent: (yearIndex: number, entryIndex: number) => void
     showScrollIcon: boolean
@@ -133,7 +128,7 @@ const TimelineContent = memo(
                 showScrollIcon
                   ? 'grid-cols-[80px_40px_1fr_auto]'
                   : 'grid-cols-[80px_1fr_auto]'
-              } gap-4 items-start border-t border-border py-1`}>
+              } gap-2 items-start border-t border-border py-1`}>
               <div className="flex items-center">
                 <FormField
                   control={form.control}
@@ -163,7 +158,9 @@ const TimelineContent = memo(
 
               {showScrollIcon && (
                 <div className="flex justify-center items-center mt-1">
-                  <ScrollIcon className="h-5 w-5 text-muted-foreground" />
+                  {yearIndex !== 0 && (
+                    <ScrollIcon className="h-5 w-5 text-muted-foreground" />
+                  )}
                 </div>
               )}
 
@@ -251,7 +248,6 @@ const TimelineContent = memo(
                   return null
                 })}
 
-                {/* Display "No events" message when there are no events */}
                 {(yearData.entries || []).length === 0 && (
                   <div className="text-sm text-gray-500 italic">No events</div>
                 )}
@@ -327,7 +323,7 @@ export function TimelineCard(
 
   // Debounce state updates with proper typing
   const debouncedSetTimeline = useCallback(
-    (newTimeline: TimelineEntry[]) => {
+    (newTimeline: TimelineEvent[]) => {
       // Create a closure over the current setTimeline to avoid stale references
       const currentSetTimeline = setTimeline
       requestAnimationFrame(() => {
@@ -344,7 +340,7 @@ export function TimelineCard(
         | `timeline.${number}.entries.${number}`
         | `timeline.${number}.completed`
         | 'timeline',
-      value: boolean | string | string[] | TimelineEntry[]
+      value: boolean | string | string[] | TimelineEvent[]
     ) => {
       // Create a closure over the current form to avoid stale references
       const currentForm = form
@@ -604,8 +600,8 @@ export function TimelineCard(
   return (
     <Card ref={cardRef}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          <HourglassIcon className="h-5 w-5" /> Timeline
+        <CardTitle className="text-md flex items-center gap-1">
+          <HourglassIcon className="h-4 w-4" /> Timeline
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">

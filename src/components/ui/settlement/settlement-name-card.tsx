@@ -26,9 +26,7 @@ export function SettlementNameCard(
             render={({ field }) => (
               <FormItem className="flex-1 w-max">
                 <div className="flex items-center gap-2">
-                  <FormLabel className="w-max text-left">
-                    Settlement Name
-                  </FormLabel>
+                  <FormLabel className="w-max text-left">Settlement</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Settlement Name"

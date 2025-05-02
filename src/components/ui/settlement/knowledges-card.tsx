@@ -20,6 +20,7 @@ import { CSS } from '@dnd-kit/utilities'
 import {
   CheckIcon,
   GripVertical,
+  LandmarkIcon,
   PencilIcon,
   PlusCircleIcon,
   TrashIcon
@@ -115,7 +116,7 @@ function KnowledgeItem({
             autoFocus
           />
         ) : (
-          <div className="flex-1 font-medium text-left">{knowledge.name}</div>
+          <div className="flex-1 text-sm text-left">{knowledge.name}</div>
         )}
         {isEditing ? (
           <>
@@ -334,8 +335,8 @@ export function KnowledgesCard(
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Knowledges
+        <CardTitle className="text-md flex items-center gap-1">
+          <LandmarkIcon className="h-4 w-4" /> Knowledges
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">

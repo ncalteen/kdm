@@ -21,6 +21,7 @@ import { CSS } from '@dnd-kit/utilities'
 import {
   CheckIcon,
   GripVertical,
+  MapPinIcon,
   PencilIcon,
   PlusCircleIcon,
   TrashIcon
@@ -324,10 +325,11 @@ export function DepartingBonusesCard(
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
+        <CardTitle className="text-md flex items-center gap-1">
+          <MapPinIcon className="h-4 w-4" />
           Departing Survivor Bonuses
         </CardTitle>
-        <CardDescription className="text-left">
+        <CardDescription className="text-left text-xs">
           Departing survivors gain these bonuses.
         </CardDescription>
       </CardHeader>

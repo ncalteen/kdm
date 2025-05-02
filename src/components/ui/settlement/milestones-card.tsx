@@ -21,6 +21,7 @@ import { CSS } from '@dnd-kit/utilities'
 import {
   BookOpen,
   CheckIcon,
+  CircleCheckBigIcon,
   GripVertical,
   PencilIcon,
   PlusCircleIcon,
@@ -36,6 +37,7 @@ import {
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { Badge } from '../badge'
 import { Button } from '../button'
 import {
   Card,
@@ -119,6 +121,7 @@ function MilestoneItem({
               <Checkbox
                 checked={field.value}
                 className="mt-2"
+                disabled={isDisabled}
                 onCheckedChange={(checked) => {
                   form.setValue(`milestones.${index}.complete`, !!checked)
                 }}
@@ -133,7 +136,7 @@ function MilestoneItem({
         <Input
           value={nameValue}
           disabled
-          className="flex-1"
+          className="flex-1 max-w-[50%]"
           id={`milestone-${index}-name`}
           name={`milestones[${index}].name`}
         />
@@ -148,15 +151,13 @@ function MilestoneItem({
           name={`milestones[${index}].name`}
         />
       )}
-      <BookOpen />
+      <BookOpen className="h-4 w-4" />
       {isDisabled ? (
-        <Input
-          value={eventValue}
-          disabled
-          className="flex-1"
-          id={`milestone-${index}-event`}
-          name={`milestones[${index}].event`}
-        />
+        <Badge
+          variant="secondary"
+          className="justify-start w-auto min-w-0 flex-none">
+          {eventValue || <span className="opacity-50">No event</span>}
+        </Badge>
       ) : (
         <Input
           value={eventValue}
@@ -385,10 +386,11 @@ export function MilestonesCard(
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
+        <CardTitle className="text-md flex items-center gap-1">
+          <CircleCheckBigIcon className="h-4 w-4" />
           Settlement Milestones
         </CardTitle>
-        <CardDescription className="text-left">
+        <CardDescription className="text-left text-xs">
           Trigger these effects when the milestone condition is met.
         </CardDescription>
       </CardHeader>

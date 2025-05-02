@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import {
   CustomCampaignData,
@@ -30,8 +30,11 @@ import { DepartingBonusesCard } from '../ui/settlement/departing-bonuses-card'
 import { GearCard } from '../ui/settlement/gear-card'
 import { InnovationsCard } from '../ui/settlement/innovations-card'
 import { KnowledgesCard } from '../ui/settlement/knowledges-card'
+import { LanternResearchLevelCard } from '../ui/settlement/lantern-research-level-card'
 import { MilestonesCard } from '../ui/settlement/milestones-card'
+import { MonsterVolumesCard } from '../ui/settlement/monster-volumes-card'
 import { NemesisCard } from '../ui/settlement/nemesis-card'
+import { NotesCard } from '../ui/settlement/notes-card'
 import { PatternsCard } from '../ui/settlement/patterns-card'
 import { PhilosophiesCard } from '../ui/settlement/philosophies-card'
 import { PopulationCard } from '../ui/settlement/population-card'
@@ -41,7 +44,6 @@ import { ResourcesCard } from '../ui/settlement/resources-card'
 import { SeedPatternsCard } from '../ui/settlement/seed-patterns-card'
 import { SettlementLocationsCard } from '../ui/settlement/settlement-locations-card'
 import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
-import { SettlementSurvivorsCard } from '../ui/settlement/settlement-survivors-card'
 import { SquireCards } from '../ui/settlement/squire-cards'
 import { SquireSuspicionsCard } from '../ui/settlement/squire-suspicions-card'
 import { TimelineCard } from '../ui/settlement/timeline-card'
@@ -113,6 +115,14 @@ export function CreateSettlementForm() {
     // Set the new campaign type
     form.setValue('campaignType', value)
 
+    // If People of the Dream Keeper, force survivor type to ARC and disable changing
+    if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
+      form.setValue('survivorType', SurvivorType.ARC)
+    }
+    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
+      form.setValue('survivorType', SurvivorType.CORE)
+    }
+
     // Set campaign data based on selected campaign type
     const campaignData: CampaignData =
       value === CampaignType.PEOPLE_OF_THE_LANTERN
@@ -182,7 +192,23 @@ export function CreateSettlementForm() {
 
     // Set Arc-specific data when survivor type is Arc
     if (value === SurvivorType.ARC) {
-      form.setValue('ccRewards', [])
+      // Set campaign data based on selected campaign type
+      const campaignData: CampaignData =
+        form.watch('campaignType') === CampaignType.PEOPLE_OF_THE_LANTERN
+          ? PeopleOfTheLanternCampaignData
+          : form.watch('campaignType') ===
+              CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+            ? PeopleOfTheDreamKeeperCampaignData
+            : form.watch('campaignType') === CampaignType.PEOPLE_OF_THE_STARS
+              ? PeopleOfTheStarsCampaignData
+              : form.watch('campaignType') === CampaignType.PEOPLE_OF_THE_SUN
+                ? PeopleOfTheSunCampaignData
+                : form.watch('campaignType') ===
+                    CampaignType.SQUIRES_OF_THE_CITADEL
+                  ? SquiresOfTheCitadelCampaignData
+                  : CustomCampaignData
+
+      form.setValue('ccRewards', campaignData.ccRewards || [])
       form.setValue('philosophies', [])
       form.setValue('knowledges', [])
     } else {
@@ -206,16 +232,19 @@ export function CreateSettlementForm() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <div className="flex justify-center gap-4 mb-4">
-        <SelectCampaignCombobox
-          value={campaignType}
-          onChange={handleCampaignChange}
-        />
-        <SelectSurvivorTypeCombobox
-          value={survivorType}
-          onChange={handleSurvivorTypeChange}
-          disabled={isSpecificSurvivorRequired}
-        />
+      <div className="flex justify-between items-center gap-4 mb-4">
+        <div className="flex gap-4">
+          <SelectCampaignCombobox
+            value={campaignType}
+            onChange={handleCampaignChange}
+          />
+          <SelectSurvivorTypeCombobox
+            value={survivorType}
+            onChange={handleSurvivorTypeChange}
+            disabled={isSpecificSurvivorRequired}
+          />
+        </div>
+        <Button type="submit">Create Settlement</Button>
       </div>
 
       <Form {...form}>
@@ -256,6 +285,9 @@ export function CreateSettlementForm() {
                     Arc
                   </TabsTrigger>
                 )}
+                <TabsTrigger value="notes" className="flex-1">
+                  Notes
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="timeline">
                 <TimelineCard {...form} />
@@ -276,22 +308,30 @@ export function CreateSettlementForm() {
               ) : (
                 <TabsContent value="survivors">
                   <DepartingBonusesCard {...form} />
-                  <SettlementSurvivorsCard {...form} />
+                  {(campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+                    campaignType === CampaignType.PEOPLE_OF_THE_SUN) && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <LanternResearchLevelCard {...form} />
+                        <MonsterVolumesCard {...form} />
+                      </div>
+                    </>
+                  )}
                 </TabsContent>
               )}
               <TabsContent value="society">
-                <InnovationsCard {...form} />
-                {!isSquiresCampaign && (
+                {(!isSquiresCampaign && (
                   <>
                     <MilestonesCard {...form} />
                     <PrinciplesCard {...form} />
+                    <InnovationsCard {...form} />
                     <SettlementLocationsCard {...form} />
                   </>
-                )}
+                )) || <InnovationsCard {...form} />}
               </TabsContent>
               <TabsContent value="crafting">
                 {!isSquiresCampaign && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <SeedPatternsCard {...form} />
                     <PatternsCard {...form} />
                   </div>
@@ -304,17 +344,17 @@ export function CreateSettlementForm() {
                   <CcCard {...form} />
                   <CcVictoriesCard {...form} />
                   <CcRewardsCard {...form} />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <PhilosophiesCard {...form} />
                     <KnowledgesCard {...form} />
                   </div>
                 </TabsContent>
               )}
+              <TabsContent value="notes">
+                <NotesCard {...form} />
+              </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter>
-            <Button type="submit">Create Settlement</Button>
-          </CardFooter>
         </Card>
       </Form>
     </form>

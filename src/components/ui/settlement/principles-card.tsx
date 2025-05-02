@@ -20,6 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import {
   CheckIcon,
+  CrownIcon,
   GripVertical,
   PencilIcon,
   PlusCircleIcon,
@@ -232,7 +233,7 @@ function PrincipleItem({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8"
             type="button"
             onClick={() => handleRemovePrinciple(index)}>
             <TrashIcon className="h-4 w-4" />
@@ -378,10 +379,10 @@ export function PrinciplesCard(
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Principles
+        <CardTitle className="text-md flex items-center gap-1">
+          <CrownIcon className="h-4 w-4" /> Principles
         </CardTitle>
-        <CardDescription className="text-left">
+        <CardDescription className="text-left text-xs">
           The settlement&apos;s established principles.
         </CardDescription>
       </CardHeader>

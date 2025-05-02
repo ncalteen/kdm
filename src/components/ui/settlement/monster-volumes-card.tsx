@@ -1,5 +1,3 @@
-'use client'
-
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -18,11 +16,11 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
+  BookOpenIcon,
   CheckIcon,
   GripVertical,
   PencilIcon,
   PlusCircleIcon,
-  SparkleIcon,
   TrashIcon
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -33,22 +31,18 @@ import { Button } from '../button'
 import { Card, CardContent, CardHeader, CardTitle } from '../card'
 import { Input } from '../input'
 
-interface PhilosophyItemProps {
-  philosophy: string
-  handleRemovePhilosophy: (philosophy: string) => void
-  handleUpdatePhilosophy: (oldPhilosophy: string, newPhilosophy: string) => void
-  id: string
-}
-
-function PhilosophyItem({
-  philosophy,
-  handleRemovePhilosophy,
+function MonsterVolumeItem({
+  volume,
+  handleRemoveVolume,
   id,
   isEditing,
   onEdit,
   onSaveEdit,
   onCancelEdit
-}: PhilosophyItemProps & {
+}: {
+  volume: string
+  handleRemoveVolume: (volume: string) => void
+  id: string
   isEditing: boolean
   onEdit: () => void
   onSaveEdit: (name: string) => void
@@ -56,11 +50,11 @@ function PhilosophyItem({
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
-  const [value, setValue] = useState(philosophy)
+  const [value, setValue] = useState(volume)
 
   useEffect(() => {
-    setValue(philosophy)
-  }, [philosophy])
+    setValue(volume)
+  }, [volume])
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -69,11 +63,11 @@ function PhilosophyItem({
 
   const handleEditSave = () => {
     if (value.trim() === '') {
-      toast.warning('Cannot save a philosophy without a name')
+      toast.warning('Cannot save a monster volume without a name')
       return
     }
     onSaveEdit(value.trim())
-    toast.success('Philosophy saved')
+    toast.success('Monster volume saved')
   }
 
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -103,7 +97,7 @@ function PhilosophyItem({
           autoFocus
         />
       ) : (
-        <div className="flex-1 text-sm text-left">{philosophy}</div>
+        <div className="flex-1 text-sm text-left">{volume}</div>
       )}
       {isEditing ? (
         <>
@@ -113,7 +107,7 @@ function PhilosophyItem({
             size="icon"
             className="h-8 w-8 p-0"
             onClick={handleEditSave}
-            title="Save philosophy">
+            title="Save volume">
             <CheckIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -134,7 +128,7 @@ function PhilosophyItem({
             size="icon"
             className="h-8 w-8 p-0"
             onClick={onEdit}
-            title="Edit philosophy">
+            title="Edit volume">
             <PencilIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -142,7 +136,7 @@ function PhilosophyItem({
             variant="ghost"
             size="icon"
             className="h-8 w-8 p-0"
-            onClick={() => handleRemovePhilosophy(philosophy)}>
+            onClick={() => handleRemoveVolume(volume)}>
             <TrashIcon className="h-4 w-4" />
           </Button>
         </>
@@ -151,7 +145,7 @@ function PhilosophyItem({
   )
 }
 
-function NewPhilosophyItem({
+function NewMonsterVolumeItem({
   form,
   onAdd,
   existingNames
@@ -164,18 +158,18 @@ function NewPhilosophyItem({
 
   const handleSubmit = () => {
     if (name.trim() === '') {
-      toast.warning('Cannot save a philosophy without a name')
+      toast.warning('Cannot save a monster volume without a name')
       return
     }
     if (existingNames.includes(name.trim())) {
-      toast.warning('A philosophy with this name already exists')
+      toast.warning('A monster volume with this name already exists')
       return
     }
-    const philosophies = [...(form.watch('philosophies') || [])]
-    form.setValue('philosophies', [...philosophies, name.trim()])
+    const monsterVolumes = [...(form.watch('monsterVolumes') || [])]
+    form.setValue('monsterVolumes', [...monsterVolumes, name.trim()])
     setName('')
     onAdd()
-    toast.success('New philosophy added')
+    toast.success('New monster volume added')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -191,7 +185,7 @@ function NewPhilosophyItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
       <Input
-        placeholder="Add a philosophy..."
+        placeholder="Add a monster volume..."
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="flex-1"
@@ -204,7 +198,7 @@ function NewPhilosophyItem({
         size="icon"
         className="h-8 w-8 p-0"
         onClick={handleSubmit}
-        title="Save philosophy">
+        title="Save volume">
         <CheckIcon className="h-4 w-4" />
       </Button>
       <Button
@@ -213,21 +207,19 @@ function NewPhilosophyItem({
         size="icon"
         className="h-8 w-8 p-0"
         onClick={onAdd}
-        title="Cancel add philosophy">
+        title="Cancel add volume">
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
   )
 }
 
-export function PhilosophiesCard(
+export function MonsterVolumesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const [showNewPhilosophyForm, setShowNewPhilosophyForm] = useState(false)
-  const [editingPhilosophy, setEditingPhilosophy] = useState<string | null>(
-    null
-  )
-  const philosophies = form.watch('philosophies') || []
+  const [showNewVolumeForm, setShowNewVolumeForm] = useState(false)
+  const [editingVolume, setEditingVolume] = useState<string | null>(null)
+  const monsterVolumes = form.watch('monsterVolumes') || []
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -235,91 +227,81 @@ export function PhilosophiesCard(
     })
   )
 
-  const handleRemovePhilosophy = (philosophy: string) => {
-    const updatedPhilosophies = philosophies.filter((p) => p !== philosophy)
-    form.setValue('philosophies', updatedPhilosophies)
+  const handleRemoveVolume = (volume: string) => {
+    const updatedVolumes = monsterVolumes.filter((v) => v !== volume)
+    form.setValue('monsterVolumes', updatedVolumes)
   }
 
-  const handleUpdatePhilosophy = (
-    oldPhilosophy: string,
-    newPhilosophy: string
-  ) => {
-    if (newPhilosophy.trim() === '') {
-      toast.warning('Cannot save a philosophy without a name')
+  const handleUpdateVolume = (oldVolume: string, newVolume: string) => {
+    if (newVolume.trim() === '') {
+      toast.warning('Cannot save a monster volume without a name')
       return
     }
-    if (
-      philosophies.some(
-        (p) => p === newPhilosophy.trim() && p !== oldPhilosophy
-      )
-    ) {
-      toast.warning('A philosophy with this name already exists')
+    if (monsterVolumes.some((v) => v === newVolume.trim() && v !== oldVolume)) {
+      toast.warning('A monster volume with this name already exists')
       return
     }
-    const updatedPhilosophies = philosophies.map((p) => {
-      if (p === oldPhilosophy) {
-        return newPhilosophy.trim()
+    const updatedVolumes = monsterVolumes.map((v) => {
+      if (v === oldVolume) {
+        return newVolume.trim()
       }
-      return p
+      return v
     })
-    form.setValue('philosophies', updatedPhilosophies)
-    setEditingPhilosophy(null)
-    toast.success('Philosophy saved')
+    form.setValue('monsterVolumes', updatedVolumes)
+    setEditingVolume(null)
+    toast.success('Monster volume saved')
   }
 
-  const addNewPhilosophy = () => {
-    setShowNewPhilosophyForm(false)
+  const addNewVolume = () => {
+    setShowNewVolumeForm(false)
   }
 
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
         <CardTitle className="text-md flex items-center gap-1">
-          <SparkleIcon className="h-4 w-4" /> Philosophies
+          <BookOpenIcon className="h-4 w-4" /> Monster Volumes
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">
         <div className="space-y-2">
-          {philosophies.length > 0 && (
+          {monsterVolumes.length > 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={(event) => {
                 const { active, over } = event
                 if (over && active.id !== over.id) {
-                  const oldIndex = philosophies.indexOf(active.id as string)
-                  const newIndex = philosophies.indexOf(over.id as string)
-                  const newOrder = arrayMove(philosophies, oldIndex, newIndex)
-                  form.setValue('philosophies', newOrder)
+                  const oldIndex = monsterVolumes.indexOf(active.id as string)
+                  const newIndex = monsterVolumes.indexOf(over.id as string)
+                  const newOrder = arrayMove(monsterVolumes, oldIndex, newIndex)
+                  form.setValue('monsterVolumes', newOrder)
                 }
               }}>
               <SortableContext
-                items={philosophies}
+                items={monsterVolumes}
                 strategy={verticalListSortingStrategy}>
-                {philosophies.map((philosophy) => (
-                  <PhilosophyItem
-                    key={philosophy}
-                    id={philosophy}
-                    philosophy={philosophy}
-                    handleRemovePhilosophy={handleRemovePhilosophy}
-                    handleUpdatePhilosophy={handleUpdatePhilosophy}
-                    isEditing={editingPhilosophy === philosophy}
-                    onEdit={() => setEditingPhilosophy(philosophy)}
-                    onSaveEdit={(name) =>
-                      handleUpdatePhilosophy(philosophy, name)
-                    }
-                    onCancelEdit={() => setEditingPhilosophy(null)}
+                {monsterVolumes.map((volume) => (
+                  <MonsterVolumeItem
+                    key={volume}
+                    id={volume}
+                    volume={volume}
+                    handleRemoveVolume={handleRemoveVolume}
+                    isEditing={editingVolume === volume}
+                    onEdit={() => setEditingVolume(volume)}
+                    onSaveEdit={(name) => handleUpdateVolume(volume, name)}
+                    onCancelEdit={() => setEditingVolume(null)}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           )}
 
-          {showNewPhilosophyForm && (
-            <NewPhilosophyItem
+          {showNewVolumeForm && (
+            <NewMonsterVolumeItem
               form={form}
-              onAdd={addNewPhilosophy}
-              existingNames={philosophies}
+              onAdd={addNewVolume}
+              existingNames={monsterVolumes}
             />
           )}
 
@@ -328,10 +310,10 @@ export function PhilosophiesCard(
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => setShowNewPhilosophyForm(true)}
-              disabled={showNewPhilosophyForm || editingPhilosophy !== null}>
+              onClick={() => setShowNewVolumeForm(true)}
+              disabled={showNewVolumeForm || editingVolume !== null}>
               <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Philosophy
+              Add Monster Volume
             </Button>
           </div>
         </div>

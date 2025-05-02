@@ -12,7 +12,7 @@ import { z } from 'zod'
  * Timeline Entry Schema
  */
 export const TimelineEntrySchema = z.object({
-  completed: z.boolean().optional(),
+  completed: z.boolean(),
   entries: z.array(z.string())
 })
 

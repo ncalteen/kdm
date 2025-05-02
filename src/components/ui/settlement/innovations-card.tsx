@@ -21,6 +21,7 @@ import { CSS } from '@dnd-kit/utilities'
 import {
   CheckIcon,
   GripVertical,
+  LightbulbIcon,
   PencilIcon,
   PlusCircleIcon,
   TrashIcon
@@ -321,8 +322,8 @@ export function InnovationsCard(
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Innovations
+        <CardTitle className="text-md flex items-center gap-1">
+          <LightbulbIcon className="h-5 w-5" /> Innovations
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 pb-2">

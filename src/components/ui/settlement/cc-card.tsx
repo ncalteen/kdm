@@ -55,7 +55,7 @@ export function CcCard(form: UseFormReturn<z.infer<typeof SettlementSchema>>) {
                 <div className="flex items-center pt-2">
                   <FormControl>
                     <Input
-                      type="text"
+                      type="number"
                       className="w-16 h-12 text-2xl font-bold text-center border-2 no-spinners"
                       value={ccValue}
                       readOnly
@@ -63,10 +63,10 @@ export function CcCard(form: UseFormReturn<z.infer<typeof SettlementSchema>>) {
                   </FormControl>
                 </div>
                 <div className="text-left">
-                  <FormLabel className="text-base font-medium">
+                  <FormLabel className="text-base text-md font-medium">
                     Collective Cognition
                   </FormLabel>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     The settlement&apos;s total CC is based on its victories.
                   </p>
                 </div>

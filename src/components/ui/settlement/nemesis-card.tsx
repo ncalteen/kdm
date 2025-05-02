@@ -698,10 +698,10 @@ export function NemesisCard(
   return (
     <Card className="mt-2" ref={cardRef}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          <SkullIcon className="h-5 w-5" /> Nemesis Monsters
+        <CardTitle className="text-md flex items-center gap-1">
+          <SkullIcon className="h-4 w-4" /> Nemesis Monsters
         </CardTitle>
-        <CardDescription className="text-left">
+        <CardDescription className="text-left text-xs">
           The nemesis monsters your settlement can encounter.
         </CardDescription>
       </CardHeader>
