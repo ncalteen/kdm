@@ -300,6 +300,7 @@ export function CreateSettlementForm() {
                 </TabsContent>
               )}
               <TabsContent value="society">
+                <InnovationsCard {...form} />
                 {!isSquiresCampaign && (
                   <>
                     <MilestonesCard {...form} />
@@ -307,7 +308,6 @@ export function CreateSettlementForm() {
                     <SettlementLocationsCard {...form} />
                   </>
                 )}
-                <InnovationsCard {...form} />
               </TabsContent>
               <TabsContent value="crafting">
                 {!isSquiresCampaign && (
