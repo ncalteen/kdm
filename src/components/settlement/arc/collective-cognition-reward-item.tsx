@@ -104,7 +104,9 @@ export function RewardItem({
       />
 
       <div className="flex items-center">
-        <FormLabel className="mr-2 text-sm">CC:</FormLabel>
+        <FormLabel htmlFor={`reward-cc-${id}`} className="mr-2 text-sm">
+          CC:
+        </FormLabel>
         {isEditing ? (
           <Input
             type="number"
@@ -255,7 +257,9 @@ export function NewRewardItem({
       <Checkbox disabled name="new-reward-unlocked" id="new-reward-unlocked" />
 
       <div className="flex items-center">
-        <FormLabel className="mr-2 text-sm">CC:</FormLabel>
+        <FormLabel htmlFor="new-reward-cc" className="mr-2 text-sm">
+          CC:
+        </FormLabel>
         <Input
           type="number"
           className="w-12 h-8 text-sm no-spinners"
