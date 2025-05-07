@@ -1,7 +1,5 @@
 'use client'
 
-import { clsx, type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
 import {
   CustomCampaignData,
   PeopleOfTheDreamKeeperCampaignData,
@@ -9,9 +7,11 @@ import {
   PeopleOfTheStarsCampaignData,
   PeopleOfTheSunCampaignData,
   SquiresOfTheCitadelCampaignData
-} from './common.jsx'
-import { CampaignType } from './enums.js'
-import type { Campaign, CampaignData, Settlement, Survivor } from './types.js'
+} from '@/lib/common'
+import { CampaignType } from '@/lib/enums'
+import type { Campaign, CampaignData, Settlement, Survivor } from '@/lib/types'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

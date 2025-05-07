@@ -1,7 +1,7 @@
 'use client'
 
+import { CampaignData, Milestone } from '@/lib/types'
 import { GrabIcon, ScrollIcon } from 'lucide-react'
-import { CampaignData, Milestone } from './types'
 
 /**
  * Core Campaign Milestones

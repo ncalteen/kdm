@@ -1,5 +1,6 @@
 'use client'
 
+import { NavFooter } from '@/components/nav-footer'
 import { NavMain } from '@/components/nav-main'
 import {
   Sidebar,
@@ -24,7 +25,6 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
-import { NavFooter } from './nav-footer'
 
 const data = {
   navMain: [
