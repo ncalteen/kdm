@@ -34,6 +34,8 @@ export function NotesCard(
       <CardContent className="pt-0 pb-2">
         <Textarea
           value={draft}
+          name="notes"
+          id="settlement-notes"
           onChange={(e) => {
             setDraft(e.target.value)
             setIsDirty(e.target.value !== notes)
