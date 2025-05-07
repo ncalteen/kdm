@@ -31,61 +31,6 @@ export function CollectiveCognitionVictoriesCard(
   const quarries = form.watch('quarries') || []
   const nemeses = form.watch('nemesis') || []
 
-  // // Handle quarry victory toggle (update quarries array)
-  // TODO: This needs to go into the saved settlement, not in the creation form
-  // const handleQuarryToggle = (
-  //   quarryIndex: number,
-  //   property: 'ccPrologue' | 'ccLevel1' | string,
-  //   value: boolean
-  // ) => {
-  //   const updatedQuarries = [...quarries]
-  //   if (property === 'ccPrologue' || property === 'ccLevel1') {
-  //     updatedQuarries[quarryIndex] = {
-  //       ...updatedQuarries[quarryIndex],
-  //       [property]: value
-  //     }
-  //   } else {
-  //     // Handle ccLevel2[0], ccLevel2[1], ccLevel3[0], etc.
-  //     const [ccLevel, indexStr] = property.split('[')
-  //     const index = parseInt(indexStr.replace(']', ''))
-  //     if (ccLevel === 'ccLevel2') {
-  //       const updatedCcLevel2 = [
-  //         ...(updatedQuarries[quarryIndex].ccLevel2 || [false, false])
-  //       ]
-  //       updatedCcLevel2[index] = value
-  //       updatedQuarries[quarryIndex] = {
-  //         ...updatedQuarries[quarryIndex],
-  //         ccLevel2: updatedCcLevel2
-  //       }
-  //     } else if (ccLevel === 'ccLevel3') {
-  //       const updatedCcLevel3 = [
-  //         ...(updatedQuarries[quarryIndex].ccLevel3 || [false, false, false])
-  //       ]
-  //       updatedCcLevel3[index] = value
-  //       updatedQuarries[quarryIndex] = {
-  //         ...updatedQuarries[quarryIndex],
-  //         ccLevel3: updatedCcLevel3
-  //       }
-  //     }
-  //   }
-  //   form.setValue('quarries', updatedQuarries)
-  // }
-
-  // // Handle nemesis victory toggle (update nemesis array)
-  // const handleNemesisToggle = (
-  //   nemesisIndex: number,
-  //   ccLevel: 'ccLevel1' | 'ccLevel2' | 'ccLevel3',
-  //   value: boolean
-  // ) => {
-  //   const updatedNemeses = [...nemeses]
-  //   updatedNemeses[nemesisIndex] = {
-  //     ...updatedNemeses[nemesisIndex],
-  //     [ccLevel]: value
-  //   }
-
-  //   form.setValue('nemesis', updatedNemeses)
-  // }
-
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
@@ -134,7 +79,12 @@ export function CollectiveCognitionVictoriesCard(
                           render={() => (
                             <FormItem className="flex justify-center">
                               <FormControl>
-                                <Checkbox checked={false} disabled={true} />
+                                <Checkbox
+                                  checked={false}
+                                  disabled={true}
+                                  id={`quarries-${index}-ccPrologue`}
+                                  name={`quarries.${index}.ccPrologue`}
+                                />
                               </FormControl>
                             </FormItem>
                           )}
@@ -148,7 +98,12 @@ export function CollectiveCognitionVictoriesCard(
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
-                              <Checkbox checked={false} disabled={true} />
+                              <Checkbox
+                                checked={false}
+                                disabled={true}
+                                id={`quarries-${index}-ccLevel1`}
+                                name={`quarries.${index}.ccLevel1`}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -165,7 +120,12 @@ export function CollectiveCognitionVictoriesCard(
                               render={() => (
                                 <FormItem className="flex justify-center">
                                   <FormControl>
-                                    <Checkbox checked={false} disabled={true} />
+                                    <Checkbox
+                                      checked={false}
+                                      disabled={true}
+                                      id={`quarries-${index}-ccLevel2-${lvl2Index}`}
+                                      name={`quarries.${index}.ccLevel2.${lvl2Index}`}
+                                    />
                                   </FormControl>
                                 </FormItem>
                               )}
@@ -185,7 +145,12 @@ export function CollectiveCognitionVictoriesCard(
                               render={() => (
                                 <FormItem className="flex justify-center">
                                   <FormControl>
-                                    <Checkbox checked={false} disabled={true} />
+                                    <Checkbox
+                                      checked={false}
+                                      disabled={true}
+                                      id={`quarries-${index}-ccLevel3-${lvl3Index}`}
+                                      name={`quarries.${index}.ccLevel3.${lvl3Index}`}
+                                    />
                                   </FormControl>
                                 </FormItem>
                               )}
@@ -230,7 +195,12 @@ export function CollectiveCognitionVictoriesCard(
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
-                              <Checkbox checked={false} disabled={true} />
+                              <Checkbox
+                                checked={false}
+                                disabled={true}
+                                id={`nemesis-${index}-ccLevel1`}
+                                name={`nemesis.${index}.ccLevel1`}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -243,7 +213,12 @@ export function CollectiveCognitionVictoriesCard(
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
-                              <Checkbox checked={false} disabled={true} />
+                              <Checkbox
+                                checked={false}
+                                disabled={true}
+                                id={`nemesis-${index}-ccLevel2`}
+                                name={`nemesis.${index}.ccLevel2`}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -256,7 +231,12 @@ export function CollectiveCognitionVictoriesCard(
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
-                              <Checkbox checked={false} disabled={true} />
+                              <Checkbox
+                                checked={false}
+                                disabled={true}
+                                id={`nemesis-${index}-ccLevel3`}
+                                name={`nemesis.${index}.ccLevel3`}
+                              />
                             </FormControl>
                           </FormItem>
                         )}

@@ -99,6 +99,8 @@ export function RewardItem({
           }
         }}
         disabled={isEditing}
+        name={`reward-unlocked-${id}`}
+        id={`reward-unlocked-${id}`}
       />
 
       <div className="flex items-center">
@@ -117,6 +119,8 @@ export function RewardItem({
             min={0}
             onKeyDown={handleEditKeyDown}
             autoFocus
+            name={`reward-cc-${id}`}
+            id={`reward-cc-${id}`}
           />
         ) : (
           <Input
@@ -126,6 +130,8 @@ export function RewardItem({
             onChange={() => {}}
             min={0}
             disabled
+            name={`reward-cc-${id}`}
+            id={`reward-cc-${id}`}
           />
         )}
       </div>
@@ -138,6 +144,8 @@ export function RewardItem({
             onKeyDown={handleEditKeyDown}
             className="flex-1"
             autoFocus
+            name={`reward-name-${id}`}
+            id={`reward-name-${id}`}
           />
         ) : (
           reward.name
@@ -244,7 +252,7 @@ export function NewRewardItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
 
-      <Checkbox disabled />
+      <Checkbox disabled name="new-reward-unlocked" id="new-reward-unlocked" />
 
       <div className="flex items-center">
         <FormLabel className="mr-2 text-sm">CC:</FormLabel>
@@ -260,6 +268,8 @@ export function NewRewardItem({
           }}
           min={0}
           onKeyDown={handleKeyDown}
+          name="new-reward-cc"
+          id="new-reward-cc"
         />
       </div>
 
@@ -270,6 +280,8 @@ export function NewRewardItem({
         className="flex-1"
         onKeyDown={handleKeyDown}
         autoFocus
+        name="new-reward-name"
+        id="new-reward-name"
       />
 
       <Button

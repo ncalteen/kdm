@@ -77,6 +77,8 @@ export function PhilosophyItem({
       {isEditing ? (
         <Input
           value={value}
+          name={`philosophy-name-${id}`}
+          id={`philosophy-name-${id}`}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleEditKeyDown}
           className="flex-1"
@@ -177,6 +179,8 @@ export function NewPhilosophyItem({
       <Input
         placeholder="Add a philosophy..."
         value={name}
+        name="new-philosophy-name"
+        id="new-philosophy-name"
         onChange={(e) => setName(e.target.value)}
         className="flex-1"
         onKeyDown={handleKeyDown}
