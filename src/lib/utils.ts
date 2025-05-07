@@ -2,7 +2,16 @@
 
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import type { Campaign, Settlement, Survivor } from './types.js'
+import {
+  CustomCampaignData,
+  PeopleOfTheDreamKeeperCampaignData,
+  PeopleOfTheLanternCampaignData,
+  PeopleOfTheStarsCampaignData,
+  PeopleOfTheSunCampaignData,
+  SquiresOfTheCitadelCampaignData
+} from './common.jsx'
+import { CampaignType } from './enums.js'
+import type { Campaign, CampaignData, Settlement, Survivor } from './types.js'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -180,4 +189,27 @@ export function canEndure(): boolean {
 export function bornWithUnderstanding(): boolean {
   // TODO
   return false
+}
+
+/**
+ * Returns the campaign data based on the campaign type.
+ *
+ * @param campaignType Campaign Type
+ * @returns Campaign Data
+ */
+export function getCampaignData(campaignType: CampaignType) {
+  const campaignData: CampaignData =
+    campaignType === CampaignType.PEOPLE_OF_THE_LANTERN
+      ? PeopleOfTheLanternCampaignData
+      : campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+        ? PeopleOfTheDreamKeeperCampaignData
+        : campaignType === CampaignType.PEOPLE_OF_THE_STARS
+          ? PeopleOfTheStarsCampaignData
+          : campaignType === CampaignType.PEOPLE_OF_THE_SUN
+            ? PeopleOfTheSunCampaignData
+            : campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+              ? SquiresOfTheCitadelCampaignData
+              : CustomCampaignData
+
+  return campaignData
 }

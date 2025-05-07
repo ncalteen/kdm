@@ -1,56 +1,57 @@
 'use client'
 
+import { SelectCampaign } from '@/components/menu/select-campaign'
+import { SelectSurvivorType } from '@/components/menu/select-survivor-type'
+import { CollectiveCognitionCard } from '@/components/settlement/arc/collective-cognition-card'
+import { CollectiveCognitionRewardsCard } from '@/components/settlement/arc/collective-cognition-rewards-card'
+import { CollectiveCognitionVictoriesCard } from '@/components/settlement/arc/collective-cognition-victories-card'
+import { KnowledgesCard } from '@/components/settlement/arc/knowledges-card'
+import { PhilosophiesCard } from '@/components/settlement/arc/philosophies-card'
+import { DepartingBonusesCard } from '@/components/settlement/departing-bonuses/departing-bonuses-card'
+import { GearCard } from '@/components/settlement/gear/gear-card'
+import { InnovationsCard } from '@/components/settlement/innovations/innovations-card'
+import { LanternResearchLevelCard } from '@/components/settlement/lantern-research/lantern-research-level-card'
+import { LocationsCard } from '@/components/settlement/locations/locations-card'
+import { MilestonesCard } from '@/components/settlement/milestones/milestones-card'
+import { MonsterVolumesCard } from '@/components/settlement/monster-volumes/monster-volumes-card'
+import { NemesesCard } from '@/components/settlement/nemeses/nemeses-card'
+import { NotesCard } from '@/components/settlement/notes-card'
+import { PatternsCard } from '@/components/settlement/patterns/patterns-card'
+import { SeedPatternsCard } from '@/components/settlement/patterns/seed-patterns-card'
+import { PopulationCard } from '@/components/settlement/population-card'
+import { PrinciplesCard } from '@/components/settlement/principles/principles-card'
+import { QuarriesCard } from '@/components/settlement/quarries/quarries-card'
+import { ResourcesCard } from '@/components/settlement/resources/resources-card'
+import { SettlementNameCard } from '@/components/settlement/settlement-name-card'
+import { SquireProgressionCards } from '@/components/settlement/squires/squire-progression-cards'
+import { SquireSuspicionsCard } from '@/components/settlement/squires/squire-suspicions-card'
+import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
-  CustomCampaignData,
   DefaultSquiresSuspicion,
-  PeopleOfTheDreamKeeperCampaignData,
-  PeopleOfTheLanternCampaignData,
-  PeopleOfTheStarsCampaignData,
-  PeopleOfTheSunCampaignData,
-  SquiresOfTheCitadelCampaignData
+  PeopleOfTheLanternCampaignData
 } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import { CampaignData } from '@/lib/types'
-import { getLostSettlementCount, getNextSettlementId } from '@/lib/utils'
+import {
+  getCampaignData,
+  getLostSettlementCount,
+  getNextSettlementId
+} from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { SelectCampaignCombobox } from '../ui/menu/select-campaign-combobox'
-import { SelectSurvivorTypeCombobox } from '../ui/menu/select-survivor-type-combobox'
-import { CcCard } from '../ui/settlement/cc-card'
-import { CcRewardsCard } from '../ui/settlement/cc-rewards-card'
-import { CcVictoriesCard } from '../ui/settlement/cc-victories-card'
-import { DepartingBonusesCard } from '../ui/settlement/departing-bonuses-card'
-import { GearCard } from '../ui/settlement/gear-card'
-import { InnovationsCard } from '../ui/settlement/innovations-card'
-import { KnowledgesCard } from '../ui/settlement/knowledges-card'
-import { LanternResearchLevelCard } from '../ui/settlement/lantern-research-level-card'
-import { MilestonesCard } from '../ui/settlement/milestones-card'
-import { MonsterVolumesCard } from '../ui/settlement/monster-volumes-card'
-import { NemesisCard } from '../ui/settlement/nemesis-card'
-import { NotesCard } from '../ui/settlement/notes-card'
-import { PatternsCard } from '../ui/settlement/patterns-card'
-import { PhilosophiesCard } from '../ui/settlement/philosophies-card'
-import { PopulationCard } from '../ui/settlement/population-card'
-import { PrinciplesCard } from '../ui/settlement/principles-card'
-import { QuarryCard } from '../ui/settlement/quarry-card'
-import { ResourcesCard } from '../ui/settlement/resources-card'
-import { SeedPatternsCard } from '../ui/settlement/seed-patterns-card'
-import { SettlementLocationsCard } from '../ui/settlement/settlement-locations-card'
-import { SettlementNameCard } from '../ui/settlement/settlement-name-card'
-import { SquireCards } from '../ui/settlement/squire-cards'
-import { SquireSuspicionsCard } from '../ui/settlement/squire-suspicions-card'
-import { TimelineCard } from '../ui/settlement/timeline-card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
 export function CreateSettlementForm() {
-  // Use lazy initialization for the default values
+  // Tracks the selected tab in the settlement creation form.
+  const [selectedTab, setSelectedTab] = useState<string>('timeline')
+
+  // Set the default campaign and survivor type.
   const [defaultValues] = useState<Partial<z.infer<typeof SettlementSchema>>>(
     () => ({
       campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
@@ -58,12 +59,11 @@ export function CreateSettlementForm() {
     })
   )
 
-  const [selectedTab, setSelectedTab] = useState<string>('timeline')
-
-  // Use state to store the ID and lost settlement count to ensure they're only calculated on the client side
+  // Sets/tracks the settlement ID and lost settlement count.
   const [settlementId, setSettlementId] = useState(1)
   const [lostSettlementCount, setLostSettlementCount] = useState(0)
 
+  // Initialize the form with the settlement schema and default values.
   const form = useForm<z.infer<typeof SettlementSchema>>({
     resolver: zodResolver(SettlementSchema),
     defaultValues: {
@@ -80,7 +80,7 @@ export function CreateSettlementForm() {
       principles: PeopleOfTheLanternCampaignData.principles,
       patterns: [],
       innovations: PeopleOfTheLanternCampaignData.innovations,
-      locations: PeopleOfTheLanternCampaignData.locations, // Add Forum if using ARC survivors
+      locations: PeopleOfTheLanternCampaignData.locations,
       resources: [],
       gear: [],
       population: 0,
@@ -90,60 +90,44 @@ export function CreateSettlementForm() {
   })
 
   useEffect(() => {
-    // Get the next settlement ID from localStorage
+    // Calculate the next settlement ID based on the latest in localStorage.
     setSettlementId(getNextSettlementId())
     defaultValues.id = getNextSettlementId()
     form.setValue('id', getNextSettlementId())
 
-    // Get the lost settlement count from localStorage
+    // Calculate the lost settlement count based on the number of settlements
+    // present in localStorage.
     setLostSettlementCount(getLostSettlementCount())
     defaultValues.lostSettlements = getLostSettlementCount()
     form.setValue('lostSettlements', getLostSettlementCount())
   }, [form, defaultValues])
 
+  /** Campaign Type */
   const campaignType = form.watch('campaignType')
+
+  /** Survivor Type */
   const survivorType = form.watch('survivorType')
 
-  // Check if Arc-specific content should be shown
-  const showArcContent = survivorType === SurvivorType.ARC
+  /** True for Arc Survivor Campaigns */
+  const isArcCampaign = survivorType === SurvivorType.ARC
 
-  // Check if this is a Squires of the Citadel campaign
+  /** True for Squires of the Citadel Campaigns */
   const isSquiresCampaign = campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
 
-  // Handle campaign type change from the combobox
+  /**
+   * Handles the user changing the campaign type.
+   *
+   * @param value Campaign Type
+   */
   const handleCampaignChange = (value: CampaignType) => {
-    // Set the new campaign type
+    const campaignData = getCampaignData(value)
+
+    // Update the form with the selected campaign type.
     form.setValue('campaignType', value)
 
-    // If People of the Dream Keeper, force survivor type to ARC and disable changing
-    if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER) {
-      form.setValue('survivorType', SurvivorType.ARC)
-    }
-    if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
-      form.setValue('survivorType', SurvivorType.CORE)
-    }
-
-    // Set campaign data based on selected campaign type
-    const campaignData: CampaignData =
-      value === CampaignType.PEOPLE_OF_THE_LANTERN
-        ? PeopleOfTheLanternCampaignData
-        : value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-          ? PeopleOfTheDreamKeeperCampaignData
-          : value === CampaignType.PEOPLE_OF_THE_STARS
-            ? PeopleOfTheStarsCampaignData
-            : value === CampaignType.PEOPLE_OF_THE_SUN
-              ? PeopleOfTheSunCampaignData
-              : value === CampaignType.SQUIRES_OF_THE_CITADEL
-                ? SquiresOfTheCitadelCampaignData
-                : CustomCampaignData
-
-    // Set survival limit
-    form.setValue(
-      'survivalLimit',
-      value === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
-    )
-
-    // Update ALL campaign-specific data
+    // Reset the campaign data based on selected campaign type.
+    // NOTE: This clears all user-editable collections to start fresh with the
+    //       new campaign.
     form.setValue('timeline', campaignData.timeline)
     form.setValue('quarries', campaignData.quarries)
     form.setValue('nemesis', campaignData.nemesis)
@@ -152,29 +136,44 @@ export function CreateSettlementForm() {
     form.setValue('locations', campaignData.locations)
     form.setValue('principles', campaignData.principles)
 
-    // Set CC rewards if available
-    if (campaignData.ccRewards && campaignData.ccRewards.length > 0) {
-      form.setValue('ccRewards', campaignData.ccRewards)
-    } else if (form.watch('survivorType') === SurvivorType.ARC) {
-      form.setValue('ccRewards', [])
-    }
-
-    // Set suspicions for Squires campaign
+    /** Squires of the Citadel */
     if (value === CampaignType.SQUIRES_OF_THE_CITADEL) {
-      form.setValue('suspicions', DefaultSquiresSuspicion)
-    } else {
-      form.setValue('suspicions', undefined)
-    }
+      // Survivor type must be Core.
+      form.setValue('survivorType', SurvivorType.CORE)
 
-    // Set lantern research for appropriate campaigns
+      // Suspicions must be set.
+      form.setValue('suspicions', DefaultSquiresSuspicion)
+    } else form.setValue('suspicions', undefined)
+
+    /** People of the Dream Keeper */
+    if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER)
+      // Survivor type must be Arc.
+      form.setValue('survivorType', SurvivorType.ARC)
+
+    // Set the initial survival limit.
+    // - For Squires of the Citadel, set it to 6.
+    // - For all other campaigns, set it to 1.
+    form.setValue(
+      'survivalLimit',
+      value === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
+    )
+
+    // If there are default Collective Cognition rewards, set them.
+    if (campaignData.ccRewards && campaignData.ccRewards.length > 0)
+      form.setValue('ccRewards', campaignData.ccRewards)
+    else if (form.watch('survivorType') === SurvivorType.ARC)
+      form.setValue('ccRewards', [])
+    else form.setValue('ccRewards', undefined)
+
+    // If the campaign requires Lantern Research, set the initial values.
     const hasLanternResearch =
-      value === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      value === CampaignType.PEOPLE_OF_THE_SUN
+      campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      campaignType === CampaignType.PEOPLE_OF_THE_SUN
 
     form.setValue('lanternResearchLevel', hasLanternResearch ? 0 : undefined)
     form.setValue('monsterVolumes', hasLanternResearch ? [] : undefined)
 
-    // Clear user-editable collections to start fresh with the new campaign
+    // Clear user-editable collections to start fresh with the new campaign.
     form.setValue('departingBonuses', [])
     form.setValue('patterns', [])
     form.setValue('seedPatterns', [])
@@ -185,29 +184,22 @@ export function CreateSettlementForm() {
     form.setValue('ccValue', 0)
   }
 
-  // Handle survivor type change from the combobox
+  /**
+   * Handles the user changing the survivor type.
+   *
+   * @param value Survivor Type
+   */
   const handleSurvivorTypeChange = (value: SurvivorType) => {
+    const campaignData = getCampaignData(form.watch('campaignType'))
+
     form.setValue('survivorType', value)
+
+    // Reset the selected tab, since the user could be on one of the tabs that
+    // are specific to a survivor type.
     setSelectedTab('timeline')
 
-    // Set Arc-specific data when survivor type is Arc
+    // Set/unset Arc-specific data.
     if (value === SurvivorType.ARC) {
-      // Set campaign data based on selected campaign type
-      const campaignData: CampaignData =
-        form.watch('campaignType') === CampaignType.PEOPLE_OF_THE_LANTERN
-          ? PeopleOfTheLanternCampaignData
-          : form.watch('campaignType') ===
-              CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-            ? PeopleOfTheDreamKeeperCampaignData
-            : form.watch('campaignType') === CampaignType.PEOPLE_OF_THE_STARS
-              ? PeopleOfTheStarsCampaignData
-              : form.watch('campaignType') === CampaignType.PEOPLE_OF_THE_SUN
-                ? PeopleOfTheSunCampaignData
-                : form.watch('campaignType') ===
-                    CampaignType.SQUIRES_OF_THE_CITADEL
-                  ? SquiresOfTheCitadelCampaignData
-                  : CustomCampaignData
-
       form.setValue('ccRewards', campaignData.ccRewards || [])
       form.setValue('philosophies', [])
       form.setValue('knowledges', [])
@@ -217,11 +209,6 @@ export function CreateSettlementForm() {
       form.setValue('knowledges', undefined)
     }
   }
-
-  // Check if a campaign that requires a specific survivor type is selected
-  const isSpecificSurvivorRequired =
-    campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-    campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
 
   // Define a submit handler with the correct schema type
   function onSubmit(values: z.infer<typeof SettlementSchema>) {
@@ -234,14 +221,17 @@ export function CreateSettlementForm() {
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <div className="flex justify-between items-center gap-4 mb-4">
         <div className="flex gap-4">
-          <SelectCampaignCombobox
+          <SelectCampaign
             value={campaignType}
             onChange={handleCampaignChange}
           />
-          <SelectSurvivorTypeCombobox
+          <SelectSurvivorType
             value={survivorType}
             onChange={handleSurvivorTypeChange}
-            disabled={isSpecificSurvivorRequired}
+            disabled={
+              campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
+              campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+            }
           />
         </div>
         <Button type="submit">Create Settlement</Button>
@@ -280,7 +270,7 @@ export function CreateSettlementForm() {
                 <TabsTrigger value="crafting" className="flex-1">
                   Crafting
                 </TabsTrigger>
-                {showArcContent && (
+                {isArcCampaign && (
                   <TabsTrigger value="arc" className="flex-1">
                     Arc
                   </TabsTrigger>
@@ -293,8 +283,8 @@ export function CreateSettlementForm() {
                 <TimelineCard {...form} />
               </TabsContent>
               <TabsContent value="monsters">
-                <QuarryCard {...form} />
-                <NemesisCard {...form} />
+                <QuarriesCard {...form} />
+                <NemesesCard {...form} />
               </TabsContent>
               {isSquiresCampaign ? (
                 <TabsContent value="squires">
@@ -303,7 +293,7 @@ export function CreateSettlementForm() {
                     setValue={form.setValue}
                     watch={form.watch}
                   />
-                  <SquireCards />
+                  <SquireProgressionCards />
                 </TabsContent>
               ) : (
                 <TabsContent value="survivors">
@@ -325,7 +315,7 @@ export function CreateSettlementForm() {
                     <MilestonesCard {...form} />
                     <PrinciplesCard {...form} />
                     <InnovationsCard {...form} />
-                    <SettlementLocationsCard {...form} />
+                    <LocationsCard {...form} />
                   </>
                 )) || <InnovationsCard {...form} />}
               </TabsContent>
@@ -339,11 +329,11 @@ export function CreateSettlementForm() {
                 <ResourcesCard {...form} />
                 <GearCard {...form} />
               </TabsContent>
-              {showArcContent && (
+              {isArcCampaign && (
                 <TabsContent value="arc">
-                  <CcCard {...form} />
-                  <CcVictoriesCard {...form} />
-                  <CcRewardsCard {...form} />
+                  <CollectiveCognitionCard {...form} />
+                  <CollectiveCognitionVictoriesCard {...form} />
+                  <CollectiveCognitionRewardsCard {...form} />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <PhilosophiesCard {...form} />
                     <KnowledgesCard {...form} />
