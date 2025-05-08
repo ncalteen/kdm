@@ -22,18 +22,18 @@ export function SettlementNameCard(
   return (
     <Card>
       <CardContent className="pt-2 pb-2">
-        <div className="flex flex-row flex-wrap gap-4">
+        <div className="flex flex-row justify-between items-center">
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="flex-1 w-max">
-                <div className="flex items-center gap-2">
-                  <FormLabel className="w-max text-left">Settlement</FormLabel>
+              <FormItem className="w-full">
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-left">Settlement</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Settlement Name"
-                      className="w-full"
+                      className="w-[300px]"
                       {...field}
                       value={field.value ?? ''}
                       onChange={(e) => {

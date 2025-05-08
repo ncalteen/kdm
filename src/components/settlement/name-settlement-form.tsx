@@ -234,18 +234,18 @@ export function NameSettlementForm() {
       })}
       className="space-y-6">
       <Form {...form}>
-        <Card className="max-w-[800px] ml-[15px] mr-[15px]">
+        <Card className="max-w-[800px] mx-auto">
           <CardContent className="w-full pt-6 pb-6">
             <Card className="mb-2">
               <CardContent className="pt-2 pb-2">
-                <div className="flex flex-row flex-wrap gap-4">
+                <div className="flex flex-row justify-between items-center">
                   <FormField
                     control={form.control}
                     name="campaignType"
                     render={({ field }) => (
-                      <FormItem className="flex-1 w-max">
-                        <div className="flex items-center gap-2">
-                          <FormLabel className="w-max text-left">
+                      <FormItem className="w-full">
+                        <div className="flex items-center justify-between">
+                          <FormLabel className="text-left">
                             Campaign Type
                           </FormLabel>
                           <FormControl>
@@ -264,14 +264,14 @@ export function NameSettlementForm() {
             </Card>
             <Card className="mb-2">
               <CardContent className="pt-2 pb-2">
-                <div className="flex flex-row flex-wrap gap-4">
+                <div className="flex flex-row justify-between items-center">
                   <FormField
                     control={form.control}
                     name="survivorType"
                     render={() => (
-                      <FormItem className="flex-1 w-max">
-                        <div className="flex items-center gap-2">
-                          <FormLabel className="w-max text-left">
+                      <FormItem className="w-full">
+                        <div className="flex items-center justify-between">
+                          <FormLabel className="text-left">
                             Survivor Type
                           </FormLabel>
                           <FormControl>
@@ -298,7 +298,7 @@ export function NameSettlementForm() {
         </Card>
       </Form>
 
-      <Button type="submit" className="ml-[15px]">
+      <Button type="submit" className="mx-auto block">
         Create Settlement
       </Button>
     </form>

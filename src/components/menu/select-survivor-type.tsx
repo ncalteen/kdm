@@ -76,7 +76,7 @@ export function SelectSurvivorType({
           aria-expanded={open}
           disabled={disabled}
           id={id}
-          className={cn('w-[200px] justify-between', disabled && 'opacity-70')}>
+          className="w-[300px] justify-between">
           {value
             ? survivorTypeOptions.find((option) => option.value === value)
                 ?.label
