@@ -30,12 +30,14 @@ interface SelectSurvivorTypeProps {
   onChange?: (value: SurvivorType) => void
   value?: SurvivorType
   disabled?: boolean
+  id?: string
 }
 
 export function SelectSurvivorType({
   onChange,
   value: propValue,
-  disabled = false
+  disabled = false,
+  id
 }: SelectSurvivorTypeProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(propValue || '')
@@ -73,6 +75,7 @@ export function SelectSurvivorType({
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
+          id={id}
           className={cn('w-[200px] justify-between', disabled && 'opacity-70')}>
           {value
             ? survivorTypeOptions.find((option) => option.value === value)

@@ -50,6 +50,13 @@ export type Location = {
 }
 
 /**
+ * Settlement Knowledge
+ */
+export type Knowledge = {
+  name: string
+}
+
+/**
  * Settlement Principle
  */
 export type Principle = {
@@ -110,6 +117,7 @@ export type Settlement = {
   survivalLimit: number
   lostSettlements: number
   name: string
+  population: number
   timeline: TimelineEvent[]
   quarries: Quarry[]
   nemesis: Nemesis[]
@@ -118,6 +126,7 @@ export type Settlement = {
   deathCount: number
   principles: Principle[]
   patterns: string[]
+  seedPatterns: string[]
   innovations: string[]
   locations: Location[]
   resources: Resource[]
@@ -129,7 +138,7 @@ export type Settlement = {
    */
   ccRewards?: CcReward[]
   philosophies?: string[]
-  knowledges?: string[]
+  knowledges?: Knowledge[]
 
   /**
    * Campaign Types:

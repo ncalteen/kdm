@@ -29,11 +29,13 @@ const campaignOptions = Object.values(CampaignType).map((campaign) => ({
 interface SelectCampaignProps {
   onChange?: (value: CampaignType) => void
   value?: CampaignType
+  id?: string
 }
 
 export function SelectCampaign({
   onChange,
-  value: propValue
+  value: propValue,
+  id
 }: SelectCampaignProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(propValue || '')
@@ -66,6 +68,7 @@ export function SelectCampaign({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          id={id}
           className="w-[300px] justify-between">
           {value
             ? campaignOptions.find((campaign) => campaign.value === value)

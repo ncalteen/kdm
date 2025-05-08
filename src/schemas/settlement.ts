@@ -124,10 +124,10 @@ export const SettlementSchema = z.object({
   // Main
   id: z.number(),
   campaignType: z.enum(
-    Object.keys(CampaignType) as [CampaignType, ...CampaignType[]]
+    Object.values(CampaignType) as [CampaignType, ...CampaignType[]]
   ),
   survivorType: z.enum(
-    Object.keys(SurvivorType) as [SurvivorType, ...SurvivorType[]]
+    Object.values(SurvivorType) as [SurvivorType, ...SurvivorType[]]
   ),
   survivalLimit: z.number().min(0),
   lostSettlements: z.number().min(0).optional(),
