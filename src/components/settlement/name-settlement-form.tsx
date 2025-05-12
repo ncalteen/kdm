@@ -34,14 +34,13 @@ export function NameSettlementForm() {
   const [defaultValues] = useState<Partial<z.infer<typeof SettlementSchema>>>(
     () => ({
       campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-      survivorType: SurvivorType.CORE,
-      name: ''
+      survivorType: SurvivorType.CORE
     })
   )
 
   // Sets/tracks the settlement ID and lost settlement count.
   const [settlementId, setSettlementId] = useState(1)
-  const [lostSettlementCount, setLostSettlementCount] = useState(0)
+  const [lostSettlements, setLostSettlements] = useState(0)
 
   // Initialize the form with the settlement schema and default values.
   const form = useForm<z.infer<typeof SettlementSchema>>({
@@ -50,14 +49,19 @@ export function NameSettlementForm() {
       ...defaultValues,
       id: settlementId,
       survivalLimit: 1,
-      lostSettlements: lostSettlementCount,
-      campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-      survivorType: SurvivorType.CORE
+      lostSettlements
     }
   })
 
+  /** Campaign Type */
+  const campaignType = form.watch('campaignType')
+
+  /** Survivor Type */
+  const survivorType = form.watch('survivorType')
+
+  // Set the initial values for the form fields when the component mounts.
   useEffect(() => {
-    // Get campaign data for the default campaign type
+    // Get campaign data for the campaign type.
     const campaignData = getCampaignData(
       defaultValues.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
     )
@@ -68,37 +72,30 @@ export function NameSettlementForm() {
 
     // Calculate the lost settlement count based on the number of settlements
     // present in localStorage.
-    setLostSettlementCount(getLostSettlementCount())
+    setLostSettlements(getLostSettlementCount())
     defaultValues.lostSettlements = getLostSettlementCount()
 
-    // Set essential form fields
+    // Update the essential form fields.
     form.setValue('id', getNextSettlementId())
     form.setValue('lostSettlements', getLostSettlementCount())
-    form.setValue('name', '')
 
-    // Set all the required fields with default values that will be used on submit
-    form.setValue('timeline', campaignData.timeline)
-    form.setValue('quarries', campaignData.quarries)
-    form.setValue('nemesis', campaignData.nemesis)
-    form.setValue('milestones', campaignData.milestones)
-    form.setValue('departingBonuses', [])
+    // Set all the required settlement fields with default values that will be
+    // used when the form is submitted.
     form.setValue('deathCount', 0)
-    form.setValue('principles', campaignData.principles)
-    form.setValue('patterns', [])
-    form.setValue('seedPatterns', [])
+    form.setValue('departingBonuses', [])
+    form.setValue('gear', [])
     form.setValue('innovations', campaignData.innovations)
     form.setValue('locations', campaignData.locations)
-    form.setValue('resources', [])
-    form.setValue('gear', [])
-    form.setValue('notes', '')
+    form.setValue('milestones', campaignData.milestones)
+    form.setValue('nemesis', campaignData.nemesis)
+    form.setValue('patterns', [])
     form.setValue('population', 0)
+    form.setValue('principles', campaignData.principles)
+    form.setValue('quarries', campaignData.quarries)
+    form.setValue('resources', [])
+    form.setValue('seedPatterns', [])
+    form.setValue('timeline', campaignData.timeline)
   }, [form, defaultValues])
-
-  /** Campaign Type */
-  const campaignType = form.watch('campaignType')
-
-  /** Survivor Type */
-  const survivorType = form.watch('survivorType')
 
   /**
    * Handles the user changing the campaign type.
@@ -107,7 +104,6 @@ export function NameSettlementForm() {
    */
   const handleCampaignChange = (value: CampaignType) => {
     // Update the form with the selected campaign type.
-    console.log('Setting campaign type to:', value)
     form.setValue('campaignType', value)
 
     /** Squires of the Citadel */
@@ -134,9 +130,8 @@ export function NameSettlementForm() {
    *
    * @param value Survivor Type
    */
-  const handleSurvivorTypeChange = (value: SurvivorType) => {
+  const handleSurvivorTypeChange = (value: SurvivorType) =>
     form.setValue('survivorType', value)
-  }
 
   // Define a submit handler with the correct schema type
   function onSubmit(values: z.infer<typeof SettlementSchema>) {
@@ -149,52 +144,57 @@ export function NameSettlementForm() {
       // Create a complete settlement object with all required fields
       const settlement = {
         ...values,
-        // Set default campaign data
-        timeline: campaignData.timeline,
-        quarries: campaignData.quarries,
-        nemesis: campaignData.nemesis,
-        milestones: campaignData.milestones,
+        // Set values from the default campaign data.
         innovations: campaignData.innovations,
         locations: campaignData.locations,
+        milestones: campaignData.milestones,
+        nemesis: campaignData.nemesis,
         principles: campaignData.principles,
+        quarries: campaignData.quarries,
+        timeline: campaignData.timeline,
 
-        // Initialize empty collections
-        departingBonuses: [],
+        // Initialize empty properties.
         deathCount: 0,
-        patterns: [],
-        seedPatterns: [],
-        resources: [],
+        departingBonuses: [],
         gear: [],
+        notes: undefined,
+        patterns: [],
         population: 0,
-        ccValue: 0,
-        notes: '',
+        resources: [],
+        seedPatterns: [],
 
-        // Set campaign-specific properties
-        suspicions:
-          values.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-            ? DefaultSquiresSuspicion
+        /*
+         * Arc Survivor Settlements
+         */
+        ccRewards:
+          values.survivorType === SurvivorType.ARC
+            ? campaignData.ccRewards || []
             : undefined,
+        ccValue: values.survivorType === SurvivorType.ARC ? 0 : undefined,
+        knowledges: values.survivorType === SurvivorType.ARC ? [] : undefined,
+        philosophies: values.survivorType === SurvivorType.ARC ? [] : undefined,
 
+        /*
+         * People of the Lantern/Sun Campaigns
+         */
         lanternResearchLevel:
           values.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
           values.campaignType === CampaignType.PEOPLE_OF_THE_SUN
             ? 0
             : undefined,
-
         monsterVolumes:
           values.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
           values.campaignType === CampaignType.PEOPLE_OF_THE_SUN
             ? []
             : undefined,
 
-        // Set Arc-specific properties
-        ccRewards:
-          values.survivorType === SurvivorType.ARC
-            ? campaignData.ccRewards || []
-            : undefined,
-
-        philosophies: values.survivorType === SurvivorType.ARC ? [] : undefined,
-        knowledges: values.survivorType === SurvivorType.ARC ? [] : undefined
+        /*
+         * Squires of the Citadel Campaigns
+         */
+        suspicions:
+          values.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+            ? DefaultSquiresSuspicion
+            : undefined
       }
 
       // Get existing campaign data from localStorage or initialize new
@@ -218,7 +218,6 @@ export function NameSettlementForm() {
       // Redirect to the settlement page, passing the ID via query parameters
       router.push(`/settlement?settlementId=${settlement.id}`)
     } catch (error) {
-      console.error('Error creating settlement:', error)
       toast.error(
         'Failed to create settlement: ' +
           (error instanceof Error ? error.message : String(error))
@@ -228,14 +227,14 @@ export function NameSettlementForm() {
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit, (errors) => {
-        console.error('Form validation errors:', errors)
-        toast.error('Please fill all required fields')
+      onSubmit={form.handleSubmit(onSubmit, () => {
+        toast.error('Please complete all required fields!')
       })}
       className="space-y-6">
       <Form {...form}>
         <Card className="max-w-[800px] mx-auto">
           <CardContent className="w-full pt-6 pb-6">
+            {/* Campaign Type */}
             <Card className="mb-2">
               <CardContent className="pt-2 pb-2">
                 <div className="flex flex-row justify-between items-center">
@@ -262,6 +261,8 @@ export function NameSettlementForm() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Survivor Type */}
             <Card className="mb-2">
               <CardContent className="pt-2 pb-2">
                 <div className="flex flex-row justify-between items-center">
@@ -293,6 +294,8 @@ export function NameSettlementForm() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Settlement Name */}
             <SettlementNameCard {...form} />
           </CardContent>
         </Card>
