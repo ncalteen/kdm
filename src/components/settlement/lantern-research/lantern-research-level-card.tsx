@@ -6,9 +6,12 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { SunIcon } from 'lucide-react'
+import { startTransition } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
@@ -37,11 +40,37 @@ export function LanternResearchLevelCard(
                       value={lanternResearchLevel}
                       onChange={(e) => {
                         const value = parseInt(e.target.value, 10)
-                        if (isNaN(value) || value < 0) {
-                          form.setValue('lanternResearchLevel', 0)
-                        } else {
-                          form.setValue('lanternResearchLevel', value)
-                        }
+                        startTransition(() => {
+                          if (isNaN(value) || value < 0)
+                            form.setValue('lanternResearchLevel', 0)
+                          else form.setValue('lanternResearchLevel', value)
+
+                          // Update localStorage
+                          try {
+                            const formValues = form.getValues()
+                            const campaign = getCampaign()
+                            const settlementIndex =
+                              campaign.settlements.findIndex(
+                                (s) => s.id === formValues.id
+                              )
+
+                            campaign.settlements[
+                              settlementIndex
+                            ].lanternResearchLevel =
+                              isNaN(value) || value < 0 ? 0 : value
+                            localStorage.setItem(
+                              'campaign',
+                              JSON.stringify(campaign)
+                            )
+
+                            toast.success('Lantern research level updated!')
+                          } catch (error) {
+                            console.error(
+                              'Error saving lantern research level to localStorage:',
+                              error
+                            )
+                          }
+                        })
                       }}
                     />
                   </FormControl>

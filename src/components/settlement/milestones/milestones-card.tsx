@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -86,9 +87,24 @@ export function MilestonesCard(
         form.setValue('milestones', updated)
         setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
         setIsAddingNew(false)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].milestones = updated
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success('New milestone added!')
+        } catch (error) {
+          console.error('Error saving milestones to localStorage:', error)
+        }
       })
 
-      toast.success('New milestone added')
       return true
     },
     [milestones, form]
@@ -120,6 +136,22 @@ export function MilestonesCard(
 
           return reindexed
         })
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].milestones = updated
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success('Milestone removed!')
+        } catch (error) {
+          console.error('Error saving milestones to localStorage:', error)
+        }
       })
     },
     [milestones, form]
@@ -140,9 +172,23 @@ export function MilestonesCard(
 
         form.setValue('milestones', updated)
         setDisabledInputs((prev) => ({ ...prev, [index]: true }))
-      })
 
-      toast.success('Milestone saved')
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].milestones = updated
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success('Milestone saved!')
+        } catch (error) {
+          console.error('Error saving milestones to localStorage:', error)
+        }
+      })
     },
     [milestones, form]
   )
@@ -158,6 +204,20 @@ export function MilestonesCard(
           const newOrder = arrayMove(milestones, oldIndex, newIndex)
 
           form.setValue('milestones', newOrder)
+
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].milestones = newOrder
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+          } catch (error) {
+            console.error('Error saving milestones to localStorage:', error)
+          }
         })
       }
     },

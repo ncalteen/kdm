@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -146,13 +147,31 @@ export function NewMonsterVolumeItem({
     if (existingNames.includes(name.trim()))
       return toast.warning('A monster volume with this name already exists')
 
-    const monsterVolumes = [...(form.watch('monsterVolumes') || [])]
+    startTransition(() => {
+      const monsterVolumes = [...(form.watch('monsterVolumes') || [])]
+      const updatedVolumes = [...monsterVolumes, name.trim()]
 
-    form.setValue('monsterVolumes', [...monsterVolumes, name.trim()])
-    setName('')
-    onAdd()
+      form.setValue('monsterVolumes', updatedVolumes)
 
-    toast.success('New monster volume added')
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].monsterVolumes = updatedVolumes
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('New monster volume added!')
+      } catch (error) {
+        console.error('Error saving monster volumes to localStorage:', error)
+      }
+
+      setName('')
+      onAdd()
+    })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

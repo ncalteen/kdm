@@ -99,3 +99,52 @@ export function SeedPatternItem({
     </div>
   )
 }
+
+export function NewSeedPatternItem({
+  onSave,
+  onCancel
+}: {
+  onSave: (value: string) => void
+  onCancel: () => void
+}) {
+  const [value, setValue] = useState('')
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      onSave(value)
+    } else if (e.key === 'Escape') {
+      onCancel()
+    }
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <div className="p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+      </div>
+      <Input
+        placeholder="Seed Pattern"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => onSave(value)}
+        title="Save seed pattern">
+        <CheckIcon className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onCancel}
+        title="Cancel">
+        <TrashIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}

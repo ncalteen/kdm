@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/locations/location-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -78,6 +79,22 @@ export function LocationsCard(
         })
         return next
       })
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].locations = currentLocations
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Location removed!')
+      } catch (error) {
+        console.error('Error saving locations to localStorage:', error)
+      }
     })
   }
 
@@ -90,9 +107,23 @@ export function LocationsCard(
       form.setValue('locations', updated)
       setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
       setIsAddingNew(false)
-    })
 
-    toast.success('Location added')
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].locations = updated
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Location added!')
+      } catch (error) {
+        console.error('Error saving locations to localStorage:', error)
+      }
+    })
   }
 
   const saveExistingLocation = (
@@ -107,9 +138,24 @@ export function LocationsCard(
       form.setValue(`locations.${index}.name`, name)
       form.setValue(`locations.${index}.unlocked`, unlocked)
       setDisabledInputs((prev) => ({ ...prev, [index]: true }))
-    })
 
-    toast.success('Location saved')
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].locations =
+          formValues.locations || []
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Location saved!')
+      } catch (error) {
+        console.error('Error saving locations to localStorage:', error)
+      }
+    })
   }
 
   const editLocation = (index: number) => {
@@ -138,6 +184,20 @@ export function LocationsCard(
         })
         return next
       })
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].locations = newOrder
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      } catch (error) {
+        console.error('Error saving locations to localStorage:', error)
+      }
     }
   }
 

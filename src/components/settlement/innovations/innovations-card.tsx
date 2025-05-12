@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/innovations/innovation-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -71,7 +72,21 @@ export function InnovationsCard(
     form.setValue('innovations', currentInnovations)
     setIsAddingNew(false)
 
-    toast.success('Innovation added')
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].innovations = currentInnovations
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Innovation added!')
+    } catch (error) {
+      console.error('Error saving innovations to localStorage:', error)
+    }
   }
 
   const cancelNewInnovation = () => setIsAddingNew(false)
@@ -96,6 +111,22 @@ export function InnovationsCard(
     })
 
     setDisabledInputs(newDisabledInputs)
+
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].innovations = currentInnovations
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Innovation removed!')
+    } catch (error) {
+      console.error('Error saving innovations to localStorage:', error)
+    }
   }
 
   const saveInnovation = (index: number) => {
@@ -110,7 +141,22 @@ export function InnovationsCard(
       [index]: true
     })
 
-    toast.success('Innovation saved')
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const currentInnovations = formValues.innovations
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].innovations = currentInnovations
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Innovation saved!')
+    } catch (error) {
+      console.error('Error saving innovations to localStorage:', error)
+    }
   }
 
   const editInnovation = (index: number) => {
@@ -148,6 +194,20 @@ export function InnovationsCard(
       })
 
       setDisabledInputs(newDisabledInputs)
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].innovations = newOrder
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      } catch (error) {
+        console.error('Error saving innovations to localStorage:', error)
+      }
     }
   }
 

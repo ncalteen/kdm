@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -89,6 +90,22 @@ export function DepartingBonusesCard(
 
           return reindexed
         })
+        
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].departingBonuses = updatedBonuses
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+          
+          toast.success('Bonus removed!')
+        } catch (error) {
+          console.error('Error saving departing bonuses to localStorage:', error)
+        }
       })
     },
     [bonuses, form]
@@ -100,10 +117,24 @@ export function DepartingBonusesCard(
         return toast.warning('Cannot save an empty bonus')
 
       setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+      
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
 
-      toast.success('Bonus saved')
+        campaign.settlements[settlementIndex].departingBonuses = formValues.departingBonuses
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        
+        toast.success('Bonus saved!')
+      } catch (error) {
+        console.error('Error saving departing bonuses to localStorage:', error)
+      }
     },
-    [bonuses]
+    [bonuses, form]
   )
 
   const handleEdit = useCallback(
@@ -139,7 +170,22 @@ export function DepartingBonusesCard(
         }))
 
         setIsAddingNew(false)
-        toast.success('Bonus added')
+        
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].departingBonuses = updatedBonuses
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+          
+          toast.success('Bonus added!')
+        } catch (error) {
+          console.error('Error saving departing bonuses to localStorage:', error)
+        }
       })
     },
     [bonuses, form]
@@ -165,6 +211,20 @@ export function DepartingBonusesCard(
           const newOrder = arrayMove(bonuses, oldIndex, newIndex)
 
           form.setValue('departingBonuses', newOrder)
+          
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].departingBonuses = newOrder
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+          } catch (error) {
+            console.error('Error saving departing bonuses to localStorage:', error)
+          }
         })
       }
     },

@@ -4,6 +4,7 @@ import {
 } from '@/components/settlement/monster-volumes/monster-volume-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -20,7 +21,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BookOpenIcon, PlusCircleIcon } from 'lucide-react'
-import { useState } from 'react'
+import { startTransition, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -42,8 +43,26 @@ export function MonsterVolumesCard(
   )
 
   const handleRemoveVolume = (volume: string) => {
-    const updatedVolumes = monsterVolumes.filter((v) => v !== volume)
-    form.setValue('monsterVolumes', updatedVolumes)
+    startTransition(() => {
+      const updatedVolumes = monsterVolumes.filter((v) => v !== volume)
+      form.setValue('monsterVolumes', updatedVolumes)
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].monsterVolumes = updatedVolumes
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Monster volume removed!')
+      } catch (error) {
+        console.error('Error saving monster volumes to localStorage:', error)
+      }
+    })
   }
 
   const handleUpdateVolume = (oldVolume: string, newVolume: string) => {
@@ -53,13 +72,30 @@ export function MonsterVolumesCard(
     if (monsterVolumes.some((v) => v === newVolume.trim() && v !== oldVolume))
       return toast.warning('A monster volume with this name already exists')
 
-    const updatedVolumes = monsterVolumes.map((v) =>
-      v === oldVolume ? newVolume.trim() : v
-    )
+    startTransition(() => {
+      const updatedVolumes = monsterVolumes.map((v) =>
+        v === oldVolume ? newVolume.trim() : v
+      )
 
-    form.setValue('monsterVolumes', updatedVolumes)
-    setEditingVolume(null)
-    toast.success('Monster volume saved')
+      form.setValue('monsterVolumes', updatedVolumes)
+      setEditingVolume(null)
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].monsterVolumes = updatedVolumes
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Monster volume saved!')
+      } catch (error) {
+        console.error('Error saving monster volumes to localStorage:', error)
+      }
+    })
   }
 
   const addNewVolume = () => setShowNewVolumeForm(false)
@@ -84,6 +120,24 @@ export function MonsterVolumesCard(
                   const newIndex = monsterVolumes.indexOf(over.id as string)
                   const newOrder = arrayMove(monsterVolumes, oldIndex, newIndex)
                   form.setValue('monsterVolumes', newOrder)
+
+                  // Update localStorage
+                  try {
+                    const formValues = form.getValues()
+                    const campaign = getCampaign()
+                    const settlementIndex = campaign.settlements.findIndex(
+                      (s) => s.id === formValues.id
+                    )
+
+                    campaign.settlements[settlementIndex].monsterVolumes =
+                      newOrder
+                    localStorage.setItem('campaign', JSON.stringify(campaign))
+                  } catch (error) {
+                    console.error(
+                      'Error saving monster volumes to localStorage:',
+                      error
+                    )
+                  }
                 }
               }}>
               <SortableContext

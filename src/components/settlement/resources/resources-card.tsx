@@ -7,6 +7,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -77,6 +78,22 @@ export function ResourcesCard(
 
       return next
     })
+
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].resources = updatedResources
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Resource removed!')
+    } catch (error) {
+      console.error('Error saving resources to localStorage:', error)
+    }
   }
 
   const saveResource = (
@@ -99,7 +116,21 @@ export function ResourcesCard(
     }))
     setIsAddingNew(false)
 
-    toast.success('Resource saved')
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].resources = updatedResources
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Resource saved!')
+    } catch (error) {
+      console.error('Error saving resources to localStorage:', error)
+    }
   }
 
   const editResource = (index: number) =>
@@ -128,6 +159,20 @@ export function ResourcesCard(
 
         return next
       })
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].resources = newOrder
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      } catch (error) {
+        console.error('Error saving resources to localStorage:', error)
+      }
     }
   }
 
@@ -181,7 +226,26 @@ export function ResourcesCard(
                       amount
                     })
                     setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-                    toast.success('Resource saved')
+
+                    // Update localStorage
+                    try {
+                      const formValues = form.getValues()
+                      const campaign = getCampaign()
+                      const settlementIndex = campaign.settlements.findIndex(
+                        (s) => s.id === formValues.id
+                      )
+
+                      campaign.settlements[settlementIndex].resources =
+                        formValues.resources || []
+                      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+                      toast.success('Resource saved!')
+                    } catch (error) {
+                      console.error(
+                        'Error saving resources to localStorage:',
+                        error
+                      )
+                    }
                   }}
                   onEdit={editResource}
                 />

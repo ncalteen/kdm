@@ -238,7 +238,7 @@ export function QuarriesCard(
           campaign.settlements[settlementIndex].quarries = updatedQuarries
           localStorage.setItem('campaign', JSON.stringify(campaign))
 
-          toast.success(`Quarry ${unlocked ? 'unlocked!' : 'locked!'}`)
+          toast.success(`${quarryName} ${unlocked ? 'unlocked!' : 'locked!'}`)
         } catch (error) {
           console.error('Error saving quarries to localStorage:', error)
         }

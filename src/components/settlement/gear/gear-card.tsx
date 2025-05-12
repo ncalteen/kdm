@@ -3,6 +3,7 @@
 import { GearItem, NewGearItem } from '@/components/settlement/gear/gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -76,6 +77,22 @@ export function GearCard(
 
       return next
     })
+
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].gear = currentGear
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Gear item removed!')
+    } catch (error) {
+      console.error('Error saving gear to localStorage:', error)
+    }
   }
 
   const saveGear = (value: string) => {
@@ -88,7 +105,21 @@ export function GearCard(
     setDisabledInputs((prev) => ({ ...prev, [newGear.length - 1]: true }))
     setIsAddingNew(false)
 
-    toast.success('Gear saved')
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].gear = newGear
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Gear saved!')
+    } catch (error) {
+      console.error('Error saving gear to localStorage:', error)
+    }
   }
 
   const editGear = (index: number) =>
@@ -118,6 +149,20 @@ export function GearCard(
 
         return next
       })
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].gear = newOrder
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      } catch (error) {
+        console.error('Error saving gear to localStorage:', error)
+      }
     }
   }
 
@@ -153,7 +198,29 @@ export function GearCard(
                     onSave={(i, value) => {
                       form.setValue(`gear.${i}`, value)
                       setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-                      toast.success('Gear saved')
+
+                      // Update localStorage
+                      try {
+                        const formValues = form.getValues()
+                        const campaign = getCampaign()
+                        const settlementIndex = campaign.settlements.findIndex(
+                          (s) => s.id === formValues.id
+                        )
+
+                        campaign.settlements[settlementIndex].gear =
+                          formValues.gear || []
+                        localStorage.setItem(
+                          'campaign',
+                          JSON.stringify(campaign)
+                        )
+
+                        toast.success('Gear saved!')
+                      } catch (error) {
+                        console.error(
+                          'Error saving gear to localStorage:',
+                          error
+                        )
+                      }
                     }}
                     onEdit={editGear}
                   />

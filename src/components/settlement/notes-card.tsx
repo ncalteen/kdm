@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -21,7 +22,23 @@ export function NotesCard(
   const handleSave = () => {
     form.setValue('notes', draft)
     setIsDirty(false)
-    toast.success('Notes saved')
+
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].notes = draft
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Notes saved!')
+    } catch (error) {
+      console.error('Error saving notes to localStorage:', error)
+      toast.error('Failed to save notes')
+    }
   }
 
   return (

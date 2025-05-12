@@ -1,6 +1,9 @@
 'use client'
 
-import { SeedPatternItem } from '@/components/settlement/patterns/seed-pattern-item'
+import {
+  NewSeedPatternItem,
+  SeedPatternItem
+} from '@/components/settlement/patterns/seed-pattern-item'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -9,7 +12,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -26,12 +29,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import {
-  CheckIcon,
-  GripVertical,
-  PlusCircleIcon,
-  TrashIcon
-} from 'lucide-react'
+import { PlusCircleIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -41,10 +39,12 @@ export function SeedPatternsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const seedPatterns = useMemo(() => form.watch('seedPatterns') || [], [form])
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState(false)
+
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -54,53 +54,100 @@ export function SeedPatternsCard(
       return next
     })
   }, [seedPatterns])
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
+
   const addSeedPattern = () => setIsAddingNew(true)
+
   const handleRemoveSeedPattern = (index: number) => {
     const currentSeedPatterns = [...seedPatterns]
+
     currentSeedPatterns.splice(index, 1)
     form.setValue('seedPatterns', currentSeedPatterns)
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
+
       Object.keys(prev).forEach((k) => {
         const num = parseInt(k)
         if (num < index) next[num] = prev[num]
         else if (num > index) next[num - 1] = prev[num]
       })
+
       return next
     })
-  }
-  const saveSeedPattern = (value: string) => {
-    if (!value || value.trim() === '') {
-      toast.warning('Cannot save a seed pattern without a name')
-      return
+
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].seedPatterns = currentSeedPatterns
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Seed pattern removed!')
+    } catch (error) {
+      console.error('Error saving seed patterns to localStorage:', error)
     }
+  }
+
+  const saveSeedPattern = (value: string) => {
+    if (!value || value.trim() === '')
+      return toast.warning('Cannot save a seed pattern without a name')
+
     const newSeedPatterns = [...seedPatterns, value]
+
     form.setValue('seedPatterns', newSeedPatterns)
+
     setDisabledInputs((prev) => ({
       ...prev,
       [newSeedPatterns.length - 1]: true
     }))
+
     setIsAddingNew(false)
-    toast.success('Seed pattern saved')
+
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].seedPatterns = newSeedPatterns
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Seed pattern saved!')
+    } catch (error) {
+      console.error('Error saving seed patterns to localStorage:', error)
+    }
   }
+
   const editSeedPattern = (index: number) => {
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
   }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
+
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(seedPatterns, oldIndex, newIndex)
+
       form.setValue('seedPatterns', newOrder)
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
+
         Object.keys(prev).forEach((k) => {
           const num = parseInt(k)
           if (num === oldIndex) next[newIndex] = prev[num]
@@ -108,58 +155,24 @@ export function SeedPatternsCard(
           else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
           else next[num] = prev[num]
         })
+
         return next
       })
-    }
-  }
-  // NewSeedPatternItem component for temporary input
-  function NewSeedPatternItem({
-    onSave,
-    onCancel
-  }: {
-    onSave: (value: string) => void
-    onCancel: () => void
-  }) {
-    const [value, setValue] = useState('')
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        onSave(value)
-      } else if (e.key === 'Escape') {
-        onCancel()
+
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].seedPatterns = newOrder
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      } catch (error) {
+        console.error('Error saving seed patterns to localStorage:', error)
       }
     }
-    return (
-      <div className="flex items-center gap-2">
-        <div className="p-1">
-          <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
-        </div>
-        <Input
-          placeholder="Seed Pattern"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="flex-1"
-          autoFocus
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() => onSave(value)}
-          title="Save seed pattern">
-          <CheckIcon className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={onCancel}
-          title="Cancel">
-          <TrashIcon className="h-4 w-4" />
-        </Button>
-      </div>
-    )
   }
 
   return (
@@ -197,7 +210,29 @@ export function SeedPatternsCard(
                     onSave={(i, value) => {
                       form.setValue(`seedPatterns.${i}`, value)
                       setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-                      toast.success('Seed pattern saved')
+
+                      // Update localStorage
+                      try {
+                        const formValues = form.getValues()
+                        const campaign = getCampaign()
+                        const settlementIndex = campaign.settlements.findIndex(
+                          (s) => s.id === formValues.id
+                        )
+
+                        campaign.settlements[settlementIndex].seedPatterns =
+                          formValues.seedPatterns || []
+                        localStorage.setItem(
+                          'campaign',
+                          JSON.stringify(campaign)
+                        )
+
+                        toast.success('Seed pattern saved!')
+                      } catch (error) {
+                        console.error(
+                          'Error saving seed patterns to localStorage:',
+                          error
+                        )
+                      }
                     }}
                     onEdit={editSeedPattern}
                   />

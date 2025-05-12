@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -99,6 +100,22 @@ export function PrinciplesCard(
 
       return reindexed
     })
+    
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
+
+      campaign.settlements[settlementIndex].principles = updated
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Principle removed!')
+    } catch (error) {
+      console.error('Error saving principles to localStorage:', error)
+    }
   }
 
   const handleEdit = (index: number) => {
@@ -123,8 +140,22 @@ export function PrinciplesCard(
 
     setDisabledInputs((prev) => ({ ...prev, [index]: true }))
     setIsEditingIndex(null)
+    
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
 
-    toast.success('Principle saved')
+      campaign.settlements[settlementIndex].principles = updated
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Principle saved!')
+    } catch (error) {
+      console.error('Error saving principles to localStorage:', error)
+    }
   }
 
   // TODO: Implement this in the settlement editor
@@ -175,8 +206,22 @@ export function PrinciplesCard(
 
     setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
     setIsAddingNew(false)
+    
+    // Update localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === formValues.id
+      )
 
-    toast.success('Principle added')
+      campaign.settlements[settlementIndex].principles = updated
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      toast.success('Principle added!')
+    } catch (error) {
+      console.error('Error saving principles to localStorage:', error)
+    }
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -188,6 +233,20 @@ export function PrinciplesCard(
       const newOrder = arrayMove(principles, oldIndex, newIndex)
 
       form.setValue('principles', newOrder)
+      
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].principles = newOrder
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      } catch (error) {
+        console.error('Error saving principles to localStorage:', error)
+      }
     }
   }
 

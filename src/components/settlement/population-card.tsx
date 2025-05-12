@@ -28,31 +28,6 @@ export function PopulationCard(
 ) {
   const settlementId = form.watch('id')
 
-  // Handler for Enter key in survival limit field
-  const handleSurvivalLimitKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].survivalLimit =
-          formValues.survivalLimit
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Survival limit updated!')
-      } catch (error) {
-        console.error('Error saving timeline to localStorage:', error)
-      }
-    }
-  }
-
   useEffect(() => {
     const survivors = getSurvivors(settlementId)
 
@@ -90,9 +65,25 @@ export function PopulationCard(
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
+                        const value = parseInt(e.target.value);
+                        form.setValue(field.name, value);
+                        
+                        // Update localStorage immediately
+                        try {
+                          const formValues = form.getValues();
+                          const campaign = getCampaign();
+                          const settlementIndex = campaign.settlements.findIndex(
+                            (s: { id: number }) => s.id === formValues.id
+                          );
+
+                          campaign.settlements[settlementIndex].survivalLimit = value;
+                          localStorage.setItem('campaign', JSON.stringify(campaign));
+                          
+                          toast.success('Survival limit updated!');
+                        } catch (error) {
+                          console.error('Error saving survival limit to localStorage:', error);
+                        }
                       }}
-                      onKeyDown={handleSurvivalLimitKeyDown}
                     />
                   </FormControl>
                   <FormLabel className="text-center text-xs">
