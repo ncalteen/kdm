@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { SettlementSchema } from '@/schemas/settlement'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
@@ -19,6 +20,38 @@ import { z } from 'zod'
 export function SettlementNameCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+
+      // Get current form values
+      const formValues = form.getValues()
+
+      // Get existing campaign data from localStorage
+      const campaign = JSON.parse(
+        localStorage.getItem('campaign') ||
+          JSON.stringify({
+            settlements: [],
+            survivors: []
+          })
+      )
+
+      // Find the settlement index and update it
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      // Only update the name in the settlement object
+      campaign.settlements[settlementIndex].name = formValues.name
+
+      // Save the updated campaign to localStorage
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      // Show success message
+      toast.success('Settlement name updated!')
+    }
+  }
+
   return (
     <Card>
       <CardContent className="pt-2 pb-2">
@@ -39,6 +72,7 @@ export function SettlementNameCard(
                       onChange={(e) => {
                         form.setValue(field.name, e.target.value)
                       }}
+                      onKeyDown={handleKeyDown}
                     />
                   </FormControl>
                 </div>

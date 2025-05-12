@@ -13,15 +13,56 @@ import { getSurvivors } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
  * Population Card Component
+ *
+ * TODO: Auto-update population
+ * TODO: Auto-update death count
+ * TODO: Auto-update lost settlements
  */
 export function PopulationCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const settlementId = form.watch('id')
+
+  // Handler for Enter key in survival limit field
+  const handleSurvivalLimitKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+
+      // Get current form values
+      const formValues = form.getValues()
+
+      // Get existing campaign data from localStorage
+      const campaign = JSON.parse(
+        localStorage.getItem('campaign') ||
+          JSON.stringify({
+            settlements: [],
+            survivors: []
+          })
+      )
+
+      // Find the settlement index and update it
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      // Only update the survival limit in the settlement object
+      campaign.settlements[settlementIndex].survivalLimit =
+        formValues.survivalLimit
+
+      // Save the updated campaign to localStorage
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      // Show success message
+      toast.success('Survival limit updated!')
+    }
+  }
 
   useEffect(() => {
     const survivors = getSurvivors(settlementId)
@@ -61,6 +102,7 @@ export function PopulationCard(
                       onChange={(e) => {
                         form.setValue(field.name, parseInt(e.target.value))
                       }}
+                      onKeyDown={handleSurvivalLimitKeyDown}
                     />
                   </FormControl>
                   <FormLabel className="text-center text-xs">
