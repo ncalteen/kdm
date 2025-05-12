@@ -17,41 +17,49 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Quarry } from '@/lib/types'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { memo, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
+/**
+ * Quarry Item Props
+ */
 interface QuarryItemProps {
-  quarry: {
-    name: string
-    unlocked: boolean
-    node: string
-  }
-  updateQuarryNode: (quarryName: string, node: string) => void
+  /** Handle Remove Quarry Function */
   handleRemoveQuarry: (quarryName: string) => void
+  /** Quarry ID */
+  id: string
+  /** Disabled Status */
   isDisabled: boolean
-  onSave: (quarryName: string) => void
+  /** Edit Handler */
   onEdit: (quarryName: string) => void
+  /** Save Handler */
+  onSave: (quarryName: string) => void
+  /** Quarry Details */
+  quarry: Quarry
+  /** Toggle Quarry Unlocked Status Function */
+  toggleQuarryUnlocked?: (quarryName: string, unlocked: boolean) => void
+  /** Update Quarry Name Function */
   updateQuarryName: (originalName: string, newName: string) => void
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Update Quarry Node Handler */
+  updateQuarryNode: (quarryName: string, node: string) => void
 }
 
 export const QuarryItem = memo(
   ({
-    quarry,
-    updateQuarryNode,
     handleRemoveQuarry,
     id,
     isDisabled,
-    onSave,
     onEdit,
-    updateQuarryName
-  }: QuarryItemProps & { id: string }) => {
+    onSave,
+    quarry,
+    toggleQuarryUnlocked,
+    updateQuarryName,
+    updateQuarryNode
+  }: QuarryItemProps) => {
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({ id })
     const [nameValue, setNameValue] = useState(quarry.name)
@@ -100,7 +108,14 @@ export const QuarryItem = memo(
                   <Checkbox
                     checked={quarry.unlocked}
                     className="mt-2"
-                    disabled={true}
+                    onCheckedChange={(checked) => {
+                      if (
+                        typeof checked === 'boolean' &&
+                        toggleQuarryUnlocked
+                      ) {
+                        toggleQuarryUnlocked(quarry.name, checked)
+                      }
+                    }}
                     id={`quarry-${quarry.name}-unlocked`}
                     name={`quarries[${quarry.name}].unlocked`}
                   />
@@ -117,7 +132,11 @@ export const QuarryItem = memo(
           <>
             <Checkbox
               checked={quarry.unlocked}
-              disabled={true}
+              onCheckedChange={(checked) => {
+                if (typeof checked === 'boolean' && toggleQuarryUnlocked) {
+                  toggleQuarryUnlocked(quarry.name, checked)
+                }
+              }}
               id={`quarry-${quarry.name}-unlocked`}
               name={`quarries[${quarry.name}].unlocked`}
             />
@@ -205,7 +224,6 @@ export function NewQuarryItem({
   onSave
 }: {
   index: number
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
   handleRemoveQuarry: (quarryName: string) => void
   onSave: (name: string, node: string, unlocked: boolean) => void
 }) {

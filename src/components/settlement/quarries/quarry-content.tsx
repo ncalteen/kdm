@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/quarries/quarry-item'
 import { Button } from '@/components/ui/button'
 import { Quarry } from '@/lib/types'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -20,40 +21,62 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+/**
+ * Quarry Content Props
+ */
+export interface QuarryContentProps {
+  /** Add Quarry Function */
+  addQuarry: () => void
+  /** Disabled Inputs */
+  disabledInputs: { [key: string]: boolean }
+  /** Edit Quarry Function */
+  editQuarry: (quarryName: string) => void
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Handle Drag End Function */
+  handleDragEnd: (event: DragEndEvent) => void
+  /** Remove Quarry Function */
+  handleRemoveQuarry: (quarryName: string) => void
+  /** Adding New Quarry Status */
+  isAddingNew: boolean
+  /** Quarries */
+  quarries: Quarry[]
+  /** Save Quarry Function */
+  saveQuarry: (quarryName: string) => void
+  /** Drag and Drop Sensors */
+  sensors: SensorDescriptor<object>[]
+  /** Set Disabled Inputs */
+  setDisabledInputs: React.Dispatch<
+    React.SetStateAction<{ [key: string]: boolean }>
+  >
+  /** Set Is Adding New */
+  setIsAddingNew: React.Dispatch<React.SetStateAction<boolean>>
+  /** Toggle Quarry Unlocked Function */
+  toggleQuarryUnlocked?: (quarryName: string, unlocked: boolean) => void
+  /** Update Quarry Name Function */
+  updateQuarryName: (originalName: string, newName: string) => void
+  /** Update Quarry Node Function */
+  updateQuarryNode: (quarryName: string, node: string) => void
+}
+
 export const QuarryContent = memo(
   ({
-    quarries,
-    disabledInputs,
-    isAddingNew,
-    sensors,
-    updateQuarryNode,
-    handleRemoveQuarry,
-    saveQuarry,
-    editQuarry,
-    updateQuarryName,
     addQuarry,
-    handleDragEnd,
+    disabledInputs,
+    editQuarry,
     form,
+    handleDragEnd,
+    handleRemoveQuarry,
+    isAddingNew,
+    quarries,
+    saveQuarry,
+    sensors,
     setDisabledInputs,
-    setIsAddingNew
-  }: {
-    quarries: Quarry[]
-    disabledInputs: { [key: string]: boolean }
-    isAddingNew: boolean
-    sensors: SensorDescriptor<object>[]
-    updateQuarryNode: (quarryName: string, node: string) => void
-    handleRemoveQuarry: (quarryName: string) => void
-    saveQuarry: (quarryName: string) => void
-    editQuarry: (quarryName: string) => void
-    updateQuarryName: (originalName: string, newName: string) => void
-    addQuarry: () => void
-    handleDragEnd: (event: DragEndEvent) => void
-    form: UseFormReturn<z.infer<typeof SettlementSchema>>
-    setDisabledInputs: React.Dispatch<
-      React.SetStateAction<{ [key: string]: boolean }>
-    >
-    setIsAddingNew: React.Dispatch<React.SetStateAction<boolean>>
-  }) => {
+    setIsAddingNew,
+    toggleQuarryUnlocked,
+    updateQuarryName,
+    updateQuarryNode
+  }: QuarryContentProps) => {
     const saveNewQuarry = useCallback(
       (name: string, node: string, unlocked: boolean) => {
         if (quarries.some((q) => q.name === name)) {
@@ -83,7 +106,21 @@ export const QuarryContent = memo(
           // Close the "add new" form
           setIsAddingNew(false)
 
-          toast.success('New quarry added')
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].quarries = updatedQuarries
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+
+            toast.success('New quarry added!')
+          } catch (error) {
+            console.error('Error saving quarries to localStorage:', error)
+          }
         })
 
         return true
@@ -111,7 +148,7 @@ export const QuarryContent = memo(
                 onSave={saveQuarry}
                 onEdit={editQuarry}
                 updateQuarryName={updateQuarryName}
-                form={form}
+                toggleQuarryUnlocked={toggleQuarryUnlocked}
               />
             ))}
           </SortableContext>
@@ -120,7 +157,6 @@ export const QuarryContent = memo(
         {isAddingNew && (
           <NewQuarryItem
             index={quarries.length}
-            form={form}
             handleRemoveQuarry={handleRemoveQuarry}
             onSave={saveNewQuarry}
           />

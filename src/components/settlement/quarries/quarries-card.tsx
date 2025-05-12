@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   DragEndEvent,
@@ -30,6 +31,11 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+/**
+ * Quarries Card Component
+ *
+ * @param form Form
+ */
 export function QuarriesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
@@ -53,9 +59,7 @@ export function QuarriesCard(
     if (currentCardRef) observer.observe(currentCardRef)
 
     return () => {
-      if (currentCardRef) {
-        observer.unobserve(currentCardRef)
-      }
+      if (currentCardRef) observer.unobserve(currentCardRef)
     }
   }, [])
 
@@ -68,9 +72,11 @@ export function QuarriesCard(
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: string]: boolean } = {}
+
       quarries.forEach((quarry) => {
         next[quarry.name] = prev[quarry.name] ?? true
       })
+
       return next
     })
   }, [quarries])
@@ -98,6 +104,22 @@ export function QuarriesCard(
             delete updated[quarryName]
             return updated
           })
+
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].quarries = updatedQuarries
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+
+            toast.success('Quarry removed!')
+          } catch (error) {
+            console.error('Error saving quarries to localStorage:', error)
+          }
         })
     },
     [quarries, form]
@@ -113,6 +135,20 @@ export function QuarriesCard(
         )
 
         form.setValue('quarries', updatedQuarries)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].quarries = updatedQuarries
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+        } catch (error) {
+          console.error('Error saving quarries to localStorage:', error)
+        }
       }),
     [quarries, form]
   )
@@ -132,23 +168,82 @@ export function QuarriesCard(
           updated[newName] = true
           return updated
         })
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].quarries = updatedQuarries
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+        } catch (error) {
+          console.error('Error saving quarries to localStorage:', error)
+        }
       }),
     [quarries, form]
   )
 
-  const saveQuarry = useCallback((quarryName: string) => {
-    if (!quarryName || quarryName.trim() === '')
-      return toast.warning('Cannot save a quarry without a name')
+  const saveQuarry = useCallback(
+    (quarryName: string) => {
+      if (!quarryName || quarryName.trim() === '')
+        return toast.warning('Cannot save a quarry without a name!')
 
-    setDisabledInputs((prev) => ({ ...prev, [quarryName]: true }))
+      setDisabledInputs((prev) => ({ ...prev, [quarryName]: true }))
 
-    toast.success('Quarry saved')
-  }, [])
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].quarries = formValues.quarries
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Quarry saved!')
+      } catch (error) {
+        console.error('Error saving quarries to localStorage:', error)
+      }
+    },
+    [form]
+  )
 
   const editQuarry = useCallback(
     (quarryName: string) =>
       setDisabledInputs((prev) => ({ ...prev, [quarryName]: false })),
     []
+  )
+
+  const toggleQuarryUnlocked = useCallback(
+    (quarryName: string, unlocked: boolean) =>
+      startTransition(() => {
+        const updatedQuarries = quarries.map((q) =>
+          q.name === quarryName ? { ...q, unlocked } : q
+        )
+
+        form.setValue('quarries', updatedQuarries)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].quarries = updatedQuarries
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success(`Quarry ${unlocked ? 'unlocked!' : 'locked!'}`)
+        } catch (error) {
+          console.error('Error saving quarries to localStorage:', error)
+        }
+      }),
+    [quarries, form]
   )
 
   const handleDragEnd = useCallback(
@@ -163,6 +258,20 @@ export function QuarriesCard(
           const newOrder = arrayMove(quarries, oldIndex, newIndex)
 
           form.setValue('quarries', newOrder)
+
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].quarries = newOrder
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+          } catch (error) {
+            console.error('Error saving quarries to localStorage:', error)
+          }
         })
     },
     [quarries, form]
@@ -182,6 +291,7 @@ export function QuarriesCard(
       editQuarry,
       updateQuarryName,
       addQuarry,
+      toggleQuarryUnlocked,
       handleDragEnd,
       form,
       setDisabledInputs,
@@ -198,6 +308,7 @@ export function QuarriesCard(
       editQuarry,
       updateQuarryName,
       addQuarry,
+      toggleQuarryUnlocked,
       handleDragEnd,
       form
     ]
