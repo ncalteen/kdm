@@ -117,6 +117,7 @@ export function TimelineCard(
     ) => {
       // Create a closure over the current form to avoid stale references
       const currentForm = form
+
       requestAnimationFrame(() => {
         currentForm.setValue(path, value)
       })
@@ -502,7 +503,6 @@ export function TimelineCard(
               removeEventFromYear={removeEventFromYear}
               addEventToYear={addEventToYear}
               form={form}
-              debouncedSetFormValue={debouncedSetFormValue}
               editEvent={editEvent}
               showStoryEventIcon={showStoryEventIcon}
             />
@@ -512,7 +512,6 @@ export function TimelineCard(
               className="mt-4 w-full"
               size="lg"
               onClick={() => {
-                // This is a non-urgent state update.
                 startTransition(() =>
                   debouncedSetTimeline([
                     ...timeline,

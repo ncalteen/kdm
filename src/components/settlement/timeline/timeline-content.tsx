@@ -6,10 +6,12 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { TimelineEvent } from '@/lib/types'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { CheckIcon, PlusCircleIcon, ScrollIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, memo, startTransition } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
@@ -47,17 +49,40 @@ export const TimelineContent = memo(
     removeEventFromYear: (yearIndex: number, eventIndex: number) => void
     addEventToYear: (yearIndex: number) => void
     form: UseFormReturn<z.infer<typeof SettlementSchema>>
-    debouncedSetFormValue: (
-      path:
-        | `timeline.${number}.entries`
-        | `timeline.${number}.entries.${number}`
-        | `timeline.${number}.completed`
-        | 'timeline',
-      value: boolean | string | string[] | TimelineEvent[]
-    ) => void
     editEvent: (yearIndex: number, entryIndex: number) => void
     showStoryEventIcon: boolean
   }) => {
+    const handleYearCompletionChange = (
+      yearIndex: number,
+      checked: string | boolean
+    ) => {
+      try {
+        form.setValue(`timeline.${yearIndex}.completed`, !!checked)
+
+        const formValues = form.getValues()
+
+        const campaign = getCampaign()
+
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].timeline = formValues.timeline
+
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        const message = usesNormalNumbering
+          ? `Lantern year ${yearIndex + 1} updated!`
+          : yearIndex === 0
+            ? 'Prologue updated!'
+            : `Lantern year ${yearIndex} updated!`
+
+        toast.success(message)
+      } catch (error) {
+        console.error('Error saving timeline to localStorage:', error)
+      }
+    }
+
     return (
       <div className="space-y-2">
         <div
@@ -86,7 +111,9 @@ export const TimelineContent = memo(
                         <Checkbox
                           className="mt-1"
                           checked={field.value}
-                          disabled={true}
+                          onCheckedChange={(checked) =>
+                            handleYearCompletionChange(yearIndex, checked)
+                          }
                           id={`timeline.${yearIndex}.completed`}
                           name={`timeline.${yearIndex}.completed`}
                         />
@@ -94,7 +121,8 @@ export const TimelineContent = memo(
                     </FormItem>
                   )}
                 />
-                <span className="text-sm font-medium ml-2 mb-1 inline-flex items-center">
+                <span
+                  className={`text-sm font-medium ml-2 mb-1 inline-flex items-center ${yearData.completed ? 'text-muted-foreground' : ''}`}>
                   {yearIndex === 0 && !usesNormalNumbering
                     ? 'Prologue'
                     : usesNormalNumbering
@@ -127,7 +155,8 @@ export const TimelineContent = memo(
                             entry={entry}
                             yearIndex={yearIndex}
                             entryIndex={entryIndex}
-                            onEdit={editEvent}
+                            onEdit={!yearData.completed ? editEvent : () => {}}
+                            isCompleted={yearData.completed}
                           />
                         )
                       }
@@ -200,17 +229,19 @@ export const TimelineContent = memo(
                 )}
               </div>
 
-              <div className="flex justify-end mr-5">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    startTransition(() => addEventToYear(yearIndex))
-                  }}>
-                  <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
-                </Button>
-              </div>
+              {!yearData.completed && (
+                <div className="flex justify-end mr-5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      startTransition(() => addEventToYear(yearIndex))
+                    }}>
+                    <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
         </div>
