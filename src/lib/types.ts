@@ -14,7 +14,9 @@ import type {
  * Settlement Timeline Event
  */
 export type TimelineEvent = {
+  /** Lantern Year Completion */
   completed: boolean
+  /** Timeline Entries */
   entries: string[]
 }
 
@@ -22,30 +24,43 @@ export type TimelineEvent = {
  * Settlement Nemesis
  */
 export type Nemesis = {
-  name: string
-  level1: boolean
-  level2: boolean
-  level3: boolean
-  unlocked: boolean
+  /** Collective Cognition (Level 1) */
   ccLevel1: boolean
+  /** Collective Cognition (Level 2) */
   ccLevel2: boolean
+  /** Collective Cognition (Level 3) */
   ccLevel3: boolean
+  /** Nemesis Name */
+  name: string
+  /** Completed (Level 1) */
+  level1: boolean
+  /** Completed (Level 2) */
+  level2: boolean
+  /** Completed (Level 3) */
+  level3: boolean
+  /** Unlocked */
+  unlocked: boolean
 }
 
 /**
  * Settlement Milestone
  */
 export type Milestone = {
-  name: string
+  /** Completed */
   complete: boolean
+  /** Event (Triggered on Completion) */
   event: string
+  /** Milestone Name */
+  name: string
 }
 
 /**
  * Settlement Location
  */
 export type Location = {
+  /** Location Name */
   name: string
+  /** Unlocked */
   unlocked: boolean
 }
 
@@ -53,6 +68,7 @@ export type Location = {
  * Settlement Knowledge
  */
 export type Knowledge = {
+  /** Knowledge Name */
   name: string
 }
 
@@ -60,10 +76,15 @@ export type Knowledge = {
  * Settlement Principle
  */
 export type Principle = {
+  /** Principle Name */
   name: string
+  /** Option 1 Name */
   option1Name: string
+  /** Option 1 Selected */
   option1Selected: boolean
+  /** Option 2 Name */
   option2Name: string
+  /** Option 2 Selected */
   option2Selected: boolean
 }
 
@@ -71,31 +92,45 @@ export type Principle = {
  * Settlement Resource
  */
 export type Resource = {
-  name: string
-  category: ResourceCategory
-  types: ResourceType[]
+  /** Amount/Quantity */
   amount: number
+  /** Category (Basic, Monster, Strange, etc.) */
+  category: ResourceCategory
+  /** Resource Name */
+  name: string
+  /** Types (Bone, Hide, Organ, etc.) */
+  types: ResourceType[]
 }
 
 /**
  * Quarry
  */
 export type Quarry = {
-  name: string
-  node: 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
-  unlocked: boolean
-  ccPrologue: boolean
+  /** Collective Cognition (Level 1) */
   ccLevel1: boolean
+  /** Collective Cognition (Level 2) */
   ccLevel2: boolean[]
+  /** Collective Cognition (Level 3) */
   ccLevel3: boolean[]
+  /** Collective Cognition (Prologue) */
+  ccPrologue: boolean
+  /** Quarry Name */
+  name: string
+  /** Node Level */
+  node: 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4'
+  /** Unlocked */
+  unlocked: boolean
 }
 
 /**
  * Collective Cognition Reward
  */
 export type CcReward = {
-  name: string
+  /** Collective Cognition Value */
   cc: number
+  /** Collective Cognition Reward Name */
+  name: string
+  /** Unlocked */
   unlocked: boolean
 }
 
@@ -103,58 +138,126 @@ export type CcReward = {
  * Squires of the Citadel Suspicion
  */
 export type SquireSuspicion = {
-  name: string
+  /** Suspicion Level 1 */
   level1: boolean
+  /** Suspicion Level 2 */
   level2: boolean
+  /** Suspicion Level 3 */
   level3: boolean
+  /** Suspicion Level 4 */
   level4: boolean
+  /** Survivor Name */
+  name: string
 }
 
 export type Settlement = {
-  id: number
+  /** Campaign Type */
   campaignType: CampaignType
-  survivorType: SurvivorType
-  survivalLimit: number
-  lostSettlements: number
-  name: string
-  population: number
-  timeline: TimelineEvent[]
-  quarries: Quarry[]
-  nemesis: Nemesis[]
-  milestones: Milestone[]
-  departingBonuses: string[]
+  /** Death Count */
   deathCount: number
-  principles: Principle[]
-  patterns: string[]
-  seedPatterns: string[]
-  innovations: string[]
-  locations: Location[]
-  resources: Resource[]
+  /** Departing Survivor Bonuses */
+  departingBonuses: string[]
+  /** Gear */
   gear: string[]
+  /** Settlement ID */
+  id: number
+  /** Innovations */
+  innovations: string[]
+  /** Locations */
+  locations: Location[]
+  /** Lost Settlement Count */
+  lostSettlements: number
+  /** Milestones */
+  milestones: Milestone[]
+  /** Settlement Name */
+  name: string
+  /** Nemeses */
+  nemeses: Nemesis[]
+  /** Notes */
   notes?: string
+  /** Patterns */
+  patterns: string[]
+  /** Population */
+  population: number
+  /** Principles */
+  principles: Principle[]
+  /** Quarries */
+  quarries: Quarry[]
+  /** Resources */
+  resources: Resource[]
+  /** Seed Patterns */
+  seedPatterns: string[]
+  /** Survival Limit */
+  survivalLimit: number
+  /** Survivor Type */
+  survivorType: SurvivorType
+  /** Settlment Timeline */
+  timeline: TimelineEvent[]
 
-  /**
+  /*
    * Arc Survivor Settlements
    */
-  ccRewards?: CcReward[]
-  philosophies?: string[]
-  knowledges?: Knowledge[]
 
-  /**
-   * Campaign Types:
-   *
-   * - People of the Lantern
-   * - People of the Sun
+  /** Collective Cognition Rewards */
+  ccRewards?: CcReward[]
+  /** Collective Cognition Value */
+  ccValue?: number
+  /** Settlement Knowledges */
+  knowledges?: Knowledge[]
+  /** Settlement Philosophies */
+  philosophies?: string[]
+
+  /*
+   * People of the Lantern/Sun Campaigns
    */
+
+  /** Lantern Research Level */
   lanternResearchLevel?: number
+  /** Monster Volumes */
   monsterVolumes?: string[]
 
-  /**
-   * Campaign Types:
-   *
-   * - Squires of the Citadel
+  /*
+   * Squires of the Citadel Campaigns
    */
+
+  /** Suspicion Levels */
   suspicions?: SquireSuspicion[]
+}
+
+/**
+ * Campaign
+ *
+ * This is the main campaign object that is read from localStorage.
+ */
+export type Campaign = {
+  /** Settlements */
+  settlements: Settlement[]
+  /** Survivors */
+  survivors: Survivor[]
+}
+
+/**
+ * Campaign Data
+ *
+ * Data used to generate a new settlement based on the campaign type.
+ */
+export type CampaignData = {
+  /** Collective Cognition Rewards */
+  ccRewards: CcReward[]
+  /** Innovations */
+  innovations: string[]
+  /** Locations */
+  locations: Location[]
+  /** Milestones */
+  milestones: Milestone[]
+  /** Nemeses */
+  nemeses: Nemesis[]
+  /** Principles */
+  principles: Principle[]
+  /** Quarries */
+  quarries: Quarry[]
+  /** Settlement Timeline */
+  timeline: TimelineEvent[]
 }
 
 /**
@@ -288,30 +391,4 @@ export type Survivor = {
   hasGoblinRust: boolean
   hasGoblinStorm: boolean
   hasGoblinReaper: boolean
-}
-
-/**
- * Campaign
- *
- * This is the main campaign object that is read from localStorage.
- */
-export type Campaign = {
-  settlements: Settlement[]
-  survivors: Survivor[]
-}
-
-/**
- * Campaign Data
- *
- * Data used to generate a new settlement based on the campaign type.
- */
-export type CampaignData = {
-  ccRewards: CcReward[]
-  innovations: string[]
-  locations: Location[]
-  milestones: Milestone[]
-  nemesis: Nemesis[]
-  principles: Principle[]
-  quarries: Quarry[]
-  timeline: TimelineEvent[]
 }

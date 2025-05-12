@@ -84,7 +84,7 @@ export const NemesisContent = memo(
             ccLevel3: false
           }
           const updatedNemeses = [...nemeses, newNemesis]
-          form.setValue('nemesis', updatedNemeses)
+          form.setValue('nemeses', updatedNemeses)
 
           // Mark the new nemesis as disabled immediately to prevent duplicates
           setDisabledInputs((prev) => ({

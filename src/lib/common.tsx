@@ -36,10 +36,10 @@ export const CustomCampaignData: CampaignData = {
   ccRewards: [],
   innovations: [],
   locations: [],
-  nemesis: [],
+  milestones: CoreMilestones,
+  nemeses: [],
   principles: [],
   quarries: [],
-  milestones: CoreMilestones,
   timeline: Array(40).fill({
     completed: false,
     entries: []
@@ -131,7 +131,7 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
       event: 'Hooded Knight'
     }
   ],
-  nemesis: [
+  nemeses: [
     {
       name: 'Butcher',
       level1: false,
@@ -359,7 +359,7 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
       event: 'Designs & Dandelions'
     }
   ],
-  nemesis: [
+  nemeses: [
     {
       name: 'Butcher',
       level1: false,
@@ -540,7 +540,7 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
     { name: 'Weapon Crafter', unlocked: false }
   ],
   milestones: CoreMilestones,
-  nemesis: [
+  nemeses: [
     {
       name: 'Butcher',
       level1: false,
@@ -798,7 +798,7 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
       event: 'Game Over'
     }
   ],
-  nemesis: [
+  nemeses: [
     {
       name: 'Butcher',
       level1: false,
@@ -942,7 +942,7 @@ export const SquiresOfTheCitadelCampaignData: CampaignData = {
   innovations: [],
   locations: [],
   milestones: [],
-  nemesis: [],
+  nemeses: [],
   principles: [],
   quarries: [],
   timeline: [
@@ -1006,7 +1006,7 @@ export const SquireCardData = [
     ]
   },
   {
-    name: 'Owen',
+    name: 'Squire Owen',
     rows: [
       { name: 'Age 1', value: '-' },
       {
@@ -1038,7 +1038,7 @@ export const SquireCardData = [
     ]
   },
   {
-    name: 'Iola',
+    name: 'Squire Iola',
     rows: [
       { name: 'Age 1', value: '-' },
       { name: 'Age 2', value: '-' },

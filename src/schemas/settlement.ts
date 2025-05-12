@@ -104,12 +104,12 @@ export const PrincipleEntrySchema = z.object({
 export const ResourceEntrySchema = z.object({
   /** Amount/Quantity */
   amount: z.number().min(0),
-  /** Resource Name */
-  name: z.string(),
   /** Category (Basic, Monster, Strange, etc.) */
   category: z.enum(
     Object.keys(ResourceCategory) as [ResourceCategory, ...ResourceCategory[]]
   ),
+  /** Resource Name */
+  name: z.string(),
   /** Types (Bone, Hide, Organ, etc.) */
   types: z
     .array(
@@ -188,7 +188,7 @@ export const SettlementSchema = z.object({
     .describe('Settlement Name')
     .min(1, 'Settlement name is required'),
   /** Nemeses */
-  nemesis: z.array(NemesisEntrySchema),
+  nemeses: z.array(NemesisEntrySchema),
   /** Notes */
   notes: z.string().optional(),
   /** Patterns */

@@ -23,7 +23,7 @@ export function CollectiveCognitionCard(
   const [ccValue, setCcValue] = useState(0)
 
   // Watch for changes to nemesis victories, quarry victories, and rewards.
-  const nemeses = useMemo(() => form.watch('nemesis') || [], [form])
+  const nemeses = useMemo(() => form.watch('nemeses') || [], [form])
   const quarries = useMemo(() => form.watch('quarries') || [], [form])
   const ccRewards = useMemo(() => form.watch('ccRewards') || [], [form])
 

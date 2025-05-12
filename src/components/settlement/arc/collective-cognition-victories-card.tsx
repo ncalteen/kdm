@@ -29,7 +29,7 @@ export function CollectiveCognitionVictoriesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const quarries = form.watch('quarries') || []
-  const nemeses = form.watch('nemesis') || []
+  const nemeses = form.watch('nemeses') || []
 
   return (
     <Card className="mt-2">
@@ -191,7 +191,7 @@ export function CollectiveCognitionVictoriesCard(
                     <TableCell className="text-center">
                       <FormField
                         control={form.control}
-                        name={`nemesis.${index}.ccLevel1`}
+                        name={`nemeses.${index}.ccLevel1`}
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
@@ -209,7 +209,7 @@ export function CollectiveCognitionVictoriesCard(
                     <TableCell className="text-center">
                       <FormField
                         control={form.control}
-                        name={`nemesis.${index}.ccLevel2`}
+                        name={`nemeses.${index}.ccLevel2`}
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>
@@ -227,7 +227,7 @@ export function CollectiveCognitionVictoriesCard(
                     <TableCell className="text-center">
                       <FormField
                         control={form.control}
-                        name={`nemesis.${index}.ccLevel3`}
+                        name={`nemeses.${index}.ccLevel3`}
                         render={() => (
                           <FormItem className="flex justify-center">
                             <FormControl>

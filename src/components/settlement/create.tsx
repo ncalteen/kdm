@@ -73,7 +73,7 @@ export function CreateSettlementForm() {
       lostSettlements: lostSettlementCount,
       timeline: PeopleOfTheLanternCampaignData.timeline,
       quarries: PeopleOfTheLanternCampaignData.quarries,
-      nemesis: PeopleOfTheLanternCampaignData.nemesis,
+      nemeses: PeopleOfTheLanternCampaignData.nemeses,
       milestones: PeopleOfTheLanternCampaignData.milestones,
       departingBonuses: [],
       deathCount: 0,
@@ -130,7 +130,7 @@ export function CreateSettlementForm() {
     //       new campaign.
     form.setValue('timeline', campaignData.timeline)
     form.setValue('quarries', campaignData.quarries)
-    form.setValue('nemesis', campaignData.nemesis)
+    form.setValue('nemeses', campaignData.nemeses)
     form.setValue('milestones', campaignData.milestones)
     form.setValue('innovations', campaignData.innovations)
     form.setValue('locations', campaignData.locations)

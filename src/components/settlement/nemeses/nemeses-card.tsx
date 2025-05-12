@@ -29,7 +29,7 @@ import { z } from 'zod'
 export function NemesesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const nemeses = useMemo(() => form.watch('nemesis') || [], [form])
+  const nemeses = useMemo(() => form.watch('nemeses') || [], [form])
 
   const [isVisible, setIsVisible] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -81,7 +81,7 @@ export function NemesesCard(
       else {
         const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
 
-        form.setValue('nemesis', updatedNemeses)
+        form.setValue('nemeses', updatedNemeses)
 
         setDisabledInputs((prev) => {
           const updated = { ...prev }
@@ -103,7 +103,7 @@ export function NemesesCard(
         n.name === nemesisName ? { ...n, [level]: checked } : n
       )
 
-      form.setValue('nemesis', updatedNemeses)
+      form.setValue('nemeses', updatedNemeses)
     },
     [nemeses, form]
   )
@@ -114,7 +114,7 @@ export function NemesesCard(
         n.name === nemesisName ? { ...n, unlocked: checked } : n
       )
 
-      form.setValue('nemesis', updatedNemeses)
+      form.setValue('nemeses', updatedNemeses)
     },
     [nemeses, form]
   )
@@ -137,7 +137,7 @@ export function NemesesCard(
         n.name === originalName ? { ...n, name: newName } : n
       )
 
-      form.setValue('nemesis', updatedNemeses)
+      form.setValue('nemeses', updatedNemeses)
 
       setDisabledInputs((prev) => {
         const updated = { ...prev }
@@ -167,7 +167,7 @@ export function NemesesCard(
 
           const newOrder = arrayMove(nemeses, oldIndex, newIndex)
 
-          form.setValue('nemesis', newOrder)
+          form.setValue('nemeses', newOrder)
         })
       }
     },

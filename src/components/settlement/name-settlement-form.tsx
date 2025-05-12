@@ -87,7 +87,7 @@ export function NameSettlementForm() {
     form.setValue('innovations', campaignData.innovations)
     form.setValue('locations', campaignData.locations)
     form.setValue('milestones', campaignData.milestones)
-    form.setValue('nemesis', campaignData.nemesis)
+    form.setValue('nemeses', campaignData.nemeses)
     form.setValue('patterns', [])
     form.setValue('population', 0)
     form.setValue('principles', campaignData.principles)
@@ -148,7 +148,7 @@ export function NameSettlementForm() {
         innovations: campaignData.innovations,
         locations: campaignData.locations,
         milestones: campaignData.milestones,
-        nemesis: campaignData.nemesis,
+        nemeses: campaignData.nemeses,
         principles: campaignData.principles,
         quarries: campaignData.quarries,
         timeline: campaignData.timeline,
