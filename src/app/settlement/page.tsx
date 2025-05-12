@@ -30,7 +30,7 @@ import { Form } from '@/components/ui/form'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { Settlement } from '@/lib/types'
-import { getSettlement } from '@/lib/utils'
+import { getCampaign, getSettlement } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
@@ -154,13 +154,7 @@ function SettlementForm({
   function onSubmit(values: z.infer<typeof SettlementSchema>) {
     try {
       // Get existing campaign data from localStorage
-      const campaign = JSON.parse(
-        localStorage.getItem('campaign') ||
-          JSON.stringify({
-            settlements: [],
-            survivors: []
-          })
-      )
+      const campaign = getCampaign()
 
       // Find the settlement index and update it
       const settlementIndex = campaign.settlements.findIndex(

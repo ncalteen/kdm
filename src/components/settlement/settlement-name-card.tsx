@@ -9,6 +9,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -24,31 +25,23 @@ export function SettlementNameCard(
     if (e.key === 'Enter') {
       e.preventDefault()
 
-      // Get current form values
-      const formValues = form.getValues()
+      try {
+        const formValues = form.getValues()
 
-      // Get existing campaign data from localStorage
-      const campaign = JSON.parse(
-        localStorage.getItem('campaign') ||
-          JSON.stringify({
-            settlements: [],
-            survivors: []
-          })
-      )
+        const campaign = getCampaign()
 
-      // Find the settlement index and update it
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-      // Only update the name in the settlement object
-      campaign.settlements[settlementIndex].name = formValues.name
+        campaign.settlements[settlementIndex].name = formValues.name
 
-      // Save the updated campaign to localStorage
-      localStorage.setItem('campaign', JSON.stringify(campaign))
+        localStorage.setItem('campaign', JSON.stringify(campaign))
 
-      // Show success message
-      toast.success('Settlement name updated!')
+        toast.success('Settlement name updated!')
+      } catch (error) {
+        console.error('Error saving timeline to localStorage:', error)
+      }
     }
   }
 

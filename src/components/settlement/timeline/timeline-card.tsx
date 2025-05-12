@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CampaignType } from '@/lib/enums'
 import { TimelineEvent } from '@/lib/types'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { HourglassIcon, PlusCircleIcon } from 'lucide-react'
 import {
@@ -209,6 +210,23 @@ export function TimelineCard(
         ...prev,
         [`${yearIndex}-${yearEntries.length}`]: true
       }))
+
+      // Save to localStorage
+      try {
+        const formValues = form.getValues()
+
+        const campaign = getCampaign()
+
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].timeline = formValues.timeline
+
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      } catch (error) {
+        console.error('Error saving timeline to localStorage:', error)
+      }
     },
     [timeline, form, editingEvents]
   )
@@ -246,6 +264,26 @@ export function TimelineCard(
         delete newEditingEvents[inputKey]
         return newEditingEvents
       })
+
+      // Save to localStorage
+      try {
+        const formValues = form.getValues()
+
+        const campaign = getCampaign()
+
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].timeline = formValues.timeline
+
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Event removed from timeline')
+      } catch (error) {
+        console.error('Error saving timeline to localStorage:', error)
+        toast.error('Failed to remove event from timeline')
+      }
     },
     [timeline, form]
   )
@@ -291,7 +329,25 @@ export function TimelineCard(
         newEventValue
       )
 
-      toast.success('Event saved to timeline')
+      // Save to localStorage
+      try {
+        const formValues = form.getValues()
+
+        const campaign = getCampaign()
+
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].timeline = formValues.timeline
+
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Event saved to timeline')
+      } catch (error) {
+        console.error('Error saving timeline to localStorage:', error)
+        toast.error('Failed to save event to timeline')
+      }
     },
     [form, setEditingEvents, inputRefs]
   )

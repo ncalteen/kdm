@@ -9,7 +9,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { getSurvivors } from '@/lib/utils'
+import { getCampaign, getSurvivors } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -35,32 +35,26 @@ export function PopulationCard(
     if (e.key === 'Enter') {
       e.preventDefault()
 
-      // Get current form values
-      const formValues = form.getValues()
+      try {
+        // Get current form values
+        const formValues = form.getValues()
 
-      // Get existing campaign data from localStorage
-      const campaign = JSON.parse(
-        localStorage.getItem('campaign') ||
-          JSON.stringify({
-            settlements: [],
-            survivors: []
-          })
-      )
+        // Get existing campaign data from localStorage
+        const campaign = getCampaign()
 
-      // Find the settlement index and update it
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-      // Only update the survival limit in the settlement object
-      campaign.settlements[settlementIndex].survivalLimit =
-        formValues.survivalLimit
+        campaign.settlements[settlementIndex].survivalLimit =
+          formValues.survivalLimit
 
-      // Save the updated campaign to localStorage
-      localStorage.setItem('campaign', JSON.stringify(campaign))
+        localStorage.setItem('campaign', JSON.stringify(campaign))
 
-      // Show success message
-      toast.success('Survival limit updated!')
+        toast.success('Survival limit updated!')
+      } catch (error) {
+        console.error('Error saving timeline to localStorage:', error)
+      }
     }
   }
 
@@ -86,6 +80,7 @@ export function PopulationCard(
     <Card className="mt-2">
       <CardContent className="pt-2 pb-2">
         <div className="flex flex-row items-center justify-between">
+          {/* Survival Limit */}
           <FormField
             control={form.control}
             name="survivalLimit"
@@ -116,6 +111,7 @@ export function PopulationCard(
 
           <div className="h-10 w-px bg-border"></div>
 
+          {/* Population */}
           <FormField
             control={form.control}
             name="population"
@@ -142,6 +138,7 @@ export function PopulationCard(
 
           <div className="h-10 w-px bg-border"></div>
 
+          {/* Death Count */}
           <FormField
             control={form.control}
             name="deathCount"
@@ -168,6 +165,7 @@ export function PopulationCard(
 
           <div className="h-10 w-px bg-border"></div>
 
+          {/* Lost Settlement Count */}
           <FormField
             control={form.control}
             name="lostSettlements"

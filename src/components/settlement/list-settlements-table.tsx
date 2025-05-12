@@ -20,8 +20,8 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { Campaign, Settlement } from '@/lib/types'
-import { getCurrentYear } from '@/lib/utils'
+import { Settlement } from '@/lib/types'
+import { getCampaign, getCurrentYear } from '@/lib/utils'
 import { SearchIcon, Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -38,25 +38,8 @@ export function ListSettlementsTable() {
 
   // Fetch settlements from localStorage when the component mounts.
   useEffect(() => {
-    loadSettlements()
+    setSettlements(getCampaign().settlements)
   }, [])
-
-  // Load settlements from localStorage
-  const loadSettlements = () => {
-    try {
-      const campaign = JSON.parse(
-        localStorage.getItem('campaign') ||
-          JSON.stringify({
-            settlements: [],
-            survivors: []
-          })
-      ) as Campaign
-
-      setSettlements(campaign.settlements)
-    } catch (error) {
-      console.error('Failed to load settlements:', error)
-    }
-  }
 
   /**
    * Navigates to the Settlement Page
@@ -67,21 +50,13 @@ export function ListSettlementsTable() {
     router.push(`/settlement?settlementId=${settlementId}`)
 
   /**
-   * Deletes a Settlement and Associated Survivors
+   * Deletes a Settlement and Survivors
    *
    * @param settlementId Settlement ID
    */
   const handleDeleteSettlement = (settlementId: number) => {
-    // Get current campaign data
-    const campaign = JSON.parse(
-      localStorage.getItem('campaign') ||
-        JSON.stringify({
-          settlements: [],
-          survivors: []
-        })
-    ) as Campaign
+    const campaign = getCampaign()
 
-    // Find the settlement to be deleted
     const settlementIndex = campaign.settlements.findIndex(
       (s) => s.id === settlementId
     )
@@ -98,13 +73,11 @@ export function ListSettlementsTable() {
       (s) => s.settlementId !== settlementId
     )
 
-    // Save updated campaign back to localStorage
     localStorage.setItem('campaign', JSON.stringify(campaign))
-
-    // Update state to refresh the UI
     setSettlements(campaign.settlements)
+
     toast.success(
-      `Darkness overtook ${settlementName}. Voices cried out, and were suddently silenced.`
+      `Darkness overtook ${settlementName}. Voices cried out, and were suddenly silenced.`
     )
 
     setDeleteSettlementId(null)

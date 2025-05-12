@@ -24,26 +24,33 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Calculates the next settlement ID.
+ * Gets the user's campaign from localStorage.
  *
- * @returns Next Settlement ID
+ * @returns Campaign
  */
-export function getNextSettlementId(): number {
-  const campaign = JSON.parse(
+export function getCampaign(): Campaign {
+  return JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
       })
   ) as Campaign
+}
 
-  // If this is the first settlement, return 1.
-  if (campaign.settlements.length === 0) return 1
+/**
+ * Calculates the next settlement ID.
+ *
+ * @returns Next Settlement ID
+ */
+export function getNextSettlementId(): number {
+  const campaign = getCampaign()
 
-  // Otherwise, return the latest settlement ID + 1.
-  return (
-    Math.max(...campaign.settlements.map((settlement) => settlement.id)) + 1
-  )
+  // If this is the first settlement, return 1. Otherwise, return the latest
+  // settlement ID + 1.
+  return campaign.settlements.length === 0
+    ? 1
+    : Math.max(...campaign.settlements.map((settlement) => settlement.id)) + 1
 }
 
 /**
@@ -52,21 +59,13 @@ export function getNextSettlementId(): number {
  * @returns Next Survivor ID
  */
 export function getNextSurvivorId(): number {
-  const campaign = JSON.parse(
-    localStorage.getItem('campaign') ||
-      JSON.stringify({
-        settlements: [],
-        survivors: []
-      })
-  ) as Campaign
+  const campaign = getCampaign()
 
-  // If this is the first survivor, return 1.
-  if (campaign.survivors.length === 0) return 1
-
-  // Otherwise, return the latest survivor ID + 1.
-  // This is done by getting the survivors from localStorage and finding the
-  // maximum ID.
-  return Math.max(...campaign.survivors.map((survivor) => survivor.id)) + 1
+  // If this is the first survivor, return 1. Otherwise, return the latest
+  // survivor ID + 1.
+  return campaign.survivors.length === 0
+    ? 1
+    : Math.max(...campaign.survivors.map((survivor) => survivor.id)) + 1
 }
 
 /**
@@ -75,26 +74,19 @@ export function getNextSurvivorId(): number {
  * @returns Lost Settlement Count
  */
 export function getLostSettlementCount(): number {
-  const campaign = JSON.parse(
-    localStorage.getItem('campaign') ||
-      JSON.stringify({
-        settlements: [],
-        survivors: []
-      })
-  ) as Campaign
+  const campaign = getCampaign()
 
-  // If the user is creating their first settlement, return 0.
-  if (campaign.settlements.length === 0) return 0
-
-  // Otherwise, return the number of lost settlements. This is determined by
-  // counting the number of settlements that have the "Population reaches 0"
-  // milestone completed.
-  return campaign.settlements.filter(
-    (settlement) =>
-      settlement.milestones.filter(
-        (m) => m.complete && m.name === 'Population reaches 0'
-      ).length > 0
-  ).length
+  // If the user is creating their first settlement, return 0. Otherwise, return
+  // the number of lost settlements. This is determined by counting the number
+  // of settlements that have the "Population reaches 0" milestone completed.
+  return campaign.settlements.length === 0
+    ? 0
+    : campaign.settlements.filter(
+        (settlement) =>
+          settlement.milestones.filter(
+            (m) => m.complete && m.name === 'Population reaches 0'
+          ).length > 0
+      ).length
 }
 
 /**
@@ -104,15 +96,7 @@ export function getLostSettlementCount(): number {
  * @returns Survivors
  */
 export function getSurvivors(settlementId: number): Survivor[] {
-  const campaign = JSON.parse(
-    localStorage.getItem('campaign') ||
-      JSON.stringify({
-        settlements: [],
-        survivors: []
-      })
-  ) as Campaign
-
-  return campaign.survivors.filter(
+  return getCampaign().survivors.filter(
     (survivor) => survivor.settlementId === settlementId
   )
 }
@@ -124,15 +108,7 @@ export function getSurvivors(settlementId: number): Survivor[] {
  * @returns Settlement
  */
 export function getSettlement(settlementId: number): Settlement | undefined {
-  const campaign = JSON.parse(
-    localStorage.getItem('campaign') ||
-      JSON.stringify({
-        settlements: [],
-        survivors: []
-      })
-  ) as Campaign
-
-  return campaign.settlements.find(
+  return getCampaign().settlements.find(
     (settlement) => settlement.id === settlementId
   ) as Settlement
 }

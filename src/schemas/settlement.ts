@@ -179,7 +179,7 @@ export const SettlementSchema = z.object({
   /** Locations */
   locations: z.array(LocationEntrySchema),
   /** Lost Settlement Count */
-  lostSettlements: z.number().min(0).optional(),
+  lostSettlements: z.number().min(0),
   /** Milestones */
   milestones: z.array(MilestoneEntrySchema),
   /** Settlement Name */

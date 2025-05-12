@@ -15,6 +15,7 @@ import {
 import { DefaultSquiresSuspicion } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import {
+  getCampaign,
   getCampaignData,
   getLostSettlementCount,
   getNextSettlementId
@@ -198,13 +199,7 @@ export function NameSettlementForm() {
       }
 
       // Get existing campaign data from localStorage or initialize new
-      const campaign = JSON.parse(
-        localStorage.getItem('campaign') ||
-          JSON.stringify({
-            settlements: [],
-            survivors: []
-          })
-      )
+      const campaign = getCampaign()
 
       // Add the new settlement to the campaign
       campaign.settlements.push(settlement)
