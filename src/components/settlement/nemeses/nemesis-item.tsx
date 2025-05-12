@@ -9,6 +9,7 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Nemesis } from '@/lib/types'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -18,24 +19,31 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+/**
+ * Nemesis Item Props
+ */
 interface NemesisItemProps {
-  nemesis: {
-    name: string
-    unlocked: boolean
-    level1: boolean
-    level2: boolean
-    level3: boolean
-  }
+  /** Disabled Status */
+  isDisabled: boolean
+  /** Removal Handler */
+  handleRemoveNemesis: (nemesisName: string) => void
+  /** Level Toggle Handler */
   handleToggleLevel: (
     nemesisName: string,
     level: 'level1' | 'level2' | 'level3',
     checked: boolean
   ) => void
-  toggleUnlocked: (nemesisName: string, checked: boolean) => void
-  handleRemoveNemesis: (nemesisName: string) => void
-  isDisabled: boolean
-  onSave: (nemesisName: string) => void
+  /** ID */
+  id: string
+  /** Nemesis */
+  nemesis: Nemesis
+  /** Edit Handler */
   onEdit: (nemesisName: string) => void
+  /** Save Handler */
+  onSave: (nemesisName: string) => void
+  /** Unlocked Toggle Handler */
+  toggleUnlocked: (nemesisName: string, checked: boolean) => void
+  /** Update Name Handler */
   updateNemesisName: (originalName: string, newName: string) => void
 }
 
@@ -53,10 +61,7 @@ export const NemesisItem = memo(
     onSave,
     onEdit,
     updateNemesisName
-  }: NemesisItemProps & {
-    id: string
-    updateNemesisName: (originalName: string, newName: string) => void
-  }) => {
+  }: NemesisItemProps) => {
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({ id })
     const [nameValue, setNameValue] = useState(nemesis.name)
@@ -101,9 +106,12 @@ export const NemesisItem = memo(
                   <Checkbox
                     checked={nemesis.unlocked}
                     className="mt-2"
-                    disabled={true}
                     id={`nemesis-${nemesis.name}-unlocked`}
                     name={`nemesis[${nemesis.name}].unlocked`}
+                    onCheckedChange={(checked) => {
+                      if (checked !== 'indeterminate')
+                        toggleUnlocked(nemesis.name, !!checked)
+                    }}
                   />
                 </FormControl>
                 <FormLabel
@@ -149,7 +157,6 @@ export const NemesisItem = memo(
                   <Checkbox
                     checked={nemesis.level1}
                     className="mt-2"
-                    disabled={isDisabled}
                     onCheckedChange={(checked) => {
                       if (checked !== 'indeterminate') {
                         handleToggleLevel(nemesis.name, 'level1', checked)
@@ -176,7 +183,6 @@ export const NemesisItem = memo(
                   <Checkbox
                     checked={nemesis.level2}
                     className="mt-2"
-                    disabled={isDisabled}
                     onCheckedChange={(checked) => {
                       if (checked !== 'indeterminate') {
                         handleToggleLevel(nemesis.name, 'level2', checked)
@@ -203,7 +209,6 @@ export const NemesisItem = memo(
                   <Checkbox
                     checked={nemesis.level3}
                     className="mt-2"
-                    disabled={isDisabled}
                     onCheckedChange={(checked) => {
                       if (checked !== 'indeterminate') {
                         handleToggleLevel(nemesis.name, 'level3', checked)
@@ -238,12 +243,9 @@ export const NemesisItem = memo(
               size="icon"
               onClick={() => {
                 if (nameValue !== nemesis.name) {
-                  // Update the name if changed
                   updateNemesisName(nemesis.name, nameValue)
-                } else {
-                  // Just save with the current name
-                  onSave(nameValue)
-                }
+                  toast.success('Nemesis updated!')
+                } else onSave(nameValue)
               }}
               title="Save nemesis">
               <CheckIcon className="h-4 w-4" />

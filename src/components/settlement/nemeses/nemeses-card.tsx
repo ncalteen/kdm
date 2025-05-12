@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   DragEndEvent,
@@ -18,7 +19,14 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { SkullIcon } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -79,14 +87,32 @@ export function NemesesCard(
     (nemesisName: string) => {
       if (nemesisName.startsWith('new-nemesis-')) setIsAddingNew(false)
       else {
-        const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
+        startTransition(() => {
+          const updatedNemeses = nemeses.filter((n) => n.name !== nemesisName)
 
-        form.setValue('nemeses', updatedNemeses)
+          form.setValue('nemeses', updatedNemeses)
 
-        setDisabledInputs((prev) => {
-          const updated = { ...prev }
-          delete updated[nemesisName]
-          return updated
+          setDisabledInputs((prev) => {
+            const updated = { ...prev }
+            delete updated[nemesisName]
+            return updated
+          })
+
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].nemeses = updatedNemeses
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+
+            toast.success('Nemesis removed!')
+          } catch (error) {
+            console.error('Error saving nemeses to localStorage:', error)
+          }
         })
       }
     },
@@ -99,51 +125,118 @@ export function NemesesCard(
       level: 'level1' | 'level2' | 'level3',
       checked: boolean
     ) => {
-      const updatedNemeses = nemeses.map((n) =>
-        n.name === nemesisName ? { ...n, [level]: checked } : n
-      )
+      startTransition(() => {
+        const updatedNemeses = nemeses.map((n) =>
+          n.name === nemesisName ? { ...n, [level]: checked } : n
+        )
 
-      form.setValue('nemeses', updatedNemeses)
+        form.setValue('nemeses', updatedNemeses)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].nemeses = updatedNemeses
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+        } catch (error) {
+          console.error('Error saving nemeses to localStorage:', error)
+        }
+      })
     },
     [nemeses, form]
   )
 
   const toggleUnlocked = useCallback(
     (nemesisName: string, checked: boolean) => {
-      const updatedNemeses = nemeses.map((n) =>
-        n.name === nemesisName ? { ...n, unlocked: checked } : n
-      )
+      startTransition(() => {
+        const updatedNemeses = nemeses.map((n) =>
+          n.name === nemesisName ? { ...n, unlocked: checked } : n
+        )
 
-      form.setValue('nemeses', updatedNemeses)
+        form.setValue('nemeses', updatedNemeses)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].nemeses = updatedNemeses
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success(`Nemesis ${checked ? 'unlocked!' : 'locked!'}`)
+        } catch (error) {
+          console.error('Error saving nemeses to localStorage:', error)
+        }
+      })
     },
     [nemeses, form]
   )
 
-  const saveNemesis = useCallback((nemesisName: string) => {
-    if (!nemesisName || nemesisName.trim() === '')
-      return toast.warning('Cannot save a nemesis without a name')
+  const saveNemesis = useCallback(
+    (nemesisName: string) => {
+      if (!nemesisName || nemesisName.trim() === '')
+        return toast.warning('Cannot save a nemesis without a name')
 
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [nemesisName]: true
-    }))
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [nemesisName]: true
+      }))
 
-    toast.success('Nemesis saved')
-  }, [])
+      // Update localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s) => s.id === formValues.id
+        )
+
+        campaign.settlements[settlementIndex].nemeses = formValues.nemeses
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Nemesis saved!')
+      } catch (error) {
+        console.error('Error saving nemeses to localStorage:', error)
+      }
+    },
+    [form]
+  )
 
   const updateNemesisName = useCallback(
     (originalName: string, newName: string) => {
-      const updatedNemeses = nemeses.map((n) =>
-        n.name === originalName ? { ...n, name: newName } : n
-      )
+      startTransition(() => {
+        const updatedNemeses = nemeses.map((n) =>
+          n.name === originalName ? { ...n, name: newName } : n
+        )
 
-      form.setValue('nemeses', updatedNemeses)
+        form.setValue('nemeses', updatedNemeses)
 
-      setDisabledInputs((prev) => {
-        const updated = { ...prev }
-        delete updated[originalName]
-        updated[newName] = true
-        return updated
+        setDisabledInputs((prev) => {
+          const updated = { ...prev }
+          delete updated[originalName]
+          updated[newName] = true
+          return updated
+        })
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].nemeses = updatedNemeses
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+        } catch (error) {
+          console.error('Error saving nemeses to localStorage:', error)
+        }
       })
     },
     [nemeses, form]
@@ -168,6 +261,20 @@ export function NemesesCard(
           const newOrder = arrayMove(nemeses, oldIndex, newIndex)
 
           form.setValue('nemeses', newOrder)
+
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].nemeses = newOrder
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+          } catch (error) {
+            console.error('Error saving nemeses to localStorage:', error)
+          }
         })
       }
     },

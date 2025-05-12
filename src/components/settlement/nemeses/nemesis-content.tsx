@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/nemeses/nemesis-item'
 import { Button } from '@/components/ui/button'
 import { Nemesis } from '@/lib/types'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -95,7 +96,21 @@ export const NemesisContent = memo(
           // Close the "add new" form
           setIsAddingNew(false)
 
-          toast.success('New nemesis added')
+          // Update localStorage
+          try {
+            const formValues = form.getValues()
+            const campaign = getCampaign()
+            const settlementIndex = campaign.settlements.findIndex(
+              (s) => s.id === formValues.id
+            )
+
+            campaign.settlements[settlementIndex].nemeses = updatedNemeses
+            localStorage.setItem('campaign', JSON.stringify(campaign))
+
+            toast.success('New nemesis added!')
+          } catch (error) {
+            console.error('Error saving nemeses to localStorage:', error)
+          }
         })
 
         return true
