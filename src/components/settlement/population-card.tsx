@@ -36,19 +36,14 @@ export function PopulationCard(
       e.preventDefault()
 
       try {
-        // Get current form values
         const formValues = form.getValues()
-
-        // Get existing campaign data from localStorage
         const campaign = getCampaign()
-
         const settlementIndex = campaign.settlements.findIndex(
           (s: { id: number }) => s.id === formValues.id
         )
 
         campaign.settlements[settlementIndex].survivalLimit =
           formValues.survivalLimit
-
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
         toast.success('Survival limit updated!')

@@ -14,44 +14,62 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+export interface TimelineContentProps {
+  /** Add Event Handler */
+  addEventToYear: (yearIndex: number) => void
+  /** Edit Event Handler */
+  editEvent: (yearIndex: number, entryIndex: number) => void
+  /** Settlement Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Key Press Handler */
+  handleKeyDown: (
+    e: KeyboardEvent<HTMLInputElement>,
+    yearIndex: number,
+    entryIndex: number
+  ) => void
+  /** Event Edit Status */
+  isEventBeingEdited: (yearIndex: number, entryIndex: number) => boolean
+  /** Remove Event Handler */
+  removeEventFromYear: (yearIndex: number, eventIndex: number) => void
+  /** Save Event Handler */
+  saveEvent: (yearIndex: number, entryIndex: number) => void
+  /** Set Input Reference Function */
+  setInputRef: (
+    element: HTMLInputElement | null,
+    yearIndex: number,
+    entryIndex: number
+  ) => void
+  /** Show Story Event Icon */
+  showStoryEventIcon: boolean
+  /** Timeline Events */
+  timeline: TimelineEvent[]
+  /** Use Normal Year Numbering */
+  usesNormalNumbering: boolean
+}
+
 /**
  * Timeline Content Component
  */
 export const TimelineContent = memo(
   ({
+    addEventToYear,
+    editEvent,
+    handleKeyDown,
+    isEventBeingEdited,
+    removeEventFromYear,
+    saveEvent,
+    setInputRef,
+    showStoryEventIcon,
     timeline,
     usesNormalNumbering,
-    isEventBeingEdited,
-    setInputRef,
-    handleKeyDown,
-    saveEvent,
-    removeEventFromYear,
-    addEventToYear,
-    form,
-    editEvent,
-    showStoryEventIcon
-  }: {
-    timeline: TimelineEvent[]
-    usesNormalNumbering: boolean
-    editingEvents: { [key: string]: boolean }
-    isEventBeingEdited: (yearIndex: number, entryIndex: number) => boolean
-    setInputRef: (
-      element: HTMLInputElement | null,
-      yearIndex: number,
-      entryIndex: number
-    ) => void
-    handleKeyDown: (
-      e: KeyboardEvent<HTMLInputElement>,
-      yearIndex: number,
-      entryIndex: number
-    ) => void
-    saveEvent: (yearIndex: number, entryIndex: number) => void
-    removeEventFromYear: (yearIndex: number, eventIndex: number) => void
-    addEventToYear: (yearIndex: number) => void
-    form: UseFormReturn<z.infer<typeof SettlementSchema>>
-    editEvent: (yearIndex: number, entryIndex: number) => void
-    showStoryEventIcon: boolean
-  }) => {
+    form
+  }: TimelineContentProps) => {
+    /**
+     * Handles Completion Status Change
+     *
+     * @param yearIndex Timeline Year Index
+     * @param checked Completion Status
+     */
     const handleYearCompletionChange = (
       yearIndex: number,
       checked: string | boolean
@@ -60,24 +78,21 @@ export const TimelineContent = memo(
         form.setValue(`timeline.${yearIndex}.completed`, !!checked)
 
         const formValues = form.getValues()
-
         const campaign = getCampaign()
-
         const settlementIndex = campaign.settlements.findIndex(
           (s: { id: number }) => s.id === formValues.id
         )
 
         campaign.settlements[settlementIndex].timeline = formValues.timeline
-
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        const message = usesNormalNumbering
-          ? `Lantern year ${yearIndex + 1} updated!`
-          : yearIndex === 0
-            ? 'Prologue updated!'
-            : `Lantern year ${yearIndex} updated!`
-
-        toast.success(message)
+        toast.success(
+          usesNormalNumbering
+            ? `Lantern year ${yearIndex + 1} updated!`
+            : yearIndex === 0
+              ? 'Prologue updated!'
+              : `Lantern year ${yearIndex} updated!`
+        )
       } catch (error) {
         console.error('Error saving timeline to localStorage:', error)
       }
@@ -101,6 +116,7 @@ export const TimelineContent = memo(
                   ? 'grid-cols-[80px_40px_1fr_auto]'
                   : 'grid-cols-[80px_1fr_auto]'
               } gap-2 items-start border-t border-border py-1`}>
+              {/* Year Number and Completion Checkbox */}
               <div className="flex items-center">
                 <FormField
                   control={form.control}
@@ -131,6 +147,7 @@ export const TimelineContent = memo(
                 </span>
               </div>
 
+              {/* Story Event Icon */}
               {showStoryEventIcon && (
                 <div className="flex justify-center items-center mt-1">
                   {yearIndex !== 0 && (
@@ -139,8 +156,9 @@ export const TimelineContent = memo(
                 </div>
               )}
 
+              {/* Events Section */}
               <div className="flex flex-col gap-2">
-                {/* Display event badges for saved events */}
+                {/* Saved Event Badges */}
                 {(yearData.entries || []).length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-1">
                     {(yearData.entries || []).map((entry, entryIndex) => {
@@ -165,7 +183,7 @@ export const TimelineContent = memo(
                   </div>
                 )}
 
-                {/* Display editable fields for events that are being edited */}
+                {/* Edit Event Input Fields */}
                 {(yearData.entries || []).map((entry, entryIndex) => {
                   if (isEventBeingEdited(yearIndex, entryIndex)) {
                     return (
@@ -229,6 +247,7 @@ export const TimelineContent = memo(
                 )}
               </div>
 
+              {/* Add Event Button */}
               {!yearData.completed && (
                 <div className="flex justify-end mr-5">
                   <Button

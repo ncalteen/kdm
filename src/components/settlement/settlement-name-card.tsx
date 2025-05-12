@@ -27,15 +27,12 @@ export function SettlementNameCard(
 
       try {
         const formValues = form.getValues()
-
         const campaign = getCampaign()
-
         const settlementIndex = campaign.settlements.findIndex(
           (s: { id: number }) => s.id === formValues.id
         )
 
         campaign.settlements[settlementIndex].name = formValues.name
-
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
         toast.success('Settlement name updated!')

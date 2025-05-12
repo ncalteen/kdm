@@ -45,7 +45,7 @@ export function TimelineCard(
   const isSunCampaign = campaignType === CampaignType.PEOPLE_OF_THE_SUN
   const isCustomCampaign = campaignType === CampaignType.CUSTOM
 
-  // Check if the campaign uses normal numbering (no prologue). The prologue is
+  // Check if the campaign uses normal numbering (no Prologue). Prologue is
   // only used in the People of the Lantern and People of the Dream Keeper
   // campaigns (as well as custom campaigns).
   const usesNormalNumbering = useMemo(
@@ -215,9 +215,7 @@ export function TimelineCard(
       // Save to localStorage
       try {
         const formValues = form.getValues()
-
         const campaign = getCampaign()
-
         const settlementIndex = campaign.settlements.findIndex(
           (s: { id: number }) => s.id === formValues.id
         )
@@ -255,11 +253,12 @@ export function TimelineCard(
       // Update form state for just the affected year.
       const yearEntries = timeline[yearIndex]?.entries || []
       const newEntries = [...yearEntries]
+      const inputKey = `${yearIndex}-${eventIndex}`
+
       newEntries.splice(eventIndex, 1)
       form.setValue(`timeline.${yearIndex}.entries`, newEntries)
 
       // Remove from editingEvents
-      const inputKey = `${yearIndex}-${eventIndex}`
       setEditingEvents((prev) => {
         const newEditingEvents = { ...prev }
         delete newEditingEvents[inputKey]
@@ -269,15 +268,12 @@ export function TimelineCard(
       // Save to localStorage
       try {
         const formValues = form.getValues()
-
         const campaign = getCampaign()
-
         const settlementIndex = campaign.settlements.findIndex(
           (s: { id: number }) => s.id === formValues.id
         )
 
         campaign.settlements[settlementIndex].timeline = formValues.timeline
-
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
         toast.success('Event removed from timeline')
@@ -319,9 +315,11 @@ export function TimelineCard(
       setTimeline((prevTimeline) => {
         const updatedTimeline = [...prevTimeline]
         const year = { ...updatedTimeline[yearIndex] }
+
         year.entries = [...(year.entries || [])]
         year.entries[entryIndex] = newEventValue
         updatedTimeline[yearIndex] = year
+
         return updatedTimeline
       })
 
@@ -333,18 +331,15 @@ export function TimelineCard(
       // Save to localStorage
       try {
         const formValues = form.getValues()
-
         const campaign = getCampaign()
-
         const settlementIndex = campaign.settlements.findIndex(
           (s: { id: number }) => s.id === formValues.id
         )
 
         campaign.settlements[settlementIndex].timeline = formValues.timeline
-
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Event saved to timeline')
+        toast.success('Event saved to timeline!')
       } catch (error) {
         console.error('Error saving timeline to localStorage:', error)
         toast.error('Failed to save event to timeline')
@@ -495,7 +490,6 @@ export function TimelineCard(
             <TimelineContent
               timeline={cachedTimeline}
               usesNormalNumbering={usesNormalNumbering}
-              editingEvents={editingEvents}
               isEventBeingEdited={isEventBeingEdited}
               setInputRef={setInputRef}
               handleKeyDown={handleKeyDown}
@@ -512,12 +506,34 @@ export function TimelineCard(
               className="mt-4 w-full"
               size="lg"
               onClick={() => {
-                startTransition(() =>
-                  debouncedSetTimeline([
+                startTransition(() => {
+                  const updatedTimeline = [
                     ...timeline,
                     { completed: false, entries: [] }
-                  ])
-                )
+                  ]
+                  debouncedSetTimeline(updatedTimeline)
+                  debouncedSetFormValue('timeline', updatedTimeline)
+
+                  // Save to localStorage
+                  try {
+                    const formValues = form.getValues()
+                    const campaign = getCampaign()
+                    const settlementIndex = campaign.settlements.findIndex(
+                      (s: { id: number }) => s.id === formValues.id
+                    )
+
+                    campaign.settlements[settlementIndex].timeline =
+                      updatedTimeline
+                    localStorage.setItem('campaign', JSON.stringify(campaign))
+
+                    toast.success('New lantern year added to timeline!')
+                  } catch (error) {
+                    console.error(
+                      'Error saving timeline to localStorage:',
+                      error
+                    )
+                  }
+                })
               }}>
               <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Lantern Year
             </Button>
