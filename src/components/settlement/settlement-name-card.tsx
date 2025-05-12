@@ -32,12 +32,19 @@ export function SettlementNameCard(
           (s: { id: number }) => s.id === formValues.id
         )
 
-        campaign.settlements[settlementIndex].name = formValues.name
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Settlement name updated!')
+        // If settlement already exists, update its name
+        if (settlementIndex !== -1) {
+          campaign.settlements[settlementIndex].name = formValues.name
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+          toast.success('Settlement name updated!')
+        } else {
+          // This will trigger the parent form's onSubmit handler
+          const formElement = e.currentTarget.closest('form')
+          if (formElement) formElement.requestSubmit()
+          // else form.handleSubmit(() => {})()
+        }
       } catch (error) {
-        console.error('Error saving timeline to localStorage:', error)
+        console.error('Error handling settlement name:', error)
       }
     }
   }
