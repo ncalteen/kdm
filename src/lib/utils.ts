@@ -9,7 +9,13 @@ import {
   SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
 import { CampaignType } from '@/lib/enums'
-import type { Campaign, CampaignData, Settlement, Survivor } from '@/lib/types'
+import type {
+  Campaign,
+  CampaignData,
+  Settlement,
+  Survivor,
+  TimelineEvent
+} from '@/lib/types'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -129,6 +135,18 @@ export function getSettlement(settlementId: number): Settlement | undefined {
   return campaign.settlements.find(
     (settlement) => settlement.id === settlementId
   ) as Settlement
+}
+
+/**
+ * Calculates the current timeline year for a settlement.
+ *
+ * This is calculated as the last completed timeline entry plus one.
+ *
+ * @param timeline Timeline
+ * @returns Current Year
+ */
+export function getCurrentYear(timeline: TimelineEvent[]): number {
+  return timeline.filter((entry) => entry.completed).length + 1
 }
 
 /**

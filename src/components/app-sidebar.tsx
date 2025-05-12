@@ -35,8 +35,12 @@ const data = {
       isActive: true,
       items: [
         {
+          title: 'List',
+          url: '/settlement/list'
+        },
+        {
           title: 'Create',
-          url: '/kdm/settlement/create'
+          url: '/settlement/create'
         }
       ]
     },
@@ -47,7 +51,7 @@ const data = {
       items: [
         {
           title: 'Create',
-          url: '/kdm/survivors/create'
+          url: '/survivor/create'
         }
       ]
     }
