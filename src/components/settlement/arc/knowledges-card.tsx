@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/arc/knowledge-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -50,6 +51,23 @@ export function KnowledgesCard(
   const handleRemoveKnowledge = (knowledgeName: string) => {
     const updatedKnowledges = knowledges.filter((k) => k.name !== knowledgeName)
     form.setValue('knowledges', updatedKnowledges)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Knowledge removed!')
+      }
+    } catch (error) {
+      console.error('Error removing knowledge:', error)
+    }
   }
 
   const handleUpdateKnowledge = (
@@ -61,6 +79,23 @@ export function KnowledgesCard(
     )
 
     form.setValue('knowledges', updatedKnowledges)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Knowledge updated!')
+      }
+    } catch (error) {
+      console.error('Error updating knowledge:', error)
+    }
   }
 
   const handleSaveEdit = (
@@ -102,6 +137,23 @@ export function KnowledgesCard(
                   const newIndex = knowledgeIds.indexOf(over.id as string)
                   const newOrder = arrayMove(knowledges, oldIndex, newIndex)
                   form.setValue('knowledges', newOrder)
+
+                  // Save to localStorage
+                  try {
+                    const formValues = form.getValues()
+                    const campaign = getCampaign()
+                    const settlementIndex = campaign.settlements.findIndex(
+                      (s: { id: number }) => s.id === formValues.id
+                    )
+
+                    if (settlementIndex !== -1) {
+                      campaign.settlements[settlementIndex].knowledges =
+                        newOrder
+                      localStorage.setItem('campaign', JSON.stringify(campaign))
+                    }
+                  } catch (error) {
+                    console.error('Error reordering knowledges:', error)
+                  }
                 }
               }}>
               <SortableContext

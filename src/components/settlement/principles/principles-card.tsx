@@ -100,7 +100,7 @@ export function PrinciplesCard(
 
       return reindexed
     })
-    
+
     // Update localStorage
     try {
       const formValues = form.getValues()
@@ -140,7 +140,7 @@ export function PrinciplesCard(
 
     setDisabledInputs((prev) => ({ ...prev, [index]: true }))
     setIsEditingIndex(null)
-    
+
     // Update localStorage
     try {
       const formValues = form.getValues()
@@ -206,7 +206,7 @@ export function PrinciplesCard(
 
     setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
     setIsAddingNew(false)
-    
+
     // Update localStorage
     try {
       const formValues = form.getValues()
@@ -233,7 +233,7 @@ export function PrinciplesCard(
       const newOrder = arrayMove(principles, oldIndex, newIndex)
 
       form.setValue('principles', newOrder)
-      
+
       // Update localStorage
       try {
         const formValues = form.getValues()

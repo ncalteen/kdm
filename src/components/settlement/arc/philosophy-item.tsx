@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -155,8 +156,25 @@ export function NewPhilosophyItem({
       return toast.warning('A philosophy with this name already exists')
 
     const philosophies = [...(form.watch('philosophies') || [])]
+    const updatedPhilosophies = [...philosophies, name.trim()]
 
-    form.setValue('philosophies', [...philosophies, name.trim()])
+    form.setValue('philosophies', updatedPhilosophies)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      }
+    } catch (error) {
+      console.error('Error saving new philosophy:', error)
+    }
 
     setName('')
     onAdd()

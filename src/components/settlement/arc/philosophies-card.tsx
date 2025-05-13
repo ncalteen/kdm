@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/arc/philosophy-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -51,6 +52,23 @@ export function PhilosophiesCard(
     const updatedPhilosophies = philosophies.filter((p) => p !== philosophy)
 
     form.setValue('philosophies', updatedPhilosophies)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Philosophy removed!')
+      }
+    } catch (error) {
+      console.error('Error removing philosophy:', error)
+    }
   }
 
   const handleUpdatePhilosophy = (
@@ -74,7 +92,22 @@ export function PhilosophiesCard(
     form.setValue('philosophies', updatedPhilosophies)
     setEditingPhilosophy(null)
 
-    toast.success('Philosophy saved')
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Philosophy saved!')
+      }
+    } catch (error) {
+      console.error('Error updating philosophy:', error)
+    }
   }
 
   const addNewPhilosophy = () => setShowNewPhilosophyForm(false)
@@ -99,6 +132,23 @@ export function PhilosophiesCard(
                   const newIndex = philosophies.indexOf(over.id as string)
                   const newOrder = arrayMove(philosophies, oldIndex, newIndex)
                   form.setValue('philosophies', newOrder)
+
+                  // Save to localStorage
+                  try {
+                    const formValues = form.getValues()
+                    const campaign = getCampaign()
+                    const settlementIndex = campaign.settlements.findIndex(
+                      (s: { id: number }) => s.id === formValues.id
+                    )
+
+                    if (settlementIndex !== -1) {
+                      campaign.settlements[settlementIndex].philosophies =
+                        newOrder
+                      localStorage.setItem('campaign', JSON.stringify(campaign))
+                    }
+                  } catch (error) {
+                    console.error('Error reordering philosophies:', error)
+                  }
                 }
               }}>
               <SortableContext

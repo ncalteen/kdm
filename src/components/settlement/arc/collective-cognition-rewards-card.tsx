@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/arc/collective-cognition-reward-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -25,6 +26,7 @@ import {
 import { BrainIcon, PlusCircleIcon } from 'lucide-react'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
@@ -52,12 +54,48 @@ export function CollectiveCognitionRewardsCard(
     })
 
     form.setValue('ccRewards', updatedRewards)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].ccRewards = updatedRewards
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Reward updated!')
+      }
+    } catch (error) {
+      console.error('Error saving reward:', error)
+    }
   }
 
   const handleRemoveReward = (rewardName: string) => {
     const updatedRewards = rewards.filter((r) => r.name !== rewardName)
 
     form.setValue('ccRewards', updatedRewards)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].ccRewards = updatedRewards
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Reward removed!')
+      }
+    } catch (error) {
+      console.error('Error removing reward:', error)
+    }
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -69,6 +107,22 @@ export function CollectiveCognitionRewardsCard(
 
       const newOrder = arrayMove(rewards, oldIndex, newIndex)
       form.setValue('ccRewards', newOrder)
+
+      // Save to localStorage
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        if (settlementIndex !== -1) {
+          campaign.settlements[settlementIndex].ccRewards = newOrder
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+        }
+      } catch (error) {
+        console.error('Error reordering rewards:', error)
+      }
     }
   }
 
@@ -112,6 +166,27 @@ export function CollectiveCognitionRewardsCard(
                       )
                       form.setValue('ccRewards', updatedRewards)
                       setEditingReward(null)
+
+                      // Save to localStorage
+                      try {
+                        const formValues = form.getValues()
+                        const campaign = getCampaign()
+                        const settlementIndex = campaign.settlements.findIndex(
+                          (s: { id: number }) => s.id === formValues.id
+                        )
+
+                        if (settlementIndex !== -1) {
+                          campaign.settlements[settlementIndex].ccRewards =
+                            updatedRewards
+                          localStorage.setItem(
+                            'campaign',
+                            JSON.stringify(campaign)
+                          )
+                          toast.success('Reward updated!')
+                        }
+                      } catch (error) {
+                        console.error('Error updating reward:', error)
+                      }
                     }}
                     onCancelEdit={() => setEditingReward(null)}
                   />

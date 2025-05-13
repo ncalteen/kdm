@@ -17,9 +17,11 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
@@ -30,6 +32,26 @@ export function CollectiveCognitionVictoriesCard(
 ) {
   const quarries = form.watch('quarries') || []
   const nemeses = form.watch('nemeses') || []
+
+  const saveToLocalStorage = () => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].quarries = formValues.quarries
+        campaign.settlements[settlementIndex].nemeses = formValues.nemeses
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        toast.success('Victory updated!')
+      }
+    } catch (error) {
+      console.error('Error saving victory:', error)
+    }
+  }
 
   return (
     <Card className="mt-2">
@@ -76,12 +98,17 @@ export function CollectiveCognitionVictoriesCard(
                         <FormField
                           control={form.control}
                           name={`quarries.${index}.ccPrologue`}
-                          render={() => (
+                          render={({ field }) => (
                             <FormItem className="flex justify-center">
                               <FormControl>
                                 <Checkbox
-                                  checked={false}
-                                  disabled={true}
+                                  checked={field.value}
+                                  onCheckedChange={(checked) => {
+                                    if (checked !== 'indeterminate') {
+                                      field.onChange(checked)
+                                      saveToLocalStorage()
+                                    }
+                                  }}
                                   id={`quarries-${index}-ccPrologue`}
                                   name={`quarries.${index}.ccPrologue`}
                                 />
@@ -95,12 +122,17 @@ export function CollectiveCognitionVictoriesCard(
                       <FormField
                         control={form.control}
                         name={`quarries.${index}.ccLevel1`}
-                        render={() => (
+                        render={({ field }) => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={false}
-                                disabled={true}
+                                checked={field.value}
+                                onCheckedChange={(checked) => {
+                                  if (checked !== 'indeterminate') {
+                                    field.onChange(checked)
+                                    saveToLocalStorage()
+                                  }
+                                }}
                                 id={`quarries-${index}-ccLevel1`}
                                 name={`quarries.${index}.ccLevel1`}
                               />
@@ -117,12 +149,17 @@ export function CollectiveCognitionVictoriesCard(
                               key={`ccLevel2-${lvl2Index}`}
                               control={form.control}
                               name={`quarries.${index}.ccLevel2.${lvl2Index}`}
-                              render={() => (
+                              render={({ field }) => (
                                 <FormItem className="flex justify-center">
                                   <FormControl>
                                     <Checkbox
-                                      checked={false}
-                                      disabled={true}
+                                      checked={field.value}
+                                      onCheckedChange={(checked) => {
+                                        if (checked !== 'indeterminate') {
+                                          field.onChange(checked)
+                                          saveToLocalStorage()
+                                        }
+                                      }}
                                       id={`quarries-${index}-ccLevel2-${lvl2Index}`}
                                       name={`quarries.${index}.ccLevel2.${lvl2Index}`}
                                     />
@@ -142,12 +179,17 @@ export function CollectiveCognitionVictoriesCard(
                               key={`ccLevel3-${lvl3Index}`}
                               control={form.control}
                               name={`quarries.${index}.ccLevel3.${lvl3Index}`}
-                              render={() => (
+                              render={({ field }) => (
                                 <FormItem className="flex justify-center">
                                   <FormControl>
                                     <Checkbox
-                                      checked={false}
-                                      disabled={true}
+                                      checked={field.value}
+                                      onCheckedChange={(checked) => {
+                                        if (checked !== 'indeterminate') {
+                                          field.onChange(checked)
+                                          saveToLocalStorage()
+                                        }
+                                      }}
                                       id={`quarries-${index}-ccLevel3-${lvl3Index}`}
                                       name={`quarries.${index}.ccLevel3.${lvl3Index}`}
                                     />
@@ -192,12 +234,17 @@ export function CollectiveCognitionVictoriesCard(
                       <FormField
                         control={form.control}
                         name={`nemeses.${index}.ccLevel1`}
-                        render={() => (
+                        render={({ field }) => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={false}
-                                disabled={true}
+                                checked={field.value}
+                                onCheckedChange={(checked) => {
+                                  if (checked !== 'indeterminate') {
+                                    field.onChange(checked)
+                                    saveToLocalStorage()
+                                  }
+                                }}
                                 id={`nemesis-${index}-ccLevel1`}
                                 name={`nemesis.${index}.ccLevel1`}
                               />
@@ -210,12 +257,17 @@ export function CollectiveCognitionVictoriesCard(
                       <FormField
                         control={form.control}
                         name={`nemeses.${index}.ccLevel2`}
-                        render={() => (
+                        render={({ field }) => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={false}
-                                disabled={true}
+                                checked={field.value}
+                                onCheckedChange={(checked) => {
+                                  if (checked !== 'indeterminate') {
+                                    field.onChange(checked)
+                                    saveToLocalStorage()
+                                  }
+                                }}
                                 id={`nemesis-${index}-ccLevel2`}
                                 name={`nemesis.${index}.ccLevel2`}
                               />
@@ -228,12 +280,17 @@ export function CollectiveCognitionVictoriesCard(
                       <FormField
                         control={form.control}
                         name={`nemeses.${index}.ccLevel3`}
-                        render={() => (
+                        render={({ field }) => (
                           <FormItem className="flex justify-center">
                             <FormControl>
                               <Checkbox
-                                checked={false}
-                                disabled={true}
+                                checked={field.value}
+                                onCheckedChange={(checked) => {
+                                  if (checked !== 'indeterminate') {
+                                    field.onChange(checked)
+                                    saveToLocalStorage()
+                                  }
+                                }}
                                 id={`nemesis-${index}-ccLevel3`}
                                 name={`nemesis.${index}.ccLevel3`}
                               />

@@ -65,23 +65,31 @@ export function PopulationCard(
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
-                        const value = parseInt(e.target.value);
-                        form.setValue(field.name, value);
-                        
+                        const value = parseInt(e.target.value)
+                        form.setValue(field.name, value)
+
                         // Update localStorage immediately
                         try {
-                          const formValues = form.getValues();
-                          const campaign = getCampaign();
-                          const settlementIndex = campaign.settlements.findIndex(
-                            (s: { id: number }) => s.id === formValues.id
-                          );
+                          const formValues = form.getValues()
+                          const campaign = getCampaign()
+                          const settlementIndex =
+                            campaign.settlements.findIndex(
+                              (s: { id: number }) => s.id === formValues.id
+                            )
 
-                          campaign.settlements[settlementIndex].survivalLimit = value;
-                          localStorage.setItem('campaign', JSON.stringify(campaign));
-                          
-                          toast.success('Survival limit updated!');
+                          campaign.settlements[settlementIndex].survivalLimit =
+                            value
+                          localStorage.setItem(
+                            'campaign',
+                            JSON.stringify(campaign)
+                          )
+
+                          toast.success('Survival limit updated!')
                         } catch (error) {
-                          console.error('Error saving survival limit to localStorage:', error);
+                          console.error(
+                            'Error saving survival limit to localStorage:',
+                            error
+                          )
                         }
                       }}
                     />

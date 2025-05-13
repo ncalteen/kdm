@@ -500,43 +500,45 @@ export function TimelineCard(
               editEvent={editEvent}
               showStoryEventIcon={showStoryEventIcon}
             />
-            <Button
-              type="button"
-              variant="outline"
-              className="mt-4 w-full"
-              size="lg"
-              onClick={() => {
-                startTransition(() => {
-                  const updatedTimeline = [
-                    ...timeline,
-                    { completed: false, entries: [] }
-                  ]
-                  debouncedSetTimeline(updatedTimeline)
-                  debouncedSetFormValue('timeline', updatedTimeline)
+            {!isSquiresCampaign && (
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-4 w-full"
+                size="lg"
+                onClick={() => {
+                  startTransition(() => {
+                    const updatedTimeline = [
+                      ...timeline,
+                      { completed: false, entries: [] }
+                    ]
+                    debouncedSetTimeline(updatedTimeline)
+                    debouncedSetFormValue('timeline', updatedTimeline)
 
-                  // Save to localStorage
-                  try {
-                    const formValues = form.getValues()
-                    const campaign = getCampaign()
-                    const settlementIndex = campaign.settlements.findIndex(
-                      (s: { id: number }) => s.id === formValues.id
-                    )
+                    // Save to localStorage
+                    try {
+                      const formValues = form.getValues()
+                      const campaign = getCampaign()
+                      const settlementIndex = campaign.settlements.findIndex(
+                        (s: { id: number }) => s.id === formValues.id
+                      )
 
-                    campaign.settlements[settlementIndex].timeline =
-                      updatedTimeline
-                    localStorage.setItem('campaign', JSON.stringify(campaign))
+                      campaign.settlements[settlementIndex].timeline =
+                        updatedTimeline
+                      localStorage.setItem('campaign', JSON.stringify(campaign))
 
-                    toast.success('New lantern year added to timeline!')
-                  } catch (error) {
-                    console.error(
-                      'Error saving timeline to localStorage:',
-                      error
-                    )
-                  }
-                })
-              }}>
-              <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Lantern Year
-            </Button>
+                      toast.success('New lantern year added to timeline!')
+                    } catch (error) {
+                      console.error(
+                        'Error saving timeline to localStorage:',
+                        error
+                      )
+                    }
+                  })
+                }}>
+                <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Lantern Year
+              </Button>
+            )}
           </>
         ) : (
           <div className="py-10 text-center text-gray-500">

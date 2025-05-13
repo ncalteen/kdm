@@ -4,6 +4,7 @@ import { SelectPhilosophy } from '@/components/menu/select-philosophy'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -197,8 +198,26 @@ export function NewKnowledgeItem({
       name: name.trim(),
       philosophy: philosophy && philosophy !== 'none' ? philosophy : undefined
     }
+    const updatedKnowledges = [...knowledges, newKnowledge]
 
-    form.setValue('knowledges', [...knowledges, newKnowledge])
+    form.setValue('knowledges', updatedKnowledges)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+      }
+    } catch (error) {
+      console.error('Error saving new knowledge:', error)
+    }
+
     setName('')
     setPhilosophy('')
     onAdd()

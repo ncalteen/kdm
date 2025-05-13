@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import type { CcReward } from '@/lib/types'
+import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -232,13 +233,30 @@ export function NewRewardItem({
       unlocked: false
     }
 
-    form.setValue('ccRewards', [...rewards, newReward])
+    const updatedRewards = [...rewards, newReward]
+    form.setValue('ccRewards', updatedRewards)
+
+    // Save to localStorage
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].ccRewards = updatedRewards
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('New reward added')
+      }
+    } catch (error) {
+      console.error('Error saving new reward:', error)
+    }
 
     // Reset form
     setName('')
     setCc(1)
     onAdd()
-    toast.success('New reward added')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

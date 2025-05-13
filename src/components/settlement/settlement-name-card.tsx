@@ -41,7 +41,6 @@ export function SettlementNameCard(
           // This will trigger the parent form's onSubmit handler
           const formElement = e.currentTarget.closest('form')
           if (formElement) formElement.requestSubmit()
-          // else form.handleSubmit(() => {})()
         }
       } catch (error) {
         console.error('Error handling settlement name:', error)

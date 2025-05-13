@@ -236,11 +236,7 @@ function SettlementForm({
                 </TabsContent>
                 {isSquiresCampaign ? (
                   <TabsContent value="squires">
-                    <SquireSuspicionsCard
-                      control={form.control}
-                      setValue={form.setValue}
-                      watch={form.watch}
-                    />
+                    <SquireSuspicionsCard {...form} />
                     <SquireProgressionCards />
                   </TabsContent>
                 ) : (

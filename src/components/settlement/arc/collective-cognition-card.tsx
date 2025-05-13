@@ -75,6 +75,7 @@ export function CollectiveCognitionCard(
                       className="w-16 h-12 text-2xl font-bold text-center border-2 no-spinners"
                       value={ccValue}
                       readOnly
+                      disabled={true}
                     />
                   </FormControl>
                 </div>
