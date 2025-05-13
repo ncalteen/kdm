@@ -17,10 +17,20 @@ import { z } from 'zod'
 
 /**
  * Settlement Name Card Component
+ *
+ * This component allows the user to set the name of a settlement.
  */
 export function SettlementNameCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
+  /**
+   * Handles Key Down Events
+   *
+   * This function is triggered when a key is pressed while the input field is
+   * focused. If the Enter key is pressed, it prevents the default behavior and
+   * checks if the settlement already exists. If it does, it updates the name of
+   * the existing settlement. If it doesn't, it triggers the form submission.
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -36,14 +46,15 @@ export function SettlementNameCard(
         if (settlementIndex !== -1) {
           campaign.settlements[settlementIndex].name = formValues.name
           localStorage.setItem('campaign', JSON.stringify(campaign))
-          toast.success('Settlement name updated!')
+          toast.success("The settlement's name echoes through the darkness.")
         } else {
           // This will trigger the parent form's onSubmit handler
           const formElement = e.currentTarget.closest('form')
           if (formElement) formElement.requestSubmit()
         }
       } catch (error) {
-        console.error('Error handling settlement name:', error)
+        console.error('Settlment Name Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
     }
   }

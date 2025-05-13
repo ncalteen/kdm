@@ -12,14 +12,34 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-interface InnovationItemProps {
-  index: number
+/**
+ * Innovation Item Component Properties
+ */
+export interface InnovationItemProps {
+  /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Remove Innovation Callback */
   handleRemoveInnovation: (index: number) => void
+  /** Innovation ID */
   id: string
+  /** Innovation Index */
+  index: number
+  /** Disabled Status */
   isDisabled: boolean
-  onSave: (index: number) => void
+  /** OnEdit Callback */
   onEdit: (index: number) => void
+  /** OnSave Callback */
+  onSave: (index: number) => void
+}
+
+/**
+ * New Innovation Item Component Properties
+ */
+export interface NewInnovationItemProps {
+  /** OnCancel Callback */
+  onCancel: () => void
+  /** OnSave Callback */
+  onSave: (value: string) => void
 }
 
 /**
@@ -108,10 +128,7 @@ export function InnovationItem({
 export function NewInnovationItem({
   onSave,
   onCancel
-}: {
-  onSave: (value: string) => void
-  onCancel: () => void
-}) {
+}: NewInnovationItemProps) {
   const [value, setValue] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +137,7 @@ export function NewInnovationItem({
 
   const handleSave = () => {
     if (value.trim() !== '') onSave(value.trim())
-    else toast.warning('Cannot save an empty innovation')
+    else toast.warning('Cannot record an empty innovation.')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

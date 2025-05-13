@@ -10,15 +10,40 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-interface PatternItemProps {
-  index: number
+/**
+ * Pattern Item Component Properties
+ */
+export interface PatternItemProps {
+  /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Remove Pattern Handler */
   handleRemovePattern: (index: number) => void
+  /** Pattern ID */
   id: string
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** OnEdit Handler */
+  onEdit: (index: number) => void
+  /** OnSave Handler */
+  onSave: (index: number, value: string) => void
+}
+
+/**
+ * New Pattern Item Component Properties
+ */
+export interface NewPatternItemProps {
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (value: string) => void
 }
 
 /**
  * Pattern Item Component
+ *
+ * @param props Pattern Item Component Props
  */
 export function PatternItem({
   index,
@@ -28,20 +53,26 @@ export function PatternItem({
   isDisabled,
   onSave,
   onEdit
-}: PatternItemProps & {
-  isDisabled: boolean
-  onSave: (index: number, value: string) => void
-  onEdit: (index: number) => void
-}) {
+}: PatternItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+
   const [value, setValue] = useState(form.getValues(`patterns.${index}`) || '')
-  useEffect(() => {
-    setValue(form.getValues(`patterns.${index}`) || '')
-  }, [form, isDisabled, index])
+
+  useEffect(
+    () => setValue(form.getValues(`patterns.${index}`) || ''),
+    [form, isDisabled, index]
+  )
 
   const style = { transform: CSS.Transform.toString(transform), transition }
 
+  /**
+   * Handles the key down event for the input field. If the Enter key is
+   * pressed, it prevents the default action and calls the onSave function with
+   * the current index and value.
+   *
+   * @param e Event
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -99,22 +130,22 @@ export function PatternItem({
 /**
  * New Pattern Item Component
  */
-export function NewPatternItem({
-  onSave,
-  onCancel
-}: {
-  onSave: (value: string) => void
-  onCancel: () => void
-}) {
+export function NewPatternItem({ onSave, onCancel }: NewPatternItemProps) {
   const [value, setValue] = useState('')
 
+  /**
+   * Handles the key down event for the input field. If the Enter key is
+   * pressed, it prevents the default action and calls the onSave function with
+   * the current value. If the Escape key is pressed, it calls the onCancel
+   * function.
+   *
+   * @param e Event
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       onSave(value)
-    } else if (e.key === 'Escape') {
-      onCancel()
-    }
+    } else if (e.key === 'Escape') onCancel()
   }
 
   return (

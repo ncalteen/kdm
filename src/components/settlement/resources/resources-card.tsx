@@ -37,6 +37,7 @@ export function ResourcesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const resources = useMemo(() => form.watch('resources') || [], [form])
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -61,6 +62,11 @@ export function ResourcesCard(
 
   const addResource = () => setIsAddingNew(true)
 
+  /**
+   * Handles the removal of a resource.
+   *
+   * @param index Resource Index
+   */
   const handleRemoveResource = (index: number) => {
     const updatedResources = [...resources]
     updatedResources.splice(index, 1)
@@ -90,12 +96,21 @@ export function ResourcesCard(
       campaign.settlements[settlementIndex].resources = updatedResources
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
-      toast.success('Resource removed!')
+      toast.success('The harvest is returned to the darkness.')
     } catch (error) {
-      console.error('Error saving resources to localStorage:', error)
+      console.error('Resource Remove Error:', error)
+      toast.error('The darkness refuses to release its grip. Please try again.')
     }
   }
 
+  /**
+   * Handles the saving of a new resource.
+   *
+   * @param name Resource Name
+   * @param category Category
+   * @param types Type(s)
+   * @param amount Amount
+   */
   const saveResource = (
     name: string,
     category: ResourceCategory,
@@ -103,7 +118,9 @@ export function ResourcesCard(
     amount: number
   ) => {
     if (!name || name.trim() === '')
-      return toast.warning('Cannot save a resource without a name')
+      return toast.warning(
+        'The nameless cannot be harvested - your offering requires a title.'
+      )
 
     const newResource = { name, category, types, amount }
     const updatedResources = [...resources, newResource]
@@ -126,16 +143,28 @@ export function ResourcesCard(
 
       campaign.settlements[settlementIndex].resources = updatedResources
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Resource saved!')
+      toast.success('The harvest has been preserved.')
     } catch (error) {
-      console.error('Error saving resources to localStorage:', error)
+      console.error('Resource Save Error:', error)
+      toast.error(
+        'The darkness refuses to release its grasp. Please try again.'
+      )
     }
   }
 
+  /**
+   * Handles the editing of a resource.
+   *
+   * @param index Resource Index
+   */
   const editResource = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
+  /**
+   * Handles the end of a drag event.
+   *
+   * @param event DragEndEvent
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -151,6 +180,7 @@ export function ResourcesCard(
 
         Object.keys(prev).forEach((k) => {
           const num = parseInt(k)
+
           if (num === oldIndex) next[newIndex] = prev[num]
           else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
           else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
@@ -171,7 +201,7 @@ export function ResourcesCard(
         campaign.settlements[settlementIndex].resources = newOrder
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving resources to localStorage:', error)
+        console.error('Resource Drag Error:', error)
       }
     }
   }
@@ -186,7 +216,7 @@ export function ResourcesCard(
       <CardContent className="pt-0 pb-2">
         {resources.length === 0 && !isAddingNew ? (
           <div className="text-center text-muted-foreground py-4">
-            No resources added yet.
+            Your settlement has claimed nothing.
           </div>
         ) : (
           <div className="mb-2">

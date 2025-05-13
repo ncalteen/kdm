@@ -128,7 +128,7 @@ export function NewDepartingBonusItem({
 
   const handleSave = () => {
     if (value.trim() !== '') onSave(value.trim())
-    else toast.warning('Cannot save an empty bonus')
+    else toast.warning('Cannot inscribe an empty blessing')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -144,7 +144,7 @@ export function NewDepartingBonusItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
       <Input
-        placeholder="Add a bonus..."
+        placeholder="Inscribe a blessing..."
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -156,7 +156,7 @@ export function NewDepartingBonusItem({
         variant="ghost"
         size="icon"
         onClick={handleSave}
-        title="Save bonus">
+        title="Consecrate blessing">
         <CheckIcon className="h-4 w-4" />
       </Button>
       <Button type="button" variant="ghost" size="icon" onClick={onCancel}>

@@ -4,6 +4,9 @@ import { Badge } from '@/components/ui/badge'
 import { BookOpenIcon, SwordsIcon } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
+/**
+ * Timeline Event Badge Component Properties
+ */
 export interface TimelineEventBadgeProps {
   /** Entry Text */
   entry: string

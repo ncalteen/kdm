@@ -6,6 +6,14 @@ import { DownloadIcon } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+/**
+ * Download Campaign Button Component
+ *
+ * This component allows the user to download the current campaign data as a
+ * JSON file. The data is retrieved from localStorage and converted.
+ *
+ * @returns Download Campaign Button
+ */
 export function DownloadCampaignButton() {
   const [isDownloading, setIsDownloading] = useState(false)
 

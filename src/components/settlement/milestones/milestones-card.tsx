@@ -77,7 +77,7 @@ export function MilestonesCard(
   const saveNewMilestone = useCallback(
     (name: string, event: string) => {
       if (milestones.some((m) => m.name === name)) {
-        toast.warning('A milestone with this name already exists')
+        toast.warning('This milestone already been recorded.')
         return false
       }
 
@@ -99,9 +99,9 @@ export function MilestonesCard(
           campaign.settlements[settlementIndex].milestones = updated
           localStorage.setItem('campaign', JSON.stringify(campaign))
 
-          toast.success('New milestone added!')
+          toast.success("New milestone added to the settlement's fate!")
         } catch (error) {
-          console.error('Error saving milestones to localStorage:', error)
+          console.error('New Milestone Save Error:', error)
         }
       })
 
@@ -127,11 +127,8 @@ export function MilestonesCard(
 
           Object.keys(next).forEach((k) => {
             const num = parseInt(k)
-            if (num > index) {
-              reindexed[num - 1] = next[num]
-            } else if (num < index) {
-              reindexed[num] = next[num]
-            }
+            if (num > index) reindexed[num - 1] = next[num]
+            else if (num < index) reindexed[num] = next[num]
           })
 
           return reindexed
@@ -148,9 +145,12 @@ export function MilestonesCard(
           campaign.settlements[settlementIndex].milestones = updated
           localStorage.setItem('campaign', JSON.stringify(campaign))
 
-          toast.success('Milestone removed!')
+          toast.success('Milestone fades into the void.')
         } catch (error) {
-          console.error('Error saving milestones to localStorage:', error)
+          console.error('Milestone Remove Error:', error)
+          toast.error(
+            'The shadows devour your words - your stories are lost. Please try again.'
+          )
         }
       })
     },
@@ -164,7 +164,7 @@ export function MilestonesCard(
   const handleSave = useCallback(
     (index: number, name: string, event: string) => {
       if (!name || name.trim() === '')
-        return toast.warning('Cannot save a milestone without a name')
+        return toast.warning('Cannot establish a nameless milestone.')
 
       startTransition(() => {
         const updated = [...milestones]
@@ -184,9 +184,10 @@ export function MilestonesCard(
           campaign.settlements[settlementIndex].milestones = updated
           localStorage.setItem('campaign', JSON.stringify(campaign))
 
-          toast.success('Milestone saved!')
+          toast.success('Milestone reshaped!')
         } catch (error) {
-          console.error('Error saving milestones to localStorage:', error)
+          console.error('Milestone Save Error:', error)
+          toast.error('Failed to save milestone. Please try again.')
         }
       })
     },
@@ -216,7 +217,7 @@ export function MilestonesCard(
             campaign.settlements[settlementIndex].milestones = newOrder
             localStorage.setItem('campaign', JSON.stringify(campaign))
           } catch (error) {
-            console.error('Error saving milestones to localStorage:', error)
+            console.error('Milestone Drag Error:', error)
           }
         })
       }

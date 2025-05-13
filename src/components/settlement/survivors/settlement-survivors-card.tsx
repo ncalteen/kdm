@@ -28,6 +28,7 @@ export function SettlementSurvivorsCard(
 ) {
   const settlementId = form.watch('id')
   const survivorType = form.watch('survivorType')
+
   const [survivors, setSurvivors] = useState<Survivor[]>([])
 
   // Tracks if Arc survivors are in use for this settlement.
@@ -35,6 +36,7 @@ export function SettlementSurvivorsCard(
 
   useEffect(() => {
     const fetchedSurvivors = getSurvivors(settlementId)
+
     setSurvivors(fetchedSurvivors)
   }, [settlementId])
 
@@ -47,7 +49,7 @@ export function SettlementSurvivorsCard(
       <CardContent>
         {survivors.length === 0 ? (
           <div className="text-center text-muted-foreground py-4">
-            No survivors found for this settlement.
+            Silence echos through the darkness. No survivors are present.
           </div>
         ) : (
           <Table>

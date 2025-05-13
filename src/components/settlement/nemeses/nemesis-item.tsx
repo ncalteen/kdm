@@ -22,9 +22,7 @@ import { z } from 'zod'
 /**
  * Nemesis Item Props
  */
-interface NemesisItemProps {
-  /** Disabled Status */
-  isDisabled: boolean
+export interface NemesisItemProps {
   /** Removal Handler */
   handleRemoveNemesis: (nemesisName: string) => void
   /** Level Toggle Handler */
@@ -35,6 +33,8 @@ interface NemesisItemProps {
   ) => void
   /** ID */
   id: string
+  /** Disabled Status */
+  isDisabled: boolean
   /** Nemesis */
   nemesis: Nemesis
   /** Edit Handler */
@@ -45,6 +45,20 @@ interface NemesisItemProps {
   toggleUnlocked: (nemesisName: string, checked: boolean) => void
   /** Update Name Handler */
   updateNemesisName: (originalName: string, newName: string) => void
+}
+
+/**
+ * New Nemesis Item Props
+ */
+export interface NewNemesisItemProps {
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Index */
+  index: number
+  /** Remove Handler */
+  handleRemoveNemesis: (nemesisName: string) => void
+  /** Save Handler */
+  onSave: (name: string) => void
 }
 
 /**
@@ -66,9 +80,7 @@ export const NemesisItem = memo(
       useSortable({ id })
     const [nameValue, setNameValue] = useState(nemesis.name)
 
-    useEffect(() => {
-      setNameValue(nemesis.name)
-    }, [nemesis.name])
+    useEffect(() => setNameValue(nemesis.name), [nemesis.name])
 
     const style = {
       transform: CSS.Transform.toString(transform),
@@ -244,7 +256,7 @@ export const NemesisItem = memo(
               onClick={() => {
                 if (nameValue !== nemesis.name) {
                   updateNemesisName(nemesis.name, nameValue)
-                  toast.success('Nemesis updated!')
+                  toast.success('The horror shifts form.')
                 } else onSave(nameValue)
               }}
               title="Save nemesis">
@@ -274,12 +286,7 @@ export function NewNemesisItem({
   index,
   handleRemoveNemesis,
   onSave
-}: {
-  index: number
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  handleRemoveNemesis: (nemesisName: string) => void
-  onSave: (name: string) => void
-}) {
+}: NewNemesisItemProps) {
   const [name, setName] = useState('')
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -287,7 +294,7 @@ export function NewNemesisItem({
 
   const handleSave = () => {
     if (name.trim() !== '') onSave(name.trim())
-    else toast.warning('Cannot save a nemesis without a name')
+    else toast.warning('A nameless horror cannot be summoned.')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

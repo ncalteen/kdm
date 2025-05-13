@@ -84,7 +84,8 @@ export function CollectiveCognitionCard(
                     Collective Cognition
                   </FormLabel>
                   <p className="text-xs text-muted-foreground">
-                    The settlement&apos;s total CC is based on its victories.
+                    The settlement&apos;s total collective cognition is based on
+                    its victories.
                   </p>
                 </div>
               </FormItem>

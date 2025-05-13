@@ -19,35 +19,44 @@ import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
 
-interface ResourceTypesComboboxProps {
-  selectedTypes: ResourceType[]
-  onChange: (types: ResourceType[]) => void
+/**
+ * Resource Types Combobox Component Properties
+ */
+export interface ResourceTypesComboboxProps {
+  /** Disabled State */
   disabled?: boolean
+  /** OnChange Callback */
+  onChange: (types: ResourceType[]) => void
+  /** Selected Types */
+  selectedTypes: ResourceType[]
 }
 
 /**
  * Resource Types Combobox Component
  */
 export function ResourceTypesCombobox({
-  selectedTypes,
+  disabled,
   onChange,
-  disabled
+  selectedTypes
 }: ResourceTypesComboboxProps) {
   const [open, setOpen] = useState(false)
 
+  /**
+   * Handles the selection of a resource type.
+   *
+   * @param type Resource Type
+   */
   const handleSelect = (type: ResourceType) => {
     if (disabled) return
+
     // Toggle selection
     const newSelection = selectedTypes.includes(type)
       ? selectedTypes.filter((t) => t !== type)
       : [...selectedTypes, type]
 
     // Ensure at least one type is selected
-    if (newSelection.length === 0) {
-      onChange([ResourceType.BONE])
-    } else {
-      onChange(newSelection)
-    }
+    if (newSelection.length === 0) onChange([ResourceType.BONE])
+    else onChange(newSelection)
   }
 
   // Create type options from the ResourceType enum

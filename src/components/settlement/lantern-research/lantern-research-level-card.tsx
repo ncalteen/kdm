@@ -63,7 +63,9 @@ export function LanternResearchLevelCard(
                               JSON.stringify(campaign)
                             )
 
-                            toast.success('Lantern research level updated!')
+                            toast.success(
+                              "Your settlement's understanding deepens."
+                            )
                           } catch (error) {
                             console.error(
                               'Error saving lantern research level to localStorage:',

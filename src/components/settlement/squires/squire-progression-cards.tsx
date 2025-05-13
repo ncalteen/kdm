@@ -13,7 +13,8 @@ import { SquireCardData } from '@/lib/common'
 /**
  * Squire Progression Card Component
  *
- * Individual card for each squire's progression data.
+ * Individual card for each squire's progression data. This is static data for
+ * reference and does not change.
  */
 const SquireProgressionCard = ({
   squire

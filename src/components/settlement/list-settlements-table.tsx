@@ -29,6 +29,8 @@ import { type ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
+ * List Settlements Table Component
+ *
  * Displays a table of settlements with options to view and delete them.
  * Each settlement can be viewed in detail or deleted, which will also remove
  * all associated survivors.
@@ -43,9 +45,7 @@ export function ListSettlementsTable(): ReactElement {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   // Fetch settlements from localStorage when the component mounts.
-  useEffect(() => {
-    setSettlements(getCampaign().settlements)
-  }, [])
+  useEffect(() => setSettlements(getCampaign().settlements), [])
 
   /**
    * Navigates to the settlement details page.
@@ -103,7 +103,7 @@ export function ListSettlementsTable(): ReactElement {
               <TableCell
                 colSpan={7}
                 className="text-center text-muted-foreground py-4">
-                No settlements added yet.
+                The darkness remains unbroken. No lanterns light the way.
               </TableCell>
             </TableRow>
           )}
@@ -158,10 +158,10 @@ export function ListSettlementsTable(): ReactElement {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Delete Settlement</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete {settlement.name}?{' '}
+                        The darkness hungers for {settlement.name}.{' '}
                         <strong>
-                          This action cannot be undone. All associated survivors
-                          will also be removed.
+                          Once consumed, it cannot return. All who dwelled
+                          within will be forgotten.
                         </strong>
                       </AlertDialogDescription>
                     </AlertDialogHeader>

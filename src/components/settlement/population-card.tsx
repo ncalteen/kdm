@@ -86,9 +86,9 @@ export function PopulationCard(
 
                           toast.success('Survival limit updated!')
                         } catch (error) {
-                          console.error(
-                            'Error saving survival limit to localStorage:',
-                            error
+                          console.error('Survival Limit Update Error:', error)
+                          toast.error(
+                            'The darkness swallows you. Please try again.'
                           )
                         }
                       }}

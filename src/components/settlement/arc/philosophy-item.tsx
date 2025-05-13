@@ -12,11 +12,38 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-interface PhilosophyItemProps {
-  philosophy: string
+/**
+ * Philosophy Item Component Properties
+ */
+export interface PhilosophyItemProps {
+  /** Remove Philosophy Handler */
   handleRemovePhilosophy: (philosophy: string) => void
+  /** Update Philosophy Handler */
   handleUpdatePhilosophy: (oldPhilosophy: string, newPhilosophy: string) => void
+  /** Philosophy ID */
   id: string
+  /** Editing Status */
+  isEditing: boolean
+  /** OnCancelEdit Callback */
+  onCancelEdit: () => void
+  /** OnEdit Callback */
+  onEdit: () => void
+  /** OnSaveEdit Callback */
+  onSaveEdit: (name: string) => void
+  /** Philosophy Name */
+  philosophy: string
+}
+
+/**
+ * New Philosophy Item Component Properties
+ */
+export interface NewPhilosophyItemProps {
+  /** Existing Names */
+  existingNames: string[]
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** OnAdd Callback */
+  onAdd: () => void
 }
 
 /**
@@ -30,19 +57,13 @@ export function PhilosophyItem({
   onEdit,
   onSaveEdit,
   onCancelEdit
-}: PhilosophyItemProps & {
-  isEditing: boolean
-  onEdit: () => void
-  onSaveEdit: (name: string) => void
-  onCancelEdit: () => void
-}) {
+}: PhilosophyItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+
   const [value, setValue] = useState(philosophy)
 
-  useEffect(() => {
-    setValue(philosophy)
-  }, [philosophy])
+  useEffect(() => setValue(philosophy), [philosophy])
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -51,10 +72,10 @@ export function PhilosophyItem({
 
   const handleEditSave = () => {
     if (value.trim() === '')
-      return toast.warning('Cannot save a philosophy without a name')
+      return toast.warning('Cannot save a nameless philosophy.')
 
     onSaveEdit(value.trim())
-    toast.success('Philosophy saved')
+    toast.success('The philosophy echos throughout your settlement.')
   }
 
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -141,19 +162,17 @@ export function NewPhilosophyItem({
   form,
   onAdd,
   existingNames
-}: {
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  onAdd: () => void
-  existingNames: string[]
-}) {
+}: NewPhilosophyItemProps) {
   const [name, setName] = useState('')
 
   const handleSubmit = () => {
     if (name.trim() === '')
-      return toast.warning('Cannot save a philosophy without a name')
+      return toast.warning('Cannot save a nameless philosophy.')
 
     if (existingNames.includes(name.trim()))
-      return toast.warning('A philosophy with this name already exists')
+      return toast.warning(
+        'This philosophy already echoes throughout your settlement.'
+      )
 
     const philosophies = [...(form.watch('philosophies') || [])]
     const updatedPhilosophies = [...philosophies, name.trim()]
@@ -173,13 +192,13 @@ export function NewPhilosophyItem({
         localStorage.setItem('campaign', JSON.stringify(campaign))
       }
     } catch (error) {
-      console.error('Error saving new philosophy:', error)
+      console.error('New Philosophy Save Error:', error)
     }
 
     setName('')
     onAdd()
 
-    toast.success('New philosophy added')
+    toast.success('A new philosophy echos throughout your settlement.')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -219,7 +238,7 @@ export function NewPhilosophyItem({
         size="icon"
         className="h-8 w-8 p-0"
         onClick={onAdd}
-        title="Cancel add philosophy">
+        title="Cancel adding philosophy">
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>

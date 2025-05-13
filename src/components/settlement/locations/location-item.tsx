@@ -11,14 +11,36 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-interface LocationItemProps {
-  index: number
+/**
+ * Location Item Component Properties
+ */
+export interface LocationItemProps {
+  /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Remove Location Callback */
   handleRemoveLocation: (index: number) => void
+  /** Location ID */
   id: string
+  /** Location Index */
+  index: number
+  /** Disabled Status */
   isDisabled: boolean
-  onSave: (index: number, name: string, unlocked: boolean) => void
+  /** OnEdit Callback */
   onEdit: (index: number) => void
+  /** OnSave Callback */
+  onSave: (index: number, name: string, unlocked: boolean) => void
+}
+
+/**
+ * New Location Item Component Properties
+ */
+export interface NewLocationItemProps {
+  /** Index */
+  index: number
+  /** OnCancel Callback */
+  onCancel: () => void
+  /** OnSave Callback */
+  onSave: (name: string, unlocked: boolean) => void
 }
 
 /**
@@ -127,11 +149,7 @@ export function NewLocationItem({
   index,
   onSave,
   onCancel
-}: {
-  index: number
-  onSave: (name: string, unlocked: boolean) => void
-  onCancel: () => void
-}) {
+}: NewLocationItemProps) {
   const [name, setName] = useState('')
   const [unlocked, setUnlocked] = useState(false)
 

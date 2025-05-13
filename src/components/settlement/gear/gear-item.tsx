@@ -10,11 +10,34 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-interface GearItemProps {
-  index: number
+/**
+ * Gear Item Component Properties
+ */
+export interface GearItemProps {
+  /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Remove Gear Callback */
   handleRemoveGear: (index: number) => void
+  /** Gear ID */
   id: string
+  /** Gear Index */
+  index: number
+  /** Disabled Status */
+  isDisabled: boolean
+  /** OnEdit Callback */
+  onEdit: (index: number) => void
+  /** OnSave Callback */
+  onSave: (index: number, value: string) => void
+}
+
+/**
+ * New Gear Item Component Properties
+ */
+export interface NewGearItemProps {
+  /** OnCancel Callback */
+  onCancel: () => void
+  /** OnSave Callback */
+  onSave: (value: string) => void
 }
 
 /**
@@ -28,11 +51,7 @@ export function GearItem({
   isDisabled,
   onSave,
   onEdit
-}: GearItemProps & {
-  isDisabled: boolean
-  onSave: (index: number, value: string) => void
-  onEdit: (index: number) => void
-}) {
+}: GearItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -100,13 +119,7 @@ export function GearItem({
 /**
  * New Gear Item Component
  */
-export function NewGearItem({
-  onSave,
-  onCancel
-}: {
-  onSave: (value: string) => void
-  onCancel: () => void
-}) {
+export function NewGearItem({ onSave, onCancel }: NewGearItemProps) {
   const [value, setValue] = useState('')
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -23,6 +23,10 @@ import { z } from 'zod'
 
 /**
  * Timeline Card Component
+ *
+ * Displays the lantern years and events for a given settlement. Depending on
+ * the campaign type, it may also show a scroll icon to indicate that a story
+ * event card should be drawn when updating the settlement's timeline.
  */
 export function TimelineCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
@@ -35,7 +39,6 @@ export function TimelineCard(
     [key: string]: boolean
   }>({})
 
-  // Use refs to store input values instead of state
   const inputRefs = useRef<{
     [key: string]: HTMLInputElement | null
   }>({})
@@ -90,11 +93,8 @@ export function TimelineCard(
     (newTimeline: TimelineEvent[]) => {
       // Create a closure over the current setTimeline to avoid stale references
       const currentSetTimeline = setTimeline
-
       // Use requestAnimationFrame to ensure the state update is batched
-      requestAnimationFrame(() => {
-        currentSetTimeline(newTimeline)
-      })
+      requestAnimationFrame(() => currentSetTimeline(newTimeline))
     },
     [setTimeline]
   )
@@ -117,21 +117,19 @@ export function TimelineCard(
     ) => {
       // Create a closure over the current form to avoid stale references
       const currentForm = form
-
-      requestAnimationFrame(() => {
-        currentForm.setValue(path, value)
-      })
+      // Use requestAnimationFrame to ensure the state update is batched
+      requestAnimationFrame(() => currentForm.setValue(path, value))
     },
     [form]
   )
 
-  // Update the form value when the timeline state changes
   useEffect(() => {
+    // Update the form value when the timeline state changes
     if (formTimeline) {
       debouncedSetTimeline(formTimeline)
 
       // When timeline is first loaded or changed, all events should be in
-      // non-editing mode (e.g. badges)
+      // non-editing mode (badges)
       setEditingEvents({})
     }
   }, [formTimeline, debouncedSetTimeline])
@@ -143,6 +141,7 @@ export function TimelineCard(
     if (isSquiresCampaign && currentTimeline.length > 5) {
       // Trim timeline to 5 rows for Squires campaign
       const trimmedTimeline = currentTimeline.slice(0, 5)
+
       debouncedSetTimeline(trimmedTimeline)
       debouncedSetFormValue('timeline', trimmedTimeline)
     } else if (!isSquiresCampaign && currentTimeline.length < 40) {
@@ -155,6 +154,7 @@ export function TimelineCard(
           entries: []
         }))
       ]
+
       debouncedSetTimeline(expandedTimeline)
       debouncedSetFormValue('timeline', expandedTimeline)
     }
@@ -170,7 +170,6 @@ export function TimelineCard(
    * Adds an Event to a Year
    *
    * @param yearIndex Year Index
-   * @returns void
    */
   const addEventToYear = useCallback(
     (yearIndex: number) => {
@@ -221,10 +220,9 @@ export function TimelineCard(
         )
 
         campaign.settlements[settlementIndex].timeline = formValues.timeline
-
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving timeline to localStorage:', error)
+        console.error('Timeline Add Error:', error)
       }
     },
     [timeline, form, editingEvents]
@@ -235,7 +233,6 @@ export function TimelineCard(
    *
    * @param yearIndex Year Index
    * @param eventIndex Event Index
-   * @returns void
    */
   const removeEventFromYear = useCallback(
     (yearIndex: number, eventIndex: number) => {
@@ -276,10 +273,14 @@ export function TimelineCard(
         campaign.settlements[settlementIndex].timeline = formValues.timeline
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Event removed from timeline')
+        toast.success(
+          'The chronicle is altered - this memory fades into darkness.'
+        )
       } catch (error) {
-        console.error('Error saving timeline to localStorage:', error)
-        toast.error('Failed to remove event from timeline')
+        console.error('Timeline Remove Error:', error)
+        toast.error(
+          'The darkness resists - your changes to history are rejected. Please try again.'
+        )
       }
     },
     [timeline, form]
@@ -290,7 +291,6 @@ export function TimelineCard(
    *
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
-   * @returns void
    */
   const saveEvent = useCallback(
     (yearIndex: number, entryIndex: number) => {
@@ -302,7 +302,7 @@ export function TimelineCard(
       const currentEvent = inputElement.value
 
       if (!currentEvent || currentEvent.trim() === '')
-        return toast.warning('Cannot save an empty event')
+        return toast.warning('Cannot save an empty event!')
 
       const newEventValue = currentEvent.trim()
 
@@ -339,10 +339,14 @@ export function TimelineCard(
         campaign.settlements[settlementIndex].timeline = formValues.timeline
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Event saved to timeline!')
+        toast.success(
+          'The chronicles remember - your memory is etched in stone.'
+        )
       } catch (error) {
-        console.error('Error saving timeline to localStorage:', error)
-        toast.error('Failed to save event to timeline')
+        console.error('Timeline Save Error:', error)
+        toast.error(
+          'The darkness clouds your memory - the chronicles remain unchanged. Please try again.'
+        )
       }
     },
     [form, setEditingEvents, inputRefs]
@@ -353,7 +357,6 @@ export function TimelineCard(
    *
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
-   * @returns void
    */
   const editEvent = useCallback(
     (yearIndex: number, entryIndex: number) => {
@@ -411,7 +414,6 @@ export function TimelineCard(
    * @param e Keyboard Event
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
-   * @returns void
    */
   const handleKeyDown = useCallback(
     (
@@ -434,7 +436,6 @@ export function TimelineCard(
    * @param element Input Element
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
-   * @returns void
    */
   const setInputRef = useCallback(
     (
@@ -468,9 +469,7 @@ export function TimelineCard(
     if (currentCardRef) observer.observe(currentCardRef)
 
     return () => {
-      if (currentCardRef) {
-        observer.unobserve(currentCardRef)
-      }
+      if (currentCardRef) observer.unobserve(currentCardRef)
     }
   }, [])
 
@@ -487,6 +486,7 @@ export function TimelineCard(
       <CardContent className="pt-0 pb-2">
         {isVisible ? (
           <>
+            {/* Timeline Content */}
             <TimelineContent
               timeline={cachedTimeline}
               usesNormalNumbering={usesNormalNumbering}
@@ -500,6 +500,8 @@ export function TimelineCard(
               editEvent={editEvent}
               showStoryEventIcon={showStoryEventIcon}
             />
+
+            {/* Add Lantern Year Button */}
             {!isSquiresCampaign && (
               <Button
                 type="button"
@@ -512,6 +514,7 @@ export function TimelineCard(
                       ...timeline,
                       { completed: false, entries: [] }
                     ]
+
                     debouncedSetTimeline(updatedTimeline)
                     debouncedSetFormValue('timeline', updatedTimeline)
 
@@ -527,11 +530,13 @@ export function TimelineCard(
                         updatedTimeline
                       localStorage.setItem('campaign', JSON.stringify(campaign))
 
-                      toast.success('New lantern year added to timeline!')
+                      toast.success(
+                        'A new lantern year is added - the chronicles expand.'
+                      )
                     } catch (error) {
-                      console.error(
-                        'Error saving timeline to localStorage:',
-                        error
+                      console.error('Lantern Year Add Error:', error)
+                      toast.error(
+                        'The darkness resists - your changes to history are rejected. Please try again.'
                       )
                     }
                   })

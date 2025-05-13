@@ -60,6 +60,11 @@ export function GearCard(
 
   const addGear = () => setIsAddingNew(true)
 
+  /**
+   * Handles removing gear from the list
+   *
+   * @param index Gear Index
+   */
   const handleRemoveGear = (index: number) => {
     const currentGear = [...gear]
     currentGear.splice(index, 1)
@@ -89,15 +94,21 @@ export function GearCard(
       campaign.settlements[settlementIndex].gear = currentGear
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
-      toast.success('Gear item removed!')
+      toast.success('The gear has been archived.')
     } catch (error) {
-      console.error('Error saving gear to localStorage:', error)
+      console.error('Gear Remove Error:', error)
+      toast.error('Failed to archive gear. Please try again.')
     }
   }
 
+  /**
+   * Handles saving a new gear item.
+   *
+   * @param value Gear Item
+   */
   const saveGear = (value: string) => {
     if (!value || value.trim() === '')
-      return toast.warning('Cannot save a gear item without a name')
+      return toast.warning('Cannot store nameless equipment.')
 
     const newGear = [...gear, value]
 
@@ -115,16 +126,21 @@ export function GearCard(
 
       campaign.settlements[settlementIndex].gear = newGear
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Gear saved!')
+      toast.success('Gear saved in the settlement storage.')
     } catch (error) {
-      console.error('Error saving gear to localStorage:', error)
+      console.error('Gear Save Error:', error)
+      toast.error('Failed to save gear. Please try again.')
     }
   }
 
   const editGear = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
+  /**
+   * Handles the end of a drag event.
+   *
+   * @param event Event
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -161,7 +177,7 @@ export function GearCard(
         campaign.settlements[settlementIndex].gear = newOrder
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving gear to localStorage:', error)
+        console.error('Gear Drag Error:', error)
       }
     }
   }

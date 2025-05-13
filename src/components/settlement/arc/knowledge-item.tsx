@@ -4,6 +4,7 @@ import { SelectPhilosophy } from '@/components/menu/select-philosophy'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Knowledge } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
@@ -14,15 +15,45 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-interface KnowledgeItemProps {
+/**
+ * Knowledge Item Component Properties
+ */
+export interface KnowledgeItemProps {
+  /** Knowledge */
   knowledge: { name: string; philosophy?: string }
+  /** Remove Knowledge Handler */
   handleRemoveKnowledge: (knowledgeName: string) => void
+  /** Update Knowledge Handler */
   handleUpdateKnowledge: (
     oldKnowledgeName: string,
     newValues: { name: string; philosophy?: string }
   ) => void
-  philosophies: string[]
+  /** Knowledge ID */
   id: string
+  /** Is Editing */
+  isEditing: boolean
+  /** Philosophies */
+  philosophies: string[]
+  /** OnCancelEdit Callback */
+  onCancelEdit: () => void
+  /** OnEdit Callback */
+  onEdit: () => void
+  /** OnSaveEdit Callback */
+  onSaveEdit: (name: string, philosophy?: string) => void
+}
+
+/**
+ * New Knowledge Item Component Properties
+ */
+export interface NewKnowledgeItemProps {
+  /** Existing Names */
+  existingNames: string[]
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** OnAdd Callback */
+  onAdd: () => void
+  /** Philosophies */
+  philosophies: string[]
 }
 
 /**
@@ -38,14 +69,10 @@ export function KnowledgeItem({
   onEdit,
   onSaveEdit,
   onCancelEdit
-}: KnowledgeItemProps & {
-  isEditing: boolean
-  onEdit: () => void
-  onSaveEdit: (name: string, philosophy?: string) => void
-  onCancelEdit: () => void
-}) {
+}: KnowledgeItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+
   const [value, setValue] = useState(knowledge.name)
   const [philosophyValue, setPhilosophyValue] = useState<string | undefined>(
     knowledge.philosophy
@@ -63,10 +90,10 @@ export function KnowledgeItem({
 
   const handleEditSave = () => {
     if (value.trim() === '')
-      return toast.warning('Cannot save a knowledge without a name')
+      return toast.warning('Knowledge cannot be nameless.')
 
     onSaveEdit(value.trim(), philosophyValue)
-    toast.success('Knowledge saved')
+    toast.success('Knowledge reshaped by your settlement.')
   }
 
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -177,21 +204,21 @@ export function NewKnowledgeItem({
   onAdd,
   philosophies,
   existingNames
-}: {
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  onAdd: () => void
-  philosophies: string[]
-  existingNames: string[]
-}) {
+}: NewKnowledgeItemProps) {
   const [name, setName] = useState('')
   const [philosophy, setPhilosophy] = useState<string>('')
 
+  /**
+   * Handles creation of a new knowledge item
+   */
   const handleSubmit = () => {
     if (name.trim() === '')
-      return toast.warning('Cannot save a knowledge without a name')
+      return toast.warning('Knowledge cannot be nameless.')
 
     if (existingNames.includes(name.trim()))
-      return toast.warning('A knowledge with this name already exists')
+      return toast.warning(
+        'This knowledge already echos throughout your settlement.'
+      )
 
     const knowledges = [...(form.watch('knowledges') || [])]
     const newKnowledge = {
@@ -211,18 +238,19 @@ export function NewKnowledgeItem({
       )
 
       if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+        campaign.settlements[settlementIndex].knowledges =
+          updatedKnowledges as Knowledge[]
         localStorage.setItem('campaign', JSON.stringify(campaign))
       }
     } catch (error) {
-      console.error('Error saving new knowledge:', error)
+      console.error('New Knowledge Save Error:', error)
     }
 
     setName('')
     setPhilosophy('')
     onAdd()
 
-    toast.success('New knowledge added')
+    toast.success('New knowledge crystallizes in the darkness.')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

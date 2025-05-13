@@ -5,52 +5,82 @@ import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { startTransition, useEffect, useState } from 'react'
+import { ReactElement, startTransition, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
+ * Monster Volume Item Component Properties
+ */
+export interface MonsterVolumeItemProps {
+  /** Remove Volume Callback */
+  handleRemoveVolume: (volume: string) => void
+  /** Volume ID */
+  id: string
+  /** Editing Status */
+  isEditing: boolean
+  /** OnCancelEdit Callback */
+  onCancelEdit: () => void
+  /** OnEdit Callback */
+  onEdit: () => void
+  /** OnSaveEdit Callback */
+  onSaveEdit: (name: string) => void
+  /** Volume Name */
+  volume: string
+}
+
+/**
+ * New Monster Volume Item Component Properties
+ */
+export interface NewMonsterVolumeItemProps {
+  /** Existing Names */
+  existingNames: string[]
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** OnAdd Callback */
+  onAdd: () => void
+}
+
+/**
  * Monster Volume Item Component
  */
 export function MonsterVolumeItem({
-  volume,
   handleRemoveVolume,
   id,
   isEditing,
+  onCancelEdit,
   onEdit,
   onSaveEdit,
-  onCancelEdit
-}: {
-  volume: string
-  handleRemoveVolume: (volume: string) => void
-  id: string
-  isEditing: boolean
-  onEdit: () => void
-  onSaveEdit: (name: string) => void
-  onCancelEdit: () => void
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
+  volume
+}: MonsterVolumeItemProps): ReactElement {
   const [value, setValue] = useState(volume)
 
-  useEffect(() => {
-    setValue(volume)
-  }, [volume])
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition
   }
 
+  useEffect(() => setValue(volume), [volume])
+
+  /**
+   * Handles the save action for the edited volume.
+   */
   const handleEditSave = () => {
     if (value.trim() === '')
-      return toast.warning('Cannot save a monster volume without a name')
+      return toast.warning('Cannot inscribe an unnamed monster volume.')
 
     onSaveEdit(value.trim())
-    toast.success('Monster volume saved')
+    toast.success('Monster volume preserved in blood.')
   }
 
+  /**
+   * Handles the key down event for the input field. If the Enter key is
+   * pressed, it saves the edited volume.
+   */
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -69,6 +99,8 @@ export function MonsterVolumeItem({
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
+
+      {/* Volume Name */}
       {isEditing ? (
         <Input
           value={value}
@@ -80,6 +112,8 @@ export function MonsterVolumeItem({
       ) : (
         <div className="flex-1 text-sm text-left">{volume}</div>
       )}
+
+      {/* Save/Edit/Delete Buttons */}
       {isEditing ? (
         <>
           <Button
@@ -91,6 +125,7 @@ export function MonsterVolumeItem({
             title="Save volume">
             <CheckIcon className="h-4 w-4" />
           </Button>
+
           <Button
             type="button"
             variant="ghost"
@@ -112,6 +147,7 @@ export function MonsterVolumeItem({
             title="Edit volume">
             <PencilIcon className="h-4 w-4" />
           </Button>
+
           <Button
             type="button"
             variant="ghost"
@@ -133,19 +169,15 @@ export function NewMonsterVolumeItem({
   form,
   onAdd,
   existingNames
-}: {
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  onAdd: () => void
-  existingNames: string[]
-}) {
+}: NewMonsterVolumeItemProps) {
   const [name, setName] = useState('')
 
   const handleSubmit = () => {
     if (name.trim() === '')
-      return toast.warning('Cannot save a monster volume without a name')
+      return toast.warning('Cannot inscribe an unnamed monster volume.')
 
     if (existingNames.includes(name.trim()))
-      return toast.warning('A monster volume with this name already exists')
+      return toast.warning('This monster volume has already been inscribed.')
 
     startTransition(() => {
       const monsterVolumes = [...(form.watch('monsterVolumes') || [])]
@@ -164,9 +196,10 @@ export function NewMonsterVolumeItem({
         campaign.settlements[settlementIndex].monsterVolumes = updatedVolumes
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('New monster volume added!')
+        toast.success('New monster volume inscribed.')
       } catch (error) {
-        console.error('Error saving monster volumes to localStorage:', error)
+        console.error('New Monster Volume Save Error:', error)
+        toast.error('Failed to save new monster volume. Please try again.')
       }
 
       setName('')
@@ -200,7 +233,7 @@ export function NewMonsterVolumeItem({
         size="icon"
         className="h-8 w-8 p-0"
         onClick={handleSubmit}
-        title="Save volume">
+        title="Save monster volume">
         <CheckIcon className="h-4 w-4" />
       </Button>
       <Button

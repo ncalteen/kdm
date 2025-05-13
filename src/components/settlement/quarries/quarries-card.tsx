@@ -41,7 +41,12 @@ export function QuarriesCard(
 ) {
   const quarries = useMemo(() => form.watch('quarries') || [], [form])
 
+  const [isAddingNew, setIsAddingNew] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: string]: boolean
+  }>({})
+
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -62,12 +67,6 @@ export function QuarriesCard(
       if (currentCardRef) observer.unobserve(currentCardRef)
     }
   }, [])
-
-  const [disabledInputs, setDisabledInputs] = useState<{
-    [key: string]: boolean
-  }>({})
-
-  const [isAddingNew, setIsAddingNew] = useState(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -90,6 +89,11 @@ export function QuarriesCard(
 
   const addQuarry = useCallback(() => setIsAddingNew(true), [])
 
+  /**
+   * Handles the removal of a quarry.
+   *
+   * @param quarryName Quarry Name
+   */
   const handleRemoveQuarry = useCallback(
     (quarryName: string) => {
       if (quarryName.startsWith('new-quarry-')) setIsAddingNew(false)
@@ -116,15 +120,22 @@ export function QuarriesCard(
             campaign.settlements[settlementIndex].quarries = updatedQuarries
             localStorage.setItem('campaign', JSON.stringify(campaign))
 
-            toast.success('Quarry removed!')
+            toast.success('The beast has been banished to the void.')
           } catch (error) {
-            console.error('Error saving quarries to localStorage:', error)
+            console.error('Quarry Remove Error:', error)
+            toast.error('The darkness refuses to let go. Please try again.')
           }
         })
     },
     [quarries, form]
   )
 
+  /**
+   * Updates the quarry node level.
+   *
+   * @param quarryName Quarry Name
+   * @param node Node Level
+   */
   const updateQuarryNode = useCallback(
     (quarryName: string, node: string) =>
       startTransition(() => {
@@ -147,12 +158,18 @@ export function QuarriesCard(
           campaign.settlements[settlementIndex].quarries = updatedQuarries
           localStorage.setItem('campaign', JSON.stringify(campaign))
         } catch (error) {
-          console.error('Error saving quarries to localStorage:', error)
+          console.error('Quarry Node Update Error:', error)
         }
       }),
     [quarries, form]
   )
 
+  /**
+   * Updates the quarry name.
+   *
+   * @param originalName Original Quarry Name
+   * @param newName New Quarry Name
+   */
   const updateQuarryName = useCallback(
     (originalName: string, newName: string) =>
       startTransition(() => {
@@ -180,12 +197,17 @@ export function QuarriesCard(
           campaign.settlements[settlementIndex].quarries = updatedQuarries
           localStorage.setItem('campaign', JSON.stringify(campaign))
         } catch (error) {
-          console.error('Error saving quarries to localStorage:', error)
+          console.error('Quarry Update Name Error:', error)
         }
       }),
     [quarries, form]
   )
 
+  /**
+   * Saves the quarry to localStorage.
+   *
+   * @param quarryName The name of the quarry to save.
+   */
   const saveQuarry = useCallback(
     (quarryName: string) => {
       if (!quarryName || quarryName.trim() === '')
@@ -203,21 +225,32 @@ export function QuarriesCard(
 
         campaign.settlements[settlementIndex].quarries = formValues.quarries
         localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Quarry saved!')
+        toast.success('The monster prowls the darkness. Hunt or be hunted.')
       } catch (error) {
-        console.error('Error saving quarries to localStorage:', error)
+        console.error('Quarry Save Error:', error)
+        toast.error('The quarry refuses to be bound. Please try again.')
       }
     },
     [form]
   )
 
+  /**
+   * Edits the quarry.
+   *
+   * @param quarryName Quarry Name
+   */
   const editQuarry = useCallback(
     (quarryName: string) =>
       setDisabledInputs((prev) => ({ ...prev, [quarryName]: false })),
     []
   )
 
+  /**
+   * Toggles the quarry unlocked state.
+   *
+   * @param quarryName Quarry Name
+   * @param unlocked Unlocked State
+   */
   const toggleQuarryUnlocked = useCallback(
     (quarryName: string, unlocked: boolean) =>
       startTransition(() => {
@@ -237,15 +270,24 @@ export function QuarriesCard(
 
           campaign.settlements[settlementIndex].quarries = updatedQuarries
           localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success(`${quarryName} ${unlocked ? 'unlocked!' : 'locked!'}`)
+          toast.success(
+            `${quarryName} ${unlocked ? 'emerges from the mist, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
+          )
         } catch (error) {
-          console.error('Error saving quarries to localStorage:', error)
+          console.error('Quarry Lock/Unlock Error:', error)
+          toast.error(
+            'The quarry resists your attempt to alter its nature. Please try again.'
+          )
         }
       }),
     [quarries, form]
   )
 
+  /**
+   * Handles the drag end event.
+   *
+   * @param event Drag End Event
+   */
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event
@@ -270,7 +312,7 @@ export function QuarriesCard(
             campaign.settlements[settlementIndex].quarries = newOrder
             localStorage.setItem('campaign', JSON.stringify(campaign))
           } catch (error) {
-            console.error('Error saving quarries to localStorage:', error)
+            console.error('Quarry Drag Error:', error)
           }
         })
     },

@@ -41,12 +41,27 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
+ * New Principle Item Properties
+ */
+export interface NewPrincipleItemProps {
+  /** Index */
+  index: number
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (name: string, option1Name: string, option2Name: string) => void
+}
+
+/**
  * Principles Card Component
+ *
+ * @param form Form
  */
 export function PrinciplesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const principles = useMemo(() => form.watch('principles') || [], [form])
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -78,6 +93,11 @@ export function PrinciplesCard(
 
   const handleAddPrinciple = () => setIsAddingNew(true)
 
+  /**
+   * Handles the removal of a principle.
+   *
+   * @param index Principle Index
+   */
   const handleRemovePrinciple = (index: number) => {
     const updated = [...principles]
 
@@ -111,10 +131,12 @@ export function PrinciplesCard(
 
       campaign.settlements[settlementIndex].principles = updated
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Principle removed!')
+      toast.success('The settlement has cleansed a belief from its memory.')
     } catch (error) {
-      console.error('Error saving principles to localStorage:', error)
+      console.error('Principle Remove Error:', error)
+      toast.error(
+        'The conviction clings to the settlement, refusing to be forgotten. Please try again.'
+      )
     }
   }
 
@@ -123,6 +145,14 @@ export function PrinciplesCard(
     setIsEditingIndex(index)
   }
 
+  /**
+   * Handles the saving of a principle.
+   *
+   * @param index Principle Index
+   * @param name Principle Name
+   * @param option1Name Option 1 Name
+   * @param option2Name Option 2 Name
+   */
   const handleSave = (
     index: number,
     name: string,
@@ -130,7 +160,9 @@ export function PrinciplesCard(
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.warning('Cannot save a principle without a name')
+      return toast.warning(
+        'A nameless conviction cannot guide your settlement.'
+      )
 
     const updated = [...principles]
 
@@ -151,45 +183,29 @@ export function PrinciplesCard(
 
       campaign.settlements[settlementIndex].principles = updated
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Principle saved!')
+      toast.success("The settlement's conviction has been etched in stone.")
     } catch (error) {
-      console.error('Error saving principles to localStorage:', error)
+      console.error('Principle Save Error:', error)
+      toast.error('The darkness rejects your principle. Please try again.')
     }
   }
 
-  // TODO: Implement this in the settlement editor
-  // const handleSelectOption = (index: number, option: 1 | 2) => {
-  //   if (disabledInputs[index]) return
-
-  //   const updatedPrinciples = [...principles]
-
-  //   if (option === 1) {
-  //     updatedPrinciples[index].option1Selected =
-  //       !updatedPrinciples[index].option1Selected
-
-  //     if (updatedPrinciples[index].option1Selected)
-  //       updatedPrinciples[index].option2Selected = false
-  //   } else {
-  //     updatedPrinciples[index].option2Selected =
-  //       !updatedPrinciples[index].option2Selected
-
-  //     if (updatedPrinciples[index].option2Selected)
-  //       updatedPrinciples[index].option1Selected = false
-  //   }
-
-  //   form.setValue('principles', updatedPrinciples)
-  // }
-
   const handleCancelNew = useCallback(() => setIsAddingNew(false), [])
 
+  /**
+   * Handles the saving of a new principle.
+   *
+   * @param name Principle Name
+   * @param option1Name Option 1 Name
+   * @param option2Name Option 2 Name
+   */
   const handleSaveNew = (
     name: string,
     option1Name: string,
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.warning('Cannot save a principle without a name')
+      return toast.warning('A nameless principle cannot guide your settlement.')
 
     const updated = [
       ...principles,
@@ -217,13 +233,18 @@ export function PrinciplesCard(
 
       campaign.settlements[settlementIndex].principles = updated
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Principle added!')
+      toast.success('A new guiding principle emerges from the darkness.')
     } catch (error) {
-      console.error('Error saving principles to localStorage:', error)
+      console.error('New Principle Save Error:', error)
+      toast.error('The darkness rejects you. Please try again.')
     }
   }
 
+  /**
+   * Handles the drag end event.
+   *
+   * @param event Event
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -245,7 +266,7 @@ export function PrinciplesCard(
         campaign.settlements[settlementIndex].principles = newOrder
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving principles to localStorage:', error)
+        console.error('Principle Drag Error:', error)
       }
     }
   }
@@ -316,15 +337,12 @@ export function PrinciplesCard(
   )
 }
 
-function NewPrincipleItem({
-  index,
-  onSave,
-  onCancel
-}: {
-  index: number
-  onSave: (name: string, option1Name: string, option2Name: string) => void
-  onCancel: () => void
-}) {
+/**
+ * New Principle Item Component
+ *
+ * @param props New Principle Item Props
+ */
+function NewPrincipleItem({ index, onSave, onCancel }: NewPrincipleItemProps) {
   const [name, setName] = useState('')
   const [option1, setOption1] = useState('')
   const [option2, setOption2] = useState('')
@@ -332,12 +350,14 @@ function NewPrincipleItem({
   const handleSave = () => {
     onSave(name.trim(), option1.trim(), option2.trim())
   }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       handleSave()
     }
   }
+
   return (
     <div className="flex flex-col gap-2 border rounded-md p-3 bg-muted/40">
       <div className="flex items-center gap-2">

@@ -45,9 +45,11 @@ export function PatternsCard(
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
+
       patterns.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
+
       return next
     })
   }, [patterns])
@@ -61,6 +63,11 @@ export function PatternsCard(
 
   const addPattern = () => setIsAddingNew(true)
 
+  /**
+   * Handles the removal of a pattern.
+   *
+   * @param index Pattern Index
+   */
   const handleRemovePattern = (index: number) => {
     const currentPatterns = [...patterns]
 
@@ -89,16 +96,21 @@ export function PatternsCard(
 
       campaign.settlements[settlementIndex].patterns = currentPatterns
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Pattern removed!')
+      toast.success('The vision has been banished from memory.')
     } catch (error) {
-      console.error('Error saving patterns to localStorage:', error)
+      console.error('Pattern Remove Error:', error)
+      toast.error('The vision resists being forgotten. Please try again.')
     }
   }
 
+  /**
+   * Handles the saving of a new pattern.
+   *
+   * @param value Pattern Value
+   */
   const savePattern = (value: string) => {
     if (!value || value.trim() === '')
-      return toast.warning('Cannot save a pattern without a name')
+      return toast.warning('A nameless pattern cannot be preserved.')
 
     const newPatterns = [...patterns, value]
 
@@ -116,16 +128,23 @@ export function PatternsCard(
 
       campaign.settlements[settlementIndex].patterns = newPatterns
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Pattern saved!')
+      toast.success('The darkness has granted a new insight.')
     } catch (error) {
-      console.error('Error saving patterns to localStorage:', error)
+      console.error('Pattern Save Error:', error)
+      toast.error(
+        'The vision fades before it can be captured. Please try again.'
+      )
     }
   }
 
   const editPattern = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
+  /**
+   * Handles the end of a drag event.
+   *
+   * @param event Event
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -161,7 +180,7 @@ export function PatternsCard(
         campaign.settlements[settlementIndex].patterns = newOrder
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving patterns to localStorage:', error)
+        console.error('Pattern Drag Error:', error)
       }
     }
   }
@@ -213,12 +232,13 @@ export function PatternsCard(
                           'campaign',
                           JSON.stringify(campaign)
                         )
-
-                        toast.success('Pattern saved!')
+                        toast.success(
+                          'The pattern has been etched into memory.'
+                        )
                       } catch (error) {
-                        console.error(
-                          'Error saving patterns to localStorage:',
-                          error
+                        console.error('New Pattern Save Error:', error)
+                        toast.error(
+                          'Your insight slips away into the darkness. Please try again.'
                         )
                       }
                     }}

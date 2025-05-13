@@ -31,13 +31,22 @@ export function SquireSuspicionsCard(
   // Calculate total suspicion level
   const totalSuspicion = suspicions.reduce((total, suspicion) => {
     let suspicionLevel = 0
+
     if (suspicion.level1) suspicionLevel += 1
     if (suspicion.level2) suspicionLevel += 1
     if (suspicion.level3) suspicionLevel += 1
     if (suspicion.level4) suspicionLevel += 1
+
     return total + suspicionLevel
   }, 0)
 
+  /**
+   * Handles the change of suspicion levels for a squire.
+   *
+   * @param squireName Squire Name
+   * @param level Suspicion Level
+   * @param checked Checked State
+   */
   const handleSuspicionChange = (
     squireName: string,
     level: number,
@@ -86,11 +95,13 @@ export function SquireSuspicionsCard(
       if (settlementIndex !== -1) {
         campaign.settlements[settlementIndex].suspicions = updatedSuspicions
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Suspicion updated!')
+        toast.success(`${squireName}'s doubt grows deeper.`)
       }
     } catch (error) {
-      console.error('Error saving suspicion:', error)
-      toast.error('Failed to update suspicion')
+      console.error('Suspicion Save Error:', error)
+      toast.error(
+        `${squireName}'s mistrust refuses to take form. Please try again.`
+      )
     }
   }
 
@@ -125,7 +136,7 @@ export function SquireSuspicionsCard(
                   />
                 </FormControl>
                 <FormLabel className="text-center text-xs">
-                  Total Suspicion
+                  Suspicion Level
                 </FormLabel>
               </div>
             </FormItem>

@@ -72,11 +72,13 @@ export function LocationsCard(
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
+
         Object.keys(prev).forEach((k) => {
           const num = parseInt(k)
           if (num < index) next[num] = prev[num]
           else if (num > index) next[num - 1] = prev[num]
         })
+
         return next
       })
 
@@ -91,16 +93,19 @@ export function LocationsCard(
         campaign.settlements[settlementIndex].locations = currentLocations
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Location removed!')
+        toast.success('Location crumbles into the void.')
       } catch (error) {
-        console.error('Error saving locations to localStorage:', error)
+        console.error('Location Remove Error:', error)
+        toast.error(
+          'The shadows devour your words - your stories are lost. Please try again.'
+        )
       }
     })
   }
 
   const saveLocation = (name: string, unlocked: boolean) => {
     if (!name || name.trim() === '')
-      return toast.warning('Cannot save a location without a name')
+      return toast.warning('Cannot save a nameless location.')
 
     startTransition(() => {
       const updated = [...locations, { name, unlocked }]
@@ -119,9 +124,10 @@ export function LocationsCard(
         campaign.settlements[settlementIndex].locations = updated
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Location added!')
+        toast.success('Location added to the settlement.')
       } catch (error) {
-        console.error('Error saving locations to localStorage:', error)
+        console.error('New Location Save Error:', error)
+        toast.error('Failed to save location. Please try again.')
       }
     })
   }
@@ -132,7 +138,7 @@ export function LocationsCard(
     unlocked: boolean
   ) => {
     if (!name || name.trim() === '')
-      return toast.warning('Cannot save a location without a name')
+      return toast.warning('Cannot save a nameless location.')
 
     startTransition(() => {
       form.setValue(`locations.${index}.name`, name)
@@ -151,16 +157,17 @@ export function LocationsCard(
           formValues.locations || []
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Location saved!')
+        toast.success('Location altered by dark forces!')
       } catch (error) {
-        console.error('Error saving locations to localStorage:', error)
+        console.error('Location Save Error:', error)
+        toast.error('Failed to save location. Please try again.')
       }
     })
   }
 
   const editLocation = (index: number) => {
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-    toast.info('Editing location')
+    toast.info('Reshaping domain through darkness.')
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -196,7 +203,7 @@ export function LocationsCard(
         campaign.settlements[settlementIndex].locations = newOrder
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving locations to localStorage:', error)
+        console.error('Location Drag Error:', error)
       }
     }
   }

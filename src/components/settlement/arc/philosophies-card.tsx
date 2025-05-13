@@ -48,6 +48,11 @@ export function PhilosophiesCard(
     })
   )
 
+  /**
+   * Handles the removal of a philosophy.
+   *
+   * @param philosophy Philosophy
+   */
   const handleRemovePhilosophy = (philosophy: string) => {
     const updatedPhilosophies = philosophies.filter((p) => p !== philosophy)
 
@@ -64,26 +69,35 @@ export function PhilosophiesCard(
       if (settlementIndex !== -1) {
         campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Philosophy removed!')
+        toast.success('Thoughts fade into the void.')
       }
     } catch (error) {
-      console.error('Error removing philosophy:', error)
+      console.error('Philosophy Remove Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
+  /**
+   * Handles the update of a philosophy.
+   *
+   * @param oldPhilosophy Old Philosophy
+   * @param newPhilosophy New Philosophy
+   */
   const handleUpdatePhilosophy = (
     oldPhilosophy: string,
     newPhilosophy: string
   ) => {
     if (newPhilosophy.trim() === '')
-      return toast.warning('Cannot save a philosophy without a name')
+      return toast.warning('Cannot save nameless philosophies.')
 
     if (
       philosophies.some(
         (p) => p === newPhilosophy.trim() && p !== oldPhilosophy
       )
     )
-      return toast.warning('A philosophy with this name already exists')
+      return toast.warning(
+        'This philosophy already echoes throughout your settlement.'
+      )
 
     const updatedPhilosophies = philosophies.map((p) => {
       return p === oldPhilosophy ? newPhilosophy.trim() : p
@@ -103,10 +117,11 @@ export function PhilosophiesCard(
       if (settlementIndex !== -1) {
         campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Philosophy saved!')
+        toast.success('Philosophy etched into memory.')
       }
     } catch (error) {
-      console.error('Error updating philosophy:', error)
+      console.error('Philosophy Update Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
@@ -131,6 +146,7 @@ export function PhilosophiesCard(
                   const oldIndex = philosophies.indexOf(active.id as string)
                   const newIndex = philosophies.indexOf(over.id as string)
                   const newOrder = arrayMove(philosophies, oldIndex, newIndex)
+
                   form.setValue('philosophies', newOrder)
 
                   // Save to localStorage
@@ -147,7 +163,7 @@ export function PhilosophiesCard(
                       localStorage.setItem('campaign', JSON.stringify(campaign))
                     }
                   } catch (error) {
-                    console.error('Error reordering philosophies:', error)
+                    console.error('Philosophy Drag Error:', error)
                   }
                 }
               }}>

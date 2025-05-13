@@ -14,12 +14,23 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-interface ResourceItemProps {
-  index: number
+/**
+ * Resource Item Component Properties
+ */
+export interface ResourceItemProps {
+  /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Handle Remove Resource  */
   handleRemoveResource: (index: number) => void
+  /** Resource Item ID */
   id: string
+  /** Resource Item Index */
+  index: number
+  /** Is Disabled */
   isDisabled: boolean
+  /** OnEdit Callback */
+  onEdit: (index: number) => void
+  /** OnSave Callback */
   onSave: (
     index: number,
     name: string,
@@ -27,21 +38,46 @@ interface ResourceItemProps {
     types: ResourceType[],
     amount: number
   ) => void
-  onEdit: (index: number) => void
+}
+
+/**
+ * New Resource Item Component Properties
+ */
+export interface NewResourceItemProps {
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (
+    name: string,
+    category: ResourceCategory,
+    types: ResourceType[],
+    amount: number
+  ) => void
 }
 
 /**
  * Resource Item Component
  */
 export function ResourceItem({
-  index,
   form,
   handleRemoveResource,
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
+  onEdit,
+  onSave
 }: ResourceItemProps) {
+  const resource = form.watch(`resources.${index}`)
+
+  const [nameValue, setNameValue] = useState(resource?.name || '')
+  const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
+    resource?.category || ResourceCategory.BASIC
+  )
+  const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
+    resource?.types || [ResourceType.BONE]
+  )
+  const [amountValue, setAmountValue] = useState(resource?.amount || 0)
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -50,20 +86,12 @@ export function ResourceItem({
     transition
   }
 
-  const resource = form.watch(`resources.${index}`)
-
-  const [nameValue, setNameValue] = useState(resource?.name || '')
-
-  const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
-    resource?.category || ResourceCategory.BASIC
-  )
-
-  const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
-    resource?.types || [ResourceType.BONE]
-  )
-
-  const [amountValue, setAmountValue] = useState(resource?.amount || 0)
-
+  /**
+   * Handles the key down event for the input fields. If the Enter key is
+   * pressed, it saves the resource.
+   *
+   * @param e Event
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -181,30 +209,24 @@ export function ResourceItem({
 /**
  * New Resource Item Component
  */
-export function NewResourceItem({
-  onSave,
-  onCancel
-}: {
-  onSave: (
-    name: string,
-    category: ResourceCategory,
-    types: ResourceType[],
-    amount: number
-  ) => void
-  onCancel: () => void
-}) {
+export function NewResourceItem({ onSave, onCancel }: NewResourceItemProps) {
   const [name, setName] = useState('')
   const [category, setCategory] = useState(ResourceCategory.BASIC)
   const [types, setTypes] = useState<ResourceType[]>([ResourceType.BONE])
   const [amount, setAmount] = useState(0)
 
+  /**
+   * Handles the key down event for the input fields. If the Enter key is
+   * pressed, it saves the resource. If the Escape key is pressed, it cancels
+   * the action.
+   *
+   * @param e Event
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       onSave(name, category, types, amount)
-    } else if (e.key === 'Escape') {
-      onCancel()
-    }
+    } else if (e.key === 'Escape') onCancel()
   }
 
   return (

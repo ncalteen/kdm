@@ -38,6 +38,18 @@ export interface RewardItemProps {
 }
 
 /**
+ * New Collective Cognition Reward Item Properties
+ */
+export interface NewRewardItemProps {
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** On Add */
+  onAdd: () => void
+  /** On Cancel */
+  onCancel: () => void
+}
+
+/**
  * Collective Cognition Reward Item
  */
 export function RewardItem({
@@ -67,10 +79,11 @@ export function RewardItem({
   }, [reward.name, reward.cc])
 
   const handleEditSave = () => {
-    if (editName.trim() === '') return toast.warning('Required: Reward Name')
+    if (editName.trim() === '')
+      return toast.warning('A nameless gift cannot be manifested.')
 
     onSaveEdit(editName.trim(), editCC)
-    toast.success('Reward Saved')
+    toast.success('The settlement eagerly awaits this reward.')
   }
 
   const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -207,25 +220,18 @@ export function RewardItem({
  * @param opts Options
  * @returns New Collective Cognition Reward Item Component
  */
-export function NewRewardItem({
-  form,
-  onAdd,
-  onCancel
-}: {
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  onAdd: () => void
-  onCancel: () => void
-}) {
+export function NewRewardItem({ form, onAdd, onCancel }: NewRewardItemProps) {
   const [name, setName] = useState('')
   const [cc, setCc] = useState(1)
 
   const handleSubmit = () => {
-    if (name.trim() === '') return toast.warning('Required: Reward Name')
+    if (name.trim() === '')
+      return toast.warning('A nameless gift cannot be manifested.')
 
     const rewards = [...(form.watch('ccRewards') || [])]
 
     if (rewards.some((r) => r.name === name.trim()))
-      return toast.warning('Conflict: Reward Name Already Exists')
+      return toast.warning('This dark gift already exists.')
 
     const newReward = {
       name: name.trim(),
@@ -247,10 +253,11 @@ export function NewRewardItem({
       if (settlementIndex !== -1) {
         campaign.settlements[settlementIndex].ccRewards = updatedRewards
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('New reward added')
+        toast.success('A new gift manifests from the darkness.')
       }
     } catch (error) {
-      console.error('Error saving new reward:', error)
+      console.error('New Reward Submit Error:', error)
+      toast.error('Failed to save the new reward. Please try again.')
     }
 
     // Reset form

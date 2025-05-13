@@ -21,12 +21,14 @@ export default function Page() {
       <Card className="max-w-[1200px] mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl text-center font-bold">
-            Settlement Tracker
+            Settlements
           </CardTitle>
         </CardHeader>
         <CardContent>
           <ListSettlementsTable />
         </CardContent>
+
+        {/* Upload/Download Buttons */}
         <CardFooter className="flex justify-between">
           <UploadCampaignButton />
           <DownloadCampaignButton />

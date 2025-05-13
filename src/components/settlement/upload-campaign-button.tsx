@@ -19,6 +19,15 @@ import { UploadIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+/**
+ * Upload Campaign Button Component
+ *
+ * This component allows the user to upload a JSON file containing campaign
+ * data. It is validated against a schema, and if valid, the data replaces the
+ * existing campaign data.
+ *
+ * @returns Upload Campaign Button
+ */
 export function UploadCampaignButton() {
   const [isUploading, setIsUploading] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)

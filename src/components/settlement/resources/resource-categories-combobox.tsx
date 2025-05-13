@@ -19,22 +19,33 @@ import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
 
+/**
+ * Resource Categories Combobox Component Properties
+ */
 interface ResourceCategoriesComboboxProps {
-  selectedCategory: ResourceCategory
-  onChange: (category: ResourceCategory) => void
+  /** Disabled State */
   disabled?: boolean
+  /** OnChange Callback */
+  onChange: (category: ResourceCategory) => void
+  /** Selected Category */
+  selectedCategory: ResourceCategory
 }
 
 /**
  * Resource Category Combobox Component
  */
 export function ResourceCategoriesCombobox({
-  selectedCategory,
+  disabled,
   onChange,
-  disabled
+  selectedCategory
 }: ResourceCategoriesComboboxProps) {
   const [open, setOpen] = useState(false)
 
+  /**
+   * Handles the selection of a category.
+   *
+   * @param category Category
+   */
   const handleSelect = (category: ResourceCategory) => {
     if (!disabled) {
       onChange(category)

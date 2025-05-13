@@ -32,9 +32,11 @@ import { z } from 'zod'
 export function MonsterVolumesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
+  const monsterVolumes = form.watch('monsterVolumes') || []
+
   const [showNewVolumeForm, setShowNewVolumeForm] = useState(false)
   const [editingVolume, setEditingVolume] = useState<string | null>(null)
-  const monsterVolumes = form.watch('monsterVolumes') || []
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -57,20 +59,22 @@ export function MonsterVolumesCard(
 
         campaign.settlements[settlementIndex].monsterVolumes = updatedVolumes
         localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Monster volume removed!')
+        toast.success('Monster volume consigned to darkness!')
       } catch (error) {
-        console.error('Error saving monster volumes to localStorage:', error)
+        console.error('Remove Monster Volume Error:', error)
+        toast.error(
+          'The shadows devour your words - your stories are lost. Please try again.'
+        )
       }
     })
   }
 
   const handleUpdateVolume = (oldVolume: string, newVolume: string) => {
     if (newVolume.trim() === '')
-      return toast.warning('Cannot save a monster volume without a name')
+      return toast.warning('Cannot inscribe an unnamed monster volume.')
 
     if (monsterVolumes.some((v) => v === newVolume.trim() && v !== oldVolume))
-      return toast.warning('A monster volume with this name already exists')
+      return toast.warning('This monster volume has already been inscribed.')
 
     startTransition(() => {
       const updatedVolumes = monsterVolumes.map((v) =>
@@ -91,9 +95,9 @@ export function MonsterVolumesCard(
         campaign.settlements[settlementIndex].monsterVolumes = updatedVolumes
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Monster volume saved!')
+        toast.success('Monster volume inscribed.')
       } catch (error) {
-        console.error('Error saving monster volumes to localStorage:', error)
+        console.error('Monster Volume Update Error:', error)
       }
     })
   }

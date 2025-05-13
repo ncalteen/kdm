@@ -28,6 +28,15 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+/**
+ * Name Settlement Form Component
+ *
+ * This component is responsible for rendering the form that allows users to
+ * name a new settlement. It includes fields for selecting the campaign type,
+ * survivor type, and the settlement name.
+ *
+ * @returns Name Settlement Form
+ */
 export function NameSettlementForm() {
   const router = useRouter()
 
@@ -208,22 +217,24 @@ export function NameSettlementForm() {
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
       // Show success message
-      toast.success('Settlement created successfully!')
+      toast.success(
+        'A lantern pierces the overwhelming darkness. A new settlement is born!'
+      )
 
       // Redirect to the settlement page, passing the ID via query parameters
       router.push(`/settlement?settlementId=${settlement.id}`)
     } catch (error) {
-      toast.error(
-        'Failed to create settlement: ' +
-          (error instanceof Error ? error.message : String(error))
-      )
+      console.error('Settlement Create Error:', error)
+      toast.error('The darkness refuses your offering. Please try again.')
     }
   }
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error('Please complete all required fields!')
+        toast.error(
+          'The chronicles remain incomplete - fill in the missing fragments.'
+        )
       })}
       className="space-y-6">
       <Form {...form}>

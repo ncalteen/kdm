@@ -22,6 +22,48 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
+ * Nemesis Content Component Properties
+ */
+export interface NemesisContentProps {
+  /** Add Nemesis */
+  addNemesis: () => void
+  /** Disabled Inputs */
+  disabledInputs: { [key: string]: boolean }
+  /** Edit Nemesis */
+  editNemesis: (nemesisName: string) => void
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Handle Drag End */
+  handleDragEnd: (event: DragEndEvent) => void
+  /** Handle Toggle Level */
+  handleToggleLevel: (
+    nemesisName: string,
+    level: 'level1' | 'level2' | 'level3',
+    checked: boolean
+  ) => void
+  /** Handle Remove Nemesis */
+  handleRemoveNemesis: (nemesisName: string) => void
+  /** Is Adding New Nemesis */
+  isAddingNew: boolean
+  /** Nemesis List */
+  nemeses: Nemesis[]
+  /** Save Nemesis */
+  saveNemesis: (nemesisName: string) => void
+  /** Sensors for Drag and Drop */
+  sensors: SensorDescriptor<object>[]
+  /** Set Disabled Inputs */
+  setDisabledInputs: React.Dispatch<
+    React.SetStateAction<{ [key: string]: boolean }>
+  >
+  /** Set Is Adding New */
+  setIsAddingNew: React.Dispatch<React.SetStateAction<boolean>>
+  /** Toggle Unlocked */
+  toggleUnlocked: (nemesisName: string, checked: boolean) => void
+  /** Update Nemesis Name */
+  updateNemesisName: (originalName: string, newName: string) => void
+}
+
+/**
  * Nemesis Content Component
  */
 export const NemesisContent = memo(
@@ -41,34 +83,12 @@ export const NemesisContent = memo(
     setDisabledInputs,
     setIsAddingNew,
     updateNemesisName
-  }: {
-    nemeses: Nemesis[]
-    disabledInputs: { [key: string]: boolean }
-    isAddingNew: boolean
-    sensors: SensorDescriptor<object>[]
-    handleToggleLevel: (
-      nemesisName: string,
-      level: 'level1' | 'level2' | 'level3',
-      checked: boolean
-    ) => void
-    handleRemoveNemesis: (nemesisName: string) => void
-    saveNemesis: (nemesisName: string) => void
-    editNemesis: (nemesisName: string) => void
-    addNemesis: () => void
-    handleDragEnd: (event: DragEndEvent) => void
-    form: UseFormReturn<z.infer<typeof SettlementSchema>>
-    toggleUnlocked: (nemesisName: string, checked: boolean) => void
-    setDisabledInputs: React.Dispatch<
-      React.SetStateAction<{ [key: string]: boolean }>
-    >
-    setIsAddingNew: React.Dispatch<React.SetStateAction<boolean>>
-    updateNemesisName: (originalName: string, newName: string) => void
-  }) => {
+  }: NemesisContentProps) => {
     const saveNewNemesis = useCallback(
       (name: string) => {
         // Check if a nemesis with this name already exists
         if (nemeses.some((n) => n.name === name)) {
-          toast.warning('A nemesis with this name already exists')
+          toast.warning('This nemesis already stalks your settlement.')
           return false
         }
 
@@ -106,10 +126,10 @@ export const NemesisContent = memo(
 
             campaign.settlements[settlementIndex].nemeses = updatedNemeses
             localStorage.setItem('campaign', JSON.stringify(campaign))
-
-            toast.success('New nemesis added!')
+            toast.success('A new nemesis emerges from the shadows.')
           } catch (error) {
-            console.error('Error saving nemeses to localStorage:', error)
+            console.error('New Nemesis Save Error:', error)
+            toast.error('Failed to save the new nemesis. Please try again.')
           }
         })
 

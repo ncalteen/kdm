@@ -25,9 +25,9 @@ import { memo, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
- * Quarry Item Props
+ * Quarry Item Properties
  */
-interface QuarryItemProps {
+export interface QuarryItemProps {
   /** Handle Remove Quarry Function */
   handleRemoveQuarry: (quarryName: string) => void
   /** Quarry ID */
@@ -48,6 +48,23 @@ interface QuarryItemProps {
   updateQuarryNode: (quarryName: string, node: string) => void
 }
 
+/**
+ * New Quarry Item Component Properties
+ */
+export interface NewQuarryItemProps {
+  /** Handle Remove Quarry Function */
+  handleRemoveQuarry: (quarryName: string) => void
+  /** Index */
+  index: number
+  /** Save Handler */
+  onSave: (name: string, node: string, unlocked: boolean) => void
+}
+
+/**
+ * Quarry Item Component
+ *
+ * @param props Quarry Item Props
+ */
 export const QuarryItem = memo(
   ({
     handleRemoveQuarry,
@@ -64,23 +81,33 @@ export const QuarryItem = memo(
       useSortable({ id })
     const [nameValue, setNameValue] = useState(quarry.name)
 
-    useEffect(() => {
-      setNameValue(quarry.name)
-    }, [quarry.name])
+    useEffect(() => setNameValue(quarry.name), [quarry.name])
 
     const style = {
       transform: CSS.Transform.toString(transform),
       transition
     }
 
+    /**
+     * Handles the change in quarry name.
+     *
+     * @param e Event
+     */
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
       setNameValue(e.target.value)
 
+    /**
+     * Handles the save action for the quarry name. If the name is empty, a
+     * warning is displayed.
+     */
     const handleSave = () => {
       if (nameValue.trim() !== '') {
         updateQuarryName(quarry.name, nameValue)
         onSave(nameValue)
-      } else toast.warning('Cannot save a quarry without a name')
+      } else
+        toast.warning(
+          'A nameless horror cannot be recorded in your chronicles.'
+        )
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -109,12 +136,8 @@ export const QuarryItem = memo(
                     checked={quarry.unlocked}
                     className="mt-2"
                     onCheckedChange={(checked) => {
-                      if (
-                        typeof checked === 'boolean' &&
-                        toggleQuarryUnlocked
-                      ) {
+                      if (typeof checked === 'boolean' && toggleQuarryUnlocked)
                         toggleQuarryUnlocked(quarry.name, checked)
-                      }
                     }}
                     id={`quarry-${quarry.name}-unlocked`}
                     name={`quarries[${quarry.name}].unlocked`}
@@ -133,9 +156,8 @@ export const QuarryItem = memo(
             <Checkbox
               checked={quarry.unlocked}
               onCheckedChange={(checked) => {
-                if (typeof checked === 'boolean' && toggleQuarryUnlocked) {
+                if (typeof checked === 'boolean' && toggleQuarryUnlocked)
                   toggleQuarryUnlocked(quarry.name, checked)
-                }
               }}
               id={`quarry-${quarry.name}-unlocked`}
               name={`quarries[${quarry.name}].unlocked`}
@@ -217,16 +239,14 @@ QuarryItem.displayName = 'QuarryItem'
 
 /**
  * New Quarry Item Component
+ *
+ * @param props New Quarry Item Props
  */
 export function NewQuarryItem({
   index,
   handleRemoveQuarry,
   onSave
-}: {
-  index: number
-  handleRemoveQuarry: (quarryName: string) => void
-  onSave: (name: string, node: string, unlocked: boolean) => void
-}) {
+}: NewQuarryItemProps) {
   const [name, setName] = useState('')
   const [node, setNode] = useState('Node 1')
 
@@ -237,7 +257,7 @@ export function NewQuarryItem({
 
   const handleSave = () => {
     if (name.trim() !== '') onSave(name.trim(), node, false)
-    else toast.warning('Cannot save a quarry without a name')
+    else toast.warning('A nameless horror cannot be added to your chronicles.')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

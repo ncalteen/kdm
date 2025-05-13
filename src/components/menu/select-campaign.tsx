@@ -1,8 +1,5 @@
 'use client'
 
-import { Check, ChevronsUpDown } from 'lucide-react'
-import * as React from 'react'
-
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -19,46 +16,63 @@ import {
 } from '@/components/ui/popover'
 import { CampaignType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { type ReactElement, useEffect, useState } from 'react'
 
-// Create campaign options from the CampaignType enum
-const campaignOptions = Object.values(CampaignType).map((campaign) => ({
-  value: campaign,
-  label: campaign
-}))
-
-interface SelectCampaignProps {
-  onChange?: (value: CampaignType) => void
-  value?: CampaignType
+/**
+ * Select Campaign Component Properties
+ */
+export interface SelectCampaignProps {
+  /** Component ID */
   id?: string
+  /** OnChange Callback */
+  onChange?: (value: CampaignType) => void
+  /** Selected Value */
+  value?: CampaignType
 }
 
+/**
+ * Select Campaign Component
+ *
+ * This component allows the user to select a campaign type from a dropdown
+ * list. It uses a popover to display the options and allows for searching
+ * through them.
+ */
 export function SelectCampaign({
+  id,
   onChange,
-  value: propValue,
-  id
-}: SelectCampaignProps) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(propValue || '')
+  value: propValue
+}: SelectCampaignProps): ReactElement {
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState(propValue || '')
 
-  React.useEffect(() => {
-    if (propValue) {
-      setValue(propValue)
-    }
+  const campaignOptions = Object.values(CampaignType).map((campaign) => ({
+    value: campaign,
+    label: campaign
+  }))
+
+  useEffect(() => {
+    if (propValue) setValue(propValue)
   }, [propValue])
 
+  /**
+   * Selects a campaign option and updates the state.
+   *
+   * @param currentValue Selected Campaign Value
+   */
   const handleSelect = (currentValue: string) => {
     // Do not allow clearing the selection
     if (!currentValue) return
+
     if (currentValue === value) {
       setOpen(false)
       return
     }
+
     setValue(currentValue)
     setOpen(false)
 
-    if (onChange && currentValue) {
-      onChange(currentValue as CampaignType)
-    }
+    if (onChange && currentValue) onChange(currentValue as CampaignType)
   }
 
   return (
@@ -79,9 +93,11 @@ export function SelectCampaign({
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0">
         <Command>
-          <CommandInput placeholder="Search campaign..." />
+          <CommandInput placeholder="Seek your path..." />
           <CommandList>
-            <CommandEmpty>No campaign found.</CommandEmpty>
+            <CommandEmpty>
+              The mist conceals all paths. No campaign found.
+            </CommandEmpty>
             <CommandGroup>
               {campaignOptions.map((campaign) => (
                 <CommandItem

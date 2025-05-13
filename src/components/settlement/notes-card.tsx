@@ -11,11 +11,14 @@ import { z } from 'zod'
 
 /**
  * Notes Card Component
+ *
+ * Displays a textarea for adding notes to the settlement.
  */
 export function NotesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const notes = form.watch('notes') || ''
+
   const [draft, setDraft] = useState(notes)
   const [isDirty, setIsDirty] = useState(false)
 
@@ -33,11 +36,14 @@ export function NotesCard(
 
       campaign.settlements[settlementIndex].notes = draft
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Notes saved!')
+      toast.success(
+        'As stories are shared amongst survivors, they are etched into the history of your settlement.'
+      )
     } catch (error) {
-      console.error('Error saving notes to localStorage:', error)
-      toast.error('Failed to save notes')
+      console.error('Notes Save Error:', error)
+      toast.error(
+        'The shadows devour your words - your stories are lost. Please try again.'
+      )
     }
   }
 

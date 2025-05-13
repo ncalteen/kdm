@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/arc/knowledge-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Knowledge } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
@@ -48,6 +49,11 @@ export function KnowledgesCard(
     })
   )
 
+  /**
+   * Handles the removal of a knowledge.
+   *
+   * @param knowledgeName Knowledge Name
+   */
   const handleRemoveKnowledge = (knowledgeName: string) => {
     const updatedKnowledges = knowledges.filter((k) => k.name !== knowledgeName)
     form.setValue('knowledges', updatedKnowledges)
@@ -61,15 +67,22 @@ export function KnowledgesCard(
       )
 
       if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+        campaign.settlements[settlementIndex].knowledges =
+          updatedKnowledges as Knowledge[]
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Knowledge removed!')
+        toast.success('Forbidden insight banished to the void.')
       }
     } catch (error) {
-      console.error('Error removing knowledge:', error)
+      console.error('Knowledge Remove Error:', error)
     }
   }
 
+  /**
+   * Handles the update of a knowledge.
+   *
+   * @param oldKnowledgeName Old Knowledge Name
+   * @param newValues New Values
+   */
   const handleUpdateKnowledge = (
     oldKnowledgeName: string,
     newValues: { name: string; philosophy?: string }
@@ -89,30 +102,37 @@ export function KnowledgesCard(
       )
 
       if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+        campaign.settlements[settlementIndex].knowledges =
+          updatedKnowledges as Knowledge[]
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Knowledge updated!')
+        toast.success('Knowledge carved into memory.')
       }
     } catch (error) {
-      console.error('Error updating knowledge:', error)
+      console.error('Knowledge Update Error:', error)
     }
   }
 
+  /**
+   * Handles the save of an edited knowledge.
+   *
+   * @param oldName Old Name
+   * @param newName New Name
+   * @param philosophy Philosophy
+   */
   const handleSaveEdit = (
     oldName: string,
     newName: string,
     philosophy?: string
   ) => {
     if (newName.trim() === '')
-      return toast.warning('Cannot save a knowledge without a name')
+      return toast.warning('Knowledge cannot be nameless.')
 
     if (knowledges.some((k) => k.name === newName.trim() && k.name !== oldName))
-      return toast.warning('A knowledge with this name already exists')
+      return toast.warning('This knowledge already haunts your settlement.')
 
     handleUpdateKnowledge(oldName, { name: newName.trim(), philosophy })
     setEditingKnowledge(null)
-
-    toast.success('Knowledge saved')
+    toast.success('Knowledge reshaped successfully.')
   }
 
   const addNewKnowledge = () => setShowNewKnowledgeForm(false)
@@ -148,7 +168,7 @@ export function KnowledgesCard(
 
                     if (settlementIndex !== -1) {
                       campaign.settlements[settlementIndex].knowledges =
-                        newOrder
+                        newOrder as Knowledge[]
                       localStorage.setItem('campaign', JSON.stringify(campaign))
                     }
                   } catch (error) {

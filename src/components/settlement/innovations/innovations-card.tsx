@@ -83,9 +83,12 @@ export function InnovationsCard(
       campaign.settlements[settlementIndex].innovations = currentInnovations
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
-      toast.success('Innovation added!')
+      toast.success('A new understanding emerges from the void.')
     } catch (error) {
-      console.error('Error saving innovations to localStorage:', error)
+      console.error('New Innovation Save Error:', error)
+      toast.error(
+        'The shadows devour your words - your stories are lost. Please try again.'
+      )
     }
   }
 
@@ -93,6 +96,7 @@ export function InnovationsCard(
 
   const handleRemoveInnovation = (index: number) => {
     const currentInnovations = [...innovations]
+
     currentInnovations.splice(index, 1)
     form.setValue('innovations', currentInnovations)
 
@@ -123,9 +127,12 @@ export function InnovationsCard(
       campaign.settlements[settlementIndex].innovations = currentInnovations
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
-      toast.success('Innovation removed!')
+      toast.success('The epiphany has been consumed by darkness.')
     } catch (error) {
-      console.error('Error saving innovations to localStorage:', error)
+      console.error('Remove Innovation Error:', error)
+      toast.error(
+        'The shadows devour your words - your stories are lost. Please try again.'
+      )
     }
   }
 
@@ -133,7 +140,7 @@ export function InnovationsCard(
     const currentInnovation = form.getValues(`innovations.${index}`)
 
     if (!currentInnovation || currentInnovation.trim() === '')
-      return toast.warning('Cannot save an empty innovation')
+      return toast.warning('Cannot record an empty innovation.')
 
     // Mark this input as disabled (saved)
     setDisabledInputs({
@@ -153,9 +160,9 @@ export function InnovationsCard(
       campaign.settlements[settlementIndex].innovations = currentInnovations
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
-      toast.success('Innovation saved!')
+      toast.success('Innovation has been recorded.')
     } catch (error) {
-      console.error('Error saving innovations to localStorage:', error)
+      console.error('Innovation Save Error:', error)
     }
   }
 
@@ -206,7 +213,7 @@ export function InnovationsCard(
         campaign.settlements[settlementIndex].innovations = newOrder
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving innovations to localStorage:', error)
+        console.error('Innovation Drag Error:', error)
       }
     }
   }

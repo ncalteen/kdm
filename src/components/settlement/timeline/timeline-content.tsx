@@ -14,6 +14,9 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+/**
+ * Timeline Content Component Properties
+ */
 export interface TimelineContentProps {
   /** Add Event Handler */
   addEventToYear: (yearIndex: number) => void
@@ -94,7 +97,8 @@ export const TimelineContent = memo(
               : `Lantern year ${yearIndex} updated!`
         )
       } catch (error) {
-        console.error('Error saving timeline to localStorage:', error)
+        console.error('Lantern Year Complete Error:', error)
+        toast.error('The darkness swallows you. Please try again.')
       }
     }
 

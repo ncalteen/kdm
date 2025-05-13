@@ -40,6 +40,7 @@ export function NemesesCard(
   const nemeses = useMemo(() => form.watch('nemeses') || [], [form])
 
   const [isVisible, setIsVisible] = useState(false)
+
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -58,16 +59,17 @@ export function NemesesCard(
     }
   }, [])
 
-  // Sync disabledInputs with nemeses
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
   }>({})
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: string]: boolean } = {}
+
       nemeses.forEach((nemesis) => {
         next[nemesis.name] = prev[nemesis.name] ?? true
       })
+
       return next
     })
   }, [nemeses])
@@ -83,6 +85,11 @@ export function NemesesCard(
 
   const addNemesis = useCallback(() => setIsAddingNew(true), [])
 
+  /**
+   * Handles the removal of a nemesis.
+   *
+   * @param nemesisName Nemesis Name
+   */
   const handleRemoveNemesis = useCallback(
     (nemesisName: string) => {
       if (nemesisName.startsWith('new-nemesis-')) setIsAddingNew(false)
@@ -108,10 +115,10 @@ export function NemesesCard(
 
             campaign.settlements[settlementIndex].nemeses = updatedNemeses
             localStorage.setItem('campaign', JSON.stringify(campaign))
-
-            toast.success('Nemesis removed!')
+            toast.success('The horror has returned to the void.')
           } catch (error) {
-            console.error('Error saving nemeses to localStorage:', error)
+            console.error('Nemesis Remove Error:', error)
+            toast.error('The nemesis resists. Please try again.')
           }
         })
       }
@@ -119,6 +126,13 @@ export function NemesesCard(
     [nemeses, form]
   )
 
+  /**
+   * Handles the toggling of nemesis levels.
+   *
+   * @param nemesisName Nemesis Name
+   * @param level Level to Toggle
+   * @param checked Checked State
+   */
   const handleToggleLevel = useCallback(
     (
       nemesisName: string,
@@ -143,13 +157,19 @@ export function NemesesCard(
           campaign.settlements[settlementIndex].nemeses = updatedNemeses
           localStorage.setItem('campaign', JSON.stringify(campaign))
         } catch (error) {
-          console.error('Error saving nemeses to localStorage:', error)
+          console.error('Nemesis Toggle Error:', error)
         }
       })
     },
     [nemeses, form]
   )
 
+  /**
+   * Handles the toggling of nemesis unlocked state.
+   *
+   * @param nemesisName Nemesis Name
+   * @param checked Checked State
+   */
   const toggleUnlocked = useCallback(
     (nemesisName: string, checked: boolean) => {
       startTransition(() => {
@@ -169,20 +189,26 @@ export function NemesesCard(
 
           campaign.settlements[settlementIndex].nemeses = updatedNemeses
           localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success(`Nemesis ${checked ? 'unlocked!' : 'locked!'}`)
+          toast.success(
+            `${checked ? `${nemesisName} emerges from darkness.` : `${nemesisName} fades back into the shadows.`}`
+          )
         } catch (error) {
-          console.error('Error saving nemeses to localStorage:', error)
+          console.error('Nemesis Lock/Unlock Error:', error)
         }
       })
     },
     [nemeses, form]
   )
 
+  /**
+   * Handles the saving of a new nemesis.
+   *
+   * @param nemesisName Nemesis Name
+   */
   const saveNemesis = useCallback(
     (nemesisName: string) => {
       if (!nemesisName || nemesisName.trim() === '')
-        return toast.warning('Cannot save a nemesis without a name')
+        return toast.warning('A nameless horror cannot be summoned.')
 
       setDisabledInputs((prev) => ({
         ...prev,
@@ -200,14 +226,20 @@ export function NemesesCard(
         campaign.settlements[settlementIndex].nemeses = formValues.nemeses
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Nemesis saved!')
+        toast.success(`${nemesisName} emerges from the darkness.`)
       } catch (error) {
-        console.error('Error saving nemeses to localStorage:', error)
+        console.error('Nemesis Save Error:', error)
       }
     },
     [form]
   )
 
+  /**
+   * Handles the update of a nemesis name.
+   *
+   * @param originalName Original Name
+   * @param newName New Name
+   */
   const updateNemesisName = useCallback(
     (originalName: string, newName: string) => {
       startTransition(() => {
@@ -235,20 +267,27 @@ export function NemesesCard(
           campaign.settlements[settlementIndex].nemeses = updatedNemeses
           localStorage.setItem('campaign', JSON.stringify(campaign))
         } catch (error) {
-          console.error('Error saving nemeses to localStorage:', error)
+          console.error('Nemesis Name Update Error:', error)
         }
       })
     },
     [nemeses, form]
   )
 
-  const editNemesis = useCallback((nemesisName: string) => {
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [nemesisName]: false
-    }))
-  }, [])
+  const editNemesis = useCallback(
+    (nemesisName: string) =>
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [nemesisName]: false
+      })),
+    []
+  )
 
+  /**
+   * Handles the drag end event for reordering nemeses.
+   *
+   * @param event DragEndEvent
+   */
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event
@@ -273,7 +312,7 @@ export function NemesesCard(
             campaign.settlements[settlementIndex].nemeses = newOrder
             localStorage.setItem('campaign', JSON.stringify(campaign))
           } catch (error) {
-            console.error('Error saving nemeses to localStorage:', error)
+            console.error('Nemesis Drag Error:', error)
           }
         })
       }

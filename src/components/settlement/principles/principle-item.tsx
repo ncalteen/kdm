@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import type { Principle } from '@/lib/types'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -11,46 +12,53 @@ import { useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-interface PrincipleItemProps {
-  principle: {
-    name: string
-    option1Name: string
-    option1Selected: boolean
-    option2Name: string
-    option2Selected: boolean
-  }
-  index: number
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  handleRemovePrinciple: (index: number) => void
-  handleUpdatePrinciple: (index: number, field: string, value: string) => void
-}
-
 /**
- * Principle Item Component
+ * Principle Item Component Properties
  */
-export function PrincipleItem({
-  index,
-  principle,
-  isDisabled,
-  onEdit,
-  onSave,
-  handleRemovePrinciple,
-  id,
-  autoFocus
-}: PrincipleItemProps & {
+export interface PrincipleItemProps {
+  /** Auto Focus */
+  autoFocus?: boolean
+  /** Form */
+  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Remove Principle Handler */
+  handleRemovePrinciple: (index: number) => void
+  /** Update Principle Handler */
+  handleUpdatePrinciple: (index: number, field: string, value: string) => void
+  /** Principle ID */
   id: string
+  /** Principle Index */
+  index: number
+  /** Disabled State */
   isDisabled: boolean
+  /** OnEdit Handler */
   onEdit: (index: number) => void
+  /** OnSave Handler */
   onSave: (
     index: number,
     name: string,
     option1Name: string,
     option2Name: string
   ) => void
-  autoFocus?: boolean
-}) {
+  /** Principle */
+  principle: Principle
+}
+
+/**
+ * Principle Item Component
+ */
+export function PrincipleItem({
+  id,
+  index,
+  principle,
+  isDisabled,
+  onEdit,
+  onSave,
+  handleRemovePrinciple,
+  autoFocus
+}: PrincipleItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+
   const [nameValue, setNameValue] = useState(principle.name)
   const [option1Value, setOption1Value] = useState(principle.option1Name)
   const [option2Value, setOption2Value] = useState(principle.option2Name)
@@ -64,9 +72,7 @@ export function PrincipleItem({
   }, [principle.name, principle.option1Name, principle.option2Name])
 
   useEffect(() => {
-    if (autoFocus && nameInputRef.current) {
-      nameInputRef.current.focus()
-    }
+    if (autoFocus && nameInputRef.current) nameInputRef.current.focus()
   }, [autoFocus])
 
   const style = {

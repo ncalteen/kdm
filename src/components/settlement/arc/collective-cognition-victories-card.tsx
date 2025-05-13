@@ -46,10 +46,10 @@ export function CollectiveCognitionVictoriesCard(
         campaign.settlements[settlementIndex].nemeses = formValues.nemeses
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Victory updated!')
+        toast.success("The settlement's legacy grows stronger.")
       }
     } catch (error) {
-      console.error('Error saving victory:', error)
+      console.error('CC Victory Save Error:', error)
     }
   }
 

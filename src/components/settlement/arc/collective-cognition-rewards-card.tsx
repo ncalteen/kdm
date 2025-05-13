@@ -35,9 +35,10 @@ import { z } from 'zod'
 export function CollectiveCognitionRewardsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
+  const rewards = form.watch('ccRewards') || []
+
   const [showNewRewardForm, setShowNewRewardForm] = useState(false)
   const [editingReward, setEditingReward] = useState<string | null>(null)
-  const rewards = form.watch('ccRewards') || []
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -46,6 +47,12 @@ export function CollectiveCognitionRewardsCard(
     })
   )
 
+  /**
+   * Handles the toggling of a reward's unlocked state.
+   *
+   * @param rewardName Reward Name
+   * @param unlocked Unlocked State
+   */
   const handleToggleUnlocked = (rewardName: string, unlocked: boolean) => {
     const updatedRewards = rewards.map((r) => {
       if (r.name === rewardName) return { ...r, unlocked }
@@ -66,14 +73,19 @@ export function CollectiveCognitionRewardsCard(
       if (settlementIndex !== -1) {
         campaign.settlements[settlementIndex].ccRewards = updatedRewards
         localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Reward updated!')
+        toast.success('Reward transformed by the darkness.')
       }
     } catch (error) {
-      console.error('Error saving reward:', error)
+      console.error('CC Reward Lock/Unlock Error:', error)
+      toast.error('Failed to save the reward. Please try again.')
     }
   }
 
+  /**
+   * Handles the removal of a reward.
+   *
+   * @param rewardName Reward Name
+   */
   const handleRemoveReward = (rewardName: string) => {
     const updatedRewards = rewards.filter((r) => r.name !== rewardName)
 
@@ -90,14 +102,19 @@ export function CollectiveCognitionRewardsCard(
       if (settlementIndex !== -1) {
         campaign.settlements[settlementIndex].ccRewards = updatedRewards
         localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Reward removed!')
+        toast.success('The dark gift recedes into shadow.')
       }
     } catch (error) {
-      console.error('Error removing reward:', error)
+      console.error('CC Reward Remove Error:', error)
+      toast.error('Failed to remove the reward. Please try again.')
     }
   }
 
+  /**
+   * Handles the drag end event.
+   *
+   * @param event Event
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -121,18 +138,14 @@ export function CollectiveCognitionRewardsCard(
           localStorage.setItem('campaign', JSON.stringify(campaign))
         }
       } catch (error) {
-        console.error('Error reordering rewards:', error)
+        console.error('CC Reward Drag Error:', error)
       }
     }
   }
 
-  const addNewReward = () => {
-    setShowNewRewardForm(false)
-  }
+  const addNewReward = () => setShowNewRewardForm(false)
 
-  const cancelNewReward = () => {
-    setShowNewRewardForm(false)
-  }
+  const cancelNewReward = () => setShowNewRewardForm(false)
 
   return (
     <Card className="mt-2">

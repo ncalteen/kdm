@@ -48,24 +48,31 @@ export function DepartingBonusesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
   const bonuses = useMemo(() => form.watch('departingBonuses') || [], [form])
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-
-  useEffect(() => {
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-      bonuses.forEach((_, i) => {
-        next[i] = prev[i] ?? true
-      })
-      return next
-    })
-  }, [bonuses])
-
   const [isAddingNew, setIsAddingNew] = useState(false)
 
   const addBonus = useCallback(() => setIsAddingNew(true), [])
 
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+
+      bonuses.forEach((_, i) => {
+        next[i] = prev[i] ?? true
+      })
+
+      return next
+    })
+  }, [bonuses])
+
+  /**
+   * Handles the removal of a departing bonus.
+   *
+   * @param index Departing Bonus Index
+   */
   const handleRemoveBonus = useCallback(
     (index: number) => {
       startTransition(() => {
@@ -102,23 +109,25 @@ export function DepartingBonusesCard(
           campaign.settlements[settlementIndex].departingBonuses =
             updatedBonuses
           localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success('Bonus removed!')
+          toast.success('A blessing has faded into the void.')
         } catch (error) {
-          console.error(
-            'Error saving departing bonuses to localStorage:',
-            error
-          )
+          console.error('Departing Bonus Remove Error:', error)
+          toast.error('Failed to remove the blessing. Please try again.')
         }
       })
     },
     [bonuses, form]
   )
 
+  /**
+   * Handles the saving of a departing bonus.
+   *
+   * @param index Departing Bonus Index
+   */
   const handleSave = useCallback(
     (index: number) => {
       if (!bonuses[index] || bonuses[index].trim() === '')
-        return toast.warning('Cannot save an empty bonus')
+        return toast.warning('Cannot inscribe a nameless blessing.')
 
       setDisabledInputs((prev) => ({ ...prev, [index]: true }))
 
@@ -133,10 +142,10 @@ export function DepartingBonusesCard(
         campaign.settlements[settlementIndex].departingBonuses =
           formValues.departingBonuses
         localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Bonus saved!')
+        toast.success('Blessing etched into reality.')
       } catch (error) {
-        console.error('Error saving departing bonuses to localStorage:', error)
+        console.error('Departing Bonus Save Error:', error)
+        toast.error('Failed to save the blessing. Please try again.')
       }
     },
     [bonuses, form]
@@ -159,11 +168,13 @@ export function DepartingBonusesCard(
     [bonuses, form]
   )
 
+  /**
+   * Handles the addition of a new departing bonus.
+   *
+   * @param bonus New Departing Bonus
+   */
   const saveNewBonus = useCallback(
     (bonus: string) => {
-      if (bonuses.includes(bonus))
-        return toast.warning('This bonus already exists')
-
       startTransition(() => {
         const updatedBonuses = [...bonuses, bonus]
 
@@ -187,13 +198,10 @@ export function DepartingBonusesCard(
           campaign.settlements[settlementIndex].departingBonuses =
             updatedBonuses
           localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success('Bonus added!')
+          toast.success('A new blessing graces your settlement.')
         } catch (error) {
-          console.error(
-            'Error saving departing bonuses to localStorage:',
-            error
-          )
+          console.error('New Departing Bonus Save Error:', error)
+          toast.error('Failed to save the new blessing. Please try again.')
         }
       })
     },
@@ -209,6 +217,11 @@ export function DepartingBonusesCard(
     })
   )
 
+  /**
+   * Handles the drag end event for the sortable list.
+   *
+   * @param event Event
+   */
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event
@@ -232,10 +245,7 @@ export function DepartingBonusesCard(
             campaign.settlements[settlementIndex].departingBonuses = newOrder
             localStorage.setItem('campaign', JSON.stringify(campaign))
           } catch (error) {
-            console.error(
-              'Error saving departing bonuses to localStorage:',
-              error
-            )
+            console.error('Departing Bonus Drag Error:', error)
           }
         })
       }

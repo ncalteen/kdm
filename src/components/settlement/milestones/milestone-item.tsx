@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Milestone } from '@/lib/types'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -20,14 +21,38 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-interface MilestoneItemProps {
-  milestone: {
-    name: string
-    complete: boolean
-    event: string
-  }
-  index: number
+/**
+ * Milestone Item Component Properties
+ */
+export interface MilestoneItemProps {
+  /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  /** Milestone ID */
+  id: string
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** Milestone */
+  milestone: Milestone
+  /** OnEdit Callback */
+  onEdit: (index: number) => void
+  /** OnRemove Callback */
+  onRemove: (index: number) => void
+  /** OnSave Callback */
+  onSave: (index: number, name: string, event: string) => void
+}
+
+/**
+ * New Milestone Item Component Properties
+ */
+export interface NewMilestoneItemProps {
+  /** Index */
+  index: number
+  /** OnCancel Callback */
+  onCancel: () => void
+  /** OnSave Callback */
+  onSave: (name: string, event: string) => void
 }
 
 /**
@@ -42,13 +67,7 @@ export function MilestoneItem({
   onEdit,
   onRemove,
   id
-}: MilestoneItemProps & {
-  isDisabled: boolean
-  onSave: (index: number, name: string, event: string) => void
-  onEdit: (index: number) => void
-  onRemove: (index: number) => void
-  id: string
-}) {
+}: MilestoneItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
   const [nameValue, setNameValue] = useState(milestone.name)
@@ -181,11 +200,7 @@ export function NewMilestoneItem({
   index,
   onSave,
   onCancel
-}: {
-  index: number
-  onSave: (name: string, event: string) => void
-  onCancel: () => void
-}) {
+}: NewMilestoneItemProps) {
   const [name, setName] = useState('')
   const [event, setEvent] = useState('')
 

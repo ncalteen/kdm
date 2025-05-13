@@ -22,7 +22,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
- * Quarry Content Props
+ * Quarry Content Properties
  */
 export interface QuarryContentProps {
   /** Add Quarry Function */
@@ -59,6 +59,11 @@ export interface QuarryContentProps {
   updateQuarryNode: (quarryName: string, node: string) => void
 }
 
+/**
+ * Quarry Content Component
+ *
+ * @param props Component Properties
+ */
 export const QuarryContent = memo(
   ({
     addQuarry,
@@ -80,7 +85,7 @@ export const QuarryContent = memo(
     const saveNewQuarry = useCallback(
       (name: string, node: string, unlocked: boolean) => {
         if (quarries.some((q) => q.name === name)) {
-          toast.warning('A quarry with this name already exists')
+          toast.warning('This beast already lurks in the darkness.')
           return false
         }
 
@@ -116,10 +121,10 @@ export const QuarryContent = memo(
 
             campaign.settlements[settlementIndex].quarries = updatedQuarries
             localStorage.setItem('campaign', JSON.stringify(campaign))
-
-            toast.success('New quarry added!')
+            toast.success('A new horror prowls in the darkness.')
           } catch (error) {
-            console.error('Error saving quarries to localStorage:', error)
+            console.error('Quarry Save Error:', error)
+            toast.error('The darkness refuses you. Please try again.')
           }
         })
 

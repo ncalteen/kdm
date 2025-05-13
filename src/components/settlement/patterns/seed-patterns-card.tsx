@@ -35,6 +35,11 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+/**
+ * Seed Patterns Card Component
+ *
+ * @param form Form
+ */
 export function SeedPatternsCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
@@ -48,9 +53,11 @@ export function SeedPatternsCard(
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
+
       seedPatterns.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
+
       return next
     })
   }, [seedPatterns])
@@ -64,6 +71,11 @@ export function SeedPatternsCard(
 
   const addSeedPattern = () => setIsAddingNew(true)
 
+  /**
+   * Handles the removal of a seed pattern.
+   *
+   * @param index Seed Pattern Index
+   */
   const handleRemoveSeedPattern = (index: number) => {
     const currentSeedPatterns = [...seedPatterns]
 
@@ -92,16 +104,21 @@ export function SeedPatternsCard(
 
       campaign.settlements[settlementIndex].seedPatterns = currentSeedPatterns
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Seed pattern removed!')
+      toast.success('The seed pattern has been consumed by darkness.')
     } catch (error) {
-      console.error('Error saving seed patterns to localStorage:', error)
+      console.error('Seed Pattern Remove Error:', error)
+      toast.error('The seed pattern resists being forgotten. Please try again.')
     }
   }
 
+  /**
+   * Saves a seed pattern.
+   *
+   * @param value Seed Pattern Value
+   */
   const saveSeedPattern = (value: string) => {
     if (!value || value.trim() === '')
-      return toast.warning('Cannot save a seed pattern without a name')
+      return toast.warning('Nameless seed patterns cannot be preserved.')
 
     const newSeedPatterns = [...seedPatterns, value]
 
@@ -124,17 +141,23 @@ export function SeedPatternsCard(
 
       campaign.settlements[settlementIndex].seedPatterns = newSeedPatterns
       localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Seed pattern saved!')
+      toast.success("A new revelation awakens in the survivors' minds.")
     } catch (error) {
-      console.error('Error saving seed patterns to localStorage:', error)
+      console.error('Seed Pattern Save Error:', error)
+      toast.error(
+        'The wisdom slips through your fingers like smoke. Please try again.'
+      )
     }
   }
 
-  const editSeedPattern = (index: number) => {
+  const editSeedPattern = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-  }
 
+  /**
+   * Handles the drag end event.
+   *
+   * @param event Drag End Event
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -170,7 +193,7 @@ export function SeedPatternsCard(
         campaign.settlements[settlementIndex].seedPatterns = newOrder
         localStorage.setItem('campaign', JSON.stringify(campaign))
       } catch (error) {
-        console.error('Error saving seed patterns to localStorage:', error)
+        console.error('Seed Pattern Drag Error:', error)
       }
     }
   }
@@ -225,12 +248,13 @@ export function SeedPatternsCard(
                           'campaign',
                           JSON.stringify(campaign)
                         )
-
-                        toast.success('Seed pattern saved!')
+                        toast.success(
+                          'The enlightened vision is carved into memory.'
+                        )
                       } catch (error) {
-                        console.error(
-                          'Error saving seed patterns to localStorage:',
-                          error
+                        console.error('New Seed Pattern Save Error:', error)
+                        toast.error(
+                          'This awakened insight proves elusive. Please try again.'
                         )
                       }
                     }}

@@ -10,11 +10,34 @@ import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-interface SeedPatternItemProps {
-  index: number
+/**
+ * Seed Pattern Item Component Properties
+ */
+export interface SeedPatternItemProps {
+  /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  handleRemoveSeedPattern: (index: number) => void
+  /** Seed Pattern ID */
   id: string
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** Remove Seed Pattern Handler */
+  handleRemoveSeedPattern: (index: number) => void
+  /** OnEdit Handler */
+  onEdit: (index: number) => void
+  /** OnSave Handler */
+  onSave: (index: number, value: string) => void
+}
+
+/**
+ * New Seed Pattern Item Component Properties
+ */
+export interface NewSeedPatternItemProps {
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (value: string) => void
 }
 
 /**
@@ -28,11 +51,7 @@ export function SeedPatternItem({
   isDisabled,
   onSave,
   onEdit
-}: SeedPatternItemProps & {
-  isDisabled: boolean
-  onSave: (index: number, value: string) => void
-  onEdit: (index: number) => void
-}) {
+}: SeedPatternItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -100,22 +119,22 @@ export function SeedPatternItem({
   )
 }
 
+/**
+ * New Seed Pattern Item Component
+ */
 export function NewSeedPatternItem({
   onSave,
   onCancel
-}: {
-  onSave: (value: string) => void
-  onCancel: () => void
-}) {
+}: NewSeedPatternItemProps) {
   const [value, setValue] = useState('')
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       onSave(value)
-    } else if (e.key === 'Escape') {
-      onCancel()
-    }
+    } else if (e.key === 'Escape') onCancel()
   }
+
   return (
     <div className="flex items-center gap-2">
       <div className="p-1">
