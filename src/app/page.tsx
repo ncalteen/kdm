@@ -1,7 +1,15 @@
 'use client'
 
+import { DownloadCampaignButton } from '@/components/settlement/download-campaign-button'
 import { ListSettlementsTable } from '@/components/settlement/list-settlements-table'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { UploadCampaignButton } from '@/components/settlement/upload-campaign-button'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 
 export default function Page() {
   return (
@@ -10,19 +18,19 @@ export default function Page() {
         Kingdom Death: Monster
       </h1>
 
-      {/* TODO: Add documentation and images showing how to use this site. */}
-
       <Card className="max-w-[1200px] mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl text-center font-bold">
-            My Settlements
+            Settlement Tracker
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            <ListSettlementsTable />
-          </div>
+          <ListSettlementsTable />
         </CardContent>
+        <CardFooter className="flex justify-between">
+          <UploadCampaignButton />
+          <DownloadCampaignButton />
+        </CardFooter>
       </Card>
     </div>
   )

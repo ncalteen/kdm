@@ -47,7 +47,7 @@ To get started, simply follow the below steps:
 
 This project is not affiliated with or endorsed by Kingdom Death: Monster or any
 of its creators. It is a fan-made project created for personal use and
-educational purposes only. All rights to Kingdom Death: Monster and its
+entertainment purposes only. All rights to Kingdom Death: Monster and its
 associated materials are owned by their respective copyright holders. This
 project is intended to be a tool for players to enhance their experience with
 the game and is not intended for commercial use or distribution.

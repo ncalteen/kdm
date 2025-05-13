@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -24,16 +25,21 @@ import { Settlement } from '@/lib/types'
 import { getCampaign, getCurrentYear } from '@/lib/utils'
 import { SearchIcon, Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { type ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-export function ListSettlementsTable() {
+/**
+ * Displays a table of settlements with options to view and delete them.
+ * Each settlement can be viewed in detail or deleted, which will also remove
+ * all associated survivors.
+ *
+ * @returns List Settlements Table
+ */
+export function ListSettlementsTable(): ReactElement {
   const router = useRouter()
 
   const [settlements, setSettlements] = useState<Settlement[]>([])
-  const [deleteSettlementId, setDeleteSettlementId] = useState<number | null>(
-    null
-  )
+  const [deleteId, setDeleteId] = useState<number | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   // Fetch settlements from localStorage when the component mounts.
@@ -42,7 +48,7 @@ export function ListSettlementsTable() {
   }, [])
 
   /**
-   * Navigates to the Settlement Page
+   * Navigates to the settlement details page.
    *
    * @param settlementId Settlement ID
    */
@@ -50,37 +56,32 @@ export function ListSettlementsTable() {
     router.push(`/settlement?settlementId=${settlementId}`)
 
   /**
-   * Deletes a Settlement and Survivors
+   * Deletes a settlement and all associated survivors from the campaign data.
    *
    * @param settlementId Settlement ID
    */
   const handleDeleteSettlement = (settlementId: number) => {
     const campaign = getCampaign()
-
     const settlementIndex = campaign.settlements.findIndex(
       (s) => s.id === settlementId
     )
 
-    if (settlementIndex === -1) return toast.error('Settlement Not Found')
+    if (settlementIndex === -1) return toast.error('Settlement not found!')
 
     const settlementName = campaign.settlements[settlementIndex].name
 
-    // Remove settlement from the array
     campaign.settlements.splice(settlementIndex, 1)
-
-    // Remove any survivors associated with this settlement
     campaign.survivors = campaign.survivors.filter(
       (s) => s.settlementId !== settlementId
     )
 
     localStorage.setItem('campaign', JSON.stringify(campaign))
     setSettlements(campaign.settlements)
-
     toast.success(
       `Darkness overtook ${settlementName}. Voices cried out, and were suddenly silenced.`
     )
 
-    setDeleteSettlementId(null)
+    setDeleteId(null)
     setIsDeleteDialogOpen(false)
   }
 
@@ -90,6 +91,7 @@ export function ListSettlementsTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
+            <TableHead>Campaign Type</TableHead>
             <TableHead>Lantern Year</TableHead>
             <TableHead>Population</TableHead>
             <TableHead>Deaths</TableHead>
@@ -99,7 +101,7 @@ export function ListSettlementsTable() {
           {settlements.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={7}
                 className="text-center text-muted-foreground py-4">
                 No settlements added yet.
               </TableCell>
@@ -107,31 +109,46 @@ export function ListSettlementsTable() {
           )}
           {settlements.map((settlement) => (
             <TableRow key={settlement.id}>
+              {/* Settlment Name */}
               <TableCell className="font-medium">{settlement.name}</TableCell>
+
+              {/* Campaign Type */}
+              <TableCell>
+                <Badge variant="secondary">{settlement.campaignType}</Badge>
+              </TableCell>
+
+              {/* Current Lantern Year */}
               <TableCell>{getCurrentYear(settlement.timeline)}</TableCell>
+
+              {/* Population */}
               <TableCell>{settlement.population}</TableCell>
+
+              {/* Death Count */}
               <TableCell>{settlement.deathCount}</TableCell>
+
+              {/* Action Buttons */}
               <TableCell className="flex justify-end gap-2">
+                {/* View Settlement */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleViewSettlement(settlement.id)}>
                   <SearchIcon className="h-4 w-4" />
                 </Button>
+
+                {/* Delete Settlement */}
                 <AlertDialog
-                  open={
-                    isDeleteDialogOpen && deleteSettlementId === settlement.id
-                  }
+                  open={isDeleteDialogOpen && deleteId === settlement.id}
                   onOpenChange={(open) => {
                     setIsDeleteDialogOpen(open)
-                    if (!open) setDeleteSettlementId(null)
+                    if (!open) setDeleteId(null)
                   }}>
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="destructive"
                       size="sm"
                       onClick={() => {
-                        setDeleteSettlementId(settlement.id)
+                        setDeleteId(settlement.id)
                         setIsDeleteDialogOpen(true)
                       }}>
                       <Trash2Icon className="h-4 w-4" />
@@ -141,9 +158,11 @@ export function ListSettlementsTable() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Delete Settlement</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete {settlement.name}? This
-                        action cannot be undone, and all associated survivors
-                        will also be removed.
+                        Are you sure you want to delete {settlement.name}?{' '}
+                        <strong>
+                          This action cannot be undone. All associated survivors
+                          will also be removed.
+                        </strong>
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
