@@ -19,6 +19,8 @@ export interface LocationItemProps {
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
   /** Remove Location Callback */
   handleRemoveLocation: (index: number) => void
+  /** Toggle Location Unlocked Callback */
+  toggleLocationUnlocked: (index: number, unlocked: boolean) => void
   /** Location ID */
   id: string
   /** Location Index */
@@ -50,6 +52,7 @@ export function LocationItem({
   index,
   form,
   handleRemoveLocation,
+  toggleLocationUnlocked,
   id,
   isDisabled,
   onSave,
@@ -92,9 +95,10 @@ export function LocationItem({
       </div>
       <Checkbox
         checked={unlockedValue}
-        disabled={isDisabled}
+        disabled={!isDisabled}
         onCheckedChange={(checked) => {
-          if (!isDisabled) setUnlockedValue(!!checked)
+          setUnlockedValue(!!checked);
+          toggleLocationUnlocked(index, !!checked);
         }}
         id={`location-${index}-unlocked`}
         name={`locations[${index}].unlocked`}

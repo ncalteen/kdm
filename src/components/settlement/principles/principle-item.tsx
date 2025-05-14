@@ -24,6 +24,8 @@ export interface PrincipleItemProps {
   handleRemovePrinciple: (index: number) => void
   /** Update Principle Handler */
   handleUpdatePrinciple: (index: number, field: string, value: string) => void
+  /** Option Selection Handler */
+  handleOptionSelect: (index: number, option: 1 | 2) => void
   /** Principle ID */
   id: string
   /** Principle Index */
@@ -54,6 +56,7 @@ export function PrincipleItem({
   onEdit,
   onSave,
   handleRemovePrinciple,
+  handleOptionSelect,
   autoFocus
 }: PrincipleItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -133,7 +136,12 @@ export function PrincipleItem({
           <div className="flex items-center gap-2">
             <Checkbox
               checked={principle.option1Selected}
-              disabled={true}
+              disabled={!isDisabled}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  handleOptionSelect(index, 1)
+                }
+              }}
               id={`principle-${index}-option1-selected`}
               name={`principles[${index}].option1Selected`}
             />
@@ -159,7 +167,12 @@ export function PrincipleItem({
             <strong>or</strong>
             <Checkbox
               checked={principle.option2Selected}
-              disabled={true}
+              disabled={!isDisabled}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  handleOptionSelect(index, 2)
+                }
+              }}
               id={`principle-${index}-option2-selected`}
               name={`principles[${index}].option2Selected`}
             />

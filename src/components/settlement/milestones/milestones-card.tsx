@@ -225,6 +225,41 @@ export function MilestonesCard(
     [milestones, form]
   )
 
+  const handleMilestoneCompletionChange = useCallback(
+    (index: number, checked: boolean) => {
+      startTransition(() => {
+        const updated = [...milestones]
+        updated[index] = { ...updated[index], complete: checked }
+
+        form.setValue('milestones', updated)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].milestones = updated
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success(
+            checked
+              ? 'Milestone completed - make sure to complete the appropriate story event.'
+              : 'Milestone updated.'
+          )
+        } catch (error) {
+          console.error('Milestone Completion Error:', error)
+          toast.error(
+            'Failed to update milestone completion status. Please try again.'
+          )
+        }
+      })
+    },
+    [milestones, form]
+  )
+
   return (
     <Card className="mt-2">
       <CardHeader className="pb-2">
@@ -256,6 +291,7 @@ export function MilestonesCard(
                   onSave={handleSave}
                   onEdit={handleEdit}
                   onRemove={handleRemoveMilestone}
+                  onToggleComplete={handleMilestoneCompletionChange}
                 />
               ))}
             </SortableContext>

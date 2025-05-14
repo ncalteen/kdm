@@ -35,7 +35,13 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -241,6 +247,48 @@ export function PrinciplesCard(
   }
 
   /**
+   * Handles selecting an option for a principle. Only one option can be selected at a time.
+   *
+   * @param index Principle Index
+   * @param option Which option (1 or 2)
+   */
+  const handleOptionSelect = useCallback(
+    (index: number, option: 1 | 2) => {
+      startTransition(() => {
+        const updated = [...principles]
+
+        // Update the option selected, ensuring only one is selected at a time
+        updated[index] = {
+          ...updated[index],
+          option1Selected: option === 1,
+          option2Selected: option === 2
+        }
+
+        form.setValue('principles', updated)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].principles = updated
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+          toast.success(
+            `The settlement has chosen ${option === 1 ? updated[index].option1Name : updated[index].option2Name}.`
+          )
+        } catch (error) {
+          console.error('Principle Option Select Error:', error)
+          toast.error('Failed to update principle selection. Please try again.')
+        }
+      })
+    },
+    [principles, form]
+  )
+
+  /**
    * Handles the drag end event.
    *
    * @param event Event
@@ -307,6 +355,7 @@ export function PrinciplesCard(
                     onSave={handleSave}
                     handleRemovePrinciple={handleRemovePrinciple}
                     handleUpdatePrinciple={() => {}}
+                    handleOptionSelect={handleOptionSelect}
                     autoFocus={isEditingIndex === index}
                   />
                 ))}

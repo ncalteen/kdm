@@ -94,7 +94,7 @@ export function SettlementForm({
       )
 
       if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex] = values
+        campaign.settlements[settlementIndex] = values as Settlement
         localStorage.setItem('campaign', JSON.stringify(campaign))
         toast.success(
           'In the vast darkness, a new settlement flickers to life.'

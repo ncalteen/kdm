@@ -17,12 +17,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger
 } from '@radix-ui/react-dropdown-menu'
-import {
-  DockIcon,
-  type LucideIcon,
-  MapPinHouse,
-  PersonStanding
-} from 'lucide-react'
+import { DockIcon, type LucideIcon, MapPinHouse } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
 
@@ -43,18 +38,18 @@ const data = {
           url: '/settlement/create'
         }
       ]
-    },
-    {
-      title: 'Survivors',
-      url: '#',
-      icon: PersonStanding,
-      items: [
-        {
-          title: 'Create',
-          url: '/survivor/create'
-        }
-      ]
     }
+    // {
+    //   title: 'Survivors',
+    //   url: '#',
+    //   icon: PersonStanding,
+    //   items: [
+    //     {
+    //       title: 'Create',
+    //       url: '/survivor/create'
+    //     }
+    //   ]
+    // }
     // {
     //   title: 'Hunt',
     //   url: '#',

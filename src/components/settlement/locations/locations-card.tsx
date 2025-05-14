@@ -24,7 +24,13 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { HomeIcon, PlusCircleIcon } from 'lucide-react'
-import { startTransition, useEffect, useMemo, useState } from 'react'
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -157,13 +163,45 @@ export function LocationsCard(
           formValues.locations || []
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Location altered by dark forces!')
+        toast.success('Location altered by adventurous hands.')
       } catch (error) {
         console.error('Location Save Error:', error)
         toast.error('Failed to save location. Please try again.')
       }
     })
   }
+
+  const toggleLocationUnlocked = useCallback(
+    (index: number, unlocked: boolean) => {
+      startTransition(() => {
+        const updated = [...locations]
+        updated[index] = { ...updated[index], unlocked }
+
+        form.setValue('locations', updated)
+
+        // Update localStorage
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s) => s.id === formValues.id
+          )
+
+          campaign.settlements[settlementIndex].locations = updated
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+          toast.success(
+            unlocked
+              ? `${updated[index].name} location is now available.`
+              : `${updated[index].name} location is now unavailable.`
+          )
+        } catch (error) {
+          console.error('Location Toggle Error:', error)
+          toast.error('Failed to update location status. Please try again.')
+        }
+      })
+    },
+    [locations, form]
+  )
 
   const editLocation = (index: number) => {
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
@@ -230,6 +268,7 @@ export function LocationsCard(
                   index={index}
                   form={form}
                   handleRemoveLocation={handleRemoveLocation}
+                  toggleLocationUnlocked={toggleLocationUnlocked}
                   isDisabled={!!disabledInputs[index]}
                   onSave={saveExistingLocation}
                   onEdit={editLocation}

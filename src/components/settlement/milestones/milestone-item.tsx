@@ -41,6 +41,8 @@ export interface MilestoneItemProps {
   onRemove: (index: number) => void
   /** OnSave Callback */
   onSave: (index: number, name: string, event: string) => void
+  /** OnToggleComplete Callback */
+  onToggleComplete: (index: number, checked: boolean) => void
 }
 
 /**
@@ -66,6 +68,7 @@ export function MilestoneItem({
   onSave,
   onEdit,
   onRemove,
+  onToggleComplete,
   id
 }: MilestoneItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -113,9 +116,11 @@ export function MilestoneItem({
               <Checkbox
                 checked={field.value}
                 className="mt-2"
-                disabled={isDisabled}
+                // Milestones should only be completable if they are saved.
+                disabled={!isDisabled}
                 onCheckedChange={(checked) => {
                   form.setValue(`milestones.${index}.complete`, !!checked)
+                  onToggleComplete(index, !!checked)
                 }}
                 id={`milestone-${index}-complete`}
                 name={`milestones[${index}].complete`}
