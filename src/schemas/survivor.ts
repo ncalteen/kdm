@@ -15,19 +15,19 @@ export const SurvivorSchema = z.object({
   /** Accuracy */
   accuracy: z.number().min(0),
   /** Can Dash */
-  canDash: z.boolean(),
+  canDash: z.boolean().optional(),
   /** Can Dodge */
-  canDodge: z.boolean(),
+  canDodge: z.boolean().optional(),
   /** Can Fist Pump */
-  canFistPump: z.boolean(),
+  canFistPump: z.boolean().optional(),
   /** Can Encourage */
-  canEncourage: z.boolean(),
+  canEncourage: z.boolean().optional(),
   /** Can Spend Survival */
-  canSpendSurvival: z.boolean(),
+  canSpendSurvival: z.boolean().optional(),
   /** Can Surge */
-  canSurge: z.boolean(),
+  canSurge: z.boolean().optional(),
   /** Can Use Fighting Arts or Knowledges */
-  canUseFightingArtsOrKnowledges: z.boolean(),
+  canUseFightingArtsOrKnowledges: z.boolean().optional(),
   /** Courage */
   courage: z.number().min(0).max(9),
   /** Survivor is Dead */
@@ -39,7 +39,7 @@ export const SurvivorSchema = z.object({
   /** Fighting Arts */
   fightingArts: z.array(z.string()),
   /** Gender */
-  gender: z.enum(Object.keys(Gender) as [Gender, ...Gender[]]),
+  gender: z.enum(Object.values(Gender) as [Gender, ...Gender[]]),
   /** Has Analyze */
   hasAnalyze: z.boolean(),
   /** Has Explore */
@@ -189,7 +189,7 @@ export const SurvivorSchema = z.object({
    */
 
   /** Can Endure */
-  canEndure: z.boolean(),
+  canEndure: z.boolean().optional(),
   /** Knowledge 1 */
   knowledge1: z.string().optional(),
   /** Knowledge 1: Observation Conditions */
