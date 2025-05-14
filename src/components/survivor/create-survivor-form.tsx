@@ -2,6 +2,7 @@
 
 import { SelectSettlement } from '@/components/menu/select-settlement'
 import { AttributeCard } from '@/components/survivor/attributes/attribute-card'
+import { CourageUnderstandingCard } from '@/components/survivor/courage-understanding/courage-understanding-card'
 import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
 import { NameGenderCard } from '@/components/survivor/name-gender/name-gender-card'
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
@@ -272,6 +273,7 @@ export function CreateSurvivorForm() {
                     <div className="flex-1">
                       <HuntXPCard {...form} />
                       <WeaponProficiencyCard {...form} />
+                      <CourageUnderstandingCard {...form} />
                     </div>
                   </div>
                 </>
