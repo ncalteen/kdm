@@ -32,11 +32,11 @@ export function WeaponProficiencyCard(
   }
 
   return (
-    <Card>
+    <Card className="mt-2">
       <CardContent className="py-4 min-w-[600px]">
-        <div className="flex flex-wrap gap-8 items-center">
+        <div className="flex flex-wrap gap-8 items-start justify-between">
           <div className="font-bold text-l whitespace-nowrap flex flex-col">
-            <span>Weapon Proficiency</span>
+            Weapon Proficiency
             <SelectWeaponType
               value={weaponProficiencyType || ''}
               onChange={(type: string) =>
@@ -49,36 +49,44 @@ export function WeaponProficiencyCard(
               }
             />
           </div>
-          <div className="flex flex-row gap-3 items-center">
-            {Array.from({ length: 8 }, (_, i) => (
-              <Checkbox
-                key={i}
-                checked={weaponProficiency > i}
-                onCheckedChange={(checked) =>
-                  handleProficiencyChange(i, !!checked)
-                }
-                className={
-                  'h-4 w-4 rounded-sm' +
-                  (i === 2 || i === 7 ? ' border-2 border-primary' : '')
-                }
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-row gap-4 items-center mt-2">
-          <div className="flex items-center gap-1">
-            <Checkbox
-              className="h-3 w-3 bg-white border border-gray-300"
-              disabled
-            />
-            <span className="text-xs">Specialist</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Checkbox
-              className="h-3 w-3 bg-white border border-gray-300"
-              disabled
-            />
-            <span className="text-xs">Master</span>
+          <div className="flex flex-col">
+            <div className="flex flex-row gap-3 mb-1">
+              {Array.from({ length: 8 }, (_, i) => (
+                <div
+                  key={i}
+                  className="w-4 h-4 flex items-center justify-center">
+                  <Checkbox
+                    checked={weaponProficiency > i}
+                    onCheckedChange={(checked) =>
+                      handleProficiencyChange(i, !!checked)
+                    }
+                    className={
+                      'h-4 w-4 rounded-sm' +
+                      (i === 2 || i === 7 ? ' border-2 border-primary' : '')
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+            <hr className="mt-2 mb-2" />
+            <div className="flex flex-row gap-3 justify-between">
+              {Array.from({ length: 2 }, (_, i) => (
+                <div key={i} className="flex items-center gap-1">
+                  {Array.from({ length: i + 1 }, (_, j) => (
+                    <Checkbox
+                      key={j}
+                      disabled
+                      className="!bg-white border border-gray-300 h-3 w-3"
+                    />
+                  ))}
+                  {i === 0 ? (
+                    <span className="text-sm">Specialist</span>
+                  ) : (
+                    <span className="text-sm">Master</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </CardContent>

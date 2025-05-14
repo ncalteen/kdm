@@ -42,7 +42,9 @@ export function SelectWeaponType({
   onChange,
   value
 }: SelectWeaponTypeProps) {
-  const weaponTypeOptions = Object.values(WeaponType)
+  const weaponTypeOptions = Object.values(WeaponType).sort((a, b) =>
+    a.localeCompare(b)
+  )
   const [open, setOpen] = useState(false)
 
   const handleTypeSelect = (type: string) => {
