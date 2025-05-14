@@ -2,7 +2,7 @@
   "name": "kdm",
   "description": "Kingdom Death: Monster (KDM) Tracker",
   "author": "Nick Alteen <ncalteen@gmail.com>",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "homepage": "https://github.com/ncalteen/kdm#readme",
   "repository": "ncalteen/kdm",
