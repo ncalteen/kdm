@@ -40,9 +40,11 @@ upload this file later to restore your settlements at any time!
 
 ## Support
 
-This project is open source and free to use. If you have any questions,
-suggestions, or problems, please feel free to open an issue
-[here](https://github.com/ncalteen/kdm/issues).
+This project is open source and free to use. It is maintained on a best-effort
+basis, with no guarantees.
+
+If you have any questions, suggestions, or problems, please feel free to open an
+issue [here](https://github.com/ncalteen/kdm/issues).
 
 If you like this project and want to support its development, please consider
 [buying me a coffee](https://buymeacoffee.com/ncalteenw)!
