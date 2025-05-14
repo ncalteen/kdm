@@ -47,6 +47,8 @@ suggestions, or problems, please feel free to open an issue
 If you like this project and want to support its development, please consider
 [buying me a coffee](https://buymeacoffee.com/ncalteenw)!
 
+[![Buy Me A Coffee](./img/bmc_qr.png)](https://www.buymeacoffee.com/ncalteenw)
+
 ## Development
 
 ### Prerequisites
@@ -87,6 +89,12 @@ entertainment purposes only. All rights to Kingdom Death: Monster and its
 associated materials are owned by their respective copyright holders. This
 project is intended to be a tool for players to enhance their experience with
 the game and is not intended for commercial use or distribution.
+
+If, at any point in time, the creators of Kingdom Death: Monster would like this
+project to be taken down, please contact me at `@hollow_forest` in the
+[Lantern's Reign Discord](https://discord.gg/kingdomdeath) and I will remove it
+immediately. I have no intention of profiting from this project or infringing on
+any copyrights. I simply want to provide a tool for players to use and enjoy.
 
 ## License
 
