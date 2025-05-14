@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button'
 import { Settlement } from '@/lib/types'
 import { getSettlement } from '@/lib/utils'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 
-export default function Page() {
+// This component handles the actual page content after searchParams are available
+function SettlementPage() {
   const searchParams = useSearchParams()
   const settlementIdParam = searchParams.get('settlementId')
 
@@ -90,4 +91,27 @@ export default function Page() {
 
   // If we have a valid settlement, render the form
   return <SettlementForm initialSettlement={settlement} />
+}
+
+// Create a loading component to show during suspense
+function SettlementLoading() {
+  return (
+    <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
+      <h1 className="text-4xl sm:text-5xl font-bold pt-[20px] text-center">
+        Loading Settlement...
+      </h1>
+      <p className="text-xl text-center">
+        Please wait while we load the settlement data...
+      </p>
+    </div>
+  )
+}
+
+// Main page component with Suspense boundary
+export default function Page() {
+  return (
+    <Suspense fallback={<SettlementLoading />}>
+      <SettlementPage />
+    </Suspense>
+  )
 }
