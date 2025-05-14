@@ -18,30 +18,66 @@ challenging game.
 
 ## About
 
-This project is a Next.js web application that provides a simple UI for keeping
-track of settlment and survivor information in Kingdom Death: Monster. It is
-designed to be lightweight and easy to use, allowing players to enjoy the game
-and save some trees.
+This project is a [Next.js](https://nextjs.org/) web application that provides a
+simple UI for keeping track of settlment and survivor information in Kingdom
+Death: Monster. It is designed to be lightweight and easy to use, allowing
+players to enjoy the game and save some trees.
 
-## Prerequisites
+Try it out here:
+[`https://ncalteen.github.io/kdm`](https://ncalteen.github.io/kdm)
 
-- [Node.js](https://nodejs.org/en)
-  - See [.node-version](./.node-version) for the current version being used by
-    this project.
+## Storage
 
-## Getting Started
+This site makes use of your browser's local storage to save your data. This
+means that you can close the tab or even your browser and come back later to
+find your data still there. However, this also means that if you clear your
+browser's local storage, your data will be lost. If you want to back up your
+data, use the `Preserve Settlement Records` button on the
+[Settlements](https://ncalteen.github.io/kdm/settlement/list) page.
 
-Initially, this project is intended to be run locally. It is not hosted
-anywhere, so deployment and maintenance is entirely up to you!
+This will download a JSON file containing all of your settlements. You can then
+upload this file later to restore your settlements at any time!
+
+## Support
+
+This project is open source and free to use. If you have any questions,
+suggestions, or problems, please feel free to open an issue
+[here](https://github.com/ncalteen/kdm/issues).
+
+If you like this project and want to support its development, please consider
+[buying me a coffee](https://buymeacoffee.com/ncalteenw)!
+
+## Development
+
+### Prerequisites
+
+[Node.js](https://nodejs.org/en)
+
+- See [.node-version](./.node-version) for the current version being used by
+  this project.
+
+### Getting Started
+
+This project can be run locally for development and testing. Since it is a
+static site, you can run it practically anywhere!
 
 To get started, simply follow the below steps:
 
 1. Fork this repository
-1. Install the dependencies (`npm install`)
-1. Create a `.env.local` file in the root of the project and add your
-   environment variables. You can use the `.env.example` file as a reference.
-1. Start the development server (`npm run dev`)
-1. Open your browser and navigate to `http://localhost:3000`
+1. Install the dependencies
+
+   ```bash
+   npm install
+   ```
+
+1. Start the development server
+
+   ```bash
+   npm run dev
+   ```
+
+1. Open your browser and navigate to
+   [`http://localhost:3000`](http://localhost:3000)
 
 ## Disclaimer
 
@@ -51,3 +87,8 @@ entertainment purposes only. All rights to Kingdom Death: Monster and its
 associated materials are owned by their respective copyright holders. This
 project is intended to be a tool for players to enhance their experience with
 the game and is not intended for commercial use or distribution.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE)
+file for details.
