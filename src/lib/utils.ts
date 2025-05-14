@@ -128,41 +128,77 @@ export function getCurrentYear(timeline: TimelineEvent[]): number {
 /**
  * Checks if the settlement has innovated the Encourage action.
  *
- * @returns True if the settlement has innovated the Encourage action.
+ * @returns True if the settlement has the Language innovation.
  */
 export function canEncourage(): boolean {
-  // TODO
-  return false
+  const settlement = getCampaign().settlements.find(
+    (settlement) => settlement.id === 1
+  ) as Settlement
+
+  if (!settlement) return false
+
+  return (
+    settlement.innovations.find((innovation) =>
+      innovation.toLowerCase().includes('language')
+    ) !== undefined
+  )
 }
 
 /**
  * Checks if the settlement has innovated the Surge action.
  *
- * @returns True if the settlement has innovated the Surge action.
+ * @returns True if the settlement has the Inner Lantern innovation.
  */
 export function canSurge(): boolean {
-  // TODO
-  return false
+  const settlement = getCampaign().settlements.find(
+    (settlement) => settlement.id === 1
+  ) as Settlement
+
+  if (!settlement) return false
+
+  return (
+    settlement.innovations.find((innovation) =>
+      innovation.toLowerCase().includes('inner lantern')
+    ) !== undefined
+  )
 }
 
 /**
  * Checks if the settlement has innovated the Dash action.
  *
- * @returns True if the settlement has innovated the Dash action.
+ * @returns True if the settlement has the Paint innovation.
  */
 export function canDash(): boolean {
-  // TODO
-  return false
+  const settlement = getCampaign().settlements.find(
+    (settlement) => settlement.id === 1
+  ) as Settlement
+
+  if (!settlement) return false
+
+  return (
+    settlement.innovations.find(
+      (innovation) => innovation.toLowerCase() === 'paint'
+    ) !== undefined
+  )
 }
 
 /**
  * Checks if the settlement has innovated the Fist Pump action.
  *
- * @returns True if the settlement has innovated the Fist Pump action.
+ * @returns True if the settlement has silent dialect innovation.
  */
 export function canFistPump(): boolean {
-  // TODO
-  return false
+  const settlement = getCampaign().settlements.find(
+    (settlement) => settlement.id === 1
+  ) as Settlement
+
+  if (!settlement) return false
+
+  return (
+    settlement.innovations.find((innovation) =>
+      innovation.toLowerCase().includes('silent dialect')
+    ) !== undefined
+  )
 }
 
 /**
@@ -178,11 +214,20 @@ export function canEndure(): boolean {
 /**
  * Checks if new survivors are born with +1 understanding.
  *
- * @returns True if new survivors are born with +1 understanding.
+ * @returns True if the settlement has the Graves innovation.
  */
 export function bornWithUnderstanding(): boolean {
-  // TODO
-  return false
+  const settlement = getCampaign().settlements.find(
+    (settlement) => settlement.id === 1
+  ) as Settlement
+
+  if (!settlement) return false
+
+  return (
+    settlement.innovations.find((innovation) =>
+      innovation.toLowerCase().includes('graves')
+    ) !== undefined
+  )
 }
 
 /**
