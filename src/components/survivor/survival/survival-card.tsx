@@ -70,7 +70,7 @@ export function SurvivalCard(
                           }}
                         />
                       </FormControl>
-                      <FormLabel className="min-w-20 text-right text-xl">
+                      <FormLabel className="min-w-20 font-bold text-left text-l">
                         Survival
                       </FormLabel>
                     </div>

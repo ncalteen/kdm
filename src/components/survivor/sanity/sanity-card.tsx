@@ -82,7 +82,7 @@ export function SanityCard(
 
           {/* Brain */}
           <div className="relative flex-1">
-            <div className="font-bold">Brain</div>
+            <div className="font-bold text-l">Brain</div>
             <br />
             <div className="text-xs mt-1 pr-28">
               If your insanity is 3+, you are <strong>insane</strong>.

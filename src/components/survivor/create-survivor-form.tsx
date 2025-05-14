@@ -1,6 +1,7 @@
 'use client'
 
 import { AttributeCard } from '@/components/survivor/attributes/attribute-card'
+import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
 import { NameGenderCard } from '@/components/survivor/name-gender/name-gender-card'
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
@@ -18,6 +19,7 @@ import {
   getNextSurvivorId,
   getSettlement
 } from '@/lib/utils'
+import { SettlementSchema } from '@/schemas/settlement'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSearchParams } from 'next/navigation'
@@ -169,15 +171,12 @@ export function CreateSurvivorForm() {
     ? parseInt(settlementIdParam, 10)
     : undefined
 
-  useEffect(() => {
-    if (!settlementId) {
-      toast.error(
-        'No refuge exists in the darkness. First, create a settlement.'
-      )
-      return
-    }
+  const [settlement, setSettlement] = useState<
+    z.infer<typeof SettlementSchema> | undefined
+  >()
 
-    const settlement = getSettlement(settlementId)
+  useEffect(() => {
+    setSettlement(settlementId ? getSettlement(settlementId) : undefined)
 
     if (!settlement) {
       toast.error(
@@ -228,7 +227,14 @@ export function CreateSurvivorForm() {
       <Form {...form}>
         <Card className="mb-2">
           <CardContent className="w-full pt-6 pb-6">
-            <NameGenderCard {...form} />
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <NameGenderCard {...form} />
+              </div>
+              <div className="flex-1">
+                <HuntXPCard form={form} />
+              </div>
+            </div>
             <SurvivalCard {...form} />
             <AttributeCard {...form} />
             <SanityCard {...form} />

@@ -41,7 +41,9 @@ export function NameGenderCard(
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <div className="flex items-center gap-4">
-                    <FormLabel className="text-left text-xl">Name</FormLabel>
+                    <FormLabel className="font-bold text-left text-l">
+                      Name
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Survivor name..."
@@ -102,7 +104,7 @@ export function NameGenderCard(
 
           <hr className="mt-2" />
 
-          <FormDescription className="mt-2">
+          <FormDescription className="mt-2 text-xs">
             When you name your survivor, gain +1 <strong>survival</strong>.
           </FormDescription>
         </div>
