@@ -32,7 +32,7 @@ import type { Settlement } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { type ReactElement, useState } from 'react'
+import { type ReactElement, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -62,14 +62,65 @@ export interface SettlementFormProps {
 export function SettlementForm({
   initialSettlement
 }: SettlementFormProps): ReactElement {
+  // Get URL search params for tab persistence
+  const searchParams = new URLSearchParams(window.location.search)
+  const tabParam = searchParams.get('tab')
+
+  // Valid tab values
+  const validTabs = useMemo(
+    () => [
+      'timeline',
+      'monsters',
+      'survivors',
+      'squires',
+      'society',
+      'crafting',
+      'arc',
+      'notes'
+    ],
+    []
+  )
+
   // Tracks the selected tab in the settlement creation form.
-  const [selectedTab, setSelectedTab] = useState<string>('timeline')
+  // Use tab from URL or default to 'timeline'
+  const [selectedTab, setSelectedTab] = useState<string>(
+    tabParam && validTabs.includes(tabParam) ? tabParam : 'timeline'
+  )
+
+  // Handle tab change and update URL
+  const handleTabChange = (value: string) => {
+    setSelectedTab(value)
+    // Update URL without refreshing the page
+    const newParams = new URLSearchParams(window.location.search)
+    newParams.set('tab', value)
+
+    // Make sure we preserve the settlementId parameter
+    const settlementId = searchParams.get('settlementId')
+    if (settlementId) newParams.set('settlementId', settlementId)
+
+    const newUrl = `${window.location.pathname}?${newParams.toString()}`
+    window.history.pushState({ path: newUrl }, '', newUrl)
+  }
 
   // Initialize the form with the settlement schema and loaded settlement data
   const form = useForm<z.infer<typeof SettlementSchema>>({
     resolver: zodResolver(SettlementSchema),
     defaultValues: initialSettlement
   })
+
+  // Update the selected tab when URL changes (browser navigation)
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      const tabFromUrl = params.get('tab')
+
+      if (tabFromUrl && validTabs.includes(tabFromUrl))
+        setSelectedTab(tabFromUrl)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [validTabs])
 
   const campaignType = form.watch('campaignType')
   const survivorType = form.watch('survivorType')
@@ -126,7 +177,7 @@ export function SettlementForm({
             <CardContent className="w-full pt-2">
               <Tabs
                 value={selectedTab}
-                onValueChange={setSelectedTab}
+                onValueChange={handleTabChange}
                 className="text-center pt-2 pb-4 w-full">
                 <TabsList className="w-full">
                   <TabsTrigger value="timeline" className="flex-1">
