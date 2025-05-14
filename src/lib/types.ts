@@ -70,6 +70,8 @@ export type Location = {
 export type Knowledge = {
   /** Knowledge Name */
   name: string
+  /** Philosophy */
+  philosophy: Philosophy
 }
 
 /**
