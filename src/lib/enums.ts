@@ -56,14 +56,10 @@ export enum Philosophy {
   REGALISM = 'Regalism',
   /** Romanticism */
   ROMANTICISM = 'Romanticism',
-  /** Starting */
-  STARTING = 'Starting',
   /** Survivalism */
   SURVIVALISM = 'Survivalism',
   /** Verminism */
-  VERMINISM = 'Verminism',
-  /** Wanderer - Luck */
-  WANDERER_LUCK = 'Wanderer - Luck'
+  VERMINISM = 'Verminism'
 }
 
 /** Survivor Gender */

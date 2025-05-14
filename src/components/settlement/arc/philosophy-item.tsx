@@ -1,7 +1,8 @@
 'use client'
 
+import { SelectPhilosophy } from '@/components/menu/select-philosophy'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Philosophy } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
@@ -71,25 +72,17 @@ export function PhilosophyItem({
   }
 
   const handleEditSave = () => {
-    if (value.trim() === '')
-      return toast.warning('Cannot save a nameless philosophy.')
+    if (!value) return toast.warning('Cannot save a nameless philosophy.')
 
-    onSaveEdit(value.trim())
+    onSaveEdit(value)
     toast.success('The philosophy echos throughout your settlement.')
-  }
-
-  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleEditSave()
-    }
   }
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 bg-background p-2 rounded-md border">
+      className="flex items-center gap-3 bg-background p-2 rounded-md border">
       <div
         {...attributes}
         {...listeners}
@@ -97,15 +90,13 @@ export function PhilosophyItem({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
       {isEditing ? (
-        <Input
-          value={value}
-          name={`philosophy-name-${id}`}
-          id={`philosophy-name-${id}`}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleEditKeyDown}
-          className="flex-1"
-          autoFocus
-        />
+        <div className="flex-1">
+          <SelectPhilosophy
+            options={Object.values(Philosophy)}
+            value={value}
+            onChange={setValue}
+          />
+        </div>
       ) : (
         <div className="flex-1 text-sm text-left">{philosophy}</div>
       )}
@@ -166,16 +157,15 @@ export function NewPhilosophyItem({
   const [name, setName] = useState('')
 
   const handleSubmit = () => {
-    if (name.trim() === '')
-      return toast.warning('Cannot save a nameless philosophy.')
+    if (!name) return toast.warning('Cannot save a nameless philosophy.')
 
-    if (existingNames.includes(name.trim()))
+    if (existingNames.includes(name))
       return toast.warning(
         'This philosophy already echoes throughout your settlement.'
       )
 
     const philosophies = [...(form.watch('philosophies') || [])]
-    const updatedPhilosophies = [...philosophies, name.trim()]
+    const updatedPhilosophies = [...philosophies, name]
 
     form.setValue('philosophies', updatedPhilosophies)
 
@@ -201,28 +191,20 @@ export function NewPhilosophyItem({
     toast.success('A new philosophy echos throughout your settlement.')
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleSubmit()
-    }
-  }
-
   return (
-    <div className="flex items-center gap-2 bg-muted/40 p-2 rounded-md">
+    <div className="flex items-center gap-3 bg-muted/40 p-2 rounded-md">
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
-      <Input
-        placeholder="Add a philosophy..."
-        value={name}
-        name="new-philosophy-name"
-        id="new-philosophy-name"
-        onChange={(e) => setName(e.target.value)}
-        className="flex-1"
-        onKeyDown={handleKeyDown}
-        autoFocus
-      />
+      <div className="flex-1">
+        <SelectPhilosophy
+          options={Object.values(Philosophy).filter(
+            (philosophy) => !existingNames.includes(philosophy)
+          )}
+          value={name}
+          onChange={setName}
+        />
+      </div>
       <Button
         type="button"
         variant="ghost"
