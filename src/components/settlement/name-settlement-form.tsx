@@ -140,8 +140,29 @@ export function NameSettlementForm() {
    *
    * @param value Survivor Type
    */
-  const handleSurvivorTypeChange = (value: SurvivorType) =>
+  const handleSurvivorTypeChange = (value: SurvivorType) => {
+    // Update the survivorType in the form
     form.setValue('survivorType', value)
+
+    // Get current locations
+    const currentLocations = form.getValues('locations') || []
+    const forumLocationIndex = currentLocations.findIndex(
+      (loc) => loc.name === 'Forum'
+    )
+
+    // Changing to Arc survivors...add "Forum" location
+    if (value === SurvivorType.ARC && forumLocationIndex === -1)
+      form.setValue('locations', [
+        ...currentLocations,
+        { name: 'Forum', unlocked: false }
+      ])
+    // Changing from Arc survivors...remove "Forum" location
+    else if (forumLocationIndex !== -1)
+      form.setValue(
+        'locations',
+        currentLocations.filter((loc) => loc.name !== 'Forum')
+      )
+  }
 
   // Define a submit handler with the correct schema type
   function onSubmit(values: z.infer<typeof SettlementSchema>) {
