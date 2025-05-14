@@ -26,9 +26,44 @@ export enum SurvivorType {
 
 /** Philosophies */
 export enum Philosophy {
+  /** Ambitionism */
+  AMBITIONISM = 'Ambitionism',
+  /** Champion */
+  CHAMPION = 'Champion',
+  /** Collectivism */
+  COLLECTIVISM = 'Collectivism',
+  /** Deadism */
+  DEADISM = 'Deadism',
+  /** Dreamism */
+  DREAMISM = 'Dreamism',
+  /** Faceism */
+  FACEISM = 'Faceism',
+  /** Gourmandism */
+  GOURMANDISM = 'Gourmandism',
+  /** Homicidalism */
+  HOMICIDALISM = 'Homicidalism',
+  /** Impermanism */
+  IMPERMANISM = 'Impermanism',
+  /** Lanternism */
+  LANTERNISM = 'Lanternism',
+  /** Marrowism */
+  MARROWISM = 'Marrowism',
+  /** Monster */
+  MONSTER = 'Monster',
+  /** Optimism */
+  OPTIMISM = 'Optimism',
+  /** Regalism */
+  REGALISM = 'Regalism',
+  /** Romanticism */
+  ROMANTICISM = 'Romanticism',
+  /** Starting */
+  STARTING = 'Starting',
   /** Survivalism */
-  SURVIVALISM = 'Survivalism'
-  // TODO: Add the rest...
+  SURVIVALISM = 'Survivalism',
+  /** Verminism */
+  VERMINISM = 'Verminism',
+  /** Wanderer - Luck */
+  WANDERER_LUCK = 'Wanderer - Luck'
 }
 
 /** Survivor Gender */
