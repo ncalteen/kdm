@@ -37,6 +37,8 @@ export interface SelectCampaignProps {
  * This component allows the user to select a campaign type from a dropdown
  * list. It uses a popover to display the options and allows for searching
  * through them.
+ *
+ * @param props Component Properties
  */
 export function SelectCampaign({
   id,

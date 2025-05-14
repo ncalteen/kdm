@@ -20,19 +20,25 @@ import {
 import { SurvivorType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 
-// Create survivor type options from the SurvivorType enum
-const survivorTypeOptions = Object.values(SurvivorType).map((survivorType) => ({
-  value: survivorType,
-  label: survivorType
-}))
-
-interface SelectSurvivorTypeProps {
-  onChange?: (value: SurvivorType) => void
-  value?: SurvivorType
+/**
+ * Select Survivor Type Component Properties
+ */
+export interface SelectSurvivorTypeProps {
+  /** Disabled State */
   disabled?: boolean
+  /** Survivor Type ID */
   id?: string
+  /** OnChange Handler */
+  onChange?: (value: SurvivorType) => void
+  /** Survivor Type Value */
+  value?: SurvivorType
 }
 
+/**
+ * Select Survivor Type Component
+ *
+ * @param props Component Properties
+ */
 export function SelectSurvivorType({
   onChange,
   value: propValue,
@@ -41,6 +47,14 @@ export function SelectSurvivorType({
 }: SelectSurvivorTypeProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(propValue || '')
+
+  // Create survivor type options from the SurvivorType enum
+  const survivorTypeOptions = Object.values(SurvivorType).map(
+    (survivorType) => ({
+      value: survivorType,
+      label: survivorType
+    })
+  )
 
   React.useEffect(() => {
     if (propValue) {

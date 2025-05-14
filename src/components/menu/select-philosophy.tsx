@@ -1,8 +1,5 @@
 'use client'
 
-import { Check, ChevronsUpDown } from 'lucide-react'
-import * as React from 'react'
-
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -18,35 +15,46 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
-interface SelectPhilosophyProps {
-  onChange?: (value: string) => void
-  value?: string
-  options: string[]
+/**
+ * Select Philosophy Component Properties
+ */
+export interface SelectPhilosophyProps {
+  /** Disabled State */
   disabled?: boolean
+  /** OnChange Handler */
+  onChange?: (value: string) => void
+  /** Options */
+  options: string[]
+  /** Value */
+  value?: string
 }
 
+/**
+ * Select Philosophy Component
+ *
+ * @param props Component Properties
+ */
 export function SelectPhilosophy({
   onChange,
   value: propValue,
   options,
   disabled
 }: SelectPhilosophyProps) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(propValue || '')
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState(propValue || '')
 
-  React.useEffect(() => {
-    if (propValue !== undefined) {
-      setValue(propValue)
-    }
+  useEffect(() => {
+    if (propValue !== undefined) setValue(propValue)
   }, [propValue])
 
   const handleSelect = (currentValue: string) => {
     setValue(currentValue)
     setOpen(false)
-    if (onChange) {
-      onChange(currentValue)
-    }
+
+    if (onChange) onChange(currentValue)
   }
 
   const philosophyOptions = [
