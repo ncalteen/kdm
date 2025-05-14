@@ -29,15 +29,15 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 /**
- * Name Settlement Form Component
+ * Create Settlement Form Component
  *
  * This component is responsible for rendering the form that allows users to
- * name a new settlement. It includes fields for selecting the campaign type,
- * survivor type, and the settlement name.
+ * name and create a settlement. It includes fields for selecting the campaign
+ * type, survivor type, and the settlement name.
  *
- * @returns Name Settlement Form
+ * @returns Create Settlement Form
  */
-export function NameSettlementForm() {
+export function CreateSettlementForm() {
   const router = useRouter()
 
   // Set the default campaign and survivor type.

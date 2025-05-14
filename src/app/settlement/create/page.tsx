@@ -1,6 +1,6 @@
 'use client'
 
-import { NameSettlementForm } from '@/components/settlement/name-settlement-form'
+import { CreateSettlementForm } from '@/components/settlement/create-settlement-form'
 
 export default function Page() {
   return (
@@ -9,7 +9,7 @@ export default function Page() {
         Create a Settlement
       </h1>
 
-      <NameSettlementForm />
+      <CreateSettlementForm />
     </div>
   )
 }
