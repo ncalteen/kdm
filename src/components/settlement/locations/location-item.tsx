@@ -97,8 +97,8 @@ export function LocationItem({
         checked={unlockedValue}
         disabled={!isDisabled}
         onCheckedChange={(checked) => {
-          setUnlockedValue(!!checked);
-          toggleLocationUnlocked(index, !!checked);
+          setUnlockedValue(!!checked)
+          toggleLocationUnlocked(index, !!checked)
         }}
         id={`location-${index}-unlocked`}
         name={`locations[${index}].unlocked`}
