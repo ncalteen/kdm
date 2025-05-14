@@ -167,7 +167,6 @@ export function LocationsCard(
 
   const editLocation = (index: number) => {
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-    toast.info('Reshaping domain through darkness.')
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
