@@ -41,7 +41,7 @@ export function PhilosophyCard({
   }
 
   return (
-    <Card className="mt-2 min-w-[500px]">
+    <Card className="min-w-[500px]">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">Philosophy</CardTitle>
       </CardHeader>
@@ -108,7 +108,7 @@ export function PhilosophyCard({
                       value={field.value || ''}
                     />
                   </FormControl>
-                  <FormLabel className="text-s">Neurosis</FormLabel>
+                  <FormLabel className="text-xs">Neurosis</FormLabel>
                 </div>
               </FormItem>
             )}

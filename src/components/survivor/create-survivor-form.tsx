@@ -8,6 +8,7 @@ import { CourageUnderstandingCard } from '@/components/survivor/courage-understa
 import { DisordersCard } from '@/components/survivor/disorders/disorders-card'
 import { FightingArtsCard } from '@/components/survivor/fighting-arts/fighting-arts-card'
 import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
+import { KnowledgeCard } from '@/components/survivor/knowledge/knowledge-card'
 import { NameGenderCard } from '@/components/survivor/name-gender/name-gender-card'
 import { OncePerLifetimeCard } from '@/components/survivor/once-per-lifetime/once-per-lifetime-card'
 import { PhilosophyCard } from '@/components/survivor/philosophy/philosophy-card'
@@ -289,6 +290,7 @@ export function CreateSurvivorForm() {
                     {settlement?.survivorType === SurvivorType.ARC && (
                       <div className="flex-1">
                         <PhilosophyCard {...form} />
+                        <KnowledgeCard {...form} />
                       </div>
                     )}
                   </div>
