@@ -9,6 +9,7 @@ import { DisordersCard } from '@/components/survivor/disorders/disorders-card'
 import { FightingArtsCard } from '@/components/survivor/fighting-arts/fighting-arts-card'
 import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
 import { NameGenderCard } from '@/components/survivor/name-gender/name-gender-card'
+import { OncePerLifetimeCard } from '@/components/survivor/once-per-lifetime/once-per-lifetime-card'
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
@@ -282,6 +283,7 @@ export function CreateSurvivorForm() {
                       <FightingArtsCard {...form} />
                       <DisordersCard {...form} />
                       <AbilitiesAndImpairmentsCard {...form} />
+                      <OncePerLifetimeCard {...form} />
                     </div>
                   </div>
                 </>
