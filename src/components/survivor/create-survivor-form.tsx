@@ -1,6 +1,7 @@
 'use client'
 
 import { SelectSettlement } from '@/components/menu/select-settlement'
+import { AbilitiesAndImpairmentsCard } from '@/components/survivor/abilities-and-impairments/abilities-and-impairments-card'
 import { AttributeCard } from '@/components/survivor/attributes/attribute-card'
 import { CombatCard } from '@/components/survivor/combat/combat-card'
 import { CourageUnderstandingCard } from '@/components/survivor/courage-understanding/courage-understanding-card'
@@ -280,6 +281,7 @@ export function CreateSurvivorForm() {
                       <CourageUnderstandingCard {...form} />
                       <FightingArtsCard {...form} />
                       <DisordersCard {...form} />
+                      <AbilitiesAndImpairmentsCard {...form} />
                     </div>
                   </div>
                 </>
