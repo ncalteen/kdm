@@ -10,6 +10,7 @@ import { FightingArtsCard } from '@/components/survivor/fighting-arts/fighting-a
 import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
 import { NameGenderCard } from '@/components/survivor/name-gender/name-gender-card'
 import { OncePerLifetimeCard } from '@/components/survivor/once-per-lifetime/once-per-lifetime-card'
+import { PhilosophyCard } from '@/components/survivor/philosophy/philosophy-card'
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
@@ -285,6 +286,11 @@ export function CreateSurvivorForm() {
                       <AbilitiesAndImpairmentsCard {...form} />
                       <OncePerLifetimeCard {...form} />
                     </div>
+                    {settlement?.survivorType === SurvivorType.ARC && (
+                      <div className="flex-1">
+                        <PhilosophyCard {...form} />
+                      </div>
+                    )}
                   </div>
                 </>
               )}

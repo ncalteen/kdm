@@ -216,8 +216,10 @@ export const SurvivorSchema = z.object({
   neurosis: z.string().optional(),
   /** Philosophy */
   philosophy: z
-    .enum(Object.keys(Philosophy) as [Philosophy, ...Philosophy[]])
+    .enum(Object.values(Philosophy) as [Philosophy, ...Philosophy[]])
     .optional(),
+  /** Philosophy Rank */
+  philosophyRank: z.number().min(0).optional(),
   /** Systemic Pressure */
   systemicPressure: z.number().min(0),
   /** Tenet Knowledge */
