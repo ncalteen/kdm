@@ -102,6 +102,16 @@ export function getSurvivors(settlementId: number): Survivor[] {
 }
 
 /**
+ * Gets a specific survivor localStorage.
+ *
+ * @param survivorId Survivor ID
+ * @returns Survivor
+ */
+export function getSurvivor(survivorId: number): Survivor | undefined {
+  return getCampaign().survivors.find((survivor) => survivor.id === survivorId)
+}
+
+/**
  * Gets a settlement from localStorage.
  *
  * @param settlementId Settlement ID

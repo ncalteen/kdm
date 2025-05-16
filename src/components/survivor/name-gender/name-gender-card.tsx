@@ -76,8 +76,10 @@ export function NameGenderCard(
                       <Checkbox
                         id="male-checkbox"
                         checked={field.value === Gender.MALE}
-                        onCheckedChange={() => {
-                          form.setValue('gender', Gender.MALE)
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            form.setValue('gender', Gender.MALE)
+                          }
                         }}
                       />
                     </div>
@@ -90,8 +92,10 @@ export function NameGenderCard(
                       <Checkbox
                         id="female-checkbox"
                         checked={field.value === Gender.FEMALE}
-                        onCheckedChange={() => {
-                          form.setValue('gender', Gender.FEMALE)
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            form.setValue('gender', Gender.FEMALE)
+                          }
                         }}
                       />
                     </div>

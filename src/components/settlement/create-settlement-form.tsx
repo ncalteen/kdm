@@ -259,7 +259,7 @@ export function CreateSettlementForm() {
       })}
       className="space-y-6">
       <Form {...form}>
-        <Card className="max-w-[800px] mx-auto">
+        <Card className="max-w-[800px] min-w-[560px] mx-auto">
           <CardContent className="w-full pt-6 pb-6">
             {/* Campaign Type */}
             <Card className="mb-2">
@@ -271,7 +271,7 @@ export function CreateSettlementForm() {
                     render={({ field }) => (
                       <FormItem className="w-full">
                         <div className="flex items-center justify-between">
-                          <FormLabel className="text-left">
+                          <FormLabel className="text-left pr-2">
                             Campaign Type
                           </FormLabel>
                           <FormControl>
@@ -299,7 +299,7 @@ export function CreateSettlementForm() {
                     render={() => (
                       <FormItem className="w-full">
                         <div className="flex items-center justify-between">
-                          <FormLabel className="text-left">
+                          <FormLabel className="text-left pr-2">
                             Survivor Type
                           </FormLabel>
                           <FormControl>

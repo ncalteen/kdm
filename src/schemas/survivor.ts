@@ -272,12 +272,3 @@ export const SurvivorSchema = z.object({
   /** Sculptor / Witch */
   hasSculptorWitch: z.boolean()
 })
-// TODO: Arc Survivors: Limited to one fighting art and secret fighting art.
-// .superRefine(async (data, ctx) => {
-//   // There should only be 3 total fighting arts.
-//   if (data.fightingArts.length + data.secretFightingArts.length > 3)
-//     ctx.addIssue({
-//       code: z.ZodIssueCode.custom,
-//       message: 'Limit: 3 Fighting Arts'
-//     })
-// })

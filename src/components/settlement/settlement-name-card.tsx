@@ -69,7 +69,7 @@ export function SettlementNameCard(
             render={({ field }) => (
               <FormItem className="w-full">
                 <div className="flex items-center justify-between">
-                  <FormLabel className="text-left">Settlement</FormLabel>
+                  <FormLabel className="text-left pr-2">Settlement</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Settlement Name"

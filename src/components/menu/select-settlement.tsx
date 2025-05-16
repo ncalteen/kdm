@@ -45,7 +45,6 @@ export function SelectSettlement({
   const [settlementOptions, setSettlementOptions] = useState<
     Array<{ value: string; label: string }>
   >([])
-  const [minWidth, setMinWidth] = useState<number>(200)
 
   // Get settlements from the campaign
   useEffect(() => {
@@ -57,32 +56,6 @@ export function SelectSettlement({
       value: settlement.id.toString(),
       label: settlement.name
     }))
-
-    // Calculate the width based on the longest settlement name
-    if (options.length > 0) {
-      // Create a temporary span to measure text width
-      const span = document.createElement('span')
-      span.style.visibility = 'hidden'
-      span.style.position = 'absolute'
-      span.style.fontFamily = 'var(--font-sans)'
-      span.style.fontSize = '14px'
-      document.body.appendChild(span)
-
-      // Find the longest name
-      let maxWidth = 0
-      options.forEach((option) => {
-        span.textContent = option.label
-        const width = span.getBoundingClientRect().width
-        maxWidth = Math.max(maxWidth, width)
-      })
-
-      // Add some padding for the button elements (icon, etc.)
-      const minButtonWidth = Math.ceil(maxWidth) + 80
-      setMinWidth(minButtonWidth)
-
-      // Clean up
-      document.body.removeChild(span)
-    }
 
     setSettlementOptions(options)
   }, [])
@@ -105,8 +78,7 @@ export function SelectSettlement({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between"
-          style={{ minWidth: `${minWidth}px` }}
+          className="w-[75%] justify-between"
           disabled={disabled}>
           {value
             ? settlementOptions.find((s) => s.value === value)?.label ||
@@ -115,7 +87,7 @@ export function SelectSettlement({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0" style={{ width: `${minWidth}px` }}>
+      <PopoverContent className="w-[250px] p-0">
         <Command>
           <CommandInput placeholder="Search settlement..." />
           <CommandList>
