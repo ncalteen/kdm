@@ -4,8 +4,17 @@ import { z } from 'zod'
 
 /**
  * Campaign Schema
+ *
+ * All of the data stored for all of the settlements and survivors for a player.
  */
 export const CampaignSchema = z.object({
   settlements: z.array(SettlementSchema),
   survivors: z.array(SurvivorSchema)
 })
+
+/**
+ * Campaign
+ *
+ * All of the data stored for all of the settlements and survivors for a player.
+ */
+export type Campaign = z.infer<typeof CampaignSchema>

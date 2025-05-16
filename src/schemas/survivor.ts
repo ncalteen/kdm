@@ -252,6 +252,14 @@ export const BaseSurvivorSchema = z.object({
 })
 
 /**
+ * Base Survivor
+ *
+ * This includes all attributes and properties of a survivor that are known
+ * before the user tries to create one.
+ */
+export type BaseSurvivor = z.infer<typeof BaseSurvivorSchema>
+
+/**
  * Survivor Schema
  *
  * All base survivor attributes, as well as those that are set when the user
@@ -269,3 +277,11 @@ export const SurvivorSchema = BaseSurvivorSchema.extend({
   /** Settlement ID */
   settlementId: z.number()
 })
+
+/**
+ * Survivor
+ *
+ * All base survivor attributes, as well as those that are set when the user
+ * chooses a settlement and creates a new survivor.
+ */
+export type Survivor = z.infer<typeof SurvivorSchema>

@@ -10,9 +10,9 @@ import {
 import { z } from 'zod'
 
 /**
- * Timeline Entry Schema
+ * Timeline Year Schema
  */
-export const TimelineEntrySchema = z.object({
+export const TimelineYearSchema = z.object({
   /** Lantern Year Completion */
   completed: z.boolean(),
   /** Timeline Entries */
@@ -20,9 +20,14 @@ export const TimelineEntrySchema = z.object({
 })
 
 /**
- * Quarry Entry Schema
+ * Timeline Year
  */
-export const QuarryEntrySchema = z.object({
+export type TimelineYear = z.infer<typeof TimelineYearSchema>
+
+/**
+ * Quarry Schema
+ */
+export const QuarrySchema = z.object({
   /** Collective Cognition (Level 1) */
   ccLevel1: z.boolean(),
   /** Collective Cognition (Level 2) */
@@ -40,9 +45,14 @@ export const QuarryEntrySchema = z.object({
 })
 
 /**
- * Nemesis Entry Schema
+ * Quarry
  */
-export const NemesisEntrySchema = z.object({
+export type Quarry = z.infer<typeof QuarrySchema>
+
+/**
+ * Nemesis Schema
+ */
+export const NemesisSchema = z.object({
   /** Collective Cognition (Level 1) */
   ccLevel1: z.boolean(),
   /** Collective Cognition (Level 2) */
@@ -62,9 +72,14 @@ export const NemesisEntrySchema = z.object({
 })
 
 /**
- * Milestone Entry Schema
+ * Nemesis
  */
-export const MilestoneEntrySchema = z.object({
+export type Nemesis = z.infer<typeof NemesisSchema>
+
+/**
+ * Milestone Schema
+ */
+export const MilestoneSchema = z.object({
   /** Completed */
   complete: z.boolean(),
   /** Event (Triggered on Completion) */
@@ -74,9 +89,14 @@ export const MilestoneEntrySchema = z.object({
 })
 
 /**
- * Location Entry Schema
+ * Milestone
  */
-export const LocationEntrySchema = z.object({
+export type Milestone = z.infer<typeof MilestoneSchema>
+
+/**
+ * Location Schema
+ */
+export const LocationSchema = z.object({
   /** Location Name */
   name: z.string(),
   /** Unlocked */
@@ -84,9 +104,14 @@ export const LocationEntrySchema = z.object({
 })
 
 /**
- * Principle Entry Schema
+ * Location
  */
-export const PrincipleEntrySchema = z.object({
+export type Location = z.infer<typeof LocationSchema>
+
+/**
+ * Principle Schema
+ */
+export const PrincipleSchema = z.object({
   /** Principle Name */
   name: z.string(),
   /** Option 1 Name */
@@ -100,9 +125,14 @@ export const PrincipleEntrySchema = z.object({
 })
 
 /**
- * Resource Entry Schema
+ * Principle
  */
-export const ResourceEntrySchema = z.object({
+export type Principle = z.infer<typeof PrincipleSchema>
+
+/**
+ * Resource Schema
+ */
+export const ResourceSchema = z.object({
   /** Amount/Quantity */
   amount: z.number().min(0),
   /** Category (Basic, Monster, Strange, etc.) */
@@ -114,9 +144,14 @@ export const ResourceEntrySchema = z.object({
 })
 
 /**
- * Collective Cognition Reward Entry Schema
+ * Resource
  */
-export const CcRewardEntrySchema = z.object({
+export type Resource = z.infer<typeof ResourceSchema>
+
+/**
+ * Collective Cognition Reward Schema
+ */
+export const CollectiveCognitionRewardSchema = z.object({
   /** Collective Cognition Value */
   cc: z.number().min(0),
   /** Collective Cognition Reward Name */
@@ -126,9 +161,16 @@ export const CcRewardEntrySchema = z.object({
 })
 
 /**
- * Knowledge Entry Schema
+ * Collective Cognition Reward
  */
-export const KnowledgeEntrySchema = z.object({
+export type CollectiveCognitionReward = z.infer<
+  typeof CollectiveCognitionRewardSchema
+>
+
+/**
+ * Knowledge Schema
+ */
+export const KnowledgeSchema = z.object({
   /** Knowledge Name */
   name: z.string(),
   /** Philosophy */
@@ -136,9 +178,14 @@ export const KnowledgeEntrySchema = z.object({
 })
 
 /**
- * Squires of the Citadel Suspicion Entry Schema
+ * Knowledge
  */
-export const SquireSuspicionEntrySchema = z.object({
+export type Knowledge = z.infer<typeof KnowledgeSchema>
+
+/**
+ * Squires of the Citadel Suspicion Schema
+ */
+export const SquireSuspicionSchema = z.object({
   /** Suspicion Level 1 */
   level1: z.boolean(),
   /** Suspicion Level 2 */
@@ -150,6 +197,11 @@ export const SquireSuspicionEntrySchema = z.object({
   /** Survivor Name */
   name: z.string()
 })
+
+/**
+ * Squires of the Citadel Suspicion
+ */
+export type SquireSuspicion = z.infer<typeof SquireSuspicionSchema>
 
 /**
  * Base Settlement Schema
@@ -171,13 +223,13 @@ export const BaseSettlementSchema = z.object({
   /** Innovations */
   innovations: z.array(z.string()).default([]),
   /** Locations */
-  locations: z.array(LocationEntrySchema).default([]),
+  locations: z.array(LocationSchema).default([]),
   /** Lost Settlement Count */
   lostSettlements: z.number().min(0).default(0),
   /** Milestones */
-  milestones: z.array(MilestoneEntrySchema).default([]),
+  milestones: z.array(MilestoneSchema).default([]),
   /** Nemeses */
-  nemeses: z.array(NemesisEntrySchema).default([]),
+  nemeses: z.array(NemesisSchema).default([]),
   /** Notes */
   notes: z.string().optional(),
   /** Patterns */
@@ -185,11 +237,11 @@ export const BaseSettlementSchema = z.object({
   /** Population */
   population: z.number().min(0).default(0),
   /** Principles */
-  principles: z.array(PrincipleEntrySchema).default([]),
+  principles: z.array(PrincipleSchema).default([]),
   /** Quarries */
-  quarries: z.array(QuarryEntrySchema).default([]),
+  quarries: z.array(QuarrySchema).default([]),
   /** Resources */
-  resources: z.array(ResourceEntrySchema).default([]),
+  resources: z.array(ResourceSchema).default([]),
   /** Seed Patterns */
   seedPatterns: z.array(z.string()).default([]),
   /** Survival Limit */
@@ -197,18 +249,18 @@ export const BaseSettlementSchema = z.object({
   /** Survivor Type */
   survivorType: z.nativeEnum(SurvivorType).default(SurvivorType.CORE),
   /** Settlment Timeline */
-  timeline: z.array(TimelineEntrySchema).default([]),
+  timeline: z.array(TimelineYearSchema).default([]),
 
   /*
    * Arc Survivor Settlements
    */
 
   /** Collective Cognition Rewards */
-  ccRewards: z.array(CcRewardEntrySchema).optional(),
+  ccRewards: z.array(CollectiveCognitionRewardSchema).optional(),
   /** Collective Cognition Value */
   ccValue: z.number().min(0).default(0),
   /** Settlement Knowledges */
-  knowledges: z.array(KnowledgeEntrySchema).default([]),
+  knowledges: z.array(KnowledgeSchema).default([]),
   /** Settlement Philosophies */
   philosophies: z.array(z.nativeEnum(Philosophy)).default([]),
 
@@ -226,8 +278,16 @@ export const BaseSettlementSchema = z.object({
    */
 
   /** Suspicion Levels */
-  suspicions: z.array(SquireSuspicionEntrySchema).optional()
+  suspicions: z.array(SquireSuspicionSchema).optional()
 })
+
+/**
+ * Base Settlement
+ *
+ * This includes all attributes and properties of a settlement that are known
+ * before the user tries to create one.
+ */
+export type BaseSettlement = z.infer<typeof BaseSettlementSchema>
 
 /**
  * Settlement Schema
@@ -244,3 +304,11 @@ export const SettlementSchema = BaseSettlementSchema.extend({
     .describe('Settlement Name')
     .min(1, 'Settlement name is required')
 })
+
+/**
+ * Settlement
+ *
+ * All base settlement attributes, as well as those that are set when the user
+ * chooses a campaign type and creates a new settlement.
+ */
+export type Settlement = z.infer<typeof SettlementSchema>

@@ -18,7 +18,7 @@ import {
 import { WeaponType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 /**
  * Select Weapon Type Component Properties
@@ -41,7 +41,7 @@ export function SelectWeaponType({
   disabled,
   onChange,
   value
-}: SelectWeaponTypeProps) {
+}: SelectWeaponTypeProps): ReactElement {
   const weaponTypeOptions = Object.values(WeaponType).sort((a, b) =>
     a.localeCompare(b)
   )

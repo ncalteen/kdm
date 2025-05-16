@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 /**
  * Select Philosophy Component Properties
@@ -42,7 +42,7 @@ export function SelectPhilosophy({
   value: propValue,
   options,
   disabled
-}: SelectPhilosophyProps) {
+}: SelectPhilosophyProps): ReactElement {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(propValue || '')
 

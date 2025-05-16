@@ -10,8 +10,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { ReactElement } from 'react'
 
-export default function Page() {
+export default function Page(): ReactElement {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-4xl sm:text-5xl font-bold pt-[20px] text-center mb-8">

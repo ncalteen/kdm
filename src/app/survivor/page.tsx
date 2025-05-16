@@ -2,8 +2,8 @@
 
 import { SurvivorForm } from '@/components/survivor/survivor-form'
 import { Button } from '@/components/ui/button'
-import { Survivor } from '@/lib/types'
 import { getSurvivor } from '@/lib/utils'
+import { Survivor } from '@/schemas/survivor'
 import { useSearchParams } from 'next/navigation'
 import { ReactElement, Suspense, useEffect, useState } from 'react'
 
@@ -71,7 +71,7 @@ export function SurvivorPage(): ReactElement {
     )
 
   // If we have a valid survivor, render the form
-  return <SurvivorForm initialSurvivor={survivor} />
+  return <SurvivorForm survivor={survivor} />
 }
 
 /**

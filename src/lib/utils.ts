@@ -9,13 +9,10 @@ import {
   SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
 import { CampaignType } from '@/lib/enums'
-import type {
-  Campaign,
-  CampaignData,
-  Settlement,
-  Survivor,
-  TimelineEvent
-} from '@/lib/types'
+import type { CampaignData } from '@/lib/types'
+import { Campaign } from '@/schemas/campaign'
+import { Settlement, TimelineYear } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -35,7 +32,7 @@ export function getCampaign(): Campaign {
         settlements: [],
         survivors: []
       })
-  ) as Campaign
+  )
 }
 
 /**
@@ -120,7 +117,7 @@ export function getSurvivor(survivorId: number): Survivor | undefined {
 export function getSettlement(settlementId: number): Settlement | undefined {
   return getCampaign().settlements.find(
     (settlement) => settlement.id === settlementId
-  ) as Settlement
+  )
 }
 
 /**
@@ -131,7 +128,7 @@ export function getSettlement(settlementId: number): Settlement | undefined {
  * @param timeline Timeline
  * @returns Current Year
  */
-export function getCurrentYear(timeline: TimelineEvent[]): number {
+export function getCurrentYear(timeline: TimelineYear[]): number {
   return timeline.filter((entry) => entry.completed).length + 1
 }
 

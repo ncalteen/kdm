@@ -2,13 +2,15 @@
 
 import { SettlementForm } from '@/components/settlement/settlement-form'
 import { Button } from '@/components/ui/button'
-import { Settlement } from '@/lib/types'
 import { getSettlement } from '@/lib/utils'
+import { Settlement } from '@/schemas/settlement'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { ReactElement, Suspense, useEffect, useRef, useState } from 'react'
 
-// This component handles the actual page content after searchParams are available
-function SettlementPage() {
+/**
+ * Handles the actual page content after searchParams are available
+ */
+function SettlementPage(): ReactElement {
   const searchParams = useSearchParams()
   const settlementIdParam = searchParams.get('settlementId')
 
@@ -42,8 +44,8 @@ function SettlementPage() {
     }
   }, [settlementIdParam])
 
-  if (!settlementIdParam) {
-    // If no settlement ID is provided, display a message
+  // If no settlement ID is provided, display a message
+  if (!settlementIdParam)
     return (
       <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
         <h1 className="text-4xl sm:text-5xl font-bold pt-[20px] text-center">
@@ -62,10 +64,9 @@ function SettlementPage() {
         </div>
       </div>
     )
-  }
 
   // If settlement data is still loading or not found
-  if (!settlement) {
+  if (!settlement)
     return (
       <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
         <h1 className="text-4xl sm:text-5xl font-bold pt-[20px] text-center">
@@ -87,14 +88,13 @@ function SettlementPage() {
         )}
       </div>
     )
-  }
 
   // If we have a valid settlement, render the form
-  return <SettlementForm initialSettlement={settlement} />
+  return <SettlementForm settlement={settlement} />
 }
 
 // Create a loading component to show during suspense
-function SettlementLoading() {
+function SettlementLoading(): ReactElement {
   return (
     <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
       <h1 className="text-4xl sm:text-5xl font-bold pt-[20px] text-center">
@@ -108,7 +108,7 @@ function SettlementLoading() {
 }
 
 // Main page component with Suspense boundary
-export default function Page() {
+export default function Page(): ReactElement {
   return (
     <Suspense fallback={<SettlementLoading />}>
       <SettlementPage />

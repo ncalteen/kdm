@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/popover'
 import { cn, getCampaign } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 /**
  * Select Settlement Component Properties
@@ -39,7 +39,7 @@ export function SelectSettlement({
   disabled,
   onChange,
   value: propValue
-}: SelectSettlementProps) {
+}: SelectSettlementProps): ReactElement {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(propValue || '')
   const [settlementOptions, setSettlementOptions] = useState<
@@ -50,7 +50,7 @@ export function SelectSettlement({
   useEffect(() => {
     // Only run on the client side
     const campaign = getCampaign()
-    const settlements = campaign?.settlements || []
+    const settlements = campaign.settlements || []
 
     const options = settlements.map((settlement) => ({
       value: settlement.id.toString(),

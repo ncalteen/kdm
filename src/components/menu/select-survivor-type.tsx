@@ -1,8 +1,5 @@
 'use client'
 
-import { Check, ChevronsUpDown } from 'lucide-react'
-import * as React from 'react'
-
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -19,6 +16,8 @@ import {
 } from '@/components/ui/popover'
 import { SurvivorType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { ReactElement, useEffect, useState } from 'react'
 
 /**
  * Select Survivor Type Component Properties
@@ -44,9 +43,9 @@ export function SelectSurvivorType({
   value: propValue,
   disabled = false,
   id
-}: SelectSurvivorTypeProps) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState(propValue || '')
+}: SelectSurvivorTypeProps): ReactElement {
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState(propValue || '')
 
   // Create survivor type options from the SurvivorType enum
   const survivorTypeOptions = Object.values(SurvivorType).map(
@@ -56,7 +55,7 @@ export function SelectSurvivorType({
     })
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (propValue) {
       setValue(propValue)
     }
@@ -74,9 +73,7 @@ export function SelectSurvivorType({
     setValue(currentValue)
     setOpen(false)
 
-    if (onChange && currentValue) {
-      onChange(currentValue as SurvivorType)
-    }
+    if (onChange && currentValue) onChange(currentValue as SurvivorType)
   }
 
   return (

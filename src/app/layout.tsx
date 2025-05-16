@@ -1,8 +1,9 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
-import type { Metadata } from 'next'
+import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { ReactElement, ReactNode } from 'react'
 import './globals.css'
 
 const geistSans = Geist({
@@ -22,8 +23,8 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children
 }: Readonly<{
-  children: React.ReactNode
-}>) {
+  children: ReactNode
+}>): ReactElement {
   return (
     <html lang="en" className="dark">
       <body
