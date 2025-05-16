@@ -4,96 +4,86 @@ import { Gender, Philosophy, WeaponType } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
- * Survivor Schema
+ * Base Survivor Schema
  *
- * All survivor attributes and properties across all settlement types. Depending
- * on the settlement type, some properties may be optional or different.
+ * This includes all attributes and properties of a survivor that are known
+ * before the user tries to create one.
  */
-export const SurvivorSchema = z.object({
+export const BaseSurvivorSchema = z.object({
   /** Abilities and Impairments */
-  abilitiesAndImpairments: z.array(z.string()),
+  abilitiesAndImpairments: z.array(z.string()).default([]),
   /** Accuracy */
-  accuracy: z.number().min(0),
+  accuracy: z.number().min(0).default(0),
   /** Can Dash */
-  canDash: z.boolean().optional(),
+  canDash: z.boolean().default(false),
   /** Can Dodge */
-  canDodge: z.boolean().optional(),
+  canDodge: z.boolean().default(true),
   /** Can Fist Pump */
-  canFistPump: z.boolean().optional(),
+  canFistPump: z.boolean().default(false),
   /** Can Encourage */
-  canEncourage: z.boolean().optional(),
+  canEncourage: z.boolean().default(false),
   /** Can Spend Survival */
-  canSpendSurvival: z.boolean().optional(),
+  canSpendSurvival: z.boolean().default(true),
   /** Can Surge */
-  canSurge: z.boolean().optional(),
+  canSurge: z.boolean().default(false),
   /** Can Use Fighting Arts or Knowledges */
-  canUseFightingArtsOrKnowledges: z.boolean().optional(),
+  canUseFightingArtsOrKnowledges: z.boolean().default(true),
   /** Courage */
-  courage: z.number().min(0).max(9),
+  courage: z.number().min(0).max(9).default(0),
   /** Survivor is Dead */
-  dead: z.boolean(),
+  dead: z.boolean().default(false),
   /** Disorders */
-  disorders: z.array(z.string()).max(3),
+  disorders: z.array(z.string()).max(3).default([]),
   /** Evasion */
-  evasion: z.number().min(0),
+  evasion: z.number().min(0).default(0),
   /** Fighting Arts */
-  fightingArts: z.array(z.string()),
-  /** Gender */
-  gender: z.enum(Object.values(Gender) as [Gender, ...Gender[]]),
+  fightingArts: z.array(z.string()).default([]),
   /** Has Analyze */
-  hasAnalyze: z.boolean(),
+  hasAnalyze: z.boolean().default(false),
   /** Has Explore */
-  hasExplore: z.boolean(),
+  hasExplore: z.boolean().default(false),
   /** Has Matchmaker */
-  hasMatchmaker: z.boolean(),
+  hasMatchmaker: z.boolean().default(false),
   /** Has Prepared */
-  hasPrepared: z.boolean(),
+  hasPrepared: z.boolean().default(false),
   /** Has Stalwart */
-  hasStalwart: z.boolean(),
+  hasStalwart: z.boolean().default(false),
   /** Has Tinker */
-  hasTinker: z.boolean(),
+  hasTinker: z.boolean().default(false),
   /** Hunt XP */
-  huntXP: z.number().min(0).max(16),
-  /** Hunt XP Rank Up Milestones */
-  huntXPRankUp: z.array(z.number()),
-  /** Survivor ID */
-  id: z.number(),
+  huntXP: z.number().min(0).max(16).default(0),
   /** Insanity */
-  insanity: z.number().min(0),
+  insanity: z.number().min(0).default(0),
   /** Luck */
-  luck: z.number().min(0),
+  luck: z.number().min(0).default(0),
   /** Movement */
-  movement: z.number().min(0),
-  /** Name */
-  name: z.string().describe('Name').min(1),
+  movement: z.number().min(0).default(5),
   /** Next Departure */
   nextDeparture: z.string().optional(),
+  /** Notes */
+  notes: z.string().optional(),
   /** Once Per Lifetime */
-  oncePerLifetime: z.array(z.string()),
+  oncePerLifetime: z.array(z.string()).default([]),
   /** Reroll Used */
-  rerollUsed: z.boolean(),
-  /** Survivor is Retired */
-  retired: z.boolean(),
+  rerollUsed: z.boolean().default(false),
+  /** Retired */
+  retired: z.boolean().default(false),
   /** Secret Fighting Arts */
-  secretFightingArts: z.array(z.string()),
-  /** Settlement ID */
-  settlementId: z.number(),
+  secretFightingArts: z.array(z.string()).default([]),
   /** Skip Next Hunt */
-  skipNextHunt: z.boolean(),
+  skipNextHunt: z.boolean().default(false),
   /** Speed */
-  speed: z.number().min(0),
+  speed: z.number().min(0).default(0),
   /** Strength */
-  strength: z.number().min(0),
-  /** Survival */
-  survival: z.number().min(0),
+  strength: z.number().min(0).default(0),
+  /** Survival (Named survivors start with 1 survival) */
+  survival: z.number().min(0).default(1),
   /** Understanding */
-  understanding: z.number().min(0).max(9),
+  understanding: z.number().min(0).max(9).default(0),
   /** Weapon Proficiency (Level) */
-  weaponProficiency: z.number().min(0).max(8),
+  weaponProficiency: z.number().min(0).max(8).default(0),
   /** Weapon Proficiency (Type) */
-  weaponProficiencyType: z
-    .enum(Object.keys(WeaponType) as [WeaponType, ...WeaponType[]])
-    .optional(),
+  weaponProficiencyType: z.nativeEnum(WeaponType).optional(),
 
   /*
    * Hunt/Showdown Attributes
@@ -103,99 +93,89 @@ export const SurvivorSchema = z.object({
    */
 
   /** Arm: Armor */
-  armArmor: z.number().min(0),
+  armArmor: z.number().min(0).default(0),
   /** Arm: Light Damage Received */
-  armLightDamage: z.boolean(),
+  armLightDamage: z.boolean().default(false),
   /** Arm: Heavy Damage Received */
-  armHeavyDamage: z.boolean(),
+  armHeavyDamage: z.boolean().default(false),
   /** Body: Armor */
-  bodyArmor: z.number().min(0),
+  bodyArmor: z.number().min(0).default(0),
   /** Body: Light Damage */
-  bodyLightDamage: z.boolean(),
+  bodyLightDamage: z.boolean().default(false),
   /** Body: Heavy Damage */
-  bodyHeavyDamage: z.boolean(),
+  bodyHeavyDamage: z.boolean().default(false),
   /** Brain: Light Damage Received */
-  brainLightDamage: z.boolean(),
+  brainLightDamage: z.boolean().default(false),
   /** Head: Armor */
-  headArmor: z.number().min(0),
+  headArmor: z.number().min(0).default(0),
   /** Head: Heavy Damage Received */
-  headHeavyDamage: z.boolean(),
+  headHeavyDamage: z.boolean().default(false),
   /** Leg: Armor */
-  legArmor: z.number().min(0),
+  legArmor: z.number().min(0).default(0),
   /** Leg: Light Damage Received */
-  legLightDamage: z.boolean(),
+  legLightDamage: z.boolean().default(false),
   /** Leg: Heavy Damage Received */
-  legHeavyDamage: z.boolean(),
+  legHeavyDamage: z.boolean().default(false),
   /** Waist: Armor */
-  waistArmor: z.number().min(0),
+  waistArmor: z.number().min(0).default(0),
   /** Waist: Light Damage Received */
-  waistLightDamage: z.boolean(),
+  waistLightDamage: z.boolean().default(false),
   /** Waist: Heavy Damage Received */
-  waistHeavyDamage: z.boolean(),
+  waistHeavyDamage: z.boolean().default(false),
 
   /*
    * Severe Injuries
    */
 
-  /** Arm: Broken (Left) */
-  armBrokenLeft: z.boolean(),
-  /** Arm: Broken (Right) */
-  armBrokenRight: z.boolean(),
+  /** Arm: Broken */
+  armBroken: z.number().min(0).max(2).default(0),
   /** Arm: Contracture */
-  armContracture: z.number().min(0).max(5),
-  /** Arm: Dismembered (Left) */
-  armDismemberedLeft: z.boolean(),
-  /** Arm: Dismembered (Right) */
-  armDismemberedRight: z.boolean(),
+  armContracture: z.number().min(0).max(5).default(0),
+  /** Arm: Dismembered */
+  armDismembered: z.number().min(0).max(2).default(0),
   /** Arm: Ruptured Muscle */
-  armRupturedMuscle: z.boolean(),
+  armRupturedMuscle: z.boolean().default(false),
   /** Body: Broken Rib */
-  bodyBrokenRib: z.number().min(0).max(5),
+  bodyBrokenRib: z.number().min(0).max(5).default(0),
   /** Body: Destroyed Back */
-  bodyDestroyedBack: z.boolean(),
+  bodyDestroyedBack: z.boolean().default(false),
   /** Body: Gaping Chest Wound */
-  bodyGapingChestWound: z.number().min(0).max(5),
-  /** Head: Blind (Left) */
-  headBlindLeft: z.boolean(),
-  /** Head: Blind (Right) */
-  headBlindRight: z.boolean(),
+  bodyGapingChestWound: z.number().min(0).max(5).default(0),
+  /** Head: Blind */
+  headBlind: z.number().min(0).max(2).default(0),
   /** Head: Deaf */
-  headDeaf: z.boolean(),
+  headDeaf: z.boolean().default(false),
   /** Head: Intracranial Hemorrhage */
-  headIntracranialHemorrhage: z.boolean(),
+  headIntracranialHemorrhage: z.boolean().default(false),
   /** Head: Shattered Jaw */
-  headShatteredJaw: z.boolean(),
-  /** Leg: Broken (Left) */
-  legBrokenLeft: z.boolean(),
-  /** Leg: Broken (Right) */
-  legBrokenRight: z.boolean(),
-  /** Leg: Dismembered (Left) */
-  legDismemberedLeft: z.boolean(),
-  /** Leg: Dismembered (Right) */
-  legDismemberedRight: z.boolean(),
+  headShatteredJaw: z.boolean().default(false),
+  /** Leg: Broken */
+  legBroken: z.number().min(0).max(2).default(0),
+  /** Leg: Dismembered */
+  legDismembered: z.number().min(0).max(2).default(0),
   /** Leg: Hamstrung */
-  legHamstrung: z.boolean(),
+  legHamstrung: z.boolean().default(false),
   /** Waist: Broken Hip */
-  waistBrokenHip: z.boolean(),
+  waistBrokenHip: z.boolean().default(false),
   /** Waist: Destroyed Genitals */
-  waistDestroyedGenitals: z.boolean(),
+  waistDestroyedGenitals: z.boolean().default(false),
   /** Waist: Intestinal Prolapse */
-  waistIntestinalProlapse: z.boolean(),
+  waistIntestinalProlapse: z.boolean().default(false),
   /** Waist: Warped Pelvis */
-  waistWarpedPelvis: z.number().min(0).max(5),
+  waistWarpedPelvis: z.number().min(0).max(5).default(0),
 
   /*
    * Arc Survivors
    */
 
   /** Can Endure */
-  canEndure: z.boolean().optional(),
+  canEndure: z.boolean().default(false),
   /** Knowledge 1 */
   knowledge1: z.string().optional(),
   /** Knowledge 1: Observation Conditions */
   knowledge1ObservationConditions: z.string().optional(),
   /** Knowledge 1: Observation Ranks */
-  knowledge1ObservationRank: z.number().min(0).max(9).optional(),
+  knowledge1ObservationRank: z.number().min(0).max(9).default(0),
   /** Knowledge 1: Rank Up Milestone */
   knowledge1RankUp: z.number().min(0).max(9).optional(),
   /** Knowledge 1: Rules */
@@ -205,70 +185,87 @@ export const SurvivorSchema = z.object({
   /** Knowledge 2: Observation Conditions */
   knowledge2ObservationConditions: z.string().optional(),
   /** Knowledge 2: Observation Ranks */
-  knowledge2ObservationRank: z.number().min(0).max(9).optional(),
+  knowledge2ObservationRank: z.number().min(0).max(9).default(0),
   /** Knowledge 2: Rank Up Milestone */
   knowledge2RankUp: z.number().min(0).max(9).optional(),
   /** Knowledge 2: Rules */
   knowledge2Rules: z.string().optional(),
   /** Lumi */
-  lumi: z.number().min(0),
+  lumi: z.number().min(0).default(0),
   /** Neurosis */
   neurosis: z.string().optional(),
   /** Philosophy */
-  philosophy: z
-    .enum(Object.values(Philosophy) as [Philosophy, ...Philosophy[]])
-    .optional(),
+  philosophy: z.nativeEnum(Philosophy).optional(),
   /** Philosophy Rank */
-  philosophyRank: z.number().min(0).optional(),
+  philosophyRank: z.number().min(0).default(0),
   /** Systemic Pressure */
-  systemicPressure: z.number().min(0),
+  systemicPressure: z.number().min(0).default(0),
   /** Tenet Knowledge */
   tenetKnowledge: z.string().optional(),
   /** Tenet Knowledge: Observation Conditions */
   tenetKnowledgeObservationConditions: z.string().optional(),
   /** Tenet Knowledge: Observation Ranks */
-  tenetKnowledgeObservationRank: z.number().min(0).max(9).optional(),
+  tenetKnowledgeObservationRank: z.number().min(0).max(9).default(0),
   /** Tenet Knowledge: Rank Up Milestone */
   tenetKnowledgeRankUp: z.number().min(0).max(9).optional(),
   /** Tenet Knowledge: Rules */
   tenetKnowledgeRules: z.string().optional(),
   /** Torment */
-  torment: z.number().min(0),
+  torment: z.number().min(0).default(0),
 
-  /**
+  /*
    * People of the Stars Survivors
    */
 
   /** Absolute / Reaper */
-  hasAbsoluteReaper: z.boolean(),
+  hasAbsoluteReaper: z.boolean().default(false),
   /** Absolute / Rust */
-  hasAbsoluteRust: z.boolean(),
+  hasAbsoluteRust: z.boolean().default(false),
   /** Absolute / Storm */
-  hasAbsoluteStorm: z.boolean(),
+  hasAbsoluteStorm: z.boolean().default(false),
   /** Absolute / Witch */
-  hasAbsoluteWitch: z.boolean(),
+  hasAbsoluteWitch: z.boolean().default(false),
   /** Gambler / Reaper */
-  hasGamblerReaper: z.boolean(),
+  hasGamblerReaper: z.boolean().default(false),
   /** Gambler / Rust */
-  hasGamblerRust: z.boolean(),
+  hasGamblerRust: z.boolean().default(false),
   /** Gambler / Storm */
-  hasGamblerStorm: z.boolean(),
+  hasGamblerStorm: z.boolean().default(false),
   /** Gambler / Witch */
-  hasGamblerWitch: z.boolean(),
+  hasGamblerWitch: z.boolean().default(false),
   /** Goblin / Reaper */
-  hasGoblinReaper: z.boolean(),
+  hasGoblinReaper: z.boolean().default(false),
   /** Goblin / Rust */
-  hasGoblinRust: z.boolean(),
+  hasGoblinRust: z.boolean().default(false),
   /** Goblin / Storm */
-  hasGoblinStorm: z.boolean(),
+  hasGoblinStorm: z.boolean().default(false),
   /** Goblin / Witch*/
-  hasGoblinWitch: z.boolean(),
+  hasGoblinWitch: z.boolean().default(false),
   /** Sculptor / Reaper */
-  hasSculptorReaper: z.boolean(),
+  hasSculptorReaper: z.boolean().default(false),
   /** Sculptor / Rust */
-  hasSculptorRust: z.boolean(),
+  hasSculptorRust: z.boolean().default(false),
   /** Sculptor / Storm */
-  hasSculptorStorm: z.boolean(),
+  hasSculptorStorm: z.boolean().default(false),
   /** Sculptor / Witch */
-  hasSculptorWitch: z.boolean()
+  hasSculptorWitch: z.boolean().default(false)
+})
+
+/**
+ * Survivor Schema
+ *
+ * All base survivor attributes, as well as those that are set when the user
+ * chooses a settlement and creates a new survivor.
+ */
+export const SurvivorSchema = BaseSurvivorSchema.extend({
+  /** Gender */
+  gender: z.nativeEnum(Gender),
+  /** Hunt XP Rank Up Milestones */
+  huntXPRankUp: z.array(z.number()),
+  /** Survivor ID */
+  id: z.number(),
+  /** Name */
+  name: z.string(),
+  /** Settlement ID */
+  settlementId: z.number()
 })

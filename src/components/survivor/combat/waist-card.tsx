@@ -9,11 +9,9 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SurvivorType } from '@/lib/enums'
-import { cn, getSettlement } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { RibbonIcon, Shield } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -27,17 +25,6 @@ import { z } from 'zod'
  * @returns Waist Card Component
  */
 export function WaistCard(form: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
-  // Get the survivor type from the settlement data.
-  const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
-    undefined
-  )
-
-  // Set the survivor type when the component mounts.
-  useEffect(() => {
-    const settlement = getSettlement(form.getValues('settlementId'))
-    setSurvivorType(settlement?.survivorType)
-  }, [form])
-
   return (
     <div className="flex flex-row w-full">
       <FormField

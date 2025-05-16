@@ -2,6 +2,7 @@
 
 import {
   CampaignType,
+  Philosophy,
   ResourceCategory,
   ResourceType,
   SurvivorType
@@ -105,17 +106,11 @@ export const ResourceEntrySchema = z.object({
   /** Amount/Quantity */
   amount: z.number().min(0),
   /** Category (Basic, Monster, Strange, etc.) */
-  category: z.enum(
-    Object.keys(ResourceCategory) as [ResourceCategory, ...ResourceCategory[]]
-  ),
+  category: z.nativeEnum(ResourceCategory),
   /** Resource Name */
   name: z.string(),
   /** Types (Bone, Hide, Organ, etc.) */
-  types: z
-    .array(
-      z.enum(Object.keys(ResourceType) as [ResourceType, ...ResourceType[]])
-    )
-    .min(1)
+  types: z.array(z.nativeEnum(ResourceType)).min(1)
 })
 
 /**
@@ -137,7 +132,7 @@ export const KnowledgeEntrySchema = z.object({
   /** Knowledge Name */
   name: z.string(),
   /** Philosophy */
-  philosophy: z.string().optional()
+  philosophy: z.nativeEnum(Philosophy).optional()
 })
 
 /**
@@ -157,60 +152,52 @@ export const SquireSuspicionEntrySchema = z.object({
 })
 
 /**
- * Settlement Schema
+ * Base Settlement Schema
  *
- * All settlement attributes and properties across all settlement types.
+ * This includes all attributes and properties of a settlement that are known
+ * before the user tries to create one.
  */
-export const SettlementSchema = z.object({
+export const BaseSettlementSchema = z.object({
   /** Campaign Type */
-  campaignType: z.enum(
-    Object.values(CampaignType) as [CampaignType, ...CampaignType[]]
-  ),
+  campaignType: z
+    .nativeEnum(CampaignType)
+    .default(CampaignType.PEOPLE_OF_THE_LANTERN),
   /** Death Count */
-  deathCount: z.number().min(0),
+  deathCount: z.number().min(0).default(0),
   /** Departing Survivor Bonuses */
-  departingBonuses: z.array(z.string()),
+  departingBonuses: z.array(z.string()).default([]),
   /** Gear */
-  gear: z.array(z.string()),
-  /** Settlement ID */
-  id: z.number(),
+  gear: z.array(z.string()).default([]),
   /** Innovations */
-  innovations: z.array(z.string()),
+  innovations: z.array(z.string()).default([]),
   /** Locations */
-  locations: z.array(LocationEntrySchema),
+  locations: z.array(LocationEntrySchema).default([]),
   /** Lost Settlement Count */
-  lostSettlements: z.number().min(0),
+  lostSettlements: z.number().min(0).default(0),
   /** Milestones */
-  milestones: z.array(MilestoneEntrySchema),
-  /** Settlement Name */
-  name: z
-    .string()
-    .describe('Settlement Name')
-    .min(1, 'Settlement name is required'),
+  milestones: z.array(MilestoneEntrySchema).default([]),
   /** Nemeses */
-  nemeses: z.array(NemesisEntrySchema),
+  nemeses: z.array(NemesisEntrySchema).default([]),
   /** Notes */
   notes: z.string().optional(),
   /** Patterns */
-  patterns: z.array(z.string()),
+  patterns: z.array(z.string()).default([]),
   /** Population */
-  population: z.number().min(0),
+  population: z.number().min(0).default(0),
   /** Principles */
-  principles: z.array(PrincipleEntrySchema),
+  principles: z.array(PrincipleEntrySchema).default([]),
   /** Quarries */
-  quarries: z.array(QuarryEntrySchema),
+  quarries: z.array(QuarryEntrySchema).default([]),
   /** Resources */
-  resources: z.array(ResourceEntrySchema),
+  resources: z.array(ResourceEntrySchema).default([]),
   /** Seed Patterns */
-  seedPatterns: z.array(z.string()),
+  seedPatterns: z.array(z.string()).default([]),
   /** Survival Limit */
-  survivalLimit: z.number().min(0),
+  survivalLimit: z.number().min(1).default(1),
   /** Survivor Type */
-  survivorType: z.enum(
-    Object.values(SurvivorType) as [SurvivorType, ...SurvivorType[]]
-  ),
+  survivorType: z.nativeEnum(SurvivorType).default(SurvivorType.CORE),
   /** Settlment Timeline */
-  timeline: z.array(TimelineEntrySchema),
+  timeline: z.array(TimelineEntrySchema).default([]),
 
   /*
    * Arc Survivor Settlements
@@ -219,20 +206,20 @@ export const SettlementSchema = z.object({
   /** Collective Cognition Rewards */
   ccRewards: z.array(CcRewardEntrySchema).optional(),
   /** Collective Cognition Value */
-  ccValue: z.number().min(0).optional(),
+  ccValue: z.number().min(0).default(0),
   /** Settlement Knowledges */
-  knowledges: z.array(KnowledgeEntrySchema).optional(),
+  knowledges: z.array(KnowledgeEntrySchema).default([]),
   /** Settlement Philosophies */
-  philosophies: z.array(z.string()).optional(),
+  philosophies: z.array(z.nativeEnum(Philosophy)).default([]),
 
   /*
    * People of the Lantern/Sun Campaigns
    */
 
   /** Lantern Research Level */
-  lanternResearchLevel: z.number().min(0).optional(),
+  lanternResearchLevel: z.number().min(0).default(0),
   /** Monster Volumes */
-  monsterVolumes: z.array(z.string()).optional(),
+  monsterVolumes: z.array(z.string()).default([]),
 
   /*
    * Squires of the Citadel Campaigns
@@ -240,4 +227,20 @@ export const SettlementSchema = z.object({
 
   /** Suspicion Levels */
   suspicions: z.array(SquireSuspicionEntrySchema).optional()
+})
+
+/**
+ * Settlement Schema
+ *
+ * All base settlement attributes, as well as those that are set when the user
+ * chooses a campaign type and creates a new settlement.
+ */
+export const SettlementSchema = BaseSettlementSchema.extend({
+  /** Settlement ID */
+  id: z.number(),
+  /** Settlement Name */
+  name: z
+    .string()
+    .describe('Settlement Name')
+    .min(1, 'Settlement name is required')
 })

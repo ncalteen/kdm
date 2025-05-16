@@ -138,12 +138,13 @@ export function getCurrentYear(timeline: TimelineEvent[]): number {
 /**
  * Checks if the settlement has innovated the Encourage action.
  *
+ * @param settlementId Settlement ID
  * @returns True if the settlement has the Language innovation.
  */
-export function canEncourage(): boolean {
+export function canEncourage(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
-    (settlement) => settlement.id === 1
-  ) as Settlement
+    (settlement) => settlement.id === settlementId
+  )
 
   if (!settlement) return false
 
@@ -157,12 +158,13 @@ export function canEncourage(): boolean {
 /**
  * Checks if the settlement has innovated the Surge action.
  *
+ * @param settlementId Settlement ID
  * @returns True if the settlement has the Inner Lantern innovation.
  */
-export function canSurge(): boolean {
+export function canSurge(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
-    (settlement) => settlement.id === 1
-  ) as Settlement
+    (settlement) => settlement.id === settlementId
+  )
 
   if (!settlement) return false
 
@@ -176,12 +178,13 @@ export function canSurge(): boolean {
 /**
  * Checks if the settlement has innovated the Dash action.
  *
+ * @param settlementId Settlement ID
  * @returns True if the settlement has the Paint innovation.
  */
-export function canDash(): boolean {
+export function canDash(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
-    (settlement) => settlement.id === 1
-  ) as Settlement
+    (settlement) => settlement.id === settlementId
+  )
 
   if (!settlement) return false
 
@@ -195,12 +198,13 @@ export function canDash(): boolean {
 /**
  * Checks if the settlement has innovated the Fist Pump action.
  *
+ * @param settlementId Settlement ID
  * @returns True if the settlement has silent dialect innovation.
  */
-export function canFistPump(): boolean {
+export function canFistPump(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
-    (settlement) => settlement.id === 1
-  ) as Settlement
+    (settlement) => settlement.id === settlementId
+  )
 
   if (!settlement) return false
 
@@ -214,22 +218,29 @@ export function canFistPump(): boolean {
 /**
  * Checks if the settlement has innovated the Endure action.
  *
+ * @param settlementId Settlement ID
  * @returns True if the settlement has innovated the Endure action.
  */
-export function canEndure(): boolean {
+export function canEndure(settlementId: number): boolean {
+  const settlement = getCampaign().settlements.find(
+    (settlement) => settlement.id === settlementId
+  )
   // TODO
+  console.log('canEndure', settlementId, settlement)
+
   return false
 }
 
 /**
  * Checks if new survivors are born with +1 understanding.
  *
+ * @param settlementId Settlement ID
  * @returns True if the settlement has the Graves innovation.
  */
-export function bornWithUnderstanding(): boolean {
+export function bornWithUnderstanding(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
-    (settlement) => settlement.id === 1
-  ) as Settlement
+    (settlement) => settlement.id === settlementId
+  )
 
   if (!settlement) return false
 

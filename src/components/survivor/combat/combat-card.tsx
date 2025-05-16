@@ -6,10 +6,7 @@ import { HeadCard } from '@/components/survivor/combat/head-card'
 import { LegsCard } from '@/components/survivor/combat/legs-card'
 import { WaistCard } from '@/components/survivor/combat/waist-card'
 import { Card, CardContent } from '@/components/ui/card'
-import { SurvivorType } from '@/lib/enums'
-import { getSettlement } from '@/lib/utils'
 import { SurvivorSchema } from '@/schemas/survivor'
-import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -25,17 +22,6 @@ import { z } from 'zod'
 export function CombatCard(
   form: UseFormReturn<z.infer<typeof SurvivorSchema>>
 ) {
-  // Get the survivor type from the settlement data.
-  const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
-    undefined
-  )
-
-  // Set the survivor type when the component mounts.
-  useEffect(() => {
-    const settlement = getSettlement(form.getValues('settlementId'))
-    setSurvivorType(settlement?.survivorType)
-  }, [form])
-
   return (
     <div className="flex flex-col gap-2 mt-2">
       <Card>

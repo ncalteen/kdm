@@ -20,11 +20,11 @@ import {
   getLostSettlementCount,
   getNextSettlementId
 } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { BaseSettlementSchema, SettlementSchema } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect } from 'react'
+import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
@@ -40,27 +40,13 @@ import { z } from 'zod'
 export function CreateSettlementForm() {
   const router = useRouter()
 
-  // Set the default campaign and survivor type.
-  const [defaultValues] = useState<Partial<z.infer<typeof SettlementSchema>>>(
-    () => ({
-      campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-      survivorType: SurvivorType.CORE
-    })
-  )
-
-  // Sets/tracks the settlement ID and lost settlement count.
-  const [settlementId, setSettlementId] = useState(1)
-  const [lostSettlements, setLostSettlements] = useState(0)
-
-  // Initialize the form with the settlement schema and default values.
   const form = useForm<z.infer<typeof SettlementSchema>>({
-    resolver: zodResolver(SettlementSchema),
-    defaultValues: {
-      ...defaultValues,
-      id: settlementId,
-      survivalLimit: 1,
-      lostSettlements
-    }
+    // Need to set the type here directly, because the schema includes a lot of
+    // fields with default values that are not resolved in the type.
+    resolver: zodResolver(SettlementSchema) as Resolver<
+      z.infer<typeof SettlementSchema>
+    >,
+    defaultValues: BaseSettlementSchema.parse({})
   })
 
   /** Campaign Type */
@@ -69,43 +55,28 @@ export function CreateSettlementForm() {
   /** Survivor Type */
   const survivorType = form.watch('survivorType')
 
-  // Set the initial values for the form fields when the component mounts.
+  // Set the form values when the component mounts.
   useEffect(() => {
     // Get campaign data for the campaign type.
-    const campaignData = getCampaignData(
-      defaultValues.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
-    )
+    const campaignData = getCampaignData(campaignType)
 
     // Calculate the next settlement ID based on the latest in localStorage.
-    setSettlementId(getNextSettlementId())
-    defaultValues.id = getNextSettlementId()
+    form.setValue('id', getNextSettlementId())
 
     // Calculate the lost settlement count based on the number of settlements
     // present in localStorage.
-    setLostSettlements(getLostSettlementCount())
-    defaultValues.lostSettlements = getLostSettlementCount()
-
-    // Update the essential form fields.
-    form.setValue('id', getNextSettlementId())
     form.setValue('lostSettlements', getLostSettlementCount())
 
     // Set all the required settlement fields with default values that will be
     // used when the form is submitted.
-    form.setValue('deathCount', 0)
-    form.setValue('departingBonuses', [])
-    form.setValue('gear', [])
     form.setValue('innovations', campaignData.innovations)
     form.setValue('locations', campaignData.locations)
     form.setValue('milestones', campaignData.milestones)
     form.setValue('nemeses', campaignData.nemeses)
-    form.setValue('patterns', [])
-    form.setValue('population', 0)
     form.setValue('principles', campaignData.principles)
     form.setValue('quarries', campaignData.quarries)
-    form.setValue('resources', [])
-    form.setValue('seedPatterns', [])
     form.setValue('timeline', campaignData.timeline)
-  }, [form, defaultValues])
+  }, [form, campaignType])
 
   /**
    * Handles the user changing the campaign type.
@@ -172,78 +143,34 @@ export function CreateSettlementForm() {
       // Get campaign data based on the selected campaign type
       const campaignData = getCampaignData(values.campaignType)
 
-      // Create a complete settlement object with all required fields
-      const settlement = {
-        ...values,
-        // Set values from the default campaign data.
-        innovations: campaignData.innovations,
-        locations: campaignData.locations,
-        milestones: campaignData.milestones,
-        nemeses: campaignData.nemeses,
-        principles: campaignData.principles,
-        quarries: campaignData.quarries,
-        timeline: campaignData.timeline,
+      /*
+       * Arc Survivor Settlements
+       */
+      if (values.survivorType === SurvivorType.ARC)
+        values.ccRewards = campaignData.ccRewards
 
-        // Initialize empty properties.
-        deathCount: 0,
-        departingBonuses: [],
-        gear: [],
-        notes: undefined,
-        patterns: [],
-        population: 0,
-        resources: [],
-        seedPatterns: [],
-
-        /*
-         * Arc Survivor Settlements
-         */
-        ccRewards:
-          values.survivorType === SurvivorType.ARC
-            ? campaignData.ccRewards || []
-            : undefined,
-        ccValue: values.survivorType === SurvivorType.ARC ? 0 : undefined,
-        knowledges: values.survivorType === SurvivorType.ARC ? [] : undefined,
-        philosophies: values.survivorType === SurvivorType.ARC ? [] : undefined,
-
-        /*
-         * People of the Lantern/Sun Campaigns
-         */
-        lanternResearchLevel:
-          values.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-          values.campaignType === CampaignType.PEOPLE_OF_THE_SUN
-            ? 0
-            : undefined,
-        monsterVolumes:
-          values.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-          values.campaignType === CampaignType.PEOPLE_OF_THE_SUN
-            ? []
-            : undefined,
-
-        /*
-         * Squires of the Citadel Campaigns
-         */
-        suspicions:
-          values.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-            ? DefaultSquiresSuspicion
-            : undefined
-      }
+      /*
+       * Squires of the Citadel Campaigns
+       */
+      if (values.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
+        values.suspicions = DefaultSquiresSuspicion
 
       // Get existing campaign data from localStorage or initialize new
       const campaign = getCampaign()
 
       // Add the new settlement to the campaign
-      campaign.settlements.push(settlement)
+      campaign.settlements.push(values)
 
       // Save the updated campaign to localStorage
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
       // Show success message
       toast.success(
-        'A lantern pierces the overwhelming darkness. A new settlement is born!'
+        'A lantern pierces the overwhelming darkness. A new settlement is born.'
       )
 
       // Redirect to the settlement page, passing the ID via query parameters
-      router.push(`/settlement?settlementId=${settlement.id}`)
+      router.push(`/settlement?settlementId=${values.id}`)
     } catch (error) {
       console.error('Settlement Create Error:', error)
       toast.error('The darkness refuses your offering. Please try again.')

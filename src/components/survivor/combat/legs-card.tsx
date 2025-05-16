@@ -9,11 +9,9 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SurvivorType } from '@/lib/enums'
-import { cn, getSettlement } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -27,17 +25,6 @@ import { z } from 'zod'
  * @returns Legs Card Component
  */
 export function LegsCard(form: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
-  // Get the survivor type from the settlement data.
-  const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
-    undefined
-  )
-
-  // Set the survivor type when the component mounts.
-  useEffect(() => {
-    const settlement = getSettlement(form.getValues('settlementId'))
-    setSurvivorType(settlement?.survivorType)
-  }, [form])
-
   return (
     <div className="flex flex-row w-full">
       <FormField
@@ -83,32 +70,23 @@ export function LegsCard(form: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
           <div className="flex flex-row gap-2">
             <FormField
               control={form.control}
-              name="legDismemberedLeft"
+              name="legDismembered"
               render={({ field }) => (
-                <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                  <FormControl>
-                    <Checkbox
-                      className="h-4 w-4 rounded-sm"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="legDismemberedRight"
-              render={({ field }) => (
-                <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                  <FormControl>
-                    <Checkbox
-                      className="h-4 w-4 rounded-sm"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
+                <FormItem>
+                  <div className="flex gap-1 items-center">
+                    {[...Array(2)].map((_, index) => (
+                      <Checkbox
+                        key={index}
+                        checked={(field.value || 0) > index}
+                        onCheckedChange={(checked) => {
+                          if (checked)
+                            form.setValue('legDismembered', index + 1)
+                          else if ((field.value || 0) === index + 1)
+                            form.setValue('legDismembered', index)
+                        }}
+                      />
+                    ))}
+                  </div>
                 </FormItem>
               )}
             />
@@ -138,32 +116,22 @@ export function LegsCard(form: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
           <div className="flex flex-row gap-2">
             <FormField
               control={form.control}
-              name="legBrokenLeft"
+              name="legBroken"
               render={({ field }) => (
-                <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                  <FormControl>
-                    <Checkbox
-                      className="h-4 w-4 rounded-sm"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="legBrokenRight"
-              render={({ field }) => (
-                <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                  <FormControl>
-                    <Checkbox
-                      className="h-4 w-4 rounded-sm"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
+                <FormItem>
+                  <div className="flex gap-1 items-center">
+                    {[...Array(2)].map((_, index) => (
+                      <Checkbox
+                        key={index}
+                        checked={(field.value || 0) > index}
+                        onCheckedChange={(checked) => {
+                          if (checked) form.setValue('legBroken', index + 1)
+                          else if ((field.value || 0) === index + 1)
+                            form.setValue('legBroken', index)
+                        }}
+                      />
+                    ))}
+                  </div>
                 </FormItem>
               )}
             />
