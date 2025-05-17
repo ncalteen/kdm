@@ -94,7 +94,7 @@ const footer = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props} className="sidebar-10">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
