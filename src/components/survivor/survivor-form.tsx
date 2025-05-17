@@ -19,20 +19,19 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSettlement } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { ReactElement, useEffect, useState } from 'react'
+import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Survivor Form Component Properties
  */
 export interface SurvivorFormProps {
-  /** Initial Survivor Data */
-  initialSurvivor: z.infer<typeof SurvivorSchema>
+  /** Survivor Data */
+  survivor: Survivor
 }
 
 /**
@@ -40,22 +39,19 @@ export interface SurvivorFormProps {
  *
  * This component is used to display/edit a survivor.
  */
-export function SurvivorForm({ initialSurvivor }: SurvivorFormProps) {
-  // Get the settlement for this survivor
-  const [settlement, setSettlement] = useState<
-    z.infer<typeof SettlementSchema> | undefined
-  >()
+export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
+  const [settlement, setSettlement] = useState<Settlement | undefined>()
 
   useEffect(() => {
-    if (initialSurvivor.settlementId) {
-      const fetchedSettlement = getSettlement(initialSurvivor.settlementId)
+    if (survivor.settlementId) {
+      const fetchedSettlement = getSettlement(survivor.settlementId)
       setSettlement(fetchedSettlement)
     }
-  }, [initialSurvivor.settlementId])
+  }, [survivor.settlementId])
 
-  const form = useForm<z.infer<typeof SurvivorSchema>>({
-    resolver: zodResolver(SurvivorSchema),
-    defaultValues: initialSurvivor
+  const form = useForm<Survivor>({
+    resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
+    defaultValues: survivor
   })
 
   /**
@@ -63,7 +59,7 @@ export function SurvivorForm({ initialSurvivor }: SurvivorFormProps) {
    *
    * @param values Form Values
    */
-  function onSubmit(values: z.infer<typeof SurvivorSchema>) {
+  function onSubmit(values: Survivor) {
     try {
       // Get existing campaign
       const campaign = getCampaign()
@@ -132,47 +128,45 @@ export function SurvivorForm({ initialSurvivor }: SurvivorFormProps) {
   }
 
   return (
-    <>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Form {...form}>
-          <Card className="mb-2">
-            <CardContent className="w-full pt-6 pb-6">
-              <div className="flex justify-between items-center">
-                <div className="font-bold text-xl">
-                  {initialSurvivor.name} - Edit Survivor
-                </div>
-                <Button type="submit">Save Changes</Button>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <Form {...form}>
+        <Card className="mb-2">
+          <CardContent className="w-full pt-6 pb-6">
+            <div className="flex justify-between items-center">
+              <div className="font-bold text-xl">
+                {survivor.name} - Edit Survivor
               </div>
-              <hr className="mt-2 mb-2" />
+              <Button type="submit">Save Changes</Button>
+            </div>
+            <hr className="mt-2 mb-2" />
 
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <NameGenderCard {...form} />
-                  <SurvivalCard {...form} />
-                  <AttributeCard {...form} />
-                  <SanityCard {...form} />
-                  <CombatCard {...form} />
-                </div>
-                <div className="flex-1">
-                  <HuntXPCard {...form} />
-                  <WeaponProficiencyCard {...form} />
-                  <CourageUnderstandingCard {...form} />
-                  <FightingArtsCard {...form} />
-                  <DisordersCard {...form} />
-                  <AbilitiesAndImpairmentsCard {...form} />
-                  <OncePerLifetimeCard {...form} />
-                </div>
-                {settlement?.survivorType === SurvivorType.ARC && (
-                  <div className="flex-1">
-                    <PhilosophyCard {...form} />
-                    <KnowledgeCard {...form} />
-                  </div>
-                )}
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <NameGenderCard {...form} />
+                <SurvivalCard {...form} />
+                <AttributeCard {...form} />
+                <SanityCard {...form} />
+                <CombatCard {...form} />
               </div>
-            </CardContent>
-          </Card>
-        </Form>
-      </form>
-    </>
+              <div className="flex-1">
+                <HuntXPCard {...form} />
+                <WeaponProficiencyCard {...form} />
+                <CourageUnderstandingCard {...form} />
+                <FightingArtsCard {...form} />
+                <DisordersCard {...form} />
+                <AbilitiesAndImpairmentsCard {...form} />
+                <OncePerLifetimeCard {...form} />
+              </div>
+              {settlement?.survivorType === SurvivorType.ARC && (
+                <div className="flex-1">
+                  <PhilosophyCard {...form} />
+                  <KnowledgeCard {...form} />
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </Form>
+    </form>
   )
 }

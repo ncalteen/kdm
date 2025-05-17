@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Milestone } from '@/lib/types'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Milestone, Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
@@ -16,17 +15,16 @@ import {
   PencilIcon,
   TrashIcon
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Milestone Item Component Properties
  */
 export interface MilestoneItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Milestone ID */
   id: string
   /** Index */
@@ -73,8 +71,8 @@ export function MilestoneItem({
 }: MilestoneItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
-  const [nameValue, setNameValue] = useState(milestone.name)
-  const [eventValue, setEventValue] = useState(milestone.event)
+  const [nameValue, setNameValue] = useState<string>(milestone.name)
+  const [eventValue, setEventValue] = useState<string>(milestone.event)
 
   useEffect(() => {
     setNameValue(milestone.name)
@@ -205,9 +203,9 @@ export function NewMilestoneItem({
   index,
   onSave,
   onCancel
-}: NewMilestoneItemProps) {
-  const [name, setName] = useState('')
-  const [event, setEvent] = useState('')
+}: NewMilestoneItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
+  const [event, setEvent] = useState<string | undefined>(undefined)
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setName(e.target.value)
@@ -216,8 +214,9 @@ export function NewMilestoneItem({
     setEvent(e.target.value)
 
   const handleSave = () => {
-    if (name.trim() !== '') onSave(name.trim(), event)
-    else toast.warning('Cannot save a milestone without a name')
+    if (name && event && name.trim() !== '' && event.trim() !== '')
+      onSave(name.trim(), event)
+    else toast.warning('Cannot save a milestone without a name and event.')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

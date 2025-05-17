@@ -21,11 +21,11 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { Settlement } from '@/lib/types'
 import { getCampaign, getCurrentYear } from '@/lib/utils'
+import { Settlement } from '@/schemas/settlement'
 import { SearchIcon, Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { type ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -41,8 +41,8 @@ export function ListSettlementsTable(): ReactElement {
   const router = useRouter()
 
   const [settlements, setSettlements] = useState<Settlement[]>([])
-  const [deleteId, setDeleteId] = useState<number | null>(null)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
   // Fetch settlements from localStorage when the component mounts.
   useEffect(() => setSettlements(getCampaign().settlements), [])
@@ -81,7 +81,7 @@ export function ListSettlementsTable(): ReactElement {
       `Darkness overtook ${settlementName}. Voices cried out, and were suddenly silenced.`
     )
 
-    setDeleteId(null)
+    setDeleteId(undefined)
     setIsDeleteDialogOpen(false)
   }
 
@@ -141,7 +141,7 @@ export function ListSettlementsTable(): ReactElement {
                   open={isDeleteDialogOpen && deleteId === settlement.id}
                   onOpenChange={(open) => {
                     setIsDeleteDialogOpen(open)
-                    if (!open) setDeleteId(null)
+                    if (!open) setDeleteId(undefined)
                   }}>
                   <AlertDialogTrigger asChild>
                     <Button

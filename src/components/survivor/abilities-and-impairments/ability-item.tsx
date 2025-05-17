@@ -2,20 +2,19 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Ability Item Component Properties
  */
 export interface AbilityItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
+  form: UseFormReturn<Survivor>
   /** Remove Ability Handler */
   handleRemoveAbility: (index: number) => void
   /** Ability ID */
@@ -53,16 +52,16 @@ export function AbilityItem({
   isDisabled,
   onSave,
   onEdit
-}: AbilityItemProps) {
+}: AbilityItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState(
-    form.getValues(`abilitiesAndImpairments.${index}`) || ''
+  const [value, setValue] = useState<string | undefined>(
+    form.getValues(`abilitiesAndImpairments.${index}`)
   )
 
   useEffect(
-    () => setValue(form.getValues(`abilitiesAndImpairments.${index}`) || ''),
+    () => setValue(form.getValues(`abilitiesAndImpairments.${index}`)),
     [form, isDisabled, index]
   )
 
@@ -76,7 +75,7 @@ export function AbilityItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(index, value)
     }
@@ -112,7 +111,9 @@ export function AbilityItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index, value)}
+          onClick={() => {
+            if (value) onSave(index, value)
+          }}
           title="Save ability">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -132,8 +133,11 @@ export function AbilityItem({
 /**
  * New Ability Item Component
  */
-export function NewAbilityItem({ onSave, onCancel }: NewAbilityItemProps) {
-  const [value, setValue] = useState('')
+export function NewAbilityItem({
+  onSave,
+  onCancel
+}: NewAbilityItemProps): ReactElement {
+  const [value, setValue] = useState<string | undefined>(undefined)
 
   /**
    * Handles the key down event for the input field. If the Enter key is
@@ -144,7 +148,7 @@ export function NewAbilityItem({ onSave, onCancel }: NewAbilityItemProps) {
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(value)
     } else if (e.key === 'Escape') onCancel()
@@ -167,7 +171,9 @@ export function NewAbilityItem({ onSave, onCancel }: NewAbilityItemProps) {
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => onSave(value)}
+        onClick={() => {
+          if (value) onSave(value)
+        }}
         title="Save ability">
         <CheckIcon className="h-4 w-4" />
       </Button>

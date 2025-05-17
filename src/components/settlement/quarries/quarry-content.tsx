@@ -5,9 +5,8 @@ import {
   QuarryItem
 } from '@/components/settlement/quarries/quarry-item'
 import { Button } from '@/components/ui/button'
-import { Quarry } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Quarry, Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -19,7 +18,6 @@ import { PlusCircleIcon } from 'lucide-react'
 import { memo, startTransition, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Quarry Content Properties
@@ -32,7 +30,7 @@ export interface QuarryContentProps {
   /** Edit Quarry Function */
   editQuarry: (quarryName: string) => void
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Handle Drag End Function */
   handleDragEnd: (event: DragEndEvent) => void
   /** Remove Quarry Function */

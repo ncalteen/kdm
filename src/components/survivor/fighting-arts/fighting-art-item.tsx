@@ -2,20 +2,19 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Fighting Art Item Component Properties
  */
 export interface FightingArtItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
+  form: UseFormReturn<Survivor>
   /** Array Name */
   arrayName: 'fightingArts' | 'secretFightingArts'
   /** Remove Art Handler */
@@ -63,8 +62,8 @@ export function FightingArtItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState(
-    form.getValues(`${arrayName}.${index}`) || ''
+  const [value, setValue] = useState<string | undefined>(
+    form.getValues(`${arrayName}.${index}`)
   )
 
   useEffect(
@@ -82,7 +81,7 @@ export function FightingArtItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(index, value)
     }
@@ -118,7 +117,9 @@ export function FightingArtItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index, value)}
+          onClick={() => {
+            if (value) onSave(index, value)
+          }}
           title={`Save ${placeholder.toLowerCase()}`}>
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -143,8 +144,8 @@ export function NewFightingArtItem({
   onSave,
   onCancel,
   placeholder
-}: NewFightingArtItemProps) {
-  const [value, setValue] = useState('')
+}: NewFightingArtItemProps): ReactElement {
+  const [value, setValue] = useState<string | undefined>(undefined)
 
   /**
    * Handles the key down event for the input field. If the Enter key is
@@ -155,7 +156,7 @@ export function NewFightingArtItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(value)
     } else if (e.key === 'Escape') onCancel()
@@ -178,7 +179,9 @@ export function NewFightingArtItem({
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => onSave(value)}
+        onClick={() => {
+          if (value) onSave(value)
+        }}
         title={`Save ${placeholder.toLowerCase()}`}>
         <CheckIcon className="h-4 w-4" />
       </Button>

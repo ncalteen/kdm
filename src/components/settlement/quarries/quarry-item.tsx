@@ -17,11 +17,11 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { Quarry } from '@/lib/types'
+import { Quarry } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { memo, useEffect, useState } from 'react'
+import { memo, ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -76,10 +76,10 @@ export const QuarryItem = memo(
     toggleQuarryUnlocked,
     updateQuarryName,
     updateQuarryNode
-  }: QuarryItemProps) => {
+  }: QuarryItemProps): ReactElement => {
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({ id })
-    const [nameValue, setNameValue] = useState(quarry.name)
+    const [nameValue, setNameValue] = useState<string | undefined>(quarry.name)
 
     useEffect(() => setNameValue(quarry.name), [quarry.name])
 
@@ -101,7 +101,7 @@ export const QuarryItem = memo(
      * warning is displayed.
      */
     const handleSave = () => {
-      if (nameValue.trim() !== '') {
+      if (nameValue && nameValue.trim() !== '') {
         updateQuarryName(quarry.name, nameValue)
         onSave(nameValue)
       } else
@@ -246,8 +246,8 @@ export function NewQuarryItem({
   index,
   handleRemoveQuarry,
   onSave
-}: NewQuarryItemProps) {
-  const [name, setName] = useState('')
+}: NewQuarryItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
   const [node, setNode] = useState('Node 1')
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -256,7 +256,7 @@ export function NewQuarryItem({
   const handleNodeChange = (value: string) => setNode(value)
 
   const handleSave = () => {
-    if (name.trim() !== '') onSave(name.trim(), node, false)
+    if (name && name.trim() !== '') onSave(name.trim(), node, false)
     else toast.warning('A nameless horror cannot be added to your chronicles.')
   }
 

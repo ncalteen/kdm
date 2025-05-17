@@ -13,18 +13,18 @@ import { FormControl, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { EyeIcon } from 'lucide-react'
+import { ReactElement } from 'react'
 import { type UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Squire Suspicions Card
  */
 export function SquireSuspicionsCard(
-  props: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+  props: UseFormReturn<Settlement>
+): ReactElement {
   const form = props
   const suspicions = form.watch('suspicions') || []
 

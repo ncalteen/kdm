@@ -5,9 +5,8 @@ import {
   NewNemesisItem
 } from '@/components/settlement/nemeses/nemesis-item'
 import { Button } from '@/components/ui/button'
-import { Nemesis } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Nemesis, Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -19,7 +18,6 @@ import { PlusCircleIcon } from 'lucide-react'
 import { memo, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Nemesis Content Component Properties
@@ -32,7 +30,7 @@ export interface NemesisContentProps {
   /** Edit Nemesis */
   editNemesis: (nemesisName: string) => void
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Handle Drag End */
   handleDragEnd: (event: DragEndEvent) => void
   /** Handle Toggle Level */

@@ -13,7 +13,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -39,14 +39,11 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Departing Bonuses Card Component
  */
-export function DepartingBonusesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function DepartingBonusesCard(form: UseFormReturn<Settlement>) {
   const bonuses = useMemo(() => form.watch('departingBonuses') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{

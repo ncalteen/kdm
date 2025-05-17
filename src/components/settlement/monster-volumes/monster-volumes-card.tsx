@@ -5,7 +5,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -24,18 +24,17 @@ import { BookOpenIcon, PlusCircleIcon } from 'lucide-react'
 import { startTransition, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Monster Volumes Card Component
  */
-export function MonsterVolumesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function MonsterVolumesCard(form: UseFormReturn<Settlement>) {
   const monsterVolumes = form.watch('monsterVolumes') || []
 
-  const [showNewVolumeForm, setShowNewVolumeForm] = useState(false)
-  const [editingVolume, setEditingVolume] = useState<string | null>(null)
+  const [showNewVolumeForm, setShowNewVolumeForm] = useState<boolean>(false)
+  const [editingVolume, setEditingVolume] = useState<string | undefined>(
+    undefined
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -82,7 +81,7 @@ export function MonsterVolumesCard(
       )
 
       form.setValue('monsterVolumes', updatedVolumes)
-      setEditingVolume(null)
+      setEditingVolume(undefined)
 
       // Update localStorage
       try {
@@ -156,7 +155,7 @@ export function MonsterVolumesCard(
                     isEditing={editingVolume === volume}
                     onEdit={() => setEditingVolume(volume)}
                     onSaveEdit={(name) => handleUpdateVolume(volume, name)}
-                    onCancelEdit={() => setEditingVolume(null)}
+                    onCancelEdit={() => setEditingVolume(undefined)}
                   />
                 ))}
               </SortableContext>

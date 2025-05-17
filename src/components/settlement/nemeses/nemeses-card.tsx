@@ -9,7 +9,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   DragEndEvent,
   KeyboardSensor,
@@ -29,17 +29,18 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Nemesis Card Component
  */
-export function NemesesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function NemesesCard(form: UseFormReturn<Settlement>) {
   const nemeses = useMemo(() => form.watch('nemeses') || [], [form])
 
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState<boolean>(false)
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: string]: boolean
+  }>({})
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -59,9 +60,6 @@ export function NemesesCard(
     }
   }, [])
 
-  const [disabledInputs, setDisabledInputs] = useState<{
-    [key: string]: boolean
-  }>({})
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: string]: boolean } = {}
@@ -73,8 +71,6 @@ export function NemesesCard(
       return next
     })
   }, [nemeses])
-
-  const [isAddingNew, setIsAddingNew] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor),

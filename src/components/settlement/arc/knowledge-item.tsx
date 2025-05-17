@@ -4,13 +4,13 @@ import { SelectPhilosophy } from '@/components/menu/select-philosophy'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Knowledge } from '@/lib/types'
+import { Philosophy } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Knowledge, SettlementSchema } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -20,13 +20,13 @@ import { z } from 'zod'
  */
 export interface KnowledgeItemProps {
   /** Knowledge */
-  knowledge: { name: string; philosophy?: string }
+  knowledge: Knowledge
   /** Remove Knowledge Handler */
   handleRemoveKnowledge: (knowledgeName: string) => void
   /** Update Knowledge Handler */
   handleUpdateKnowledge: (
     oldKnowledgeName: string,
-    newValues: { name: string; philosophy?: string }
+    newValues: Knowledge
   ) => void
   /** Knowledge ID */
   id: string
@@ -53,7 +53,7 @@ export interface NewKnowledgeItemProps {
   /** OnAdd Callback */
   onAdd: () => void
   /** Philosophies */
-  philosophies: string[]
+  philosophies: Philosophy[]
 }
 
 /**
@@ -74,13 +74,13 @@ export function KnowledgeItem({
     useSortable({ id })
 
   const [value, setValue] = useState(knowledge.name)
-  const [philosophyValue, setPhilosophyValue] = useState<string | undefined>(
+  const [philosophy, setPhilosophy] = useState<Philosophy | undefined>(
     knowledge.philosophy
   )
 
   useEffect(() => {
     setValue(knowledge.name)
-    setPhilosophyValue(knowledge.philosophy)
+    setPhilosophy(knowledge.philosophy)
   }, [knowledge.name, knowledge.philosophy])
 
   const style = {
@@ -92,7 +92,7 @@ export function KnowledgeItem({
     if (value.trim() === '')
       return toast.warning('Knowledge cannot be nameless.')
 
-    onSaveEdit(value.trim(), philosophyValue)
+    onSaveEdit(value.trim(), philosophy)
     toast.success('Knowledge reshaped by your settlement.')
   }
 
@@ -172,24 +172,27 @@ export function KnowledgeItem({
       <div className="flex items-center pl-8 gap-2">
         {isEditing ? (
           <SelectPhilosophy
-            value={philosophyValue || ''}
+            value={philosophy}
             onChange={(newPhilosophy) => {
-              setPhilosophyValue(
-                newPhilosophy === 'none' ? undefined : newPhilosophy
+              setPhilosophy(
+                newPhilosophy === 'none'
+                  ? undefined
+                  : (newPhilosophy as Philosophy)
               )
               if (isEditing) return
               handleUpdateKnowledge(knowledge.name, {
                 name: knowledge.name,
-                philosophy: newPhilosophy === 'none' ? undefined : newPhilosophy
+                philosophy:
+                  newPhilosophy === 'none'
+                    ? undefined
+                    : (newPhilosophy as Philosophy)
               })
             }}
             options={philosophies}
             disabled={!isEditing}
           />
         ) : (
-          <Badge variant="secondary">
-            {philosophyValue ? philosophyValue : 'None'}
-          </Badge>
+          <Badge variant="secondary">{philosophy ? philosophy : 'None'}</Badge>
         )}
       </div>
     </div>
@@ -204,15 +207,15 @@ export function NewKnowledgeItem({
   onAdd,
   philosophies,
   existingNames
-}: NewKnowledgeItemProps) {
-  const [name, setName] = useState('')
-  const [philosophy, setPhilosophy] = useState<string>('')
+}: NewKnowledgeItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
+  const [philosophy, setPhilosophy] = useState<Philosophy | undefined>()
 
   /**
    * Handles creation of a new knowledge item
    */
   const handleSubmit = () => {
-    if (name.trim() === '')
+    if (!name || name.trim() === '')
       return toast.warning('Knowledge cannot be nameless.')
 
     if (existingNames.includes(name.trim()))
@@ -223,7 +226,10 @@ export function NewKnowledgeItem({
     const knowledges = [...(form.watch('knowledges') || [])]
     const newKnowledge = {
       name: name.trim(),
-      philosophy: philosophy && philosophy !== 'none' ? philosophy : undefined
+      philosophy:
+        philosophy && philosophy !== ('none' as Philosophy)
+          ? philosophy
+          : undefined
     }
     const updatedKnowledges = [...knowledges, newKnowledge]
 
@@ -246,8 +252,8 @@ export function NewKnowledgeItem({
       console.error('New Knowledge Save Error:', error)
     }
 
-    setName('')
-    setPhilosophy('')
+    setName(undefined)
+    setPhilosophy(undefined)
     onAdd()
 
     toast.success('New knowledge crystallizes in the darkness.')
@@ -296,7 +302,7 @@ export function NewKnowledgeItem({
       <div className="flex items-center pl-8 gap-2">
         <SelectPhilosophy
           value={philosophy}
-          onChange={setPhilosophy}
+          onChange={(val) => setPhilosophy(val as Philosophy)}
           options={philosophies}
         />
       </div>

@@ -18,17 +18,16 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Collective Cognition Victories Card
  */
 export function CollectiveCognitionVictoriesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
 ) {
   const quarries = form.watch('quarries') || []
   const nemeses = form.watch('nemeses') || []

@@ -13,16 +13,16 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Philosophy } from '@/lib/enums'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Philosophy Card Component
  */
 export function PhilosophyCard({
   ...form
-}: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
+}: UseFormReturn<Survivor>): ReactElement {
   const watchedPhilosophy = form.watch('philosophy')
 
   /**
@@ -51,7 +51,7 @@ export function PhilosophyCard({
             <div className="flex-grow">
               <SelectPhilosophy
                 options={Object.values(Philosophy)}
-                value={watchedPhilosophy || ''}
+                value={watchedPhilosophy}
                 onChange={handlePhilosophyChange}
               />
             </div>

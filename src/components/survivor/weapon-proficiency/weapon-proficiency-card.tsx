@@ -4,7 +4,8 @@
 import { SelectWeaponType } from '@/components/menu/select-weapon-type'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -20,8 +21,8 @@ import { z } from 'zod'
  * @returns Weapon Proficiency Card Component
  */
 export function WeaponProficiencyCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+  form: UseFormReturn<Survivor>
+): ReactElement {
   const weaponProficiency = form.watch('weaponProficiency') || 0
   const weaponProficiencyType = form.watch('weaponProficiencyType')
 
@@ -38,7 +39,7 @@ export function WeaponProficiencyCard(
           <div className="font-bold text-l whitespace-nowrap flex flex-col">
             Weapon Proficiency
             <SelectWeaponType
-              value={weaponProficiencyType || ''}
+              value={weaponProficiencyType}
               onChange={(type: string) =>
                 form.setValue(
                   'weaponProficiencyType',

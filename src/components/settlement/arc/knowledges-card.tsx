@@ -6,9 +6,8 @@ import {
 } from '@/components/settlement/arc/knowledge-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Knowledge } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Knowledge, SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -24,7 +23,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { LandmarkIcon, PlusCircleIcon } from 'lucide-react'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -34,7 +33,7 @@ import { z } from 'zod'
  */
 export function KnowledgesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+): ReactElement {
   const [showNewKnowledgeForm, setShowNewKnowledgeForm] = useState(false)
   const [editingKnowledge, setEditingKnowledge] = useState<string | null>(null)
 
@@ -89,7 +88,7 @@ export function KnowledgesCard(
   ) => {
     const updatedKnowledges = knowledges.map((k) =>
       k.name === oldKnowledgeName ? newValues : k
-    )
+    ) as Knowledge[]
 
     form.setValue('knowledges', updatedKnowledges)
 
@@ -102,8 +101,7 @@ export function KnowledgesCard(
       )
 
       if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].knowledges =
-          updatedKnowledges as Knowledge[]
+        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
         localStorage.setItem('campaign', JSON.stringify(campaign))
         toast.success('Knowledge carved into memory.')
       }
@@ -168,7 +166,7 @@ export function KnowledgesCard(
 
                     if (settlementIndex !== -1) {
                       campaign.settlements[settlementIndex].knowledges =
-                        newOrder as Knowledge[]
+                        newOrder
                       localStorage.setItem('campaign', JSON.stringify(campaign))
                     }
                   } catch (error) {

@@ -2,20 +2,19 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Gear Item Component Properties
  */
 export interface GearItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Remove Gear Callback */
   handleRemoveGear: (index: number) => void
   /** Gear ID */
@@ -119,7 +118,10 @@ export function GearItem({
 /**
  * New Gear Item Component
  */
-export function NewGearItem({ onSave, onCancel }: NewGearItemProps) {
+export function NewGearItem({
+  onSave,
+  onCancel
+}: NewGearItemProps): ReactElement {
   const [value, setValue] = useState('')
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

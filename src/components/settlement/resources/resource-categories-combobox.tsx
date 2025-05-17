@@ -39,7 +39,7 @@ export function ResourceCategoriesCombobox({
   onChange,
   selectedCategory
 }: ResourceCategoriesComboboxProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean>(false)
 
   /**
    * Handles the selection of a category.

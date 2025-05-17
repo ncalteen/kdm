@@ -3,14 +3,12 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import type { Principle } from '@/lib/types'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Principle, Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Principle Item Component Properties
@@ -19,7 +17,7 @@ export interface PrincipleItemProps {
   /** Auto Focus */
   autoFocus?: boolean
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Remove Principle Handler */
   handleRemovePrinciple: (index: number) => void
   /** Update Principle Handler */
@@ -62,9 +60,13 @@ export function PrincipleItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [nameValue, setNameValue] = useState(principle.name)
-  const [option1Value, setOption1Value] = useState(principle.option1Name)
-  const [option2Value, setOption2Value] = useState(principle.option2Name)
+  const [nameValue, setNameValue] = useState<string | undefined>(principle.name)
+  const [option1Value, setOption1Value] = useState<string | undefined>(
+    principle.option1Name
+  )
+  const [option2Value, setOption2Value] = useState<string | undefined>(
+    principle.option2Name
+  )
 
   const nameInputRef = useRef<HTMLInputElement>(null)
 
@@ -93,7 +95,7 @@ export function PrincipleItem({
     setOption2Value(e.target.value)
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && nameValue && option1Value && option2Value) {
       e.preventDefault()
       onSave(index, nameValue, option1Value, option2Value)
     }
@@ -212,9 +214,10 @@ export function PrincipleItem({
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() =>
-                onSave(index, nameValue, option1Value, option2Value)
-              }
+              onClick={() => {
+                if (nameValue && option1Value && option2Value)
+                  onSave(index, nameValue, option1Value, option2Value)
+              }}
               title="Save principle">
               <CheckIcon className="h-4 w-4" />
             </Button>

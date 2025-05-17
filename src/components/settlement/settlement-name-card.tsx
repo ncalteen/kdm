@@ -10,19 +10,16 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Settlement Name Card Component
  *
  * This component allows the user to set the name of a settlement.
  */
-export function SettlementNameCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function SettlementNameCard(form: UseFormReturn<Settlement>) {
   /**
    * Handles Key Down Events
    *

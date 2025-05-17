@@ -4,16 +4,14 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import type { CcReward } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { CollectiveCognitionReward, Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Collective Cognition Reward Item Properties
@@ -24,7 +22,7 @@ export interface RewardItemProps {
   /** Is Editing */
   isEditing: boolean
   /** Collective Cognition Reward */
-  reward: CcReward
+  reward: CollectiveCognitionReward
   /** Handle Remove Reward */
   handleRemoveReward: (rewardName: string) => void
   /** Handle Toggle Unlocked */
@@ -42,7 +40,7 @@ export interface RewardItemProps {
  */
 export interface NewRewardItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** On Add */
   onAdd: () => void
   /** On Cancel */
@@ -70,8 +68,8 @@ export function RewardItem({
     transition
   }
 
-  const [editName, setEditName] = useState(reward.name)
-  const [editCC, setEditCC] = useState(reward.cc)
+  const [editName, setEditName] = useState<string | undefined>(reward.name)
+  const [editCC, setEditCC] = useState<number>(reward.cc)
 
   useEffect(() => {
     setEditName(reward.name)
@@ -79,7 +77,7 @@ export function RewardItem({
   }, [reward.name, reward.cc])
 
   const handleEditSave = () => {
-    if (editName.trim() === '')
+    if (!editName || editName.trim() === '')
       return toast.warning('A nameless gift cannot be manifested.')
 
     onSaveEdit(editName.trim(), editCC)
@@ -128,9 +126,7 @@ export function RewardItem({
             value={editCC}
             onChange={(e) => {
               const value = parseInt(e.target.value)
-              if (!isNaN(value) && value >= 0) {
-                setEditCC(value)
-              }
+              if (!isNaN(value) && value >= 0) setEditCC(value)
             }}
             min={0}
             onKeyDown={handleEditKeyDown}
@@ -220,12 +216,16 @@ export function RewardItem({
  * @param opts Options
  * @returns New Collective Cognition Reward Item Component
  */
-export function NewRewardItem({ form, onAdd, onCancel }: NewRewardItemProps) {
-  const [name, setName] = useState('')
+export function NewRewardItem({
+  form,
+  onAdd,
+  onCancel
+}: NewRewardItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>()
   const [cc, setCc] = useState(1)
 
   const handleSubmit = () => {
-    if (name.trim() === '')
+    if (!name || name.trim() === '')
       return toast.warning('A nameless gift cannot be manifested.')
 
     const rewards = [...(form.watch('ccRewards') || [])]
@@ -261,7 +261,7 @@ export function NewRewardItem({ form, onAdd, onCancel }: NewRewardItemProps) {
     }
 
     // Reset form
-    setName('')
+    setName(undefined)
     setCc(1)
     onAdd()
   }

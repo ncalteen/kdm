@@ -9,7 +9,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   DragEndEvent,
   KeyboardSensor,
@@ -29,20 +29,17 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Quarries Card Component
  *
  * @param form Form
  */
-export function QuarriesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function QuarriesCard(form: UseFormReturn<Settlement>) {
   const quarries = useMemo(() => form.watch('quarries') || [], [form])
 
-  const [isAddingNew, setIsAddingNew] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+  const [isVisible, setIsVisible] = useState<boolean>(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
   }>({})

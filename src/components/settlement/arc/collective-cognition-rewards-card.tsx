@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -24,21 +24,22 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BrainIcon, PlusCircleIcon } from 'lucide-react'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Collective Cognition Rewards Card
  */
 export function CollectiveCognitionRewardsCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+  form: UseFormReturn<Settlement>
+): ReactElement {
   const rewards = form.watch('ccRewards') || []
 
-  const [showNewRewardForm, setShowNewRewardForm] = useState(false)
-  const [editingReward, setEditingReward] = useState<string | null>(null)
+  const [showNewRewardForm, setShowNewRewardForm] = useState<boolean>(false)
+  const [editingReward, setEditingReward] = useState<string | undefined>(
+    undefined
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -54,11 +55,9 @@ export function CollectiveCognitionRewardsCard(
    * @param unlocked Unlocked State
    */
   const handleToggleUnlocked = (rewardName: string, unlocked: boolean) => {
-    const updatedRewards = rewards.map((r) => {
-      if (r.name === rewardName) return { ...r, unlocked }
-
-      return r
-    })
+    const updatedRewards = rewards.map((r) =>
+      r.name === rewardName ? { ...r, unlocked } : r
+    )
 
     form.setValue('ccRewards', updatedRewards)
 
@@ -178,7 +177,7 @@ export function CollectiveCognitionRewardsCard(
                         r.name === reward.name ? { ...r, name, cc } : r
                       )
                       form.setValue('ccRewards', updatedRewards)
-                      setEditingReward(null)
+                      setEditingReward(undefined)
 
                       // Save to localStorage
                       try {
@@ -201,7 +200,7 @@ export function CollectiveCognitionRewardsCard(
                         console.error('Error updating reward:', error)
                       }
                     }}
-                    onCancelEdit={() => setEditingReward(null)}
+                    onCancelEdit={() => setEditingReward(undefined)}
                   />
                 ))}
               </SortableContext>

@@ -1,12 +1,9 @@
 'use client'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { CampaignType } from '@/lib/enums'
-import { getSettlement } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
-import { useEffect, useState } from 'react'
+import { Survivor } from '@/schemas/survivor'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Courage/Understanding Abilities Component
@@ -18,26 +15,14 @@ import { z } from 'zod'
  * @returns Courage/Understanding Abilities Component
  */
 export function CourageUnderstandingAbilities(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
-  const settlementId = form.watch('settlementId')
+  form: UseFormReturn<Survivor>
+): ReactElement {
   const hasStalwart = form.watch('hasStalwart')
   const hasPrepared = form.watch('hasPrepared')
   const hasMatchmaker = form.watch('hasMatchmaker')
   const hasAnalyze = form.watch('hasAnalyze')
   const hasExplore = form.watch('hasExplore')
   const hasTinker = form.watch('hasTinker')
-
-  // Get the survivor type from the settlement data.
-  const [campaignType, setCampaignType] = useState<CampaignType | undefined>(
-    undefined
-  )
-
-  // Set the survivor type when the component mounts.
-  useEffect(
-    () => setCampaignType(getSettlement(settlementId)?.campaignType),
-    [settlementId]
-  )
 
   /**
    * Handles the change of the ability in the courage group.

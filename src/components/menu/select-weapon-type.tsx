@@ -29,7 +29,7 @@ export interface SelectWeaponTypeProps {
   /** OnChange Handler */
   onChange?: (value: string) => void
   /** Value */
-  value?: string
+  value?: WeaponType
 }
 
 /**

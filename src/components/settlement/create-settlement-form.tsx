@@ -20,13 +20,16 @@ import {
   getLostSettlementCount,
   getNextSettlementId
 } from '@/lib/utils'
-import { BaseSettlementSchema, SettlementSchema } from '@/schemas/settlement'
+import {
+  BaseSettlementSchema,
+  Settlement,
+  SettlementSchema
+} from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Create Settlement Form Component
@@ -40,19 +43,14 @@ import { z } from 'zod'
 export function CreateSettlementForm() {
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof SettlementSchema>>({
+  const form = useForm<Settlement>({
     // Need to set the type here directly, because the schema includes a lot of
     // fields with default values that are not resolved in the type.
-    resolver: zodResolver(SettlementSchema) as Resolver<
-      z.infer<typeof SettlementSchema>
-    >,
+    resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
     defaultValues: BaseSettlementSchema.parse({})
   })
 
-  /** Campaign Type */
   const campaignType = form.watch('campaignType')
-
-  /** Survivor Type */
   const survivorType = form.watch('survivorType')
 
   // Set the form values when the component mounts.
@@ -136,7 +134,7 @@ export function CreateSettlementForm() {
   }
 
   // Define a submit handler with the correct schema type
-  function onSubmit(values: z.infer<typeof SettlementSchema>) {
+  function onSubmit(values: Settlement) {
     try {
       console.log('Form values at submission:', values)
 

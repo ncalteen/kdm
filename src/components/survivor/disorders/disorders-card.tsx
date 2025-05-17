@@ -6,7 +6,7 @@ import {
 } from '@/components/survivor/disorders/disorder-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
   DndContext,
@@ -23,24 +23,21 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusCircleIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Disorders Card Component
  */
-export function DisordersCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
   const disorders = useMemo(() => form.watch('disorders') || [], [form])
   const MAX_DISORDERS = 3
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {

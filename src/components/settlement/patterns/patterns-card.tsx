@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -27,20 +27,17 @@ import { PlusCircleIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Patterns Card Component
  */
-export function PatternsCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function PatternsCard(form: UseFormReturn<Settlement>) {
   const patterns = useMemo(() => form.watch('patterns') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {

@@ -3,20 +3,19 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Location Item Component Properties
  */
 export interface LocationItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Remove Location Callback */
   handleRemoveLocation: (index: number) => void
   /** Toggle Location Unlocked Callback */
@@ -61,15 +60,15 @@ export function LocationItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [nameValue, setNameValue] = useState(
-    form.getValues(`locations.${index}.name`) || ''
+  const [nameValue, setNameValue] = useState<string | undefined>(
+    form.getValues(`locations.${index}.name`)
   )
-  const [unlockedValue, setUnlockedValue] = useState(
+  const [unlockedValue, setUnlockedValue] = useState<boolean>(
     form.getValues(`locations.${index}.unlocked`) || false
   )
 
   useEffect(() => {
-    setNameValue(form.getValues(`locations.${index}.name`) || '')
+    setNameValue(form.getValues(`locations.${index}.name`))
     setUnlockedValue(form.getValues(`locations.${index}.unlocked`) || false)
   }, [form, isDisabled, index])
 
@@ -79,7 +78,7 @@ export function LocationItem({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && nameValue) {
       e.preventDefault()
       onSave(index, nameValue, unlockedValue)
     }
@@ -129,7 +128,9 @@ export function LocationItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index, nameValue, unlockedValue)}
+          onClick={() => {
+            if (nameValue) onSave(index, nameValue, unlockedValue)
+          }}
           title="Save location">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -153,12 +154,12 @@ export function NewLocationItem({
   index,
   onSave,
   onCancel
-}: NewLocationItemProps) {
-  const [name, setName] = useState('')
-  const [unlocked, setUnlocked] = useState(false)
+}: NewLocationItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
+  const [unlocked, setUnlocked] = useState<boolean>(false)
 
   const handleSave = () => {
-    onSave(name.trim(), unlocked)
+    if (name) onSave(name.trim(), unlocked)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -28,21 +28,19 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import type { Settlement } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type ReactElement, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Settlement Form Component Properties
  */
 export interface SettlementFormProps {
-  /** Initial Settlement Data */
-  initialSettlement: z.infer<typeof SettlementSchema>
+  /** Settlement Data */
+  settlement: Settlement
 }
 
 /**
@@ -60,7 +58,7 @@ export interface SettlementFormProps {
  * survivors, and monsters.
  */
 export function SettlementForm({
-  initialSettlement
+  settlement
 }: SettlementFormProps): ReactElement {
   // Get URL search params for tab persistence
   const searchParams = new URLSearchParams(window.location.search)
@@ -103,9 +101,9 @@ export function SettlementForm({
   }
 
   // Initialize the form with the settlement schema and loaded settlement data
-  const form = useForm<z.infer<typeof SettlementSchema>>({
-    resolver: zodResolver(SettlementSchema),
-    defaultValues: initialSettlement
+  const form = useForm<Settlement>({
+    resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
+    defaultValues: settlement
   })
 
   // Update the selected tab when URL changes (browser navigation)
@@ -137,11 +135,11 @@ export function SettlementForm({
    *
    * @param values Settlement Form Values
    */
-  function onSubmit(values: z.infer<typeof SettlementSchema>) {
+  function onSubmit(values: Settlement) {
     try {
       const campaign = getCampaign()
       const settlementIndex = campaign.settlements.findIndex(
-        (s: Settlement) => s.id === initialSettlement.id
+        (s: Settlement) => s.id === settlement.id
       )
 
       if (settlementIndex !== -1) {
@@ -151,7 +149,7 @@ export function SettlementForm({
           'In the vast darkness, a new settlement flickers to life.'
         )
       } else {
-        console.error(`Settlement Not Found: ${initialSettlement.id}`)
+        console.error(`Settlement Not Found: ${settlement.id}`)
         toast.error('Your settlement is lost to the void.')
       }
     } catch (error) {

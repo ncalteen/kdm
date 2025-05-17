@@ -9,6 +9,36 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
+ * Departing Bonus Item Component Properties
+ */
+export interface DepartingBonusItemProps {
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** OnChange Callback */
+  onChange: (index: number, value: string) => void
+  /** OnEdit Callback */
+  onEdit: (index: number) => void
+  /** OnRemove Callback */
+  onRemove: (index: number) => void
+  /** OnSave Callback */
+  onSave: (index: number) => void
+  /** Value */
+  value: string
+}
+
+/**
+ * New Departing Bonus Item Component Properties
+ */
+export interface NewDepartingBonusItemProps {
+  /** OnCancel Callback */
+  onCancel: () => void
+  /** OnSave Callback */
+  onSave: (bonus: string) => void
+}
+
+/**
  * Departing Bonus Item Component
  */
 export function DepartingBonusItem({
@@ -19,23 +49,13 @@ export function DepartingBonusItem({
   onEdit,
   onRemove,
   onChange
-}: {
-  index: number
-  value: string
-  isDisabled: boolean
-  onSave: (index: number) => void
-  onEdit: (index: number) => void
-  onRemove: (index: number) => void
-  onChange: (index: number, value: string) => void
-}) {
+}: DepartingBonusItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: index.toString() })
-  const [inputValue, setInputValue] = useState(value)
+  const [inputValue, setInputValue] = useState<string>(value)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    setInputValue(value)
-  }, [value])
+  useEffect(() => setInputValue(value), [value])
 
   useEffect(() => {
     if (!isDisabled && inputRef.current) inputRef.current.focus()
@@ -117,17 +137,14 @@ export function DepartingBonusItem({
 export function NewDepartingBonusItem({
   onSave,
   onCancel
-}: {
-  onSave: (bonus: string) => void
-  onCancel: () => void
-}) {
-  const [value, setValue] = useState('')
+}: NewDepartingBonusItemProps) {
+  const [value, setValue] = useState<string | undefined>(undefined)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setValue(e.target.value)
 
   const handleSave = () => {
-    if (value.trim() !== '') onSave(value.trim())
+    if (value && value.trim() !== '') onSave(value.trim())
     else toast.warning('Cannot inscribe an empty blessing')
   }
 

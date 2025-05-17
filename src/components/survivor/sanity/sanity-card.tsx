@@ -12,11 +12,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
 import { getSettlement } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { Shield } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Survivor Sanity Card Component
@@ -28,9 +27,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Sanity Card Component
  */
-export function SanityCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
   // Get the survivor type from the settlement data.
   const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
     undefined

@@ -6,20 +6,19 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Resource Item Component Properties
  */
 export interface ResourceItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Handle Remove Resource  */
   handleRemoveResource: (index: number) => void
   /** Resource Item ID */
@@ -66,17 +65,17 @@ export function ResourceItem({
   isDisabled,
   onEdit,
   onSave
-}: ResourceItemProps) {
+}: ResourceItemProps): ReactElement {
   const resource = form.watch(`resources.${index}`)
 
-  const [nameValue, setNameValue] = useState(resource?.name || '')
+  const [nameValue, setNameValue] = useState<string | undefined>(resource?.name)
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
     resource?.category || ResourceCategory.BASIC
   )
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
     resource?.types || [ResourceType.BONE]
   )
-  const [amountValue, setAmountValue] = useState(resource?.amount || 0)
+  const [amountValue, setAmountValue] = useState<number>(resource?.amount || 0)
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -93,7 +92,7 @@ export function ResourceItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && nameValue) {
       e.preventDefault()
       onSave(index, nameValue, selectedCategory, selectedTypes, amountValue)
     }
@@ -181,15 +180,16 @@ export function ResourceItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() =>
-            onSave(
-              index,
-              nameValue,
-              selectedCategory,
-              selectedTypes,
-              amountValue
-            )
-          }
+          onClick={() => {
+            if (nameValue)
+              onSave(
+                index,
+                nameValue,
+                selectedCategory,
+                selectedTypes,
+                amountValue
+              )
+          }}
           title="Save resource">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -209,11 +209,16 @@ export function ResourceItem({
 /**
  * New Resource Item Component
  */
-export function NewResourceItem({ onSave, onCancel }: NewResourceItemProps) {
-  const [name, setName] = useState('')
-  const [category, setCategory] = useState(ResourceCategory.BASIC)
+export function NewResourceItem({
+  onSave,
+  onCancel
+}: NewResourceItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
+  const [category, setCategory] = useState<ResourceCategory>(
+    ResourceCategory.BASIC
+  )
   const [types, setTypes] = useState<ResourceType[]>([ResourceType.BONE])
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState<number>(0)
 
   /**
    * Handles the key down event for the input fields. If the Enter key is
@@ -223,7 +228,7 @@ export function NewResourceItem({ onSave, onCancel }: NewResourceItemProps) {
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && name) {
       e.preventDefault()
       onSave(name, category, types, amount)
     } else if (e.key === 'Escape') onCancel()
@@ -270,7 +275,9 @@ export function NewResourceItem({ onSave, onCancel }: NewResourceItemProps) {
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => onSave(name, category, types, amount)}
+        onClick={() => {
+          if (name) onSave(name, category, types, amount)
+        }}
         title="Save resource">
         <CheckIcon className="h-4 w-4" />
       </Button>

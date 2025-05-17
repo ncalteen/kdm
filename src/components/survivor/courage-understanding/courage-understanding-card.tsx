@@ -5,11 +5,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CampaignType } from '@/lib/enums'
 import { getSettlement } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 import { CourageUnderstandingAbilities } from './courage-understanding-abilities'
 import { FacesInTheSky } from './faces-in-the-sky'
 
@@ -24,8 +23,8 @@ import { FacesInTheSky } from './faces-in-the-sky'
  * @returns Courage and Understanding Card Component
  */
 export function CourageUnderstandingCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+  form: UseFormReturn<Survivor>
+): ReactElement {
   const courage = form.watch('courage') || 0
   const understanding = form.watch('understanding') || 0
   const settlementId = form.watch('settlementId')

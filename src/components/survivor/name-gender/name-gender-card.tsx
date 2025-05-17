@@ -12,9 +12,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Gender } from '@/lib/enums'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Survivor Name and Gender Card Component
@@ -26,9 +26,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Name and Gender Card Component
  */
-export function NameGenderCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+export function NameGenderCard(form: UseFormReturn<Survivor>): ReactElement {
   return (
     <Card>
       <CardContent className="pt-2 pb-2">

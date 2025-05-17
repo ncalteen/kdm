@@ -3,13 +3,12 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { SurvivorType } from '@/lib/enums'
-import { Settlement } from '@/lib/types'
 import { cn, getSettlement } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Hunt XP Card Component
@@ -21,9 +20,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Hunt XP Card Component
  */
-export function HuntXPCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+export function HuntXPCard(form: UseFormReturn<Survivor>) {
   const huntXP = form.watch('huntXP') || 0
   const huntXPRankUp = form.watch('huntXPRankUp') || []
   const settlementId = form.watch('settlementId')

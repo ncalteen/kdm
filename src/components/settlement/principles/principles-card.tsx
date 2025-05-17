@@ -12,7 +12,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -36,6 +36,7 @@ import {
   TrashIcon
 } from 'lucide-react'
 import {
+  ReactElement,
   startTransition,
   useCallback,
   useEffect,
@@ -44,7 +45,6 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * New Principle Item Properties
@@ -63,16 +63,16 @@ export interface NewPrincipleItemProps {
  *
  * @param form Form
  */
-export function PrinciplesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function PrinciplesCard(form: UseFormReturn<Settlement>) {
   const principles = useMemo(() => form.watch('principles') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
-  const [isEditingIndex, setIsEditingIndex] = useState<number | null>(null)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+  const [isEditingIndex, setIsEditingIndex] = useState<number | undefined>(
+    undefined
+  )
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -87,7 +87,7 @@ export function PrinciplesCard(
 
     // If principles array changes (e.g. tab switch), cancel new and editing
     setIsAddingNew(false)
-    setIsEditingIndex(null)
+    setIsEditingIndex(undefined)
   }, [principles])
 
   const sensors = useSensors(
@@ -177,7 +177,7 @@ export function PrinciplesCard(
     form.setValue('principles', updated)
 
     setDisabledInputs((prev) => ({ ...prev, [index]: true }))
-    setIsEditingIndex(null)
+    setIsEditingIndex(undefined)
 
     // Update localStorage
     try {
@@ -391,12 +391,19 @@ export function PrinciplesCard(
  *
  * @param props New Principle Item Props
  */
-function NewPrincipleItem({ index, onSave, onCancel }: NewPrincipleItemProps) {
-  const [name, setName] = useState('')
-  const [option1, setOption1] = useState('')
-  const [option2, setOption2] = useState('')
+function NewPrincipleItem({
+  index,
+  onSave,
+  onCancel
+}: NewPrincipleItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
+  const [option1, setOption1] = useState<string | undefined>(undefined)
+  const [option2, setOption2] = useState<string | undefined>(undefined)
 
   const handleSave = () => {
+    if (!name || !option1 || !option2)
+      return toast.warning('A nameless principle cannot guide your settlement.')
+
     onSave(name.trim(), option1.trim(), option2.trim())
   }
 

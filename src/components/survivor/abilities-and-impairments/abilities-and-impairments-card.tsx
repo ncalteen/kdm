@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import type { DragEndEvent } from '@dnd-kit/core'
 import {
   DndContext,
@@ -25,17 +25,16 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusCircleIcon } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Abilities and Impairments Card Component
  */
 export function AbilitiesAndImpairmentsCard({
   ...form
-}: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
+}: UseFormReturn<Survivor>): ReactElement {
   const formValues = form.getValues()
 
   // Use ref to avoid circular dependencies in effects
@@ -54,7 +53,7 @@ export function AbilitiesAndImpairmentsCard({
   }, [abilities])
 
   // Use a local state to track the checkbox to avoid infinite loop
-  const [skipNextHuntState, setSkipNextHuntState] = useState(
+  const [skipNextHuntState, setSkipNextHuntState] = useState<boolean>(
     !!form.getValues('skipNextHunt')
   )
 
@@ -66,7 +65,7 @@ export function AbilitiesAndImpairmentsCard({
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {

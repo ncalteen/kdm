@@ -6,9 +6,8 @@ import { HeadCard } from '@/components/survivor/combat/head-card'
 import { LegsCard } from '@/components/survivor/combat/legs-card'
 import { WaistCard } from '@/components/survivor/combat/waist-card'
 import { Card, CardContent } from '@/components/ui/card'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Combat Card Component
@@ -19,9 +18,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Combat Card Component
  */
-export function CombatCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+export function CombatCard(form: UseFormReturn<Survivor>) {
   return (
     <div className="flex flex-col gap-2 mt-2">
       <Card>

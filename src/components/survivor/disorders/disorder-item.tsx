@@ -2,20 +2,19 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Disorder Item Component Properties
  */
 export interface DisorderItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
+  form: UseFormReturn<Survivor>
   /** Remove Disorder Handler */
   handleRemoveDisorder: (index: number) => void
   /** Disorder ID */
@@ -53,14 +52,16 @@ export function DisorderItem({
   isDisabled,
   onSave,
   onEdit
-}: DisorderItemProps) {
+}: DisorderItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState(form.getValues(`disorders.${index}`) || '')
+  const [value, setValue] = useState<string | undefined>(
+    form.getValues(`disorders.${index}`)
+  )
 
   useEffect(
-    () => setValue(form.getValues(`disorders.${index}`) || ''),
+    () => setValue(form.getValues(`disorders.${index}`)),
     [form, isDisabled, index]
   )
 
@@ -74,7 +75,7 @@ export function DisorderItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(index, value)
     }
@@ -110,7 +111,9 @@ export function DisorderItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index, value)}
+          onClick={() => {
+            if (value) onSave(index, value)
+          }}
           title="Save disorder">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -130,8 +133,11 @@ export function DisorderItem({
 /**
  * New Disorder Item Component
  */
-export function NewDisorderItem({ onSave, onCancel }: NewDisorderItemProps) {
-  const [value, setValue] = useState('')
+export function NewDisorderItem({
+  onSave,
+  onCancel
+}: NewDisorderItemProps): ReactElement {
+  const [value, setValue] = useState<string | undefined>(undefined)
 
   /**
    * Handles the key down event for the input field. If the Enter key is
@@ -142,7 +148,7 @@ export function NewDisorderItem({ onSave, onCancel }: NewDisorderItemProps) {
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(value)
     } else if (e.key === 'Escape') onCancel()
@@ -165,7 +171,9 @@ export function NewDisorderItem({ onSave, onCancel }: NewDisorderItemProps) {
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => onSave(value)}
+        onClick={() => {
+          if (value) onSave(value)
+        }}
         title="Save disorder">
         <CheckIcon className="h-4 w-4" />
       </Button>

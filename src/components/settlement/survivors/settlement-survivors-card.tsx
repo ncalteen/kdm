@@ -11,21 +11,18 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { SurvivorType } from '@/lib/enums'
-import { Survivor } from '@/lib/types'
 import { getSurvivors } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Settlement Survivors Card Component
  *
  * Displays the list of survivors for a given settlement.
  */
-export function SettlementSurvivorsCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function SettlementSurvivorsCard(form: UseFormReturn<Settlement>) {
   const settlementId = form.watch('id')
   const survivorType = form.watch('survivorType')
 

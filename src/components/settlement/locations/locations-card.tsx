@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -33,26 +33,26 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Locations Card Component
  */
-export function LocationsCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function LocationsCard(form: UseFormReturn<Settlement>) {
   const locations = useMemo(() => form.watch('locations') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
+
       locations.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
+
       return next
     })
     setIsAddingNew(false)
@@ -65,9 +65,7 @@ export function LocationsCard(
     })
   )
 
-  const addLocation = () => {
-    setIsAddingNew(true)
-  }
+  const addLocation = () => setIsAddingNew(true)
 
   const handleRemoveLocation = (index: number) => {
     startTransition(() => {

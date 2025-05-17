@@ -18,9 +18,12 @@ import { z } from 'zod'
  */
 export interface PhilosophyItemProps {
   /** Remove Philosophy Handler */
-  handleRemovePhilosophy: (philosophy: string) => void
+  handleRemovePhilosophy: (philosophy: Philosophy) => void
   /** Update Philosophy Handler */
-  handleUpdatePhilosophy: (oldPhilosophy: string, newPhilosophy: string) => void
+  handleUpdatePhilosophy: (
+    oldPhilosophy: Philosophy,
+    newPhilosophy: Philosophy
+  ) => void
   /** Philosophy ID */
   id: string
   /** Editing Status */
@@ -32,7 +35,7 @@ export interface PhilosophyItemProps {
   /** OnSaveEdit Callback */
   onSaveEdit: (name: string) => void
   /** Philosophy Name */
-  philosophy: string
+  philosophy: Philosophy
 }
 
 /**
@@ -40,7 +43,7 @@ export interface PhilosophyItemProps {
  */
 export interface NewPhilosophyItemProps {
   /** Existing Names */
-  existingNames: string[]
+  existingNames: Philosophy[]
   /** Form */
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
   /** OnAdd Callback */
@@ -94,7 +97,7 @@ export function PhilosophyItem({
           <SelectPhilosophy
             options={Object.values(Philosophy)}
             value={value}
-            onChange={setValue}
+            onChange={(val) => setValue(val as Philosophy)}
           />
         </div>
       ) : (
@@ -154,7 +157,7 @@ export function NewPhilosophyItem({
   onAdd,
   existingNames
 }: NewPhilosophyItemProps) {
-  const [name, setName] = useState('')
+  const [name, setName] = useState<Philosophy | undefined>()
 
   const handleSubmit = () => {
     if (!name) return toast.warning('Cannot save a nameless philosophy.')
@@ -185,7 +188,7 @@ export function NewPhilosophyItem({
       console.error('New Philosophy Save Error:', error)
     }
 
-    setName('')
+    setName(undefined)
     onAdd()
 
     toast.success('A new philosophy echos throughout your settlement.')
@@ -202,7 +205,7 @@ export function NewPhilosophyItem({
             (philosophy) => !existingNames.includes(philosophy)
           )}
           value={name}
-          onChange={setName}
+          onChange={(val) => setName(val as Philosophy)}
         />
       </div>
       <Button

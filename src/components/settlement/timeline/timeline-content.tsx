@@ -5,14 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { TimelineEvent } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { CheckIcon, PlusCircleIcon, ScrollIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, memo, startTransition } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Timeline Content Component Properties
@@ -23,7 +21,7 @@ export interface TimelineContentProps {
   /** Edit Event Handler */
   editEvent: (yearIndex: number, entryIndex: number) => void
   /** Settlement Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Key Press Handler */
   handleKeyDown: (
     e: KeyboardEvent<HTMLInputElement>,
@@ -45,7 +43,7 @@ export interface TimelineContentProps {
   /** Show Story Event Icon */
   showStoryEventIcon: boolean
   /** Timeline Events */
-  timeline: TimelineEvent[]
+  timeline: TimelineYear[]
   /** Use Normal Year Numbering */
   usesNormalNumbering: boolean
 }

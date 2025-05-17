@@ -5,16 +5,16 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Knowledge Card Component
  */
 export function KnowledgeCard({
   ...form
-}: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
+}: UseFormReturn<Survivor>): ReactElement {
   /**
    * Helper function to handle textarea auto-resize
    */

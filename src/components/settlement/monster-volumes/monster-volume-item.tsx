@@ -1,14 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { ReactElement, startTransition, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Monster Volume Item Component Properties
@@ -37,7 +36,7 @@ export interface NewMonsterVolumeItemProps {
   /** Existing Names */
   existingNames: string[]
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** OnAdd Callback */
   onAdd: () => void
 }
@@ -54,7 +53,7 @@ export function MonsterVolumeItem({
   onSaveEdit,
   volume
 }: MonsterVolumeItemProps): ReactElement {
-  const [value, setValue] = useState(volume)
+  const [value, setValue] = useState<string | undefined>(volume)
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -70,7 +69,7 @@ export function MonsterVolumeItem({
    * Handles the save action for the edited volume.
    */
   const handleEditSave = () => {
-    if (value.trim() === '')
+    if (!value || value.trim() === '')
       return toast.warning('Cannot inscribe an unnamed monster volume.')
 
     onSaveEdit(value.trim())
@@ -169,11 +168,11 @@ export function NewMonsterVolumeItem({
   form,
   onAdd,
   existingNames
-}: NewMonsterVolumeItemProps) {
-  const [name, setName] = useState('')
+}: NewMonsterVolumeItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
 
   const handleSubmit = () => {
-    if (name.trim() === '')
+    if (!name || name.trim() === '')
       return toast.warning('Cannot inscribe an unnamed monster volume.')
 
     if (existingNames.includes(name.trim()))

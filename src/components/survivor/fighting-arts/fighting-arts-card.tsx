@@ -13,8 +13,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -25,7 +25,6 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 // Type for a combined fighting art item with metadata
 export interface CombinedFightingArt {
@@ -40,12 +39,8 @@ export interface CombinedFightingArt {
 /**
  * Fighting Arts Card Component
  */
-export function FightingArtsCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
-  const [settlement, setSettlement] = useState<
-    z.infer<typeof SettlementSchema> | undefined
-  >()
+export function FightingArtsCard(form: UseFormReturn<Survivor>) {
+  const [settlement, setSettlement] = useState<Settlement | undefined>()
   const [survivorType, setSurvivorType] = useState<SurvivorType>(
     SurvivorType.CORE
   )
@@ -94,11 +89,11 @@ export function FightingArtsCard(
   }>({})
 
   // Track when we're adding new arts
-  const [isAddingNew, setIsAddingNew] = useState(false)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   // Track which type we're currently adding
   const [newArtType, setNewArtType] = useState<'regular' | 'secret'>('regular')
-  const [newArtValue, setNewArtValue] = useState('')
+  const [newArtValue, setNewArtValue] = useState<string | undefined>(undefined)
 
   // Set the survivor type when the settlement ID changes
   useEffect(() => {
@@ -292,9 +287,8 @@ export function FightingArtsCard(
   }
 
   // Don't show this component for Squires of the Citadel campaign
-  if (settlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL) {
+  if (settlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
     return null
-  }
 
   return (
     <Card className="mt-2">

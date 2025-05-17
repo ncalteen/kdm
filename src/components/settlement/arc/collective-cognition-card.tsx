@@ -8,17 +8,16 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SettlementSchema } from '@/schemas/settlement'
-import { useEffect, useMemo, useState } from 'react'
+import { Settlement } from '@/schemas/settlement'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Collective Cognition Card
  */
 export function CollectiveCognitionCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+  form: UseFormReturn<Settlement>
+): ReactElement {
   // Initialize state for collective cognition value.
   const [ccValue, setCcValue] = useState(0)
 

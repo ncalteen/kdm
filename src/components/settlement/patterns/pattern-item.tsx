@@ -2,20 +2,19 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Pattern Item Component Properties
  */
 export interface PatternItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Remove Pattern Handler */
   handleRemovePattern: (index: number) => void
   /** Pattern ID */
@@ -53,14 +52,16 @@ export function PatternItem({
   isDisabled,
   onSave,
   onEdit
-}: PatternItemProps) {
+}: PatternItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState(form.getValues(`patterns.${index}`) || '')
+  const [value, setValue] = useState<string | undefined>(
+    form.getValues(`patterns.${index}`)
+  )
 
   useEffect(
-    () => setValue(form.getValues(`patterns.${index}`) || ''),
+    () => setValue(form.getValues(`patterns.${index}`)),
     [form, isDisabled, index]
   )
 
@@ -74,7 +75,7 @@ export function PatternItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(index, value)
     }
@@ -110,7 +111,9 @@ export function PatternItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index, value)}
+          onClick={() => {
+            if (value) onSave(index, value)
+          }}
           title="Save pattern">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -130,7 +133,10 @@ export function PatternItem({
 /**
  * New Pattern Item Component
  */
-export function NewPatternItem({ onSave, onCancel }: NewPatternItemProps) {
+export function NewPatternItem({
+  onSave,
+  onCancel
+}: NewPatternItemProps): ReactElement {
   const [value, setValue] = useState('')
 
   /**

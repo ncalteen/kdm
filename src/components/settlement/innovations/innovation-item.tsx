@@ -3,21 +3,20 @@
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Innovation Item Component Properties
  */
 export interface InnovationItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Remove Innovation Callback */
   handleRemoveInnovation: (index: number) => void
   /** Innovation ID */
@@ -128,15 +127,15 @@ export function InnovationItem({
 export function NewInnovationItem({
   onSave,
   onCancel
-}: NewInnovationItemProps) {
-  const [value, setValue] = useState('')
+}: NewInnovationItemProps): ReactElement {
+  const [value, setValue] = useState<string | undefined>(undefined)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value)
   }
 
   const handleSave = () => {
-    if (value.trim() !== '') onSave(value.trim())
+    if (value && value.trim() !== '') onSave(value.trim())
     else toast.warning('Cannot record an empty innovation.')
   }
 

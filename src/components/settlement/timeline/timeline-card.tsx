@@ -4,12 +4,12 @@ import { TimelineContent } from '@/components/settlement/timeline/timeline-conte
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CampaignType } from '@/lib/enums'
-import { TimelineEvent } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { HourglassIcon, PlusCircleIcon } from 'lucide-react'
 import {
   KeyboardEvent,
+  ReactElement,
   startTransition,
   useCallback,
   useEffect,
@@ -19,7 +19,6 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Timeline Card Component
@@ -28,13 +27,11 @@ import { z } from 'zod'
  * the campaign type, it may also show a scroll icon to indicate that a story
  * event card should be drawn when updating the settlement's timeline.
  */
-export function TimelineCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   const campaignType = form.watch('campaignType')
   const formTimeline = form.watch('timeline')
 
-  const [timeline, setTimeline] = useState(formTimeline || [])
+  const [timeline, setTimeline] = useState<TimelineYear[]>(formTimeline || [])
   const [editingEvents, setEditingEvents] = useState<{
     [key: string]: boolean
   }>({})
@@ -90,7 +87,7 @@ export function TimelineCard(
    * @returns void
    */
   const debouncedSetTimeline = useCallback(
-    (newTimeline: TimelineEvent[]) => {
+    (newTimeline: TimelineYear[]) => {
       // Create a closure over the current setTimeline to avoid stale references
       const currentSetTimeline = setTimeline
       // Use requestAnimationFrame to ensure the state update is batched
@@ -113,7 +110,7 @@ export function TimelineCard(
         | `timeline.${number}.entries.${number}`
         | `timeline.${number}.completed`
         | 'timeline',
-      value: boolean | string | string[] | TimelineEvent[]
+      value: boolean | string | string[] | TimelineYear[]
     ) => {
       // Create a closure over the current form to avoid stale references
       const currentForm = form

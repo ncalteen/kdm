@@ -12,9 +12,8 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import type { Campaign } from '@/lib/types'
 import { getCampaign } from '@/lib/utils'
-import { CampaignSchema } from '@/schemas/campaign'
+import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { UploadIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -29,9 +28,11 @@ import { toast } from 'sonner'
  * @returns Upload Campaign Button
  */
 export function UploadCampaignButton() {
-  const [isUploading, setIsUploading] = useState(false)
-  const [showConfirmation, setShowConfirmation] = useState(false)
-  const [uploadedData, setUploadedData] = useState<Campaign | null>(null)
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
+  const [uploadedData, setUploadedData] = useState<Campaign | undefined>(
+    undefined
+  )
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState(false)
 
@@ -68,7 +69,7 @@ export function UploadCampaignButton() {
           )
 
           setValidationErrors(errors)
-          setUploadedData(null)
+          setUploadedData(undefined)
           setShowConfirmation(false)
         }
       } catch (error) {
@@ -77,7 +78,7 @@ export function UploadCampaignButton() {
           'Your records are unreadable. The darkness has corrupted them.'
         ])
 
-        setUploadedData(null)
+        setUploadedData(undefined)
         setShowConfirmation(false)
       } finally {
         setIsUploading(false)
@@ -105,7 +106,7 @@ export function UploadCampaignButton() {
       toast.success("Settlement chronicles illuminated by the lantern's light!")
 
       // Reset state
-      setUploadedData(null)
+      setUploadedData(undefined)
       setShowConfirmation(false)
       setIsOpen(false)
 
@@ -124,7 +125,7 @@ export function UploadCampaignButton() {
    * Handles the dialog close event.
    */
   const handleDialogClose = () => {
-    setUploadedData(null)
+    setUploadedData(undefined)
     setShowConfirmation(false)
     setValidationErrors([])
 

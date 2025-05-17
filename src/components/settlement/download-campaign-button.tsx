@@ -15,7 +15,7 @@ import { toast } from 'sonner'
  * @returns Download Campaign Button
  */
 export function DownloadCampaignButton() {
-  const [isDownloading, setIsDownloading] = useState(false)
+  const [isDownloading, setIsDownloading] = useState<boolean>(false)
 
   const handleDownload = () => {
     try {

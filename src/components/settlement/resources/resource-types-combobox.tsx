@@ -17,7 +17,7 @@ import {
 import { ResourceType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 /**
  * Resource Types Combobox Component Properties
@@ -38,8 +38,8 @@ export function ResourceTypesCombobox({
   disabled,
   onChange,
   selectedTypes
-}: ResourceTypesComboboxProps) {
-  const [open, setOpen] = useState(false)
+}: ResourceTypesComboboxProps): ReactElement {
+  const [open, setOpen] = useState<boolean>(false)
 
   /**
    * Handles the selection of a resource type.

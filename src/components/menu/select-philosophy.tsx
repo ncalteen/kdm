@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
+import { Philosophy } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
@@ -29,7 +30,7 @@ export interface SelectPhilosophyProps {
   /** Options */
   options: string[]
   /** Value */
-  value?: string
+  value?: Philosophy
 }
 
 /**

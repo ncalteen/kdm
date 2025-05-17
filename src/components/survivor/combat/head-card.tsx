@@ -10,10 +10,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { Shield, UserRoundIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Head Card Component
@@ -24,7 +23,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Head Card Component
  */
-export function HeadCard(form: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
+export function HeadCard(form: UseFormReturn<Survivor>) {
   return (
     <div className="flex flex-row w-full">
       <FormField

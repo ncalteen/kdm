@@ -2,20 +2,19 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Seed Pattern Item Component Properties
  */
 export interface SeedPatternItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Seed Pattern ID */
   id: string
   /** Index */
@@ -51,25 +50,25 @@ export function SeedPatternItem({
   isDisabled,
   onSave,
   onEdit
-}: SeedPatternItemProps) {
+}: SeedPatternItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState(
-    form.getValues(`seedPatterns.${index}`) || ''
+  const [value, setValue] = useState<string | undefined>(
+    form.getValues(`seedPatterns.${index}`)
   )
 
   const style = { transform: CSS.Transform.toString(transform), transition }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(index, value)
     }
   }
 
   useEffect(() => {
-    setValue(form.getValues(`seedPatterns.${index}`) || '')
+    setValue(form.getValues(`seedPatterns.${index}`))
   }, [form, isDisabled, index])
 
   return (
@@ -102,7 +101,9 @@ export function SeedPatternItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index, value)}
+          onClick={() => {
+            if (value) onSave(index, value)
+          }}
           title="Save seed pattern">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -125,11 +126,11 @@ export function SeedPatternItem({
 export function NewSeedPatternItem({
   onSave,
   onCancel
-}: NewSeedPatternItemProps) {
-  const [value, setValue] = useState('')
+}: NewSeedPatternItemProps): ReactElement {
+  const [value, setValue] = useState<string | undefined>(undefined)
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && value) {
       e.preventDefault()
       onSave(value)
     } else if (e.key === 'Escape') onCancel()
@@ -152,7 +153,9 @@ export function NewSeedPatternItem({
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => onSave(value)}
+        onClick={() => {
+          if (value) onSave(value)
+        }}
         title="Save seed pattern">
         <CheckIcon className="h-4 w-4" />
       </Button>

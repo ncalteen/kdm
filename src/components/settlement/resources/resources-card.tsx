@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -25,23 +25,20 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusCircleIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Resources Card Component
  */
-export function ResourcesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function ResourcesCard(form: UseFormReturn<Settlement>): ReactElement {
   const resources = useMemo(() => form.watch('resources') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {

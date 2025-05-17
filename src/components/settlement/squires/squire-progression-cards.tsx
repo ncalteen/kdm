@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { SquireCardData } from '@/lib/common'
+import { ReactElement } from 'react'
 
 /**
  * Squire Progression Card Component
@@ -20,7 +21,7 @@ const SquireProgressionCard = ({
   squire
 }: {
   squire: (typeof SquireCardData)[0]
-}) => {
+}): ReactElement => {
   return (
     <Card className="w-full">
       <CardHeader className="pb-2">
@@ -54,7 +55,7 @@ const SquireProgressionCard = ({
 /**
  * Squire Progression Cards Component
  */
-export function SquireProgressionCards() {
+export function SquireProgressionCards(): ReactElement {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {SquireCardData.map((squire, index) => (

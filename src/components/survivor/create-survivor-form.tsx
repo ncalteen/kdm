@@ -25,13 +25,16 @@ import {
   getNextSurvivorId,
   getSettlement
 } from '@/lib/utils'
-import { BaseSurvivorSchema, SurvivorSchema } from '@/schemas/survivor'
+import {
+  BaseSurvivorSchema,
+  Survivor,
+  SurvivorSchema
+} from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactElement, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Create Survivor Form Component
@@ -55,12 +58,10 @@ export function CreateSurvivorForm(): ReactElement {
     settlementIdParam ? parseInt(settlementIdParam, 10) : 0
   )
 
-  const form = useForm<z.infer<typeof SurvivorSchema>>({
+  const form = useForm<Survivor>({
     // Need to set the type here directly, because the schema includes a lot of
     // fields with default values that are not resolved in the type.
-    resolver: zodResolver(SurvivorSchema) as Resolver<
-      z.infer<typeof SurvivorSchema>
-    >,
+    resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
     defaultValues: BaseSurvivorSchema.parse({})
   })
 
@@ -98,7 +99,7 @@ export function CreateSurvivorForm(): ReactElement {
    *
    * @param values Form Values
    */
-  function onSubmit(values: z.infer<typeof SurvivorSchema>) {
+  function onSubmit(values: Survivor) {
     try {
       // Get existing campaign
       const campaign = getCampaign()

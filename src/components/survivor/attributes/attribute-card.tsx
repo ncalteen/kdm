@@ -11,10 +11,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
 import { getSettlement } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Survivor Attribute Card Component
@@ -26,9 +25,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Attribute Card Component
  */
-export function AttributeCard(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+export function AttributeCard(form: UseFormReturn<Survivor>) {
   // Get the survivor type from the settlement data.
   const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
     undefined

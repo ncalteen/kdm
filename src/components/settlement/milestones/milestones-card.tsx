@@ -13,7 +13,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -39,31 +39,29 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Milestones Card Component
  */
-export function MilestonesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function MilestonesCard(form: UseFormReturn<Settlement>) {
   const milestones = useMemo(() => form.watch('milestones') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
+
       milestones.forEach((_, i) => {
         next[i] = prev[i] ?? true
       })
+
       return next
     })
   }, [milestones])
-
-  const [isAddingNew, setIsAddingNew] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -84,6 +82,7 @@ export function MilestonesCard(
       startTransition(() => {
         const newMilestone = { name, complete: false, event }
         const updated = [...milestones, newMilestone]
+
         form.setValue('milestones', updated)
         setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
         setIsAddingNew(false)
@@ -98,7 +97,6 @@ export function MilestonesCard(
 
           campaign.settlements[settlementIndex].milestones = updated
           localStorage.setItem('campaign', JSON.stringify(campaign))
-
           toast.success("New milestone added to the settlement's fate!")
         } catch (error) {
           console.error('New Milestone Save Error:', error)

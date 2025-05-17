@@ -10,11 +10,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { getCampaign, getSurvivors } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Population Card Component
@@ -23,9 +22,7 @@ import { z } from 'zod'
  * TODO: Auto-update death count
  * TODO: Auto-update lost settlements
  */
-export function PopulationCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
+export function PopulationCard(form: UseFormReturn<Settlement>) {
   const settlementId = form.watch('id')
 
   useEffect(() => {

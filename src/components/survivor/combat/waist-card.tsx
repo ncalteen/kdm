@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { RibbonIcon, Shield } from 'lucide-react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Waist Card Component
@@ -24,7 +24,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Waist Card Component
  */
-export function WaistCard(form: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
+export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
   return (
     <div className="flex flex-row w-full">
       <FormField

@@ -9,15 +9,13 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Nemesis } from '@/lib/types'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Nemesis, Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { memo, useEffect, useState } from 'react'
+import { memo, ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Nemesis Item Props
@@ -52,7 +50,7 @@ export interface NemesisItemProps {
  */
 export interface NewNemesisItemProps {
   /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
+  form: UseFormReturn<Settlement>
   /** Index */
   index: number
   /** Remove Handler */
@@ -78,7 +76,7 @@ export const NemesisItem = memo(
   }: NemesisItemProps) => {
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({ id })
-    const [nameValue, setNameValue] = useState(nemesis.name)
+    const [nameValue, setNameValue] = useState<string | undefined>(nemesis.name)
 
     useEffect(() => setNameValue(nemesis.name), [nemesis.name])
 
@@ -94,9 +92,10 @@ export const NemesisItem = memo(
       if (e.key === 'Enter') {
         e.preventDefault()
 
-        if (nameValue !== nemesis.name)
+        if (nameValue && nameValue !== nemesis.name)
           updateNemesisName(nemesis.name, nameValue)
-        else onSave(nameValue)
+        else if (nameValue) onSave(nameValue)
+        else toast.warning('A nameless horror cannot be summoned.')
       }
     }
 
@@ -254,10 +253,11 @@ export const NemesisItem = memo(
               variant="ghost"
               size="icon"
               onClick={() => {
-                if (nameValue !== nemesis.name) {
+                if (nameValue && nameValue !== nemesis.name) {
                   updateNemesisName(nemesis.name, nameValue)
                   toast.success('The horror shifts form.')
-                } else onSave(nameValue)
+                } else if (nameValue) onSave(nameValue)
+                else toast.warning('A nameless horror cannot be summoned.')
               }}
               title="Save nemesis">
               <CheckIcon className="h-4 w-4" />
@@ -286,14 +286,14 @@ export function NewNemesisItem({
   index,
   handleRemoveNemesis,
   onSave
-}: NewNemesisItemProps) {
-  const [name, setName] = useState('')
+}: NewNemesisItemProps): ReactElement {
+  const [name, setName] = useState<string | undefined>(undefined)
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setName(e.target.value)
 
   const handleSave = () => {
-    if (name.trim() !== '') onSave(name.trim())
+    if (name && name.trim() !== '') onSave(name.trim())
     else toast.warning('A nameless horror cannot be summoned.')
   }
 

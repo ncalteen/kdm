@@ -2,25 +2,22 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
 import { useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Notes Card Component
  *
  * Displays a textarea for adding notes to the settlement.
  */
-export function NotesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
-  const notes = form.watch('notes') || ''
+export function NotesCard(form: UseFormReturn<Settlement>) {
+  const notes = form.watch('notes')
 
-  const [draft, setDraft] = useState(notes)
-  const [isDirty, setIsDirty] = useState(false)
+  const [draft, setDraft] = useState<string | undefined>(notes)
+  const [isDirty, setIsDirty] = useState<boolean>(false)
 
   const handleSave = () => {
     form.setValue('notes', draft)

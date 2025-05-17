@@ -8,10 +8,10 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Faces in the Sky Component
@@ -24,9 +24,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Faces in the Sky Component
  */
-export function FacesInTheSky(
-  form: UseFormReturn<z.infer<typeof SurvivorSchema>>
-) {
+export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
   // Watch the props from the form
   const hasGamblerWitch = form.watch('hasGamblerWitch')
   const hasGamblerRust = form.watch('hasGamblerRust')
@@ -54,10 +52,8 @@ export function FacesInTheSky(
    * @param property The property to toggle
    * @param currentValue The current value of the property
    */
-  const handleToggleCell = (
-    property: keyof z.infer<typeof SurvivorSchema>,
-    currentValue: boolean
-  ) => form.setValue(property, !currentValue)
+  const handleToggleCell = (property: keyof Survivor, currentValue: boolean) =>
+    form.setValue(property, !currentValue)
 
   return (
     <div className="w-full">

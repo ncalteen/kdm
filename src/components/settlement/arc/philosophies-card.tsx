@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/arc/philosophy-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Philosophy } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { SettlementSchema } from '@/schemas/settlement'
 import {
@@ -34,7 +35,8 @@ import { z } from 'zod'
 export function PhilosophiesCard(
   form: UseFormReturn<z.infer<typeof SettlementSchema>>
 ) {
-  const [showNewPhilosophyForm, setShowNewPhilosophyForm] = useState(false)
+  const [showNewPhilosophyForm, setShowNewPhilosophyForm] =
+    useState<boolean>(false)
   const [editingPhilosophy, setEditingPhilosophy] = useState<string | null>(
     null
   )
@@ -53,7 +55,7 @@ export function PhilosophiesCard(
    *
    * @param philosophy Philosophy
    */
-  const handleRemovePhilosophy = (philosophy: string) => {
+  const handleRemovePhilosophy = (philosophy: Philosophy) => {
     const updatedPhilosophies = philosophies.filter((p) => p !== philosophy)
 
     form.setValue('philosophies', updatedPhilosophies)
@@ -84,8 +86,8 @@ export function PhilosophiesCard(
    * @param newPhilosophy New Philosophy
    */
   const handleUpdatePhilosophy = (
-    oldPhilosophy: string,
-    newPhilosophy: string
+    oldPhilosophy: Philosophy,
+    newPhilosophy: Philosophy
   ) => {
     if (newPhilosophy.trim() === '')
       return toast.warning('Cannot save nameless philosophies.')
@@ -101,7 +103,7 @@ export function PhilosophiesCard(
 
     const updatedPhilosophies = philosophies.map((p) => {
       return p === oldPhilosophy ? newPhilosophy.trim() : p
-    })
+    }) as Philosophy[]
 
     form.setValue('philosophies', updatedPhilosophies)
     setEditingPhilosophy(null)
@@ -143,8 +145,8 @@ export function PhilosophiesCard(
               onDragEnd={(event) => {
                 const { active, over } = event
                 if (over && active.id !== over.id) {
-                  const oldIndex = philosophies.indexOf(active.id as string)
-                  const newIndex = philosophies.indexOf(over.id as string)
+                  const oldIndex = philosophies.indexOf(active.id as Philosophy)
+                  const newIndex = philosophies.indexOf(over.id as Philosophy)
                   const newOrder = arrayMove(philosophies, oldIndex, newIndex)
 
                   form.setValue('philosophies', newOrder)
@@ -180,7 +182,7 @@ export function PhilosophiesCard(
                     isEditing={editingPhilosophy === philosophy}
                     onEdit={() => setEditingPhilosophy(philosophy)}
                     onSaveEdit={(name) =>
-                      handleUpdatePhilosophy(philosophy, name)
+                      handleUpdatePhilosophy(philosophy, name as Philosophy)
                     }
                     onCancelEdit={() => setEditingPhilosophy(null)}
                   />

@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
 
 /**
  * Legs Card Component
@@ -24,7 +24,7 @@ import { z } from 'zod'
  * @param form Form
  * @returns Legs Card Component
  */
-export function LegsCard(form: UseFormReturn<z.infer<typeof SurvivorSchema>>) {
+export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
   return (
     <div className="flex flex-row w-full">
       <FormField
