@@ -52,6 +52,10 @@ const data = {
         {
           title: 'Create',
           url: '/survivor/create'
+        },
+        {
+          title: 'List',
+          url: '/survivor/list'
         }
       ]
     }

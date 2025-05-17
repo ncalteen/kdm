@@ -92,7 +92,9 @@ export function getLostSettlementCount(): number {
  * @param settlementId Settlement ID
  * @returns Survivors
  */
-export function getSurvivors(settlementId: number): Survivor[] {
+export function getSurvivors(settlementId?: number): Survivor[] {
+  if (!settlementId) return getCampaign().survivors
+
   return getCampaign().survivors.filter(
     (survivor) => survivor.settlementId === settlementId
   )
