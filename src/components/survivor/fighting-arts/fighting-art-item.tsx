@@ -163,7 +163,7 @@ export function NewFightingArtItem({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>

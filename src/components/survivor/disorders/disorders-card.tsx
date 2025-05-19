@@ -142,16 +142,14 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Disorders
-        </CardTitle>
+    <Card className="mt-1 border-0">
+      <CardHeader className="px-3 py-2 pb-2">
+        <CardTitle className="text-md">Disorders</CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
+      <CardContent className="pb-2">
         <div className="space-y-2">
           {disorders.length === 0 && !isAddingNew ? (
-            <div className="text-center text-sm text-muted-foreground py-4">
+            <div className="text-center text-xs text-muted-foreground">
               No disorders...yet.
             </div>
           ) : (
@@ -187,7 +185,7 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
+          <div className="flex justify-center">
             <Button
               type="button"
               size="sm"
@@ -198,7 +196,7 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
                 disorders.length >= MAX_DISORDERS ||
                 Object.values(disabledInputs).some((v) => v === false)
               }>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
+              <PlusCircleIcon className="h-4 w-4" />
               Add Disorder
             </Button>
           </div>

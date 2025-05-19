@@ -120,9 +120,8 @@ export function NextDepartureItem({
       )}
       <Button
         variant="ghost"
-        size="sm"
+        size="icon"
         type="button"
-        className="h-8 w-8 p-0 ml-2"
         onClick={() => handleRemoveNextDeparture(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>

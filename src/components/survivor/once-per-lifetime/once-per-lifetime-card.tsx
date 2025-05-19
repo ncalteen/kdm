@@ -168,12 +168,10 @@ export function OncePerLifetimeCard({
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
+    <Card className="mt-1 border-0">
+      <CardHeader className="px-3 py-2 pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg flex items-center gap-1">
-            Once Per Lifetime
-          </CardTitle>
+          <CardTitle className="text-md">Once Per Lifetime</CardTitle>
           <div className="flex items-center space-x-2">
             <Checkbox
               id="rerollUsed"
@@ -182,14 +180,16 @@ export function OncePerLifetimeCard({
                 if (typeof checked === 'boolean') setRerollUsedState(checked)
               }}
             />
-            <Label htmlFor="rerollUsed">Reroll Used</Label>
+            <Label htmlFor="rerollUsed" className="text-xs cursor-pointer">
+              Reroll Used
+            </Label>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
+      <CardContent className="pb-2">
         <div className="space-y-2">
           {oncePerLifetimeRef.current.length === 0 && !isAddingNew ? (
-            <div className="text-center text-muted-foreground py-4">
+            <div className="text-center text-xs text-muted-foreground">
               No once per lifetime events recorded yet.
             </div>
           ) : (
@@ -229,7 +229,7 @@ export function OncePerLifetimeCard({
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
+          <div className="flex justify-center">
             <Button
               type="button"
               size="sm"
@@ -239,7 +239,7 @@ export function OncePerLifetimeCard({
                 isAddingNew ||
                 Object.values(disabledInputs).some((v) => v === false)
               }>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
+              <PlusCircleIcon className="h-4 w-4" />
               Add Once Per Lifetime Event
             </Button>
           </div>

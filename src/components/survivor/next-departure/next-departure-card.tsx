@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -138,9 +138,11 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
   }
 
   return (
-    <Card className="mt-2 border-2">
-      <CardContent className="p-3">
-        <CardTitle className="text-l pb-2">Next Departure</CardTitle>
+    <Card className="mt-1 border-0">
+      <CardHeader className="px-3 py-2 pb-2">
+        <CardTitle className="text-md">Next Departure</CardTitle>
+      </CardHeader>
+      <CardContent className="pb-2">
         <div className="space-y-2">
           {nextDeparture.length === 0 && !isAddingNew ? (
             <div className="text-center text-xs text-muted-foreground">

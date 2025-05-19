@@ -291,10 +291,10 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
     return null
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
+    <Card className="mt-1 border-0">
+      <CardHeader className="px-3 py-2 pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-md flex items-center gap-1">
+          <CardTitle className="text-md">
             Fighting Arts &amp; Secret Fighting Arts
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -307,18 +307,18 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
             />
             <label
               htmlFor="canUseFightingArtsOrKnowledges"
-              className="text-sm cursor-pointer">
+              className="text-xs cursor-pointer">
               Can use fighting arts
             </label>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-4">
+      <CardContent className="pb-2">
+        <div>
           {/* Combined Fighting Arts List */}
           <div className="space-y-2">
             {combinedArts.length === 0 && !isAddingNew ? (
-              <div className="text-center text-sm text-muted-foreground py-4">
+              <div className="text-center text-xs text-muted-foreground">
                 No fighting arts mastered yet.
               </div>
             ) : (
@@ -327,10 +327,10 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
                 const isDisabled = disabledInputs[key] !== false
 
                 return (
-                  <div key={key} className="flex items-center gap-2">
+                  <div key={key} className="flex items-center">
                     <Badge
                       variant={art.type === 'regular' ? 'default' : 'secondary'}
-                      className="shrink-0 w-16 flex justify-center">
+                      className="shrink-0 w-16 flex justify-center mr-2">
                       {art.type === 'regular' ? 'Fighting' : 'Secret'}
                     </Badge>
                     <Input
@@ -371,9 +371,8 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
                     )}
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       type="button"
-                      className="h-8 w-8 p-0 ml-2"
                       onClick={() => handleRemoveFightingArt(art)}
                       title={`Remove ${art.type === 'regular' ? 'fighting' : 'secret fighting'} art`}>
                       <TrashIcon className="h-4 w-4" />
@@ -383,10 +382,10 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
               })
             )}
             {isAddingNew && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center">
                 <Badge
                   variant={newArtType === 'regular' ? 'default' : 'secondary'}
-                  className="shrink-0 w-16 flex justify-center">
+                  className="shrink-0 w-16 flex justify-center mr-2">
                   {newArtType === 'regular' ? 'Fighting' : 'Secret'}
                 </Badge>
                 <Input
@@ -428,7 +427,7 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
               </div>
             )}
             {!isAddingNew && (
-              <div className="pt-2 flex justify-center">
+              <div className="flex justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -436,9 +435,9 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
                       size="sm"
                       variant="outline"
                       disabled={isAnyBeingEdited()}>
-                      <PlusCircleIcon className="h-4 w-4 mr-1" />
+                      <PlusCircleIcon className="h-4 w-4" />
                       Add Fighting Art
-                      <ChevronDownIcon className="h-4 w-4 ml-1" />
+                      <ChevronDownIcon className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

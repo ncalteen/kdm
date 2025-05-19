@@ -82,7 +82,7 @@ export function DisorderItem({
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div ref={setNodeRef} style={style} className="flex items-center">
       <div
         {...attributes}
         {...listeners}
@@ -120,9 +120,8 @@ export function DisorderItem({
       )}
       <Button
         variant="ghost"
-        size="sm"
+        size="icon"
         type="button"
-        className="h-8 w-8 p-0 ml-2"
         onClick={() => handleRemoveDisorder(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
@@ -155,7 +154,7 @@ export function NewDisorderItem({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
