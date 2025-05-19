@@ -57,16 +57,54 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
         )}
       />
 
-      <div className="mx-4 w-px bg-border" />
+      <div className="mx-3 w-px bg-border" />
 
-      <div className="flex flex-row justify-between w-full">
-        <div className="font-bold text-l flex flex-row gap-2">
+      <div className="flex flex-row items-start w-full">
+        <div className="font-bold text-l flex flex-row gap-1 min-w-[70px]">
           <FootprintsIcon /> Legs
         </div>
-
-        {/* Severe Injuries */}
-        <div className="flex flex-col items-left gap-1">
-          {/* Dismembered */}
+        <div className="flex flex-col items-start gap-0.5 ml-2">
+          {/* Severe Injuries */}
+          <FormField
+            control={form.control}
+            name="legHamstrung"
+            render={({ field }) => (
+              <FormItem className="space-y-0 flex flex-row items-center gap-2">
+                <FormControl>
+                  <Checkbox
+                    className="h-4 w-4 rounded-sm"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="text-xs">Hamstrung</FormLabel>
+              </FormItem>
+            )}
+          />
+          <div className="flex flex-row gap-2">
+            <FormField
+              control={form.control}
+              name="legBroken"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-1 items-center">
+                    {[...Array(2)].map((_, index) => (
+                      <Checkbox
+                        key={index}
+                        checked={(field.value || 0) > index}
+                        onCheckedChange={(checked) => {
+                          if (checked) form.setValue('legBroken', index + 1)
+                          else if ((field.value || 0) === index + 1)
+                            form.setValue('legBroken', index)
+                        }}
+                      />
+                    ))}
+                  </div>
+                </FormItem>
+              )}
+            />
+            <span className="text-xs">Broken Leg</span>
+          </div>
           <div className="flex flex-row gap-2">
             <FormField
               control={form.control}
@@ -90,58 +128,11 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
                 </FormItem>
               )}
             />
-
             <span className="text-xs">Dismembered Leg</span>
           </div>
-
-          {/* Hamstrung */}
-          <FormField
-            control={form.control}
-            name="legHamstrung"
-            render={({ field }) => (
-              <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                <FormControl>
-                  <Checkbox
-                    className="h-4 w-4 rounded-sm"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="text-xs">Hamstrung</FormLabel>
-              </FormItem>
-            )}
-          />
-
-          {/* Broken */}
-          <div className="flex flex-row gap-2">
-            <FormField
-              control={form.control}
-              name="legBroken"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex gap-1 items-center">
-                    {[...Array(2)].map((_, index) => (
-                      <Checkbox
-                        key={index}
-                        checked={(field.value || 0) > index}
-                        onCheckedChange={(checked) => {
-                          if (checked) form.setValue('legBroken', index + 1)
-                          else if ((field.value || 0) === index + 1)
-                            form.setValue('legBroken', index)
-                        }}
-                      />
-                    ))}
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            <span className="text-xs">Broken Leg</span>
-          </div>
         </div>
-
         {/* Light and Heavy Damage */}
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 ml-auto">
           {/* Light Damage */}
           <FormField
             control={form.control}
@@ -163,7 +154,6 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
               </FormItem>
             )}
           />
-
           {/* Heavy Damage */}
           <FormField
             control={form.control}

@@ -40,8 +40,8 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
   }, [form])
 
   return (
-    <Card className="mt-2">
-      <CardContent className="pt-2 pb-2 relative">
+    <Card className="m-0 mt-1 border-2">
+      <CardContent className="p-2">
         <div className="flex">
           {/* Insanity */}
           <FormField
@@ -49,7 +49,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
             name="insanity"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center">
                   <FormControl>
                     <div className="relative flex items-center">
                       <Shield
@@ -70,22 +70,15 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                   </FormControl>
                   <FormLabel className="text-xs">Insanity</FormLabel>
                 </div>
-                <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="mx-4 w-px bg-border"></div>
+          <div className="mx-2.5 w-px bg-border" />
 
           {/* Brain */}
-          <div className="relative flex-1">
+          <div className="relative flex-1 flex flex-col justify-between">
             <div className="font-bold text-l">Brain</div>
-            <br />
-            <div className="text-xs mt-1 pr-28">
-              If your insanity is 3+, you are <strong>insane</strong>.
-            </div>
-
-            {/* Light Brain Damage */}
             <div className="absolute top-0 right-0 flex items-center">
               <FormField
                 control={form.control}
@@ -103,12 +96,15 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                 )}
               />
             </div>
+            <div className="text-xs mt-auto">
+              If your insanity is 3+, you are <strong>insane</strong>.
+            </div>
           </div>
 
           {/* Torment (Arc) */}
           {survivorType === SurvivorType.ARC && (
             <>
-              <div className="mx-4 w-px bg-border"></div>
+              <div className="mx-2.5 w-px bg-border" />
 
               <FormField
                 control={form.control}

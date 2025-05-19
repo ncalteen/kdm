@@ -56,36 +56,15 @@ export function HeadCard(form: UseFormReturn<Survivor>) {
         )}
       />
 
-      <div className="mx-4 w-px bg-border" />
+      <div className="mx-3 w-px bg-border" />
 
-      <div className="flex flex-row justify-between w-full">
-        <div className="font-bold text-l flex flex-row gap-2">
+      {/* Body part label and severe injuries in a single row */}
+      <div className="flex flex-row items-start w-full">
+        <div className="font-bold text-l flex flex-row gap-1 min-w-[70px]">
           <UserRoundIcon /> Head
         </div>
-
-        {/* Severe Injuries */}
-        <div className="flex flex-col items-left gap-1">
-          {/* Intracranial Hemorrhage */}
-          <FormField
-            control={form.control}
-            name="headIntracranialHemorrhage"
-            render={({ field }) => (
-              <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                <FormControl>
-                  <Checkbox
-                    className="h-4 w-4 rounded-sm"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="text-xs">
-                  Intracranial Hemorrhage
-                </FormLabel>
-              </FormItem>
-            )}
-          />
-
-          {/* Deaf */}
+        <div className="flex flex-col items-start gap-0.5 ml-2">
+          {/* Severe Injuries */}
           <FormField
             control={form.control}
             name="headDeaf"
@@ -102,8 +81,6 @@ export function HeadCard(form: UseFormReturn<Survivor>) {
               </FormItem>
             )}
           />
-
-          {/* Blind Left and Right (side by side) */}
           <div className="flex flex-row gap-2">
             <FormField
               control={form.control}
@@ -126,11 +103,8 @@ export function HeadCard(form: UseFormReturn<Survivor>) {
                 </FormItem>
               )}
             />
-
             <span className="text-xs">Blind</span>
           </div>
-
-          {/* Shattered Jaw */}
           <FormField
             control={form.control}
             name="headShatteredJaw"
@@ -147,29 +121,48 @@ export function HeadCard(form: UseFormReturn<Survivor>) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="headIntracranialHemorrhage"
+            render={({ field }) => (
+              <FormItem className="space-y-0 flex flex-row items-center gap-2">
+                <FormControl>
+                  <Checkbox
+                    className="h-4 w-4 rounded-sm"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="text-xs">
+                  Intracranial Hemorrhage
+                </FormLabel>
+              </FormItem>
+            )}
+          />
         </div>
-
         {/* Heavy Head Damage */}
-        <FormField
-          control={form.control}
-          name="headHeavyDamage"
-          render={({ field }) => (
-            <FormItem className="space-y-0 flex flex-col items-center">
-              <FormControl>
-                <Checkbox
-                  className={cn(
-                    'h-4 w-4 rounded-sm',
-                    !field.value && 'border-2 border-primary',
-                    !field.value && 'border-4 border-primary'
-                  )}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormLabel className="text-xs mt-1">H</FormLabel>
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-col items-center ml-auto">
+          <FormField
+            control={form.control}
+            name="headHeavyDamage"
+            render={({ field }) => (
+              <FormItem className="space-y-0 flex flex-col items-center">
+                <FormControl>
+                  <Checkbox
+                    className={cn(
+                      'h-4 w-4 rounded-sm',
+                      !field.value && 'border-2 border-primary',
+                      !field.value && 'border-4 border-primary'
+                    )}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="text-xs mt-1">H</FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
     </div>
   )

@@ -14,7 +14,6 @@ import { PhilosophyCard } from '@/components/survivor/philosophy/philosophy-card
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
@@ -130,25 +129,17 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <Form {...form}>
-        <Card className="mb-2">
-          <CardContent className="w-full pt-6 pb-6">
-            <div className="flex justify-between items-center">
-              <div className="font-bold text-xl">
-                {survivor.name} - Edit Survivor
-              </div>
-              <Button type="submit">Save Changes</Button>
-            </div>
-            <hr className="mt-2 mb-2" />
-
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
+        <Card className="mb-2 pt-2">
+          <CardContent className="w-full">
+            <div className="flex flex-col md:flex-row gap-2">
+              <div className="flex-1 min-w-[450px] max-w-[450px]">
                 <NameGenderCard {...form} />
                 <SurvivalCard {...form} />
                 <AttributeCard {...form} />
                 <SanityCard {...form} />
                 <CombatCard {...form} />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 pl-2">
                 <HuntXPCard {...form} />
                 <WeaponProficiencyCard {...form} />
                 <CourageUnderstandingCard {...form} />

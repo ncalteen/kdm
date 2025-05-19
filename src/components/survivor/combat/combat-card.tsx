@@ -20,32 +20,37 @@ import { UseFormReturn } from 'react-hook-form'
  */
 export function CombatCard(form: UseFormReturn<Survivor>) {
   return (
-    <div className="flex flex-col gap-2 mt-2">
-      <Card>
-        <CardContent className="pt-2 pb-2">
+    <div className="flex flex-col gap-1 mt-1">
+      <Card className="m-0 border-0">
+        <CardContent className="p-2 min-h-[80px]">
           <HeadCard {...form} />
         </CardContent>
       </Card>
-      <Card>
-        <CardContent className="pt-2 pb-2">
+      <hr />
+      <Card className="m-0 border-0">
+        <CardContent className="p-2 min-h-[80px]">
           <ArmsCard {...form} />
         </CardContent>
       </Card>
-      <Card>
-        <CardContent className="pt-2 pb-2">
+      <hr />
+      <Card className="m-0 border-0">
+        <CardContent className="p-2 min-h-[80px]">
           <BodyCard {...form} />
         </CardContent>
       </Card>
-      <Card>
-        <CardContent className="pt-2 pb-2">
+      <hr />
+      <Card className="m-0 border-0">
+        <CardContent className="p-2 min-h-[80px]">
           <WaistCard {...form} />
         </CardContent>
       </Card>
-      <Card>
-        <CardContent className="pt-2 pb-2">
+      <hr />
+      <Card className="m-0 border-0">
+        <CardContent className="p-2 min-h-[80px]">
           <LegsCard {...form} />
         </CardContent>
       </Card>
+      <hr />
     </div>
   )
 }

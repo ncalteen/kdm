@@ -57,16 +57,30 @@ export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
         )}
       />
 
-      <div className="mx-4 w-px bg-border" />
+      <div className="mx-3 w-px bg-border" />
 
-      <div className="flex flex-row justify-between w-full">
-        <div className="font-bold text-l flex flex-row gap-2">
+      <div className="flex flex-row items-start w-full">
+        <div className="font-bold text-l flex flex-row gap-1 min-w-[70px]">
           <RibbonIcon /> Waist
         </div>
-
-        {/* Severe Injuries */}
-        <div className="flex flex-col items-left gap-1">
-          {/* Intestinal Prolapse */}
+        <div className="flex flex-col items-start gap-0.5 ml-2">
+          {/* Severe Injuries */}
+          <FormField
+            control={form.control}
+            name="waistBrokenHip"
+            render={({ field }) => (
+              <FormItem className="space-y-0 flex flex-row items-center gap-2">
+                <FormControl>
+                  <Checkbox
+                    className="h-4 w-4 rounded-sm"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="text-xs">Broken Hip</FormLabel>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="waistIntestinalProlapse"
@@ -83,8 +97,22 @@ export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
               </FormItem>
             )}
           />
-
-          {/* Warped Pelvis */}
+          <FormField
+            control={form.control}
+            name="waistDestroyedGenitals"
+            render={({ field }) => (
+              <FormItem className="space-y-0 flex flex-row items-center gap-2">
+                <FormControl>
+                  <Checkbox
+                    className="h-4 w-4 rounded-sm"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="text-xs">Destroyed Genitals</FormLabel>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="waistWarpedPelvis"
@@ -109,46 +137,9 @@ export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
               </FormItem>
             )}
           />
-
-          {/* Destroyed Genitals */}
-          <FormField
-            control={form.control}
-            name="waistDestroyedGenitals"
-            render={({ field }) => (
-              <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                <FormControl>
-                  <Checkbox
-                    className="h-4 w-4 rounded-sm"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="text-xs">Destroyed Genitals</FormLabel>
-              </FormItem>
-            )}
-          />
-
-          {/* Broken Hip */}
-          <FormField
-            control={form.control}
-            name="waistBrokenHip"
-            render={({ field }) => (
-              <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                <FormControl>
-                  <Checkbox
-                    className="h-4 w-4 rounded-sm"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="text-xs">Broken Hip</FormLabel>
-              </FormItem>
-            )}
-          />
         </div>
-
         {/* Light and Heavy Damage */}
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 ml-auto">
           {/* Light Damage */}
           <FormField
             control={form.control}
@@ -170,7 +161,6 @@ export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
               </FormItem>
             )}
           />
-
           {/* Heavy Damage */}
           <FormField
             control={form.control}

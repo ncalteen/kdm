@@ -56,42 +56,14 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
         )}
       />
 
-      <div className="mx-4 w-px bg-border" />
+      <div className="mx-3 w-px bg-border" />
 
-      <div className="flex flex-row justify-between w-full">
-        <div className="font-bold text-l flex flex-row gap-2">
+      <div className="flex flex-row items-start w-full">
+        <div className="font-bold text-l flex flex-row gap-1 min-w-[70px]">
           <ShirtIcon /> Body
         </div>
-
-        {/* Severe Injuries */}
-        <div className="flex flex-col items-left gap-1">
-          {/* Gaping Chest Wound */}
-          <FormField
-            control={form.control}
-            name="bodyGapingChestWound"
-            render={({ field }) => (
-              <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                <FormControl>
-                  <div className="flex flex-row gap-1">
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <Checkbox
-                        key={value}
-                        className="h-4 w-4 rounded-sm"
-                        checked={field.value >= value}
-                        onCheckedChange={(checked) => {
-                          const newValue = checked ? value : value - 1
-                          field.onChange(Math.max(0, Math.min(5, newValue)))
-                        }}
-                      />
-                    ))}
-                  </div>
-                </FormControl>
-                <FormLabel className="text-xs">Gaping Chest Wound</FormLabel>
-              </FormItem>
-            )}
-          />
-
-          {/* Destroyed Back */}
+        <div className="flex flex-col items-start gap-0.5 ml-2">
+          {/* Severe Injuries */}
           <FormField
             control={form.control}
             name="bodyDestroyedBack"
@@ -108,8 +80,6 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
               </FormItem>
             )}
           />
-
-          {/* Broken Rib */}
           <FormField
             control={form.control}
             name="bodyBrokenRib"
@@ -134,10 +104,33 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="bodyGapingChestWound"
+            render={({ field }) => (
+              <FormItem className="space-y-0 flex flex-row items-center gap-2">
+                <FormControl>
+                  <div className="flex flex-row gap-1">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <Checkbox
+                        key={value}
+                        className="h-4 w-4 rounded-sm"
+                        checked={field.value >= value}
+                        onCheckedChange={(checked) => {
+                          const newValue = checked ? value : value - 1
+                          field.onChange(Math.max(0, Math.min(5, newValue)))
+                        }}
+                      />
+                    ))}
+                  </div>
+                </FormControl>
+                <FormLabel className="text-xs">Gaping Chest Wound</FormLabel>
+              </FormItem>
+            )}
+          />
         </div>
-
         {/* Light and Heavy Damage */}
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 ml-auto">
           {/* Light Damage */}
           <FormField
             control={form.control}
@@ -159,7 +152,6 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
               </FormItem>
             )}
           />
-
           {/* Heavy Damage */}
           <FormField
             control={form.control}

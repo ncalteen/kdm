@@ -38,9 +38,9 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
   }, [form])
 
   return (
-    <Card className="mt-2">
-      <CardContent className="pt-2 pb-2">
-        <div className="flex flex-row flex-wrap gap-4">
+    <Card className="m-0 mt-1 border-2">
+      <CardContent className="p-2">
+        <div className="flex flex-row flex-wrap justify-between">
           {/* Movement */}
           <FormField
             control={form.control}
@@ -202,7 +202,8 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
           {/* Lumi (Arc) */}
           {survivorType === SurvivorType.ARC && (
             <>
-              <div className="w-px bg-border"></div>
+              <div className="w-px bg-border" />
+
               <FormField
                 control={form.control}
                 name="lumi"

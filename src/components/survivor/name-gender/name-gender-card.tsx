@@ -28,8 +28,8 @@ import { UseFormReturn } from 'react-hook-form'
  */
 export function NameGenderCard(form: UseFormReturn<Survivor>): ReactElement {
   return (
-    <Card>
-      <CardContent className="pt-2 pb-2">
+    <Card className="border-0">
+      <CardContent className="p-0">
         <div className="flex flex-col">
           <div className="flex items-center">
             {/* Survivor Name */}
@@ -63,7 +63,7 @@ export function NameGenderCard(form: UseFormReturn<Survivor>): ReactElement {
               control={form.control}
               name="gender"
               render={({ field }) => (
-                <FormItem className="ml-6">
+                <FormItem className="ml-6 mt-1">
                   <div className="flex items-center space-x-1">
                     <div className="flex items-center space-x-1">
                       <label
