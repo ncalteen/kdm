@@ -9,6 +9,7 @@ import { FightingArtsCard } from '@/components/survivor/fighting-arts/fighting-a
 import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
 import { KnowledgeCard } from '@/components/survivor/knowledge/knowledge-card'
 import { NameGenderCard } from '@/components/survivor/name-gender/name-gender-card'
+import { NextDepartureCard } from '@/components/survivor/next-departure/next-departure-card'
 import { OncePerLifetimeCard } from '@/components/survivor/once-per-lifetime/once-per-lifetime-card'
 import { PhilosophyCard } from '@/components/survivor/philosophy/philosophy-card'
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
@@ -131,7 +132,7 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
       <Form {...form}>
         <Card className="mb-2 pt-2">
           <CardContent className="w-full">
-            <div className="flex flex-col md:flex-row gap-2">
+            <div className="flex flex-col md:flex-row">
               <div className="flex-1 min-w-[450px] max-w-[450px]">
                 <NameGenderCard {...form} />
                 <SurvivalCard {...form} />
@@ -139,10 +140,11 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
                 <SanityCard {...form} />
                 <CombatCard {...form} />
               </div>
-              <div className="flex-1 pl-2">
+              <div className="flex-1 pl-2 min-w-[525px] max-w-[525px]">
                 <HuntXPCard {...form} />
                 <WeaponProficiencyCard {...form} />
                 <CourageUnderstandingCard {...form} />
+                <NextDepartureCard {...form} />
                 <FightingArtsCard {...form} />
                 <DisordersCard {...form} />
                 <AbilitiesAndImpairmentsCard {...form} />

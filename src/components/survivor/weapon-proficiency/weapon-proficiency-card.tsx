@@ -2,7 +2,7 @@
 'use client'
 
 import { SelectWeaponType } from '@/components/menu/select-weapon-type'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -33,25 +33,25 @@ export function WeaponProficiencyCard(
   }
 
   return (
-    <Card className="mt-2">
-      <CardContent className="py-4 min-w-[600px]">
-        <div className="flex flex-wrap gap-8 items-start justify-between">
-          <div className="font-bold text-l whitespace-nowrap flex flex-col">
-            Weapon Proficiency
+    <Card className="mt-2 border-2">
+      <CardContent className="p-3">
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-col gap-1">
+            <CardTitle className="text-l">Weapon Proficiency</CardTitle>
             <SelectWeaponType
               value={weaponProficiencyType}
               onChange={(type: string) =>
                 form.setValue(
                   'weaponProficiencyType',
-                  type as unknown as z.infer<
-                    typeof SurvivorSchema
-                  >['weaponProficiencyType']
+                  type as z.infer<
+                    typeof SurvivorSchema.shape.weaponProficiencyType
+                  >
                 )
               }
             />
           </div>
-          <div className="flex flex-col">
-            <div className="flex flex-row gap-3 mb-1">
+          <div className="flex flex-col pt-1">
+            <div className="flex flex-row gap-2">
               {Array.from({ length: 8 }, (_, i) => (
                 <div
                   key={i}
@@ -69,8 +69,10 @@ export function WeaponProficiencyCard(
                 </div>
               ))}
             </div>
+
             <hr className="mt-2 mb-2" />
-            <div className="flex flex-row gap-3 justify-between">
+
+            <div className="flex flex-row justify-between">
               {Array.from({ length: 2 }, (_, i) => (
                 <div key={i} className="flex items-center gap-1">
                   {Array.from({ length: i + 1 }, (_, j) => (

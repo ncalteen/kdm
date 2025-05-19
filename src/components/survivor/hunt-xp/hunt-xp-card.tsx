@@ -2,6 +2,13 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
 import { cn, getSettlement } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
@@ -52,39 +59,58 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
   const isDisabled = (index: number) => index > huntXP + 1
 
   return (
-    <Card>
-      <CardContent className="py-4 min-w-[600px]">
+    <Card className="border-0">
+      <CardContent className="p-0 pt-3">
         <div className="flex flex-wrap gap-8 items-center">
-          <div className="font-bold text-l whitespace-nowrap">Hunt XP</div>
-          <div className="flex flex-wrap gap-3 items-center">
-            {Array.from({ length: 16 }, (_, i) => {
-              const boxIndex = i
-              const checked = huntXP >= boxIndex
-              const milestone = huntXPRankUp.includes(boxIndex)
-              const isLast = boxIndex === 15
+          <FormField
+            control={form.control}
+            name="huntXP"
+            render={() => (
+              <FormItem className="flex-1">
+                <div className="flex items-center gap-4">
+                  <FormLabel className="font-bold text-left text-l">
+                    Hunt XP
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-3">
+                      {Array.from({ length: 16 }, (_, i) => {
+                        const boxIndex = i
+                        const checked = huntXP >= boxIndex
+                        const milestone = huntXPRankUp.includes(boxIndex)
+                        const isLast = boxIndex === 15
 
-              return (
-                <div key={boxIndex} className="flex flex-col items-center">
-                  <Checkbox
-                    id={`hunt-xp-${boxIndex}`}
-                    checked={checked}
-                    disabled={isDisabled(boxIndex)}
-                    onCheckedChange={(checked) =>
-                      handleToggle(boxIndex, !!checked)
-                    }
-                    className={cn(
-                      'h-4 w-4 rounded-sm',
-                      !checked && milestone && 'border-2 border-primary',
-                      !checked && isLast && 'border-4 border-primary'
-                    )}
-                  />
+                        return (
+                          <div
+                            key={boxIndex}
+                            className="flex flex-col items-center">
+                            <Checkbox
+                              id={`hunt-xp-${boxIndex}`}
+                              checked={checked}
+                              disabled={isDisabled(boxIndex)}
+                              onCheckedChange={(checked) =>
+                                handleToggle(boxIndex, !!checked)
+                              }
+                              className={cn(
+                                'h-4 w-4 rounded-sm',
+                                !checked &&
+                                  milestone &&
+                                  'border-2 border-primary',
+                                !checked && isLast && 'border-4 border-primary'
+                              )}
+                            />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </FormControl>
                 </div>
-              )
-            })}
-          </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        <hr className="mt-2" />
+        <hr className="mt-4" />
 
         <div className="flex items-center justify-between mt-2">
           {Array.from({ length: 4 }, (_, i) => (

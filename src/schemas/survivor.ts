@@ -59,7 +59,7 @@ export const BaseSurvivorSchema = z.object({
   /** Movement */
   movement: z.number().min(0).default(5),
   /** Next Departure */
-  nextDeparture: z.string().optional(),
+  nextDeparture: z.array(z.string()).default([]),
   /** Notes */
   notes: z.string().optional(),
   /** Once Per Lifetime */

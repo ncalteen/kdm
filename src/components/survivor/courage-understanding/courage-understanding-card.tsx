@@ -70,11 +70,13 @@ export function CourageUnderstandingCard(
     campaignType === CampaignType.PEOPLE_OF_THE_STARS ? 'Awake' : 'Insight'
 
   return (
-    <Card className="mt-2">
-      <CardContent className="py-4 min-w-[600px]">
-        <div className="flex flex-wrap gap-2 items-start justify-between">
+    <Card className="m-0 mt-1 border-2">
+      <CardContent className="pt-2 pb-2 pl-0 pr-0">
+        <div className="flex flex-wrap justify-evenly items-center">
+          {/* Courage Section */}
           <div className="flex flex-col">
-            <div className="font-bold text-sm mb-2">Courage</div>
+            <div className="font-bold text-md mb-1">Courage</div>
+
             <div className="flex flex-row gap-2">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
@@ -92,7 +94,7 @@ export function CourageUnderstandingCard(
               ))}
             </div>
 
-            <hr className="mt-2 mb-2" />
+            <hr className="mt-1 mb-1" />
 
             <div className="flex flex-row gap-3 justify-between">
               {Array.from({ length: 2 }, (_, i) => (
@@ -119,11 +121,13 @@ export function CourageUnderstandingCard(
             </div>
           </div>
 
-          {/* Vertical divider */}
-          <div className="h-20 w-px bg-gray-300" />
+          {/* Vertical Divider */}
+          <div className="h-18 w-px bg-gray-800" />
 
+          {/* Understanding Section */}
           <div className="flex flex-col">
-            <div className="font-bold text-sm mb-2">Understanding</div>
+            <div className="font-bold text-md mb-1">Understanding</div>
+
             <div className="flex flex-row gap-2">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
@@ -141,8 +145,7 @@ export function CourageUnderstandingCard(
               ))}
             </div>
 
-            {/* Horizontal Divider */}
-            <hr className="mt-2 mb-2" />
+            <hr className="mt-1 mb-1" />
 
             <div className="flex flex-row gap-3 justify-between">
               {Array.from({ length: 2 }, (_, i) => (
@@ -170,10 +173,8 @@ export function CourageUnderstandingCard(
           </div>
         </div>
 
-        {/* Horizontal Divider */}
-        <hr className="mt-2 mb-2" />
+        <hr className="my-2 mx-1" />
 
-        {/* Abilities Section (Non-PotStars Campaigns) */}
         {campaignType !== CampaignType.PEOPLE_OF_THE_STARS ? (
           <CourageUnderstandingAbilities {...form} />
         ) : (

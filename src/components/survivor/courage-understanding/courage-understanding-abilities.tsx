@@ -91,33 +91,40 @@ export function CourageUnderstandingAbilities(
         : ''
 
   return (
-    <div className="flex flex-wrap items-start justify-between">
+    <div className="flex flex-wrap items-start justify-evenly">
+      {/* Courage Abilities */}
       <div className="flex flex-col w-[45%]">
         <RadioGroup
           value={courageGroupValue}
           onValueChange={handleCourageGroupChange}>
           <div className="flex gap-2 text-xs">
             <RadioGroupItem value="stalwart" id="stalwart" />
-            <strong>Stalwart:</strong> Can&apos;t be knocked down by brain
-            trauma or intimidate.
+            <div>
+              <strong>Stalwart:</strong> Can&apos;t be knocked down by brain
+              trauma or intimidate.
+            </div>
           </div>
-          <hr />
+          <hr className="mt-0 mb-0" />
           <div className="flex gap-2 text-xs">
             <RadioGroupItem value="prepared" id="prepared" />
-            <strong>Prepared:</strong> Add Hunt XP to your roll when determining
-            a straggler.
+            <div>
+              <strong>Prepared:</strong> Add Hunt XP to your roll when
+              determining a straggler.
+            </div>
           </div>
           <hr />
           <div className="flex gap-2 text-xs">
             <RadioGroupItem value="matchmaker" id="matchmaker" />
-            <strong>Matchmaker:</strong> Spend 1 endeavour to trigger Intimacy
-            story event.
+            <div>
+              <strong>Matchmaker:</strong> Spend 1 endeavour to trigger Intimacy
+              story event.
+            </div>
           </div>
         </RadioGroup>
       </div>
 
-      {/* Vertical divider */}
-      <div className="h-38 w-px bg-gray-300" />
+      {/* Vertical Divider */}
+      <div className="h-36 w-px bg-gray-800" />
 
       <div className="flex flex-col w-[45%]">
         <RadioGroup
@@ -125,18 +132,24 @@ export function CourageUnderstandingAbilities(
           onValueChange={handleUnderstandingGroupChange}>
           <div className="flex gap-2 text-xs">
             <RadioGroupItem value="analyze" id="analyze" />
-            <strong>Analyze:</strong> Look at the top AI card and return it to
-            the top of the deck.
+            <div>
+              <strong>Analyze:</strong> Look at the top AI card and return it to
+              the top of the deck.
+            </div>
           </div>
           <hr />
           <div className="flex gap-2 text-xs">
             <RadioGroupItem value="explore" id="explore" />
-            <strong>Explore:</strong> Add +2 to your Investigate roll results.
+            <div>
+              <strong>Explore:</strong> Add +2 to your Investigate roll results.
+            </div>
           </div>
           <hr />
           <div className="flex gap-2 text-xs">
             <RadioGroupItem value="tinker" id="tinker" />
-            <strong>Tinker:</strong> +1 endeavour when a returning survivor.
+            <div>
+              <strong>Tinker:</strong> +1 endeavour when a returning survivor.
+            </div>
           </div>
         </RadioGroup>
       </div>
