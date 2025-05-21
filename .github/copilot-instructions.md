@@ -539,6 +539,17 @@ export function NewAbilityItem({
 }
 ```
 
+## Object Schemas
+
+- All object schemas should be created using the `zod` library.
+- All object schemas should be created in the `src/schemas` directory.
+- All object schemas should be created in a file named after the object schema.
+  For example, the `Survivor` schema should be created in
+  `src/schemas/survivor.ts`.
+- All object schemas should be created using the `z.object` function.
+- Validation and parsing should be done using the `zod` library.
+- All refinements should include appropriate error messages.
+
 ## User Messaging
 
 - All user messaging should be done using the `sonner` library.
@@ -562,3 +573,24 @@ export function NewAbilityItem({
 - If an error occurs, it should be logged to the console with appropriate
   leading information to identify it. For example,
   `console.error('Attribute Save Error:', error)`.
+
+## Theme
+
+Use the following text as thematic inspiration for any user-facing notifications
+and text.
+
+```plain
+Kingdom Death's world is immensely deep and brutally challenging. It will
+captivate the imagination and stoke the fires of obsession.
+
+In a place of stone faces, nameless survivors stand together. They have nothing.
+Only a lantern to light their struggle.
+```
+
+Other terms and phrases that can be used to describe the game include:
+
+- Lanterns as a source of light and hope.
+- Darkness as a source of fear and despair.
+- Overwhelming odds.
+- Struggle for survival.
+- Victory rarely achieved, and at great cost.
