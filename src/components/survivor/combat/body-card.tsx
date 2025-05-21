@@ -9,10 +9,13 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { Survivor } from '@/schemas/survivor'
+import { cn, getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { Shield, ShirtIcon } from 'lucide-react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Body Card Component
@@ -23,7 +26,57 @@ import { UseFormReturn } from 'react-hook-form'
  * @param form Form
  * @returns Arms Card Component
  */
-export function BodyCard(form: UseFormReturn<Survivor>) {
+export function BodyCard(form: UseFormReturn<Survivor>): ReactElement {
+  /**
+   * Save a body-related value to localStorage for the current survivor.
+   *
+   * @param attrName Attribute name
+   * @param value New value
+   */
+  const saveToLocalStorage = (
+    attrName:
+      | 'bodyArmor'
+      | 'bodyDestroyedBack'
+      | 'bodyBrokenRib'
+      | 'bodyGapingChestWound'
+      | 'bodyLightDamage'
+      | 'bodyHeavyDamage',
+    value: number | boolean
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          [attrName]: value
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            toast.error(error.errors[0].message)
+          else
+            toast.error('The darkness swallows your words. Please try again.')
+
+          return
+        }
+        // @ts-expect-error: dynamic assignment is safe for known keys
+        campaign.survivors[survivorIndex][attrName] = value
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Body status updated!')
+      }
+    } catch (error) {
+      console.error('Body Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
   return (
     <div className="flex flex-row w-full">
       <FormField
@@ -42,10 +95,13 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
                     placeholder="1"
                     type="number"
                     className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-center p-0 bg-transparent border-none no-spinners"
-                    {...field}
-                    value={field.value ?? '0'}
+                    defaultValue={field.value ?? '0'}
+                    min={0}
                     onChange={(e) => {
-                      form.setValue(field.name, parseInt(e.target.value))
+                      let val = parseInt(e.target.value)
+                      if (isNaN(val) || val < 0) val = 0
+                      form.setValue(field.name, val)
+                      saveToLocalStorage('bodyArmor', val)
                     }}
                   />
                 </div>
@@ -55,9 +111,7 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
           </FormItem>
         )}
       />
-
       <div className="mx-3 w-px bg-border" />
-
       <div className="flex flex-row items-start w-full">
         <div className="font-bold text-l flex flex-row gap-1 min-w-[70px]">
           <ShirtIcon /> Body
@@ -73,7 +127,11 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
                   <Checkbox
                     className="h-4 w-4 rounded-sm"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(checked) => {
+                      const boolValue = checked === true
+                      field.onChange(boolValue)
+                      saveToLocalStorage('bodyDestroyedBack', boolValue)
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs">Destroyed Back</FormLabel>
@@ -94,7 +152,9 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
                         checked={field.value >= value}
                         onCheckedChange={(checked) => {
                           const newValue = checked ? value : value - 1
-                          field.onChange(Math.max(0, Math.min(5, newValue)))
+                          const safeValue = Math.max(0, Math.min(5, newValue))
+                          field.onChange(safeValue)
+                          saveToLocalStorage('bodyBrokenRib', safeValue)
                         }}
                       />
                     ))}
@@ -118,7 +178,9 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
                         checked={field.value >= value}
                         onCheckedChange={(checked) => {
                           const newValue = checked ? value : value - 1
-                          field.onChange(Math.max(0, Math.min(5, newValue)))
+                          const safeValue = Math.max(0, Math.min(5, newValue))
+                          field.onChange(safeValue)
+                          saveToLocalStorage('bodyGapingChestWound', safeValue)
                         }}
                       />
                     ))}
@@ -145,7 +207,11 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
                       !field.value && 'border-2 border-primary'
                     )}
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(checked) => {
+                      const boolValue = checked === true
+                      field.onChange(boolValue)
+                      saveToLocalStorage('bodyLightDamage', boolValue)
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs mt-1">L</FormLabel>
@@ -166,7 +232,11 @@ export function BodyCard(form: UseFormReturn<Survivor>) {
                       !field.value && 'border-4 border-primary'
                     )}
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(checked) => {
+                      const boolValue = checked === true
+                      field.onChange(boolValue)
+                      saveToLocalStorage('bodyHeavyDamage', boolValue)
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs mt-1">H</FormLabel>

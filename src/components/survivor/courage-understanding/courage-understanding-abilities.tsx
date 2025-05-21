@@ -1,9 +1,12 @@
 'use client'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Courage/Understanding Abilities Component
@@ -25,6 +28,48 @@ export function CourageUnderstandingAbilities(
   const hasTinker = form.watch('hasTinker')
 
   /**
+   * Save a courage/understanding ability change to localStorage for the current survivor.
+   *
+   * @param attrName Attribute name
+   * @param value New value
+   */
+  const saveToLocalStorage = (attrName: keyof Survivor, value: boolean) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          [attrName]: value
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        // @ts-expect-error: dynamic assignment is safe for known keys
+        campaign.survivors[survivorIndex][attrName] = value
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Ability updated!')
+      }
+    } catch (error) {
+      console.error('Courage/Understanding Ability Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the change of the ability in the courage group.
    *
    * @param value Value
@@ -34,17 +79,23 @@ export function CourageUnderstandingAbilities(
     form.setValue('hasStalwart', false)
     form.setValue('hasPrepared', false)
     form.setValue('hasMatchmaker', false)
+    saveToLocalStorage('hasStalwart', false)
+    saveToLocalStorage('hasPrepared', false)
+    saveToLocalStorage('hasMatchmaker', false)
 
     // Set the selected value
     switch (value) {
       case 'stalwart':
         form.setValue('hasStalwart', true)
+        saveToLocalStorage('hasStalwart', true)
         break
       case 'prepared':
         form.setValue('hasPrepared', true)
+        saveToLocalStorage('hasPrepared', true)
         break
       case 'matchmaker':
         form.setValue('hasMatchmaker', true)
+        saveToLocalStorage('hasMatchmaker', true)
         break
     }
   }
@@ -59,17 +110,23 @@ export function CourageUnderstandingAbilities(
     form.setValue('hasAnalyze', false)
     form.setValue('hasExplore', false)
     form.setValue('hasTinker', false)
+    saveToLocalStorage('hasAnalyze', false)
+    saveToLocalStorage('hasExplore', false)
+    saveToLocalStorage('hasTinker', false)
 
     // Set the selected value
     switch (value) {
       case 'analyze':
         form.setValue('hasAnalyze', true)
+        saveToLocalStorage('hasAnalyze', true)
         break
       case 'explore':
         form.setValue('hasExplore', true)
+        saveToLocalStorage('hasExplore', true)
         break
       case 'tinker':
         form.setValue('hasTinker', true)
+        saveToLocalStorage('hasTinker', true)
         break
     }
   }

@@ -152,6 +152,10 @@ export function AbilitiesAndImpairmentsCard({
       SurvivorSchema.shape.abilitiesAndImpairments.parse([value])
     } catch (error) {
       if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
     }
 
     const abilitiesAndImpairments =

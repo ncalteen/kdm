@@ -15,7 +15,7 @@ export const BaseSurvivorSchema = z.object({
     .array(z.string().min(1, 'A nameless ability cannot be recorded.'))
     .default([]),
   /** Accuracy */
-  accuracy: z.number().min(0).default(0),
+  accuracy: z.number().default(0),
   /** Can Dash */
   canDash: z.boolean().default(false),
   /** Can Dodge */
@@ -37,7 +37,7 @@ export const BaseSurvivorSchema = z.object({
   /** Disorders */
   disorders: z.array(z.string()).max(3).default([]),
   /** Evasion */
-  evasion: z.number().min(0).default(0),
+  evasion: z.number().default(0),
   /** Fighting Arts */
   fightingArts: z.array(z.string()).default([]),
   /** Has Analyze */
@@ -57,7 +57,7 @@ export const BaseSurvivorSchema = z.object({
   /** Insanity */
   insanity: z.number().min(0).default(0),
   /** Luck */
-  luck: z.number().min(0).default(0),
+  luck: z.number().default(0),
   /** Movement */
   movement: z.number().min(0).default(5),
   /** Next Departure */
@@ -75,9 +75,9 @@ export const BaseSurvivorSchema = z.object({
   /** Skip Next Hunt */
   skipNextHunt: z.boolean().default(false),
   /** Speed */
-  speed: z.number().min(0).default(0),
+  speed: z.number().default(0),
   /** Strength */
-  strength: z.number().min(0).default(0),
+  strength: z.number().default(0),
   /** Survival (Named survivors start with 1 survival) */
   survival: z.number().min(0).default(1),
   /** Understanding */

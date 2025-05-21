@@ -258,8 +258,10 @@ export function AttributeCard(form: UseFormReturn<Survivor>): ReactElement {
                           type="number"
                           className="w-12 text-center no-spinners"
                           defaultValue={field.value ?? '0'}
+                          min={0}
                           onChange={(e) => {
-                            const val = parseInt(e.target.value)
+                            let val = parseInt(e.target.value)
+                            if (isNaN(val) || val < 0) val = 0
                             form.setValue(field.name, val)
                             saveToLocalStorage('lumi', val)
                           }}

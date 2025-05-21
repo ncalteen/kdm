@@ -4,11 +4,13 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CampaignType } from '@/lib/enums'
-import { getSettlement } from '@/lib/utils'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign, getSettlement } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 import { CourageUnderstandingAbilities } from './courage-understanding-abilities'
 import { FacesInTheSky } from './faces-in-the-sky'
 
@@ -41,14 +43,61 @@ export function CourageUnderstandingCard(
   )
 
   /**
+   * Save a courage/understanding stat change to localStorage for the current survivor.
+   *
+   * @param attrName Attribute name
+   * @param value New value
+   */
+  const saveToLocalStorage = (
+    attrName: 'courage' | 'understanding',
+    value: number
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          [attrName]: value
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.survivors[survivorIndex][attrName] = value
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success(
+          `${attrName.charAt(0).toUpperCase() + attrName.slice(1)} updated!`
+        )
+      }
+    } catch (error) {
+      console.error('Courage/Understanding Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the change of the courage checkbox.
    *
    * @param index Index
    * @param checked Checked
    */
   const handleCourageChange = (index: number, checked: boolean) => {
-    if (checked) form.setValue('courage', index + 1)
-    else form.setValue('courage', index)
+    const newValue = checked ? index + 1 : index
+    form.setValue('courage', newValue)
+    saveToLocalStorage('courage', newValue)
   }
 
   /**
@@ -58,8 +107,9 @@ export function CourageUnderstandingCard(
    * @param checked Checked
    */
   const handleUnderstandingChange = (index: number, checked: boolean) => {
-    if (checked) form.setValue('understanding', index + 1)
-    else form.setValue('understanding', index)
+    const newValue = checked ? index + 1 : index
+    form.setValue('understanding', newValue)
+    saveToLocalStorage('understanding', newValue)
   }
 
   // Determine the label texts based on campaign type. Currently only People of

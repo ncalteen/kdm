@@ -9,11 +9,13 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
-import { Survivor } from '@/schemas/survivor'
+import { cn, getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Legs Card Component
@@ -25,6 +27,59 @@ import { UseFormReturn } from 'react-hook-form'
  * @returns Legs Card Component
  */
 export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
+  /**
+   * Save a legs-related value to localStorage for the current survivor.
+   *
+   * @param attrName Attribute name
+   * @param value New value
+   */
+  const saveToLocalStorage = (
+    attrName:
+      | 'legArmor'
+      | 'legHamstrung'
+      | 'legBroken'
+      | 'legDismembered'
+      | 'legLightDamage'
+      | 'legHeavyDamage',
+    value: number | boolean
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          [attrName]: value
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          console.log('Legs Save Error:', error)
+
+          if (error instanceof ZodError)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        // @ts-expect-error: dynamic assignment is safe for known keys
+        campaign.survivors[survivorIndex][attrName] = value
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Legs status updated!')
+      }
+    } catch (error) {
+      console.error('Legs Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
   return (
     <div className="flex flex-row w-full">
       <FormField
@@ -43,10 +98,13 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
                     placeholder="1"
                     type="number"
                     className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-center p-0 bg-transparent border-none no-spinners"
-                    {...field}
-                    value={field.value ?? '0'}
+                    defaultValue={field.value ?? '0'}
+                    min={0}
                     onChange={(e) => {
-                      form.setValue(field.name, parseInt(e.target.value))
+                      let val = parseInt(e.target.value)
+                      if (isNaN(val) || val < 0) val = 0
+                      form.setValue(field.name, val)
+                      saveToLocalStorage('legArmor', val)
                     }}
                   />
                 </div>
@@ -56,9 +114,7 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
           </FormItem>
         )}
       />
-
       <div className="mx-3 w-px bg-border" />
-
       <div className="flex flex-row items-start w-full">
         <div className="font-bold text-l flex flex-row gap-1 min-w-[70px]">
           <FootprintsIcon /> Legs
@@ -74,7 +130,11 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
                   <Checkbox
                     className="h-4 w-4 rounded-sm"
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(checked) => {
+                      const boolValue = checked === true
+                      field.onChange(boolValue)
+                      saveToLocalStorage('legHamstrung', boolValue)
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs">Hamstrung</FormLabel>
@@ -93,9 +153,12 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
                         key={index}
                         checked={(field.value || 0) > index}
                         onCheckedChange={(checked) => {
-                          if (checked) form.setValue('legBroken', index + 1)
+                          let newValue = field.value || 0
+                          if (checked) newValue = index + 1
                           else if ((field.value || 0) === index + 1)
-                            form.setValue('legBroken', index)
+                            newValue = index
+                          form.setValue('legBroken', newValue)
+                          saveToLocalStorage('legBroken', newValue)
                         }}
                       />
                     ))}
@@ -117,10 +180,12 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
                         key={index}
                         checked={(field.value || 0) > index}
                         onCheckedChange={(checked) => {
-                          if (checked)
-                            form.setValue('legDismembered', index + 1)
+                          let newValue = field.value || 0
+                          if (checked) newValue = index + 1
                           else if ((field.value || 0) === index + 1)
-                            form.setValue('legDismembered', index)
+                            newValue = index
+                          form.setValue('legDismembered', newValue)
+                          saveToLocalStorage('legDismembered', newValue)
                         }}
                       />
                     ))}
@@ -147,7 +212,11 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
                       !field.value && 'border-2 border-primary'
                     )}
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(checked) => {
+                      const boolValue = checked === true
+                      field.onChange(boolValue)
+                      saveToLocalStorage('legLightDamage', boolValue)
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs mt-1">L</FormLabel>
@@ -168,7 +237,11 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
                       !field.value && 'border-4 border-primary'
                     )}
                     checked={field.value}
-                    onCheckedChange={field.onChange}
+                    onCheckedChange={(checked) => {
+                      const boolValue = checked === true
+                      field.onChange(boolValue)
+                      saveToLocalStorage('legHeavyDamage', boolValue)
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs mt-1">H</FormLabel>

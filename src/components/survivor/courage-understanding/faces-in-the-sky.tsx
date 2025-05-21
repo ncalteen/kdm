@@ -8,10 +8,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Faces in the Sky Component
@@ -47,13 +50,64 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
   const hasGoblinReaper = form.watch('hasGoblinReaper')
 
   /**
+   * Save a Faces in the Sky trait change to localStorage for the current survivor.
+   *
+   * @param attrName Attribute name
+   * @param value New value
+   */
+  const saveToLocalStorage = (attrName: keyof Survivor, value: boolean) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          [attrName]: value
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        // Type-safe dynamic assignment workaround
+        ;(campaign.survivors[survivorIndex] as Record<string, unknown>)[
+          attrName as string
+        ] = value
+        campaign.survivors[survivorIndex] = updatedSurvivor
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('Faces in the Sky trait updated!')
+      }
+    } catch (error) {
+      console.error('Faces in the Sky Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles toggling a cell in the table
    *
    * @param property The property to toggle
    * @param currentValue The current value of the property
    */
-  const handleToggleCell = (property: keyof Survivor, currentValue: boolean) =>
-    form.setValue(property, !currentValue)
+  const handleToggleCell = (
+    property: keyof Survivor,
+    currentValue: boolean
+  ) => {
+    const newValue = !currentValue
+    form.setValue(property, newValue)
+    saveToLocalStorage(property, newValue)
+  }
 
   return (
     <div>
