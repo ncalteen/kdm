@@ -300,7 +300,7 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
           <div className="flex items-center gap-2">
             <Checkbox
               id="canUseFightingArtsOrKnowledges"
-              checked={canUseFightingArtsOrKnowledges}
+              checked={!canUseFightingArtsOrKnowledges}
               onCheckedChange={(checked) => {
                 form.setValue('canUseFightingArtsOrKnowledges', !!checked)
               }}
@@ -308,7 +308,7 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
             <label
               htmlFor="canUseFightingArtsOrKnowledges"
               className="text-xs cursor-pointer">
-              Can use fighting arts
+              Cannot use fighting arts
             </label>
           </div>
         </div>
@@ -317,11 +317,7 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
         <div>
           {/* Combined Fighting Arts List */}
           <div className="space-y-2">
-            {combinedArts.length === 0 && !isAddingNew ? (
-              <div className="text-center text-xs text-muted-foreground">
-                No fighting arts mastered yet.
-              </div>
-            ) : (
+            {combinedArts.length !== 0 &&
               combinedArts.map((art) => {
                 const key = `${art.type}-${art.originalIndex}`
                 const isDisabled = disabledInputs[key] !== false
@@ -379,8 +375,7 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
                     </Button>
                   </div>
                 )
-              })
-            )}
+              })}
             {isAddingNew && (
               <div className="flex items-center">
                 <Badge

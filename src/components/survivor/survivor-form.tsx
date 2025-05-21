@@ -128,38 +128,40 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <Form {...form}>
-        <Card className="mb-2 pt-2">
-          <CardContent className="w-full">
-            <div className="flex flex-col md:flex-row">
-              <div className="flex-1 min-w-[450px] max-w-[450px]">
-                <NameGenderCard {...form} />
-                <SurvivalCard {...form} />
-                <AttributeCard {...form} />
-                <SanityCard {...form} />
-                <CombatCard {...form} />
-              </div>
-              <div className="flex-1 pl-2 min-w-[525px] max-w-[525px]">
-                <HuntXPCard {...form} />
-                <WeaponProficiencyCard {...form} />
-                <CourageUnderstandingCard {...form} />
-                <NextDepartureCard {...form} />
-                <FightingArtsCard {...form} />
-                <DisordersCard {...form} />
-                <AbilitiesAndImpairmentsCard {...form} />
-                <OncePerLifetimeCard {...form} />
-              </div>
-              {settlement?.survivorType === SurvivorType.ARC && (
-                <div className="flex-1">
-                  <PhilosophyCard {...form} />
-                  <KnowledgeCard {...form} />
+    <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Form {...form}>
+          <Card className="pt-2 min-w-[450px]">
+            <CardContent>
+              <div className="flex flex-col md:flex-row gap-1">
+                <div className="flex-1 md:w-[25%]">
+                  <NameGenderCard {...form} />
+                  <SurvivalCard {...form} />
+                  <AttributeCard {...form} />
+                  <SanityCard {...form} />
+                  <CombatCard {...form} />
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </Form>
-    </form>
+                <div className="flex-1 md:w-[50%]">
+                  <HuntXPCard {...form} />
+                  <WeaponProficiencyCard {...form} />
+                  <CourageUnderstandingCard {...form} />
+                  <NextDepartureCard {...form} />
+                  <FightingArtsCard {...form} />
+                  <DisordersCard {...form} />
+                  <AbilitiesAndImpairmentsCard {...form} />
+                  <OncePerLifetimeCard {...form} />
+                </div>
+                {settlement?.survivorType === SurvivorType.ARC && (
+                  <div className="flex-1 md:w-[25%]">
+                    <PhilosophyCard {...form} />
+                    <KnowledgeCard {...form} />
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </Form>
+      </form>
+    </div>
   )
 }

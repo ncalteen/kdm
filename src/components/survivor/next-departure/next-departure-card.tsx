@@ -144,11 +144,7 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
       </CardHeader>
       <CardContent className="pb-2">
         <div className="space-y-2">
-          {nextDeparture.length === 0 && !isAddingNew ? (
-            <div className="text-center text-xs text-muted-foreground">
-              No next departure bonuses.
-            </div>
-          ) : (
+          {nextDeparture.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -181,20 +177,22 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addNextDeparture}
-              disabled={
-                isAddingNew ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4" />
-              Add Next Departure Bonus
-            </Button>
-          </div>
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addNextDeparture}
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusCircleIcon className="h-4 w-4" />
+                Add Next Departure Bonus
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

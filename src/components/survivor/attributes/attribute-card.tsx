@@ -10,10 +10,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
-import { getSettlement } from '@/lib/utils'
+import { getCampaign, getSettlement } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 
 /**
  * Survivor Attribute Card Component
@@ -25,7 +26,7 @@ import { UseFormReturn } from 'react-hook-form'
  * @param form Form
  * @returns Attribute Card Component
  */
-export function AttributeCard(form: UseFormReturn<Survivor>) {
+export function AttributeCard(form: UseFormReturn<Survivor>): ReactElement {
   // Get the survivor type from the settlement data.
   const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
     undefined
@@ -36,6 +37,42 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
     const settlement = getSettlement(form.getValues('settlementId'))
     setSurvivorType(settlement?.survivorType)
   }, [form])
+
+  /**
+   * Save attribute changes to localStorage for the current survivor.
+   *
+   * @param attrName Attribute name
+   * @param value New value
+   */
+  const saveToLocalStorage = (
+    attrName:
+      | 'movement'
+      | 'accuracy'
+      | 'strength'
+      | 'evasion'
+      | 'luck'
+      | 'speed'
+      | 'lumi',
+    value: number
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+      if (survivorIndex !== -1) {
+        campaign.survivors[survivorIndex][attrName] = value
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success(
+          `${attrName.charAt(0).toUpperCase() + attrName.slice(1)} updated!`
+        )
+      }
+    } catch (error) {
+      console.error('Attribute Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <Card className="m-0 mt-1 border-2">
@@ -53,10 +90,11 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
                       placeholder="1"
                       type="number"
                       className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '1'}
+                      defaultValue={field.value ?? '1'}
                       onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
+                        const val = parseInt(e.target.value)
+                        form.setValue(field.name, val)
+                        saveToLocalStorage('movement', val)
                       }}
                     />
                   </FormControl>
@@ -81,10 +119,11 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
                       placeholder="0"
                       type="number"
                       className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '0'}
+                      defaultValue={field.value ?? '0'}
                       onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
+                        const val = parseInt(e.target.value)
+                        form.setValue(field.name, val)
+                        saveToLocalStorage('accuracy', val)
                       }}
                     />
                   </FormControl>
@@ -107,10 +146,11 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
                       placeholder="0"
                       type="number"
                       className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '0'}
+                      defaultValue={field.value ?? '0'}
                       onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
+                        const val = parseInt(e.target.value)
+                        form.setValue(field.name, val)
+                        saveToLocalStorage('strength', val)
                       }}
                     />
                   </FormControl>
@@ -133,10 +173,11 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
                       placeholder="0"
                       type="number"
                       className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '0'}
+                      defaultValue={field.value ?? '0'}
                       onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
+                        const val = parseInt(e.target.value)
+                        form.setValue(field.name, val)
+                        saveToLocalStorage('evasion', val)
                       }}
                     />
                   </FormControl>
@@ -159,10 +200,11 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
                       placeholder="0"
                       type="number"
                       className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '0'}
+                      defaultValue={field.value ?? '0'}
                       onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
+                        const val = parseInt(e.target.value)
+                        form.setValue(field.name, val)
+                        saveToLocalStorage('luck', val)
                       }}
                     />
                   </FormControl>
@@ -185,10 +227,11 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
                       placeholder="0"
                       type="number"
                       className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '0'}
+                      defaultValue={field.value ?? '0'}
                       onChange={(e) => {
-                        form.setValue(field.name, parseInt(e.target.value))
+                        const val = parseInt(e.target.value)
+                        form.setValue(field.name, val)
+                        saveToLocalStorage('speed', val)
                       }}
                     />
                   </FormControl>
@@ -203,7 +246,6 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
           {survivorType === SurvivorType.ARC && (
             <>
               <div className="w-px bg-border" />
-
               <FormField
                 control={form.control}
                 name="lumi"
@@ -215,10 +257,11 @@ export function AttributeCard(form: UseFormReturn<Survivor>) {
                           placeholder="0"
                           type="number"
                           className="w-12 text-center no-spinners"
-                          {...field}
-                          value={field.value ?? '0'}
+                          defaultValue={field.value ?? '0'}
                           onChange={(e) => {
-                            form.setValue(field.name, parseInt(e.target.value))
+                            const val = parseInt(e.target.value)
+                            form.setValue(field.name, val)
+                            saveToLocalStorage('lumi', val)
                           }}
                         />
                       </FormControl>

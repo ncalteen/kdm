@@ -148,11 +148,7 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
       </CardHeader>
       <CardContent className="pb-2">
         <div className="space-y-2">
-          {disorders.length === 0 && !isAddingNew ? (
-            <div className="text-center text-xs text-muted-foreground">
-              No disorders...yet.
-            </div>
-          ) : (
+          {disorders.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -185,21 +181,23 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addDisorder}
-              disabled={
-                isAddingNew ||
-                disorders.length >= MAX_DISORDERS ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4" />
-              Add Disorder
-            </Button>
-          </div>
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addDisorder}
+                disabled={
+                  isAddingNew ||
+                  disorders.length >= MAX_DISORDERS ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusCircleIcon className="h-4 w-4" />
+                Add Disorder
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

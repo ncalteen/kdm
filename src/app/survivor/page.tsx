@@ -50,22 +50,16 @@ export function SurvivorPage(): ReactElement {
     return (
       <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
         <h1 className="text-4xl sm:text-5xl font-bold pt-[20px] text-center">
-          {isLoading ? 'Loading Survivor...' : 'Survivor Not Found'}
+          {isLoading
+            ? 'Loading Survivor...'
+            : `Survivor #${survivorIdParam} Not Found`}
         </h1>
         {!survivor && !isLoading && (
-          <>
-            <p className="text-xl text-center">
-              Survivor #{survivorIdParam} Not Found
-            </p>
-
-            <div className="mt-6">
-              <Button
-                onClick={() => (window.location.href = '/kdm/survivor/create')}
-                variant="default">
-                Create a Survivor
-              </Button>
-            </div>
-          </>
+          <Button
+            onClick={() => (window.location.href = '/kdm/survivor/create')}
+            variant="default">
+            Create a Survivor
+          </Button>
         )}
       </div>
     )

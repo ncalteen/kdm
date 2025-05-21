@@ -181,18 +181,14 @@ export function OncePerLifetimeCard({
               }}
             />
             <Label htmlFor="rerollUsed" className="text-xs cursor-pointer">
-              Reroll Used
+              Reroll used
             </Label>
           </div>
         </div>
       </CardHeader>
       <CardContent className="pb-2">
         <div className="space-y-2">
-          {oncePerLifetimeRef.current.length === 0 && !isAddingNew ? (
-            <div className="text-center text-xs text-muted-foreground">
-              No once per lifetime events recorded yet.
-            </div>
-          ) : (
+          {oncePerLifetimeRef.current.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -229,20 +225,22 @@ export function OncePerLifetimeCard({
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addOncePerLifetime}
-              disabled={
-                isAddingNew ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4" />
-              Add Once Per Lifetime Event
-            </Button>
-          </div>
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addOncePerLifetime}
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusCircleIcon className="h-4 w-4" />
+                Add Once Per Lifetime Event
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

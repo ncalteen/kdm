@@ -11,7 +11,9 @@ import { z } from 'zod'
  */
 export const BaseSurvivorSchema = z.object({
   /** Abilities and Impairments */
-  abilitiesAndImpairments: z.array(z.string()).default([]),
+  abilitiesAndImpairments: z
+    .array(z.string().min(1, 'A nameless ability cannot be recorded.'))
+    .default([]),
   /** Accuracy */
   accuracy: z.number().min(0).default(0),
   /** Can Dash */
