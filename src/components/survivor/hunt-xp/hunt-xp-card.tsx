@@ -6,16 +6,17 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage
+  FormLabel
 } from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
-import { cn, getSettlement } from '@/lib/utils'
+import { cn, getCampaign, getSettlement } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
-import { Survivor } from '@/schemas/survivor'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Hunt XP Card Component
@@ -40,74 +41,115 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
   useEffect(() => setSettlement(getSettlement(settlementId)), [settlementId])
 
   /**
+   * Save Hunt XP to localStorage for the current survivor, with Zod validation and toast feedback.
+   *
+   * @param updatedHuntXP Updated Hunt XP value
+   */
+  const saveToLocalStorage = (updatedHuntXP: number) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          huntXP: updatedHuntXP
+        }
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.survivors[survivorIndex].huntXP = updatedHuntXP
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        toast.success('The lantern grows brighter. Hunt XP updated.')
+      }
+    } catch (error) {
+      console.error('Hunt XP Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles toggling the Hunt XP checkboxes
    *
-   * @param index The index of the checkbox (1-based)
+   * @param index The index of the checkbox (0-based)
    * @param checked Whether the checkbox is checked
    */
   const handleToggle = (index: number, checked: boolean) => {
-    if (checked) form.setValue('huntXP', index)
-    else form.setValue('huntXP', index - 1)
+    const newXP = checked ? index : index - 1
+    form.setValue('huntXP', newXP)
+    saveToLocalStorage(newXP)
   }
 
   /**
    * Checks if a checkbox should be disabled
    *
-   * @param index The index of the checkbox (1-based)
+   * @param index The index of the checkbox (0-based)
    * @returns True if the checkbox should be disabled
    */
   const isDisabled = (index: number) => index > huntXP + 1
 
   return (
     <Card className="border-0">
-      <CardContent className="p-0 pt-3">
-        <div className="flex flex-wrap gap-8 items-center">
-          <FormField
-            control={form.control}
-            name="huntXP"
-            render={() => (
-              <FormItem className="flex-1">
-                <div className="flex items-center gap-4">
-                  <FormLabel className="font-bold text-left text-l">
-                    Hunt XP
-                  </FormLabel>
-                  <FormControl>
-                    <div className="flex items-center gap-3">
-                      {Array.from({ length: 16 }, (_, i) => {
-                        const boxIndex = i
-                        const checked = huntXP >= boxIndex
-                        const milestone = huntXPRankUp.includes(boxIndex)
-                        const isLast = boxIndex === 15
-
-                        return (
-                          <div
-                            key={boxIndex}
-                            className="flex flex-col items-center">
-                            <Checkbox
-                              id={`hunt-xp-${boxIndex}`}
-                              checked={checked}
-                              disabled={isDisabled(boxIndex)}
-                              onCheckedChange={(checked) =>
-                                handleToggle(boxIndex, !!checked)
-                              }
-                              className={cn(
-                                'h-4 w-4 rounded-sm',
-                                !checked &&
-                                  milestone &&
-                                  'border-2 border-primary',
-                                !checked && isLast && 'border-4 border-primary'
-                              )}
-                            />
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <CardContent className="p-1 pt-3 pb-0">
+        <div className="flex flex-col">
+          <div className="flex items-center">
+            {/* Hunt XP */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={() => (
+                <FormItem className="flex-1">
+                  <div className="flex items-center gap-4">
+                    <FormLabel className="font-bold text-left text-l">
+                      Hunt XP
+                    </FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-3">
+                        {Array.from({ length: 16 }, (_, i) => {
+                          const boxIndex = i
+                          const checked = huntXP >= boxIndex
+                          const milestone = huntXPRankUp.includes(boxIndex)
+                          const isLast = boxIndex === 15
+                          return (
+                            <div key={boxIndex} className="flex">
+                              <Checkbox
+                                id={`hunt-xp-${boxIndex}`}
+                                checked={checked}
+                                disabled={isDisabled(boxIndex)}
+                                onCheckedChange={(checked) =>
+                                  handleToggle(boxIndex, !!checked)
+                                }
+                                className={cn(
+                                  'h-4 w-4 rounded-sm',
+                                  !checked &&
+                                    milestone &&
+                                    'border-2 border-primary',
+                                  !checked &&
+                                    isLast &&
+                                    'border-4 border-primary'
+                                )}
+                              />
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         <hr className="mt-4" />

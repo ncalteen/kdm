@@ -6,7 +6,7 @@ import { Survivor } from '@/schemas/survivor'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -43,6 +43,7 @@ export interface NewDisorderItemProps {
  * Disorder Item Component
  *
  * @param props Disorder Item Component Props
+ * @returns ReactElement
  */
 export function DisorderItem({
   index,
@@ -56,16 +57,12 @@ export function DisorderItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState<string | undefined>(
-    form.getValues(`disorders.${index}`)
-  )
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(
-    () => setValue(form.getValues(`disorders.${index}`)),
-    [form, isDisabled, index]
-  )
-
-  const style = { transform: CSS.Transform.toString(transform), transition }
+  useEffect(() => {
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`disorders.${index}`) || ''
+  }, [form, isDisabled, index])
 
   /**
    * Handles the key down event for the input field. If the Enter key is
@@ -75,14 +72,17 @@ export function DisorderItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value) {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, value)
+      onSave(index, inputRef.current.value)
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
       <div
         {...attributes}
         {...listeners}
@@ -90,12 +90,12 @@ export function DisorderItem({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
       <Input
+        ref={inputRef}
         placeholder="Disorder"
-        value={value}
+        defaultValue={form.getValues(`disorders.${index}`) || ''}
         disabled={isDisabled}
-        onChange={(e) => !isDisabled && setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="flex-1"
+        className="flex-1 mr-2"
       />
       {isDisabled ? (
         <Button
@@ -112,7 +112,8 @@ export function DisorderItem({
           variant="ghost"
           size="icon"
           onClick={() => {
-            if (value) onSave(index, value)
+            if (inputRef.current && inputRef.current.value)
+              onSave(index, inputRef.current.value)
           }}
           title="Save disorder">
           <CheckIcon className="h-4 w-4" />
@@ -131,12 +132,15 @@ export function DisorderItem({
 
 /**
  * New Disorder Item Component
+ *
+ * @param props New Disorder Item Component Props
+ * @returns ReactElement
  */
 export function NewDisorderItem({
   onSave,
   onCancel
 }: NewDisorderItemProps): ReactElement {
-  const [value, setValue] = useState<string | undefined>(undefined)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   /**
    * Handles the key down event for the input field. If the Enter key is
@@ -147,9 +151,9 @@ export function NewDisorderItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value) {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(value)
+      onSave(inputRef.current.value)
     } else if (e.key === 'Escape') onCancel()
   }
 
@@ -159,11 +163,11 @@ export function NewDisorderItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
       <Input
+        ref={inputRef}
         placeholder="Disorder"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1"
+        className="flex-1 mr-2"
         autoFocus
       />
       <Button
@@ -171,7 +175,8 @@ export function NewDisorderItem({
         variant="ghost"
         size="icon"
         onClick={() => {
-          if (value) onSave(value)
+          if (inputRef.current && inputRef.current.value)
+            onSave(inputRef.current.value)
         }}
         title="Save disorder">
         <CheckIcon className="h-4 w-4" />

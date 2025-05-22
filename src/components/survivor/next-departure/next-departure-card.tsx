@@ -1,8 +1,13 @@
 'use client'
 
+import {
+  NewNextDepartureItem,
+  NextDepartureItem
+} from '@/components/survivor/next-departure/next-departure-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import {
   closestCenter,
   DndContext,
@@ -18,11 +23,11 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { NewNextDepartureItem, NextDepartureItem } from './next-departure-item'
+import { ZodError } from 'zod'
 
 /**
  * Next Departure Card Component
@@ -57,6 +62,53 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
   const addNextDeparture = () => setIsAddingNew(true)
 
   /**
+   * Save nextDeparture to localStorage for the current survivor, with Zod
+   * validation and toast feedback.
+   *
+   * @param updatedNextDeparture Updated nextDeparture array
+   * @param successMsg Optional success message for toast
+   */
+  const saveToLocalStorage = (
+    updatedNextDeparture: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          nextDeparture: updatedNextDeparture
+        }
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message) {
+            return toast.error(error.errors[0].message)
+          } else {
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+          }
+        }
+
+        campaign.survivors[survivorIndex].nextDeparture = updatedNextDeparture
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+        if (successMsg) toast.success(successMsg)
+        return true
+      }
+    } catch (error) {
+      console.error('Next Departure Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+    return false
+  }
+
+  /**
    * Handles the removal of a next departure item.
    *
    * @param index Next Departure Index
@@ -66,6 +118,15 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
 
     currentNextDeparture.splice(index, 1)
     form.setValue('nextDeparture', currentNextDeparture)
+
+    if (
+      saveToLocalStorage(
+        currentNextDeparture,
+        'The lantern dims. Next departure bonus removed.'
+      )
+    ) {
+      toast.success('The lantern dims. Next departure bonus removed.')
+    }
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -78,8 +139,6 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
 
       return next
     })
-
-    toast.success('The next departure item has been removed.')
   }
 
   /**
@@ -88,10 +147,15 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
    * @param value Next Departure Value
    */
   const saveNextDeparture = (value: string) => {
-    if (!value || value.trim() === '')
-      return toast.warning('You must name the next departure item.')
-
     const newNextDeparture = [...nextDeparture, value]
+
+    if (
+      !saveToLocalStorage(
+        newNextDeparture,
+        'A new hope flickers. Next departure bonus added.'
+      )
+    )
+      return
 
     form.setValue('nextDeparture', newNextDeparture)
     setDisabledInputs((prev) => ({
@@ -100,7 +164,7 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
     }))
     setIsAddingNew(false)
 
-    toast.success('The survivor gains a new next departure item.')
+    toast.success('A new hope flickers. Next departure bonus added.')
   }
 
   const editNextDeparture = (index: number) =>
@@ -140,7 +204,25 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
   return (
     <Card className="mt-1 border-0">
       <CardHeader className="px-3 py-2 pb-2">
-        <CardTitle className="text-md">Next Departure</CardTitle>
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+          Next Departure{' '}
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addNextDeparture}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="pb-2">
         <div className="space-y-2">
@@ -161,9 +243,20 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
                     handleRemoveNextDeparture={handleRemoveNextDeparture}
                     isDisabled={!!disabledInputs[index]}
                     onSave={(i, value) => {
+                      const updated = [...nextDeparture]
+                      updated[i] = value
+                      if (
+                        !saveToLocalStorage(
+                          updated,
+                          'The lantern glows. Next departure bonus updated.'
+                        )
+                      )
+                        return
                       form.setValue(`nextDeparture.${i}`, value)
                       setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-                      toast.success('Next departure bonus updated.')
+                      toast.success(
+                        'The lantern glows. Next departure bonus updated.'
+                      )
                     }}
                     onEdit={editNextDeparture}
                   />
@@ -176,22 +269,6 @@ export function NextDepartureCard(form: UseFormReturn<Survivor>): ReactElement {
               onSave={saveNextDeparture}
               onCancel={() => setIsAddingNew(false)}
             />
-          )}
-          {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addNextDeparture}
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusCircleIcon className="h-4 w-4" />
-                Add Next Departure Bonus
-              </Button>
-            </div>
           )}
         </div>
       </CardContent>

@@ -1,6 +1,8 @@
 // CourageUnderstandingCard.tsx
 'use client'
 
+import { CourageUnderstandingAbilities } from '@/components/survivor/courage-understanding/courage-understanding-abilities'
+import { FacesInTheSky } from '@/components/survivor/courage-understanding/faces-in-the-sky'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CampaignType } from '@/lib/enums'
@@ -11,8 +13,6 @@ import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
-import { CourageUnderstandingAbilities } from './courage-understanding-abilities'
-import { FacesInTheSky } from './faces-in-the-sky'
 
 /**
  * Courage and Understanding Card Component

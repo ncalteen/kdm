@@ -131,17 +131,17 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
     <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Form {...form}>
-          <Card className="pt-2 min-w-[450px]">
+          <Card className="pt-2 min-w-[500px]">
             <CardContent>
               <div className="flex flex-col md:flex-row gap-1">
-                <div className="flex-1 md:w-[25%]">
+                <div className="w-[500px]">
                   <NameGenderCard {...form} />
                   <SurvivalCard {...form} />
                   <AttributeCard {...form} />
                   <SanityCard {...form} />
                   <CombatCard {...form} />
                 </div>
-                <div className="flex-1 md:w-[50%]">
+                <div className="w-[500px]">
                   <HuntXPCard {...form} />
                   <WeaponProficiencyCard {...form} />
                   <CourageUnderstandingCard {...form} />
@@ -152,7 +152,7 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
                   <OncePerLifetimeCard {...form} />
                 </div>
                 {settlement?.survivorType === SurvivorType.ARC && (
-                  <div className="flex-1 md:w-[25%]">
+                  <div className="w-[500px]">
                     <PhilosophyCard {...form} />
                     <KnowledgeCard {...form} />
                   </div>

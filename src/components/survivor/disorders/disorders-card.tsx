@@ -6,7 +6,8 @@ import {
 } from '@/components/survivor/disorders/disorder-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import {
   closestCenter,
   DndContext,
@@ -22,10 +23,11 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Disorders Card Component
@@ -61,6 +63,51 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
   const addDisorder = () => setIsAddingNew(true)
 
   /**
+   * Save disorders to localStorage for the current survivor, with Zod validation and toast feedback.
+   *
+   * @param updatedDisorders Updated disorders array
+   * @param successMsg Success message for toast
+   */
+  const saveToLocalStorage = (
+    updatedDisorders: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          disorders: updatedDisorders
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.survivors[survivorIndex].disorders = updatedDisorders
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Disorder Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the removal of a disorder.
    *
    * @param index Disorder Index
@@ -83,7 +130,10 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
       return next
     })
 
-    toast.success('The survivor has overcome their disorder.')
+    saveToLocalStorage(
+      currentDisorders,
+      'The survivor has overcome their disorder.'
+    )
   }
 
   /**
@@ -104,7 +154,7 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
     setDisabledInputs((prev) => ({ ...prev, [newDisorders.length - 1]: true }))
     setIsAddingNew(false)
 
-    toast.success('The survivor gains a new disorder.')
+    saveToLocalStorage(newDisorders, 'The survivor gains a new disorder.')
   }
 
   const editDisorder = (index: number) =>
@@ -138,13 +188,34 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
 
         return next
       })
+
+      saveToLocalStorage(newOrder)
     }
   }
 
   return (
     <Card className="mt-1 border-0">
       <CardHeader className="px-3 py-2 pb-2">
-        <CardTitle className="text-md">Disorders</CardTitle>
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+          Disorders{' '}
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addDisorder}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  disorders.length >= MAX_DISORDERS ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="pb-2">
         <div className="space-y-2">
@@ -165,9 +236,14 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
                     handleRemoveDisorder={handleRemoveDisorder}
                     isDisabled={!!disabledInputs[index]}
                     onSave={(i, value) => {
+                      const updated = [...disorders]
+                      updated[i] = value
                       form.setValue(`disorders.${i}`, value)
                       setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-                      toast.success('The disorder has been updated.')
+                      saveToLocalStorage(
+                        updated,
+                        'The disorder has been updated.'
+                      )
                     }}
                     onEdit={editDisorder}
                   />
@@ -180,23 +256,6 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
               onSave={saveDisorder}
               onCancel={() => setIsAddingNew(false)}
             />
-          )}
-          {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addDisorder}
-                disabled={
-                  isAddingNew ||
-                  disorders.length >= MAX_DISORDERS ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusCircleIcon className="h-4 w-4" />
-                Add Disorder
-              </Button>
-            </div>
           )}
         </div>
       </CardContent>

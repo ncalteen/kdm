@@ -35,11 +35,16 @@ export const BaseSurvivorSchema = z.object({
   /** Survivor is Dead */
   dead: z.boolean().default(false),
   /** Disorders */
-  disorders: z.array(z.string()).max(3).default([]),
+  disorders: z
+    .array(z.string().min(1, 'A nameless disorder cannot be recorded.'))
+    .max(3)
+    .default([]),
   /** Evasion */
   evasion: z.number().default(0),
   /** Fighting Arts */
-  fightingArts: z.array(z.string()).default([]),
+  fightingArts: z
+    .array(z.string().min(1, 'A nameless fighting art cannot be recorded.'))
+    .default([]),
   /** Has Analyze */
   hasAnalyze: z.boolean().default(false),
   /** Has Explore */
@@ -61,7 +66,9 @@ export const BaseSurvivorSchema = z.object({
   /** Movement */
   movement: z.number().min(0).default(5),
   /** Next Departure */
-  nextDeparture: z.array(z.string()).default([]),
+  nextDeparture: z
+    .array(z.string().min(1, 'A nameless departure bonus cannot be recorded.'))
+    .default([]),
   /** Notes */
   notes: z.string().optional(),
   /** Once Per Lifetime */
@@ -71,7 +78,11 @@ export const BaseSurvivorSchema = z.object({
   /** Retired */
   retired: z.boolean().default(false),
   /** Secret Fighting Arts */
-  secretFightingArts: z.array(z.string()).default([]),
+  secretFightingArts: z
+    .array(
+      z.string().min(1, 'A nameless secret fighting art cannot be recorded.')
+    )
+    .default([]),
   /** Skip Next Hunt */
   skipNextHunt: z.boolean().default(false),
   /** Speed */

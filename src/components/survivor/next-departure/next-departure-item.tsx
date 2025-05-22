@@ -6,7 +6,7 @@ import { Survivor } from '@/schemas/survivor'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -56,14 +56,12 @@ export function NextDepartureItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState<string | undefined>(
-    form.getValues(`nextDeparture.${index}`)
-  )
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(
-    () => setValue(form.getValues(`nextDeparture.${index}`)),
-    [form, isDisabled, index]
-  )
+  useEffect(() => {
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`nextDeparture.${index}`) || ''
+  }, [form, isDisabled, index])
 
   const style = { transform: CSS.Transform.toString(transform), transition }
 
@@ -75,9 +73,9 @@ export function NextDepartureItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value) {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, value)
+      onSave(index, inputRef.current.value)
     }
   }
 
@@ -90,12 +88,12 @@ export function NextDepartureItem({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
       <Input
+        ref={inputRef}
         placeholder="Next Departure"
-        value={value}
+        defaultValue={form.getValues(`nextDeparture.${index}`)}
         disabled={isDisabled}
-        onChange={(e) => !isDisabled && setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="flex-1"
+        className="flex-1 mr-2"
       />
       {isDisabled ? (
         <Button
@@ -112,7 +110,8 @@ export function NextDepartureItem({
           variant="ghost"
           size="icon"
           onClick={() => {
-            if (value) onSave(index, value)
+            if (inputRef.current && inputRef.current.value)
+              onSave(index, inputRef.current.value)
           }}
           title="Save next departure">
           <CheckIcon className="h-4 w-4" />
@@ -131,25 +130,28 @@ export function NextDepartureItem({
 
 /**
  * New Next Departure Item Component
+ *
+ * @param props New Next Departure Item Component Props
  */
 export function NewNextDepartureItem({
   onSave,
   onCancel
 }: NewNextDepartureItemProps): ReactElement {
-  const [value, setValue] = useState<string | undefined>(undefined)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current value. If the Escape key is pressed, it calls the onCancel
-   * function.
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it prevents the default action and calls the
+   * onSave function with the current value. If the Escape key is pressed, it
+   * calls the onCancel function.
    *
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value) {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(value)
+      onSave(inputRef.current.value)
     } else if (e.key === 'Escape') onCancel()
   }
 
@@ -159,11 +161,11 @@ export function NewNextDepartureItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
       <Input
+        ref={inputRef}
         placeholder="Next Departure"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1"
+        className="flex-1 mr-2"
         autoFocus
       />
       <Button
@@ -171,7 +173,8 @@ export function NewNextDepartureItem({
         variant="ghost"
         size="icon"
         onClick={() => {
-          if (value) onSave(value)
+          if (inputRef.current && inputRef.current.value)
+            onSave(inputRef.current.value)
         }}
         title="Save next departure">
         <CheckIcon className="h-4 w-4" />

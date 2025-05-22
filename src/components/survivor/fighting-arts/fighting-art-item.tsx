@@ -6,7 +6,7 @@ import { Survivor } from '@/schemas/survivor'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -47,6 +47,9 @@ export interface NewFightingArtItemProps {
 
 /**
  * Fighting Art Item Component
+ *
+ * @param props Fighting Art Item Component Props
+ * @returns ReactElement
  */
 export function FightingArtItem({
   form,
@@ -58,20 +61,16 @@ export function FightingArtItem({
   onEdit,
   onSave,
   placeholder
-}: FightingArtItemProps) {
+}: FightingArtItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState<string | undefined>(
-    form.getValues(`${arrayName}.${index}`)
-  )
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(
-    () => setValue(form.getValues(`${arrayName}.${index}`) || ''),
-    [form, isDisabled, index, arrayName]
-  )
-
-  const style = { transform: CSS.Transform.toString(transform), transition }
+  useEffect(() => {
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`${arrayName}.${index}`) || ''
+  }, [form, isDisabled, index, arrayName])
 
   /**
    * Handles the key down event for the input field. If the Enter key is
@@ -81,14 +80,17 @@ export function FightingArtItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value) {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, value)
+      onSave(index, inputRef.current.value)
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
       <div
         {...attributes}
         {...listeners}
@@ -96,12 +98,12 @@ export function FightingArtItem({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
       <Input
+        ref={inputRef}
         placeholder={placeholder}
-        value={value}
+        defaultValue={form.getValues(`${arrayName}.${index}`) || ''}
         disabled={isDisabled}
-        onChange={(e) => !isDisabled && setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="flex-1"
+        className="flex-1 mr-2"
       />
       {isDisabled ? (
         <Button
@@ -118,7 +120,8 @@ export function FightingArtItem({
           variant="ghost"
           size="icon"
           onClick={() => {
-            if (value) onSave(index, value)
+            if (inputRef.current && inputRef.current.value)
+              onSave(index, inputRef.current.value)
           }}
           title={`Save ${placeholder.toLowerCase()}`}>
           <CheckIcon className="h-4 w-4" />
@@ -128,7 +131,6 @@ export function FightingArtItem({
         variant="ghost"
         size="sm"
         type="button"
-        className="h-8 w-8 p-0 ml-2"
         onClick={() => handleRemove(index)}
         title={`Remove ${placeholder.toLowerCase()}`}>
         <TrashIcon className="h-4 w-4" />
@@ -139,13 +141,16 @@ export function FightingArtItem({
 
 /**
  * New Fighting Art Item Component
+ *
+ * @param props New Fighting Art Item Component Props
+ * @returns ReactElement
  */
 export function NewFightingArtItem({
   onSave,
   onCancel,
   placeholder
 }: NewFightingArtItemProps): ReactElement {
-  const [value, setValue] = useState<string | undefined>(undefined)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   /**
    * Handles the key down event for the input field. If the Enter key is
@@ -156,9 +161,9 @@ export function NewFightingArtItem({
    * @param e Event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value) {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(value)
+      onSave(inputRef.current.value)
     } else if (e.key === 'Escape') onCancel()
   }
 
@@ -168,11 +173,11 @@ export function NewFightingArtItem({
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
       <Input
+        ref={inputRef}
         placeholder={placeholder}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1"
+        className="flex-1 mr-2"
         autoFocus
       />
       <Button
@@ -180,7 +185,8 @@ export function NewFightingArtItem({
         variant="ghost"
         size="icon"
         onClick={() => {
-          if (value) onSave(value)
+          if (inputRef.current && inputRef.current.value)
+            onSave(inputRef.current.value)
         }}
         title={`Save ${placeholder.toLowerCase()}`}>
         <CheckIcon className="h-4 w-4" />
