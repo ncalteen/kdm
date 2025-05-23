@@ -15,8 +15,6 @@ import { UseFormReturn } from 'react-hook-form'
 export interface NextDepartureItemProps {
   /** Form */
   form: UseFormReturn<Survivor>
-  /** Remove Next Departure Handler */
-  handleRemoveNextDeparture: (index: number) => void
   /** Next Departure ID */
   id: string
   /** Index */
@@ -25,8 +23,10 @@ export interface NextDepartureItemProps {
   isDisabled: boolean
   /** OnEdit Handler */
   onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
   /** OnSave Handler */
-  onSave: (index: number, value: string) => void
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
@@ -36,22 +36,23 @@ export interface NewNextDepartureItemProps {
   /** OnCancel Handler */
   onCancel: () => void
   /** OnSave Handler */
-  onSave: (value: string) => void
+  onSave: (value?: string) => void
 }
 
 /**
  * Next Departure Item Component
  *
- * @param props Next Departure Item Component Props
+ * @param props Next Departure Item Component Properties
+ * @returns Next Departure Item Component
  */
 export function NextDepartureItem({
-  index,
-  form,
-  handleRemoveNextDeparture,
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
+  form,
+  onEdit,
+  onRemove,
+  onSave
 }: NextDepartureItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -61,45 +62,62 @@ export function NextDepartureItem({
   useEffect(() => {
     if (inputRef.current)
       inputRef.current.value = form.getValues(`nextDeparture.${index}`) || ''
+
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
   }, [form, isDisabled, index])
 
-  const style = { transform: CSS.Transform.toString(transform), transition }
-
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current index and value.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, inputRef.current.value)
+      onSave(inputRef.current.value, index)
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
+
+      {/* Input Field */}
       <Input
         ref={inputRef}
         placeholder="Next Departure"
         defaultValue={form.getValues(`nextDeparture.${index}`)}
         disabled={isDisabled}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
+        autoFocus
       />
+
+      {/* Interaction Buttons */}
       {isDisabled ? (
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit next departure">
           <PencilIcon className="h-4 w-4" />
@@ -109,10 +127,8 @@ export function NextDepartureItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => {
-            if (inputRef.current && inputRef.current.value)
-              onSave(index, inputRef.current.value)
-          }}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
           title="Save next departure">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -121,7 +137,7 @@ export function NextDepartureItem({
         variant="ghost"
         size="icon"
         type="button"
-        onClick={() => handleRemoveNextDeparture(index)}>
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -134,48 +150,53 @@ export function NextDepartureItem({
  * @param props New Next Departure Item Component Props
  */
 export function NewNextDepartureItem({
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewNextDepartureItemProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
    * Handles the key down event for the input field.
    *
-   * If the Enter key is pressed, it prevents the default action and calls the
-   * onSave function with the current value. If the Escape key is pressed, it
-   * calls the onCancel function.
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
    *
-   * @param e Event
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)
-    } else if (e.key === 'Escape') onCancel()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
   }
 
   return (
     <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
+      {/* Input Field */}
       <Input
         ref={inputRef}
         placeholder="Next Departure"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
         autoFocus
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => {
-          if (inputRef.current && inputRef.current.value)
-            onSave(inputRef.current.value)
-        }}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
         title="Save next departure">
         <CheckIcon className="h-4 w-4" />
       </Button>
