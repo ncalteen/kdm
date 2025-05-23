@@ -10,13 +10,11 @@ import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Ability Item Component Properties
+ * Ability/Impairment Item Component Properties
  */
-export interface AbilityItemProps {
+export interface AbilityImpairmentItemProps {
   /** Form */
   form: UseFormReturn<Survivor>
-  /** Remove Ability Handler */
-  handleRemoveAbility: (index: number) => void
   /** Ability ID */
   id: string
   /** Index */
@@ -25,34 +23,37 @@ export interface AbilityItemProps {
   isDisabled: boolean
   /** OnEdit Handler */
   onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
   /** OnSave Handler */
-  onSave: (index: number, value: string) => void
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
- * New Ability Item Component Properties
+ * New Ability/Impairment Item Component Properties
  */
-export interface NewAbilityItemProps {
+export interface NewAbilityImpairmentItemProps {
   /** OnCancel Handler */
   onCancel: () => void
   /** OnSave Handler */
-  onSave: (value: string) => void
+  onSave: (value?: string) => void
 }
 
 /**
- * Ability Item Component
+ * Ability/Impairment Item Component
  *
- * @param props Ability Item Component Props
+ * @param props Ability/Impairment Item Component Properties
+ * @returns Ability/Impairment Item Component
  */
-export function AbilityItem({
-  index,
-  form,
-  handleRemoveAbility,
+export function AbilityImpairmentItem({
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
-}: AbilityItemProps): ReactElement {
+  form,
+  onEdit,
+  onRemove,
+  onSave
+}: AbilityImpairmentItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -62,19 +63,28 @@ export function AbilityItem({
     if (inputRef.current)
       inputRef.current.value =
         form.getValues(`abilitiesAndImpairments.${index}`) || ''
+
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
   }, [form, isDisabled, index])
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current index and value.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, inputRef.current.value)
+      onSave(inputRef.current.value, index)
     }
   }
 
@@ -98,7 +108,8 @@ export function AbilityItem({
         defaultValue={form.getValues(`abilitiesAndImpairments.${index}`)}
         disabled={isDisabled}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
+        autoFocus
       />
 
       {/* Interaction Buttons */}
@@ -107,6 +118,7 @@ export function AbilityItem({
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit ability">
           <PencilIcon className="h-4 w-4" />
@@ -116,10 +128,8 @@ export function AbilityItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => {
-            if (inputRef.current && inputRef.current.value)
-              onSave(index, inputRef.current.value)
-          }}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
           title="Save ability">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -128,7 +138,7 @@ export function AbilityItem({
         variant="ghost"
         size="icon"
         type="button"
-        onClick={() => handleRemoveAbility(index)}>
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -136,30 +146,32 @@ export function AbilityItem({
 }
 
 /**
- * New Ability Item Component
+ * New Ability/Impairment Item Component
  *
- * @param props New Ability Item Component Props
+ * @param props New Ability/Impairment Item Component Props
  */
-export function NewAbilityItem({
-  onSave,
-  onCancel
-}: NewAbilityItemProps): ReactElement {
+export function NewAbilityImpairmentItem({
+  onCancel,
+  onSave
+}: NewAbilityImpairmentItemProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
    * Handles the key down event for the input field.
    *
-   * If the Enter key is pressed, it prevents the default action and calls the
-   * onSave function with the current value. If the Escape key is pressed, it
-   * calls the onCancel function.
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
    *
-   * @param e Event
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)
-    } else if (e.key === 'Escape') onCancel()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
   }
 
   return (
@@ -173,7 +185,7 @@ export function NewAbilityItem({
         placeholder="Ability or Impairment"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
         autoFocus
       />
 
@@ -182,10 +194,8 @@ export function NewAbilityItem({
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => {
-          if (inputRef.current && inputRef.current.value)
-            onSave(inputRef.current.value)
-        }}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
         title="Save ability">
         <CheckIcon className="h-4 w-4" />
       </Button>

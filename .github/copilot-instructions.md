@@ -29,12 +29,13 @@ The following component implementation illustrates these standards. This
 component displays an editable and draggable list of abilities for a character.
 
 ```tsx
-// File: src/components/survivor/abilities-and-impairments/abilities-and-impai'use client'
+// File: src/components/survivor/abilities-and-impairments/abilities-and-impairments-card.tsx
+'use client'
 
 import {
-  AbilityItem,
-  NewAbilityItem
-} from '@/components/survivor/abilities-and-impairments/ability-item'
+  AbilityImpairmentItem,
+  NewAbilityImpairmentItem
+} from '@/components/survivor/abilities-and-impairments/ability-impairment-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -57,7 +58,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -68,31 +69,9 @@ import { ZodError } from 'zod'
 export function AbilitiesAndImpairmentsCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const formValues = form.getValues()
-
-  // Use ref to avoid circular dependencies in effects
-  const abilitiesRef = useRef<string[]>(
-    formValues.abilitiesAndImpairments || []
-  )
-
-  // Watch for changes in the abilities field
-  const abilities = form.watch('abilitiesAndImpairments')
-
-  // Update our ref when abilities change
-  useEffect(() => {
-    if (abilities) abilitiesRef.current = abilities
-  }, [abilities])
-
-  // Use a local state to track the checkbox to avoid infinite loop
-  const [skipNextHuntState, setSkipNextHuntState] = useState<boolean>(
-    !!form.getValues('skipNextHunt')
-  )
-
-  // Update form value when skipNextHuntState changes
-  useEffect(
-    () =>
-      form.setValue('skipNextHunt', skipNextHuntState, { shouldDirty: true }),
-    [skipNextHuntState, form]
+  const abilitiesAndImpairments = useMemo(
+    () => form.watch('abilitiesAndImpairments') || [],
+    [form]
   )
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -104,13 +83,23 @@ export function AbilitiesAndImpairmentsCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      abilitiesRef.current.forEach((_, i) => {
+      abilitiesAndImpairments.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [abilities])
+  }, [abilitiesAndImpairments])
+
+  const [skipNextHuntState, setSkipNextHuntState] = useState<boolean>(
+    !!form.getValues('skipNextHunt')
+  )
+
+  useEffect(
+    () =>
+      form.setValue('skipNextHunt', skipNextHuntState, { shouldDirty: true }),
+    [skipNextHuntState, form]
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -122,26 +111,49 @@ export function AbilitiesAndImpairmentsCard({
   const addAbility = () => setIsAddingNew(true)
 
   /**
-   * Save abilities and impairments to localStorage for the current survivor.
+   * Save abilities/impairments to localStorage for the current survivor, with
+   * Zod validation and toast feedback.
    *
-   * @param updatedAbilities Updated Abilities
+   * @param updatedAbilitiesAndImpairments Updated Abilities/Impairments
+   * @param successMsg Success Message
    */
-  const saveToLocalStorage = (updatedAbilities: string[]) => {
+  const saveToLocalStorage = (
+    updatedAbilitiesAndImpairments: string[],
+    successMsg?: string
+  ) => {
     try {
       const formValues = form.getValues()
       const campaign = getCampaign()
-
       const survivorIndex = campaign.survivors.findIndex(
         (s: { id: number }) => s.id === formValues.id
       )
 
       if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          abilitiesAndImpairments: updatedAbilitiesAndImpairments
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
         campaign.survivors[survivorIndex].abilitiesAndImpairments =
-          updatedAbilities
+          updatedAbilitiesAndImpairments
         localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
       }
     } catch (error) {
-      console.error('Abilities/Impairments Save Error:', error)
+      console.error('Ability/Impairment Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
@@ -150,12 +162,11 @@ export function AbilitiesAndImpairmentsCard({
    *
    * @param index Ability Index
    */
-  const handleRemoveAbility = (index: number) => {
-    const currentAbilities = [...abilitiesRef.current]
+  const onRemove = (index: number) => {
+    const currentAbilitiesAndImpairments = [...abilitiesAndImpairments]
 
-    currentAbilities.splice(index, 1)
-    form.setValue('abilitiesAndImpairments', currentAbilities)
-    saveToLocalStorage(currentAbilities)
+    currentAbilitiesAndImpairments.splice(index, 1)
+    form.setValue('abilitiesAndImpairments', currentAbilitiesAndImpairments)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -169,60 +180,76 @@ export function AbilitiesAndImpairmentsCard({
       return next
     })
 
-    toast.success('The ability or impairment has been removed.')
+    saveToLocalStorage(
+      currentAbilitiesAndImpairments,
+      'The ability/impairment has been removed.'
+    )
   }
 
   /**
-   * Handles the saving of a new ability or impairment.
+   * Handles saving a new ability or impairment.
    *
-   * @param value Ability Value
-   * @param i Ability Index (Updating Only)
+   * @param value Ability/Impairment Value
+   * @param i Ability/Impairment Index (When Updating Only)
    */
-  const saveAbility = (value: string, i?: number) => {
+  const onSave = (value?: string, i?: number) => {
+    if (!value)
+      return toast.error('A nameless ability/impairment cannot be recorded.')
+
     try {
       SurvivorSchema.shape.abilitiesAndImpairments.parse([value])
     } catch (error) {
       if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
     }
 
-    const abilitiesAndImpairments =
-      i !== undefined
-        ? [...abilitiesRef.current]
-        : [...abilitiesRef.current, value]
+    const updatedAbilitiesAndImpairments = [...abilitiesAndImpairments]
 
     if (i !== undefined) {
-      abilitiesAndImpairments[i] = value
+      // Updating an existing value
+      updatedAbilitiesAndImpairments[i] = value
       form.setValue(`abilitiesAndImpairments.${i}`, value)
+
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
-      form.setValue('abilitiesAndImpairments', abilitiesAndImpairments)
+      // Adding a new value
+      updatedAbilitiesAndImpairments.push(value)
+
+      form.setValue('abilitiesAndImpairments', updatedAbilitiesAndImpairments)
+
       setDisabledInputs((prev) => ({
         ...prev,
-        [abilitiesAndImpairments.length - 1]: true
+        [updatedAbilitiesAndImpairments.length - 1]: true
       }))
     }
 
-    saveToLocalStorage(abilitiesAndImpairments)
+    saveToLocalStorage(
+      updatedAbilitiesAndImpairments,
+      i !== undefined
+        ? 'The ability/impairment has been updated.'
+        : 'The survivor gains a new ability/impairment.'
+    )
     setIsAddingNew(false)
-
-    toast.success('The ability or impairment has been added.')
   }
 
   /**
-   * Enables the input for editing.
+   * Enables editing a value.
    *
    * @param index Ability Index
    */
-  const editAbility = (index: number) =>
+  const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
    *
-   * @param event Drag Event
+   * @param event Drag End Event
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -230,7 +257,7 @@ export function AbilitiesAndImpairmentsCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(abilitiesRef.current, oldIndex, newIndex)
+      const newOrder = arrayMove(abilitiesAndImpairments, oldIndex, newIndex)
 
       form.setValue('abilitiesAndImpairments', newOrder)
       saveToLocalStorage(newOrder)
@@ -286,41 +313,43 @@ export function AbilitiesAndImpairmentsCard({
               }}
             />
             <Label htmlFor="skipNextHunt" className="text-xs cursor-pointer">
-              Skip next hunt
+              Skip Next Hunt
             </Label>
           </div>
         </div>
       </CardHeader>
 
       {/* Abilities/Impairments List */}
-      <CardContent className="pb-2 pt-1">
-        <div className="space-y-2">
-          {abilitiesRef.current.length !== 0 && (
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
+          {abilitiesAndImpairments.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={abilitiesRef.current.map((_, index) => index.toString())}
+                items={abilitiesAndImpairments.map((_, index) =>
+                  index.toString()
+                )}
                 strategy={verticalListSortingStrategy}>
-                {abilitiesRef.current.map((ability, index) => (
-                  <AbilityItem
+                {abilitiesAndImpairments.map((ability, index) => (
+                  <AbilityImpairmentItem
                     key={index}
                     id={index.toString()}
                     index={index}
                     form={form}
-                    handleRemoveAbility={handleRemoveAbility}
+                    onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => saveAbility(value, i)}
-                    onEdit={editAbility}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           )}
           {isAddingNew && (
-            <NewAbilityItem
-              onSave={saveAbility}
+            <NewAbilityImpairmentItem
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
             />
           )}
@@ -335,6 +364,7 @@ Since this component is used to display an editable list of items, the items
 themselves are created as separate components, below.
 
 ```tsx
+// File: src/components/survivor/abilities-and-impairments/ability-impairment-item.tsx
 'use client'
 
 import { Button } from '@/components/ui/button'
@@ -347,13 +377,11 @@ import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Ability Item Component Properties
+ * Ability/Impairment Item Component Properties
  */
-export interface AbilityItemProps {
+export interface AbilityImpairmentItemProps {
   /** Form */
   form: UseFormReturn<Survivor>
-  /** Remove Ability Handler */
-  handleRemoveAbility: (index: number) => void
   /** Ability ID */
   id: string
   /** Index */
@@ -362,34 +390,37 @@ export interface AbilityItemProps {
   isDisabled: boolean
   /** OnEdit Handler */
   onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
   /** OnSave Handler */
-  onSave: (index: number, value: string) => void
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
- * New Ability Item Component Properties
+ * New Ability/Impairment Item Component Properties
  */
-export interface NewAbilityItemProps {
+export interface NewAbilityImpairmentItemProps {
   /** OnCancel Handler */
   onCancel: () => void
   /** OnSave Handler */
-  onSave: (value: string) => void
+  onSave: (value?: string) => void
 }
 
 /**
- * Ability Item Component
+ * Ability/Impairment Item Component
  *
- * @param props Ability Item Component Props
+ * @param props Ability/Impairment Item Component Properties
+ * @returns Ability/Impairment Item Component
  */
-export function AbilityItem({
-  index,
-  form,
-  handleRemoveAbility,
+export function AbilityImpairmentItem({
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
-}: AbilityItemProps): ReactElement {
+  form,
+  onEdit,
+  onRemove,
+  onSave
+}: AbilityImpairmentItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -399,19 +430,28 @@ export function AbilityItem({
     if (inputRef.current)
       inputRef.current.value =
         form.getValues(`abilitiesAndImpairments.${index}`) || ''
+
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
   }, [form, isDisabled, index])
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current index and value.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, inputRef.current.value)
+      onSave(inputRef.current.value, index)
     }
   }
 
@@ -435,7 +475,8 @@ export function AbilityItem({
         defaultValue={form.getValues(`abilitiesAndImpairments.${index}`)}
         disabled={isDisabled}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
+        autoFocus
       />
 
       {/* Interaction Buttons */}
@@ -444,6 +485,7 @@ export function AbilityItem({
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit ability">
           <PencilIcon className="h-4 w-4" />
@@ -453,10 +495,8 @@ export function AbilityItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => {
-            if (inputRef.current && inputRef.current.value)
-              onSave(index, inputRef.current.value)
-          }}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
           title="Save ability">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -465,7 +505,7 @@ export function AbilityItem({
         variant="ghost"
         size="icon"
         type="button"
-        onClick={() => handleRemoveAbility(index)}>
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -473,30 +513,32 @@ export function AbilityItem({
 }
 
 /**
- * New Ability Item Component
+ * New Ability/Impairment Item Component
  *
- * @param props New Ability Item Component Props
+ * @param props New Ability/Impairment Item Component Props
  */
-export function NewAbilityItem({
-  onSave,
-  onCancel
-}: NewAbilityItemProps): ReactElement {
+export function NewAbilityImpairmentItem({
+  onCancel,
+  onSave
+}: NewAbilityImpairmentItemProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
    * Handles the key down event for the input field.
    *
-   * If the Enter key is pressed, it prevents the default action and calls the
-   * onSave function with the current value. If the Escape key is pressed, it
-   * calls the onCancel function.
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
    *
-   * @param e Event
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)
-    } else if (e.key === 'Escape') onCancel()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
   }
 
   return (
@@ -510,7 +552,7 @@ export function NewAbilityItem({
         placeholder="Ability or Impairment"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
         autoFocus
       />
 
@@ -519,10 +561,8 @@ export function NewAbilityItem({
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => {
-          if (inputRef.current && inputRef.current.value)
-            onSave(inputRef.current.value)
-        }}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
         title="Save ability">
         <CheckIcon className="h-4 w-4" />
       </Button>
