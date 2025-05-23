@@ -42,9 +42,9 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { getCampaign } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import type { DragEndEvent } from '@dnd-kit/core'
 import {
   DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
@@ -543,9 +543,11 @@ export function NewAbilityImpairmentItem({
 
   return (
     <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
       {/* Input Field */}
       <Input
         ref={inputRef}

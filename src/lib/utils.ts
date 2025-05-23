@@ -12,9 +12,12 @@ import { CampaignType } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
 import { Campaign } from '@/schemas/campaign'
 import { Settlement, TimelineYear } from '@/schemas/settlement'
-import { Survivor } from '@/schemas/survivor'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { clsx, type ClassValue } from 'clsx'
+import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
+import { ZodError } from 'zod'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -271,4 +274,53 @@ export function getCampaignData(campaignType: CampaignType) {
               : CustomCampaignData
 
   return campaignData
+}
+
+/**
+ * Saves a survivor's data to localStorage, with Zod validation and toast
+ * feedback.
+ *
+ * @param fieldName Field Name
+ * @param value Field Value
+ * @param successMsg Success Message
+ */
+export function saveSurvivorToLocalStorage(
+  form: UseFormReturn<Survivor>,
+  fieldName: keyof Survivor,
+  value: string | number,
+  successMsg?: string
+): string | number | void {
+  try {
+    const formValues = form.getValues()
+    const campaign = getCampaign()
+    const survivorIndex = campaign.survivors.findIndex(
+      (s: { id: number }) => s.id === formValues.id
+    )
+
+    if (survivorIndex !== -1) {
+      const updatedSurvivor = {
+        ...campaign.survivors[survivorIndex],
+        [fieldName]: value
+      }
+
+      try {
+        SurvivorSchema.parse(updatedSurvivor)
+      } catch (error) {
+        if (error instanceof ZodError && error.errors[0]?.message)
+          return toast.error(error.errors[0].message)
+        else
+          return toast.error(
+            'The darkness swallows your words. Please try again.'
+          )
+      }
+
+      campaign.survivors[survivorIndex] = updatedSurvivor
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+
+      if (successMsg) toast.success(successMsg)
+    }
+  } catch (error) {
+    console.error(`[${fieldName}] Save Error:`, error)
+    toast.error('The darkness swallows your words. Please try again.')
+  }
 }

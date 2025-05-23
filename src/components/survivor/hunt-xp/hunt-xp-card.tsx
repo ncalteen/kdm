@@ -13,7 +13,7 @@ import { cn, getCampaign, getSettlement } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -28,7 +28,7 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Hunt XP Card Component
  */
-export function HuntXPCard(form: UseFormReturn<Survivor>) {
+export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   const huntXP = form.watch('huntXP') || 0
   const huntXPRankUp = form.watch('huntXPRankUp') || []
   const settlementId = form.watch('settlementId')
@@ -44,40 +44,50 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
    * Save Hunt XP to localStorage for the current survivor, with Zod validation and toast feedback.
    *
    * @param updatedHuntXP Updated Hunt XP value
+   * @param successMsg Success Message
    */
-  const saveToLocalStorage = (updatedHuntXP: number) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+  const saveToLocalStorage = useCallback(
+    (updatedHuntXP: number, successMsg?: string) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          huntXP: updatedHuntXP
-        }
-        try {
-          SurvivorSchema.parse(updatedSurvivor)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
+        if (survivorIndex !== -1) {
+          const updatedSurvivor = {
+            ...campaign.survivors[survivorIndex],
+            huntXP: updatedHuntXP
+          }
 
-        campaign.survivors[survivorIndex].huntXP = updatedHuntXP
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('The lantern grows brighter. Hunt XP updated.')
+          try {
+            SurvivorSchema.parse(updatedSurvivor)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          campaign.survivors[survivorIndex] = {
+            ...campaign.survivors[survivorIndex],
+            huntXP: updatedHuntXP
+          }
+
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error('Hunt XP Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
-    } catch (error) {
-      console.error('Hunt XP Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+    },
+    [form]
+  )
 
   /**
    * Handles toggling the Hunt XP checkboxes
@@ -85,11 +95,14 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
    * @param index The index of the checkbox (0-based)
    * @param checked Whether the checkbox is checked
    */
-  const handleToggle = (index: number, checked: boolean) => {
-    const newXP = checked ? index : index - 1
-    form.setValue('huntXP', newXP)
-    saveToLocalStorage(newXP)
-  }
+  const handleToggle = useCallback(
+    (index: number, checked: boolean) => {
+      const newXP = checked ? index : index - 1
+      form.setValue('huntXP', newXP, { shouldDirty: true })
+      saveToLocalStorage(newXP, 'The lantern grows brighter. Hunt XP updated.')
+    },
+    [form, saveToLocalStorage]
+  )
 
   /**
    * Checks if a checkbox should be disabled
@@ -97,7 +110,10 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
    * @param index The index of the checkbox (0-based)
    * @returns True if the checkbox should be disabled
    */
-  const isDisabled = (index: number) => index > huntXP + 1
+  const isDisabled = useCallback(
+    (index: number) => index > huntXP + 1,
+    [huntXP]
+  )
 
   return (
     <Card className="border-0">
@@ -107,15 +123,15 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
             {/* Hunt XP */}
             <FormField
               control={form.control}
-              name="name"
+              name="huntXP"
               render={() => (
                 <FormItem className="flex-1">
-                  <div className="flex items-center gap-4">
+                  <div className="flex justify-between items-center gap-4">
                     <FormLabel className="font-bold text-left text-l">
                       Hunt XP
                     </FormLabel>
                     <FormControl>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         {Array.from({ length: 16 }, (_, i) => {
                           const boxIndex = i
                           const checked = huntXP >= boxIndex
@@ -164,7 +180,7 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
                   className="!bg-white border border-gray-300 h-3 w-3"
                 />
               ))}
-              <span className="text-xs flex items-center gap-1">
+              <span className="text-xs">
                 {settlement?.survivorType === SurvivorType.CORE ? (
                   <>
                     <BookOpenIcon className="h-4 w-4" /> Age
@@ -179,7 +195,7 @@ export function HuntXPCard(form: UseFormReturn<Survivor>) {
           ))}
           <div className="flex items-center gap-1">
             <Checkbox disabled className="border-4 border-gray-300 h-3 w-3" />
-            <span className="text-xs flex items-center gap-1">Retired</span>
+            <span className="text-xs">Retired</span>
           </div>
         </div>
       </CardContent>

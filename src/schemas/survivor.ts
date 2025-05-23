@@ -33,7 +33,11 @@ export const BaseSurvivorSchema = z.object({
   /** Can Use Fighting Arts or Knowledges */
   canUseFightingArtsOrKnowledges: z.boolean().default(true),
   /** Courage */
-  courage: z.number().min(0).max(9).default(0),
+  courage: z
+    .number()
+    .min(0, 'Courage cannot be negative.')
+    .max(9, 'Courage may not exceed 9.')
+    .default(0),
   /** Survivor is Dead */
   dead: z.boolean().default(false),
   /** Disorders */
@@ -60,13 +64,17 @@ export const BaseSurvivorSchema = z.object({
   /** Has Tinker */
   hasTinker: z.boolean().default(false),
   /** Hunt XP */
-  huntXP: z.number().min(0).max(16).default(0),
+  huntXP: z
+    .number()
+    .min(0, 'Hunt XP cannot be negative.')
+    .max(16, 'Hunt XP cannot exceed 16.')
+    .default(0),
   /** Insanity */
-  insanity: z.number().min(0).default(0),
+  insanity: z.number().min(0, 'Insanity cannot be negative.').default(0),
   /** Luck */
   luck: z.number().default(0),
   /** Movement */
-  movement: z.number().min(0).default(5),
+  movement: z.number().min(0, 'Movement cannot be negative.').default(5),
   /** Next Departure */
   nextDeparture: z
     .array(z.string().min(1, 'A nameless departure bonus cannot be recorded.'))
@@ -74,7 +82,9 @@ export const BaseSurvivorSchema = z.object({
   /** Notes */
   notes: z.string().optional(),
   /** Once Per Lifetime */
-  oncePerLifetime: z.array(z.string()).default([]),
+  oncePerLifetime: z
+    .array(z.string().min(1, 'A nameless lifetime bonus cannot be recorded.'))
+    .default([]),
   /** Reroll Used */
   rerollUsed: z.boolean().default(false),
   /** Retired */
@@ -92,11 +102,19 @@ export const BaseSurvivorSchema = z.object({
   /** Strength */
   strength: z.number().default(0),
   /** Survival (Named survivors start with 1 survival) */
-  survival: z.number().min(0).default(1),
+  survival: z.number().min(0, 'Survival cannot be negative.').default(1),
   /** Understanding */
-  understanding: z.number().min(0).max(9).default(0),
+  understanding: z
+    .number()
+    .min(0, 'Understanding cannot be negative.')
+    .max(9, 'Understanding cannot exceed 9.')
+    .default(0),
   /** Weapon Proficiency (Level) */
-  weaponProficiency: z.number().min(0).max(8).default(0),
+  weaponProficiency: z
+    .number()
+    .min(0, 'Weapon proficiency cannot be negative.')
+    .max(8, 'Weapon proficiency cannot exceed 8.')
+    .default(0),
   /** Weapon Proficiency (Type) */
   weaponProficiencyType: z.nativeEnum(WeaponType).optional(),
 
@@ -108,13 +126,13 @@ export const BaseSurvivorSchema = z.object({
    */
 
   /** Arm: Armor */
-  armArmor: z.number().min(0).default(0),
+  armArmor: z.number().min(0, 'Arm armor cannot be negative.').default(0),
   /** Arm: Light Damage Received */
   armLightDamage: z.boolean().default(false),
   /** Arm: Heavy Damage Received */
   armHeavyDamage: z.boolean().default(false),
   /** Body: Armor */
-  bodyArmor: z.number().min(0).default(0),
+  bodyArmor: z.number().min(0, 'Body armor cannot be negative.').default(0),
   /** Body: Light Damage */
   bodyLightDamage: z.boolean().default(false),
   /** Body: Heavy Damage */
@@ -122,17 +140,17 @@ export const BaseSurvivorSchema = z.object({
   /** Brain: Light Damage Received */
   brainLightDamage: z.boolean().default(false),
   /** Head: Armor */
-  headArmor: z.number().min(0).default(0),
+  headArmor: z.number().min(0, 'Head armor cannot be negative.').default(0),
   /** Head: Heavy Damage Received */
   headHeavyDamage: z.boolean().default(false),
   /** Leg: Armor */
-  legArmor: z.number().min(0).default(0),
+  legArmor: z.number().min(0, 'Leg armor cannot be negative.').default(0),
   /** Leg: Light Damage Received */
   legLightDamage: z.boolean().default(false),
   /** Leg: Heavy Damage Received */
   legHeavyDamage: z.boolean().default(false),
   /** Waist: Armor */
-  waistArmor: z.number().min(0).default(0),
+  waistArmor: z.number().min(0, 'Waist armor cannot be negative.').default(0),
   /** Waist: Light Damage Received */
   waistLightDamage: z.boolean().default(false),
   /** Waist: Heavy Damage Received */
@@ -143,21 +161,45 @@ export const BaseSurvivorSchema = z.object({
    */
 
   /** Arm: Broken */
-  armBroken: z.number().min(0).max(2).default(0),
+  armBroken: z
+    .number()
+    .min(0, 'Broken arm count cannot be negative.')
+    .max(2, 'Broken arm count cannot exceed 2.')
+    .default(0),
   /** Arm: Contracture */
-  armContracture: z.number().min(0).max(5).default(0),
+  armContracture: z
+    .number()
+    .min(0, 'Arm contracture count cannot be negative.')
+    .max(5, 'Arm contracture count cannot exceed 5.')
+    .default(0),
   /** Arm: Dismembered */
-  armDismembered: z.number().min(0).max(2).default(0),
+  armDismembered: z
+    .number()
+    .min(0, 'Dismembered arm count cannot be negative.')
+    .max(2, 'Dismembered arm count cannot exceed 2.')
+    .default(0),
   /** Arm: Ruptured Muscle */
   armRupturedMuscle: z.boolean().default(false),
   /** Body: Broken Rib */
-  bodyBrokenRib: z.number().min(0).max(5).default(0),
+  bodyBrokenRib: z
+    .number()
+    .min(0, 'Broken rib count cannot be negative.')
+    .max(5, 'Broken rib count cannot exceed 5.')
+    .default(0),
   /** Body: Destroyed Back */
   bodyDestroyedBack: z.boolean().default(false),
   /** Body: Gaping Chest Wound */
-  bodyGapingChestWound: z.number().min(0).max(5).default(0),
+  bodyGapingChestWound: z
+    .number()
+    .min(0, 'Gaping chest wound count cannot be negative.')
+    .max(5, 'Gaping chest wound count cannot exceed 5.')
+    .default(0),
   /** Head: Blind */
-  headBlind: z.number().min(0).max(2).default(0),
+  headBlind: z
+    .number()
+    .min(0, 'Blind count cannot be negative.')
+    .max(2, 'Blind count cannot exceed 2.')
+    .default(0),
   /** Head: Deaf */
   headDeaf: z.boolean().default(false),
   /** Head: Intracranial Hemorrhage */
@@ -165,9 +207,17 @@ export const BaseSurvivorSchema = z.object({
   /** Head: Shattered Jaw */
   headShatteredJaw: z.boolean().default(false),
   /** Leg: Broken */
-  legBroken: z.number().min(0).max(2).default(0),
+  legBroken: z
+    .number()
+    .min(0, 'Broken leg count cannot be negative.')
+    .max(2, 'Broken leg count cannot exceed 2.')
+    .default(0),
   /** Leg: Dismembered */
-  legDismembered: z.number().min(0).max(2).default(0),
+  legDismembered: z
+    .number()
+    .min(0, 'Dismembered leg count cannot be negative.')
+    .max(2, 'Dismembered leg count cannot exceed 2.')
+    .default(0),
   /** Leg: Hamstrung */
   legHamstrung: z.boolean().default(false),
   /** Waist: Broken Hip */
@@ -177,7 +227,11 @@ export const BaseSurvivorSchema = z.object({
   /** Waist: Intestinal Prolapse */
   waistIntestinalProlapse: z.boolean().default(false),
   /** Waist: Warped Pelvis */
-  waistWarpedPelvis: z.number().min(0).max(5).default(0),
+  waistWarpedPelvis: z
+    .number()
+    .min(0, 'Warped pelvis count cannot be negative.')
+    .max(5, 'Warped pelvis count cannot exceed 5.')
+    .default(0),
 
   /*
    * Arc Survivors
@@ -190,9 +244,17 @@ export const BaseSurvivorSchema = z.object({
   /** Knowledge 1: Observation Conditions */
   knowledge1ObservationConditions: z.string().optional(),
   /** Knowledge 1: Observation Ranks */
-  knowledge1ObservationRank: z.number().min(0).max(9).default(0),
+  knowledge1ObservationRank: z
+    .number()
+    .min(0, 'Knowledge observation rank count cannot be negative.')
+    .max(9, 'Knowledge observation rank count cannot exceed 9.')
+    .default(0),
   /** Knowledge 1: Rank Up Milestone */
-  knowledge1RankUp: z.number().min(0).max(9).optional(),
+  knowledge1RankUp: z
+    .number()
+    .min(0, 'Knowledge observation rank count cannot be negative.')
+    .max(9, 'Knowledge observation rank count cannot exceed 9.')
+    .optional(),
   /** Knowledge 1: Rules */
   knowledge1Rules: z.string().optional(),
   /** Knowledge 2 */
@@ -200,33 +262,51 @@ export const BaseSurvivorSchema = z.object({
   /** Knowledge 2: Observation Conditions */
   knowledge2ObservationConditions: z.string().optional(),
   /** Knowledge 2: Observation Ranks */
-  knowledge2ObservationRank: z.number().min(0).max(9).default(0),
+  knowledge2ObservationRank: z
+    .number()
+    .min(0, 'Knowledge observation rank count cannot be negative.')
+    .max(9, 'Knowledge observation rank count cannot exceed 9.')
+    .default(0),
   /** Knowledge 2: Rank Up Milestone */
-  knowledge2RankUp: z.number().min(0).max(9).optional(),
+  knowledge2RankUp: z
+    .number()
+    .min(0, 'Knowledge observation rank count cannot be negative.')
+    .max(9, 'Knowledge observation rank count cannot exceed 9.')
+    .optional(),
   /** Knowledge 2: Rules */
   knowledge2Rules: z.string().optional(),
   /** Lumi */
-  lumi: z.number().min(0).default(0),
+  lumi: z.number().min(0, 'Lumi cannot be negative.').default(0),
   /** Neurosis */
   neurosis: z.string().optional(),
   /** Philosophy */
   philosophy: z.nativeEnum(Philosophy).optional(),
   /** Philosophy Rank */
-  philosophyRank: z.number().min(0).default(0),
+  philosophyRank: z
+    .number()
+    .min(0, 'Philosophy rank cannot be negative.')
+    .default(0),
   /** Systemic Pressure */
-  systemicPressure: z.number().min(0).default(0),
+  systemicPressure: z
+    .number()
+    .min(0, 'Systemic pressure cannot be negative.')
+    .default(0),
   /** Tenet Knowledge */
   tenetKnowledge: z.string().optional(),
   /** Tenet Knowledge: Observation Conditions */
   tenetKnowledgeObservationConditions: z.string().optional(),
   /** Tenet Knowledge: Observation Ranks */
-  tenetKnowledgeObservationRank: z.number().min(0).max(9).default(0),
+  tenetKnowledgeObservationRank: z
+    .number()
+    .min(0, 'Knowledge observation rank count cannot be negative.')
+    .max(9, 'Knowledge observation rank count cannot exceed 9.')
+    .default(0),
   /** Tenet Knowledge: Rank Up Milestone */
   tenetKnowledgeRankUp: z.number().min(0).max(9).optional(),
   /** Tenet Knowledge: Rules */
   tenetKnowledgeRules: z.string().optional(),
   /** Torment */
-  torment: z.number().min(0).default(0),
+  torment: z.number().min(0, 'Torment cannot be negative.').default(0),
 
   /*
    * People of the Stars Survivors

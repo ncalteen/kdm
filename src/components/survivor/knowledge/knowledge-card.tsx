@@ -5,8 +5,9 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { saveSurvivorToLocalStorage } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -15,6 +16,96 @@ import { UseFormReturn } from 'react-hook-form'
 export function KnowledgeCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
+  // Watch the observation rank values to ensure UI updates correctly
+  const knowledge1ObservationRank = form.watch('knowledge1ObservationRank') || 0
+  const knowledge2ObservationRank = form.watch('knowledge2ObservationRank') || 0
+
+  /**
+   * Save knowledge data to localStorage for the current survivor, with
+   * Zod validation and toast feedback.
+   *
+   * @param fieldName Field Name
+   * @param value Field Value
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = useCallback(
+    (fieldName: keyof Survivor, value: string | number, successMsg?: string) =>
+      saveSurvivorToLocalStorage(form, fieldName, value, successMsg),
+    [form]
+  )
+
+  /**
+   * Handles text input changes - saves on Enter key press.
+   *
+   * @param e Keyboard Event
+   * @param fieldName Field Name
+   * @param value Current Input Value
+   * @param successMsg Success Message
+   */
+  const handleTextKeyDown = useCallback(
+    (
+      e: React.KeyboardEvent<HTMLInputElement>,
+      fieldName: keyof Survivor,
+      value: string,
+      successMsg: string
+    ) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        saveToLocalStorage(
+          fieldName,
+          value,
+          value.trim() ? successMsg : undefined
+        )
+      }
+    },
+    [saveToLocalStorage]
+  )
+
+  /**
+   * Handles textarea changes - saves on Enter key press.
+   *
+   * @param e Keyboard Event
+   * @param fieldName Field Name
+   * @param value Current Input Value
+   * @param successMsg Success Message
+   */
+  const handleTextareaKeyDown = useCallback(
+    (
+      e: React.KeyboardEvent<HTMLTextAreaElement>,
+      fieldName: keyof Survivor,
+      value: string,
+      successMsg: string
+    ) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        saveToLocalStorage(
+          fieldName,
+          value,
+          value.trim() ? successMsg : undefined
+        )
+      }
+    },
+    [saveToLocalStorage]
+  )
+
+  /**
+   * Handles observation rank changes - saves immediately.
+   *
+   * @param fieldName Field Name
+   * @param rank Selected Rank
+   */
+  const handleRankChange = useCallback(
+    (fieldName: keyof Survivor, rank: number) => {
+      form.setValue(fieldName, rank, { shouldDirty: true })
+      saveToLocalStorage(
+        fieldName,
+        rank,
+        'The lantern illuminates newfound wisdom.'
+      )
+    },
+    [form, saveToLocalStorage]
+  )
+
   /**
    * Helper function to handle textarea auto-resize
    */
@@ -39,6 +130,14 @@ export function KnowledgeCard({
                 className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-lg"
                 {...form.register('knowledge1')}
                 defaultValue={form.getValues('knowledge1') || ''}
+                onKeyDown={(e) =>
+                  handleTextKeyDown(
+                    e,
+                    'knowledge1',
+                    e.currentTarget.value,
+                    'Knowledge of the darkness expands.'
+                  )
+                }
               />
               <FormLabel className="text-xs text-muted-foreground">
                 Knowledge Name
@@ -52,17 +151,12 @@ export function KnowledgeCard({
                 return (
                   <Checkbox
                     key={index}
-                    checked={
-                      (form.getValues('knowledge1ObservationRank') || 0) >= rank
-                    }
+                    checked={knowledge1ObservationRank >= rank}
                     onCheckedChange={(checked) => {
-                      const currentRank =
-                        form.getValues('knowledge1ObservationRank') || 0
-
                       if (checked)
-                        form.setValue('knowledge1ObservationRank', rank)
-                      else if (currentRank === rank)
-                        form.setValue('knowledge1ObservationRank', rank - 1)
+                        handleRankChange('knowledge1ObservationRank', rank)
+                      else if (knowledge1ObservationRank === rank)
+                        handleRankChange('knowledge1ObservationRank', rank - 1)
                     }}
                   />
                 )
@@ -80,6 +174,14 @@ export function KnowledgeCard({
               onInput={handleTextareaInput}
               {...form.register('knowledge1Rules')}
               defaultValue={form.getValues('knowledge1Rules') || ''}
+              onKeyDown={(e) =>
+                handleTextareaKeyDown(
+                  e,
+                  'knowledge1Rules',
+                  e.currentTarget.value,
+                  'The rules of wisdom are inscribed in lantern light.'
+                )
+              }
             />
             <FormLabel className="text-xs text-muted-foreground">
               Rules
@@ -97,6 +199,14 @@ export function KnowledgeCard({
               {...form.register('knowledge1ObservationConditions')}
               defaultValue={
                 form.getValues('knowledge1ObservationConditions') || ''
+              }
+              onKeyDown={(e) =>
+                handleTextareaKeyDown(
+                  e,
+                  'knowledge1ObservationConditions',
+                  e.currentTarget.value,
+                  'Observation conditions etched in the darkness.'
+                )
               }
             />
             <FormLabel className="text-xs text-muted-foreground">
@@ -116,6 +226,14 @@ export function KnowledgeCard({
                 className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-lg"
                 {...form.register('knowledge2')}
                 defaultValue={form.getValues('knowledge2') || ''}
+                onKeyDown={(e) =>
+                  handleTextKeyDown(
+                    e,
+                    'knowledge2',
+                    e.currentTarget.value,
+                    'Knowledge of the darkness expands.'
+                  )
+                }
               />
               <FormLabel className="text-xs text-muted-foreground">
                 Knowledge Name
@@ -129,17 +247,12 @@ export function KnowledgeCard({
                 return (
                   <Checkbox
                     key={index}
-                    checked={
-                      (form.getValues('knowledge2ObservationRank') || 0) >= rank
-                    }
+                    checked={knowledge2ObservationRank >= rank}
                     onCheckedChange={(checked) => {
-                      const currentRank =
-                        form.getValues('knowledge2ObservationRank') || 0
-                      if (checked) {
-                        form.setValue('knowledge2ObservationRank', rank)
-                      } else if (currentRank === rank) {
-                        form.setValue('knowledge2ObservationRank', rank - 1)
-                      }
+                      if (checked)
+                        handleRankChange('knowledge2ObservationRank', rank)
+                      else if (knowledge2ObservationRank === rank)
+                        handleRankChange('knowledge2ObservationRank', rank - 1)
                     }}
                   />
                 )
@@ -157,6 +270,14 @@ export function KnowledgeCard({
               onInput={handleTextareaInput}
               {...form.register('knowledge2Rules')}
               defaultValue={form.getValues('knowledge2Rules') || ''}
+              onKeyDown={(e) =>
+                handleTextareaKeyDown(
+                  e,
+                  'knowledge2Rules',
+                  e.currentTarget.value,
+                  'The rules of wisdom are inscribed in lantern light.'
+                )
+              }
             />
             <FormLabel className="text-xs text-muted-foreground">
               Rules
@@ -174,6 +295,14 @@ export function KnowledgeCard({
               {...form.register('knowledge2ObservationConditions')}
               defaultValue={
                 form.getValues('knowledge2ObservationConditions') || ''
+              }
+              onKeyDown={(e) =>
+                handleTextareaKeyDown(
+                  e,
+                  'knowledge2ObservationConditions',
+                  e.currentTarget.value,
+                  'Observation conditions etched in the darkness.'
+                )
               }
             />
             <FormLabel className="text-xs text-muted-foreground">
