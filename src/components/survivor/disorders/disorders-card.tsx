@@ -63,7 +63,8 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
   const addDisorder = () => setIsAddingNew(true)
 
   /**
-   * Save disorders to localStorage for the current survivor, with Zod validation and toast feedback.
+   * Save disorders to localStorage for the current survivor, with Zod
+   * validation and toast feedback.
    *
    * @param updatedDisorders Updated disorders array
    * @param successMsg Success message for toast

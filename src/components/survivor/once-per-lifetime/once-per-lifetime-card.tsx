@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import type { DragEndEvent } from '@dnd-kit/core'
 import {
   DndContext,
@@ -24,10 +25,11 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Once Per Lifetime Card Component
@@ -35,30 +37,10 @@ import { toast } from 'sonner'
 export function OncePerLifetimeCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const formValues = form.getValues()
-
-  // Use ref to avoid circular dependencies in effects
-  const oncePerLifetimeRef = useRef<string[]>(formValues.oncePerLifetime || [])
-
-  // Watch for changes in the oncePerLifetime field
-  const oncePerLifetime = form.watch('oncePerLifetime')
-
-  // Update our ref when oncePerLifetime changes
-  useEffect(() => {
-    if (oncePerLifetime) {
-      oncePerLifetimeRef.current = oncePerLifetime
-    }
-  }, [oncePerLifetime])
-
-  // Use a local state to track the checkbox to avoid infinite loop
-  const [rerollUsedState, setRerollUsedState] = useState<boolean>(
-    !!form.getValues('rerollUsed')
+  const oncePerLifetime = useMemo(
+    () => form.watch('oncePerLifetime') || [],
+    [form]
   )
-
-  // Update form value when rerollUsedState changes
-  useEffect(() => {
-    form.setValue('rerollUsed', rerollUsedState, { shouldDirty: true })
-  }, [rerollUsedState, form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -69,13 +51,22 @@ export function OncePerLifetimeCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      oncePerLifetimeRef.current.forEach((_, i) => {
+      oncePerLifetime.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
   }, [oncePerLifetime])
+
+  const [rerollUsedState, setRerollUsedState] = useState<boolean>(
+    !!form.getValues('rerollUsed')
+  )
+
+  useEffect(
+    () => form.setValue('rerollUsed', rerollUsedState, { shouldDirty: true }),
+    [rerollUsedState, form]
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -87,12 +78,59 @@ export function OncePerLifetimeCard({
   const addOncePerLifetime = () => setIsAddingNew(true)
 
   /**
+   * Save once per lifetime data to localStorage for the current survivor, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedOncePerLifetime Updated Once Per Lifetime
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedOncePerLifetime: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          oncePerLifetime: updatedOncePerLifetime
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.survivors[survivorIndex].oncePerLifetime =
+          updatedOncePerLifetime
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Once Per Lifetime Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the removal of a once per lifetime event.
    *
    * @param index Event Index
    */
-  const handleRemoveOncePerLifetime = (index: number) => {
-    const currentOncePerLifetime = [...oncePerLifetimeRef.current]
+  const onRemove = (index: number) => {
+    const currentOncePerLifetime = [...oncePerLifetime]
 
     currentOncePerLifetime.splice(index, 1)
     form.setValue('oncePerLifetime', currentOncePerLifetime)
@@ -109,37 +147,74 @@ export function OncePerLifetimeCard({
       return next
     })
 
-    toast.success('The once per lifetime event has been removed.')
+    saveToLocalStorage(
+      currentOncePerLifetime,
+      'The fleeting moment fades back into darkness.'
+    )
   }
 
   /**
    * Handles the saving of a new once per lifetime event.
    *
    * @param value Event Value
+   * @param i Event Index (When Updating Only)
    */
-  const saveOncePerLifetime = (value: string) => {
+  const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.warning('Please enter a once per lifetime event.')
+      return toast.error('A nameless event cannot be inscribed in memory.')
 
-    const newOncePerLifetime = [...oncePerLifetimeRef.current, value]
+    try {
+      SurvivorSchema.shape.oncePerLifetime.parse([value])
+    } catch (error) {
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
+    }
 
-    form.setValue('oncePerLifetime', newOncePerLifetime)
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [newOncePerLifetime.length - 1]: true
-    }))
+    const updatedOncePerLifetime = [...oncePerLifetime]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedOncePerLifetime[i] = value
+      form.setValue(`oncePerLifetime.${i}`, value)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedOncePerLifetime.push(value)
+
+      form.setValue('oncePerLifetime', updatedOncePerLifetime)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedOncePerLifetime.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedOncePerLifetime,
+      'The once-in-a-lifetime moment has been inscribed in memory.'
+    )
     setIsAddingNew(false)
-
-    toast.success('The once per lifetime event has been added.')
   }
 
-  const editOncePerLifetime = (index: number) =>
+  /**
+   * Enables editing a value.
+   *
+   * @param index Event Index
+   */
+  const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles the end of a drag event.
+   * Handles the end of a drag event for reordering values.
    *
-   * @param event Event
+   * @param event Drag End Event
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -147,9 +222,10 @@ export function OncePerLifetimeCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(oncePerLifetimeRef.current, oldIndex, newIndex)
+      const newOrder = arrayMove(oncePerLifetime, oldIndex, newIndex)
 
       form.setValue('oncePerLifetime', newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -171,7 +247,28 @@ export function OncePerLifetimeCard({
     <Card className="mt-1 border-0">
       <CardHeader className="px-3 py-2 pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-md">Once Per Lifetime</CardTitle>
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+            Once Per Lifetime{' '}
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addOncePerLifetime}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+
+          {/* Skip Next Hunt */}
           <div className="flex items-center space-x-2">
             <Checkbox
               id="rerollUsed"
@@ -180,40 +277,34 @@ export function OncePerLifetimeCard({
                 if (typeof checked === 'boolean') setRerollUsedState(checked)
               }}
             />
-            <Label htmlFor="rerollUsed" className="text-xs cursor-pointer">
-              Reroll used
+            <Label htmlFor="skipNextHunt" className="text-xs cursor-pointer">
+              Reroll Used
             </Label>
           </div>
         </div>
       </CardHeader>
+
+      {/* Once Per Lifetime List */}
       <CardContent className="pb-2">
         <div className="space-y-2">
-          {oncePerLifetimeRef.current.length !== 0 && (
+          {oncePerLifetime.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={oncePerLifetimeRef.current.map((_, index) =>
-                  index.toString()
-                )}
+                items={oncePerLifetime.map((_, index) => index.toString())}
                 strategy={verticalListSortingStrategy}>
-                {oncePerLifetimeRef.current.map((event, index) => (
+                {oncePerLifetime.map((event, index) => (
                   <OncePerLifetimeItem
                     key={index}
                     id={index.toString()}
                     index={index}
                     form={form}
-                    handleRemoveOncePerLifetime={handleRemoveOncePerLifetime}
+                    onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => {
-                      form.setValue(`oncePerLifetime.${i}`, value)
-                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-                      toast.success(
-                        'The once per lifetime event has been updated.'
-                      )
-                    }}
-                    onEdit={editOncePerLifetime}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
                   />
                 ))}
               </SortableContext>
@@ -221,25 +312,9 @@ export function OncePerLifetimeCard({
           )}
           {isAddingNew && (
             <NewOncePerLifetimeItem
-              onSave={saveOncePerLifetime}
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
             />
-          )}
-          {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addOncePerLifetime}
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusCircleIcon className="h-4 w-4" />
-                Add Once Per Lifetime Event
-              </Button>
-            </div>
           )}
         </div>
       </CardContent>

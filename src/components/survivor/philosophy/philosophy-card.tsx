@@ -13,10 +13,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Philosophy } from '@/lib/enums'
-import { cn } from '@/lib/utils'
-import { Survivor } from '@/schemas/survivor'
+import { cn, getCampaign } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Philosophy Card Component
@@ -27,18 +29,78 @@ export function PhilosophyCard({
   const watchedPhilosophy = form.watch('philosophy')
 
   /**
+   * Save philosophy data to localStorage for the current survivor, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedData Updated philosophy data
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedData: Partial<Survivor>,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          ...updatedData
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        Object.assign(campaign.survivors[survivorIndex], updatedData)
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Philosophy Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the change of philosophy selection.
    *
    * @param value Value
    */
   const handlePhilosophyChange = (value: string) => {
+    const philosophyValue = value ? (value as Philosophy) : undefined
+
     // Update the form directly
-    form.setValue('philosophy', value ? (value as Philosophy) : undefined, {
+    form.setValue('philosophy', philosophyValue, {
       shouldDirty: true
     })
 
     // If philosophy is cleared or changed, reset rank to 0
-    if (!value) form.setValue('philosophyRank', 0, { shouldDirty: true })
+    if (!value || value.trim() === '')
+      form.setValue('philosophyRank', 0, { shouldDirty: true })
+
+    // Save to localStorage
+    saveToLocalStorage(
+      {
+        philosophy: philosophyValue,
+        ...(value ? {} : { philosophyRank: 0 })
+      },
+      value
+        ? 'The path of wisdom begins to illuminate the darkness.'
+        : 'The philosophical path returns to shadow.'
+    )
   }
 
   return (
@@ -73,6 +135,12 @@ export function PhilosophyCard({
                         const value = parseInt(e.target.value)
                         const clampedValue = Math.min(Math.max(value, 0), 9)
                         form.setValue(field.name, clampedValue)
+
+                        // Save to localStorage
+                        saveToLocalStorage(
+                          { philosophyRank: clampedValue },
+                          'Philosophy rank has been updated.'
+                        )
                       }}
                     />
                   </FormControl>
@@ -106,6 +174,15 @@ export function PhilosophyCard({
                     className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-lg"
                     {...field}
                     value={field.value || ''}
+                    onBlur={(e) => {
+                      field.onBlur()
+                      saveToLocalStorage(
+                        { neurosis: e.target.value },
+                        e.target.value
+                          ? 'The neurosis manifests in the mind.'
+                          : 'The neurosis fades into darkness.'
+                      )
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs text-muted-foreground">
@@ -131,6 +208,15 @@ export function PhilosophyCard({
                         className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-lg"
                         {...field}
                         value={field.value || ''}
+                        onBlur={(e) => {
+                          field.onBlur()
+                          saveToLocalStorage(
+                            { tenetKnowledge: e.target.value },
+                            e.target.value
+                              ? 'Tenet knowledge is inscribed in memory.'
+                              : 'Tenet knowledge dissolves into shadow.'
+                          )
+                        }}
                       />
                     </FormControl>
                     <FormLabel className="text-xs text-muted-foreground">
@@ -153,16 +239,26 @@ export function PhilosophyCard({
                         key={index}
                         checked={(field.value || 0) > index}
                         onCheckedChange={(checked) => {
-                          if (checked)
+                          let newRank
+                          if (checked) {
+                            newRank = index + 1
                             form.setValue(
                               'tenetKnowledgeObservationRank',
-                              index + 1
+                              newRank
                             )
-                          else if ((field.value || 0) === index + 1)
+                          } else if ((field.value || 0) === index + 1) {
+                            newRank = index
                             form.setValue(
                               'tenetKnowledgeObservationRank',
-                              index
+                              newRank
                             )
+                          } else return
+
+                          // Save to localStorage
+                          saveToLocalStorage(
+                            { tenetKnowledgeObservationRank: newRank },
+                            `Observation rank ${newRank} burns bright in the lantern's glow.`
+                          )
                         }}
                       />
                     ))}
@@ -191,6 +287,15 @@ export function PhilosophyCard({
                     }}
                     {...field}
                     value={field.value || ''}
+                    onBlur={(e) => {
+                      field.onBlur()
+                      saveToLocalStorage(
+                        { tenetKnowledgeRules: e.target.value },
+                        e.target.value
+                          ? 'The rules of knowledge are etched in stone.'
+                          : 'The rules fade back into mystery.'
+                      )
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs text-muted-foreground">
@@ -220,6 +325,15 @@ export function PhilosophyCard({
                     }}
                     {...field}
                     value={field.value || ''}
+                    onBlur={(e) => {
+                      field.onBlur()
+                      saveToLocalStorage(
+                        { tenetKnowledgeObservationConditions: e.target.value },
+                        e.target.value
+                          ? "Observation conditions are recorded in the survivor's memory."
+                          : 'The conditions vanish into the void.'
+                      )
+                    }}
                   />
                 </FormControl>
                 <FormLabel className="text-xs text-muted-foreground">

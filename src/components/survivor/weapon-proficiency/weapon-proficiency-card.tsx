@@ -1,13 +1,15 @@
-// WeaponProficiencyCard.tsx
 'use client'
 
 import { SelectWeaponType } from '@/components/menu/select-weapon-type'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { WeaponType } from '@/lib/enums'
+import { getCampaign } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Weapon Proficiency Card Component
@@ -26,10 +28,80 @@ export function WeaponProficiencyCard(
   const weaponProficiency = form.watch('weaponProficiency') || 0
   const weaponProficiencyType = form.watch('weaponProficiencyType')
 
-  // Handle proficiency checkbox change
+  /**
+   * Save weapon proficiency data to localStorage for the current survivor, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedProficiency Updated weapon proficiency level
+   * @param updatedType Updated weapon proficiency type
+   */
+  const saveToLocalStorage = (
+    updatedProficiency: number,
+    updatedType?: WeaponType
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          weaponProficiency: updatedProficiency,
+          ...(updatedType && { weaponProficiencyType: updatedType })
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.survivors[survivorIndex].weaponProficiency = updatedProficiency
+        if (updatedType)
+          campaign.survivors[survivorIndex].weaponProficiencyType = updatedType
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (updatedProficiency === 3)
+          toast.success('The survivor becomes a specialist in their craft.')
+        else if (updatedProficiency === 8)
+          toast.success('The survivor achieves mastery beyond mortal limits.')
+      }
+    } catch (error) {
+      console.error('Weapon Proficiency Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
+   * Handle weapon proficiency level checkbox change
+   *
+   * @param index Checkbox index (0-7)
+   * @param checked Whether the checkbox is checked
+   */
   const handleProficiencyChange = (index: number, checked: boolean) => {
-    if (checked) form.setValue('weaponProficiency', index + 1)
-    else form.setValue('weaponProficiency', index)
+    const newProficiency = checked ? index + 1 : index
+    form.setValue('weaponProficiency', newProficiency)
+    saveToLocalStorage(newProficiency)
+  }
+
+  /**
+   * Handle weapon type selection change
+   *
+   * @param type Selected weapon type
+   */
+  const handleWeaponTypeChange = (type: string) => {
+    const weaponType = type as WeaponType
+    form.setValue('weaponProficiencyType', weaponType)
+    saveToLocalStorage(weaponProficiency, weaponType)
+    toast.success('The survivor turns their focus to a new weapon.')
   }
 
   return (
@@ -40,14 +112,7 @@ export function WeaponProficiencyCard(
             <CardTitle className="text-l">Weapon Proficiency</CardTitle>
             <SelectWeaponType
               value={weaponProficiencyType}
-              onChange={(type: string) =>
-                form.setValue(
-                  'weaponProficiencyType',
-                  type as z.infer<
-                    typeof SurvivorSchema.shape.weaponProficiencyType
-                  >
-                )
-              }
+              onChange={handleWeaponTypeChange}
             />
           </div>
           <div className="flex flex-col pt-1">
@@ -72,7 +137,7 @@ export function WeaponProficiencyCard(
 
             <hr className="mt-2 mb-2" />
 
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between gap-2">
               {Array.from({ length: 2 }, (_, i) => (
                 <div key={i} className="flex items-center gap-1">
                   {Array.from({ length: i + 1 }, (_, j) => (

@@ -176,9 +176,11 @@ export function NewAbilityImpairmentItem({
 
   return (
     <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
       {/* Input Field */}
       <Input
         ref={inputRef}

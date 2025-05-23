@@ -193,7 +193,7 @@ export function AbilitiesAndImpairmentsCard({
    * @param i Ability/Impairment Index (When Updating Only)
    */
   const onSave = (value?: string, i?: number) => {
-    if (!value)
+    if (!value || value.trim() === '')
       return toast.error('A nameless ability/impairment cannot be recorded.')
 
     try {

@@ -11,11 +11,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
-import { getSettlement } from '@/lib/utils'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign, getSettlement } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { Shield } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Survivor Sanity Card Component
@@ -38,6 +40,57 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
     const settlement = getSettlement(form.getValues('settlementId'))
     setSurvivorType(settlement?.survivorType)
   }, [form])
+
+  /**
+   * Save sanity data to localStorage for the current survivor, with Zod
+   * validation and toast feedback.
+   *
+   * @param field Field name to update
+   * @param value New value
+   * @param successMsg Optional success message
+   */
+  const saveToLocalStorage = (
+    field: keyof Survivor,
+    value: number | boolean,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          [field]: value
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.survivors[survivorIndex] = {
+          ...campaign.survivors[survivorIndex],
+          [field]: value
+        }
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Sanity Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <Card className="m-0 mt-1 border-2">
@@ -63,7 +116,16 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                         {...field}
                         value={field.value ?? '0'}
                         onChange={(e) => {
-                          form.setValue(field.name, parseInt(e.target.value))
+                          let value = parseInt(e.target.value) || 0
+
+                          // Enforce minimum value of 0
+                          if (value < 0) {
+                            value = 0
+                            toast.error('Insanity cannot be negative..')
+                          }
+
+                          form.setValue(field.name, value)
+                          saveToLocalStorage('insanity', value)
                         }}
                       />
                     </div>
@@ -88,7 +150,17 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={field.onChange}
+                        onCheckedChange={(checked) => {
+                          const brainLightDamage = !!checked
+                          field.onChange(brainLightDamage)
+                          saveToLocalStorage(
+                            'brainLightDamage',
+                            brainLightDamage,
+                            brainLightDamage
+                              ? 'The survivor suffers brain damage from the horrors witnessed.'
+                              : 'The survivor recovers from their brain injury.'
+                          )
+                        }}
                       />
                     </FormControl>
                     <FormLabel className="text-xs mt-1">L</FormLabel>
@@ -120,7 +192,16 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {
-                            form.setValue(field.name, parseInt(e.target.value))
+                            let value = parseInt(e.target.value) || 0
+
+                            // Enforce minimum value of 0
+                            if (value < 0) {
+                              value = 0
+                              toast.error('Torment cannot be negative.')
+                            }
+
+                            form.setValue(field.name, value)
+                            saveToLocalStorage('torment', value)
                           }}
                         />
                       </FormControl>

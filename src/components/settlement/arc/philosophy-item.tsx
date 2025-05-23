@@ -75,7 +75,8 @@ export function PhilosophyItem({
   }
 
   const handleEditSave = () => {
-    if (!value) return toast.warning('Cannot save a nameless philosophy.')
+    if (!value || value.trim() === '')
+      return toast.error('A nameless philosophy cannot be recorded.')
 
     onSaveEdit(value)
     toast.success('The philosophy echos throughout your settlement.')
