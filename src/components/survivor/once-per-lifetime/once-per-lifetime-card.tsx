@@ -285,8 +285,8 @@ export function OncePerLifetimeCard({
       </CardHeader>
 
       {/* Once Per Lifetime List */}
-      <CardContent className="pb-2">
-        <div className="space-y-2">
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
           {oncePerLifetime.length !== 0 && (
             <DndContext
               sensors={sensors}
