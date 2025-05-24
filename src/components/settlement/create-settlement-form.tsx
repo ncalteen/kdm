@@ -2,7 +2,7 @@
 
 import { SelectCampaign } from '@/components/menu/select-campaign'
 import { SelectSurvivorType } from '@/components/menu/select-survivor-type'
-import { SettlementNameCard } from '@/components/settlement/settlement-name-card'
+import { SettlementNameCard } from '@/components/settlement/settlement-name/settlement-name-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {

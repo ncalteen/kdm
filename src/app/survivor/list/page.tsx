@@ -1,7 +1,7 @@
 'use client'
 
-import { DownloadCampaignButton } from '@/components/settlement/download-campaign-button'
-import { UploadCampaignButton } from '@/components/settlement/upload-campaign-button'
+import { DownloadCampaignButton } from '@/components/menu/download-campaign-button'
+import { UploadCampaignButton } from '@/components/menu/upload-campaign-button'
 import { ListSurvivorsTable } from '@/components/survivor/list-survivors-table'
 import {
   Card,
