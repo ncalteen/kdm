@@ -16,7 +16,7 @@ export const TimelineYearSchema = z.object({
   /** Lantern Year Completion */
   completed: z.boolean(),
   /** Timeline Entries */
-  entries: z.array(z.string())
+  entries: z.array(z.string().min(1, 'A nameless event cannot be recorded.'))
 })
 
 /**
@@ -37,7 +37,7 @@ export const QuarrySchema = z.object({
   /** Collective Cognition (Prologue) */
   ccPrologue: z.boolean(),
   /** Quarry Name */
-  name: z.string(),
+  name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
   /** Node Level */
   node: z.enum(['Node 1', 'Node 2', 'Node 3', 'Node 4']),
   /** Unlocked */
@@ -60,7 +60,7 @@ export const NemesisSchema = z.object({
   /** Collective Cognition (Level 3) */
   ccLevel3: z.boolean(),
   /** Nemesis Name */
-  name: z.string(),
+  name: z.string().min(1, 'A nameless nemesis cannot be recorded.'),
   /** Completed (Level 1) */
   level1: z.boolean(),
   /** Completed (Level 2) */
@@ -83,9 +83,9 @@ export const MilestoneSchema = z.object({
   /** Completed */
   complete: z.boolean(),
   /** Event (Triggered on Completion) */
-  event: z.string(),
+  event: z.string().min(1, 'A nameless event cannot be recorded.'),
   /** Milestone Name */
-  name: z.string()
+  name: z.string().min(1, 'A nameless milestone cannot be recorded.')
 })
 
 /**
@@ -98,7 +98,7 @@ export type Milestone = z.infer<typeof MilestoneSchema>
  */
 export const LocationSchema = z.object({
   /** Location Name */
-  name: z.string(),
+  name: z.string().min(1, 'A nameless location cannot be recorded.'),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -113,13 +113,17 @@ export type Location = z.infer<typeof LocationSchema>
  */
 export const PrincipleSchema = z.object({
   /** Principle Name */
-  name: z.string(),
+  name: z.string().min(1, 'A nameless principle cannot be recorded.'),
   /** Option 1 Name */
-  option1Name: z.string(),
+  option1Name: z
+    .string()
+    .min(1, 'A nameless principle option cannot be recorded.'),
   /** Option 1 Selected */
   option1Selected: z.boolean(),
   /** Option 2 Name */
-  option2Name: z.string(),
+  option2Name: z
+    .string()
+    .min(1, 'A nameless principle option cannot be recorded.'),
   /** Option 2 Selected */
   option2Selected: z.boolean()
 })
@@ -138,9 +142,11 @@ export const ResourceSchema = z.object({
   /** Category (Basic, Monster, Strange, etc.) */
   category: z.nativeEnum(ResourceCategory),
   /** Resource Name */
-  name: z.string(),
+  name: z.string().min(1, 'A nameless resource cannot be recorded.'),
   /** Types (Bone, Hide, Organ, etc.) */
-  types: z.array(z.nativeEnum(ResourceType)).min(1)
+  types: z
+    .array(z.nativeEnum(ResourceType))
+    .min(1, 'A resource must have at least one type.')
 })
 
 /**
@@ -155,7 +161,7 @@ export const CollectiveCognitionRewardSchema = z.object({
   /** Collective Cognition Value */
   cc: z.number().min(0),
   /** Collective Cognition Reward Name */
-  name: z.string(),
+  name: z.string().min(1, 'A nameless reward cannot be recorded.'),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -172,7 +178,7 @@ export type CollectiveCognitionReward = z.infer<
  */
 export const KnowledgeSchema = z.object({
   /** Knowledge Name */
-  name: z.string(),
+  name: z.string().min(1, 'A nameless knowledge cannot be recorded.'),
   /** Philosophy */
   philosophy: z.nativeEnum(Philosophy).optional()
 })
@@ -195,7 +201,7 @@ export const SquireSuspicionSchema = z.object({
   /** Suspicion Level 4 */
   level4: z.boolean(),
   /** Survivor Name */
-  name: z.string()
+  name: z.string().min(1, 'A nameless survivor cannot be recorded.')
 })
 
 /**
@@ -217,11 +223,17 @@ export const BaseSettlementSchema = z.object({
   /** Death Count */
   deathCount: z.number().min(0).default(0),
   /** Departing Survivor Bonuses */
-  departingBonuses: z.array(z.string()).default([]),
+  departingBonuses: z
+    .array(z.string().min(1, 'A nameless departing bonus cannot be recorded.'))
+    .default([]),
   /** Gear */
-  gear: z.array(z.string()).default([]),
+  gear: z
+    .array(z.string().min(1, 'A nameless gear item cannot be recorded.'))
+    .default([]),
   /** Innovations */
-  innovations: z.array(z.string()).default([]),
+  innovations: z
+    .array(z.string().min(1, 'A nameless innovation cannot be recorded.'))
+    .default([]),
   /** Locations */
   locations: z.array(LocationSchema).default([]),
   /** Lost Settlement Count */
@@ -233,7 +245,9 @@ export const BaseSettlementSchema = z.object({
   /** Notes */
   notes: z.string().optional(),
   /** Patterns */
-  patterns: z.array(z.string()).default([]),
+  patterns: z
+    .array(z.string().min(1, 'A nameless pattern cannot be recorded.'))
+    .default([]),
   /** Population */
   population: z.number().min(0).default(0),
   /** Principles */
@@ -243,7 +257,9 @@ export const BaseSettlementSchema = z.object({
   /** Resources */
   resources: z.array(ResourceSchema).default([]),
   /** Seed Patterns */
-  seedPatterns: z.array(z.string()).default([]),
+  seedPatterns: z
+    .array(z.string().min(1, 'A nameless seed pattern cannot be recorded.'))
+    .default([]),
   /** Survival Limit */
   survivalLimit: z.number().min(1).default(1),
   /** Survivor Type */
@@ -271,7 +287,9 @@ export const BaseSettlementSchema = z.object({
   /** Lantern Research Level */
   lanternResearchLevel: z.number().min(0).default(0),
   /** Monster Volumes */
-  monsterVolumes: z.array(z.string()).default([]),
+  monsterVolumes: z
+    .array(z.string().min(1, 'A nameless monster volume cannot be recorded.'))
+    .default([]),
 
   /*
    * Squires of the Citadel Campaigns
@@ -302,7 +320,7 @@ export const SettlementSchema = BaseSettlementSchema.extend({
   name: z
     .string()
     .describe('Settlement Name')
-    .min(1, 'Settlement name is required')
+    .min(1, 'A nameless settlement cannot be recorded.')
 })
 
 /**
