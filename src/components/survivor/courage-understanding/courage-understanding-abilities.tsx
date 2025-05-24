@@ -17,9 +17,9 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Courage/Understanding Abilities Component
  */
-export function CourageUnderstandingAbilities(
-  form: UseFormReturn<Survivor>
-): ReactElement {
+export function CourageUnderstandingAbilities({
+  ...form
+}: UseFormReturn<Survivor>): ReactElement {
   const hasStalwart = form.watch('hasStalwart')
   const hasPrepared = form.watch('hasPrepared')
   const hasMatchmaker = form.watch('hasMatchmaker')
@@ -61,7 +61,7 @@ export function CourageUnderstandingAbilities(
         // @ts-expect-error: dynamic assignment is safe for known keys
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Ability updated!')
+        toast.success('The survivor\'s inner strength grows brighter.')
       }
     } catch (error) {
       console.error('Courage/Understanding Ability Save Error:', error)

@@ -24,9 +24,9 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Courage and Understanding Card Component
  */
-export function CourageUnderstandingCard(
-  form: UseFormReturn<Survivor>
-): ReactElement {
+export function CourageUnderstandingCard({
+  ...form
+}: UseFormReturn<Survivor>): ReactElement {
   const courage = form.watch('courage') || 0
   const understanding = form.watch('understanding') || 0
   const settlementId = form.watch('settlementId')
@@ -78,8 +78,11 @@ export function CourageUnderstandingCard(
 
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
+
         toast.success(
-          `${attrName.charAt(0).toUpperCase() + attrName.slice(1)} updated!`
+          attrName === 'courage'
+            ? 'Courage burns brighter in the darkness.'
+            : 'Understanding illuminates the path forward.'
         )
       }
     } catch (error) {

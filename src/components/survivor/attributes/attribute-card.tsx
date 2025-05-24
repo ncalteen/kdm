@@ -11,10 +11,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSettlement } from '@/lib/utils'
-import { Survivor } from '@/schemas/survivor'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Survivor Attribute Card Component
@@ -26,7 +27,9 @@ import { toast } from 'sonner'
  * @param form Form
  * @returns Attribute Card Component
  */
-export function AttributeCard(form: UseFormReturn<Survivor>): ReactElement {
+export function AttributeCard({
+  ...form
+}: UseFormReturn<Survivor>): ReactElement {
   // Get the survivor type from the settlement data.
   const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
     undefined
@@ -61,11 +64,40 @@ export function AttributeCard(form: UseFormReturn<Survivor>): ReactElement {
       const survivorIndex = campaign.survivors.findIndex(
         (s: { id: number }) => s.id === formValues.id
       )
+
       if (survivorIndex !== -1) {
+        const updatedSurvivor = {
+          ...campaign.survivors[survivorIndex],
+          [attrName]: value
+        }
+
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        // Thematic success messages for each attribute
+        const attributeMessages: Record<string, string> = {
+          movement: 'Strides through darkness grow more confident.',
+          accuracy: "The survivor's aim pierces through shadow.",
+          strength: 'Muscles forged in adversity grow stronger.',
+          evasion: 'Grace in the face of death improves.',
+          luck: 'Fortune favors the desperate soul.',
+          speed: 'Swift as shadows, the survivor advances.',
+          lumi: 'Arc energy courses through enlightened veins.'
+        }
+
         toast.success(
-          `${attrName.charAt(0).toUpperCase() + attrName.slice(1)} updated!`
+          attributeMessages[attrName] || "The survivor's potential grows."
         )
       }
     } catch (error) {

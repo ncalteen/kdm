@@ -26,7 +26,7 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Legs Card Component
  */
-export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
+export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   /**
    * Save a legs-related value to localStorage for the current survivor.
    *
@@ -59,9 +59,7 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
         try {
           SurvivorSchema.parse(updatedSurvivor)
         } catch (error) {
-          console.log('Legs Save Error:', error)
-
-          if (error instanceof ZodError)
+          if (error instanceof ZodError && error.errors[0]?.message)
             return toast.error(error.errors[0].message)
           else
             return toast.error(
@@ -72,7 +70,7 @@ export function LegsCard(form: UseFormReturn<Survivor>): ReactElement {
         // @ts-expect-error: dynamic assignment is safe for known keys
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Legs status updated!')
+        toast.success('Each step forward defies the consuming darkness.')
       }
     } catch (error) {
       console.error('Legs Save Error:', error)

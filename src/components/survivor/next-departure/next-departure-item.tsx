@@ -148,6 +148,7 @@ export function NextDepartureItem({
  * New Next Departure Item Component
  *
  * @param props New Next Departure Item Component Props
+ * @returns New Next Departure Item Component
  */
 export function NewNextDepartureItem({
   onCancel,

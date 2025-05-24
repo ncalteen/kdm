@@ -15,11 +15,26 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, getSettlement } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 import { PlusIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -36,12 +51,27 @@ export interface CombinedFightingArt {
 
 /**
  * Fighting Arts Card Component
+ *
+ * @param form Form
+ * @returns Fighting Arts Card Component
  */
-export function FightingArtsCard(form: UseFormReturn<Survivor>) {
+export function FightingArtsCard({
+  ...form
+}: UseFormReturn<Survivor>): ReactElement {
+  const settlementId = form.watch('settlementId')
+
+  // Get settlement data to determine survivor type for limit checking
   const [settlement, setSettlement] = useState<Settlement | undefined>()
-  const [survivorType, setSurvivorType] = useState<SurvivorType>(
-    SurvivorType.CORE
-  )
+
+  useEffect(() => {
+    if (settlementId) {
+      const fetchedSettlement = getSettlement(settlementId)
+      setSettlement(fetchedSettlement)
+    }
+  }, [settlementId])
+
+  // Determine survivor type from settlement data
+  const survivorType = settlement?.survivorType || SurvivorType.CORE
 
   // Get the current fighting arts and secret fighting arts
   const fightingArts = useMemo(() => form.watch('fightingArts') || [], [form])
@@ -68,57 +98,43 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
   const [newArtType, setNewArtType] = useState<'regular' | 'secret'>('regular')
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Set the survivor type when the settlement ID changes
-  useEffect(() => {
-    const settlementId = form.getValues('settlementId')
-
-    if (settlementId) {
-      try {
-        const campaign = getCampaign()
-        const fetchedSettlement = campaign.settlements.find(
-          (s) => s.id === settlementId
-        )
-
-        if (fetchedSettlement) {
-          setSettlement(fetchedSettlement)
-          setSurvivorType(fetchedSettlement.survivorType)
-        }
-      } catch (error) {
-        console.error('Settlement Fetch Error:', error)
-      }
-    }
-  }, [form])
-
   // Initialize disabled inputs for fighting arts
   useEffect(() => {
-    setDisabledInputs(() => {
+    setDisabledInputs((prev) => {
       const next: { [key: string]: boolean } = {}
 
       fightingArts.forEach((_, index) => {
         const key = `regular-${index}`
-        next[key] = true
+        next[key] = prev[key] !== undefined ? prev[key] : true
       })
 
       secretFightingArts.forEach((_, index) => {
         const key = `secret-${index}`
-        next[key] = true
+        next[key] = prev[key] !== undefined ? prev[key] : true
       })
 
       return next
     })
   }, [fightingArts, secretFightingArts])
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
+
   /**
    * Save fighting arts and secret fighting arts to localStorage for the current survivor, with Zod validation and toast feedback.
    *
-   * @param updatedFightingArts Updated fighting arts array
-   * @param updatedSecretFightingArts Updated secret fighting arts array
-   * @param successMsg Success message for toast
+   * @param updatedFightingArts Updated Fighting Arts
+   * @param updatedSecretFightingArts Updated Secret Fighting Arts
+   * @param successMsg Success Message
    */
   const saveToLocalStorage = (
     updatedFightingArts: string[],
     updatedSecretFightingArts: string[],
-    successMsg: string
+    successMsg?: string
   ) => {
     try {
       const formValues = form.getValues()
@@ -149,7 +165,8 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
         campaign.survivors[survivorIndex].secretFightingArts =
           updatedSecretFightingArts
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success(successMsg)
+
+        if (successMsg) toast.success(successMsg)
       }
     } catch (error) {
       console.error('Fighting Art Save Error:', error)
@@ -158,138 +175,322 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
   }
 
   /**
+   * Handles the removal of a fighting art.
+   *
+   * @param art Fighting Art to Remove
+   */
+  const onRemove = (art: CombinedFightingArt) => {
+    if (art.type === 'regular') {
+      const currentArts = [...fightingArts]
+      currentArts.splice(art.originalIndex, 1)
+      form.setValue('fightingArts', currentArts)
+
+      setDisabledInputs((prev) => {
+        const next: { [key: string]: boolean } = {}
+
+        Object.keys(prev).forEach((k) => {
+          if (k.startsWith('regular-')) {
+            const num = parseInt(k.replace('regular-', ''))
+            if (num < art.originalIndex) next[k] = prev[k]
+            else if (num > art.originalIndex)
+              next[`regular-${num - 1}`] = prev[k]
+          } else {
+            next[k] = prev[k]
+          }
+        })
+
+        return next
+      })
+
+      saveToLocalStorage(
+        currentArts,
+        secretFightingArts,
+        'The fighting art has been forgotten.'
+      )
+    } else {
+      const currentArts = [...secretFightingArts]
+      currentArts.splice(art.originalIndex, 1)
+      form.setValue('secretFightingArts', currentArts)
+
+      setDisabledInputs((prev) => {
+        const next: { [key: string]: boolean } = {}
+
+        Object.keys(prev).forEach((k) => {
+          if (k.startsWith('secret-')) {
+            const num = parseInt(k.replace('secret-', ''))
+            if (num < art.originalIndex) next[k] = prev[k]
+            else if (num > art.originalIndex)
+              next[`secret-${num - 1}`] = prev[k]
+          } else {
+            next[k] = prev[k]
+          }
+        })
+
+        return next
+      })
+
+      saveToLocalStorage(
+        fightingArts,
+        currentArts,
+        'The secret fighting art has been banished from memory.'
+      )
+    }
+  }
+
+  /**
+   * Handles saving of a new fighting art.
+   *
+   * @param value Fighting Art Value
+   * @returns void
+   */
+  const onSave = (value?: string, art?: CombinedFightingArt) => {
+    if (!value || value.trim() === '')
+      return toast.error('A nameless fighting art cannot be recorded.')
+
+    if (art) {
+      // Updating an existing fighting art
+      const key = `${art.type}-${art.originalIndex}`
+
+      if (art.type === 'regular') {
+        const updated = [...fightingArts]
+
+        updated[art.originalIndex] = value
+        form.setValue(`fightingArts.${art.originalIndex}`, value)
+
+        setDisabledInputs((prev) => ({
+          ...prev,
+          [key]: true
+        }))
+
+        saveToLocalStorage(
+          updated,
+          secretFightingArts,
+          'The fighting art has been perfected.'
+        )
+      } else {
+        const updated = [...secretFightingArts]
+
+        updated[art.originalIndex] = value
+        form.setValue(`secretFightingArts.${art.originalIndex}`, value)
+
+        setDisabledInputs((prev) => ({
+          ...prev,
+          [key]: true
+        }))
+
+        saveToLocalStorage(
+          fightingArts,
+          updated,
+          'The secret fighting art has been perfected.'
+        )
+      }
+    } else {
+      // Adding a new fighting art
+      if (newArtType === 'regular') {
+        if (isAtRegularFightingArtLimit())
+          return toast.warning(
+            survivorType === SurvivorType.ARC
+              ? 'Arc survivors can only have 1 Fighting Art.'
+              : 'Survivors can only have 3 total Fighting Arts and Secret Fighting Arts combined.'
+          )
+
+        const newArts = [...fightingArts, value]
+        form.setValue('fightingArts', newArts)
+
+        setDisabledInputs((prev) => ({
+          ...prev,
+          [`regular-${newArts.length - 1}`]: true
+        }))
+
+        saveToLocalStorage(
+          newArts,
+          secretFightingArts,
+          'A new fighting art has been mastered.'
+        )
+      } else {
+        if (isAtSecretFightingArtLimit())
+          return toast.warning(
+            survivorType === SurvivorType.ARC
+              ? 'Arc survivors can only have 1 Secret Fighting Art.'
+              : 'Survivors can only have 3 total Fighting Arts and Secret Fighting Arts combined.'
+          )
+
+        const newArts = [...secretFightingArts, value]
+        form.setValue('secretFightingArts', newArts)
+
+        setDisabledInputs((prev) => ({
+          ...prev,
+          [`secret-${newArts.length - 1}`]: true
+        }))
+
+        saveToLocalStorage(
+          fightingArts,
+          newArts,
+          'A new secret fighting art has been mastered.'
+        )
+      }
+      setIsAddingNew(false)
+    }
+  }
+
+  /**
+   * Enables editing a value.
+   *
+   * @param art Fighting Art to Edit
+   */
+  const onEdit = (art: CombinedFightingArt) => {
+    const key = `${art.type}-${art.originalIndex}`
+    setDisabledInputs((prev) => ({ ...prev, [key]: false }))
+  }
+
+  /**
+   * Handle toggling the canUseFightingArtsOrKnowledges checkbox
+   */
+  const handleCanUseToggle = useCallback(
+    (checked: boolean) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        if (survivorIndex !== -1) {
+          const updatedValue = !checked
+
+          const updatedSurvivor = {
+            ...campaign.survivors[survivorIndex],
+            canUseFightingArtsOrKnowledges: updatedValue
+          }
+
+          try {
+            SurvivorSchema.parse(updatedSurvivor)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          form.setValue('canUseFightingArtsOrKnowledges', updatedValue)
+
+          campaign.survivors[survivorIndex].canUseFightingArtsOrKnowledges =
+            updatedValue
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success(
+            updatedValue
+              ? 'The survivor recalls the ways of battle.'
+              : 'The survivor has forgotten their fighting techniques.'
+          )
+        }
+      } catch (error) {
+        console.error('Fighting Art Toggle Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
+      }
+    },
+    [form]
+  )
+
+  /**
    * Checks if we've reached the regular fighting arts limit
    *
    * @returns boolean True if at limit, false otherwise
    */
-  const isAtRegularFightingArtLimit = () => {
-    if (survivorType === SurvivorType.ARC) return fightingArts.length >= 1
-    return totalArts >= 3
-  }
+  const isAtRegularFightingArtLimit = useCallback(() => {
+    // ARC survivors can have 1 fighting art and 1 secret fighting art
+    // Regular survivors can have 3 total (fighting + secret combined)
+    return survivorType === SurvivorType.ARC
+      ? fightingArts.length >= 1
+      : totalArts >= 3
+  }, [survivorType, fightingArts.length, totalArts])
 
   /**
    * Checks if we've reached the secret fighting arts limit
    *
    * @returns boolean True if at limit, false otherwise
    */
-  const isAtSecretFightingArtLimit = () => {
-    if (survivorType === SurvivorType.ARC) return secretFightingArts.length >= 1
-    return totalArts >= 3
-  }
+  const isAtSecretFightingArtLimit = useCallback(() => {
+    // ARC survivors can have 1 fighting art and 1 secret fighting art
+    // Regular survivors can have 3 total (fighting + secret combined)
+    return survivorType === SurvivorType.ARC
+      ? secretFightingArts.length >= 1
+      : totalArts >= 3
+  }, [survivorType, secretFightingArts.length, totalArts])
 
   /**
-   * Checks if any fighting art is currently being edited
-   */
-  const isAnyBeingEdited = () => {
-    return Object.values(disabledInputs).some((v) => v === false)
-  }
-
-  /**
-   * Handles the removal of a fighting art
+   * Handles the end of a drag event for reordering values.
    *
-   * @param art The art to remove
+   * @param event Drag End Event
+   * @param artType Type of fighting art being reordered
    */
-  const handleRemoveFightingArt = (art: CombinedFightingArt) => {
-    if (art.type === 'regular') {
-      const currentArts = [...fightingArts]
-      currentArts.splice(art.originalIndex, 1)
-      saveToLocalStorage(
-        currentArts,
-        secretFightingArts,
-        'The fighting art has been forgotten.'
-      )
-      form.setValue('fightingArts', currentArts)
-    } else {
-      const currentArts = [...secretFightingArts]
-      currentArts.splice(art.originalIndex, 1)
-      saveToLocalStorage(
-        fightingArts,
-        currentArts,
-        'The secret fighting art has been banished from memory.'
-      )
-      form.setValue('secretFightingArts', currentArts)
-    }
-  }
+  const handleDragEnd = (
+    event: DragEndEvent,
+    artType: 'regular' | 'secret'
+  ) => {
+    const { active, over } = event
 
-  /**
-   * Handles the saving of a new fighting art
-   */
-  const saveNewFightingArt = (value: string) => {
-    if (!value || value.trim() === '') {
-      return toast.warning('A nameless fighting art cannot be learned.')
-    }
-    if (newArtType === 'regular') {
-      if (isAtRegularFightingArtLimit()) {
-        const message =
-          survivorType === SurvivorType.ARC
-            ? 'Arc survivors can only have 1 Fighting Art.'
-            : 'Survivors can only have 3 total Fighting Arts and Secret Fighting Arts combined.'
-        return toast.warning(message)
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id.toString())
+      const newIndex = parseInt(over.id.toString())
+
+      if (artType === 'regular') {
+        const newOrder = arrayMove(fightingArts, oldIndex, newIndex)
+        form.setValue('fightingArts', newOrder)
+        saveToLocalStorage(newOrder, secretFightingArts)
+
+        setDisabledInputs((prev) => {
+          const next: { [key: string]: boolean } = {}
+
+          Object.keys(prev).forEach((k) => {
+            if (k.startsWith('regular-')) {
+              const num = parseInt(k.replace('regular-', ''))
+              if (num === oldIndex) next[`regular-${newIndex}`] = prev[k]
+              else if (num >= newIndex && num < oldIndex)
+                next[`regular-${num + 1}`] = prev[k]
+              else if (num <= newIndex && num > oldIndex)
+                next[`regular-${num - 1}`] = prev[k]
+              else next[k] = prev[k]
+            } else {
+              next[k] = prev[k]
+            }
+          })
+
+          return next
+        })
+      } else {
+        const newOrder = arrayMove(secretFightingArts, oldIndex, newIndex)
+        form.setValue('secretFightingArts', newOrder)
+        saveToLocalStorage(fightingArts, newOrder)
+
+        setDisabledInputs((prev) => {
+          const next: { [key: string]: boolean } = {}
+
+          Object.keys(prev).forEach((k) => {
+            if (k.startsWith('secret-')) {
+              const num = parseInt(k.replace('secret-', ''))
+              if (num === oldIndex) next[`secret-${newIndex}`] = prev[k]
+              else if (num >= newIndex && num < oldIndex)
+                next[`secret-${num + 1}`] = prev[k]
+              else if (num <= newIndex && num > oldIndex)
+                next[`secret-${num - 1}`] = prev[k]
+              else next[k] = prev[k]
+            } else {
+              next[k] = prev[k]
+            }
+          })
+
+          return next
+        })
       }
-      const newArts = [...fightingArts, value]
-      saveToLocalStorage(
-        newArts,
-        secretFightingArts,
-        'A new fighting art has been mastered.'
-      )
-      form.setValue('fightingArts', newArts)
-    } else {
-      if (isAtSecretFightingArtLimit()) {
-        const message =
-          survivorType === SurvivorType.ARC
-            ? 'Arc survivors can only have 1 Secret Fighting Art.'
-            : 'Survivors can only have 3 total Fighting Arts and Secret Fighting Arts combined.'
-        return toast.warning(message)
-      }
-      const newArts = [...secretFightingArts, value]
-      saveToLocalStorage(
-        fightingArts,
-        newArts,
-        'A secret fighting art has been mastered in the darkness.'
-      )
-      form.setValue('secretFightingArts', newArts)
     }
-    setIsAddingNew(false)
-  }
-
-  /**
-   * Handles editing a fighting art (enables input)
-   */
-  const editFightingArt = (art: CombinedFightingArt) => {
-    const key = `${art.type}-${art.originalIndex}`
-    setDisabledInputs((prev) => ({ ...prev, [key]: false }))
-  }
-
-  /**
-   * Handles saving an edited fighting art
-   */
-  const saveFightingArt = (art: CombinedFightingArt, value: string) => {
-    const key = `${art.type}-${art.originalIndex}`
-    if (art.type === 'regular') {
-      const updated = [...fightingArts]
-      updated[art.originalIndex] = value
-      saveToLocalStorage(
-        updated,
-        secretFightingArts,
-        'The fighting art has been perfected.'
-      )
-      form.setValue(`fightingArts.${art.originalIndex}`, value)
-    } else {
-      const updated = [...secretFightingArts]
-      updated[art.originalIndex] = value
-      saveToLocalStorage(
-        fightingArts,
-        updated,
-        'The secret fighting art has been perfected.'
-      )
-      form.setValue(`secretFightingArts.${art.originalIndex}`, value)
-    }
-    setDisabledInputs((prev) => ({ ...prev, [key]: true }))
   }
 
   // Don't show this component for Squires of the Citadel campaign
   if (settlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
-    return null
+    return <></>
 
   return (
     <Card className="mt-1 border-0">
@@ -307,7 +508,10 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
                       size="sm"
                       variant="outline"
                       className="border-0 h-8 w-8"
-                      disabled={isAnyBeingEdited()}>
+                      disabled={
+                        isAddingNew ||
+                        Object.values(disabledInputs).some((v) => v === false)
+                      }>
                       <PlusIcon className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -339,93 +543,121 @@ export function FightingArtsCard(form: UseFormReturn<Survivor>) {
             <Checkbox
               id="canUseFightingArtsOrKnowledges"
               checked={!canUseFightingArtsOrKnowledges}
-              onCheckedChange={(checked) => {
-                form.setValue('canUseFightingArtsOrKnowledges', !!checked)
-              }}
+              onCheckedChange={handleCanUseToggle}
             />
-            <Label htmlFor="skipNextHunt" className="text-xs cursor-pointer">
+            <Label
+              htmlFor="canUseFightingArtsOrKnowledges"
+              className="text-xs cursor-pointer">
               Cannot use fighting arts
             </Label>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="space-y-2">
-          {/* Render regular fighting arts */}
-          {fightingArts.length !== 0 &&
-            fightingArts.map((art, index) => (
-              <FightingArtItem
-                key={`regular-${index}`}
-                form={form}
-                arrayName="fightingArts"
-                handleRemove={(i) =>
-                  handleRemoveFightingArt({
-                    value: art,
-                    type: 'regular',
-                    originalIndex: i
-                  })
-                }
-                id={index.toString()}
-                index={index}
-                isDisabled={!!disabledInputs[`regular-${index}`]}
-                onEdit={(i) =>
-                  editFightingArt({
-                    value: art,
-                    type: 'regular',
-                    originalIndex: i
-                  })
-                }
-                onSave={(i, value) =>
-                  saveFightingArt(
-                    { value: art, type: 'regular', originalIndex: i },
-                    value
-                  )
-                }
-                placeholder="Fighting Art"
-              />
-            ))}
-          {/* Render secret fighting arts */}
-          {secretFightingArts.length !== 0 &&
-            secretFightingArts.map((art, index) => (
-              <FightingArtItem
-                key={`secret-${index}`}
-                form={form}
-                arrayName="secretFightingArts"
-                handleRemove={(i) =>
-                  handleRemoveFightingArt({
-                    value: art,
-                    type: 'secret',
-                    originalIndex: i
-                  })
-                }
-                id={index.toString()}
-                index={index}
-                isDisabled={!!disabledInputs[`secret-${index}`]}
-                onEdit={(i) =>
-                  editFightingArt({
-                    value: art,
-                    type: 'secret',
-                    originalIndex: i
-                  })
-                }
-                onSave={(i, value) =>
-                  saveFightingArt(
-                    { value: art, type: 'secret', originalIndex: i },
-                    value
-                  )
-                }
-                placeholder="Secret Fighting Art"
-              />
-            ))}
+
+      {/* Fighting Arts List */}
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
+          {/* Regular Fighting Arts */}
+          {fightingArts.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => handleDragEnd(event, 'regular')}>
+              <SortableContext
+                items={fightingArts.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {fightingArts.map((art, index) => (
+                  <FightingArtItem
+                    key={`regular-${index}`}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    arrayName="fightingArts"
+                    onRemove={() =>
+                      onRemove({
+                        value: art,
+                        type: 'regular',
+                        originalIndex: index
+                      })
+                    }
+                    isDisabled={!!disabledInputs[`regular-${index}`]}
+                    onSave={(value) =>
+                      onSave(value, {
+                        value: art,
+                        type: 'regular',
+                        originalIndex: index
+                      })
+                    }
+                    onEdit={() =>
+                      onEdit({
+                        value: art,
+                        type: 'regular',
+                        originalIndex: index
+                      })
+                    }
+                    placeholder="Fighting Art"
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
+
+          {/* Secret Fighting Arts */}
+          {secretFightingArts.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => handleDragEnd(event, 'secret')}>
+              <SortableContext
+                items={secretFightingArts.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {secretFightingArts.map((art, index) => (
+                  <FightingArtItem
+                    key={`secret-${index}`}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    arrayName="secretFightingArts"
+                    onRemove={() =>
+                      onRemove({
+                        value: art,
+                        type: 'secret',
+                        originalIndex: index
+                      })
+                    }
+                    isDisabled={!!disabledInputs[`secret-${index}`]}
+                    onSave={(value) =>
+                      onSave(value, {
+                        value: art,
+                        type: 'secret',
+                        originalIndex: index
+                      })
+                    }
+                    onEdit={() =>
+                      onEdit({
+                        value: art,
+                        type: 'secret',
+                        originalIndex: index
+                      })
+                    }
+                    placeholder="Secret Fighting Art"
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
+
+          {/* Add New Fighting Art */}
           {isAddingNew && (
             <NewFightingArtItem
-              onSave={saveNewFightingArt}
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
               placeholder={
                 newArtType === 'regular'
                   ? 'Fighting Art'
                   : 'Secret Fighting Art'
               }
+              artType={newArtType}
             />
           )}
         </div>

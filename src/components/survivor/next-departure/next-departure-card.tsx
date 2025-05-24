@@ -31,6 +31,9 @@ import { ZodError } from 'zod'
 
 /**
  * Next Departure Card Component
+ *
+ * @param form Form
+ * @returns Next Departure Card Component
  */
 export function NextDepartureCard({
   ...form

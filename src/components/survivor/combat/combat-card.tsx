@@ -19,7 +19,7 @@ import { UseFormReturn } from 'react-hook-form'
  * @param form Form
  * @returns Combat Card Component
  */
-export function CombatCard(form: UseFormReturn<Survivor>): ReactElement {
+export function CombatCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   return (
     <div className="flex flex-col gap-1 mt-1">
       <Card className="m-0 border-0">

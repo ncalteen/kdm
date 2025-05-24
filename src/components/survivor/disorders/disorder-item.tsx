@@ -15,8 +15,6 @@ import { UseFormReturn } from 'react-hook-form'
 export interface DisorderItemProps {
   /** Form */
   form: UseFormReturn<Survivor>
-  /** Remove Disorder Handler */
-  handleRemoveDisorder: (index: number) => void
   /** Disorder ID */
   id: string
   /** Index */
@@ -25,8 +23,10 @@ export interface DisorderItemProps {
   isDisabled: boolean
   /** OnEdit Handler */
   onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
   /** OnSave Handler */
-  onSave: (index: number, value: string) => void
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
@@ -36,23 +36,23 @@ export interface NewDisorderItemProps {
   /** OnCancel Handler */
   onCancel: () => void
   /** OnSave Handler */
-  onSave: (value: string) => void
+  onSave: (value?: string) => void
 }
 
 /**
  * Disorder Item Component
  *
- * @param props Disorder Item Component Props
- * @returns ReactElement
+ * @param props Disorder Item Component Properties
+ * @returns Disorder Item Component
  */
 export function DisorderItem({
-  index,
-  form,
-  handleRemoveDisorder,
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
+  form,
+  onEdit,
+  onRemove,
+  onSave
 }: DisorderItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -62,19 +62,28 @@ export function DisorderItem({
   useEffect(() => {
     if (inputRef.current)
       inputRef.current.value = form.getValues(`disorders.${index}`) || ''
+
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
   }, [form, isDisabled, index])
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current index and value.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, inputRef.current.value)
+      onSave(inputRef.current.value, index)
     }
   }
 
@@ -83,25 +92,32 @@ export function DisorderItem({
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
+
+      {/* Input Field */}
       <Input
         ref={inputRef}
         placeholder="Disorder"
-        defaultValue={form.getValues(`disorders.${index}`) || ''}
+        defaultValue={form.getValues(`disorders.${index}`)}
         disabled={isDisabled}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
+        autoFocus
       />
+
+      {/* Interaction Buttons */}
       {isDisabled ? (
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit disorder">
           <PencilIcon className="h-4 w-4" />
@@ -111,10 +127,8 @@ export function DisorderItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => {
-            if (inputRef.current && inputRef.current.value)
-              onSave(index, inputRef.current.value)
-          }}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
           title="Save disorder">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -123,7 +137,7 @@ export function DisorderItem({
         variant="ghost"
         size="icon"
         type="button"
-        onClick={() => handleRemoveDisorder(index)}>
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -134,50 +148,56 @@ export function DisorderItem({
  * New Disorder Item Component
  *
  * @param props New Disorder Item Component Props
- * @returns ReactElement
+ * @returns New Disorder Item Component
  */
 export function NewDisorderItem({
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewDisorderItemProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current value. If the Escape key is pressed, it calls the onCancel
-   * function.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)
-    } else if (e.key === 'Escape') onCancel()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
   }
 
   return (
     <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
+      {/* Input Field */}
       <Input
         ref={inputRef}
         placeholder="Disorder"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
         autoFocus
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => {
-          if (inputRef.current && inputRef.current.value)
-            onSave(inputRef.current.value)
-        }}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
         title="Save disorder">
         <CheckIcon className="h-4 w-4" />
       </Button>

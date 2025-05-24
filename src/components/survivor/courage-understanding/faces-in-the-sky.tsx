@@ -86,7 +86,7 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
         ] = value
         campaign.survivors[survivorIndex] = updatedSurvivor
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Faces in the Sky trait updated!')
+        toast.success('The stars align. Celestial traits recorded.')
       }
     } catch (error) {
       console.error('Faces in the Sky Save Error:', error)

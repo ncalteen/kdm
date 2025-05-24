@@ -26,7 +26,7 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Head Card Component
  */
-export function HeadCard(form: UseFormReturn<Survivor>): ReactElement {
+export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   /**
    * Save a head-related value to localStorage for the current survivor.
    *
@@ -60,16 +60,16 @@ export function HeadCard(form: UseFormReturn<Survivor>): ReactElement {
           SurvivorSchema.parse(updatedSurvivor)
         } catch (error) {
           if (error instanceof ZodError && error.errors[0]?.message)
-            toast.error(error.errors[0].message)
+            return toast.error(error.errors[0].message)
           else
-            toast.error('The darkness swallows your words. Please try again.')
-
-          return
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
         // @ts-expect-error: dynamic assignment is safe for known keys
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Head status updated!')
+        toast.success('The mind endures what the flesh cannot.')
       }
     } catch (error) {
       console.error('Head Save Error:', error)

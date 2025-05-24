@@ -24,9 +24,9 @@ import { ZodError } from 'zod'
  * severe injuries, and light/heavy damage.
  *
  * @param form Form
- * @returns Arms Card Component
+ * @returns Body Card Component
  */
-export function BodyCard(form: UseFormReturn<Survivor>): ReactElement {
+export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   /**
    * Save a body-related value to localStorage for the current survivor.
    *
@@ -60,16 +60,16 @@ export function BodyCard(form: UseFormReturn<Survivor>): ReactElement {
           SurvivorSchema.parse(updatedSurvivor)
         } catch (error) {
           if (error instanceof ZodError && error.errors[0]?.message)
-            toast.error(error.errors[0].message)
+            return toast.error(error.errors[0].message)
           else
-            toast.error('The darkness swallows your words. Please try again.')
-
-          return
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
         // @ts-expect-error: dynamic assignment is safe for known keys
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Body status updated!')
+        toast.success('The body persists through torment and pain.')
       }
     } catch (error) {
       console.error('Body Save Error:', error)

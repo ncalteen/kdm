@@ -26,7 +26,7 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Arms Card Component
  */
-export function ArmsCard(form: UseFormReturn<Survivor>): ReactElement {
+export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   /**
    * Save an arms-related value to localStorage for the current survivor.
    *
@@ -61,17 +61,17 @@ export function ArmsCard(form: UseFormReturn<Survivor>): ReactElement {
           SurvivorSchema.parse(updatedSurvivor)
         } catch (error) {
           if (error instanceof ZodError && error.errors[0]?.message)
-            toast.error(error.errors[0].message)
+            return toast.error(error.errors[0].message)
           else
-            toast.error('The darkness swallows your words. Please try again.')
-
-          return
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
 
         // @ts-expect-error: dynamic assignment is safe for known keys
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Arms status updated!')
+        toast.success('Arms endure another battle.')
       }
     } catch (error) {
       console.error('Arms Save Error:', error)

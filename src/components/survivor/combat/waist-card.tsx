@@ -26,7 +26,7 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Waist Card Component
  */
-export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
+export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   /**
    * Save a waist-related value to localStorage for the current survivor.
    *
@@ -61,8 +61,7 @@ export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
         try {
           SurvivorSchema.parse(updatedSurvivor)
         } catch (error) {
-          console.log('Waist Save Error:', error)
-          if (error instanceof ZodError)
+          if (error instanceof ZodError && error.errors[0]?.message)
             return toast.error(error.errors[0].message)
           else
             return toast.error(
@@ -73,11 +72,11 @@ export function WaistCard(form: UseFormReturn<Survivor>): ReactElement {
         // @ts-expect-error: dynamic assignment is safe for known keys
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Waist status updated!')
+        toast.success('The core withstands the relentless onslaught.')
       }
     } catch (error) {
       console.error('Waist Save Error:', error)
-      toast.error('Failed to save waist status. Please try again.')
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 

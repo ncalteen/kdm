@@ -31,8 +31,13 @@ import { ZodError } from 'zod'
 
 /**
  * Disorders Card Component
+ *
+ * @param form Form
+ * @returns Disorders Card Component
  */
-export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
+export function DisordersCard({
+  ...form
+}: UseFormReturn<Survivor>): ReactElement {
   const disorders = useMemo(() => form.watch('disorders') || [], [form])
   const MAX_DISORDERS = 3
 
@@ -113,7 +118,7 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
    *
    * @param index Disorder Index
    */
-  const handleRemoveDisorder = (index: number) => {
+  const onRemove = (index: number) => {
     const currentDisorders = [...disorders]
 
     currentDisorders.splice(index, 1)
@@ -138,33 +143,72 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
   }
 
   /**
-   * Handles the saving of a new disorder.
+   * Handles saving a new disorder.
    *
    * @param value Disorder Value
+   * @param i Disorder Index (When Updating Only)
    */
-  const saveDisorder = (value: string) => {
+  const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.warning('You must name the disorder.')
+      return toast.error('A nameless disorder cannot be recorded.')
 
-    if (disorders.length >= MAX_DISORDERS)
+    if (i === undefined && disorders.length >= MAX_DISORDERS)
       return toast.error('A survivor can have at most 3 disorders.')
 
-    const newDisorders = [...disorders, value]
+    try {
+      SurvivorSchema.shape.disorders.parse([value])
+    } catch (error) {
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
+    }
 
-    form.setValue('disorders', newDisorders)
-    setDisabledInputs((prev) => ({ ...prev, [newDisorders.length - 1]: true }))
+    const updatedDisorders = [...disorders]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedDisorders[i] = value
+      form.setValue(`disorders.${i}`, value)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedDisorders.push(value)
+
+      form.setValue('disorders', updatedDisorders)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedDisorders.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedDisorders,
+      i !== undefined
+        ? 'The disorder has been updated.'
+        : 'The survivor gains a new disorder.'
+    )
     setIsAddingNew(false)
-
-    saveToLocalStorage(newDisorders, 'The survivor gains a new disorder.')
   }
 
-  const editDisorder = (index: number) =>
+  /**
+   * Enables editing a value.
+   *
+   * @param index Disorder Index
+   */
+  const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles the end of a drag event.
+   * Handles the end of a drag event for reordering values.
    *
-   * @param event Event
+   * @param event Drag End Event
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -175,6 +219,7 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
       const newOrder = arrayMove(disorders, oldIndex, newIndex)
 
       form.setValue('disorders', newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -189,8 +234,6 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
 
         return next
       })
-
-      saveToLocalStorage(newOrder)
     }
   }
 
@@ -218,8 +261,10 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="space-y-2">
+
+      {/* Disorders List */}
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
           {disorders.length !== 0 && (
             <DndContext
               sensors={sensors}
@@ -234,19 +279,10 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
                     id={index.toString()}
                     index={index}
                     form={form}
-                    handleRemoveDisorder={handleRemoveDisorder}
+                    onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => {
-                      const updated = [...disorders]
-                      updated[i] = value
-                      form.setValue(`disorders.${i}`, value)
-                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-                      saveToLocalStorage(
-                        updated,
-                        'The disorder has been updated.'
-                      )
-                    }}
-                    onEdit={editDisorder}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
                   />
                 ))}
               </SortableContext>
@@ -254,7 +290,7 @@ export function DisordersCard(form: UseFormReturn<Survivor>): ReactElement {
           )}
           {isAddingNew && (
             <NewDisorderItem
-              onSave={saveDisorder}
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
             />
           )}
