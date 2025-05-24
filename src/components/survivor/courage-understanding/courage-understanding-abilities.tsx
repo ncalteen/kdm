@@ -61,7 +61,7 @@ export function CourageUnderstandingAbilities({
         // @ts-expect-error: dynamic assignment is safe for known keys
         campaign.survivors[survivorIndex][attrName] = value
         localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('The survivor\'s inner strength grows brighter.')
+        toast.success("The survivor's inner strength grows brighter.")
       }
     } catch (error) {
       console.error('Courage/Understanding Ability Save Error:', error)
