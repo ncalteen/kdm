@@ -1,7 +1,7 @@
 'use client'
 
 import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
-import { ReactElement } from 'react'
+import { ReactElement, Suspense } from 'react'
 
 export default function Page(): ReactElement {
   return (
@@ -10,7 +10,19 @@ export default function Page(): ReactElement {
         Create a Survivor
       </h1>
 
-      <CreateSurvivorForm />
+      <Suspense
+        fallback={
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-4">
+              A lantern flickers...
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              The Scribe is preparing a new survivor.
+            </p>
+          </div>
+        }>
+        <CreateSurvivorForm />
+      </Suspense>
     </div>
   )
 }
