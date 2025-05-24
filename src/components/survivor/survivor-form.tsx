@@ -25,6 +25,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ReactElement, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Survivor Form Component Properties
@@ -70,42 +71,21 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
       )
 
       if (survivorIndex !== -1) {
-        // Get the existing survivor to merge with updates
-        const existingSurvivor = campaign.survivors[survivorIndex]
-
-        // Create an updated survivor with all fields
+        // Create an updated survivor with the new values
         const updatedSurvivor = {
-          ...existingSurvivor, // Start with all existing values
-          ...values, // Override with new values from the form
+          ...campaign.survivors[survivorIndex],
+          ...values
+        }
 
-          // Explicitly set specific optional booleans to their default values if undefined
-          canSpendSurvival: values.canSpendSurvival ?? true,
-          canDodge: values.canDodge ?? true,
-          canDash: values.canDash ?? true,
-          canEncourage: values.canEncourage ?? true,
-          canFistPump: values.canFistPump ?? true,
-          canSurge: values.canSurge ?? true,
-          canUseFightingArtsOrKnowledges:
-            values.canUseFightingArtsOrKnowledges ?? true,
-
-          // Set false defaults
-          dead: values.dead ?? false,
-          hasAnalyze: values.hasAnalyze ?? false,
-          hasExplore: values.hasExplore ?? false,
-          hasMatchmaker: values.hasMatchmaker ?? false,
-          hasPrepared: values.hasPrepared ?? false,
-          hasStalwart: values.hasStalwart ?? false,
-          hasTinker: values.hasTinker ?? false,
-          rerollUsed: values.rerollUsed ?? false,
-          retired: values.retired ?? false,
-          skipNextHunt: values.skipNextHunt ?? false,
-
-          // People of the stars booleans
-          hasAbsoluteReaper: values.hasAbsoluteReaper ?? false,
-          hasAbsoluteRust: values.hasAbsoluteRust ?? false,
-          hasAbsoluteStorm: values.hasAbsoluteStorm ?? false,
-          hasAbsoluteWitch: values.hasAbsoluteWitch ?? false,
-          hasGamblerReaper: values.hasGamblerReaper ?? false
+        try {
+          SurvivorSchema.parse(updatedSurvivor)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
 
         // Update the survivor in the campaign
@@ -123,7 +103,7 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
       }
     } catch (error) {
       console.error('Survivor Update Error:', error)
-      toast.error('The darkness resists your changes. Please try again.')
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 

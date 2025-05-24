@@ -59,26 +59,34 @@ export function ListSurvivorsTable(): ReactElement {
    * @param survivorId Survivor ID
    */
   const handleDeleteSurvivor = (survivorId: number) => {
-    const campaign = getCampaign()
-    const survivorIndex = campaign.survivors.findIndex(
-      (s) => s.id === survivorId
-    )
+    try {
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s) => s.id === survivorId
+      )
 
-    if (survivorIndex === -1) return toast.error('Survivor not found!')
+      if (survivorIndex === -1)
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
 
-    const survivorName = campaign.survivors[survivorIndex].name
+      const survivorName = campaign.survivors[survivorIndex].name
 
-    campaign.survivors.splice(survivorIndex, 1)
-    campaign.survivors = campaign.survivors.filter((s) => s.id !== survivorId)
+      // Remove the survivor from the campaign
+      campaign.survivors.splice(survivorIndex, 1)
 
-    localStorage.setItem('campaign', JSON.stringify(campaign))
-    setSurvivors(campaign.survivors)
-    toast.success(
-      `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
-    )
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+      setSurvivors(campaign.survivors)
+      toast.success(
+        `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
+      )
 
-    setDeleteId(undefined)
-    setIsDeleteDialogOpen(false)
+      setDeleteId(undefined)
+      setIsDeleteDialogOpen(false)
+    } catch (error) {
+      console.error('Survivor Delete Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
   }
 
   return (

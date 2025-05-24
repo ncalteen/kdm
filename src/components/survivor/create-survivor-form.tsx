@@ -35,6 +35,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactElement, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Create Survivor Form Component
@@ -101,6 +102,18 @@ export function CreateSurvivorForm(): ReactElement {
    */
   function onSubmit(values: Survivor) {
     try {
+      // Validate the survivor data
+      try {
+        SurvivorSchema.parse(values)
+      } catch (error) {
+        if (error instanceof ZodError && error.errors[0]?.message)
+          return toast.error(error.errors[0].message)
+        else
+          return toast.error(
+            'The darkness swallows your words. Please try again.'
+          )
+      }
+
       // Get existing campaign
       const campaign = getCampaign()
 
@@ -121,16 +134,14 @@ export function CreateSurvivorForm(): ReactElement {
       )
     } catch (error) {
       console.error('Survivor Create Error:', error)
-      toast.error('The darkness binds the new survivor. Please try again.')
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error(
-          'The chronicles remain incomplete - fill in the missing fragments.'
-        )
+        toast.error('The darkness swallows your words. Please try again.')
       })}
       className="space-y-6">
       <Form {...form}>
@@ -186,8 +197,14 @@ export function CreateSurvivorForm(): ReactElement {
                               className="w-[75%]"
                               {...field}
                               value={field.value ?? ''}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault()
+                                  form.handleSubmit(onSubmit)()
+                                }
+                              }}
                               onChange={(e) => {
-                                form.setValue(field.name, e.target.value)
+                                form.setValue('name', e.target.value)
                               }}
                             />
                           </FormControl>
@@ -219,37 +236,33 @@ export function CreateSurvivorForm(): ReactElement {
                           <FormLabel className="text-left pr-2 w-[25%]">
                             Gender
                           </FormLabel>
-                          <div className="w-[75%] flex items-center space-x-1 justify-start">
-                            <div className="flex items-center space-x-1">
-                              <label
-                                htmlFor="male-checkbox"
-                                className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                M
-                              </label>
-                              <Checkbox
-                                id="male-checkbox"
-                                checked={field.value === Gender.MALE}
-                                onCheckedChange={(checked) => {
-                                  if (checked)
-                                    form.setValue('gender', Gender.MALE)
-                                }}
-                              />
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <label
-                                htmlFor="female-checkbox"
-                                className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                F
-                              </label>
-                              <Checkbox
-                                id="female-checkbox"
-                                checked={field.value === Gender.FEMALE}
-                                onCheckedChange={(checked) => {
-                                  if (checked)
-                                    form.setValue('gender', Gender.FEMALE)
-                                }}
-                              />
-                            </div>
+                          <div className="w-[75%] flex items-center gap-2 justify-start">
+                            <Checkbox
+                              id="male-checkbox"
+                              checked={field.value === Gender.MALE}
+                              onCheckedChange={(checked) => {
+                                if (checked)
+                                  form.setValue('gender', Gender.MALE)
+                              }}
+                            />
+                            <label
+                              htmlFor="male-checkbox"
+                              className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              M
+                            </label>
+                            <Checkbox
+                              id="female-checkbox"
+                              checked={field.value === Gender.FEMALE}
+                              onCheckedChange={(checked) => {
+                                if (checked)
+                                  form.setValue('gender', Gender.FEMALE)
+                              }}
+                            />
+                            <label
+                              htmlFor="female-checkbox"
+                              className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              F
+                            </label>
                           </div>
                         </div>
                       </FormItem>
