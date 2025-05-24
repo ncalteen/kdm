@@ -76,7 +76,9 @@ export const TimelineContent = memo(
       checked: string | boolean
     ) => {
       try {
-        form.setValue(`timeline.${yearIndex}.completed`, !!checked)
+        form.setValue(`timeline.${yearIndex}.completed`, !!checked, {
+          shouldDirty: true
+        })
 
         const formValues = form.getValues()
         const campaign = getCampaign()
@@ -84,19 +86,21 @@ export const TimelineContent = memo(
           (s: { id: number }) => s.id === formValues.id
         )
 
-        campaign.settlements[settlementIndex].timeline = formValues.timeline
-        localStorage.setItem('campaign', JSON.stringify(campaign))
+        if (settlementIndex !== -1) {
+          campaign.settlements[settlementIndex].timeline = formValues.timeline
+          localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success(
-          usesNormalNumbering
-            ? `Lantern year ${yearIndex + 1} updated!`
-            : yearIndex === 0
-              ? 'Prologue updated!'
-              : `Lantern year ${yearIndex} updated!`
-        )
+          toast.success(
+            usesNormalNumbering
+              ? `Lantern year ${yearIndex + 1} marks another step through the darkness.`
+              : yearIndex === 0
+                ? 'The beginning of your tale is recorded.'
+                : `Lantern year ${yearIndex} marks another step through the darkness.`
+          )
+        }
       } catch (error) {
-        console.error('Lantern Year Complete Error:', error)
-        toast.error('The darkness swallows you. Please try again.')
+        console.error('Timeline Year Complete Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
     }
 
@@ -119,7 +123,7 @@ export const TimelineContent = memo(
                   : 'grid-cols-[80px_1fr_auto]'
               } gap-2 items-start border-t border-border py-1`}>
               {/* Year Number and Completion Checkbox */}
-              <div className="flex items-center">
+              <div className="flex items-center gap-2">
                 <FormField
                   control={form.control}
                   name={`timeline.${yearIndex}.completed`}
@@ -127,7 +131,6 @@ export const TimelineContent = memo(
                     <FormItem className="flex items-center m-0">
                       <FormControl>
                         <Checkbox
-                          className="mt-1"
                           checked={field.value}
                           onCheckedChange={(checked) =>
                             handleYearCompletionChange(yearIndex, checked)
@@ -140,7 +143,7 @@ export const TimelineContent = memo(
                   )}
                 />
                 <span
-                  className={`text-sm font-medium ml-2 mb-1 inline-flex items-center ${yearData.completed ? 'text-muted-foreground' : ''}`}>
+                  className={`text-sm font-medium inline-flex items-center ${yearData.completed ? 'text-muted-foreground' : ''}`}>
                   {yearIndex === 0 && !usesNormalNumbering
                     ? 'Prologue'
                     : usesNormalNumbering
@@ -245,7 +248,9 @@ export const TimelineContent = memo(
                 })}
 
                 {(yearData.entries || []).length === 0 && (
-                  <div className="text-sm text-gray-500 italic">No events</div>
+                  <div className="text-sm text-muted-foreground italic">
+                    No events recorded.
+                  </div>
                 )}
               </div>
 
@@ -258,7 +263,8 @@ export const TimelineContent = memo(
                     size="sm"
                     onClick={() => {
                       startTransition(() => addEventToYear(yearIndex))
-                    }}>
+                    }}
+                    className="h-8">
                     <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
                   </Button>
                 </div>

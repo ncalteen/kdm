@@ -22,6 +22,9 @@ export interface TimelineEventBadgeProps {
 
 /**
  * Timeline Event Badge Component
+ *
+ * @param props Timeline Event Badge Component Properties
+ * @returns Timeline Event Badge Component
  */
 export const TimelineEventBadge = memo(
   ({
@@ -32,7 +35,7 @@ export const TimelineEventBadge = memo(
     yearIndex
   }: TimelineEventBadgeProps) => {
     /**
-     * Handler for click event on the badge
+     * Handles click events on the badge for editing
      */
     const handleClick = useCallback(() => {
       if (!isCompleted) onEdit(yearIndex, entryIndex)
@@ -41,15 +44,19 @@ export const TimelineEventBadge = memo(
     return (
       <Badge
         key={entryIndex}
-        className={`my-1 inline-flex items-center ${isCompleted ? 'opacity-70 cursor-default' : 'cursor-pointer'}`}
+        className={`my-1 inline-flex items-center gap-1 ${
+          isCompleted
+            ? 'opacity-70 cursor-default'
+            : 'cursor-pointer hover:bg-accent'
+        }`}
         onClick={handleClick}>
         {entry.toLowerCase().startsWith('nemesis') ||
         entry.toLowerCase().startsWith('special showdown') ? (
-          <SwordsIcon className="h-4 w-4" />
+          <SwordsIcon className="h-3 w-3" />
         ) : (
-          <BookOpenIcon className="h-4 w-4" />
+          <BookOpenIcon className="h-3 w-3" />
         )}
-        {entry}
+        <span>{entry}</span>
       </Badge>
     )
   }

@@ -2,11 +2,15 @@
 
 import { TimelineContent } from '@/components/settlement/timeline/timeline-content'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { CampaignType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
-import { Settlement, TimelineYear } from '@/schemas/settlement'
-import { HourglassIcon, PlusCircleIcon } from 'lucide-react'
+import {
+  Settlement,
+  SettlementSchema,
+  TimelineYear
+} from '@/schemas/settlement'
+import { PlusCircleIcon } from 'lucide-react'
 import {
   KeyboardEvent,
   ReactElement,
@@ -19,6 +23,7 @@ import {
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Timeline Card Component
@@ -26,6 +31,9 @@ import { toast } from 'sonner'
  * Displays the lantern years and events for a given settlement. Depending on
  * the campaign type, it may also show a scroll icon to indicate that a story
  * event card should be drawn when updating the settlement's timeline.
+ *
+ * @param form Settlement form instance
+ * @returns Timeline Card Component
  */
 export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   const campaignType = form.watch('campaignType')
@@ -81,41 +89,47 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   )
 
   /**
-   * Debounced function to set the timeline state.
+   * Save timeline to localStorage for the current settlement, with Zod
+   * validation and toast feedback.
    *
-   * @param newTimeline New Timeline
-   * @returns void
+   * @param updatedTimeline Updated Timeline
+   * @param successMsg Success Message
    */
-  const debouncedSetTimeline = useCallback(
-    (newTimeline: TimelineYear[]) => {
-      // Create a closure over the current setTimeline to avoid stale references
-      const currentSetTimeline = setTimeline
-      // Use requestAnimationFrame to ensure the state update is batched
-      requestAnimationFrame(() => currentSetTimeline(newTimeline))
-    },
-    [setTimeline]
-  )
+  const saveToLocalStorage = useCallback(
+    (updatedTimeline: TimelineYear[], successMsg?: string) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-  /**
-   * Debounced function to set the form value.
-   *
-   * @param path Path to Set
-   * @param value Value to Set
-   * @returns void
-   */
-  const debouncedSetFormValue = useCallback(
-    (
-      path:
-        | `timeline.${number}.entries`
-        | `timeline.${number}.entries.${number}`
-        | `timeline.${number}.completed`
-        | 'timeline',
-      value: boolean | string | string[] | TimelineYear[]
-    ) => {
-      // Create a closure over the current form to avoid stale references
-      const currentForm = form
-      // Use requestAnimationFrame to ensure the state update is batched
-      requestAnimationFrame(() => currentForm.setValue(path, value))
+        if (settlementIndex !== -1) {
+          const updatedSettlement = {
+            ...campaign.settlements[settlementIndex],
+            timeline: updatedTimeline
+          }
+
+          try {
+            SettlementSchema.parse(updatedSettlement)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          campaign.settlements[settlementIndex].timeline = updatedTimeline
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error('Timeline Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
+      }
     },
     [form]
   )
@@ -123,13 +137,13 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   useEffect(() => {
     // Update the form value when the timeline state changes
     if (formTimeline) {
-      debouncedSetTimeline(formTimeline)
+      setTimeline(formTimeline)
 
       // When timeline is first loaded or changed, all events should be in
       // non-editing mode (badges)
       setEditingEvents({})
     }
-  }, [formTimeline, debouncedSetTimeline])
+  }, [formTimeline])
 
   // Update timeline when campaign type changes
   useEffect(() => {
@@ -139,8 +153,8 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
       // Trim timeline to 5 rows for Squires campaign
       const trimmedTimeline = currentTimeline.slice(0, 5)
 
-      debouncedSetTimeline(trimmedTimeline)
-      debouncedSetFormValue('timeline', trimmedTimeline)
+      setTimeline(trimmedTimeline)
+      form.setValue('timeline', trimmedTimeline)
     } else if (!isSquiresCampaign && currentTimeline.length < 40) {
       // Expand timeline to 40 rows for other campaigns
       // Preserve existing timeline entries and add empty ones to reach 40
@@ -152,16 +166,10 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         }))
       ]
 
-      debouncedSetTimeline(expandedTimeline)
-      debouncedSetFormValue('timeline', expandedTimeline)
+      setTimeline(expandedTimeline)
+      form.setValue('timeline', expandedTimeline)
     }
-  }, [
-    campaignType,
-    isSquiresCampaign,
-    form,
-    debouncedSetTimeline,
-    debouncedSetFormValue
-  ])
+  }, [campaignType, isSquiresCampaign, form])
 
   /**
    * Adds an Event to a Year
@@ -208,19 +216,9 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         [`${yearIndex}-${yearEntries.length}`]: true
       }))
 
-      // Save to localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].timeline = formValues.timeline
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      } catch (error) {
-        console.error('Timeline Add Error:', error)
-      }
+      // Note: We don't save to localStorage here because we're adding an empty
+      // string which would fail Zod validation. We only save when the user
+      // actually enters content.
     },
     [timeline, form, editingEvents]
   )
@@ -259,28 +257,19 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         return newEditingEvents
       })
 
-      // Save to localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+      // Save to localStorage with the updated timeline
+      const updatedTimeline = [...timeline]
+      const year = { ...updatedTimeline[yearIndex] }
+      year.entries = [...(year.entries || [])]
+      year.entries.splice(eventIndex, 1)
+      updatedTimeline[yearIndex] = year
 
-        campaign.settlements[settlementIndex].timeline = formValues.timeline
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success(
-          'The chronicle is altered - this memory fades into darkness.'
-        )
-      } catch (error) {
-        console.error('Timeline Remove Error:', error)
-        toast.error(
-          'The darkness resists - your changes to history are rejected. Please try again.'
-        )
-      }
+      saveToLocalStorage(
+        updatedTimeline,
+        'The chronicle is altered - this memory fades into darkness.'
+      )
     },
-    [timeline, form]
+    [timeline, form, saveToLocalStorage]
   )
 
   /**
@@ -325,28 +314,19 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         newEventValue
       )
 
-      // Save to localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+      // Save to localStorage with the updated timeline
+      const updatedTimeline = [...timeline]
+      const year = { ...updatedTimeline[yearIndex] }
+      year.entries = [...(year.entries || [])]
+      year.entries[entryIndex] = newEventValue
+      updatedTimeline[yearIndex] = year
 
-        campaign.settlements[settlementIndex].timeline = formValues.timeline
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success(
-          'The chronicles remember - your memory is etched in stone.'
-        )
-      } catch (error) {
-        console.error('Timeline Save Error:', error)
-        toast.error(
-          'The darkness clouds your memory - the chronicles remain unchanged. Please try again.'
-        )
-      }
+      saveToLocalStorage(
+        updatedTimeline,
+        'The chronicles remember - your memory is etched in stone.'
+      )
     },
-    [form, setEditingEvents, inputRefs]
+    [form, inputRefs, timeline, saveToLocalStorage]
   )
 
   /**
@@ -445,107 +425,52 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
     []
   )
 
-  // Add a visibility state for progressive loading when switching tabs.
-  const [isVisible, setIsVisible] = useState(false)
-
-  // Use IntersectionObserver to detect when the component becomes visible.
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    // Check if the component is in view.
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) setIsVisible(true)
-      },
-      // Trigger when 10% of the component is visible
-      { threshold: 0.1 }
-    )
-
-    const currentCardRef = cardRef.current
-
-    if (currentCardRef) observer.observe(currentCardRef)
-
-    return () => {
-      if (currentCardRef) observer.unobserve(currentCardRef)
-    }
-  }, [])
-
-  // Preload essential data when component mounts, but defer full rendering.
+  // Preload essential data when component mounts
   const cachedTimeline = useMemo(() => timeline, [timeline])
 
   return (
-    <Card ref={cardRef}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <HourglassIcon className="h-4 w-4" /> Timeline
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        {isVisible ? (
-          <>
-            {/* Timeline Content */}
-            <TimelineContent
-              timeline={cachedTimeline}
-              usesNormalNumbering={usesNormalNumbering}
-              isEventBeingEdited={isEventBeingEdited}
-              setInputRef={setInputRef}
-              handleKeyDown={handleKeyDown}
-              saveEvent={saveEvent}
-              removeEventFromYear={removeEventFromYear}
-              addEventToYear={addEventToYear}
-              form={form}
-              editEvent={editEvent}
-              showStoryEventIcon={showStoryEventIcon}
-            />
+    <Card className="mt-1 border-0">
+      <CardContent className="p-1 pb-0">
+        {/* Timeline Content */}
+        <TimelineContent
+          timeline={cachedTimeline}
+          usesNormalNumbering={usesNormalNumbering}
+          isEventBeingEdited={isEventBeingEdited}
+          setInputRef={setInputRef}
+          handleKeyDown={handleKeyDown}
+          saveEvent={saveEvent}
+          removeEventFromYear={removeEventFromYear}
+          addEventToYear={addEventToYear}
+          form={form}
+          editEvent={editEvent}
+          showStoryEventIcon={showStoryEventIcon}
+        />
 
-            {/* Add Lantern Year Button */}
-            {!isSquiresCampaign && (
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-4 w-full"
-                size="lg"
-                onClick={() => {
-                  startTransition(() => {
-                    const updatedTimeline = [
-                      ...timeline,
-                      { completed: false, entries: [] }
-                    ]
+        {/* Add Lantern Year Button */}
+        {!isSquiresCampaign && (
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-4 w-full"
+            size="lg"
+            onClick={() => {
+              startTransition(() => {
+                const updatedTimeline = [
+                  ...timeline,
+                  { completed: false, entries: [] }
+                ]
 
-                    debouncedSetTimeline(updatedTimeline)
-                    debouncedSetFormValue('timeline', updatedTimeline)
+                setTimeline(updatedTimeline)
+                form.setValue('timeline', updatedTimeline)
 
-                    // Save to localStorage
-                    try {
-                      const formValues = form.getValues()
-                      const campaign = getCampaign()
-                      const settlementIndex = campaign.settlements.findIndex(
-                        (s: { id: number }) => s.id === formValues.id
-                      )
-
-                      campaign.settlements[settlementIndex].timeline =
-                        updatedTimeline
-                      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-                      toast.success(
-                        'A new lantern year is added - the chronicles expand.'
-                      )
-                    } catch (error) {
-                      console.error('Lantern Year Add Error:', error)
-                      toast.error(
-                        'The darkness resists - your changes to history are rejected. Please try again.'
-                      )
-                    }
-                  })
-                }}>
-                <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Lantern Year
-              </Button>
-            )}
-          </>
-        ) : (
-          <div className="py-10 text-center text-gray-500">
-            Loading timeline...
-          </div>
+                saveToLocalStorage(
+                  updatedTimeline,
+                  'A new lantern year is added - the chronicles expand.'
+                )
+              })
+            }}>
+            <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Lantern Year
+          </Button>
         )}
       </CardContent>
     </Card>
