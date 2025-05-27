@@ -17,7 +17,7 @@ import {
 import { ResourceCategory } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 /**
  * Resource Categories Combobox Component Properties
@@ -32,13 +32,13 @@ interface ResourceCategoriesComboboxProps {
 }
 
 /**
- * Resource Category Combobox Component
+ * Resource Categories Combobox Component
  */
 export function ResourceCategoriesCombobox({
   disabled,
   onChange,
   selectedCategory
-}: ResourceCategoriesComboboxProps) {
+}: ResourceCategoriesComboboxProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
 
   /**

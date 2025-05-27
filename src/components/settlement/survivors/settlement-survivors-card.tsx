@@ -14,17 +14,21 @@ import { SurvivorType } from '@/lib/enums'
 import { getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
-import { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Settlement Survivors Card Component
  *
- * Displays the list of survivors for a given settlement.
+ * Displays the list of survivors for a given settlement in a table format.
+ * Shows survivor details including name, gender, hunt experience, philosophy
+ * (for Arc survivors), status, and notes.
  */
-export function SettlementSurvivorsCard(form: UseFormReturn<Settlement>) {
-  const settlementId = form.watch('id')
-  const survivorType = form.watch('survivorType')
+export function SettlementSurvivorsCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
+  const settlementId = useMemo(() => form.watch('id'), [form])
+  const survivorType = useMemo(() => form.watch('survivorType'), [form])
 
   const [survivors, setSurvivors] = useState<Survivor[]>([])
 
@@ -38,15 +42,15 @@ export function SettlementSurvivorsCard(form: UseFormReturn<Settlement>) {
   }, [settlementId])
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="text-left">
-        <CardTitle>Survivors</CardTitle>
+    <Card className="mt-1 border-0">
+      <CardHeader className="px-3 py-2 pb-2">
+        <CardTitle className="text-md">Survivors</CardTitle>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="p-1 pb-0">
         {survivors.length === 0 ? (
           <div className="text-center text-muted-foreground py-4">
-            Silence echos through the darkness. No survivors are present.
+            Silence echoes through the darkness. No survivors present.
           </div>
         ) : (
           <Table>

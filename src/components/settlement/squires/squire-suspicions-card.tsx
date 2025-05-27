@@ -9,24 +9,24 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FormControl, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { EyeIcon } from 'lucide-react'
-import { ReactElement } from 'react'
-import { type UseFormReturn } from 'react-hook-form'
+import { ReactElement, useMemo } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
- * Squire Suspicions Card
+ * Squire Suspicions Card Component
  */
-export function SquireSuspicionsCard(
-  props: UseFormReturn<Settlement>
-): ReactElement {
-  const form = props
-  const suspicions = form.watch('suspicions') || []
+export function SquireSuspicionsCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
+  const suspicions = useMemo(() => form.watch('suspicions') || [], [form])
 
   // Calculate total suspicion level
   const totalSuspicion = suspicions.reduce((total, suspicion) => {
@@ -39,6 +39,52 @@ export function SquireSuspicionsCard(
 
     return total + suspicionLevel
   }, 0)
+
+  /**
+   * Save suspicions to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedSuspicions Updated Suspicions
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedSuspicions: typeof suspicions,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          suspicions: updatedSuspicions
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].suspicions = updatedSuspicions
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Suspicion Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the change of suspicion levels for a squire.
@@ -84,117 +130,125 @@ export function SquireSuspicionsCard(
 
     form.setValue('suspicions', updatedSuspicions)
 
-    // Save to localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].suspicions = updatedSuspicions
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success(`${squireName}'s doubt grows deeper.`)
-      }
-    } catch (error) {
-      console.error('Suspicion Save Error:', error)
-      toast.error(
-        `${squireName}'s mistrust refuses to take form. Please try again.`
-      )
-    }
+    saveToLocalStorage(updatedSuspicions, `${squireName}'s doubt grows deeper.`)
   }
 
   return (
-    <Card className="my-4 mx-0 p-2 relative">
-      <CardHeader className="pb-0 text-left">
-        <div className="flex flex-row items-center justify-between">
+    <Card className="border-0">
+      <CardHeader className="p-0">
+        <div className="flex justify-between items-center">
           <div>
             <CardTitle className="text-md flex items-center gap-1">
               <EyeIcon className="h-4 w-4" /> Suspicions
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs">
               Fill these milestone boxes as the squires observe suspicious
               behavior. Each checked box increases the suspicion level.
             </CardDescription>
           </div>
 
           <div className="flex items-center">
-            <FormItem className="flex-1 flex justify-center">
-              <div className="flex flex-col items-center gap-2">
-                <FormControl>
-                  <Input
-                    type="number"
-                    className={`w-12 text-center no-spinners ${
-                      totalSuspicion >= 8
-                        ? 'text-red-500 font-bold border-red-500'
-                        : ''
-                    }`}
-                    value={totalSuspicion}
-                    readOnly
-                    disabled={false}
-                  />
-                </FormControl>
-                <FormLabel className="text-center text-xs">
-                  Suspicion Level
-                </FormLabel>
-              </div>
-            </FormItem>
+            <div className="flex flex-col items-center gap-1">
+              <Input
+                type="number"
+                className={`w-12 h-12 text-center no-spinners ${
+                  totalSuspicion >= 8
+                    ? 'text-red-500 font-bold border-red-500'
+                    : ''
+                }`}
+                value={totalSuspicion}
+                readOnly
+                disabled={false}
+              />
+              <Label className="text-center text-xs">Suspicion Level</Label>
+            </div>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableBody>
-            <TableRow className="border-b">
-              <TableCell className="font-medium text-left pl-5">
-                Squire
-              </TableCell>
-            </TableRow>
-            {suspicions.map((suspicion, index) => (
-              <TableRow key={index}>
+
+      <CardContent className="p-0">
+        <div className="space-y-1">
+          <Table>
+            <TableBody>
+              <TableRow className="border-b">
                 <TableCell className="font-medium text-left pl-5">
-                  {suspicion.name}&apos;s Suspicion
+                  Squire
                 </TableCell>
-                <TableCell className="text-center">
-                  <Checkbox
-                    checked={suspicion.level1 || false}
-                    onCheckedChange={(checked) =>
-                      handleSuspicionChange(suspicion.name, 1, checked === true)
-                    }
-                  />
-                </TableCell>
-                <TableCell className="text-center">
-                  <Checkbox
-                    checked={suspicion.level2 || false}
-                    onCheckedChange={(checked) =>
-                      handleSuspicionChange(suspicion.name, 2, checked === true)
-                    }
-                  />
-                </TableCell>
-                <TableCell className="text-center">
-                  <Checkbox
-                    checked={suspicion.level3 || false}
-                    onCheckedChange={(checked) =>
-                      handleSuspicionChange(suspicion.name, 3, checked === true)
-                    }
-                  />
-                </TableCell>
-                <TableCell className="text-center">
-                  <Checkbox
-                    checked={suspicion.level4 || false}
-                    onCheckedChange={(checked) =>
-                      handleSuspicionChange(suspicion.name, 4, checked === true)
-                    }
-                  />
-                </TableCell>
+                <TableCell className="text-center" />
+                <TableCell className="text-center" />
+                <TableCell className="text-center" />
+                <TableCell className="text-center" />
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              {suspicions.map((suspicion, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium text-left pl-5">
+                    {suspicion.name}&apos;s Suspicion
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center">
+                      <Checkbox
+                        checked={suspicion.level1 || false}
+                        onCheckedChange={(checked) =>
+                          handleSuspicionChange(
+                            suspicion.name,
+                            1,
+                            checked === true
+                          )
+                        }
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center">
+                      <Checkbox
+                        checked={suspicion.level2 || false}
+                        onCheckedChange={(checked) =>
+                          handleSuspicionChange(
+                            suspicion.name,
+                            2,
+                            checked === true
+                          )
+                        }
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center">
+                      <Checkbox
+                        checked={suspicion.level3 || false}
+                        onCheckedChange={(checked) =>
+                          handleSuspicionChange(
+                            suspicion.name,
+                            3,
+                            checked === true
+                          )
+                        }
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center">
+                      <Checkbox
+                        checked={suspicion.level4 || false}
+                        onCheckedChange={(checked) =>
+                          handleSuspicionChange(
+                            suspicion.name,
+                            4,
+                            checked === true
+                          )
+                        }
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
-      <CardFooter className="flex flex-col items-start">
-        <CardDescription>
+
+      <CardFooter className="p-3 pt-2">
+        <CardDescription className="text-xs">
           On <strong>Arrival</strong>, if the total suspicion is 8+, all
           survivors gain +3 insanity.
         </CardDescription>

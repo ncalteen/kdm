@@ -12,27 +12,36 @@ import { SquireCardData } from '@/lib/common'
 import { ReactElement } from 'react'
 
 /**
+ * Squire Progression Card Component Properties
+ */
+interface SquireProgressionCardProps {
+  /** Squire Data */
+  squire: (typeof SquireCardData)[0]
+}
+
+/**
  * Squire Progression Card Component
  *
  * Individual card for each squire's progression data. This is static data for
  * reference and does not change.
+ *
+ * @param props Squire Progression Card Component Properties
+ * @returns Squire Progression Card Component
  */
 const SquireProgressionCard = ({
   squire
-}: {
-  squire: (typeof SquireCardData)[0]
-}): ReactElement => {
+}: SquireProgressionCardProps): ReactElement => {
   return (
     <Card className="w-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-l text-left font-bold">
+      <CardHeader className="px-3 py-2 pb-2">
+        <CardTitle className="text-md text-left font-bold">
           {squire.name}
         </CardTitle>
         <CardDescription className="text-xs text-left">
           Gain the following in addition to <strong>Age</strong>.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-1 py-0">
         <Table>
           <TableBody className="text-xs">
             {squire.rows.map((stat, index) => (

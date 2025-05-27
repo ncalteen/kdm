@@ -10,7 +10,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -19,17 +19,17 @@ import { UseFormReturn } from 'react-hook-form'
 export interface ResourceItemProps {
   /** Form */
   form: UseFormReturn<Settlement>
-  /** Handle Remove Resource  */
-  handleRemoveResource: (index: number) => void
   /** Resource Item ID */
   id: string
   /** Resource Item Index */
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Callback */
+  /** OnEdit Handler */
   onEdit: (index: number) => void
-  /** OnSave Callback */
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
   onSave: (
     index: number,
     name: string,
@@ -56,121 +56,144 @@ export interface NewResourceItemProps {
 
 /**
  * Resource Item Component
+ *
+ * @param props Resource Item Component Properties
+ * @returns Resource Item Component
  */
 export function ResourceItem({
-  form,
-  handleRemoveResource,
   id,
   index,
   isDisabled,
+  form,
   onEdit,
+  onRemove,
   onSave
 }: ResourceItemProps): ReactElement {
   const resource = form.watch(`resources.${index}`)
 
-  const [nameValue, setNameValue] = useState<string | undefined>(resource?.name)
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id })
+
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  const amountInputRef = useRef<HTMLInputElement>(null)
+
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
     resource?.category || ResourceCategory.BASIC
   )
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
     resource?.types || [ResourceType.BONE]
   )
-  const [amountValue, setAmountValue] = useState<number>(resource?.amount || 0)
-
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
-  /**
-   * Handles the key down event for the input fields. If the Enter key is
-   * pressed, it saves the resource.
-   *
-   * @param e Event
-   */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && nameValue) {
-      e.preventDefault()
-      onSave(index, nameValue, selectedCategory, selectedTypes, amountValue)
-    }
-  }
 
   useEffect(() => {
-    setNameValue(resource?.name || '')
+    if (nameInputRef.current) nameInputRef.current.value = resource?.name || ''
+
+    if (amountInputRef.current)
+      amountInputRef.current.value = (resource?.amount || 0).toString()
+
     setSelectedCategory(resource?.category || ResourceCategory.BASIC)
     setSelectedTypes(resource?.types || [ResourceType.BONE])
-    setAmountValue(resource?.amount || 0)
+
+    if (!isDisabled && nameInputRef.current) {
+      nameInputRef.current.focus()
+
+      const val = nameInputRef.current.value
+      nameInputRef.current.value = ''
+      nameInputRef.current.value = val
+    }
   }, [resource, isDisabled, index])
+
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and values.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && nameInputRef.current && amountInputRef.current) {
+      e.preventDefault()
+      onSave(
+        index,
+        nameInputRef.current.value,
+        selectedCategory,
+        selectedTypes,
+        Number(amountInputRef.current.value)
+      )
+    }
+  }
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className="flex items-center mb-3 gap-2">
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-      <div className="flex-1 flex items-center gap-2">
-        <div className="w-[30%]">
-          <Input
-            placeholder="Resource Name"
-            value={nameValue}
-            disabled={isDisabled}
-            onChange={(e) => !isDisabled && setNameValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="h-9"
-          />
-        </div>
-        <div className="w-[25%]">
-          <ResourceCategoriesCombobox
-            selectedCategory={selectedCategory}
-            onChange={(cat) => !isDisabled && setSelectedCategory(cat)}
-            disabled={isDisabled}
-          />
-        </div>
-        <div className="w-[30%]">
-          {isDisabled ? (
-            <div className="flex flex-wrap gap-1">
-              {selectedTypes.map((type) => (
-                <Badge key={type} variant="secondary">
-                  {type}
-                </Badge>
-              ))}
-            </div>
-          ) : (
-            <ResourceTypesCombobox
-              selectedTypes={selectedTypes}
-              onChange={(types) => !isDisabled && setSelectedTypes(types)}
-              disabled={isDisabled}
-            />
-          )}
-        </div>
-        <div className="w-[10%] flex items-center">
-          <Input
-            type="number"
-            min={0}
-            placeholder="0"
-            className="w-12 text-center no-spinners"
-            value={amountValue}
-            disabled={isDisabled}
-            onChange={(e) =>
-              !isDisabled && setAmountValue(Number(e.target.value))
-            }
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+
+      {/* Name Input */}
+      <Input
+        ref={nameInputRef}
+        placeholder="Resource Name"
+        defaultValue={resource?.name}
+        disabled={isDisabled}
+        onKeyDown={handleKeyDown}
+        className="flex-1 mr-2"
+        autoFocus
+      />
+
+      {/* Category */}
+      <div className="w-32 mr-2">
+        <ResourceCategoriesCombobox
+          selectedCategory={selectedCategory}
+          onChange={setSelectedCategory}
+          disabled={isDisabled}
+        />
       </div>
+
+      {/* Types */}
+      <div className="w-40 mr-2">
+        {isDisabled ? (
+          <div className="flex flex-wrap gap-1">
+            {selectedTypes.map((type) => (
+              <Badge key={type} variant="secondary" className="text-xs">
+                {type}
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <ResourceTypesCombobox
+            selectedTypes={selectedTypes}
+            onChange={setSelectedTypes}
+            disabled={isDisabled}
+          />
+        )}
+      </div>
+
+      {/* Amount Input */}
+      <Input
+        ref={amountInputRef}
+        type="number"
+        min={0}
+        placeholder="0"
+        defaultValue={resource?.amount}
+        disabled={isDisabled}
+        onKeyDown={handleKeyDown}
+        className="w-16 text-center mr-2 no-spinners"
+      />
+
+      {/* Edit/Save Button */}
       {isDisabled ? (
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit resource">
           <PencilIcon className="h-4 w-4" />
@@ -180,26 +203,29 @@ export function ResourceItem({
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => {
-            if (nameValue)
+            if (nameInputRef.current && amountInputRef.current) {
               onSave(
                 index,
-                nameValue,
+                nameInputRef.current.value,
                 selectedCategory,
                 selectedTypes,
-                amountValue
+                Number(amountInputRef.current.value)
               )
+            }
           }}
           title="Save resource">
           <CheckIcon className="h-4 w-4" />
         </Button>
       )}
+
+      {/* Remove Button */}
       <Button
         variant="ghost"
-        size="sm"
+        size="icon"
         type="button"
-        className="h-9 w-9 p-0"
-        onClick={() => handleRemoveResource(index)}>
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -208,79 +234,106 @@ export function ResourceItem({
 
 /**
  * New Resource Item Component
+ *
+ * @param props New Resource Item Component Props
  */
 export function NewResourceItem({
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewResourceItemProps): ReactElement {
-  const [name, setName] = useState<string | undefined>(undefined)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  const amountInputRef = useRef<HTMLInputElement>(null)
+
   const [category, setCategory] = useState<ResourceCategory>(
     ResourceCategory.BASIC
   )
   const [types, setTypes] = useState<ResourceType[]>([ResourceType.BONE])
-  const [amount, setAmount] = useState<number>(0)
 
   /**
-   * Handles the key down event for the input fields. If the Enter key is
-   * pressed, it saves the resource. If the Escape key is pressed, it cancels
-   * the action.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, calls the onSave function with the current
+   * values. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && name) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && nameInputRef.current && amountInputRef.current) {
       e.preventDefault()
-      onSave(name, category, types, amount)
-    } else if (e.key === 'Escape') onCancel()
+      onSave(
+        nameInputRef.current.value,
+        category,
+        types,
+        Number(amountInputRef.current.value)
+      )
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
   }
 
   return (
-    <div className="flex items-center mb-2 gap-2">
+    <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
-      <div className="flex-1 flex items-center gap-2">
-        <div className="w-[30%]">
-          <Input
-            placeholder="Resource Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="h-9"
-            autoFocus
-          />
-        </div>
-        <div className="w-[25%]">
-          <ResourceCategoriesCombobox
-            selectedCategory={category}
-            onChange={setCategory}
-          />
-        </div>
-        <div className="w-[30%]">
-          <ResourceTypesCombobox selectedTypes={types} onChange={setTypes} />
-        </div>
-        <div className="w-[10%] flex items-center">
-          <Input
-            type="number"
-            min={0}
-            placeholder="0"
-            className="w-12 text-center no-spinners"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
+
+      {/* Name Input */}
+      <Input
+        ref={nameInputRef}
+        placeholder="Resource Name"
+        defaultValue={''}
+        onKeyDown={handleKeyDown}
+        className="flex-1 mr-2"
+        autoFocus
+      />
+
+      {/* Category */}
+      <div className="w-32 mr-2">
+        <ResourceCategoriesCombobox
+          selectedCategory={category}
+          onChange={setCategory}
+        />
       </div>
+
+      {/* Types */}
+      <div className="w-40 mr-2">
+        <ResourceTypesCombobox selectedTypes={types} onChange={setTypes} />
+      </div>
+
+      {/* Amount Input */}
+      <Input
+        ref={amountInputRef}
+        type="number"
+        min={0}
+        placeholder="0"
+        defaultValue={''}
+        onKeyDown={handleKeyDown}
+        className="w-16 text-center mr-2"
+      />
+
+      {/* Save Button */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
+        className="ml-2"
         onClick={() => {
-          if (name) onSave(name, category, types, amount)
+          if (nameInputRef.current && amountInputRef.current) {
+            onSave(
+              nameInputRef.current.value,
+              category,
+              types,
+              Number(amountInputRef.current.value)
+            )
+          }
         }}
         title="Save resource">
         <CheckIcon className="h-4 w-4" />
       </Button>
+
+      {/* Cancel Button */}
       <Button
         type="button"
         variant="ghost"

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -24,15 +24,18 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Resources Card Component
  */
-export function ResourcesCard(form: UseFormReturn<Settlement>): ReactElement {
+export function ResourcesCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
   const resources = useMemo(() => form.watch('resources') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -60,15 +63,66 @@ export function ResourcesCard(form: UseFormReturn<Settlement>): ReactElement {
   const addResource = () => setIsAddingNew(true)
 
   /**
+   * Save resources to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedResources Updated Resources
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedResources: {
+      name: string
+      category: ResourceCategory
+      types: ResourceType[]
+      amount: number
+    }[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          resources: updatedResources
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].resources = updatedResources
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Resource Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the removal of a resource.
    *
    * @param index Resource Index
    */
-  const handleRemoveResource = (index: number) => {
-    const updatedResources = [...resources]
-    updatedResources.splice(index, 1)
+  const onRemove = (index: number) => {
+    const currentResources = [...resources]
 
-    form.setValue('resources', updatedResources)
+    currentResources.splice(index, 1)
+    form.setValue('resources', currentResources)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -82,85 +136,98 @@ export function ResourcesCard(form: UseFormReturn<Settlement>): ReactElement {
       return next
     })
 
-    // Update localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].resources = updatedResources
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('The harvest is returned to the darkness.')
-    } catch (error) {
-      console.error('Resource Remove Error:', error)
-      toast.error('The darkness refuses to release its grip. Please try again.')
-    }
+    saveToLocalStorage(
+      currentResources,
+      'The harvest is returned to the darkness.'
+    )
   }
 
   /**
-   * Handles the saving of a new resource.
+   * Handles saving a new resource.
    *
    * @param name Resource Name
-   * @param category Category
-   * @param types Type(s)
-   * @param amount Amount
+   * @param category Resource Category
+   * @param types Resource Types
+   * @param amount Resource Amount
+   * @param i Resource Index (When Updating Only)
    */
-  const saveResource = (
-    name: string,
-    category: ResourceCategory,
-    types: ResourceType[],
-    amount: number
+  const onSave = (
+    name?: string,
+    category?: ResourceCategory,
+    types?: ResourceType[],
+    amount?: number,
+    i?: number
   ) => {
     if (!name || name.trim() === '')
-      return toast.warning(
-        'The nameless cannot be harvested - your offering requires a title.'
-      )
+      return toast.error('A nameless resource cannot be recorded.')
 
-    const newResource = { name, category, types, amount }
-    const updatedResources = [...resources, newResource]
-
-    form.setValue('resources', updatedResources)
-
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [updatedResources.length - 1]: true
-    }))
-    setIsAddingNew(false)
-
-    // Update localStorage
     try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].resources = updatedResources
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-      toast.success('The harvest has been preserved.')
+      SettlementSchema.shape.resources.parse([
+        { name, category, types, amount }
+      ])
     } catch (error) {
-      console.error('Resource Save Error:', error)
-      toast.error(
-        'The darkness refuses to release its grasp. Please try again.'
-      )
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
     }
+
+    const updatedResources = [...resources]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedResources[i] = {
+        name,
+        category: category!,
+        types: types!,
+        amount: amount!
+      }
+      form.setValue(`resources.${i}`, updatedResources[i])
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      const newResource = {
+        name,
+        category: category!,
+        types: types!,
+        amount: amount!
+      }
+      updatedResources.push(newResource)
+
+      form.setValue('resources', updatedResources)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedResources.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedResources,
+      i !== undefined
+        ? 'The harvest has been preserved.'
+        : 'Your settlement claims new resources.'
+    )
+    setIsAddingNew(false)
   }
 
   /**
-   * Handles the editing of a resource.
+   * Enables editing a resource.
    *
    * @param index Resource Index
    */
-  const editResource = (index: number) =>
+  const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles the end of a drag event.
+   * Handles the end of a drag event for reordering resources.
    *
-   * @param event DragEndEvent
+   * @param event Drag End Event
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -171,13 +238,13 @@ export function ResourcesCard(form: UseFormReturn<Settlement>): ReactElement {
       const newOrder = arrayMove(resources, oldIndex, newIndex)
 
       form.setValue('resources', newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
         Object.keys(prev).forEach((k) => {
           const num = parseInt(k)
-
           if (num === oldIndex) next[newIndex] = prev[num]
           else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
           else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
@@ -186,119 +253,70 @@ export function ResourcesCard(form: UseFormReturn<Settlement>): ReactElement {
 
         return next
       })
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].resources = newOrder
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      } catch (error) {
-        console.error('Resource Drag Error:', error)
-      }
     }
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Resource Storage
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        {resources.length === 0 && !isAddingNew ? (
-          <div className="text-center text-muted-foreground py-4">
-            Your settlement has claimed nothing.
-          </div>
-        ) : (
-          <div className="mb-2">
-            <div className="flex items-center mb-2">
-              <div className="w-[30px]"></div>
-              <div className="flex-1 flex items-center gap-2">
-                <div className="w-[30%] pl-1">Name</div>
-                <div className="w-[30%] pl-1">Category</div>
-                <div className="w-[30%] pl-1">Types</div>
-                <div className="w-[10%] pl-1">Amount</div>
-                <div className="flex-shrink-0 w-9"></div>
+    <Card>
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-md flex flex-row items-center gap-1">
+            Resource Storage
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={addResource}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
               </div>
-            </div>
-          </div>
-        )}
-        <div className="space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={resources.map((_, index) => index.toString())}
-              strategy={verticalListSortingStrategy}>
-              {resources.map((_, index) => (
-                <ResourceItem
-                  key={index}
-                  id={index.toString()}
-                  index={index}
-                  form={form}
-                  handleRemoveResource={handleRemoveResource}
-                  isDisabled={!!disabledInputs[index]}
-                  onSave={(i, name, category, types, amount) => {
-                    form.setValue(`resources.${i}`, {
-                      name,
-                      category,
-                      types,
-                      amount
-                    })
-                    setDisabledInputs((prev) => ({ ...prev, [i]: true }))
+            )}
+          </CardTitle>
+        </div>
+      </CardHeader>
 
-                    // Update localStorage
-                    try {
-                      const formValues = form.getValues()
-                      const campaign = getCampaign()
-                      const settlementIndex = campaign.settlements.findIndex(
-                        (s) => s.id === formValues.id
-                      )
-
-                      campaign.settlements[settlementIndex].resources =
-                        formValues.resources || []
-                      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-                      toast.success('Resource saved!')
-                    } catch (error) {
-                      console.error(
-                        'Error saving resources to localStorage:',
-                        error
-                      )
+      <CardContent className="p-2">
+        <div className="space-y-1">
+          {resources.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={resources.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {resources.map((_, index) => (
+                  <ResourceItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(i, name, category, types, amount) =>
+                      onSave(name, category, types, amount, i)
                     }
-                  }}
-                  onEdit={editResource}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+                    onEdit={onEdit}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
           {isAddingNew && (
             <NewResourceItem
-              onSave={saveResource}
+              onSave={(name, category, types, amount) =>
+                onSave(name, category, types, amount)
+              }
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addResource}
-              disabled={
-                isAddingNew ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Resource
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

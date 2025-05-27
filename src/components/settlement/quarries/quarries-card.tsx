@@ -1,6 +1,10 @@
 'use client'
 
-import { QuarryContent } from '@/components/settlement/quarries/quarry-content'
+import {
+  NewQuarryItem,
+  QuarryItem
+} from '@/components/settlement/quarries/quarry-item'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -9,68 +13,47 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Quarry, Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
+  DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
-import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { SwordIcon } from 'lucide-react'
 import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { PlusIcon, SwordIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Quarries Card Component
- *
- * @param form Form
  */
-export function QuarriesCard(form: UseFormReturn<Settlement>) {
+export function QuarriesCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
   const quarries = useMemo(() => form.watch('quarries') || [], [form])
 
-  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-  const [isVisible, setIsVisible] = useState<boolean>(false)
   const [disabledInputs, setDisabledInputs] = useState<{
-    [key: string]: boolean
+    [key: number]: boolean
   }>({})
-
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    const currentCardRef = cardRef.current
-
-    if (currentCardRef) observer.observe(currentCardRef)
-
-    return () => {
-      if (currentCardRef) observer.unobserve(currentCardRef)
-    }
-  }, [])
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
-      const next: { [key: string]: boolean } = {}
+      const next: { [key: number]: boolean } = {}
 
-      quarries.forEach((quarry) => {
-        next[quarry.name] = prev[quarry.name] ?? true
+      quarries.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
@@ -84,293 +67,302 @@ export function QuarriesCard(form: UseFormReturn<Settlement>) {
     })
   )
 
-  const addQuarry = useCallback(() => setIsAddingNew(true), [])
+  const addQuarry = () => setIsAddingNew(true)
+
+  /**
+   * Save quarries to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedQuarries Updated Quarries
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedQuarries: Quarry[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          quarries: updatedQuarries
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].quarries = updatedQuarries
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Quarry Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a quarry.
    *
-   * @param quarryName Quarry Name
+   * @param index Quarry Index
    */
-  const handleRemoveQuarry = useCallback(
-    (quarryName: string) => {
-      if (quarryName.startsWith('new-quarry-')) setIsAddingNew(false)
+  const onRemove = (index: number) => {
+    const currentQuarries = [...quarries]
+
+    currentQuarries.splice(index, 1)
+    form.setValue('quarries', currentQuarries)
+
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+
+      return next
+    })
+
+    saveToLocalStorage(
+      currentQuarries,
+      'The beast has been banished to the void.'
+    )
+  }
+
+  /**
+   * Handles saving a new quarry.
+   *
+   * @param value Quarry Name
+   * @param node Quarry Node
+   * @param unlocked Quarry Unlocked Status
+   * @param index Quarry Index (When Updating Only)
+   */
+  const onSave = (
+    value?: string,
+    node?: string,
+    unlocked?: boolean,
+    index?: number
+  ) => {
+    if (!value || value.trim() === '')
+      return toast.error(
+        'A nameless horror cannot be recorded in your chronicles.'
+      )
+
+    const quarryWithCc: Quarry = {
+      name: value,
+      node: (node || 'Node 1') as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4',
+      unlocked: unlocked || false,
+      ccPrologue: false,
+      ccLevel1: false,
+      ccLevel2: [false, false],
+      ccLevel3: [false, false, false]
+    }
+
+    try {
+      SettlementSchema.shape.quarries.parse([quarryWithCc])
+    } catch (error) {
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
       else
-        startTransition(() => {
-          const updatedQuarries = quarries.filter((q) => q.name !== quarryName)
-
-          form.setValue('quarries', updatedQuarries)
-
-          setDisabledInputs((prev) => {
-            const updated = { ...prev }
-            delete updated[quarryName]
-            return updated
-          })
-
-          // Update localStorage
-          try {
-            const formValues = form.getValues()
-            const campaign = getCampaign()
-            const settlementIndex = campaign.settlements.findIndex(
-              (s) => s.id === formValues.id
-            )
-
-            campaign.settlements[settlementIndex].quarries = updatedQuarries
-            localStorage.setItem('campaign', JSON.stringify(campaign))
-
-            toast.success('The beast has been banished to the void.')
-          } catch (error) {
-            console.error('Quarry Remove Error:', error)
-            toast.error('The darkness refuses to let go. Please try again.')
-          }
-        })
-    },
-    [quarries, form]
-  )
-
-  /**
-   * Updates the quarry node level.
-   *
-   * @param quarryName Quarry Name
-   * @param node Node Level
-   */
-  const updateQuarryNode = useCallback(
-    (quarryName: string, node: string) =>
-      startTransition(() => {
-        const updatedQuarries = quarries.map((q) =>
-          q.name === quarryName
-            ? { ...q, node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4' }
-            : q
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
         )
+    }
 
-        form.setValue('quarries', updatedQuarries)
+    const updatedQuarries = [...quarries]
 
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].quarries = updatedQuarries
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-        } catch (error) {
-          console.error('Quarry Node Update Error:', error)
-        }
-      }),
-    [quarries, form]
-  )
-
-  /**
-   * Updates the quarry name.
-   *
-   * @param originalName Original Quarry Name
-   * @param newName New Quarry Name
-   */
-  const updateQuarryName = useCallback(
-    (originalName: string, newName: string) =>
-      startTransition(() => {
-        const updatedQuarries = quarries.map((q) =>
-          q.name === originalName ? { ...q, name: newName } : q
-        )
-
-        form.setValue('quarries', updatedQuarries)
-
-        setDisabledInputs((prev) => {
-          const updated = { ...prev }
-          delete updated[originalName]
-          updated[newName] = true
-          return updated
-        })
-
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].quarries = updatedQuarries
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-        } catch (error) {
-          console.error('Quarry Update Name Error:', error)
-        }
-      }),
-    [quarries, form]
-  )
-
-  /**
-   * Saves the quarry to localStorage.
-   *
-   * @param quarryName The name of the quarry to save.
-   */
-  const saveQuarry = useCallback(
-    (quarryName: string) => {
-      if (!quarryName || quarryName.trim() === '')
-        return toast.warning('Cannot save a quarry without a name!')
-
-      setDisabledInputs((prev) => ({ ...prev, [quarryName]: true }))
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].quarries = formValues.quarries
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('The monster prowls the darkness. Hunt or be hunted.')
-      } catch (error) {
-        console.error('Quarry Save Error:', error)
-        toast.error('The quarry refuses to be bound. Please try again.')
+    if (index !== undefined) {
+      // Updating an existing value - preserve existing CC properties
+      updatedQuarries[index] = {
+        ...updatedQuarries[index],
+        name: value,
+        node: (node || 'Node 1') as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4',
+        unlocked: unlocked || false
       }
-    },
-    [form]
-  )
+      form.setValue(`quarries.${index}`, updatedQuarries[index])
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [index]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedQuarries.push(quarryWithCc)
+
+      form.setValue('quarries', updatedQuarries)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedQuarries.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedQuarries,
+      index !== undefined
+        ? 'The monster prowls the darkness. Hunt or be hunted.'
+        : 'A new terror emerges from the mist.'
+    )
+    setIsAddingNew(false)
+  }
 
   /**
-   * Edits the quarry.
+   * Enables editing a quarry.
    *
-   * @param quarryName Quarry Name
+   * @param index Quarry Index
    */
-  const editQuarry = useCallback(
-    (quarryName: string) =>
-      setDisabledInputs((prev) => ({ ...prev, [quarryName]: false })),
-    []
-  )
+  const onEdit = (index: number) =>
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Toggles the quarry unlocked state.
+   * Handles toggling quarry unlocked status.
    *
-   * @param quarryName Quarry Name
-   * @param unlocked Unlocked State
+   * @param index Quarry Index
+   * @param unlocked Unlocked Status
    */
-  const toggleQuarryUnlocked = useCallback(
-    (quarryName: string, unlocked: boolean) =>
-      startTransition(() => {
-        const updatedQuarries = quarries.map((q) =>
-          q.name === quarryName ? { ...q, unlocked } : q
-        )
+  const onToggleUnlocked = (index: number, unlocked: boolean) => {
+    const updatedQuarries = quarries.map((q, i) =>
+      i === index ? { ...q, unlocked } : q
+    )
 
-        form.setValue('quarries', updatedQuarries)
+    form.setValue('quarries', updatedQuarries)
 
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].quarries = updatedQuarries
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-          toast.success(
-            `${quarryName} ${unlocked ? 'emerges from the mist, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
-          )
-        } catch (error) {
-          console.error('Quarry Lock/Unlock Error:', error)
-          toast.error(
-            'The quarry resists your attempt to alter its nature. Please try again.'
-          )
-        }
-      }),
-    [quarries, form]
-  )
+    saveToLocalStorage(
+      updatedQuarries,
+      `${quarries[index]?.name} ${unlocked ? 'emerges from the mist, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
+    )
+  }
 
   /**
-   * Handles the drag end event.
+   * Handles updating quarry node.
+   *
+   * @param index Quarry Index
+   * @param node Node Value
+   */
+  const onUpdateNode = (index: number, node: string) => {
+    const updatedQuarries = quarries.map((q, i) =>
+      i === index
+        ? { ...q, node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4' }
+        : q
+    )
+
+    form.setValue('quarries', updatedQuarries)
+    saveToLocalStorage(updatedQuarries)
+  }
+
+  /**
+   * Handles the end of a drag event for reordering quarries.
    *
    * @param event Drag End Event
    */
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
 
-      if (over && active.id !== over.id)
-        requestAnimationFrame(() => {
-          const oldIndex = quarries.findIndex((q) => q.name === active.id)
-          const newIndex = quarries.findIndex((q) => q.name === over.id)
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id.toString())
+      const newIndex = parseInt(over.id.toString())
+      const newOrder = arrayMove(quarries, oldIndex, newIndex)
 
-          const newOrder = arrayMove(quarries, oldIndex, newIndex)
+      form.setValue('quarries', newOrder)
+      saveToLocalStorage(newOrder)
 
-          form.setValue('quarries', newOrder)
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
 
-          // Update localStorage
-          try {
-            const formValues = form.getValues()
-            const campaign = getCampaign()
-            const settlementIndex = campaign.settlements.findIndex(
-              (s) => s.id === formValues.id
-            )
-
-            campaign.settlements[settlementIndex].quarries = newOrder
-            localStorage.setItem('campaign', JSON.stringify(campaign))
-          } catch (error) {
-            console.error('Quarry Drag Error:', error)
-          }
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
         })
-    },
-    [quarries, form]
-  )
 
-  const cachedQuarries = useMemo(() => quarries, [quarries])
-
-  const contentProps = useMemo(
-    () => ({
-      quarries: cachedQuarries,
-      disabledInputs,
-      isAddingNew,
-      sensors,
-      updateQuarryNode,
-      handleRemoveQuarry,
-      saveQuarry,
-      editQuarry,
-      updateQuarryName,
-      addQuarry,
-      toggleQuarryUnlocked,
-      handleDragEnd,
-      form,
-      setDisabledInputs,
-      setIsAddingNew
-    }),
-    [
-      cachedQuarries,
-      disabledInputs,
-      isAddingNew,
-      sensors,
-      updateQuarryNode,
-      handleRemoveQuarry,
-      saveQuarry,
-      editQuarry,
-      updateQuarryName,
-      addQuarry,
-      toggleQuarryUnlocked,
-      handleDragEnd,
-      form
-    ]
-  )
+        return next
+      })
+    }
+  }
 
   return (
-    <Card className="mt-2" ref={cardRef}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <SwordIcon className="h-4 w-4" /> Quarries
-        </CardTitle>
+    <Card>
+      <CardHeader className="px-4 py-4 pb-2">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+            <SwordIcon className="h-4 w-4" />
+            Quarries
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addQuarry}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
         <CardDescription className="text-left text-xs">
           The monsters your settlement can select to hunt.
         </CardDescription>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        {isVisible ? (
-          <QuarryContent {...contentProps} />
-        ) : (
-          <div className="py-8 text-center text-gray-500">
-            Loading quarries...
-          </div>
-        )}
+
+      {/* Quarries List */}
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
+          {quarries.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={quarries.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {quarries.map((quarry, index) => (
+                  <QuarryItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(name, node, unlocked, i) =>
+                      onSave(name, node, unlocked, i)
+                    }
+                    onEdit={onEdit}
+                    onToggleUnlocked={onToggleUnlocked}
+                    onUpdateNode={onUpdateNode}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
+          {isAddingNew && (
+            <NewQuarryItem
+              onSave={(name, node, unlocked) => onSave(name, node, unlocked)}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
+        </div>
       </CardContent>
     </Card>
   )
