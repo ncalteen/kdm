@@ -257,10 +257,10 @@ export function ResourcesCard({
   }
 
   return (
-    <Card>
+    <Card className="mt-1">
       <CardHeader className="px-4 pt-2 pb-0">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-md flex flex-row items-center gap-1">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             Resource Storage
             {!isAddingNew && (
               <div className="flex justify-center">

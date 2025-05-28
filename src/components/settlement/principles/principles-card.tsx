@@ -301,7 +301,7 @@ export function PrinciplesCard({
       <CardHeader className="px-4 py-4 pb-2">
         <div className="flex justify-between items-center">
           {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             Principles
             {!isAddingNew && (
               <div className="flex justify-center">

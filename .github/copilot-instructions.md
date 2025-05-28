@@ -24,6 +24,8 @@ follow when generating code. The instructions are grouped by category.
     on blur.
   - If the input field is a text input, it should be saved on Enter key is
     pressed.
+  - ShadCN reusable components can be found in the `src/components/ui`
+    directory.
 
 The following component implementation illustrates these standards. This
 component displays an editable and draggable list of abilities for a character.
@@ -283,7 +285,7 @@ export function AbilitiesAndImpairmentsCard({
       <CardHeader className="px-3 py-2 pb-2">
         <div className="flex justify-between items-center">
           {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             Abilities & Impairments{' '}
             {!isAddingNew && (
               <div className="flex justify-center">

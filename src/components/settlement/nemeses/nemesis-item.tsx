@@ -2,346 +2,334 @@
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Nemesis, Settlement } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { memo, ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Nemesis Item Props
+ * Nemesis Item Properties
  */
 export interface NemesisItemProps {
-  /** Removal Handler */
-  handleRemoveNemesis: (nemesisName: string) => void
-  /** Level Toggle Handler */
-  handleToggleLevel: (
-    nemesisName: string,
-    level: 'level1' | 'level2' | 'level3',
+  /** Form */
+  form: UseFormReturn<Settlement>
+  /** Nemesis ID */
+  id: string
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** OnEdit Handler */
+  onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
+  onSave: (name?: string, unlocked?: boolean, index?: number) => void
+  /** OnToggleLevel Handler */
+  onToggleLevel: (
+    index: number,
+    level:
+      | 'level1'
+      | 'level2'
+      | 'level3'
+      | 'ccLevel1'
+      | 'ccLevel2'
+      | 'ccLevel3',
     checked: boolean
   ) => void
-  /** ID */
-  id: string
-  /** Disabled Status */
-  isDisabled: boolean
-  /** Nemesis */
-  nemesis: Nemesis
-  /** Edit Handler */
-  onEdit: (nemesisName: string) => void
-  /** Save Handler */
-  onSave: (nemesisName: string) => void
-  /** Unlocked Toggle Handler */
-  toggleUnlocked: (nemesisName: string, checked: boolean) => void
-  /** Update Name Handler */
-  updateNemesisName: (originalName: string, newName: string) => void
+  /** OnToggleUnlocked Handler */
+  onToggleUnlocked: (index: number, unlocked: boolean) => void
 }
 
 /**
- * New Nemesis Item Props
+ * New Nemesis Item Component Properties
  */
 export interface NewNemesisItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
-  /** Index */
-  index: number
-  /** Remove Handler */
-  handleRemoveNemesis: (nemesisName: string) => void
-  /** Save Handler */
-  onSave: (name: string) => void
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (name?: string, unlocked?: boolean) => void
 }
 
 /**
  * Nemesis Item Component
+ *
+ * @param props Nemesis Item Component Properties
+ * @returns Nemesis Item Component
  */
-export const NemesisItem = memo(
-  ({
-    nemesis,
-    handleToggleLevel,
-    toggleUnlocked,
-    handleRemoveNemesis,
-    id,
-    isDisabled,
-    onSave,
-    onEdit,
-    updateNemesisName
-  }: NemesisItemProps) => {
-    const { attributes, listeners, setNodeRef, transform, transition } =
-      useSortable({ id })
-    const [nameValue, setNameValue] = useState<string | undefined>(nemesis.name)
+export function NemesisItem({
+  id,
+  index,
+  isDisabled,
+  form,
+  onEdit,
+  onRemove,
+  onSave,
+  onToggleLevel,
+  onToggleUnlocked
+}: NemesisItemProps): ReactElement {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id })
 
-    useEffect(() => setNameValue(nemesis.name), [nemesis.name])
+  const inputRef = useRef<HTMLInputElement>(null)
+  const nemesis = form.watch(`nemeses.${index}`)
 
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition
+  useEffect(() => {
+    if (inputRef.current && nemesis) {
+      inputRef.current.value = nemesis.name || ''
     }
 
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-      setNameValue(e.target.value)
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-
-        if (nameValue && nameValue !== nemesis.name)
-          updateNemesisName(nemesis.name, nameValue)
-        else if (nameValue) onSave(nameValue)
-        else toast.warning('A nameless horror cannot be summoned.')
-      }
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
     }
+  }, [form, isDisabled, index, nemesis])
 
-    return (
-      <div ref={setNodeRef} style={style} className="flex items-center gap-2">
-        <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1">
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
+      e.preventDefault()
+      onSave(inputRef.current.value, nemesis?.unlocked, index)
+    }
+  }
+
+  if (!nemesis) return <></>
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center gap-2">
+      {/* Drag Handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing p-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </div>
+
+      {/* Unlocked Checkbox */}
+      <div className="flex items-center">
+        <Checkbox
+          checked={nemesis.unlocked}
+          onCheckedChange={(checked) => {
+            if (checked !== 'indeterminate') {
+              onToggleUnlocked(index, !!checked)
+            }
+          }}
+          id={`nemesis-${index}-unlocked`}
+        />
+      </div>
+
+      {/* Input Field */}
+      {isDisabled ? (
+        <div className="flex-1 flex items-center">
+          <span className="text-sm font-medium">{nemesis.name}</span>
+        </div>
+      ) : (
+        <Input
+          ref={inputRef}
+          placeholder="Nemesis Name"
+          defaultValue={nemesis.name}
+          disabled={isDisabled}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+          autoFocus
+        />
+      )}
+
+      {/* Level Checkboxes */}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center space-x-1">
+          <Checkbox
+            checked={nemesis.level1}
+            onCheckedChange={(checked) => {
+              if (checked !== 'indeterminate') {
+                onToggleLevel(index, 'level1', !!checked)
+              }
+            }}
+            id={`nemesis-${index}-level1`}
+          />
+          <label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
+            Lvl 1
+          </label>
         </div>
 
-        {isDisabled ? (
-          <FormField
-            name="nemesis.unlocked"
-            render={() => (
-              <FormItem className="flex items-center space-x-2 flex-shrink-0">
-                <FormControl>
-                  <Checkbox
-                    checked={nemesis.unlocked}
-                    className="mt-2"
-                    id={`nemesis-${nemesis.name}-unlocked`}
-                    name={`nemesis[${nemesis.name}].unlocked`}
-                    onCheckedChange={(checked) => {
-                      if (checked !== 'indeterminate')
-                        toggleUnlocked(nemesis.name, !!checked)
-                    }}
-                  />
-                </FormControl>
-                <FormLabel
-                  className="text-sm font-medium mr-2"
-                  htmlFor={`nemesis-${nemesis.name}-unlocked`}>
-                  {nemesis.name}
-                </FormLabel>
-              </FormItem>
-            )}
+        <div className="flex items-center space-x-1">
+          <Checkbox
+            checked={nemesis.level2}
+            onCheckedChange={(checked) => {
+              if (checked !== 'indeterminate') {
+                onToggleLevel(index, 'level2', !!checked)
+              }
+            }}
+            id={`nemesis-${index}-level2`}
           />
-        ) : (
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={nemesis.unlocked}
-              className="mt-2"
-              disabled={false}
-              onCheckedChange={(checked) => {
-                if (checked !== 'indeterminate') {
-                  toggleUnlocked(nemesis.name, !!checked)
-                }
-              }}
-              id={`nemesis-${nemesis.name}-unlocked`}
-              name={`nemesis[${nemesis.name}].unlocked`}
-            />
-            <Input
-              value={nameValue}
-              onChange={handleNameChange}
-              onKeyDown={handleKeyDown}
-              className="w-[180px]"
-              autoFocus
-              id={`nemesis-${nemesis.name}-name`}
-              name={`nemesis[${nemesis.name}].name`}
-            />
-          </div>
-        )}
+          <label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
+            Lvl 2
+          </label>
+        </div>
 
-        <div className="flex items-center gap-2 ml-auto">
-          <FormField
-            name="nemesis"
-            render={() => (
-              <FormItem className="flex items-center space-x-1">
-                <FormControl>
-                  <Checkbox
-                    checked={nemesis.level1}
-                    className="mt-2"
-                    onCheckedChange={(checked) => {
-                      if (checked !== 'indeterminate') {
-                        handleToggleLevel(nemesis.name, 'level1', checked)
-                      }
-                    }}
-                    id={`nemesis-${nemesis.name}-level1`}
-                    name={`nemesis[${nemesis.name}].level1`}
-                  />
-                </FormControl>
-                <FormLabel
-                  className="text-xs"
-                  htmlFor={`nemesis-${nemesis.name}-level1`}>
-                  Lvl 1
-                </FormLabel>
-              </FormItem>
-            )}
+        <div className="flex items-center space-x-1">
+          <Checkbox
+            checked={nemesis.level3}
+            onCheckedChange={(checked) => {
+              if (checked !== 'indeterminate') {
+                onToggleLevel(index, 'level3', !!checked)
+              }
+            }}
+            id={`nemesis-${index}-level3`}
           />
-
-          <FormField
-            name="nemesis"
-            render={() => (
-              <FormItem className="flex items-center space-x-1">
-                <FormControl>
-                  <Checkbox
-                    checked={nemesis.level2}
-                    className="mt-2"
-                    onCheckedChange={(checked) => {
-                      if (checked !== 'indeterminate') {
-                        handleToggleLevel(nemesis.name, 'level2', checked)
-                      }
-                    }}
-                    id={`nemesis-${nemesis.name}-level2`}
-                    name={`nemesis[${nemesis.name}].level2`}
-                  />
-                </FormControl>
-                <FormLabel
-                  className="text-xs"
-                  htmlFor={`nemesis-${nemesis.name}-level2`}>
-                  Lvl 2
-                </FormLabel>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name="nemesis"
-            render={() => (
-              <FormItem className="flex items-center space-x-1">
-                <FormControl>
-                  <Checkbox
-                    checked={nemesis.level3}
-                    className="mt-2"
-                    onCheckedChange={(checked) => {
-                      if (checked !== 'indeterminate') {
-                        handleToggleLevel(nemesis.name, 'level3', checked)
-                      }
-                    }}
-                    id={`nemesis-${nemesis.name}-level3`}
-                    name={`nemesis[${nemesis.name}].level3`}
-                  />
-                </FormControl>
-                <FormLabel
-                  className="text-xs"
-                  htmlFor={`nemesis-${nemesis.name}-level3`}>
-                  Lvl 3
-                </FormLabel>
-              </FormItem>
-            )}
-          />
-
-          {isDisabled ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => onEdit(nemesis.name)}
-              title="Edit nemesis">
-              <PencilIcon className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                if (nameValue && nameValue !== nemesis.name) {
-                  updateNemesisName(nemesis.name, nameValue)
-                  toast.success('The horror shifts form.')
-                } else if (nameValue) onSave(nameValue)
-                else toast.warning('A nameless horror cannot be summoned.')
-              }}
-              title="Save nemesis">
-              <CheckIcon className="h-4 w-4" />
-            </Button>
-          )}
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => handleRemoveNemesis(nemesis.name)}>
-            <TrashIcon className="h-4 w-4" />
-          </Button>
+          <label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
+            Lvl 3
+          </label>
         </div>
       </div>
-    )
-  }
-)
 
-NemesisItem.displayName = 'NemesisItem'
+      {/* Interaction Buttons */}
+      {isDisabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onEdit(index)}
+          title="Edit nemesis">
+          <PencilIcon className="h-4 w-4" />
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() =>
+            onSave(inputRef.current!.value, nemesis.unlocked, index)
+          }
+          title="Save nemesis">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        onClick={() => onRemove(index)}>
+        <TrashIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
 
 /**
  * New Nemesis Item Component
+ *
+ * @param props New Nemesis Item Component Props
  */
 export function NewNemesisItem({
-  index,
-  handleRemoveNemesis,
+  onCancel,
   onSave
 }: NewNemesisItemProps): ReactElement {
-  const [name, setName] = useState<string | undefined>(undefined)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setName(e.target.value)
-
-  const handleSave = () => {
-    if (name && name.trim() !== '') onSave(name.trim())
-    else toast.warning('A nameless horror cannot be summoned.')
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleSave()
+      if (!inputRef.current.value || inputRef.current.value.trim() === '') {
+        toast.error('A nameless horror cannot be summoned.')
+        return
+      }
+      onSave(inputRef.current.value, false)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
     }
   }
 
   return (
     <div className="flex items-center gap-2">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
 
-      <Checkbox
-        checked={false}
-        disabled={true}
-        id={`nemesis-new-${index}-unlocked`}
-        name={`nemesis[new-${index}].unlocked`}
-      />
+      {/* Unlocked Checkbox */}
+      <div className="flex items-center space-x-2">
+        <Checkbox checked={false} disabled={true} id="nemesis-new-unlocked" />
+      </div>
 
+      {/* Input Field */}
       <Input
-        placeholder="Add a nemesis..."
-        value={name}
-        onChange={handleNameChange}
+        ref={inputRef}
+        placeholder="Nemesis Name"
+        defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
-        id={`nemesis-new-${index}-name`}
-        name={`nemesis[new-${index}].name`}
       />
 
+      {/* Level Checkboxes (disabled for new items) */}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center space-x-1">
+          <Checkbox checked={false} disabled={true} id="nemesis-new-level1" />
+          <label className="text-xs opacity-50">Lvl 1</label>
+        </div>
+
+        <div className="flex items-center space-x-1">
+          <Checkbox checked={false} disabled={true} id="nemesis-new-level2" />
+          <label className="text-xs opacity-50">Lvl 2</label>
+        </div>
+
+        <div className="flex items-center space-x-1">
+          <Checkbox checked={false} disabled={true} id="nemesis-new-level3" />
+          <label className="text-xs opacity-50">Lvl 3</label>
+        </div>
+      </div>
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={handleSave}
+        onClick={() => {
+          if (
+            !inputRef.current?.value ||
+            inputRef.current.value.trim() === ''
+          ) {
+            toast.error('A nameless horror cannot be summoned.')
+            return
+          }
+          onSave(inputRef.current.value, false)
+        }}
         title="Save nemesis">
         <CheckIcon className="h-4 w-4" />
       </Button>
-
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => handleRemoveNemesis('new-nemesis-' + index)}>
+        onClick={onCancel}
+        title="Cancel">
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>

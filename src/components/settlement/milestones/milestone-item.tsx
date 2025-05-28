@@ -3,21 +3,19 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Milestone, Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
-  BookOpen,
+  BookOpenIcon,
   CheckIcon,
   GripVertical,
   PencilIcon,
   TrashIcon
 } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 
 /**
  * Milestone Item Component Properties
@@ -47,8 +45,6 @@ export interface MilestoneItemProps {
  * New Milestone Item Component Properties
  */
 export interface NewMilestoneItemProps {
-  /** Index */
-  index: number
   /** OnCancel Callback */
   onCancel: () => void
   /** OnSave Callback */
@@ -57,6 +53,12 @@ export interface NewMilestoneItemProps {
 
 /**
  * Milestone Item Component
+ *
+ * Individual milestone item with drag-and-drop functionality.
+ * Supports inline editing, completion tracking, and provides save/cancel actions.
+ *
+ * @param props Milestone item properties
+ * @returns Milestone Item Component
  */
 export function MilestoneItem({
   milestone,
@@ -68,199 +70,200 @@ export function MilestoneItem({
   onRemove,
   onToggleComplete,
   id
-}: MilestoneItemProps) {
+}: MilestoneItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
-  const [nameValue, setNameValue] = useState<string>(milestone.name)
-  const [eventValue, setEventValue] = useState<string>(milestone.event)
+
+  const nameRef = useRef<HTMLInputElement>(null)
+  const eventRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setNameValue(milestone.name)
-    setEventValue(milestone.event)
-  }, [milestone.name, milestone.event])
+    if (nameRef.current) {
+      nameRef.current.value = milestone.name || ''
+    }
+    if (eventRef.current) {
+      eventRef.current.value = milestone.event || ''
+    }
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
+    if (!isDisabled && nameRef.current) {
+      nameRef.current.focus()
+      const val = nameRef.current.value
+      nameRef.current.value = ''
+      nameRef.current.value = val
+    }
+  }, [milestone.name, milestone.event, isDisabled])
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setNameValue(e.target.value)
-
-  const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setEventValue(e.target.value)
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
-      onSave(index, nameValue, eventValue)
+      onSave(index, nameRef.current.value, eventRef.current.value)
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
-      <FormField
-        control={form.control}
-        name={`milestones.${index}.complete`}
-        render={({ field }) => (
-          <FormItem className="flex items-center space-x-2">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                className="mt-2"
-                // Milestones should only be completable if they are saved.
-                disabled={!isDisabled}
-                onCheckedChange={(checked) => {
-                  form.setValue(`milestones.${index}.complete`, !!checked)
-                  onToggleComplete(index, !!checked)
-                }}
-                id={`milestone-${index}-complete`}
-                name={`milestones[${index}].complete`}
-              />
-            </FormControl>
-          </FormItem>
-        )}
+
+      {/* Completion Checkbox */}
+      <Checkbox
+        checked={milestone.complete}
+        disabled={!isDisabled}
+        onCheckedChange={(checked) => {
+          if (typeof checked === 'boolean') {
+            form.setValue(`milestones.${index}.complete`, checked)
+            onToggleComplete(index, checked)
+          }
+        }}
+        className="mr-2"
       />
+
+      {/* Name Display/Input Field */}
       {isDisabled ? (
-        <Input
-          value={nameValue}
-          disabled
-          className="flex-1 max-w-[50%]"
-          id={`milestone-${index}-name`}
-          name={`milestones[${index}].name`}
-        />
+        <span className="flex-1 text-sm text-left">{milestone.name}</span>
       ) : (
         <Input
-          value={nameValue}
-          onChange={handleNameChange}
+          ref={nameRef}
+          placeholder="Milestone name"
+          defaultValue={milestone.name}
+          disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          className="flex-1"
-          autoFocus
-          id={`milestone-${index}-name`}
-          name={`milestones[${index}].name`}
+          autoFocus={!isDisabled}
         />
       )}
-      <BookOpen className="h-4 w-4" />
+
+      {/* Event Display/Input Field */}
       {isDisabled ? (
-        <Badge
-          variant="secondary"
-          className="justify-start w-auto min-w-0 flex-none">
-          {eventValue || <span className="opacity-50">No event</span>}
+        <Badge variant="secondary" className="flex-1 justify-start">
+          <BookOpenIcon className="h-4 w-4" />
+          {milestone.event}
         </Badge>
       ) : (
         <Input
-          value={eventValue}
-          onChange={handleEventChange}
+          ref={eventRef}
+          placeholder="Event description"
+          defaultValue={milestone.event}
+          disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          className="flex-1"
-          id={`milestone-${index}-event`}
-          name={`milestones[${index}].event`}
         />
       )}
-      <div className="flex items-center gap-2 ml-auto">
-        {isDisabled ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => onEdit(index)}
-            title="Edit milestone">
-            <PencilIcon className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => onSave(index, nameValue, eventValue)}
-            title="Save milestone">
-            <CheckIcon className="h-4 w-4" />
-          </Button>
-        )}
+
+      {/* Interaction Buttons */}
+      {isDisabled ? (
         <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 ml-2"
           type="button"
-          onClick={() => onRemove(index)}>
-          <TrashIcon className="h-4 w-4" />
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() => onEdit(index)}
+          title="Edit milestone">
+          <PencilIcon className="h-4 w-4" />
         </Button>
-      </div>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() =>
+            onSave(index, nameRef.current!.value, eventRef.current!.value)
+          }
+          title="Save milestone">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        onClick={() => onRemove(index)}>
+        <TrashIcon className="h-4 w-4" />
+      </Button>
     </div>
   )
 }
 
 /**
  * New Milestone Item Component
+ *
+ * Component for adding a new milestone item.
+ * Provides input fields for name and event with save/cancel functionality.
+ *
+ * @param props New milestone item properties
+ * @returns New Milestone Item Component
  */
 export function NewMilestoneItem({
-  index,
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewMilestoneItemProps): ReactElement {
-  const [name, setName] = useState<string | undefined>(undefined)
-  const [event, setEvent] = useState<string | undefined>(undefined)
+  const nameRef = useRef<HTMLInputElement>(null)
+  const eventRef = useRef<HTMLInputElement>(null)
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setName(e.target.value)
-
-  const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setEvent(e.target.value)
-
-  const handleSave = () => {
-    if (name && event && name.trim() !== '' && event.trim() !== '')
-      onSave(name.trim(), event)
-    else toast.warning('Cannot save a milestone without a name and event.')
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
-      handleSave()
+      onSave(nameRef.current.value, eventRef.current.value)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
     }
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
-      <Checkbox checked={false} disabled className="mt-2" />
+
+      {/* Completion Checkbox */}
+      <Checkbox checked={false} disabled className="mr-1" />
+
+      {/* Name Input Field */}
       <Input
-        placeholder="Add a milestone..."
-        value={name}
-        onChange={handleNameChange}
+        ref={nameRef}
+        placeholder="Milestone name"
+        defaultValue=""
         onKeyDown={handleKeyDown}
-        className="flex-1"
+        className="flex-1 mr-2"
         autoFocus
-        id={`milestone-new-${index}-name`}
-        name={`milestones[new-${index}].name`}
       />
-      <BookOpen />
+
+      {/* Event Input Field */}
       <Input
-        placeholder="Event..."
-        value={event}
-        onChange={handleEventChange}
+        ref={eventRef}
+        placeholder="Event description"
+        defaultValue=""
         onKeyDown={handleKeyDown}
-        className="flex-1"
-        id={`milestone-new-${index}-event`}
-        name={`milestones[new-${index}].event`}
+        className="flex-1 pr-8"
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={handleSave}
+        className="ml-2"
+        onClick={() =>
+          onSave(nameRef.current?.value || '', eventRef.current?.value || '')
+        }
         title="Save milestone">
         <CheckIcon className="h-4 w-4" />
       </Button>
-      <Button type="button" variant="ghost" size="icon" onClick={onCancel}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onCancel}
+        title="Cancel">
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>

@@ -5,9 +5,15 @@ import {
   PatternItem
 } from '@/components/settlement/patterns/pattern-item'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -23,15 +29,25 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Patterns Card Component
+ *
+ * Displays and manages an editable and draggable list of crafting patterns.
+ * Users can add, edit, remove, and reorder pattern items. All changes are
+ * automatically saved to localStorage with appropriate validation and user feedback.
+ *
+ * @param form Settlement form instance
+ * @returns Patterns Card Component
  */
-export function PatternsCard(form: UseFormReturn<Settlement>) {
+export function PatternsCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
   const patterns = useMemo(() => form.watch('patterns') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -61,11 +77,57 @@ export function PatternsCard(form: UseFormReturn<Settlement>) {
   const addPattern = () => setIsAddingNew(true)
 
   /**
+   * Save patterns to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedPatterns Updated Patterns
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedPatterns: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          patterns: updatedPatterns
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].patterns = updatedPatterns
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Pattern Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the removal of a pattern.
    *
    * @param index Pattern Index
    */
-  const handleRemovePattern = (index: number) => {
+  const onRemove = (index: number) => {
     const currentPatterns = [...patterns]
 
     currentPatterns.splice(index, 1)
@@ -83,64 +145,76 @@ export function PatternsCard(form: UseFormReturn<Settlement>) {
       return next
     })
 
-    // Update localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].patterns = currentPatterns
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-      toast.success('The vision has been banished from memory.')
-    } catch (error) {
-      console.error('Pattern Remove Error:', error)
-      toast.error('The vision resists being forgotten. Please try again.')
-    }
+    saveToLocalStorage(
+      currentPatterns,
+      'The vision has been banished from memory.'
+    )
   }
 
   /**
-   * Handles the saving of a new pattern.
+   * Handles saving a new pattern or impairment.
    *
    * @param value Pattern Value
+   * @param i Pattern Index (When Updating Only)
    */
-  const savePattern = (value: string) => {
+  const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.warning('A nameless pattern cannot be preserved.')
+      return toast.error('A nameless pattern cannot be preserved.')
 
-    const newPatterns = [...patterns, value]
-
-    form.setValue('patterns', newPatterns)
-    setDisabledInputs((prev) => ({ ...prev, [newPatterns.length - 1]: true }))
-    setIsAddingNew(false)
-
-    // Update localStorage
     try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].patterns = newPatterns
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-      toast.success('The darkness has granted a new insight.')
+      SettlementSchema.shape.patterns.parse([value])
     } catch (error) {
-      console.error('Pattern Save Error:', error)
-      toast.error(
-        'The vision fades before it can be captured. Please try again.'
-      )
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
     }
+
+    const updatedPatterns = [...patterns]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedPatterns[i] = value
+      form.setValue(`patterns.${i}`, value)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedPatterns.push(value)
+
+      form.setValue('patterns', updatedPatterns)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedPatterns.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedPatterns,
+      i !== undefined
+        ? 'The pattern has been etched into memory.'
+        : 'The darkness has granted a new insight.'
+    )
+    setIsAddingNew(false)
   }
 
-  const editPattern = (index: number) =>
+  /**
+   * Enables editing a value.
+   *
+   * @param index Pattern Index
+   */
+  const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles the end of a drag event.
+   * Handles the end of a drag event for reordering values.
    *
-   * @param event Event
+   * @param event Drag End Event
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -151,6 +225,7 @@ export function PatternsCard(form: UseFormReturn<Settlement>) {
       const newOrder = arrayMove(patterns, oldIndex, newIndex)
 
       form.setValue('patterns', newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -165,37 +240,43 @@ export function PatternsCard(form: UseFormReturn<Settlement>) {
 
         return next
       })
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].patterns = newOrder
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      } catch (error) {
-        console.error('Pattern Drag Error:', error)
-      }
     }
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Patterns
-        </CardTitle>
+    <Card>
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Patterns
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addPattern}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
+        <CardDescription className="text-left text-xs pb-1">
+          Patterns gained only when instructed.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          {patterns.length === 0 && !isAddingNew ? (
-            <div className="text-center text-muted-foreground py-4">
-              No patterns added yet.
-            </div>
-          ) : (
+
+      {/* Patterns List */}
+      <CardContent className="p-1 pb-2">
+        <div className="space-y-1">
+          {patterns.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -209,37 +290,10 @@ export function PatternsCard(form: UseFormReturn<Settlement>) {
                     id={index.toString()}
                     index={index}
                     form={form}
-                    handleRemovePattern={handleRemovePattern}
+                    onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => {
-                      form.setValue(`patterns.${i}`, value)
-                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-
-                      // Update localStorage
-                      try {
-                        const formValues = form.getValues()
-                        const campaign = getCampaign()
-                        const settlementIndex = campaign.settlements.findIndex(
-                          (s) => s.id === formValues.id
-                        )
-
-                        campaign.settlements[settlementIndex].patterns =
-                          formValues.patterns || []
-                        localStorage.setItem(
-                          'campaign',
-                          JSON.stringify(campaign)
-                        )
-                        toast.success(
-                          'The pattern has been etched into memory.'
-                        )
-                      } catch (error) {
-                        console.error('New Pattern Save Error:', error)
-                        toast.error(
-                          'Your insight slips away into the darkness. Please try again.'
-                        )
-                      }
-                    }}
-                    onEdit={editPattern}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
                   />
                 ))}
               </SortableContext>
@@ -247,24 +301,10 @@ export function PatternsCard(form: UseFormReturn<Settlement>) {
           )}
           {isAddingNew && (
             <NewPatternItem
-              onSave={savePattern}
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addPattern}
-              disabled={
-                isAddingNew ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Pattern
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

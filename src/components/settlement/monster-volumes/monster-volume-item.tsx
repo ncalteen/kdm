@@ -1,97 +1,98 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { getCampaign } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, startTransition, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 
 /**
  * Monster Volume Item Component Properties
  */
 export interface MonsterVolumeItemProps {
-  /** Remove Volume Callback */
-  handleRemoveVolume: (volume: string) => void
+  /** Form */
+  form: UseFormReturn<Settlement>
   /** Volume ID */
   id: string
-  /** Editing Status */
-  isEditing: boolean
-  /** OnCancelEdit Callback */
-  onCancelEdit: () => void
-  /** OnEdit Callback */
-  onEdit: () => void
-  /** OnSaveEdit Callback */
-  onSaveEdit: (name: string) => void
-  /** Volume Name */
-  volume: string
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** OnEdit Handler */
+  onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
  * New Monster Volume Item Component Properties
  */
 export interface NewMonsterVolumeItemProps {
-  /** Existing Names */
-  existingNames: string[]
-  /** Form */
-  form: UseFormReturn<Settlement>
-  /** OnAdd Callback */
-  onAdd: () => void
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (value?: string) => void
 }
 
 /**
  * Monster Volume Item Component
+ *
+ * @param props Monster Volume Item Component Properties
+ * @returns Monster Volume Item Component
  */
 export function MonsterVolumeItem({
-  handleRemoveVolume,
   id,
-  isEditing,
-  onCancelEdit,
+  index,
+  isDisabled,
+  form,
   onEdit,
-  onSaveEdit,
-  volume
+  onRemove,
+  onSave
 }: MonsterVolumeItemProps): ReactElement {
-  const [value, setValue] = useState<string | undefined>(volume)
-
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => setValue(volume), [volume])
+  useEffect(() => {
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`monsterVolumes.${index}`) || ''
 
-  /**
-   * Handles the save action for the edited volume.
-   */
-  const handleEditSave = () => {
-    if (!value || value.trim() === '')
-      return toast.warning('Cannot inscribe an unnamed monster volume.')
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
 
-    onSaveEdit(value.trim())
-    toast.success('Monster volume preserved in blood.')
-  }
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
+  }, [form, isDisabled, index])
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it saves the edited volume.
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
    */
-  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleEditSave()
+      onSave(inputRef.current.value, index)
     }
   }
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className="flex items-center gap-2 bg-background p-2 rounded-md border">
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
@@ -99,149 +100,112 @@ export function MonsterVolumeItem({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
 
-      {/* Volume Name */}
-      {isEditing ? (
-        <Input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleEditKeyDown}
-          className="flex-1"
-          autoFocus
-        />
+      {/* Input Field */}
+      <Input
+        ref={inputRef}
+        placeholder="Monster Volume"
+        defaultValue={form.getValues(`monsterVolumes.${index}`)}
+        disabled={isDisabled}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+      />
+
+      {/* Interaction Buttons */}
+      {isDisabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() => onEdit(index)}
+          title="Edit volume">
+          <PencilIcon className="h-4 w-4" />
+        </Button>
       ) : (
-        <div className="flex-1 text-sm text-left">{volume}</div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
+          title="Save volume">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
       )}
-
-      {/* Save/Edit/Delete Buttons */}
-      {isEditing ? (
-        <>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={handleEditSave}
-            title="Save volume">
-            <CheckIcon className="h-4 w-4" />
-          </Button>
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={onCancelEdit}
-            title="Cancel edit">
-            <TrashIcon className="h-4 w-4" />
-          </Button>
-        </>
-      ) : (
-        <>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={onEdit}
-            title="Edit volume">
-            <PencilIcon className="h-4 w-4" />
-          </Button>
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={() => handleRemoveVolume(volume)}>
-            <TrashIcon className="h-4 w-4" />
-          </Button>
-        </>
-      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        onClick={() => onRemove(index)}>
+        <TrashIcon className="h-4 w-4" />
+      </Button>
     </div>
   )
 }
 
 /**
  * New Monster Volume Item Component
+ *
+ * @param props New Monster Volume Item Component Props
  */
 export function NewMonsterVolumeItem({
-  form,
-  onAdd,
-  existingNames
+  onCancel,
+  onSave
 }: NewMonsterVolumeItemProps): ReactElement {
-  const [name, setName] = useState<string | undefined>(undefined)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleSubmit = () => {
-    if (!name || name.trim() === '')
-      return toast.warning('Cannot inscribe an unnamed monster volume.')
-
-    if (existingNames.includes(name.trim()))
-      return toast.warning('This monster volume has already been inscribed.')
-
-    startTransition(() => {
-      const monsterVolumes = [...(form.watch('monsterVolumes') || [])]
-      const updatedVolumes = [...monsterVolumes, name.trim()]
-
-      form.setValue('monsterVolumes', updatedVolumes)
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].monsterVolumes = updatedVolumes
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('New monster volume inscribed.')
-      } catch (error) {
-        console.error('New Monster Volume Save Error:', error)
-        toast.error('Failed to save new monster volume. Please try again.')
-      }
-
-      setName('')
-      onAdd()
-    })
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleSubmit()
+      onSave(inputRef.current.value)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
     }
   }
 
   return (
-    <div className="flex items-center gap-2 bg-muted/40 p-2 rounded-md">
+    <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
+      {/* Input Field */}
       <Input
-        placeholder="Add a monster volume..."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="flex-1"
+        ref={inputRef}
+        placeholder="Monster Volume"
+        defaultValue={''}
         onKeyDown={handleKeyDown}
+        className="flex-1"
         autoFocus
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="h-8 w-8 p-0"
-        onClick={handleSubmit}
-        title="Save monster volume">
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
+        title="Save volume">
         <CheckIcon className="h-4 w-4" />
       </Button>
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="h-8 w-8 p-0"
-        onClick={onAdd}
-        title="Cancel add volume">
+        onClick={onCancel}
+        title="Cancel">
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>

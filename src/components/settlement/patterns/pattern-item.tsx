@@ -6,7 +6,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -15,8 +15,6 @@ import { UseFormReturn } from 'react-hook-form'
 export interface PatternItemProps {
   /** Form */
   form: UseFormReturn<Settlement>
-  /** Remove Pattern Handler */
-  handleRemovePattern: (index: number) => void
   /** Pattern ID */
   id: string
   /** Index */
@@ -25,8 +23,10 @@ export interface PatternItemProps {
   isDisabled: boolean
   /** OnEdit Handler */
   onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
   /** OnSave Handler */
-  onSave: (index: number, value: string) => void
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
@@ -36,72 +36,88 @@ export interface NewPatternItemProps {
   /** OnCancel Handler */
   onCancel: () => void
   /** OnSave Handler */
-  onSave: (value: string) => void
+  onSave: (value?: string) => void
 }
 
 /**
  * Pattern Item Component
  *
- * @param props Pattern Item Component Props
+ * @param props Pattern Item Component Properties
+ * @returns Pattern Item Component
  */
 export function PatternItem({
-  index,
-  form,
-  handleRemovePattern,
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
+  form,
+  onEdit,
+  onRemove,
+  onSave
 }: PatternItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState<string | undefined>(
-    form.getValues(`patterns.${index}`)
-  )
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(
-    () => setValue(form.getValues(`patterns.${index}`)),
-    [form, isDisabled, index]
-  )
+  useEffect(() => {
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`patterns.${index}`) || ''
 
-  const style = { transform: CSS.Transform.toString(transform), transition }
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
+  }, [form, isDisabled, index])
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current index and value.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, value)
+      onSave(inputRef.current.value, index)
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
+
+      {/* Input Field */}
       <Input
+        ref={inputRef}
         placeholder="Pattern"
-        value={value}
+        defaultValue={form.getValues(`patterns.${index}`)}
         disabled={isDisabled}
-        onChange={(e) => !isDisabled && setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         className="flex-1"
+        autoFocus
       />
+
+      {/* Interaction Buttons */}
       {isDisabled ? (
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit pattern">
           <PencilIcon className="h-4 w-4" />
@@ -111,19 +127,17 @@ export function PatternItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => {
-            if (value) onSave(index, value)
-          }}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
           title="Save pattern">
           <CheckIcon className="h-4 w-4" />
         </Button>
       )}
       <Button
         variant="ghost"
-        size="sm"
+        size="icon"
         type="button"
-        className="h-8 w-8 p-0 ml-2"
-        onClick={() => handleRemovePattern(index)}>
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -132,46 +146,57 @@ export function PatternItem({
 
 /**
  * New Pattern Item Component
+ *
+ * @param props New Pattern Item Component Props
  */
 export function NewPatternItem({
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewPatternItemProps): ReactElement {
-  const [value, setValue] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field. If the Enter key is
-   * pressed, it prevents the default action and calls the onSave function with
-   * the current value. If the Escape key is pressed, it calls the onCancel
-   * function.
+   * Handles the key down event for the input field.
    *
-   * @param e Event
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(value)
-    } else if (e.key === 'Escape') onCancel()
+      onSave(inputRef.current.value)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
+      {/* Input Field */}
       <Input
+        ref={inputRef}
         placeholder="Pattern"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => onSave(value)}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
         title="Save pattern">
         <CheckIcon className="h-4 w-4" />
       </Button>

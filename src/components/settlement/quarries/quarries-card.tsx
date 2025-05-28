@@ -297,10 +297,10 @@ export function QuarriesCard({
   }
 
   return (
-    <Card>
-      <CardHeader className="px-4 py-4 pb-2">
+    <Card className="border-0">
+      <CardHeader className="px-1 py-4 pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             <SwordIcon className="h-4 w-4" />
             Quarries
             {!isAddingNew && (

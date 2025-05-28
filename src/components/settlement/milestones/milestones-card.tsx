@@ -5,45 +5,36 @@ import {
   NewMilestoneItem
 } from '@/components/settlement/milestones/milestone-item'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
-  closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { CircleCheckBigIcon, PlusCircleIcon } from 'lucide-react'
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Milestones Card Component
  */
-export function MilestonesCard(form: UseFormReturn<Settlement>) {
+export function MilestonesCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
   const milestones = useMemo(() => form.watch('milestones') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -56,7 +47,7 @@ export function MilestonesCard(form: UseFormReturn<Settlement>) {
       const next: { [key: number]: boolean } = {}
 
       milestones.forEach((_, i) => {
-        next[i] = prev[i] ?? true
+        next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
@@ -70,251 +61,265 @@ export function MilestonesCard(form: UseFormReturn<Settlement>) {
     })
   )
 
-  const addMilestone = useCallback(() => setIsAddingNew(true), [])
+  const addMilestone = () => setIsAddingNew(true)
 
-  const saveNewMilestone = useCallback(
-    (name: string, event: string) => {
-      if (milestones.some((m) => m.name === name)) {
-        toast.warning('This milestone already been recorded.')
-        return false
-      }
+  /**
+   * Save milestones to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedMilestones Updated Milestones
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedMilestones: typeof milestones,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      startTransition(() => {
-        const newMilestone = { name, complete: false, event }
-        const updated = [...milestones, newMilestone]
-
-        form.setValue('milestones', updated)
-        setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
-        setIsAddingNew(false)
-
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].milestones = updated
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-          toast.success("New milestone added to the settlement's fate!")
-        } catch (error) {
-          console.error('New Milestone Save Error:', error)
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          milestones: updatedMilestones
         }
-      })
 
-      return true
-    },
-    [milestones, form]
-  )
-
-  const cancelNewMilestone = useCallback(() => setIsAddingNew(false), [])
-
-  const handleRemoveMilestone = useCallback(
-    (index: number) => {
-      startTransition(() => {
-        const updated = [...milestones]
-        updated.splice(index, 1)
-
-        form.setValue('milestones', updated)
-
-        setDisabledInputs((prev) => {
-          const next = { ...prev }
-          delete next[index]
-          const reindexed: { [key: number]: boolean } = {}
-
-          Object.keys(next).forEach((k) => {
-            const num = parseInt(k)
-            if (num > index) reindexed[num - 1] = next[num]
-            else if (num < index) reindexed[num] = next[num]
-          })
-
-          return reindexed
-        })
-
-        // Update localStorage
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].milestones = updated
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success('Milestone fades into the void.')
+          SettlementSchema.parse(updatedSettlement)
         } catch (error) {
-          console.error('Milestone Remove Error:', error)
-          toast.error(
-            'The shadows devour your words - your stories are lost. Please try again.'
-          )
-        }
-      })
-    },
-    [milestones, form]
-  )
-
-  const handleEdit = useCallback((index: number) => {
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-  }, [])
-
-  const handleSave = useCallback(
-    (index: number, name: string, event: string) => {
-      if (!name || name.trim() === '')
-        return toast.warning('Cannot establish a nameless milestone.')
-
-      startTransition(() => {
-        const updated = [...milestones]
-        updated[index] = { ...updated[index], name, event }
-
-        form.setValue('milestones', updated)
-        setDisabledInputs((prev) => ({ ...prev, [index]: true }))
-
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].milestones = updated
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success('Milestone reshaped!')
-        } catch (error) {
-          console.error('Milestone Save Error:', error)
-          toast.error('Failed to save milestone. Please try again.')
-        }
-      })
-    },
-    [milestones, form]
-  )
-
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event
-
-      if (over && active.id !== over.id) {
-        requestAnimationFrame(() => {
-          const oldIndex = parseInt(active.id.toString())
-          const newIndex = parseInt(over.id.toString())
-          const newOrder = arrayMove(milestones, oldIndex, newIndex)
-
-          form.setValue('milestones', newOrder)
-
-          // Update localStorage
-          try {
-            const formValues = form.getValues()
-            const campaign = getCampaign()
-            const settlementIndex = campaign.settlements.findIndex(
-              (s) => s.id === formValues.id
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
             )
-
-            campaign.settlements[settlementIndex].milestones = newOrder
-            localStorage.setItem('campaign', JSON.stringify(campaign))
-          } catch (error) {
-            console.error('Milestone Drag Error:', error)
-          }
-        })
-      }
-    },
-    [milestones, form]
-  )
-
-  const handleMilestoneCompletionChange = useCallback(
-    (index: number, checked: boolean) => {
-      startTransition(() => {
-        const updated = [...milestones]
-        updated[index] = { ...updated[index], complete: checked }
-
-        form.setValue('milestones', updated)
-
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].milestones = updated
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success(
-            checked
-              ? 'Milestone completed - make sure to complete the appropriate story event.'
-              : 'Milestone updated.'
-          )
-        } catch (error) {
-          console.error('Milestone Completion Error:', error)
-          toast.error(
-            'Failed to update milestone completion status. Please try again.'
-          )
         }
+
+        campaign.settlements[settlementIndex].milestones = updatedMilestones
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Milestone Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
+   * Handles the removal of a milestone.
+   *
+   * @param index Milestone Index
+   */
+  const onRemove = (index: number) => {
+    const currentMilestones = [...milestones]
+
+    currentMilestones.splice(index, 1)
+    form.setValue('milestones', currentMilestones)
+
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
       })
-    },
-    [milestones, form]
-  )
+
+      return next
+    })
+
+    saveToLocalStorage(
+      currentMilestones,
+      'The milestone fades into the darkness.'
+    )
+  }
+
+  /**
+   * Handles saving a new milestone or updating an existing one.
+   *
+   * @param name Milestone Name
+   * @param event Event Description
+   * @param i Milestone Index (When Updating Only)
+   */
+  const onSave = (name?: string, event?: string, i?: number) => {
+    if (!name || name.trim() === '')
+      return toast.error('A nameless milestone cannot be recorded.')
+
+    if (!event || event.trim() === '')
+      return toast.error('A milestone without an event cannot be recorded.')
+
+    try {
+      SettlementSchema.shape.milestones.parse([
+        { name, event, complete: false }
+      ])
+    } catch (error) {
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
+    }
+
+    const updatedMilestones = [...milestones]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedMilestones[i] = { ...updatedMilestones[i], name, event }
+      form.setValue(`milestones.${i}.name`, name)
+      form.setValue(`milestones.${i}.event`, event)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedMilestones.push({ name, event, complete: false })
+
+      form.setValue('milestones', updatedMilestones)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedMilestones.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedMilestones,
+      i !== undefined
+        ? 'Milestone chronicles have been updated.'
+        : "A new milestone marks the settlement's destiny."
+    )
+    setIsAddingNew(false)
+  }
+
+  /**
+   * Enables editing a milestone.
+   *
+   * @param index Milestone Index
+   */
+  const onEdit = (index: number) =>
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+
+  /**
+   * Handles the end of a drag event for reordering milestones.
+   *
+   * @param event Drag End Event
+   */
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id.toString())
+      const newIndex = parseInt(over.id.toString())
+      const newOrder = arrayMove(milestones, oldIndex, newIndex)
+
+      form.setValue('milestones', newOrder)
+      saveToLocalStorage(newOrder)
+
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+
+        return next
+      })
+    }
+  }
+
+  /**
+   * Handles milestone completion toggle.
+   *
+   * @param index Milestone Index
+   * @param checked Completion Status
+   */
+  const onToggleComplete = (index: number, checked: boolean) => {
+    const updatedMilestones = [...milestones]
+    updatedMilestones[index] = {
+      ...updatedMilestones[index],
+      complete: checked
+    }
+
+    form.setValue('milestones', updatedMilestones)
+    saveToLocalStorage(
+      updatedMilestones,
+      checked
+        ? 'Milestone achieved - the settlement progresses through the darkness.'
+        : 'Milestone status updated.'
+    )
+  }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <CircleCheckBigIcon className="h-4 w-4" />
-          Settlement Milestones
-        </CardTitle>
-        <CardDescription className="text-left text-xs">
-          Trigger these effects when the milestone condition is met.
-        </CardDescription>
+    <Card>
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Milestones{' '}
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addMilestone}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={milestones.map((_, index) => index.toString())}
-              strategy={verticalListSortingStrategy}>
-              {milestones.map((milestone, index) => (
-                <MilestoneItem
-                  key={index}
-                  id={index.toString()}
-                  milestone={milestone}
-                  index={index}
-                  form={form}
-                  isDisabled={!!disabledInputs[index]}
-                  onSave={handleSave}
-                  onEdit={handleEdit}
-                  onRemove={handleRemoveMilestone}
-                  onToggleComplete={handleMilestoneCompletionChange}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+
+      {/* Milestones List */}
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
+          {milestones.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={milestones.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {milestones.map((milestone, index) => (
+                  <MilestoneItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    milestone={milestone}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(i, name, event) => onSave(name, event, i)}
+                    onEdit={onEdit}
+                    onToggleComplete={onToggleComplete}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
           {isAddingNew && (
             <NewMilestoneItem
-              index={milestones.length}
-              onSave={saveNewMilestone}
-              onCancel={cancelNewMilestone}
+              onSave={(name, event) => onSave(name, event)}
+              onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addMilestone}
-              disabled={
-                isAddingNew ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Milestone
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

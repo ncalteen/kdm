@@ -13,7 +13,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -29,17 +29,21 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Seed Patterns Card Component
  *
- * @param form Form
+ * @param form Settlement form instance
+ * @returns Seed Patterns Card Component
  */
-export function SeedPatternsCard(form: UseFormReturn<Settlement>) {
+export function SeedPatternsCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
   const seedPatterns = useMemo(() => form.watch('seedPatterns') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -69,11 +73,57 @@ export function SeedPatternsCard(form: UseFormReturn<Settlement>) {
   const addSeedPattern = () => setIsAddingNew(true)
 
   /**
+   * Save seed patterns to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedSeedPatterns Updated Seed Patterns
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedSeedPatterns: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          seedPatterns: updatedSeedPatterns
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].seedPatterns = updatedSeedPatterns
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Seed Pattern Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
    * Handles the removal of a seed pattern.
    *
    * @param index Seed Pattern Index
    */
-  const handleRemoveSeedPattern = (index: number) => {
+  const onRemove = (index: number) => {
     const currentSeedPatterns = [...seedPatterns]
 
     currentSeedPatterns.splice(index, 1)
@@ -91,67 +141,74 @@ export function SeedPatternsCard(form: UseFormReturn<Settlement>) {
       return next
     })
 
-    // Update localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].seedPatterns = currentSeedPatterns
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-      toast.success('The seed pattern has been consumed by darkness.')
-    } catch (error) {
-      console.error('Seed Pattern Remove Error:', error)
-      toast.error('The seed pattern resists being forgotten. Please try again.')
-    }
+    saveToLocalStorage(
+      currentSeedPatterns,
+      'The seed pattern has been consumed by darkness.'
+    )
   }
 
   /**
-   * Saves a seed pattern.
+   * Handles saving a new seed pattern.
    *
    * @param value Seed Pattern Value
+   * @param i Seed Pattern Index (When Updating Only)
    */
-  const saveSeedPattern = (value: string) => {
+  const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.warning('Nameless seed patterns cannot be preserved.')
+      return toast.error('A nameless seed pattern cannot be preserved.')
 
-    const newSeedPatterns = [...seedPatterns, value]
-
-    form.setValue('seedPatterns', newSeedPatterns)
-
-    setDisabledInputs((prev) => ({
-      ...prev,
-      [newSeedPatterns.length - 1]: true
-    }))
-
-    setIsAddingNew(false)
-
-    // Update localStorage
     try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].seedPatterns = newSeedPatterns
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-      toast.success("A new revelation awakens in the survivors' minds.")
+      SettlementSchema.shape.seedPatterns.parse([value])
     } catch (error) {
-      console.error('Seed Pattern Save Error:', error)
-      toast.error(
-        'The wisdom slips through your fingers like smoke. Please try again.'
-      )
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
     }
+
+    const updatedSeedPatterns = [...seedPatterns]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedSeedPatterns[i] = value
+      form.setValue(`seedPatterns.${i}`, value)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedSeedPatterns.push(value)
+
+      form.setValue('seedPatterns', updatedSeedPatterns)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedSeedPatterns.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedSeedPatterns,
+      i !== undefined
+        ? 'The enlightened vision is carved into memory.'
+        : "A new revelation awakens in the survivors' minds."
+    )
+    setIsAddingNew(false)
   }
 
-  const editSeedPattern = (index: number) =>
+  /**
+   * Enables editing a value.
+   *
+   * @param index Seed Pattern Index
+   */
+  const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles the drag end event.
+   * Handles the end of a drag event for reordering values.
    *
    * @param event Drag End Event
    */
@@ -164,6 +221,7 @@ export function SeedPatternsCard(form: UseFormReturn<Settlement>) {
       const newOrder = arrayMove(seedPatterns, oldIndex, newIndex)
 
       form.setValue('seedPatterns', newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -178,40 +236,43 @@ export function SeedPatternsCard(form: UseFormReturn<Settlement>) {
 
         return next
       })
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].seedPatterns = newOrder
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      } catch (error) {
-        console.error('Seed Pattern Drag Error:', error)
-      }
     }
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Seed Patterns
-        </CardTitle>
-        <CardDescription className="text-left">
+    <Card>
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Seed Patterns
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addSeedPattern}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
+        <CardDescription className="text-left text-xs pb-1">
           Patterns gained when survivors reach 3 understanding.
         </CardDescription>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          {seedPatterns.length === 0 && !isAddingNew ? (
-            <div className="text-center text-muted-foreground py-4">
-              No seed patterns added yet.
-            </div>
-          ) : (
+
+      {/* Seed Patterns List */}
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
+          {seedPatterns.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -225,37 +286,10 @@ export function SeedPatternsCard(form: UseFormReturn<Settlement>) {
                     id={index.toString()}
                     index={index}
                     form={form}
-                    handleRemoveSeedPattern={handleRemoveSeedPattern}
+                    onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => {
-                      form.setValue(`seedPatterns.${i}`, value)
-                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-
-                      // Update localStorage
-                      try {
-                        const formValues = form.getValues()
-                        const campaign = getCampaign()
-                        const settlementIndex = campaign.settlements.findIndex(
-                          (s) => s.id === formValues.id
-                        )
-
-                        campaign.settlements[settlementIndex].seedPatterns =
-                          formValues.seedPatterns || []
-                        localStorage.setItem(
-                          'campaign',
-                          JSON.stringify(campaign)
-                        )
-                        toast.success(
-                          'The enlightened vision is carved into memory.'
-                        )
-                      } catch (error) {
-                        console.error('New Seed Pattern Save Error:', error)
-                        toast.error(
-                          'This awakened insight proves elusive. Please try again.'
-                        )
-                      }
-                    }}
-                    onEdit={editSeedPattern}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
                   />
                 ))}
               </SortableContext>
@@ -263,24 +297,10 @@ export function SeedPatternsCard(form: UseFormReturn<Settlement>) {
           )}
           {isAddingNew && (
             <NewSeedPatternItem
-              onSave={saveSeedPattern}
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addSeedPattern}
-              disabled={
-                isAddingNew ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Seed Pattern
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

@@ -251,7 +251,7 @@ export function AbilitiesAndImpairmentsCard({
       <CardHeader className="px-3 py-2 pb-2">
         <div className="flex justify-between items-center">
           {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             Abilities & Impairments{' '}
             {!isAddingNew && (
               <div className="flex justify-center">
