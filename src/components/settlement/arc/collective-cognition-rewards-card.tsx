@@ -146,9 +146,7 @@ export function CollectiveCognitionRewardsCard(
       return toast.error('A nameless reward cannot be recorded.')
 
     if (cc === undefined || cc < 0)
-      return toast.error(
-        'A reward must have a valid collective cognition value.'
-      )
+      return toast.error('A reward must have a collective cognition target.')
 
     const updatedRewards = [...ccRewards]
 
