@@ -4,98 +4,110 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { getCampaign } from '@/lib/utils'
-import { CollectiveCognitionReward, Settlement } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 
 /**
- * Collective Cognition Reward Item Properties
+ * Reward Item Component Properties
  */
 export interface RewardItemProps {
-  /** Collective Cognition Reward ID */
-  id: string
-  /** Is Editing */
-  isEditing: boolean
-  /** Collective Cognition Reward */
-  reward: CollectiveCognitionReward
-  /** Handle Remove Reward */
-  handleRemoveReward: (rewardName: string) => void
-  /** Handle Toggle Unlocked */
-  handleToggleUnlocked: (rewardName: string, unlocked: boolean) => void
-  /** On Cancel Edit */
-  onCancelEdit: () => void
-  /** On Edit */
-  onEdit: () => void
-  /** On Save Edit */
-  onSaveEdit: (name: string, cc: number) => void
-}
-
-/**
- * New Collective Cognition Reward Item Properties
- */
-export interface NewRewardItemProps {
   /** Form */
   form: UseFormReturn<Settlement>
-  /** On Add */
-  onAdd: () => void
-  /** On Cancel */
-  onCancel: () => void
+  /** Reward ID */
+  id: string
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** OnEdit Handler */
+  onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
+  onSave: (name?: string, cc?: number, index?: number) => void
+  /** OnToggleUnlocked Handler */
+  onToggleUnlocked: (index: number, unlocked: boolean) => void
 }
 
 /**
- * Collective Cognition Reward Item
+ * New Reward Item Component Properties
+ */
+export interface NewRewardItemProps {
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (name?: string, cc?: number) => void
+}
+
+/**
+ * Reward Item Component
+ *
+ * @param props Reward Item Component Properties
+ * @returns Reward Item Component
  */
 export function RewardItem({
   id,
-  isEditing,
-  reward,
-  handleRemoveReward,
-  handleToggleUnlocked,
-  onCancelEdit,
+  index,
+  isDisabled,
+  form,
   onEdit,
-  onSaveEdit
-}: RewardItemProps) {
+  onRemove,
+  onSave,
+  onToggleUnlocked
+}: RewardItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
-  const [editName, setEditName] = useState<string | undefined>(reward.name)
-  const [editCC, setEditCC] = useState<number>(reward.cc)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  const ccInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setEditName(reward.name)
-    setEditCC(reward.cc)
-  }, [reward.name, reward.cc])
+    if (nameInputRef.current) {
+      const reward = form.getValues(`ccRewards.${index}`)
+      nameInputRef.current.value = reward?.name || ''
+    }
+    if (ccInputRef.current) {
+      const reward = form.getValues(`ccRewards.${index}`)
+      ccInputRef.current.value = reward?.cc?.toString() || '1'
+    }
 
-  const handleEditSave = () => {
-    if (!editName || editName.trim() === '')
-      return toast.warning('A nameless gift cannot be manifested.')
+    if (!isDisabled && nameInputRef.current) {
+      nameInputRef.current.focus()
 
-    onSaveEdit(editName.trim(), editCC)
-    toast.success('The settlement eagerly awaits this reward.')
-  }
+      const val = nameInputRef.current.value
+      nameInputRef.current.value = ''
+      nameInputRef.current.value = val
+    }
+  }, [form, isDisabled, index])
 
-  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input fields.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * values.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
-      handleEditSave()
+      const ccValue = parseInt(ccInputRef.current.value) || 1
+      onSave(nameInputRef.current.value, ccValue, index)
     }
   }
+
+  const reward = form.getValues(`ccRewards.${index}`)
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className="flex items-center gap-2 bg-background p-2 rounded-md border">
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center gap-2">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
@@ -103,222 +115,157 @@ export function RewardItem({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
 
+      {/* Unlocked Checkbox */}
       <Checkbox
-        checked={reward.unlocked}
+        checked={reward?.unlocked || false}
         onCheckedChange={(checked) => {
           if (checked !== 'indeterminate') {
-            handleToggleUnlocked(reward.name, checked)
+            onToggleUnlocked(index, checked)
           }
         }}
-        disabled={isEditing}
-        name={`reward-unlocked-${id}`}
-        id={`reward-unlocked-${id}`}
+        disabled={!isDisabled}
       />
 
+      {/* CC Value Input */}
       <div className="flex items-center">
-        <FormLabel htmlFor={`reward-cc-${id}`} className="mr-2 text-sm">
-          CC:
-        </FormLabel>
-        {isEditing ? (
-          <Input
-            type="number"
-            className="w-12 h-8 text-sm no-spinners"
-            value={editCC}
-            onChange={(e) => {
-              const value = parseInt(e.target.value)
-              if (!isNaN(value) && value >= 0) setEditCC(value)
-            }}
-            min={0}
-            onKeyDown={handleEditKeyDown}
-            autoFocus
-            name={`reward-cc-${id}`}
-            id={`reward-cc-${id}`}
-          />
-        ) : (
-          <Input
-            type="number"
-            className="w-12 h-8 text-sm no-spinners"
-            value={reward.cc}
-            onChange={() => {}}
-            min={0}
-            disabled
-            name={`reward-cc-${id}`}
-            id={`reward-cc-${id}`}
-          />
-        )}
+        <FormLabel className="mr-2 text-sm">CC:</FormLabel>
+        <Input
+          ref={ccInputRef}
+          type="number"
+          className="w-16 h-8 text-sm"
+          defaultValue={reward?.cc || 1}
+          disabled={isDisabled}
+          min={0}
+          onKeyDown={handleKeyDown}
+        />
       </div>
 
-      <div className="flex-1 text-sm text-left">
-        {isEditing ? (
-          <Input
-            value={editName}
-            onChange={(e) => setEditName(e.target.value)}
-            onKeyDown={handleEditKeyDown}
-            className="flex-1"
-            autoFocus
-            name={`reward-name-${id}`}
-            id={`reward-name-${id}`}
-          />
-        ) : (
-          reward.name
-        )}
-      </div>
+      {/* Reward Name Input */}
+      <Input
+        ref={nameInputRef}
+        placeholder="Reward Name"
+        defaultValue={reward?.name || ''}
+        disabled={isDisabled}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus={!isDisabled}
+      />
 
-      {isEditing ? (
-        <>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={handleEditSave}
-            title="Save reward">
-            <CheckIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={onCancelEdit}
-            title="Cancel edit">
-            <TrashIcon className="h-4 w-4" />
-          </Button>
-        </>
+      {/* Action Buttons */}
+      {isDisabled ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() => onEdit(index)}
+          title="Edit reward">
+          <PencilIcon className="h-4 w-4" />
+        </Button>
       ) : (
-        <>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={onEdit}
-            title="Edit reward">
-            <PencilIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 p-0"
-            onClick={() => handleRemoveReward(reward.name)}>
-            <TrashIcon className="h-4 w-4" />
-          </Button>
-        </>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() => {
+            if (nameInputRef.current && ccInputRef.current) {
+              const ccValue = parseInt(ccInputRef.current.value) || 1
+              onSave(nameInputRef.current.value, ccValue, index)
+            }
+          }}
+          title="Save reward">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
       )}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => onRemove(index)}
+        title="Remove reward">
+        <TrashIcon className="h-4 w-4" />
+      </Button>
     </div>
   )
 }
 
 /**
- * New Collective Cognition Reward Item
+ * New Reward Item Component
  *
- * @param opts Options
- * @returns New Collective Cognition Reward Item Component
+ * @param props New Reward Item Component Props
  */
 export function NewRewardItem({
-  form,
-  onAdd,
-  onCancel
+  onCancel,
+  onSave
 }: NewRewardItemProps): ReactElement {
-  const [name, setName] = useState<string | undefined>()
-  const [cc, setCc] = useState(1)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  const ccInputRef = useRef<HTMLInputElement>(null)
 
-  const handleSubmit = () => {
-    if (!name || name.trim() === '')
-      return toast.warning('A nameless gift cannot be manifested.')
-
-    const rewards = [...(form.watch('ccRewards') || [])]
-
-    if (rewards.some((r) => r.name === name.trim()))
-      return toast.warning('This dark gift already exists.')
-
-    const newReward = {
-      name: name.trim(),
-      cc: cc,
-      unlocked: false
-    }
-
-    const updatedRewards = [...rewards, newReward]
-    form.setValue('ccRewards', updatedRewards)
-
-    // Save to localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].ccRewards = updatedRewards
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('A new gift manifests from the darkness.')
-      }
-    } catch (error) {
-      console.error('New Reward Submit Error:', error)
-      toast.error('Failed to save the new reward. Please try again.')
-    }
-
-    // Reset form
-    setName(undefined)
-    setCc(1)
-    onAdd()
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input fields.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * values. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
-      handleSubmit()
+      const ccValue = parseInt(ccInputRef.current.value) || 1
+      onSave(nameInputRef.current.value, ccValue)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
     }
   }
 
   return (
-    <div className="flex items-center gap-2 bg-muted/40 p-2 rounded-md">
+    <div className="flex items-center gap-2">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
 
-      <Checkbox disabled name="new-reward-unlocked" id="new-reward-unlocked" />
+      {/* Unlocked Checkbox */}
+      <Checkbox disabled />
 
+      {/* CC Value Input */}
       <div className="flex items-center">
-        <FormLabel htmlFor="new-reward-cc" className="mr-2 text-sm">
-          CC:
-        </FormLabel>
+        <FormLabel className="mr-2 text-sm">CC:</FormLabel>
         <Input
+          ref={ccInputRef}
           type="number"
-          className="w-12 h-8 text-sm no-spinners"
-          value={cc}
-          onChange={(e) => {
-            const value = parseInt(e.target.value)
-            if (!isNaN(value) && value >= 0) {
-              setCc(value)
-            }
-          }}
+          className="w-16 h-8 text-sm"
+          defaultValue={1}
           min={0}
           onKeyDown={handleKeyDown}
-          name="new-reward-cc"
-          id="new-reward-cc"
         />
       </div>
 
+      {/* Reward Name Input */}
       <Input
-        placeholder="Add a new reward..."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="flex-1"
+        ref={nameInputRef}
+        placeholder="Reward Name"
+        defaultValue={''}
         onKeyDown={handleKeyDown}
+        className="flex-1"
         autoFocus
-        name="new-reward-name"
-        id="new-reward-name"
       />
 
+      {/* Action Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="h-8 w-8 p-0"
-        onClick={handleSubmit}
+        className="ml-2"
+        onClick={() => {
+          if (nameInputRef.current && ccInputRef.current) {
+            const ccValue = parseInt(ccInputRef.current.value) || 1
+            onSave(nameInputRef.current.value, ccValue)
+          }
+        }}
         title="Save reward">
         <CheckIcon className="h-4 w-4" />
       </Button>
@@ -326,9 +273,8 @@ export function NewRewardItem({
         type="button"
         variant="ghost"
         size="icon"
-        className="h-8 w-8 p-0"
         onClick={onCancel}
-        title="Cancel add reward">
+        title="Cancel">
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>

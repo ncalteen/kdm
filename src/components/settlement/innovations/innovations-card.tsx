@@ -7,7 +7,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -23,33 +23,35 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { LightbulbIcon, PlusCircleIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Innovations Card Component
  */
-export function InnovationsCard(form: UseFormReturn<Settlement>) {
+export function InnovationsCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
   const innovations = useMemo(() => form.watch('innovations') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => setIsAddingNew(false), [innovations])
-
   useEffect(() => {
-    const initialDisabled: { [key: number]: boolean } = {}
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
 
-    innovations.forEach((innovation, idx) => {
-      if (innovation && innovation.trim() !== '') initialDisabled[idx] = true
+      innovations.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
+      })
+
+      return next
     })
-
-    setDisabledInputs(initialDisabled)
   }, [innovations])
 
   const sensors = useSensors(
@@ -61,205 +63,230 @@ export function InnovationsCard(form: UseFormReturn<Settlement>) {
 
   const addInnovation = () => setIsAddingNew(true)
 
-  const saveNewInnovation = (value: string) => {
-    const currentInnovations = [...innovations, value]
-
-    form.setValue('innovations', currentInnovations)
-    setIsAddingNew(false)
-
-    // Update localStorage
+  /**
+   * Save innovations to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedInnovations Updated Innovations
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedInnovations: string[],
+    successMsg?: string
+  ) => {
     try {
       const formValues = form.getValues()
       const campaign = getCampaign()
       const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
+        (s: { id: number }) => s.id === formValues.id
       )
 
-      campaign.settlements[settlementIndex].innovations = currentInnovations
-      localStorage.setItem('campaign', JSON.stringify(campaign))
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          innovations: updatedInnovations
+        }
 
-      toast.success('A new understanding emerges from the void.')
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].innovations = updatedInnovations
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
     } catch (error) {
-      console.error('New Innovation Save Error:', error)
-      toast.error(
-        'The shadows devour your words - your stories are lost. Please try again.'
-      )
+      console.error('Innovation Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
-  const cancelNewInnovation = () => setIsAddingNew(false)
-
-  const handleRemoveInnovation = (index: number) => {
+  /**
+   * Handles the removal of an innovation.
+   *
+   * @param index Innovation Index
+   */
+  const onRemove = (index: number) => {
     const currentInnovations = [...innovations]
 
     currentInnovations.splice(index, 1)
     form.setValue('innovations', currentInnovations)
 
-    // Remove from disabled inputs
-    const updatedDisabledInputs = { ...disabledInputs }
-    delete updatedDisabledInputs[index]
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
 
-    // Reindex the disabled inputs for the remaining items
-    const newDisabledInputs: { [key: number]: boolean } = {}
-    Object.keys(updatedDisabledInputs).forEach((key) => {
-      const numKey = parseInt(key)
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
 
-      if (numKey > index)
-        newDisabledInputs[numKey - 1] = updatedDisabledInputs[numKey]
-      else newDisabledInputs[numKey] = updatedDisabledInputs[numKey]
+      return next
     })
 
-    setDisabledInputs(newDisabledInputs)
+    saveToLocalStorage(
+      currentInnovations,
+      'The innovation has been consumed by darkness.'
+    )
+  }
 
-    // Update localStorage
+  /**
+   * Handles saving a new innovation.
+   *
+   * @param value Innovation Value
+   * @param i Innovation Index (When Updating Only)
+   */
+  const onSave = (value?: string, i?: number) => {
+    if (!value || value.trim() === '')
+      return toast.error('A nameless innovation cannot be recorded.')
+
     try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].innovations = currentInnovations
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('The epiphany has been consumed by darkness.')
+      SettlementSchema.shape.innovations.parse([value])
     } catch (error) {
-      console.error('Remove Innovation Error:', error)
-      toast.error(
-        'The shadows devour your words - your stories are lost. Please try again.'
-      )
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
     }
-  }
 
-  const saveInnovation = (index: number) => {
-    const currentInnovation = form.getValues(`innovations.${index}`)
+    const updatedInnovations = [...innovations]
 
-    if (!currentInnovation || currentInnovation.trim() === '')
-      return toast.warning('Cannot record an empty innovation.')
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedInnovations[i] = value
+      form.setValue(`innovations.${i}`, value)
 
-    // Mark this input as disabled (saved)
-    setDisabledInputs({
-      ...disabledInputs,
-      [index]: true
-    })
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedInnovations.push(value)
 
-    // Update localStorage
-    try {
-      const formValues = form.getValues()
-      const currentInnovations = formValues.innovations
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
+      form.setValue('innovations', updatedInnovations)
 
-      campaign.settlements[settlementIndex].innovations = currentInnovations
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('Innovation has been recorded.')
-    } catch (error) {
-      console.error('Innovation Save Error:', error)
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedInnovations.length - 1]: true
+      }))
     }
+
+    saveToLocalStorage(
+      updatedInnovations,
+      i !== undefined
+        ? 'The innovation has been updated.'
+        : 'A new understanding emerges from the void.'
+    )
+    setIsAddingNew(false)
   }
 
-  const editInnovation = (index: number) => {
-    // Mark this input as enabled (editable)
-    const updatedDisabledInputs = { ...disabledInputs }
+  /**
+   * Enables editing a value.
+   *
+   * @param index Innovation Index
+   */
+  const onEdit = (index: number) =>
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
-    updatedDisabledInputs[index] = false
-
-    setDisabledInputs(updatedDisabledInputs)
-  }
-
+  /**
+   * Handles the end of a drag event for reordering values.
+   *
+   * @param event Drag End Event
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-
       const newOrder = arrayMove(innovations, oldIndex, newIndex)
+
       form.setValue('innovations', newOrder)
+      saveToLocalStorage(newOrder)
 
-      // Reorder the disabled inputs state
-      const newDisabledInputs: { [key: number]: boolean } = {}
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
 
-      Object.keys(disabledInputs).forEach((key) => {
-        const numKey = parseInt(key)
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
 
-        if (numKey === oldIndex)
-          newDisabledInputs[newIndex] = disabledInputs[numKey]
-        else if (numKey >= newIndex && numKey < oldIndex)
-          newDisabledInputs[numKey + 1] = disabledInputs[numKey]
-        else if (numKey <= newIndex && numKey > oldIndex)
-          newDisabledInputs[numKey - 1] = disabledInputs[numKey]
-        else newDisabledInputs[numKey] = disabledInputs[numKey]
+        return next
       })
-
-      setDisabledInputs(newDisabledInputs)
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].innovations = newOrder
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      } catch (error) {
-        console.error('Innovation Drag Error:', error)
-      }
     }
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <LightbulbIcon className="h-5 w-5" /> Innovations
-        </CardTitle>
+    <Card className="mt-1">
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Innovations{' '}
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addInnovation}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={innovations.map((_, index) => index.toString())}
-              strategy={verticalListSortingStrategy}>
-              {innovations.map((Innovation, index) => (
-                <InnovationItem
-                  key={index}
-                  id={index.toString()}
-                  index={index}
-                  form={form}
-                  handleRemoveInnovation={handleRemoveInnovation}
-                  isDisabled={!!disabledInputs[index]}
-                  onSave={saveInnovation}
-                  onEdit={editInnovation}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+
+      <CardContent className="p-1 pb-2">
+        <div className="space-y-1">
+          {innovations.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={innovations.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {innovations.map((innovation, index) => (
+                  <InnovationItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
           {isAddingNew && (
             <NewInnovationItem
-              onSave={saveNewInnovation}
-              onCancel={cancelNewInnovation}
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addInnovation}
-              disabled={isAddingNew}>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Innovation
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

@@ -4,31 +4,32 @@ import { GearItem, NewGearItem } from '@/components/settlement/gear/gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
-  closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Gear Card Component
  */
-export function GearCard(form: UseFormReturn<Settlement>): ReactElement {
+export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
   const gear = useMemo(() => form.watch('gear') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -58,14 +59,57 @@ export function GearCard(form: UseFormReturn<Settlement>): ReactElement {
   const addGear = () => setIsAddingNew(true)
 
   /**
-   * Handles removing gear from the list
+   * Save gear to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedGear Updated Gear
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (updatedGear: string[], successMsg?: string) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          gear: updatedGear
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].gear = updatedGear
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Gear Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
+   * Handles the removal of gear.
    *
    * @param index Gear Index
    */
-  const handleRemoveGear = (index: number) => {
+  const onRemove = (index: number) => {
     const currentGear = [...gear]
-    currentGear.splice(index, 1)
 
+    currentGear.splice(index, 1)
     form.setValue('gear', currentGear)
 
     setDisabledInputs((prev) => {
@@ -80,63 +124,71 @@ export function GearCard(form: UseFormReturn<Settlement>): ReactElement {
       return next
     })
 
-    // Update localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].gear = currentGear
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      toast.success('The gear has been archived.')
-    } catch (error) {
-      console.error('Gear Remove Error:', error)
-      toast.error('Failed to archive gear. Please try again.')
-    }
+    saveToLocalStorage(currentGear, 'Gear consumed by the void.')
   }
 
   /**
-   * Handles saving a new gear item.
+   * Handles saving gear.
    *
-   * @param value Gear Item
+   * @param value Gear Value
+   * @param i Gear Index (When Updating Only)
    */
-  const saveGear = (value: string) => {
+  const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.warning('Cannot store nameless equipment.')
+      return toast.error('Nameless equipment cannot be stored.')
 
-    const newGear = [...gear, value]
-
-    form.setValue('gear', newGear)
-    setDisabledInputs((prev) => ({ ...prev, [newGear.length - 1]: true }))
-    setIsAddingNew(false)
-
-    // Update localStorage
     try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s) => s.id === formValues.id
-      )
-
-      campaign.settlements[settlementIndex].gear = newGear
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-      toast.success('Gear saved in the settlement storage.')
+      SettlementSchema.shape.gear.parse([value])
     } catch (error) {
-      console.error('Gear Save Error:', error)
-      toast.error('Failed to save gear. Please try again.')
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
     }
+
+    const updatedGear = [...gear]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedGear[i] = value
+      form.setValue(`gear.${i}`, value)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedGear.push(value)
+
+      form.setValue('gear', updatedGear)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedGear.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedGear,
+      i !== undefined ? 'Equipment secured.' : 'New gear forged from necessity.'
+    )
+    setIsAddingNew(false)
   }
 
-  const editGear = (index: number) =>
+  /**
+   * Enables editing gear.
+   *
+   * @param index Gear Index
+   */
+  const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles the end of a drag event.
+   * Handles the end of a drag event for reordering gear.
    *
-   * @param event Event
+   * @param event Drag End Event
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -147,13 +199,13 @@ export function GearCard(form: UseFormReturn<Settlement>): ReactElement {
       const newOrder = arrayMove(gear, oldIndex, newIndex)
 
       form.setValue('gear', newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
         Object.keys(prev).forEach((k) => {
           const num = parseInt(k)
-
           if (num === oldIndex) next[newIndex] = prev[num]
           else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
           else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
@@ -162,37 +214,40 @@ export function GearCard(form: UseFormReturn<Settlement>): ReactElement {
 
         return next
       })
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].gear = newOrder
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      } catch (error) {
-        console.error('Gear Drag Error:', error)
-      }
     }
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-1">
-          Gear Storage
-        </CardTitle>
+    <Card className="mt-1">
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Gear Storage{' '}
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addGear}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          {gear.length === 0 && !isAddingNew ? (
-            <div className="text-center text-muted-foreground py-4">
-              No gear obtained yet.
-            </div>
-          ) : (
+
+      {/* Gear List */}
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
+          {gear.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -206,36 +261,10 @@ export function GearCard(form: UseFormReturn<Settlement>): ReactElement {
                     id={index.toString()}
                     index={index}
                     form={form}
-                    handleRemoveGear={handleRemoveGear}
+                    onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
-                    onSave={(i, value) => {
-                      form.setValue(`gear.${i}`, value)
-                      setDisabledInputs((prev) => ({ ...prev, [i]: true }))
-
-                      // Update localStorage
-                      try {
-                        const formValues = form.getValues()
-                        const campaign = getCampaign()
-                        const settlementIndex = campaign.settlements.findIndex(
-                          (s) => s.id === formValues.id
-                        )
-
-                        campaign.settlements[settlementIndex].gear =
-                          formValues.gear || []
-                        localStorage.setItem(
-                          'campaign',
-                          JSON.stringify(campaign)
-                        )
-
-                        toast.success('Gear saved!')
-                      } catch (error) {
-                        console.error(
-                          'Error saving gear to localStorage:',
-                          error
-                        )
-                      }
-                    }}
-                    onEdit={editGear}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
                   />
                 ))}
               </SortableContext>
@@ -243,24 +272,10 @@ export function GearCard(form: UseFormReturn<Settlement>): ReactElement {
           )}
           {isAddingNew && (
             <NewGearItem
-              onSave={saveGear}
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addGear}
-              disabled={
-                isAddingNew ||
-                Object.values(disabledInputs).some((v) => v === false)
-              }>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Gear
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

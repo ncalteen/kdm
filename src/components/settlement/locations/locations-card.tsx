@@ -7,37 +7,39 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
 import {
-  closestCenter,
+  Location,
+  LocationSchema,
+  Settlement,
+  SettlementSchema
+} from '@/schemas/settlement'
+import {
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { HomeIcon, PlusCircleIcon } from 'lucide-react'
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Locations Card Component
  */
-export function LocationsCard(form: UseFormReturn<Settlement>) {
+export function LocationsCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
   const locations = useMemo(() => form.watch('locations') || [], [form])
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -55,7 +57,6 @@ export function LocationsCard(form: UseFormReturn<Settlement>) {
 
       return next
     })
-    setIsAddingNew(false)
   }, [locations])
 
   const sensors = useSensors(
@@ -67,144 +68,165 @@ export function LocationsCard(form: UseFormReturn<Settlement>) {
 
   const addLocation = () => setIsAddingNew(true)
 
-  const handleRemoveLocation = (index: number) => {
-    startTransition(() => {
-      const currentLocations = [...locations]
-      currentLocations.splice(index, 1)
-
-      form.setValue('locations', currentLocations)
-
-      setDisabledInputs((prev) => {
-        const next: { [key: number]: boolean } = {}
-
-        Object.keys(prev).forEach((k) => {
-          const num = parseInt(k)
-          if (num < index) next[num] = prev[num]
-          else if (num > index) next[num - 1] = prev[num]
-        })
-
-        return next
-      })
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].locations = currentLocations
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Location crumbles into the void.')
-      } catch (error) {
-        console.error('Location Remove Error:', error)
-        toast.error(
-          'The shadows devour your words - your stories are lost. Please try again.'
-        )
-      }
-    })
-  }
-
-  const saveLocation = (name: string, unlocked: boolean) => {
-    if (!name || name.trim() === '')
-      return toast.warning('Cannot save a nameless location.')
-
-    startTransition(() => {
-      const updated = [...locations, { name, unlocked }]
-      form.setValue('locations', updated)
-      setDisabledInputs((prev) => ({ ...prev, [updated.length - 1]: true }))
-      setIsAddingNew(false)
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].locations = updated
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('Location added to the settlement.')
-      } catch (error) {
-        console.error('New Location Save Error:', error)
-        toast.error('Failed to save location. Please try again.')
-      }
-    })
-  }
-
-  const saveExistingLocation = (
-    index: number,
-    name: string,
-    unlocked: boolean
+  /**
+   * Save locations to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedLocations Updated Locations
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedLocations: Location[],
+    successMsg?: string
   ) => {
-    if (!name || name.trim() === '')
-      return toast.warning('Cannot save a nameless location.')
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-    startTransition(() => {
-      form.setValue(`locations.${index}.name`, name)
-      form.setValue(`locations.${index}.unlocked`, unlocked)
-      setDisabledInputs((prev) => ({ ...prev, [index]: true }))
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          locations: updatedLocations
+        }
 
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
 
-        campaign.settlements[settlementIndex].locations =
-          formValues.locations || []
+        campaign.settlements[settlementIndex].locations = updatedLocations
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
-        toast.success('Location altered by adventurous hands.')
-      } catch (error) {
-        console.error('Location Save Error:', error)
-        toast.error('Failed to save location. Please try again.')
+        if (successMsg) toast.success(successMsg)
       }
-    })
+    } catch (error) {
+      console.error('Location Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
   }
 
-  const toggleLocationUnlocked = useCallback(
-    (index: number, unlocked: boolean) => {
-      startTransition(() => {
-        const updated = [...locations]
-        updated[index] = { ...updated[index], unlocked }
+  /**
+   * Handles the removal of a location.
+   *
+   * @param index Location Index
+   */
+  const onRemove = (index: number) => {
+    const currentLocations = [...locations]
 
-        form.setValue('locations', updated)
+    currentLocations.splice(index, 1)
+    form.setValue('locations', currentLocations)
 
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
 
-          campaign.settlements[settlementIndex].locations = updated
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-          toast.success(
-            unlocked
-              ? `${updated[index].name} location is now available.`
-              : `${updated[index].name} location is now unavailable.`
-          )
-        } catch (error) {
-          console.error('Location Toggle Error:', error)
-          toast.error('Failed to update location status. Please try again.')
-        }
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
       })
-    },
-    [locations, form]
-  )
 
-  const editLocation = (index: number) => {
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+      return next
+    })
+
+    saveToLocalStorage(currentLocations, 'The location has been removed.')
   }
 
+  /**
+   * Handles saving a new or updated location.
+   *
+   * @param name Location Name
+   * @param unlocked Location Unlocked State
+   * @param i Location Index (When Updating Only)
+   */
+  const onSave = (name?: string, unlocked?: boolean, i?: number) => {
+    if (!name || name.trim() === '')
+      return toast.error('A nameless location cannot be recorded.')
+
+    const locationData = { name: name.trim(), unlocked: unlocked || false }
+
+    try {
+      LocationSchema.parse(locationData)
+    } catch (error) {
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
+    }
+
+    const updatedLocations = [...locations]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedLocations[i] = locationData
+      form.setValue(`locations.${i}`, locationData)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedLocations.push(locationData)
+
+      form.setValue('locations', updatedLocations)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedLocations.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedLocations,
+      i !== undefined
+        ? 'The location has been updated.'
+        : 'A new location illuminates the settlement.'
+    )
+    setIsAddingNew(false)
+  }
+
+  /**
+   * Handles toggling the unlocked state of a location.
+   *
+   * @param index Location Index
+   * @param unlocked New Unlocked State
+   */
+  const onToggleUnlocked = (index: number, unlocked: boolean) => {
+    const currentLocations = [...locations]
+    currentLocations[index] = { ...currentLocations[index], unlocked }
+
+    form.setValue('locations', currentLocations)
+    saveToLocalStorage(
+      currentLocations,
+      unlocked
+        ? 'The location has been illuminated.'
+        : 'The location fades into darkness.'
+    )
+  }
+
+  /**
+   * Enables editing a value.
+   *
+   * @param index Location Index
+   */
+  const onEdit = (index: number) =>
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+
+  /**
+   * Handles the end of a drag event for reordering values.
+   *
+   * @param event Drag End Event
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -214,9 +236,11 @@ export function LocationsCard(form: UseFormReturn<Settlement>) {
       const newOrder = arrayMove(locations, oldIndex, newIndex)
 
       form.setValue('locations', newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
+
         Object.keys(prev).forEach((k) => {
           const num = parseInt(k)
           if (num === oldIndex) next[newIndex] = prev[num]
@@ -224,75 +248,72 @@ export function LocationsCard(form: UseFormReturn<Settlement>) {
           else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
           else next[num] = prev[num]
         })
+
         return next
       })
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].locations = newOrder
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      } catch (error) {
-        console.error('Location Drag Error:', error)
-      }
     }
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <HomeIcon className="h-4 w-4" /> Settlement Locations
-        </CardTitle>
+    <Card className="mt-1">
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Locations{' '}
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addLocation}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={locations.map((_, index) => index.toString())}
-              strategy={verticalListSortingStrategy}>
-              {locations.map((location, index) => (
-                <LocationItem
-                  key={index}
-                  id={index.toString()}
-                  index={index}
-                  form={form}
-                  handleRemoveLocation={handleRemoveLocation}
-                  toggleLocationUnlocked={toggleLocationUnlocked}
-                  isDisabled={!!disabledInputs[index]}
-                  onSave={saveExistingLocation}
-                  onEdit={editLocation}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+
+      {/* Locations List */}
+      <CardContent className="p-1 pb-2">
+        <div className="space-y-1">
+          {locations.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={locations.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {locations.map((location, index) => (
+                  <LocationItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
+                    onToggleUnlocked={onToggleUnlocked}
+                    onEdit={onEdit}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
           {isAddingNew && (
             <NewLocationItem
-              index={locations.length}
-              onSave={saveLocation}
+              onSave={onSave}
               onCancel={() => setIsAddingNew(false)}
             />
           )}
-
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addLocation}
-              disabled={isAddingNew}>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Location
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

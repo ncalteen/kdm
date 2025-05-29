@@ -8,40 +8,52 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Philosophy } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
-import { SettlementSchema } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
-  closestCenter,
   DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusCircleIcon, SparkleIcon } from 'lucide-react'
-import { useState } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
+import { ZodError } from 'zod'
 
 /**
  * Philosophies Card Component
  */
-export function PhilosophiesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-) {
-  const [showNewPhilosophyForm, setShowNewPhilosophyForm] =
-    useState<boolean>(false)
-  const [editingPhilosophy, setEditingPhilosophy] = useState<string | null>(
-    null
-  )
+export function PhilosophiesCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
+  const philosophies = useMemo(() => form.watch('philosophies') || [], [form])
 
-  const philosophies = form.watch('philosophies') || []
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+
+      philosophies.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
+      })
+
+      return next
+    })
+  }, [philosophies])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -50,166 +62,221 @@ export function PhilosophiesCard(
     })
   )
 
+  const addPhilosophy = () => setIsAddingNew(true)
+
+  /**
+   * Save philosophies to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedPhilosophies Updated Philosophies
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedPhilosophies: Philosophy[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          philosophies: updatedPhilosophies
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Philosophy Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
   /**
    * Handles the removal of a philosophy.
    *
-   * @param philosophy Philosophy
+   * @param index Philosophy Index
    */
-  const handleRemovePhilosophy = (philosophy: Philosophy) => {
-    const updatedPhilosophies = philosophies.filter((p) => p !== philosophy)
+  const onRemove = (index: number) => {
+    const currentPhilosophies = [...philosophies]
 
-    form.setValue('philosophies', updatedPhilosophies)
+    currentPhilosophies.splice(index, 1)
+    form.setValue('philosophies', currentPhilosophies)
 
-    // Save to localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
 
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Thoughts fade into the void.')
-      }
-    } catch (error) {
-      console.error('Philosophy Remove Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+
+      return next
+    })
+
+    saveToLocalStorage(currentPhilosophies, 'Thoughts fade into the void.')
   }
 
   /**
-   * Handles the update of a philosophy.
+   * Handles saving a new philosophy or updating an existing one.
    *
-   * @param oldPhilosophy Old Philosophy
-   * @param newPhilosophy New Philosophy
+   * @param value Philosophy Value
+   * @param i Philosophy Index (When Updating Only)
    */
-  const handleUpdatePhilosophy = (
-    oldPhilosophy: Philosophy,
-    newPhilosophy: Philosophy
-  ) => {
-    if (newPhilosophy.trim() === '')
-      return toast.warning('Cannot save nameless philosophies.')
+  const onSave = (value?: string, i?: number) => {
+    if (!value || value.trim() === '')
+      return toast.error('A nameless philosophy cannot be recorded.')
 
-    if (
-      philosophies.some(
-        (p) => p === newPhilosophy.trim() && p !== oldPhilosophy
-      )
+    const updatedPhilosophies = [...philosophies]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedPhilosophies[i] = value as Philosophy
+      form.setValue(`philosophies.${i}`, value as Philosophy)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedPhilosophies.push(value as Philosophy)
+
+      form.setValue('philosophies', updatedPhilosophies)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedPhilosophies.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedPhilosophies,
+      i !== undefined
+        ? 'Philosophy etched into memory.'
+        : 'A new philosophy emerges from the darkness.'
     )
-      return toast.warning(
-        'This philosophy already echoes throughout your settlement.'
-      )
+    setIsAddingNew(false)
+  }
 
-    const updatedPhilosophies = philosophies.map((p) => {
-      return p === oldPhilosophy ? newPhilosophy.trim() : p
-    }) as Philosophy[]
+  /**
+   * Enables editing a value.
+   *
+   * @param index Philosophy Index
+   */
+  const onEdit = (index: number) =>
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
-    form.setValue('philosophies', updatedPhilosophies)
-    setEditingPhilosophy(null)
+  /**
+   * Handles the end of a drag event for reordering values.
+   *
+   * @param event Drag End Event
+   */
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
 
-    // Save to localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id.toString())
+      const newIndex = parseInt(over.id.toString())
+      const newOrder = arrayMove(philosophies, oldIndex, newIndex)
 
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Philosophy etched into memory.')
-      }
-    } catch (error) {
-      console.error('Philosophy Update Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      form.setValue('philosophies', newOrder)
+      saveToLocalStorage(newOrder)
+
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+
+        return next
+      })
     }
   }
 
-  const addNewPhilosophy = () => setShowNewPhilosophyForm(false)
-
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <SparkleIcon className="h-4 w-4" /> Philosophies
-        </CardTitle>
+    <Card className="mt-1 px-2">
+      <CardHeader className="px-3 py-2 pb-2">
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Philosophies{' '}
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addPhilosophy}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          {philosophies.length > 0 && (
+
+      {/* Philosophies List */}
+      <CardContent className="p-1 pb-2">
+        <div className="space-y-1">
+          {philosophies.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
-              onDragEnd={(event) => {
-                const { active, over } = event
-                if (over && active.id !== over.id) {
-                  const oldIndex = philosophies.indexOf(active.id as Philosophy)
-                  const newIndex = philosophies.indexOf(over.id as Philosophy)
-                  const newOrder = arrayMove(philosophies, oldIndex, newIndex)
-
-                  form.setValue('philosophies', newOrder)
-
-                  // Save to localStorage
-                  try {
-                    const formValues = form.getValues()
-                    const campaign = getCampaign()
-                    const settlementIndex = campaign.settlements.findIndex(
-                      (s: { id: number }) => s.id === formValues.id
-                    )
-
-                    if (settlementIndex !== -1) {
-                      campaign.settlements[settlementIndex].philosophies =
-                        newOrder
-                      localStorage.setItem('campaign', JSON.stringify(campaign))
-                    }
-                  } catch (error) {
-                    console.error('Philosophy Drag Error:', error)
-                  }
-                }
-              }}>
+              onDragEnd={handleDragEnd}>
               <SortableContext
-                items={philosophies}
+                items={philosophies.map((_, index) => index.toString())}
                 strategy={verticalListSortingStrategy}>
-                {philosophies.map((philosophy) => (
+                {philosophies.map((philosophy, index) => (
                   <PhilosophyItem
-                    key={philosophy}
-                    id={philosophy}
-                    philosophy={philosophy}
-                    handleRemovePhilosophy={handleRemovePhilosophy}
-                    handleUpdatePhilosophy={handleUpdatePhilosophy}
-                    isEditing={editingPhilosophy === philosophy}
-                    onEdit={() => setEditingPhilosophy(philosophy)}
-                    onSaveEdit={(name) =>
-                      handleUpdatePhilosophy(philosophy, name as Philosophy)
-                    }
-                    onCancelEdit={() => setEditingPhilosophy(null)}
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           )}
-
-          {showNewPhilosophyForm && (
+          {isAddingNew && (
             <NewPhilosophyItem
-              form={form}
-              onAdd={addNewPhilosophy}
-              existingNames={philosophies}
+              onSave={(value) => onSave(value)}
+              onCancel={() => setIsAddingNew(false)}
             />
           )}
-
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => setShowNewPhilosophyForm(true)}
-              disabled={showNewPhilosophyForm || editingPhilosophy !== null}>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Philosophy
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

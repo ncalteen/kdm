@@ -1,15 +1,13 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 
 /**
  * Innovation Item Component Properties
@@ -17,52 +15,84 @@ import { toast } from 'sonner'
 export interface InnovationItemProps {
   /** Form */
   form: UseFormReturn<Settlement>
-  /** Remove Innovation Callback */
-  handleRemoveInnovation: (index: number) => void
   /** Innovation ID */
   id: string
-  /** Innovation Index */
+  /** Index */
   index: number
-  /** Disabled Status */
+  /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Callback */
+  /** OnEdit Handler */
   onEdit: (index: number) => void
-  /** OnSave Callback */
-  onSave: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
  * New Innovation Item Component Properties
  */
 export interface NewInnovationItemProps {
-  /** OnCancel Callback */
+  /** OnCancel Handler */
   onCancel: () => void
-  /** OnSave Callback */
-  onSave: (value: string) => void
+  /** OnSave Handler */
+  onSave: (value?: string) => void
 }
 
 /**
  * Innovation Item Component
+ *
+ * @param props Innovation Item Component Properties
+ * @returns Innovation Item Component
  */
 export function InnovationItem({
-  index,
-  form,
-  handleRemoveInnovation,
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
-}: InnovationItemProps) {
+  form,
+  onEdit,
+  onRemove,
+  onSave
+}: InnovationItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`innovations.${index}`) || ''
+
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
+  }, [form, isDisabled, index])
+
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
+      e.preventDefault()
+      onSave(inputRef.current.value, index)
+    }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
@@ -70,31 +100,24 @@ export function InnovationItem({
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
 
-      <FormField
-        control={form.control}
-        name={`innovations.${index}`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            <FormControl>
-              <Input
-                placeholder="Innovation"
-                {...field}
-                value={field.value || ''}
-                disabled={isDisabled}
-                onChange={(e) => {
-                  form.setValue(`innovations.${index}`, e.target.value)
-                }}
-              />
-            </FormControl>
-          </FormItem>
-        )}
+      {/* Input Field */}
+      <Input
+        ref={inputRef}
+        placeholder="Innovation"
+        defaultValue={form.getValues(`innovations.${index}`)}
+        disabled={isDisabled}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
       />
 
+      {/* Interaction Buttons */}
       {isDisabled ? (
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit innovation">
           <PencilIcon className="h-4 w-4" />
@@ -104,17 +127,17 @@ export function InnovationItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index)}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
           title="Save innovation">
           <CheckIcon className="h-4 w-4" />
         </Button>
       )}
-
       <Button
-        type="button"
         variant="ghost"
         size="icon"
-        onClick={() => handleRemoveInnovation(index)}>
+        type="button"
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -123,59 +146,57 @@ export function InnovationItem({
 
 /**
  * New Innovation Item Component
+ *
+ * @param props New Innovation Item Component Props
  */
 export function NewInnovationItem({
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewInnovationItemProps): ReactElement {
-  const [value, setValue] = useState<string | undefined>(undefined)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value)
-  }
-
-  const handleSave = () => {
-    if (value && value.trim() !== '') onSave(value.trim())
-    else toast.warning('Cannot record an empty innovation.')
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleSave()
+      onSave(inputRef.current.value)
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()
     }
   }
 
-  useEffect(() => {
-    const input = document.getElementById(
-      'new-innovation-input'
-    ) as HTMLInputElement
-
-    if (input) input.focus()
-  }, [])
-
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
+      {/* Input Field */}
       <Input
-        id="new-innovation-input"
-        placeholder="Add an innovation..."
-        value={value}
-        onChange={handleChange}
+        ref={inputRef}
+        placeholder="Innovation"
+        defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={handleSave}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
         title="Save innovation">
         <CheckIcon className="h-4 w-4" />
       </Button>

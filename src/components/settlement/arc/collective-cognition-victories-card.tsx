@@ -20,15 +20,22 @@ import {
 import { getCampaign } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Collective Cognition Victories Card
+ * Collective Cognition Victories Card Component
+ *
+ * Displays and manages the collective cognition victories tracking table.
+ * Allows checking off victories and saves progress to localStorage.
+ *
+ * @param form Settlement form instance
+ * @returns Collective Cognition Victories Card Component
  */
 export function CollectiveCognitionVictoriesCard(
   form: UseFormReturn<Settlement>
-) {
+): ReactElement {
   const quarries = form.watch('quarries') || []
   const nemeses = form.watch('nemeses') || []
 
@@ -49,12 +56,13 @@ export function CollectiveCognitionVictoriesCard(
       }
     } catch (error) {
       console.error('CC Victory Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
+    <Card className="mt-1 border-0">
+      <CardHeader className="px-3 py-2 pb-2">
         <CardTitle className="text-md flex items-center gap-1">
           <TrophyIcon className="h-4 w-4" /> Settlement Victories
         </CardTitle>
@@ -63,8 +71,8 @@ export function CollectiveCognitionVictoriesCard(
           monster&apos;s level.
         </CardDescription>
       </CardHeader>
-      <CardContent className="pt-2 pb-2">
-        <div className="space-y-4">
+      <CardContent className="p-1 pb-0">
+        <div className="space-y-1">
           <div>
             <Table>
               <TableHeader>

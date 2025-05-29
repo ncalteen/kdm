@@ -14,6 +14,13 @@ import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Collective Cognition Card
+ *
+ * Displays the calculated collective cognition value based on victories
+ * against nemeses and quarries. This value is automatically computed
+ * from the settlement's monster victories and collective cognition rewards.
+ *
+ * @param form Settlement form instance
+ * @returns Collective Cognition Card Component
  */
 export function CollectiveCognitionCard(
   form: UseFormReturn<Settlement>

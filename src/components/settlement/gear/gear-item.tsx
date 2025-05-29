@@ -6,7 +6,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -15,80 +15,109 @@ import { UseFormReturn } from 'react-hook-form'
 export interface GearItemProps {
   /** Form */
   form: UseFormReturn<Settlement>
-  /** Remove Gear Callback */
-  handleRemoveGear: (index: number) => void
   /** Gear ID */
   id: string
-  /** Gear Index */
+  /** Index */
   index: number
-  /** Disabled Status */
+  /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Callback */
+  /** OnEdit Handler */
   onEdit: (index: number) => void
-  /** OnSave Callback */
-  onSave: (index: number, value: string) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
  * New Gear Item Component Properties
  */
 export interface NewGearItemProps {
-  /** OnCancel Callback */
+  /** OnCancel Handler */
   onCancel: () => void
-  /** OnSave Callback */
-  onSave: (value: string) => void
+  /** OnSave Handler */
+  onSave: (value?: string) => void
 }
 
 /**
  * Gear Item Component
+ *
+ * @param props Gear Item Component Properties
+ * @returns Gear Item Component
  */
 export function GearItem({
-  index,
-  form,
-  handleRemoveGear,
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
-}: GearItemProps) {
+  form,
+  onEdit,
+  onRemove,
+  onSave
+}: GearItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState(form.getValues(`gear.${index}`) || '')
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setValue(form.getValues(`gear.${index}`) || '')
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`gear.${index}`) || ''
+
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
   }, [form, isDisabled, index])
 
-  const style = { transform: CSS.Transform.toString(transform), transition }
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, value)
+      onSave(inputRef.current.value, index)
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
+
+      {/* Input Field */}
       <Input
+        ref={inputRef}
         placeholder="Gear item"
-        value={value}
+        defaultValue={form.getValues(`gear.${index}`)}
         disabled={isDisabled}
-        onChange={(e) => !isDisabled && setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         className="flex-1"
+        autoFocus
       />
+
+      {/* Interaction Buttons */}
       {isDisabled ? (
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit gear">
           <PencilIcon className="h-4 w-4" />
@@ -98,17 +127,17 @@ export function GearItem({
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onSave(index, value)}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
           title="Save gear">
           <CheckIcon className="h-4 w-4" />
         </Button>
       )}
       <Button
         variant="ghost"
-        size="sm"
-        className="h-8 w-8 p-0 ml-2"
+        size="icon"
         type="button"
-        onClick={() => handleRemoveGear(index)}>
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -117,38 +146,57 @@ export function GearItem({
 
 /**
  * New Gear Item Component
+ *
+ * @param props New Gear Item Component Props
  */
 export function NewGearItem({
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewGearItemProps): ReactElement {
-  const [value, setValue] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(value)
-    } else if (e.key === 'Escape') onCancel()
+      onSave(inputRef.current.value)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
+    }
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
+      {/* Input Field */}
       <Input
+        ref={inputRef}
         placeholder="Gear item"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={() => onSave(value)}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
         title="Save gear">
         <CheckIcon className="h-4 w-4" />
       </Button>

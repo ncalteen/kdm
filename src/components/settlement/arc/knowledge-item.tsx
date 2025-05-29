@@ -1,199 +1,176 @@
 'use client'
 
 import { SelectPhilosophy } from '@/components/menu/select-philosophy'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Philosophy } from '@/lib/enums'
-import { getCampaign } from '@/lib/utils'
-import { Knowledge, SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { z } from 'zod'
 
 /**
  * Knowledge Item Component Properties
  */
 export interface KnowledgeItemProps {
-  /** Knowledge */
-  knowledge: Knowledge
-  /** Remove Knowledge Handler */
-  handleRemoveKnowledge: (knowledgeName: string) => void
-  /** Update Knowledge Handler */
-  handleUpdateKnowledge: (
-    oldKnowledgeName: string,
-    newValues: Knowledge
-  ) => void
+  /** Form */
+  form: UseFormReturn<Settlement>
   /** Knowledge ID */
   id: string
-  /** Is Editing */
-  isEditing: boolean
-  /** Philosophies */
-  philosophies: string[]
-  /** OnCancelEdit Callback */
-  onCancelEdit: () => void
-  /** OnEdit Callback */
-  onEdit: () => void
-  /** OnSaveEdit Callback */
-  onSaveEdit: (name: string, philosophy?: string) => void
+  /** Index */
+  index: number
+  /** Is Disabled */
+  isDisabled: boolean
+  /** OnEdit Handler */
+  onEdit: (index: number) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
+  onSave: (name?: string, philosophy?: string, index?: number) => void
+  /** Available Philosophies */
+  philosophies: Philosophy[]
 }
 
 /**
  * New Knowledge Item Component Properties
  */
 export interface NewKnowledgeItemProps {
-  /** Existing Names */
-  existingNames: string[]
-  /** Form */
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-  /** OnAdd Callback */
-  onAdd: () => void
-  /** Philosophies */
+  /** OnCancel Handler */
+  onCancel: () => void
+  /** OnSave Handler */
+  onSave: (name?: string, philosophy?: string) => void
+  /** Available Philosophies */
   philosophies: Philosophy[]
 }
 
 /**
  * Knowledge Item Component
+ *
+ * @param props Knowledge Item Component Properties
+ * @returns Knowledge Item Component
  */
 export function KnowledgeItem({
-  knowledge,
-  handleRemoveKnowledge,
-  handleUpdateKnowledge,
-  philosophies,
   id,
-  isEditing,
+  index,
+  isDisabled,
+  form,
   onEdit,
-  onSaveEdit,
-  onCancelEdit
-}: KnowledgeItemProps) {
+  onRemove,
+  onSave,
+  philosophies
+}: KnowledgeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [value, setValue] = useState(knowledge.name)
-  const [philosophy, setPhilosophy] = useState<Philosophy | undefined>(
-    knowledge.philosophy
-  )
+  const inputRef = useRef<HTMLInputElement>(null)
+  const selectRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    setValue(knowledge.name)
-    setPhilosophy(knowledge.philosophy)
-  }, [knowledge.name, knowledge.philosophy])
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`knowledges.${index}.name`) || ''
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
 
-  const handleEditSave = () => {
-    if (value.trim() === '')
-      return toast.warning('Knowledge cannot be nameless.')
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
+  }, [form, isDisabled, index])
 
-    onSaveEdit(value.trim(), philosophy)
-    toast.success('Knowledge reshaped by your settlement.')
-  }
-
-  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and values.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleEditSave()
+      const currentPhilosophy = form.getValues(`knowledges.${index}.philosophy`)
+      onSave(inputRef.current.value, currentPhilosophy, index)
     }
   }
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className="flex flex-col gap-2 bg-background p-3 rounded-md border">
-      <div className="flex items-center gap-2">
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex flex-col gap-2">
+      <div className="flex items-center">
+        {/* Drag Handle */}
         <div
           {...attributes}
           {...listeners}
           className="cursor-grab active:cursor-grabbing p-1">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-        {isEditing ? (
-          <Input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={handleEditKeyDown}
-            className="flex-1"
-            autoFocus
-          />
+
+        {/* Input Field */}
+        <Input
+          ref={inputRef}
+          placeholder="Knowledge name"
+          defaultValue={form.getValues(`knowledges.${index}.name`)}
+          disabled={isDisabled}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+          autoFocus
+        />
+
+        {/* Interaction Buttons */}
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="ml-2"
+            onClick={() => onEdit(index)}
+            title="Edit knowledge">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
         ) : (
-          <div className="flex-1 text-sm text-left">{knowledge.name}</div>
-        )}
-        {isEditing ? (
-          <>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0"
-              onClick={handleEditSave}
-              title="Save knowledge">
-              <CheckIcon className="h-4 w-4" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0"
-              onClick={onCancelEdit}
-              title="Cancel edit">
-              <TrashIcon className="h-4 w-4" />
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0"
-              onClick={onEdit}
-              title="Edit knowledge">
-              <PencilIcon className="h-4 w-4" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 p-0"
-              onClick={() => handleRemoveKnowledge(knowledge.name)}>
-              <TrashIcon className="h-4 w-4" />
-            </Button>
-          </>
-        )}
-      </div>
-      <div className="flex items-center pl-8 gap-2">
-        {isEditing ? (
-          <SelectPhilosophy
-            value={philosophy}
-            onChange={(newPhilosophy) => {
-              setPhilosophy(
-                newPhilosophy === 'none'
-                  ? undefined
-                  : (newPhilosophy as Philosophy)
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="ml-2"
+            onClick={() => {
+              const currentPhilosophy = form.getValues(
+                `knowledges.${index}.philosophy`
               )
-              if (isEditing) return
-              handleUpdateKnowledge(knowledge.name, {
-                name: knowledge.name,
-                philosophy:
-                  newPhilosophy === 'none'
-                    ? undefined
-                    : (newPhilosophy as Philosophy)
-              })
+              onSave(inputRef.current!.value, currentPhilosophy, index)
             }}
-            options={philosophies}
-            disabled={!isEditing}
-          />
-        ) : (
-          <Badge variant="secondary">{philosophy ? philosophy : 'None'}</Badge>
+            title="Save knowledge">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
         )}
+        <Button
+          variant="ghost"
+          size="icon"
+          type="button"
+          onClick={() => onRemove(index)}>
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Philosophy Selection */}
+      <div className="flex items-center pl-6">
+        <SelectPhilosophy
+          ref={selectRef}
+          options={philosophies}
+          value={form.getValues(`knowledges.${index}.philosophy`)}
+          onChange={(value) => {
+            if (!isDisabled) {
+              const currentName = form.getValues(`knowledges.${index}.name`)
+              onSave(currentName, value, index)
+            }
+          }}
+          disabled={isDisabled}
+        />
       </div>
     </div>
   )
@@ -201,91 +178,63 @@ export function KnowledgeItem({
 
 /**
  * New Knowledge Item Component
+ *
+ * @param props New Knowledge Item Component Props
  */
 export function NewKnowledgeItem({
-  form,
-  onAdd,
-  philosophies,
-  existingNames
+  onCancel,
+  onSave,
+  philosophies
 }: NewKnowledgeItemProps): ReactElement {
-  const [name, setName] = useState<string | undefined>(undefined)
-  const [philosophy, setPhilosophy] = useState<Philosophy | undefined>()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const selectRef = useRef<HTMLButtonElement>(null)
+  const [selectedPhilosophy, setSelectedPhilosophy] = useState<
+    Philosophy | undefined
+  >(undefined)
 
   /**
-   * Handles creation of a new knowledge item
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * values. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
    */
-  const handleSubmit = () => {
-    if (!name || name.trim() === '')
-      return toast.warning('Knowledge cannot be nameless.')
-
-    if (existingNames.includes(name.trim()))
-      return toast.warning(
-        'This knowledge already echos throughout your settlement.'
-      )
-
-    const knowledges = [...(form.watch('knowledges') || [])]
-    const newKnowledge = {
-      name: name.trim(),
-      philosophy:
-        philosophy && philosophy !== ('none' as Philosophy)
-          ? philosophy
-          : undefined
-    }
-    const updatedKnowledges = [...knowledges, newKnowledge]
-
-    form.setValue('knowledges', updatedKnowledges)
-
-    // Save to localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].knowledges =
-          updatedKnowledges as Knowledge[]
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-      }
-    } catch (error) {
-      console.error('New Knowledge Save Error:', error)
-    }
-
-    setName(undefined)
-    setPhilosophy(undefined)
-    onAdd()
-
-    toast.success('New knowledge crystallizes in the darkness.')
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleSubmit()
+      onSave(inputRef.current.value, selectedPhilosophy)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
     }
   }
 
   return (
-    <div className="flex flex-col gap-2 bg-muted/40 p-3 rounded-md">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center">
+        {/* Drag Handle */}
         <div className="p-1">
           <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
         </div>
+
+        {/* Input Field */}
         <Input
-          placeholder="Add a new knowledge..."
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="flex-1"
+          ref={inputRef}
+          placeholder="Knowledge name"
+          defaultValue={''}
           onKeyDown={handleKeyDown}
+          className="flex-1"
           autoFocus
         />
+
+        {/* Interaction Buttons */}
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 p-0"
-          onClick={handleSubmit}
+          className="ml-2"
+          onClick={() => onSave(inputRef.current?.value, selectedPhilosophy)}
           title="Save knowledge">
           <CheckIcon className="h-4 w-4" />
         </Button>
@@ -293,17 +242,19 @@ export function NewKnowledgeItem({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 p-0"
-          onClick={onAdd}
-          title="Cancel add knowledge">
+          onClick={onCancel}
+          title="Cancel">
           <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
-      <div className="flex items-center pl-8 gap-2">
+
+      {/* Philosophy Selection */}
+      <div className="flex items-center pl-6">
         <SelectPhilosophy
-          value={philosophy}
-          onChange={(val) => setPhilosophy(val as Philosophy)}
+          ref={selectRef}
           options={philosophies}
+          value={selectedPhilosophy}
+          onChange={(value) => setSelectedPhilosophy(value as Philosophy)}
         />
       </div>
     </div>

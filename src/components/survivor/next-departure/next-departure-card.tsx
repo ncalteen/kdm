@@ -237,7 +237,7 @@ export function NextDepartureCard({
     <Card className="mt-1 border-0">
       <CardHeader className="px-3 py-2 pb-2">
         {/* Title */}
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-4">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           Next Departure{' '}
           {!isAddingNew && (
             <div className="flex justify-center">

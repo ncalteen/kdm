@@ -27,7 +27,7 @@ import {
 } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -38,9 +38,9 @@ import { toast } from 'sonner'
  * name and create a settlement. It includes fields for selecting the campaign
  * type, survivor type, and the settlement name.
  *
- * @returns Create Settlement Form
+ * @returns Create Settlement Form Component
  */
-export function CreateSettlementForm() {
+export function CreateSettlementForm(): ReactElement {
   const router = useRouter()
 
   const form = useForm<Settlement>({
@@ -171,16 +171,14 @@ export function CreateSettlementForm() {
       router.push(`/settlement?settlementId=${values.id}`)
     } catch (error) {
       console.error('Settlement Create Error:', error)
-      toast.error('The darkness refuses your offering. Please try again.')
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error(
-          'The chronicles remain incomplete - fill in the missing fragments.'
-        )
+        toast.error('The darkness swallows your words. Please try again.')
       })}
       className="space-y-6">
       <Form {...form}>

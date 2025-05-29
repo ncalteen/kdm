@@ -7,7 +7,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -16,109 +16,124 @@ import { UseFormReturn } from 'react-hook-form'
 export interface LocationItemProps {
   /** Form */
   form: UseFormReturn<Settlement>
-  /** Remove Location Callback */
-  handleRemoveLocation: (index: number) => void
-  /** Toggle Location Unlocked Callback */
-  toggleLocationUnlocked: (index: number, unlocked: boolean) => void
   /** Location ID */
   id: string
-  /** Location Index */
+  /** Index */
   index: number
-  /** Disabled Status */
+  /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Callback */
+  /** OnEdit Handler */
   onEdit: (index: number) => void
-  /** OnSave Callback */
-  onSave: (index: number, name: string, unlocked: boolean) => void
+  /** OnRemove Handler */
+  onRemove: (index: number) => void
+  /** OnSave Handler */
+  onSave: (name?: string, unlocked?: boolean, index?: number) => void
+  /** OnToggleUnlocked Handler */
+  onToggleUnlocked: (index: number, unlocked: boolean) => void
 }
 
 /**
  * New Location Item Component Properties
  */
 export interface NewLocationItemProps {
-  /** Index */
-  index: number
-  /** OnCancel Callback */
+  /** OnCancel Handler */
   onCancel: () => void
-  /** OnSave Callback */
-  onSave: (name: string, unlocked: boolean) => void
+  /** OnSave Handler */
+  onSave: (name?: string, unlocked?: boolean) => void
 }
 
 /**
- * Settlement Location Item Component
+ * Location Item Component
+ *
+ * @param props Location Item Component Properties
+ * @returns Location Item Component
  */
 export function LocationItem({
-  index,
-  form,
-  handleRemoveLocation,
-  toggleLocationUnlocked,
   id,
+  index,
   isDisabled,
+  form,
+  onEdit,
+  onRemove,
   onSave,
-  onEdit
-}: LocationItemProps) {
+  onToggleUnlocked
+}: LocationItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [nameValue, setNameValue] = useState<string | undefined>(
-    form.getValues(`locations.${index}.name`)
-  )
-  const [unlockedValue, setUnlockedValue] = useState<boolean>(
-    form.getValues(`locations.${index}.unlocked`) || false
-  )
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setNameValue(form.getValues(`locations.${index}.name`))
-    setUnlockedValue(form.getValues(`locations.${index}.unlocked`) || false)
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`locations.${index}.name`) || ''
+
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
+
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
   }, [form, isDisabled, index])
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && nameValue) {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index, nameValue, unlockedValue)
+      const locationData = form.getValues(`locations.${index}`)
+      onSave(inputRef.current.value, locationData?.unlocked || false, index)
     }
   }
 
+  const locationData = form.getValues(`locations.${index}`)
+
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center gap-2">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
+
+      {/* Unlocked Checkbox */}
       <Checkbox
-        checked={unlockedValue}
-        disabled={!isDisabled}
+        id={`location-unlocked-${index}`}
+        checked={locationData?.unlocked || false}
         onCheckedChange={(checked) => {
-          setUnlockedValue(!!checked)
-          toggleLocationUnlocked(index, !!checked)
+          if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
-        id={`location-${index}-unlocked`}
-        name={`locations[${index}].unlocked`}
       />
+
+      {/* Input Field */}
       <Input
+        ref={inputRef}
         placeholder="Location Name"
-        value={nameValue}
+        defaultValue={form.getValues(`locations.${index}.name`)}
         disabled={isDisabled}
-        onChange={(e) => {
-          if (!isDisabled) setNameValue(e.target.value)
-        }}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        id={`location-${index}-name`}
-        name={`locations[${index}].name`}
+        autoFocus
       />
+
+      {/* Interaction Buttons */}
       {isDisabled ? (
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => onEdit(index)}
           title="Edit location">
           <PencilIcon className="h-4 w-4" />
@@ -128,19 +143,24 @@ export function LocationItem({
           type="button"
           variant="ghost"
           size="icon"
+          className="ml-2"
           onClick={() => {
-            if (nameValue) onSave(index, nameValue, unlockedValue)
+            const locationData = form.getValues(`locations.${index}`)
+            onSave(
+              inputRef.current!.value,
+              locationData?.unlocked || false,
+              index
+            )
           }}
           title="Save location">
           <CheckIcon className="h-4 w-4" />
         </Button>
       )}
       <Button
-        type="button"
         variant="ghost"
         size="icon"
-        onClick={() => handleRemoveLocation(index)}
-        title="Remove location">
+        type="button"
+        onClick={() => onRemove(index)}>
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>
@@ -149,52 +169,60 @@ export function LocationItem({
 
 /**
  * New Location Item Component
+ *
+ * @param props New Location Item Component Props
  */
 export function NewLocationItem({
-  index,
-  onSave,
-  onCancel
+  onCancel,
+  onSave
 }: NewLocationItemProps): ReactElement {
-  const [name, setName] = useState<string | undefined>(undefined)
-  const [unlocked, setUnlocked] = useState<boolean>(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleSave = () => {
-    if (name) onSave(name.trim(), unlocked)
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleSave()
+      onSave(inputRef.current.value, false)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
     }
   }
 
   return (
     <div className="flex items-center gap-2">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
-      <Checkbox
-        checked={unlocked}
-        onCheckedChange={(checked) => setUnlocked(checked === true)}
-        id={`location-new-${index}-unlocked`}
-        name={`locations[new-${index}].unlocked`}
-      />
+
+      {/* Unlocked Checkbox */}
+      <Checkbox id="new-location-unlocked" checked={false} disabled />
+
+      {/* Input Field */}
       <Input
-        placeholder="Add a location..."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        ref={inputRef}
+        placeholder="Location Name"
+        defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
-        id={`location-new-${index}-name`}
-        name={`locations[new-${index}].name`}
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={handleSave}
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value, false)}
         title="Save location">
         <CheckIcon className="h-4 w-4" />
       </Button>

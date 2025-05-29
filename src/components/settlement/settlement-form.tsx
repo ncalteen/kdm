@@ -56,6 +56,9 @@ export interface SettlementFormProps {
  * When editing an existing settlement, the user can modify the settlement
  * details, including the name, population, timeline, society, crafting,
  * survivors, and monsters.
+ *
+ * @param props Settlement Form Component Properties
+ * @returns Settlement Form Component
  */
 export function SettlementForm({
   settlement
@@ -154,7 +157,7 @@ export function SettlementForm({
       }
     } catch (error) {
       console.error('Settlement Create Error:', error)
-      toast.error('The darkness rejects your offering. Please try again.')
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 

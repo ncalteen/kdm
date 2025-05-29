@@ -2,181 +2,210 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { ReactElement, useEffect, useRef } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Departing Bonus Item Component Properties
  */
 export interface DepartingBonusItemProps {
+  /** Form */
+  form: UseFormReturn<Settlement>
+  /** Departing Bonus ID */
+  id: string
   /** Index */
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnChange Callback */
-  onChange: (index: number, value: string) => void
-  /** OnEdit Callback */
+  /** OnEdit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Callback */
+  /** OnRemove Handler */
   onRemove: (index: number) => void
-  /** OnSave Callback */
-  onSave: (index: number) => void
-  /** Value */
-  value: string
+  /** OnSave Handler */
+  onSave: (value?: string, index?: number) => void
 }
 
 /**
  * New Departing Bonus Item Component Properties
  */
 export interface NewDepartingBonusItemProps {
-  /** OnCancel Callback */
+  /** OnCancel Handler */
   onCancel: () => void
-  /** OnSave Callback */
-  onSave: (bonus: string) => void
+  /** OnSave Handler */
+  onSave: (value?: string) => void
 }
 
 /**
  * Departing Bonus Item Component
+ *
+ * @param props Departing Bonus Item Component Properties
+ * @returns Departing Bonus Item Component
  */
 export function DepartingBonusItem({
+  id,
   index,
-  value,
   isDisabled,
-  onSave,
+  form,
   onEdit,
   onRemove,
-  onChange
-}: DepartingBonusItemProps) {
+  onSave
+}: DepartingBonusItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: index.toString() })
-  const [inputValue, setInputValue] = useState<string>(value)
+    useSortable({ id })
+
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => setInputValue(value), [value])
-
   useEffect(() => {
-    if (!isDisabled && inputRef.current) inputRef.current.focus()
-  }, [isDisabled])
+    if (inputRef.current)
+      inputRef.current.value = form.getValues(`departingBonuses.${index}`) || ''
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
+    if (!isDisabled && inputRef.current) {
+      inputRef.current.focus()
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
-    onChange(index, e.target.value)
-  }
+      const val = inputRef.current.value
+      inputRef.current.value = ''
+      inputRef.current.value = val
+    }
+  }, [form, isDisabled, index])
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, it calls the onSave function with the current
+   * index and value.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(index)
+      onSave(inputRef.current.value, index)
     }
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2">
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className="flex items-center">
+      {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
+
+      {/* Input Field */}
+      <Input
+        ref={inputRef}
+        placeholder="Departing bonus"
+        defaultValue={form.getValues(`departingBonuses.${index}`)}
+        disabled={isDisabled}
+        onKeyDown={handleKeyDown}
+        className="flex-1"
+        autoFocus
+      />
+
+      {/* Interaction Buttons */}
       {isDisabled ? (
-        <Input value={inputValue} disabled className="flex-1" />
-      ) : (
-        <Input
-          ref={inputRef}
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          className="flex-1"
-          autoFocus
-        />
-      )}
-      <div className="flex items-center gap-2 ml-auto">
-        {isDisabled ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => onEdit(index)}
-            title="Edit bonus">
-            <PencilIcon className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => onSave(index)}
-            title="Save bonus">
-            <CheckIcon className="h-4 w-4" />
-          </Button>
-        )}
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => onRemove(index)}
-          title="Remove bonus">
-          <TrashIcon className="h-4 w-4" />
+          className="ml-2"
+          onClick={() => onEdit(index)}
+          title="Edit bonus">
+          <PencilIcon className="h-4 w-4" />
         </Button>
-      </div>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() => onSave(inputRef.current!.value, index)}
+          title="Save bonus">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        onClick={() => onRemove(index)}>
+        <TrashIcon className="h-4 w-4" />
+      </Button>
     </div>
   )
 }
 
 /**
  * New Departing Bonus Item Component
+ *
+ * @param props New Departing Bonus Item Component Props
  */
 export function NewDepartingBonusItem({
-  onSave,
-  onCancel
-}: NewDepartingBonusItemProps) {
-  const [value, setValue] = useState<string | undefined>(undefined)
+  onCancel,
+  onSave
+}: NewDepartingBonusItemProps): ReactElement {
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setValue(e.target.value)
-
-  const handleSave = () => {
-    if (value && value.trim() !== '') onSave(value.trim())
-    else toast.warning('Cannot inscribe an empty blessing')
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      handleSave()
+      onSave(inputRef.current.value)
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      onCancel()
     }
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
+      {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
+
+      {/* Input Field */}
       <Input
-        placeholder="Inscribe a blessing..."
-        value={value}
-        onChange={handleChange}
+        ref={inputRef}
+        placeholder="Departing bonus"
+        defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
       />
+
+      {/* Interaction Buttons */}
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        onClick={handleSave}
-        title="Consecrate blessing">
+        className="ml-2"
+        onClick={() => onSave(inputRef.current?.value)}
+        title="Save bonus">
         <CheckIcon className="h-4 w-4" />
       </Button>
-      <Button type="button" variant="ghost" size="icon" onClick={onCancel}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onCancel}
+        title="Cancel">
         <TrashIcon className="h-4 w-4" />
       </Button>
     </div>

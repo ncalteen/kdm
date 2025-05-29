@@ -5,207 +5,57 @@ import {
   NewDepartingBonusItem
 } from '@/components/settlement/departing-bonuses/departing-bonus-item'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
-  closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { MapPinIcon, PlusCircleIcon } from 'lucide-react'
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Departing Bonuses Card Component
  */
-export function DepartingBonusesCard(form: UseFormReturn<Settlement>) {
-  const bonuses = useMemo(() => form.watch('departingBonuses') || [], [form])
+export function DepartingBonusesCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
+  const departingBonuses = useMemo(
+    () => form.watch('departingBonuses') || [],
+    [form]
+  )
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
-
-  const addBonus = useCallback(() => setIsAddingNew(true), [])
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      bonuses.forEach((_, i) => {
-        next[i] = prev[i] ?? true
+      departingBonuses.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [bonuses])
-
-  /**
-   * Handles the removal of a departing bonus.
-   *
-   * @param index Departing Bonus Index
-   */
-  const handleRemoveBonus = useCallback(
-    (index: number) => {
-      startTransition(() => {
-        const updatedBonuses = [...bonuses]
-        updatedBonuses.splice(index, 1)
-
-        form.setValue('departingBonuses', updatedBonuses)
-
-        setDisabledInputs((prev) => {
-          const next = { ...prev }
-          delete next[index]
-
-          // Reindex
-          const reindexed: { [key: number]: boolean } = {}
-
-          Object.keys(next).forEach((k) => {
-            const num = parseInt(k)
-
-            if (num > index) reindexed[num - 1] = next[num]
-            else if (num < index) reindexed[num] = next[num]
-          })
-
-          return reindexed
-        })
-
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].departingBonuses =
-            updatedBonuses
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-          toast.success('A blessing has faded into the void.')
-        } catch (error) {
-          console.error('Departing Bonus Remove Error:', error)
-          toast.error('Failed to remove the blessing. Please try again.')
-        }
-      })
-    },
-    [bonuses, form]
-  )
-
-  /**
-   * Handles the saving of a departing bonus.
-   *
-   * @param index Departing Bonus Index
-   */
-  const handleSave = useCallback(
-    (index: number) => {
-      if (!bonuses[index] || bonuses[index].trim() === '')
-        return toast.warning('Cannot inscribe a nameless blessing.')
-
-      setDisabledInputs((prev) => ({ ...prev, [index]: true }))
-
-      // Update localStorage
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s) => s.id === formValues.id
-        )
-
-        campaign.settlements[settlementIndex].departingBonuses =
-          formValues.departingBonuses
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Blessing etched into reality.')
-      } catch (error) {
-        console.error('Departing Bonus Save Error:', error)
-        toast.error('Failed to save the blessing. Please try again.')
-      }
-    },
-    [bonuses, form]
-  )
-
-  const handleEdit = useCallback(
-    (index: number) =>
-      setDisabledInputs((prev) => ({ ...prev, [index]: false })),
-    []
-  )
-
-  const handleChange = useCallback(
-    (index: number, value: string) => {
-      const updatedBonuses = [...bonuses]
-
-      updatedBonuses[index] = value
-
-      form.setValue('departingBonuses', updatedBonuses)
-    },
-    [bonuses, form]
-  )
-
-  /**
-   * Handles the addition of a new departing bonus.
-   *
-   * @param bonus New Departing Bonus
-   */
-  const saveNewBonus = useCallback(
-    (bonus: string) => {
-      startTransition(() => {
-        const updatedBonuses = [...bonuses, bonus]
-
-        form.setValue('departingBonuses', updatedBonuses)
-
-        setDisabledInputs((prev) => ({
-          ...prev,
-          [updatedBonuses.length - 1]: true
-        }))
-
-        setIsAddingNew(false)
-
-        // Update localStorage
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s) => s.id === formValues.id
-          )
-
-          campaign.settlements[settlementIndex].departingBonuses =
-            updatedBonuses
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-          toast.success('A new blessing graces your settlement.')
-        } catch (error) {
-          console.error('New Departing Bonus Save Error:', error)
-          toast.error('Failed to save the new blessing. Please try again.')
-        }
-      })
-    },
-    [bonuses, form]
-  )
-
-  const cancelNewBonus = useCallback(() => setIsAddingNew(false), [])
+  }, [departingBonuses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -214,93 +64,235 @@ export function DepartingBonusesCard(form: UseFormReturn<Settlement>) {
     })
   )
 
+  const addBonus = () => setIsAddingNew(true)
+
   /**
-   * Handles the drag end event for the sortable list.
+   * Save departing bonuses to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
    *
-   * @param event Event
+   * @param updatedDepartingBonuses Updated Departing Bonuses
+   * @param successMsg Success Message
    */
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event
+  const saveToLocalStorage = (
+    updatedDepartingBonuses: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      if (over && active.id !== over.id) {
-        requestAnimationFrame(() => {
-          const oldIndex = parseInt(active.id.toString())
-          const newIndex = parseInt(over.id.toString())
-          const newOrder = arrayMove(bonuses, oldIndex, newIndex)
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          departingBonuses: updatedDepartingBonuses
+        }
 
-          form.setValue('departingBonuses', newOrder)
-
-          // Update localStorage
-          try {
-            const formValues = form.getValues()
-            const campaign = getCampaign()
-            const settlementIndex = campaign.settlements.findIndex(
-              (s) => s.id === formValues.id
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
             )
+        }
 
-            campaign.settlements[settlementIndex].departingBonuses = newOrder
-            localStorage.setItem('campaign', JSON.stringify(campaign))
-          } catch (error) {
-            console.error('Departing Bonus Drag Error:', error)
-          }
-        })
+        campaign.settlements[settlementIndex].departingBonuses =
+          updatedDepartingBonuses
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [bonuses, form]
-  )
+    } catch (error) {
+      console.error('Departing Bonus Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
+   * Handles the removal of a departing bonus.
+   *
+   * @param index Departing Bonus Index
+   */
+  const onRemove = (index: number) => {
+    const currentDepartingBonuses = [...departingBonuses]
+
+    currentDepartingBonuses.splice(index, 1)
+    form.setValue('departingBonuses', currentDepartingBonuses)
+
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+
+      return next
+    })
+
+    saveToLocalStorage(
+      currentDepartingBonuses,
+      'A blessing fades into the void.'
+    )
+  }
+
+  /**
+   * Handles saving departing bonus.
+   *
+   * @param value Departing Bonus Value
+   * @param i Departing Bonus Index (When Updating Only)
+   */
+  const onSave = (value?: string, i?: number) => {
+    if (!value || value.trim() === '')
+      return toast.error('A nameless blessing cannot be inscribed.')
+
+    try {
+      SettlementSchema.shape.departingBonuses.parse([value])
+    } catch (error) {
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
+    }
+
+    const updatedDepartingBonuses = [...departingBonuses]
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedDepartingBonuses[i] = value
+      form.setValue(`departingBonuses.${i}`, value)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedDepartingBonuses.push(value)
+
+      form.setValue('departingBonuses', updatedDepartingBonuses)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedDepartingBonuses.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedDepartingBonuses,
+      i !== undefined
+        ? 'The blessing has been inscribed.'
+        : 'A new blessing graces your settlement.'
+    )
+    setIsAddingNew(false)
+  }
+
+  /**
+   * Enables editing a departing bonus.
+   *
+   * @param index Departing Bonus Index
+   */
+  const onEdit = (index: number) =>
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+
+  /**
+   * Handles the end of a drag event for reordering departing bonuses.
+   *
+   * @param event Drag End Event
+   */
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id.toString())
+      const newIndex = parseInt(over.id.toString())
+      const newOrder = arrayMove(departingBonuses, oldIndex, newIndex)
+
+      form.setValue('departingBonuses', newOrder)
+      saveToLocalStorage(newOrder)
+
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+
+        return next
+      })
+    }
+  }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <MapPinIcon className="h-4 w-4" />
-          Departing Survivor Bonuses
-        </CardTitle>
-        <CardDescription className="text-left text-xs">
-          Departing survivors gain these bonuses.
-        </CardDescription>
+    <Card>
+      <CardHeader className="px-4 pt-2 pb-0">
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            Departing Survivor Bonuses{' '}
+            {!isAddingNew && (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addBonus}
+                  className="border-0 h-8 w-8"
+                  disabled={
+                    isAddingNew ||
+                    Object.values(disabledInputs).some((v) => v === false)
+                  }>
+                  <PlusIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={bonuses.map((_, index) => index.toString())}
-              strategy={verticalListSortingStrategy}>
-              {bonuses.map((bonus, index) => (
-                <DepartingBonusItem
-                  key={index}
-                  index={index}
-                  value={bonus}
-                  isDisabled={!!disabledInputs[index]}
-                  onSave={handleSave}
-                  onEdit={handleEdit}
-                  onRemove={handleRemoveBonus}
-                  onChange={handleChange}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+
+      {/* Departing Bonuses List */}
+      <CardContent className="p-1 pb-2">
+        <div className="space-y-1">
+          {departingBonuses.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={departingBonuses.map((_, index) => index.toString())}
+                strategy={verticalListSortingStrategy}>
+                {departingBonuses.map((bonus, index) => (
+                  <DepartingBonusItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
           {isAddingNew && (
             <NewDepartingBonusItem
-              onSave={saveNewBonus}
-              onCancel={cancelNewBonus}
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
             />
           )}
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addBonus}
-              disabled={isAddingNew}>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Bonus
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>

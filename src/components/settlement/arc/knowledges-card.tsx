@@ -7,39 +7,53 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Knowledge, SettlementSchema } from '@/schemas/settlement'
+import { Knowledge, Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
-  closestCenter,
   DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { LandmarkIcon, PlusCircleIcon } from 'lucide-react'
-import { ReactElement, useState } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
+import { ZodError } from 'zod'
 
 /**
  * Knowledges Card Component
  */
-export function KnowledgesCard(
-  form: UseFormReturn<z.infer<typeof SettlementSchema>>
-): ReactElement {
-  const [showNewKnowledgeForm, setShowNewKnowledgeForm] = useState(false)
-  const [editingKnowledge, setEditingKnowledge] = useState<string | null>(null)
+export function KnowledgesCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
+  const knowledges = useMemo(() => form.watch('knowledges') || [], [form])
+  const philosophies = useMemo(() => form.watch('philosophies') || [], [form])
 
-  const knowledges = form.watch('knowledges') || []
-  const philosophies = form.watch('philosophies') || []
-  const knowledgeIds = knowledges.map((k) => k.name)
+  const [disabledInputs, setDisabledInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  useEffect(() => {
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+
+      knowledges.forEach((_, i) => {
+        next[i] = prev[i] !== undefined ? prev[i] : true
+      })
+
+      return next
+    })
+  }, [knowledges])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -48,175 +62,247 @@ export function KnowledgesCard(
     })
   )
 
+  const addKnowledge = () => setIsAddingNew(true)
+
+  /**
+   * Save knowledges to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedKnowledges Updated Knowledges
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = (
+    updatedKnowledges: Knowledge[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
+        const updatedSettlement = {
+          ...campaign.settlements[settlementIndex],
+          knowledges: updatedKnowledges
+        }
+
+        try {
+          SettlementSchema.parse(updatedSettlement)
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
+        }
+
+        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+        localStorage.setItem('campaign', JSON.stringify(campaign))
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Knowledge Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
   /**
    * Handles the removal of a knowledge.
    *
-   * @param knowledgeName Knowledge Name
+   * @param index Knowledge Index
    */
-  const handleRemoveKnowledge = (knowledgeName: string) => {
-    const updatedKnowledges = knowledges.filter((k) => k.name !== knowledgeName)
-    form.setValue('knowledges', updatedKnowledges)
+  const onRemove = (index: number) => {
+    const currentKnowledges = [...knowledges]
 
-    // Save to localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+    currentKnowledges.splice(index, 1)
+    form.setValue('knowledges', currentKnowledges)
 
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].knowledges =
-          updatedKnowledges as Knowledge[]
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Forbidden insight banished to the void.')
-      }
-    } catch (error) {
-      console.error('Knowledge Remove Error:', error)
-    }
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
+
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+
+      return next
+    })
+
+    saveToLocalStorage(
+      currentKnowledges,
+      'Forbidden insight banished to the void.'
+    )
   }
 
   /**
-   * Handles the update of a knowledge.
+   * Handles saving a new knowledge.
    *
-   * @param oldKnowledgeName Old Knowledge Name
-   * @param newValues New Values
-   */
-  const handleUpdateKnowledge = (
-    oldKnowledgeName: string,
-    newValues: { name: string; philosophy?: string }
-  ) => {
-    const updatedKnowledges = knowledges.map((k) =>
-      k.name === oldKnowledgeName ? newValues : k
-    ) as Knowledge[]
-
-    form.setValue('knowledges', updatedKnowledges)
-
-    // Save to localStorage
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('Knowledge carved into memory.')
-      }
-    } catch (error) {
-      console.error('Knowledge Update Error:', error)
-    }
-  }
-
-  /**
-   * Handles the save of an edited knowledge.
-   *
-   * @param oldName Old Name
-   * @param newName New Name
+   * @param name Knowledge Name
    * @param philosophy Philosophy
+   * @param i Knowledge Index (When Updating Only)
    */
-  const handleSaveEdit = (
-    oldName: string,
-    newName: string,
-    philosophy?: string
-  ) => {
-    if (newName.trim() === '')
-      return toast.warning('Knowledge cannot be nameless.')
+  const onSave = (name?: string, philosophy?: string, i?: number) => {
+    if (!name || name.trim() === '')
+      return toast.error('A nameless knowledge cannot be recorded.')
 
-    if (knowledges.some((k) => k.name === newName.trim() && k.name !== oldName))
-      return toast.warning('This knowledge already haunts your settlement.')
+    // Convert empty string to undefined for optional philosophy
+    const processedPhilosophy =
+      philosophy && philosophy.trim() !== '' ? philosophy : undefined
 
-    handleUpdateKnowledge(oldName, { name: newName.trim(), philosophy })
-    setEditingKnowledge(null)
-    toast.success('Knowledge reshaped successfully.')
+    try {
+      SettlementSchema.shape.knowledges.parse([
+        { name: name.trim(), philosophy: processedPhilosophy }
+      ])
+    } catch (error) {
+      if (error instanceof ZodError) return toast.error(error.errors[0].message)
+      else
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
+    }
+
+    const updatedKnowledges = [...knowledges]
+    const knowledgeData: Knowledge = {
+      name: name.trim(),
+      philosophy: processedPhilosophy as Knowledge['philosophy']
+    }
+
+    if (i !== undefined) {
+      // Updating an existing value
+      updatedKnowledges[i] = knowledgeData
+      form.setValue(`knowledges.${i}`, knowledgeData)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updatedKnowledges.push(knowledgeData)
+
+      form.setValue('knowledges', updatedKnowledges)
+
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updatedKnowledges.length - 1]: true
+      }))
+    }
+
+    saveToLocalStorage(
+      updatedKnowledges,
+      i !== undefined
+        ? 'Knowledge carved into memory.'
+        : 'New knowledge illuminates the settlement.'
+    )
+    setIsAddingNew(false)
   }
 
-  const addNewKnowledge = () => setShowNewKnowledgeForm(false)
+  /**
+   * Enables editing a value.
+   *
+   * @param index Knowledge Index
+   */
+  const onEdit = (index: number) =>
+    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+
+  /**
+   * Handles the end of a drag event for reordering values.
+   *
+   * @param event Drag End Event
+   */
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id.toString())
+      const newIndex = parseInt(over.id.toString())
+      const newOrder = arrayMove(knowledges, oldIndex, newIndex)
+
+      form.setValue('knowledges', newOrder)
+      saveToLocalStorage(newOrder)
+
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
+        })
+
+        return next
+      })
+    }
+  }
 
   return (
-    <Card className="mt-2">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
-          <LandmarkIcon className="h-4 w-4" /> Knowledges
+    <Card className="mt-1 px-2">
+      <CardHeader className="px-3 py-2 pb-2">
+        {/* Title */}
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          Knowledges{' '}
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addKnowledge}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0 pb-2">
-        <div className="space-y-2">
-          {knowledges.length > 0 && (
+
+      {/* Knowledges List */}
+      <CardContent className="p-1 pb-2">
+        <div className="space-y-1">
+          {knowledges.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
-              onDragEnd={(event) => {
-                const { active, over } = event
-                if (over && active.id !== over.id) {
-                  const oldIndex = knowledgeIds.indexOf(active.id as string)
-                  const newIndex = knowledgeIds.indexOf(over.id as string)
-                  const newOrder = arrayMove(knowledges, oldIndex, newIndex)
-                  form.setValue('knowledges', newOrder)
-
-                  // Save to localStorage
-                  try {
-                    const formValues = form.getValues()
-                    const campaign = getCampaign()
-                    const settlementIndex = campaign.settlements.findIndex(
-                      (s: { id: number }) => s.id === formValues.id
-                    )
-
-                    if (settlementIndex !== -1) {
-                      campaign.settlements[settlementIndex].knowledges =
-                        newOrder
-                      localStorage.setItem('campaign', JSON.stringify(campaign))
-                    }
-                  } catch (error) {
-                    console.error('Error reordering knowledges:', error)
-                  }
-                }
-              }}>
+              onDragEnd={handleDragEnd}>
               <SortableContext
-                items={knowledgeIds}
+                items={knowledges.map((_, index) => index.toString())}
                 strategy={verticalListSortingStrategy}>
-                {knowledges.map((knowledge) => (
+                {knowledges.map((knowledge, index) => (
                   <KnowledgeItem
-                    key={knowledge.name}
-                    id={knowledge.name}
-                    knowledge={knowledge}
-                    philosophies={philosophies}
-                    handleRemoveKnowledge={handleRemoveKnowledge}
-                    handleUpdateKnowledge={handleUpdateKnowledge}
-                    isEditing={editingKnowledge === knowledge.name}
-                    onEdit={() => setEditingKnowledge(knowledge.name)}
-                    onSaveEdit={(name, philosophy) =>
-                      handleSaveEdit(knowledge.name, name, philosophy)
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    form={form}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(name, philosophy, i) =>
+                      onSave(name, philosophy, i)
                     }
-                    onCancelEdit={() => setEditingKnowledge(null)}
+                    onEdit={onEdit}
+                    philosophies={philosophies}
                   />
                 ))}
               </SortableContext>
             </DndContext>
           )}
-
-          {showNewKnowledgeForm && (
+          {isAddingNew && (
             <NewKnowledgeItem
-              form={form}
-              onAdd={addNewKnowledge}
+              onSave={(name, philosophy) => onSave(name, philosophy)}
+              onCancel={() => setIsAddingNew(false)}
               philosophies={philosophies}
-              existingNames={knowledges.map((k) => k.name)}
             />
           )}
-
-          <div className="pt-2 flex justify-center">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => setShowNewKnowledgeForm(true)}
-              disabled={showNewKnowledgeForm || editingKnowledge !== null}>
-              <PlusCircleIcon className="h-4 w-4 mr-1" />
-              Add Knowledge
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>
