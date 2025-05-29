@@ -50,12 +50,12 @@ const data = {
       icon: PersonStandingIcon,
       items: [
         {
-          title: 'Create',
-          url: '/survivor/create'
-        },
-        {
           title: 'List',
           url: '/survivor/list'
+        },
+        {
+          title: 'Create',
+          url: '/survivor/create'
         }
       ]
     }

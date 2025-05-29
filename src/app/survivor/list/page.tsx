@@ -14,12 +14,12 @@ import { ReactElement } from 'react'
 
 export default function Page(): ReactElement {
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-4xl sm:text-5xl font-bold pt-[20px] text-center mb-8">
+    <div className="mx-auto py-8">
+      <h1 className="text-3xl sm:text-4xl font-bold text-center mb-8">
         Kingdom Death: Monster
       </h1>
 
-      <Card className="max-w-[1200px] mx-auto">
+      <Card className="max-w-[90%] mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl text-center font-bold">
             Survivors
