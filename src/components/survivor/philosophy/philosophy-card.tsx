@@ -154,7 +154,7 @@ export function PhilosophyCard({
         </div>
 
         {/* Rules Text */}
-        <p className="text-xs">
+        <p className="text-xs text-muted-foreground">
           <strong>Ponder:</strong> If you are a{' '}
           <strong>returning survivor</strong> and reach a new Hunt XP milestone,
           you must rank up your philosophy. Limit, once per settlement phase.

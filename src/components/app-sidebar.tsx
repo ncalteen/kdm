@@ -24,7 +24,7 @@ import {
   PersonStandingIcon
 } from 'lucide-react'
 import Link from 'next/link'
-import * as React from 'react'
+import { ComponentProps } from 'react'
 
 const data = {
   navMain: [
@@ -92,7 +92,7 @@ const footer = [
   }
 ]
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props} className="sidebar-10">
       <SidebarHeader>

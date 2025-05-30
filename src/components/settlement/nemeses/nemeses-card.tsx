@@ -320,7 +320,7 @@ export function NemesesCard({
             </div>
           )}
         </CardTitle>
-        <CardDescription className="text-left text-xs">
+        <CardDescription className="text-left text-xs text-muted-foreground">
           The nemesis monsters your settlement can encounter.
         </CardDescription>
       </CardHeader>

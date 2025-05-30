@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Gender } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { ReactElement, useCallback } from 'react'
+import { KeyboardEvent, ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -131,7 +131,7 @@ export function NameGenderCard({
    * @param value Current Input Value
    */
   const handleNameKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
+    e: KeyboardEvent<HTMLInputElement>,
     value: string
   ) => {
     if (e.key === 'Enter') {

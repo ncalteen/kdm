@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { UploadIcon } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { ChangeEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -43,7 +43,7 @@ export function UploadCampaignButton() {
    *
    * @param event File Input Change Event
    */
-  const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelection = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
     if (!file) return

@@ -262,7 +262,7 @@ export function SeedPatternsCard({
             </div>
           )}
         </CardTitle>
-        <CardDescription className="text-left text-xs">
+        <CardDescription className="text-left text-xs text-muted-foreground">
           Patterns gained when survivors reach 3 understanding.
         </CardDescription>
       </CardHeader>

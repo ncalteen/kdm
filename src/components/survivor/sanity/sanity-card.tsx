@@ -171,7 +171,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                 )}
               />
             </div>
-            <div className="text-xs mt-auto">
+            <div className="text-xs mt-auto text-muted-foreground">
               If your insanity is 3+, you are <strong>insane</strong>.
             </div>
           </div>

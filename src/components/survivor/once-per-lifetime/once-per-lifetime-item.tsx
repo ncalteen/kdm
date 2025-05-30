@@ -6,7 +6,7 @@ import { Survivor } from '@/schemas/survivor'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -80,7 +80,7 @@ export function OncePerLifetimeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -171,7 +171,7 @@ export function NewOncePerLifetimeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

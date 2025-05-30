@@ -14,7 +14,7 @@ import {
   PencilIcon,
   TrashIcon
 } from 'lucide-react'
-import { ReactElement, useEffect, useRef } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -93,7 +93,7 @@ export function MilestoneItem({
     }
   }, [milestone.name, milestone.event, isDisabled])
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
       onSave(index, nameRef.current.value, eventRef.current.value)
@@ -211,7 +211,7 @@ export function NewMilestoneItem({
   const nameRef = useRef<HTMLInputElement>(null)
   const eventRef = useRef<HTMLInputElement>(null)
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
       onSave(nameRef.current.value, eventRef.current.value)

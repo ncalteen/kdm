@@ -17,7 +17,13 @@ import {
 import { Philosophy } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { ReactElement, forwardRef, useEffect, useState } from 'react'
+import {
+  KeyboardEvent,
+  ReactElement,
+  forwardRef,
+  useEffect,
+  useState
+} from 'react'
 
 /**
  * Select Philosophy Component Properties
@@ -30,7 +36,7 @@ export interface SelectPhilosophyProps {
   /** OnChange Handler */
   onChange?: (value: string) => void
   /** OnKeyDown Handler */
-  onKeyDown?: (e: React.KeyboardEvent) => void
+  onKeyDown?: (e: KeyboardEvent) => void
   /** Options */
   options: string[]
   /** Value */
@@ -64,7 +70,7 @@ export const SelectPhilosophy = forwardRef<
       if (onChange) onChange(currentValue)
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (onKeyDown) onKeyDown(e)
     }
 

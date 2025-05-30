@@ -8,7 +8,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -92,7 +92,7 @@ export function RewardItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
       const ccValue = parseInt(ccInputRef.current.value) || 1
@@ -213,7 +213,7 @@ export function NewRewardItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
       const ccValue = parseInt(ccInputRef.current.value) || 1

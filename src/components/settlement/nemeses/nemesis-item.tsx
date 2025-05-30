@@ -7,7 +7,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -100,7 +100,7 @@ export function NemesisItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, nemesis?.unlocked, index)
@@ -248,7 +248,7 @@ export function NewNemesisItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       if (!inputRef.current.value || inputRef.current.value.trim() === '') {

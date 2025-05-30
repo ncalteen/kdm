@@ -315,7 +315,7 @@ export function QuarriesCard({
             </Button>
           )}
         </CardTitle>
-        <CardDescription className="text-left text-xs">
+        <CardDescription className="text-left text-xs text-muted-foreground">
           The monsters your settlement can select to hunt.
         </CardDescription>
       </CardHeader>

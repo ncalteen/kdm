@@ -4,12 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { saveSurvivorToLocalStorage } from '@/lib/utils'
-import { Survivor } from '@/schemas/survivor'
+import { getCampaign, saveSurvivorToLocalStorage } from '@/lib/utils'
+import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { LightBulbIcon } from '@primer/octicons-react'
-import { ReactElement, useCallback } from 'react'
+import {
+  FormEvent,
+  KeyboardEvent,
+  ReactElement,
+  useCallback,
+  useMemo
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Knowledge Card Component
@@ -20,6 +29,12 @@ export function KnowledgeCard({
   // Watch the observation rank values to ensure UI updates correctly
   const knowledge1ObservationRank = form.watch('knowledge1ObservationRank') || 0
   const knowledge2ObservationRank = form.watch('knowledge2ObservationRank') || 0
+
+  // Get the canUseFightingArtsOrKnowledges value
+  const canUseFightingArtsOrKnowledges = useMemo(
+    () => form.watch('canUseFightingArtsOrKnowledges'),
+    [form]
+  )
 
   /**
    * Save knowledge data to localStorage for the current survivor, with
@@ -45,7 +60,7 @@ export function KnowledgeCard({
    */
   const handleTextKeyDown = useCallback(
     (
-      e: React.KeyboardEvent<HTMLInputElement>,
+      e: KeyboardEvent<HTMLInputElement>,
       fieldName: keyof Survivor,
       value: string,
       successMsg: string
@@ -72,7 +87,7 @@ export function KnowledgeCard({
    */
   const handleTextareaKeyDown = useCallback(
     (
-      e: React.KeyboardEvent<HTMLTextAreaElement>,
+      e: KeyboardEvent<HTMLTextAreaElement>,
       fieldName: keyof Survivor,
       value: string,
       successMsg: string
@@ -110,19 +125,87 @@ export function KnowledgeCard({
   /**
    * Helper function to handle textarea auto-resize
    */
-  const handleTextareaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+  const handleTextareaInput = (e: FormEvent<HTMLTextAreaElement>) => {
     const target = e.target as HTMLTextAreaElement
     target.style.height = 'auto'
     target.style.height = `${target.scrollHeight}px`
   }
 
+  /**
+   * Handle toggling the canUseFightingArtsOrKnowledges checkbox
+   */
+  const handleCanUseToggle = useCallback(
+    (checked: boolean) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        if (survivorIndex !== -1) {
+          const updatedValue = !checked
+
+          const updatedSurvivor = {
+            ...campaign.survivors[survivorIndex],
+            canUseFightingArtsOrKnowledges: updatedValue
+          }
+
+          try {
+            SurvivorSchema.parse(updatedSurvivor)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          form.setValue('canUseFightingArtsOrKnowledges', updatedValue)
+
+          campaign.survivors[survivorIndex].canUseFightingArtsOrKnowledges =
+            updatedValue
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          toast.success(
+            updatedValue
+              ? 'The survivor recalls their knowledge.'
+              : 'The survivor has forgotten their learnings.'
+          )
+        }
+      } catch (error) {
+        console.error('Knowledge Toggle Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
+      }
+    },
+    [form]
+  )
+
   return (
     <Card className="p-0 pb-1 mt-1 border-3">
       <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          <LightBulbIcon className="h-4 w-4" />
-          Knowledges
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          {/* Title */}
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+            <LightBulbIcon className="h-4 w-4" />
+            Knowledges
+          </CardTitle>
+
+          {/* Cannot Use Fighting Arts or Knowledges */}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="canUseFightingArtsOrKnowledges"
+              checked={!canUseFightingArtsOrKnowledges}
+              onCheckedChange={handleCanUseToggle}
+            />
+            <Label
+              htmlFor="canUseFightingArtsOrKnowledges"
+              className="text-xs cursor-pointer">
+              Cannot Use Knowledges
+            </Label>
+          </div>
+        </div>
       </CardHeader>
 
       <CardContent className="px-2 py-0">

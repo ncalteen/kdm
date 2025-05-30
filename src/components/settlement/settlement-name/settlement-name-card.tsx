@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { getCampaign } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
-import { ReactElement } from 'react'
+import { KeyboardEvent, ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -81,7 +81,7 @@ export function SettlementNameCard({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
 

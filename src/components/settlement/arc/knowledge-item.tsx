@@ -9,7 +9,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -89,7 +89,7 @@ export function KnowledgeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       const currentPhilosophy = form.getValues(`knowledges.${index}.philosophy`)
@@ -239,7 +239,7 @@ export function NewKnowledgeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, selectedPhilosophy)

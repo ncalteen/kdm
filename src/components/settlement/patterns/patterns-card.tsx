@@ -266,7 +266,7 @@ export function PatternsCard({
             </div>
           )}
         </CardTitle>
-        <CardDescription className="text-left text-xs">
+        <CardDescription className="text-left text-xs text-muted-foreground">
           Patterns gained only when instructed.
         </CardDescription>
       </CardHeader>

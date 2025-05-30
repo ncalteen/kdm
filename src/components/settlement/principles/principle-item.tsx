@@ -7,7 +7,7 @@ import { Principle } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 /**
  * Principle Item Component Properties
@@ -99,7 +99,7 @@ export function PrincipleItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && nameValue && option1Value && option2Value) {
       e.preventDefault()
       onSave(index, nameValue, option1Value, option2Value)
@@ -250,7 +250,7 @@ export function NewPrincipleItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && name && option1 && option2) {
       e.preventDefault()
       onSave(name, option1, option2)
