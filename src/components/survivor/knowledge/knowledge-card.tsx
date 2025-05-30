@@ -6,7 +6,7 @@ import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { getCampaign, saveSurvivorToLocalStorage } from '@/lib/utils'
+import { cn, getCampaign, saveSurvivorToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { LightBulbIcon } from '@primer/octicons-react'
 import {
@@ -29,6 +29,10 @@ export function KnowledgeCard({
   // Watch the observation rank values to ensure UI updates correctly
   const knowledge1ObservationRank = form.watch('knowledge1ObservationRank') || 0
   const knowledge2ObservationRank = form.watch('knowledge2ObservationRank') || 0
+
+  // Watch the rank up milestone values
+  const knowledge1RankUp = useMemo(() => form.watch('knowledge1RankUp'), [form])
+  const knowledge2RankUp = useMemo(() => form.watch('knowledge2RankUp'), [form])
 
   // Get the canUseFightingArtsOrKnowledges value
   const canUseFightingArtsOrKnowledges = useMemo(
@@ -182,6 +186,54 @@ export function KnowledgeCard({
     [form]
   )
 
+  /**
+   * Handles right-clicking on knowledge1 observation rank checkboxes to toggle rank up milestone
+   *
+   * @param index The index of the checkbox (0-based)
+   * @param event The mouse event
+   */
+  const handleKnowledge1RightClick = useCallback(
+    (index: number, event: React.MouseEvent) => {
+      event.preventDefault()
+
+      const newRankUp = knowledge1RankUp === index ? undefined : index
+
+      form.setValue('knowledge1RankUp', newRankUp, { shouldDirty: true })
+      saveToLocalStorage(
+        'knowledge1RankUp',
+        newRankUp ?? 0,
+        newRankUp !== undefined
+          ? 'Knowledge rank up milestone marked.'
+          : 'Knowledge rank up milestone removed.'
+      )
+    },
+    [form, knowledge1RankUp, saveToLocalStorage]
+  )
+
+  /**
+   * Handles right-clicking on knowledge2 observation rank checkboxes to toggle rank up milestone
+   *
+   * @param index The index of the checkbox (0-based)
+   * @param event The mouse event
+   */
+  const handleKnowledge2RightClick = useCallback(
+    (index: number, event: React.MouseEvent) => {
+      event.preventDefault()
+
+      const newRankUp = knowledge2RankUp === index ? undefined : index
+
+      form.setValue('knowledge2RankUp', newRankUp, { shouldDirty: true })
+      saveToLocalStorage(
+        'knowledge2RankUp',
+        newRankUp ?? 0,
+        newRankUp !== undefined
+          ? 'Knowledge rank up milestone marked.'
+          : 'Knowledge rank up milestone removed.'
+      )
+    },
+    [form, knowledge2RankUp, saveToLocalStorage]
+  )
+
   return (
     <Card className="p-0 pb-1 mt-1 border-3">
       <CardHeader className="px-2 py-1">
@@ -236,16 +288,36 @@ export function KnowledgeCard({
             <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
                 const rank = index + 1
+                const checked = knowledge1ObservationRank >= rank
+                const isRankUpMilestone = knowledge1RankUp === index
                 return (
                   <Checkbox
                     key={index}
-                    checked={knowledge1ObservationRank >= rank}
+                    checked={checked}
                     onCheckedChange={(checked) => {
-                      if (checked)
+                      if (checked) {
+                        // Check if this is a rank up milestone
+                        const isRankUp = knowledge1RankUp === index
+                        const successMessage = isRankUp
+                          ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
+                          : 'The lantern illuminates newfound wisdom.'
+
                         handleRankChange('knowledge1ObservationRank', rank)
-                      else if (knowledge1ObservationRank === rank)
+                        if (isRankUp) {
+                          // Override the default success message
+                          toast.success(successMessage)
+                        }
+                      } else if (knowledge1ObservationRank === rank) {
                         handleRankChange('knowledge1ObservationRank', rank - 1)
+                      }
                     }}
+                    onContextMenu={(event) =>
+                      handleKnowledge1RightClick(index, event)
+                    }
+                    className={cn(
+                      'h-4 w-4 rounded-sm',
+                      !checked && isRankUpMilestone && 'border-2 border-primary'
+                    )}
                   />
                 )
               })}
@@ -332,16 +404,36 @@ export function KnowledgeCard({
             <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
                 const rank = index + 1
+                const checked = knowledge2ObservationRank >= rank
+                const isRankUpMilestone = knowledge2RankUp === index
                 return (
                   <Checkbox
                     key={index}
-                    checked={knowledge2ObservationRank >= rank}
+                    checked={checked}
                     onCheckedChange={(checked) => {
-                      if (checked)
+                      if (checked) {
+                        // Check if this is a rank up milestone
+                        const isRankUp = knowledge2RankUp === index
+                        const successMessage = isRankUp
+                          ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
+                          : 'The lantern illuminates newfound wisdom.'
+
                         handleRankChange('knowledge2ObservationRank', rank)
-                      else if (knowledge2ObservationRank === rank)
+                        if (isRankUp) {
+                          // Override the default success message
+                          toast.success(successMessage)
+                        }
+                      } else if (knowledge2ObservationRank === rank) {
                         handleRankChange('knowledge2ObservationRank', rank - 1)
+                      }
                     }}
+                    onContextMenu={(event) =>
+                      handleKnowledge2RightClick(index, event)
+                    }
+                    className={cn(
+                      'h-4 w-4 rounded-sm',
+                      !checked && isRankUpMilestone && 'border-2 border-primary'
+                    )}
                   />
                 )
               })}

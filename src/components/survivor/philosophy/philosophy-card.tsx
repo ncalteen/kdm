@@ -16,7 +16,7 @@ import { Philosophy } from '@/lib/enums'
 import { cn, getCampaign } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BrainCogIcon } from 'lucide-react'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -28,6 +28,10 @@ export function PhilosophyCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
   const watchedPhilosophy = form.watch('philosophy')
+  const tenetKnowledgeRankUp = useMemo(
+    () => form.watch('tenetKnowledgeRankUp'),
+    [form]
+  )
 
   /**
    * Save philosophy data to localStorage for the current survivor, with
@@ -36,44 +40,44 @@ export function PhilosophyCard({
    * @param updatedData Updated philosophy data
    * @param successMsg Success Message
    */
-  const saveToLocalStorage = (
-    updatedData: Partial<Survivor>,
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+  const saveToLocalStorage = useCallback(
+    (updatedData: Partial<Survivor>, successMsg?: string) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          ...updatedData
+        if (survivorIndex !== -1) {
+          const updatedSurvivor = {
+            ...campaign.survivors[survivorIndex],
+            ...updatedData
+          }
+
+          try {
+            SurvivorSchema.parse(updatedSurvivor)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          Object.assign(campaign.survivors[survivorIndex], updatedData)
+          localStorage.setItem('campaign', JSON.stringify(campaign))
+
+          if (successMsg) toast.success(successMsg)
         }
-
-        try {
-          SurvivorSchema.parse(updatedSurvivor)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        Object.assign(campaign.survivors[survivorIndex], updatedData)
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
+      } catch (error) {
+        console.error('Philosophy Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
-    } catch (error) {
-      console.error('Philosophy Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+    },
+    [form]
+  )
 
   /**
    * Handles the change of philosophy selection.
@@ -103,6 +107,31 @@ export function PhilosophyCard({
         : 'The philosophical path returns to shadow.'
     )
   }
+
+  /**
+   * Handles right-clicking on tenet knowledge observation rank checkboxes to toggle rank up milestone
+   *
+   * @param index The index of the checkbox (0-based)
+   * @param event The mouse event
+   */
+  const handleRightClick = useCallback(
+    (index: number, event: React.MouseEvent) => {
+      event.preventDefault()
+
+      const newRankUp = tenetKnowledgeRankUp === index ? undefined : index
+
+      form.setValue('tenetKnowledgeRankUp', newRankUp, { shouldDirty: true })
+
+      // Save to localStorage
+      saveToLocalStorage(
+        { tenetKnowledgeRankUp: newRankUp },
+        newRankUp !== undefined
+          ? 'Tenet knowledge rank up milestone marked.'
+          : 'Tenet knowledge rank up milestone removed.'
+      )
+    },
+    [form, tenetKnowledgeRankUp, saveToLocalStorage]
+  )
 
   return (
     <Card className="p-0 pb-1 border-3">
@@ -236,34 +265,54 @@ export function PhilosophyCard({
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-1 pt-2">
-                    {[...Array(9)].map((_, index) => (
-                      <Checkbox
-                        key={index}
-                        checked={(field.value || 0) > index}
-                        onCheckedChange={(checked) => {
-                          let newRank
-                          if (checked) {
-                            newRank = index + 1
-                            form.setValue(
-                              'tenetKnowledgeObservationRank',
-                              newRank
-                            )
-                          } else if ((field.value || 0) === index + 1) {
-                            newRank = index
-                            form.setValue(
-                              'tenetKnowledgeObservationRank',
-                              newRank
-                            )
-                          } else return
+                    {[...Array(9)].map((_, index) => {
+                      const checked = (field.value || 0) > index
+                      const isRankUpMilestone = tenetKnowledgeRankUp === index
+                      return (
+                        <Checkbox
+                          key={index}
+                          checked={checked}
+                          onCheckedChange={(checked) => {
+                            let newRank
+                            if (checked) {
+                              newRank = index + 1
+                              form.setValue(
+                                'tenetKnowledgeObservationRank',
+                                newRank
+                              )
+                            } else if ((field.value || 0) === index + 1) {
+                              newRank = index
+                              form.setValue(
+                                'tenetKnowledgeObservationRank',
+                                newRank
+                              )
+                            } else return
 
-                          // Save to localStorage
-                          saveToLocalStorage(
-                            { tenetKnowledgeObservationRank: newRank },
-                            `Observation rank ${newRank} burns bright in the lantern's glow.`
-                          )
-                        }}
-                      />
-                    ))}
+                            // Check if this is a rank up milestone
+                            const isRankUp =
+                              checked && tenetKnowledgeRankUp === index
+                            const successMessage = isRankUp
+                              ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
+                              : `Observation rank ${newRank} burns bright in the lantern's glow.`
+
+                            // Save to localStorage
+                            saveToLocalStorage(
+                              { tenetKnowledgeObservationRank: newRank },
+                              successMessage
+                            )
+                          }}
+                          onContextMenu={(event) =>
+                            handleRightClick(index, event)
+                          }
+                          className={cn(
+                            'h-4 w-4 rounded-sm',
+                            !checked &&
+                              isRankUpMilestone &&
+                              'border-2 border-primary'
+                          )}
+                        />
+                      )
+                    })}
                   </div>
                 </FormItem>
               )}

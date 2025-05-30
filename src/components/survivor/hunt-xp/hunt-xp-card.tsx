@@ -13,7 +13,7 @@ import { cn, getCampaign, getSettlement } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -30,7 +30,7 @@ import { ZodError } from 'zod'
  */
 export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   const huntXP = form.watch('huntXP') || 0
-  const huntXPRankUp = form.watch('huntXPRankUp') || []
+  const huntXPRankUp = useMemo(() => form.watch('huntXPRankUp') || [], [form])
   const settlementId = form.watch('settlementId')
 
   const [settlement, setSettlement] = useState<Settlement | undefined>(
@@ -41,13 +41,19 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   useEffect(() => setSettlement(getSettlement(settlementId)), [settlementId])
 
   /**
-   * Save Hunt XP to localStorage for the current survivor, with Zod validation and toast feedback.
+   * Save Hunt XP and rank up milestones to localStorage for the current
+   * survivor, with Zod validation and toast feedback.
    *
    * @param updatedHuntXP Updated Hunt XP value
+   * @param updatedHuntXPRankUp Updated Hunt XP rank up milestones
    * @param successMsg Success Message
    */
   const saveToLocalStorage = useCallback(
-    (updatedHuntXP: number, successMsg?: string) => {
+    (
+      updatedHuntXP?: number,
+      updatedHuntXPRankUp?: number[],
+      successMsg?: string
+    ) => {
       try {
         const formValues = form.getValues()
         const campaign = getCampaign()
@@ -58,7 +64,10 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
         if (survivorIndex !== -1) {
           const updatedSurvivor = {
             ...campaign.survivors[survivorIndex],
-            huntXP: updatedHuntXP
+            ...(updatedHuntXP !== undefined && { huntXP: updatedHuntXP }),
+            ...(updatedHuntXPRankUp !== undefined && {
+              huntXPRankUp: updatedHuntXPRankUp
+            })
           }
 
           try {
@@ -74,7 +83,10 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
 
           campaign.survivors[survivorIndex] = {
             ...campaign.survivors[survivorIndex],
-            huntXP: updatedHuntXP
+            ...(updatedHuntXP !== undefined && { huntXP: updatedHuntXP }),
+            ...(updatedHuntXPRankUp !== undefined && {
+              huntXPRankUp: updatedHuntXPRankUp
+            })
           }
 
           localStorage.setItem('campaign', JSON.stringify(campaign))
@@ -99,9 +111,53 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
     (index: number, checked: boolean) => {
       const newXP = checked ? index : index - 1
       form.setValue('huntXP', newXP, { shouldDirty: true })
-      saveToLocalStorage(newXP, 'The lantern grows brighter. Hunt XP updated.')
+
+      // Check if this is a rank up milestone
+      const isRankUp = checked && huntXPRankUp.includes(index)
+      const successMessage = isRankUp
+        ? 'The survivor rises through struggle and triumph. Rank up achieved!'
+        : 'The lantern grows brighter. Hunt XP updated.'
+
+      saveToLocalStorage(newXP, undefined, successMessage)
     },
-    [form, saveToLocalStorage]
+    [form, huntXPRankUp, saveToLocalStorage]
+  )
+
+  /**
+   * Handles right-clicking on Hunt XP checkboxes to toggle rank up milestones
+   *
+   * @param index The index of the checkbox (0-based)
+   * @param event The mouse event
+   */
+  const handleRightClick = useCallback(
+    (index: number, event: React.MouseEvent) => {
+      event.preventDefault()
+
+      const currentRankUps = [...huntXPRankUp]
+      const rankUpIndex = currentRankUps.indexOf(index)
+
+      if (rankUpIndex >= 0) {
+        // Remove from rank up milestones
+        currentRankUps.splice(rankUpIndex, 1)
+        form.setValue('huntXPRankUp', currentRankUps, { shouldDirty: true })
+        saveToLocalStorage(
+          undefined,
+          currentRankUps,
+          'Rank up milestone removed.'
+        )
+      } else {
+        // Add to rank up milestones
+        currentRankUps.push(index)
+        currentRankUps.sort((a, b) => a - b) // Keep sorted
+        form.setValue('huntXPRankUp', currentRankUps, { shouldDirty: true })
+        saveToLocalStorage(
+          undefined,
+          currentRankUps,
+          'Rank up milestone added.'
+        )
+      }
+    },
+    [form, huntXPRankUp, saveToLocalStorage]
   )
 
   /**
@@ -145,6 +201,9 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                                 disabled={isDisabled(boxIndex)}
                                 onCheckedChange={(checked) =>
                                   handleToggle(boxIndex, !!checked)
+                                }
+                                onContextMenu={(event) =>
+                                  handleRightClick(boxIndex, event)
                                 }
                                 className={cn(
                                   'h-4 w-4 rounded-sm',

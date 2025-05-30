@@ -31,12 +31,7 @@ import { ZodError } from 'zod'
  * @param form Form
  * @returns Name, Gender, and Status Card Component
  */
-export function NameGenderCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const dead = form.watch('dead') || false
-  const retired = form.watch('retired') || false
-
+export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   /**
    * Save name to localStorage for the current survivor, with
    * Zod validation and toast feedback.
@@ -244,8 +239,8 @@ export function NameGenderCard({
       form.setValue('retired', checked, { shouldDirty: true })
 
       const successMessage = checked
-        ? 'The survivor steps back from the hunt, seeking peace in the settlement.'
-        : 'The call of adventure stirs once more. The survivor returns to active duty.'
+        ? 'The survivor retires from the hunt, seeking peace in the settlement.'
+        : 'The call of adventure stirs once more. The survivor returns from retirement.'
 
       saveStatusToLocalStorage(undefined, checked, successMessage)
     },
@@ -291,7 +286,7 @@ export function NameGenderCard({
                 <FormItem className="ml-4">
                   <div className="flex items-center gap-2">
                     <div className="flex items-center space-x-1">
-                      <label htmlFor="male-checkbox" className="text-sm">
+                      <label htmlFor="male-checkbox" className="text-xs">
                         M
                       </label>
                       <Checkbox
@@ -303,7 +298,7 @@ export function NameGenderCard({
                       />
                     </div>
                     <div className="flex items-center space-x-1">
-                      <label htmlFor="female-checkbox" className="text-sm">
+                      <label htmlFor="female-checkbox" className="text-xs">
                         F
                       </label>
                       <Checkbox
@@ -319,80 +314,60 @@ export function NameGenderCard({
                 </FormItem>
               )}
             />
-
-            {/* Status Section */}
-            <div className="ml-4 flex items-center gap-2">
-              {/* Dead Status */}
-              <FormField
-                control={form.control}
-                name="dead"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-1 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={handleDeadToggle}
-                        className="h-4 w-4 rounded-sm"
-                      />
-                    </FormControl>
-                    <SkullIcon className="h-3 w-3 text-muted-foreground" />
-                    <FormLabel className="text-xs font-medium cursor-pointer">
-                      Dead
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
-
-              {/* Retired Status */}
-              <FormField
-                control={form.control}
-                name="retired"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-1 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={handleRetiredToggle}
-                        className="h-4 w-4 rounded-sm"
-                      />
-                    </FormControl>
-                    <UserXIcon className="h-3 w-3 text-muted-foreground" />
-                    <FormLabel className="text-xs font-medium cursor-pointer">
-                      Retired
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
-            </div>
           </div>
+        </div>
 
-          <hr className="my-1" />
+        <hr className="my-1" />
 
-          {/* Status Description */}
-          {(dead || retired) && (
-            <div className="mb-1">
-              <div className="text-xs text-muted-foreground">
-                {dead && retired && (
-                  <p>
-                    The survivor has fallen and will never return to the hunt.
-                  </p>
-                )}
-                {dead && !retired && (
-                  <p>The darkness has claimed this soul. They cannot hunt.</p>
-                )}
-                {!dead && retired && (
-                  <p>
-                    This survivor has stepped back from active duty but may
-                    return if needed.
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
+        {/* Status Section */}
+        <div className="flex justify-between items-center">
           <FormDescription className="text-xs">
             When you name your survivor, gain +1 <strong>survival</strong>.
           </FormDescription>
+
+          <div className="flex items-center gap-2">
+            {/* Dead Status */}
+            <FormField
+              control={form.control}
+              name="dead"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center gap-1 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={handleDeadToggle}
+                      className="h-4 w-4 rounded-sm"
+                    />
+                  </FormControl>
+                  <SkullIcon className="h-3 w-3 text-muted-foreground" />
+                  <FormLabel className="text-xs text-muted-foreground cursor-pointer">
+                    Dead
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+
+            {/* Retired Status */}
+            <FormField
+              control={form.control}
+              name="retired"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center gap-1 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={handleRetiredToggle}
+                      className="h-4 w-4 rounded-sm"
+                    />
+                  </FormControl>
+                  <UserXIcon className="h-3 w-3 text-muted-foreground" />
+                  <FormLabel className="text-xs text-muted-foreground cursor-pointer">
+                    Retired
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
       </CardContent>
     </Card>

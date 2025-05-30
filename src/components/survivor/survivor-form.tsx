@@ -8,11 +8,11 @@ import { DisordersCard } from '@/components/survivor/disorders/disorders-card'
 import { FightingArtsCard } from '@/components/survivor/fighting-arts/fighting-arts-card'
 import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
 import { KnowledgeCard } from '@/components/survivor/knowledge/knowledge-card'
-import { NameGenderCard } from '@/components/survivor/name-gender/name-gender-card'
 import { NextDepartureCard } from '@/components/survivor/next-departure/next-departure-card'
 import { OncePerLifetimeCard } from '@/components/survivor/once-per-lifetime/once-per-lifetime-card'
 import { PhilosophyCard } from '@/components/survivor/philosophy/philosophy-card'
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
+import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
 import { Card, CardContent } from '@/components/ui/card'
@@ -115,7 +115,7 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
             <CardContent>
               <div className="flex flex-col md:flex-row gap-2">
                 <div className="w-[435px]">
-                  <NameGenderCard {...form} />
+                  <StatusCard {...form} />
                   <SurvivalCard {...form} />
                   <AttributeCard {...form} />
                   <SanityCard {...form} />
