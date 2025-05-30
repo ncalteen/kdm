@@ -1,6 +1,5 @@
 'use client'
 
-import { CollectiveCognitionCard } from '@/components/settlement/arc/collective-cognition-card'
 import { CollectiveCognitionRewardsCard } from '@/components/settlement/arc/collective-cognition-rewards-card'
 import { CollectiveCognitionVictoriesCard } from '@/components/settlement/arc/collective-cognition-victories-card'
 import { KnowledgesCard } from '@/components/settlement/arc/knowledges-card'
@@ -8,15 +7,14 @@ import { PhilosophiesCard } from '@/components/settlement/arc/philosophies-card'
 import { DepartingBonusesCard } from '@/components/settlement/departing-bonuses/departing-bonuses-card'
 import { GearCard } from '@/components/settlement/gear/gear-card'
 import { InnovationsCard } from '@/components/settlement/innovations/innovations-card'
-import { LanternResearchLevelCard } from '@/components/settlement/lantern-research/lantern-research-level-card'
 import { LocationsCard } from '@/components/settlement/locations/locations-card'
 import { MilestonesCard } from '@/components/settlement/milestones/milestones-card'
 import { MonsterVolumesCard } from '@/components/settlement/monster-volumes/monster-volumes-card'
 import { NemesesCard } from '@/components/settlement/nemeses/nemeses-card'
 import { NotesCard } from '@/components/settlement/notes/notes-card'
+import { OverviewCard } from '@/components/settlement/overview/overview-card'
 import { PatternsCard } from '@/components/settlement/patterns/patterns-card'
 import { SeedPatternsCard } from '@/components/settlement/patterns/seed-patterns-card'
-import { PopulationCard } from '@/components/settlement/population/population-card'
 import { PrinciplesCard } from '@/components/settlement/principles/principles-card'
 import { QuarriesCard } from '@/components/settlement/quarries/quarries-card'
 import { ResourcesCard } from '@/components/settlement/resources/resources-card'
@@ -34,6 +32,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { type ReactElement, useEffect, useMemo, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { SettlementSurvivorsCard } from './survivors/settlement-survivors-card'
 
 /**
  * Settlement Form Component Properties
@@ -115,8 +114,9 @@ export function SettlementForm({
       const params = new URLSearchParams(window.location.search)
       const tabFromUrl = params.get('tab')
 
-      if (tabFromUrl && validTabs.includes(tabFromUrl))
+      if (tabFromUrl && validTabs.includes(tabFromUrl)) {
         setSelectedTab(tabFromUrl)
+      }
     }
 
     window.addEventListener('popstate', handlePopState)
@@ -162,24 +162,24 @@ export function SettlementForm({
   }
 
   return (
-    <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid sm:p-4 sm:pt-2">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Form {...form}>
           {/* Settlement Overview */}
-          <Card className="min-w-[800px] max-w-[800px] mx-auto">
-            <CardContent className="w-full pt-6">
+          <Card className="max-w-[800px] mx-auto">
+            <CardContent className="p-2">
               <SettlementNameCard {...form} />
-              <PopulationCard {...form} />
+              <OverviewCard {...form} />
             </CardContent>
           </Card>
 
           {/* Settlement Tabs */}
-          <Card className="min-w-[800px] max-w-[800px] mx-auto">
-            <CardContent className="w-full pt-2">
+          <Card className="max-w-[800px] mx-auto">
+            <CardContent className="pt-1">
               <Tabs
                 value={selectedTab}
                 onValueChange={handleTabChange}
-                className="text-center pt-2 pb-4 w-full">
+                className="text-center pt-1">
                 <TabsList className="w-full">
                   <TabsTrigger value="timeline" className="flex-1">
                     Timeline
@@ -237,10 +237,8 @@ export function SettlementForm({
                     {(campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
                       campaignType === CampaignType.PEOPLE_OF_THE_SUN) && (
                       <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                          <LanternResearchLevelCard {...form} />
-                          <MonsterVolumesCard {...form} />
-                        </div>
+                        <MonsterVolumesCard {...form} />
+                        <SettlementSurvivorsCard {...form} />
                       </>
                     )}
                   </TabsContent>
@@ -252,8 +250,10 @@ export function SettlementForm({
                     <>
                       <MilestonesCard {...form} />
                       <PrinciplesCard {...form} />
-                      <InnovationsCard {...form} />
-                      <LocationsCard {...form} />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <InnovationsCard {...form} />
+                        <LocationsCard {...form} />
+                      </div>
                     </>
                   )) || <InnovationsCard {...form} />}
                 </TabsContent>
@@ -273,7 +273,6 @@ export function SettlementForm({
                 {/* Arc Surviors */}
                 {isArcCampaign && (
                   <TabsContent value="arc">
-                    <CollectiveCognitionCard {...form} />
                     <CollectiveCognitionVictoriesCard {...form} />
                     <CollectiveCognitionRewardsCard {...form} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

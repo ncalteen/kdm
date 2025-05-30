@@ -20,7 +20,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, WrenchIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -124,7 +124,7 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
       return next
     })
 
-    saveToLocalStorage(currentGear, 'Gear consumed by the void.')
+    saveToLocalStorage(currentGear, 'Gear has been archived.')
   }
 
   /**
@@ -135,7 +135,7 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('Nameless equipment cannot be stored.')
+      return toast.error('Nameless gear cannot be stored.')
 
     try {
       SettlementSchema.shape.gear.parse([value])
@@ -172,7 +172,9 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
 
     saveToLocalStorage(
       updatedGear,
-      i !== undefined ? 'Equipment secured.' : 'New gear forged from necessity.'
+      i !== undefined
+        ? 'Gear has been modified.'
+        : 'New gear added to settlement storage.'
     )
     setIsAddingNew(false)
   }
@@ -218,35 +220,33 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
   }
 
   return (
-    <Card className="mt-1">
-      <CardHeader className="px-4 pt-2 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Gear Storage{' '}
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addGear}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <WrenchIcon className="h-4 w-4" />
+          Gear Storage
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addGear}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Gear List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {gear.length !== 0 && (
             <DndContext
               sensors={sensors}

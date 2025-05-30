@@ -28,7 +28,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { HouseIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -137,7 +137,7 @@ export function LocationsCard({
       return next
     })
 
-    saveToLocalStorage(currentLocations, 'The location has been removed.')
+    saveToLocalStorage(currentLocations, 'The location has been destroyed.')
   }
 
   /**
@@ -190,7 +190,7 @@ export function LocationsCard({
       updatedLocations,
       i !== undefined
         ? 'The location has been updated.'
-        : 'A new location illuminates the settlement.'
+        : 'A new location illuminates within settlement.'
     )
     setIsAddingNew(false)
   }
@@ -255,35 +255,31 @@ export function LocationsCard({
   }
 
   return (
-    <Card className="mt-1">
-      <CardHeader className="px-4 pt-2 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Locations{' '}
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addLocation}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <HouseIcon className="h-4 w-4" />
+          Locations
+          {!isAddingNew && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addLocation}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Locations List */}
-      <CardContent className="p-1 pb-2">
-        <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           {locations.length !== 0 && (
             <DndContext
               sensors={sensors}

@@ -138,7 +138,7 @@ export function MonsterVolumesCard({
 
     saveToLocalStorage(
       currentMonsterVolumes,
-      'Monster volume consigned to darkness!'
+      'The monster volume has been consigned to darkness.'
     )
   }
 
@@ -188,8 +188,8 @@ export function MonsterVolumesCard({
     saveToLocalStorage(
       updatedMonsterVolumes,
       i !== undefined
-        ? 'Monster volume inscribed.'
-        : 'New monster volume inscribed.'
+        ? 'Monster volume inscribed in blood.'
+        : 'New monster volume inscribed in blood.'
     )
     setIsAddingNew(false)
   }
@@ -235,35 +235,31 @@ export function MonsterVolumesCard({
   }
 
   return (
-    <Card className="mt-1 px-2">
-      <CardHeader className="px-3 py-2 pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <BookOpenIcon className="h-4 w-4" />
-            Monster Volumes
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addMonsterVolume}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <BookOpenIcon className="h-4 w-4" />
+          Monster Volumes
+          {!isAddingNew && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addMonsterVolume}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Monster Volumes List */}
-      <CardContent className="p-1 pb-2">
-        <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           {monsterVolumes.length !== 0 && (
             <DndContext
               sensors={sensors}

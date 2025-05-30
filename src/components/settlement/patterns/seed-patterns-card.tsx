@@ -29,7 +29,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { BeanIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -193,8 +193,8 @@ export function SeedPatternsCard({
     saveToLocalStorage(
       updatedSeedPatterns,
       i !== undefined
-        ? 'The enlightened vision is carved into memory.'
-        : "A new revelation awakens in the survivors' minds."
+        ? 'The seed pattern is carved into memory.'
+        : "A new seed pattern awakens in the survivors' minds."
     )
     setIsAddingNew(false)
   }
@@ -240,38 +240,36 @@ export function SeedPatternsCard({
   }
 
   return (
-    <Card>
-      <CardHeader className="px-4 pt-2 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Seed Patterns
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addSeedPattern}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
-        <CardDescription className="text-left text-xs pb-1">
+    <Card className="p-0 pb-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <BeanIcon className="h-4 w-4" />
+          Seed Patterns
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addSeedPattern}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
+        <CardDescription className="text-left text-xs">
           Patterns gained when survivors reach 3 understanding.
         </CardDescription>
       </CardHeader>
 
       {/* Seed Patterns List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {seedPatterns.length !== 0 && (
             <DndContext
               sensors={sensors}

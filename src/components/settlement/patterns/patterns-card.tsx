@@ -29,7 +29,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, ScissorsLineDashedIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -147,7 +147,7 @@ export function PatternsCard({
 
     saveToLocalStorage(
       currentPatterns,
-      'The vision has been banished from memory.'
+      'The pattern has been banished from memory.'
     )
   }
 
@@ -198,7 +198,7 @@ export function PatternsCard({
       updatedPatterns,
       i !== undefined
         ? 'The pattern has been etched into memory.'
-        : 'The darkness has granted a new insight.'
+        : 'Insight has granted a new pattern.'
     )
     setIsAddingNew(false)
   }
@@ -244,38 +244,36 @@ export function PatternsCard({
   }
 
   return (
-    <Card>
-      <CardHeader className="px-4 pt-2 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Patterns
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addPattern}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
-        <CardDescription className="text-left text-xs pb-1">
+    <Card className="p-0 pb-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <ScissorsLineDashedIcon className="h-4 w-4" />
+          Patterns
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addPattern}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
+        <CardDescription className="text-left text-xs">
           Patterns gained only when instructed.
         </CardDescription>
       </CardHeader>
 
       {/* Patterns List */}
-      <CardContent className="p-1 pb-2">
-        <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           {patterns.length !== 0 && (
             <DndContext
               sensors={sensors}

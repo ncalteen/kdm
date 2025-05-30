@@ -138,7 +138,10 @@ export function NemesesCard({
       return next
     })
 
-    saveToLocalStorage(currentNemeses, 'The horror has returned to the void.')
+    saveToLocalStorage(
+      currentNemeses,
+      'The nemesis has returned to the darkness.'
+    )
   }
 
   /**
@@ -150,7 +153,7 @@ export function NemesesCard({
    */
   const onSave = (value?: string, unlocked?: boolean, index?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless horror cannot be summoned.')
+      return toast.error('A nameless nemesis cannot be recorded.')
 
     const nemesisWithCc: Nemesis = {
       name: value,
@@ -203,8 +206,8 @@ export function NemesesCard({
     saveToLocalStorage(
       updatedNemeses,
       index !== undefined
-        ? 'The horror shifts form.'
-        : 'A new nemesis emerges from the shadows.'
+        ? 'The nemesis waits outside your settlement.'
+        : 'A new nemesis emerges.'
     )
     setIsAddingNew(false)
   }
@@ -232,7 +235,7 @@ export function NemesesCard({
 
     saveToLocalStorage(
       updatedNemeses,
-      `${nemeses[index]?.name} ${unlocked ? 'emerges from darkness.' : 'fades back into the shadows.'}`
+      `${nemeses[index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -295,30 +298,28 @@ export function NemesesCard({
   }
 
   return (
-    <Card className="mt-1 border-0">
-      <CardHeader className="px-1 py-2 pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <SkullIcon className="h-4 w-4" />
-            Nemesis Monsters
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addNemesis}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <SkullIcon className="h-4 w-4" />
+          Nemesis Monsters
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addNemesis}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
         <CardDescription className="text-left text-xs">
           The nemesis monsters your settlement can encounter.
         </CardDescription>
@@ -326,7 +327,7 @@ export function NemesesCard({
 
       {/* Nemeses List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {nemeses.length !== 0 && (
             <DndContext
               sensors={sensors}

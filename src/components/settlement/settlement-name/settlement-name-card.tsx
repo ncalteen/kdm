@@ -130,8 +130,8 @@ export function SettlementNameCard({
   }
 
   return (
-    <Card>
-      <CardContent className="pt-2 pb-2">
+    <Card className="border-0">
+      <CardContent className="p-2">
         <div className="flex flex-row justify-between items-center">
           <FormField
             control={form.control}

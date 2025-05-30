@@ -7,7 +7,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel
@@ -145,132 +144,99 @@ export function CreateSurvivorForm(): ReactElement {
       })}
       className="space-y-6">
       <Form {...form}>
-        <Card className="max-w-[800px] min-w-[560px] mx-auto">
-          <CardContent className="w-full pt-6 pb-6">
+        <Card className="max-w-[500px] mx-auto">
+          <CardContent className="w-full p-4 space-y-2">
             {/* Settlement */}
-            <Card className="mb-2">
-              <CardContent className="pt-2 pb-2">
-                <div className="flex flex-row justify-between items-center">
-                  <FormField
-                    control={form.control}
-                    name="settlementId"
-                    render={() => (
-                      <FormItem className="w-full">
-                        <div className="flex items-center justify-between">
-                          <FormLabel className="text-left pr-2">
-                            Settlement
-                          </FormLabel>
-                          <FormControl>
-                            <SelectSettlement
-                              onChange={(value) => {
-                                setSettlementId(parseInt(value, 10))
-                                form.setValue(
-                                  'settlementId',
-                                  parseInt(value, 10)
-                                )
-                              }}
-                              value={settlementId.toString()}
-                            />
-                          </FormControl>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <FormField
+              control={form.control}
+              name="settlementId"
+              render={() => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Settlement
+                    </FormLabel>
+                    <FormControl>
+                      <SelectSettlement
+                        onChange={(value) => {
+                          setSettlementId(parseInt(value, 10))
+                          form.setValue('settlementId', parseInt(value, 10))
+                        }}
+                        value={settlementId.toString()}
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
 
             {/* Survivor Name */}
-            <Card className="mb-2">
-              <CardContent className="pt-2 pb-2">
-                <div className="flex flex-col justify-between">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <div className="flex items-center justify-between">
-                          <FormLabel className="text-left pr-2">Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Survivor name..."
-                              className="w-[75%]"
-                              {...field}
-                              value={field.value ?? ''}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault()
-                                  form.handleSubmit(onSubmit)()
-                                }
-                              }}
-                              onChange={(e) => {
-                                form.setValue('name', e.target.value)
-                              }}
-                            />
-                          </FormControl>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  <hr className="mt-2" />
-
-                  <FormDescription className="mt-2 text-xs">
-                    When you name your survivor, gain +1{' '}
-                    <strong>survival</strong>.
-                  </FormDescription>
-                </div>
-              </CardContent>
-            </Card>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Survivor name..."
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          form.setValue('name', e.target.value)
+                        }}
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
 
             {/* Survivor Gender */}
-            <Card className="mb-2">
-              <CardContent className="pt-2 pb-2">
-                <div className="flex flex-col justify-between">
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <div className="flex items-center justify-between">
-                          <FormLabel className="text-left pr-2 w-[25%]">
-                            Gender
-                          </FormLabel>
-                          <div className="w-[75%] flex items-center gap-2 justify-start">
-                            <Checkbox
-                              id="male-checkbox"
-                              checked={field.value === Gender.MALE}
-                              onCheckedChange={(checked) => {
-                                if (checked)
-                                  form.setValue('gender', Gender.MALE)
-                              }}
-                            />
-                            <label
-                              htmlFor="male-checkbox"
-                              className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                              M
-                            </label>
-                            <Checkbox
-                              id="female-checkbox"
-                              checked={field.value === Gender.FEMALE}
-                              onCheckedChange={(checked) => {
-                                if (checked)
-                                  form.setValue('gender', Gender.FEMALE)
-                              }}
-                            />
-                            <label
-                              htmlFor="female-checkbox"
-                              className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                              F
-                            </label>
-                          </div>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Gender
+                    </FormLabel>
+                    <div className="flex w-[75%] items-center gap-2">
+                      <Checkbox
+                        id="male-checkbox"
+                        checked={field.value === Gender.MALE}
+                        onCheckedChange={(checked) => {
+                          if (checked) form.setValue('gender', Gender.MALE)
+                        }}
+                      />
+                      <label htmlFor="male-checkbox" className="text-sm">
+                        M
+                      </label>
+                      <Checkbox
+                        id="female-checkbox"
+                        checked={field.value === Gender.FEMALE}
+                        onCheckedChange={(checked) => {
+                          if (checked) form.setValue('gender', Gender.FEMALE)
+                        }}
+                      />
+                      <label htmlFor="female-checkbox" className="text-sm">
+                        F
+                      </label>
+                    </div>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <hr className="my-2" />
+
+            <div className="text-xs text-muted-foreground">
+              When you name your survivor, gain +1 <strong>survival</strong>.
+            </div>
           </CardContent>
         </Card>
       </Form>

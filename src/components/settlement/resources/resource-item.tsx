@@ -127,107 +127,118 @@ export function ResourceItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex items-center">
-      {/* Drag Handle */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing p-1">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        {/* Drag Handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+
+        <div className="flex-1">
+          {isDisabled ? (
+            <div className="grid grid-cols-12 items-center gap-2">
+              {/* Form Fields */}
+              <div className="col-span-4 text-sm text-left font-bold">
+                {resource?.name}
+              </div>
+              <div className="col-span-2">
+                <Badge variant="default">{selectedCategory}</Badge>
+              </div>
+              <div className="flex flex-wrap gap-1 col-span-3">
+                {selectedTypes.map((type) => (
+                  <Badge key={type} variant="secondary" className="text-xs">
+                    {type}
+                  </Badge>
+                ))}
+              </div>
+              <div className="col-span-1">
+                <Input
+                  ref={amountInputRef}
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  defaultValue={resource?.amount}
+                  onKeyDown={handleKeyDown}
+                  className="w-16 text-center no-spinners"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="col-span-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(index)}
+                  title="Edit resource">
+                  <PencilIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  type="button"
+                  onClick={() => onRemove(index)}>
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-12 items-center gap-2">
+              {/* Form Fields */}
+              <div className="col-span-4 text-sm text-left font-bold">
+                {resource?.name}
+              </div>
+              <div className="col-span-2">
+                <ResourceCategoriesCombobox
+                  selectedCategory={selectedCategory}
+                  onChange={setSelectedCategory}
+                  disabled={isDisabled}
+                />
+              </div>
+              <div className="flex flex-wrap gap-1 col-span-3">
+                <ResourceTypesCombobox
+                  selectedTypes={selectedTypes}
+                  onChange={setSelectedTypes}
+                  disabled={isDisabled}
+                />
+              </div>
+              <div className="col-span-1">
+                <Input
+                  ref={amountInputRef}
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  defaultValue={resource?.amount}
+                  onKeyDown={handleKeyDown}
+                  className="w-16 text-center no-spinners"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="col-span-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(index)}
+                  title="Edit resource">
+                  <PencilIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  type="button"
+                  onClick={() => onRemove(index)}>
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Name Input */}
-      <Input
-        ref={nameInputRef}
-        placeholder="Resource Name"
-        defaultValue={resource?.name}
-        disabled={isDisabled}
-        onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
-        autoFocus
-      />
-
-      {/* Category */}
-      <div className="w-32 mr-2">
-        <ResourceCategoriesCombobox
-          selectedCategory={selectedCategory}
-          onChange={setSelectedCategory}
-          disabled={isDisabled}
-        />
-      </div>
-
-      {/* Types */}
-      <div className="w-40 mr-2">
-        {isDisabled ? (
-          <div className="flex flex-wrap gap-1">
-            {selectedTypes.map((type) => (
-              <Badge key={type} variant="secondary" className="text-xs">
-                {type}
-              </Badge>
-            ))}
-          </div>
-        ) : (
-          <ResourceTypesCombobox
-            selectedTypes={selectedTypes}
-            onChange={setSelectedTypes}
-            disabled={isDisabled}
-          />
-        )}
-      </div>
-
-      {/* Amount Input */}
-      <Input
-        ref={amountInputRef}
-        type="number"
-        min={0}
-        placeholder="0"
-        defaultValue={resource?.amount}
-        disabled={isDisabled}
-        onKeyDown={handleKeyDown}
-        className="w-16 text-center mr-2 no-spinners"
-      />
-
-      {/* Edit/Save Button */}
-      {isDisabled ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => onEdit(index)}
-          title="Edit resource">
-          <PencilIcon className="h-4 w-4" />
-        </Button>
-      ) : (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => {
-            if (nameInputRef.current && amountInputRef.current) {
-              onSave(
-                index,
-                nameInputRef.current.value,
-                selectedCategory,
-                selectedTypes,
-                Number(amountInputRef.current.value)
-              )
-            }
-          }}
-          title="Save resource">
-          <CheckIcon className="h-4 w-4" />
-        </Button>
-      )}
-
-      {/* Remove Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove(index)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
     </div>
   )
 }
@@ -273,75 +284,72 @@ export function NewResourceItem({
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
 
-      {/* Name Input */}
-      <Input
-        ref={nameInputRef}
-        placeholder="Resource Name"
-        defaultValue={''}
-        onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
-        autoFocus
-      />
+      <div className="grid grid-cols-12 items-center gap-2">
+        {/* Form Fields */}
+        <div className="col-span-4 text-sm text-left font-bold">
+          <Input
+            ref={nameInputRef}
+            placeholder="Resource Name"
+            defaultValue={''}
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
+        </div>
+        <div className="col-span-2">
+          <ResourceCategoriesCombobox
+            selectedCategory={category}
+            onChange={setCategory}
+          />
+        </div>
+        <div className="flex flex-wrap gap-1 col-span-3">
+          <ResourceTypesCombobox selectedTypes={types} onChange={setTypes} />
+        </div>
+        <div className="col-span-1">
+          <Input
+            ref={amountInputRef}
+            type="number"
+            min={0}
+            placeholder="0"
+            defaultValue={''}
+            onKeyDown={handleKeyDown}
+            className="w-16 text-center no-spinners"
+          />
+        </div>
 
-      {/* Category */}
-      <div className="w-32 mr-2">
-        <ResourceCategoriesCombobox
-          selectedCategory={category}
-          onChange={setCategory}
-        />
+        {/* Action Buttons */}
+        <div className="col-span-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (nameInputRef.current && amountInputRef.current)
+                onSave(
+                  nameInputRef.current.value,
+                  category,
+                  types,
+                  Number(amountInputRef.current.value)
+                )
+            }}
+            title="Save resource">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onCancel}
+            title="Cancel">
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-
-      {/* Types */}
-      <div className="w-40 mr-2">
-        <ResourceTypesCombobox selectedTypes={types} onChange={setTypes} />
-      </div>
-
-      {/* Amount Input */}
-      <Input
-        ref={amountInputRef}
-        type="number"
-        min={0}
-        placeholder="0"
-        defaultValue={''}
-        onKeyDown={handleKeyDown}
-        className="w-16 text-center mr-2"
-      />
-
-      {/* Save Button */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() => {
-          if (nameInputRef.current && amountInputRef.current) {
-            onSave(
-              nameInputRef.current.value,
-              category,
-              types,
-              Number(amountInputRef.current.value)
-            )
-          }
-        }}
-        title="Save resource">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-
-      {/* Cancel Button */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
     </div>
   )
 }

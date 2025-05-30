@@ -119,9 +119,7 @@ export function RewardItem({
       <Checkbox
         checked={reward?.unlocked || false}
         onCheckedChange={(checked) => {
-          if (checked !== 'indeterminate') {
-            onToggleUnlocked(index, checked)
-          }
+          if (checked !== 'indeterminate') onToggleUnlocked(index, checked)
         }}
         disabled={!isDisabled}
       />
@@ -132,7 +130,7 @@ export function RewardItem({
         <Input
           ref={ccInputRef}
           type="number"
-          className="w-16 h-8 text-sm"
+          className="w-12 text-center no-spinners"
           defaultValue={reward?.cc || 1}
           disabled={isDisabled}
           min={0}
@@ -141,51 +139,56 @@ export function RewardItem({
       </div>
 
       {/* Reward Name Input */}
-      <Input
-        ref={nameInputRef}
-        placeholder="Reward Name"
-        defaultValue={reward?.name || ''}
-        disabled={isDisabled}
-        onKeyDown={handleKeyDown}
-        className="flex-1"
-        autoFocus={!isDisabled}
-      />
+      {isDisabled ? (
+        <div className="flex ml-1">
+          <span className="text-sm">{reward.name}</span>
+        </div>
+      ) : (
+        <Input
+          ref={nameInputRef}
+          placeholder="Reward Name"
+          defaultValue={reward.name}
+          disabled={isDisabled}
+          onKeyDown={handleKeyDown}
+          autoFocus={!isDisabled}
+        />
+      )}
 
       {/* Action Buttons */}
-      {isDisabled ? (
+      <div className="flex items-center gap-1 ml-auto">
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(index)}
+            title="Edit reward">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (nameInputRef.current && ccInputRef.current) {
+                const ccValue = parseInt(ccInputRef.current.value) || 1
+                onSave(nameInputRef.current.value, ccValue, index)
+              }
+            }}
+            title="Save reward">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
-          onClick={() => onEdit(index)}
-          title="Edit reward">
-          <PencilIcon className="h-4 w-4" />
+          onClick={() => onRemove(index)}
+          title="Remove reward">
+          <TrashIcon className="h-4 w-4" />
         </Button>
-      ) : (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => {
-            if (nameInputRef.current && ccInputRef.current) {
-              const ccValue = parseInt(ccInputRef.current.value) || 1
-              onSave(nameInputRef.current.value, ccValue, index)
-            }
-          }}
-          title="Save reward">
-          <CheckIcon className="h-4 w-4" />
-        </Button>
-      )}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => onRemove(index)}
-        title="Remove reward">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      </div>
     </div>
   )
 }
@@ -237,7 +240,7 @@ export function NewRewardItem({
         <Input
           ref={ccInputRef}
           type="number"
-          className="w-16 h-8 text-sm"
+          className="w-12 text-center no-spinners"
           defaultValue={1}
           min={0}
           onKeyDown={handleKeyDown}
@@ -250,33 +253,33 @@ export function NewRewardItem({
         placeholder="Reward Name"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1"
         autoFocus
       />
 
-      {/* Action Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() => {
-          if (nameInputRef.current && ccInputRef.current) {
-            const ccValue = parseInt(ccInputRef.current.value) || 1
-            onSave(nameInputRef.current.value, ccValue)
-          }
-        }}
-        title="Save reward">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Action Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            if (nameInputRef.current && ccInputRef.current) {
+              const ccValue = parseInt(ccInputRef.current.value) || 1
+              onSave(nameInputRef.current.value, ccValue)
+            }
+          }}
+          title="Save reward">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

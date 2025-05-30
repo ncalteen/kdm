@@ -92,10 +92,10 @@ export const TimelineContent = memo(
 
           toast.success(
             usesNormalNumbering
-              ? `Lantern year ${yearIndex + 1} marks another step through the darkness.`
+              ? 'An extinguishing lantern marks the passage of another year.'
               : yearIndex === 0
                 ? 'The beginning of your tale is recorded.'
-                : `Lantern year ${yearIndex} marks another step through the darkness.`
+                : 'An extinguishing lantern marks the passage of another year.'
           )
         }
       } catch (error) {
@@ -105,15 +105,15 @@ export const TimelineContent = memo(
     }
 
     return (
-      <div className="space-y-2">
+      <div>
         <div
-          className={`grid ${showStoryEventIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} gap-4 px-2 py-1 font-medium text-sm`}>
+          className={`grid ${showStoryEventIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} px-2 py-1 text-sm text-left`}>
           <div>Year</div>
-          {showStoryEventIcon && <div className="text-center" />}
+          {showStoryEventIcon && <div />}
           <div>Events</div>
-          <div></div>
+          <div />
         </div>
-        <div className="flex flex-col gap-0">
+        <div className="flex flex-col">
           {timeline.map((yearData, yearIndex) => (
             <div
               key={yearIndex}
@@ -121,14 +121,14 @@ export const TimelineContent = memo(
                 showStoryEventIcon
                   ? 'grid-cols-[80px_40px_1fr_auto]'
                   : 'grid-cols-[80px_1fr_auto]'
-              } gap-2 items-start border-t border-border py-1`}>
+              } items-start border-t py-1`}>
               {/* Year Number and Completion Checkbox */}
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2">
                 <FormField
                   control={form.control}
                   name={`timeline.${yearIndex}.completed`}
                   render={({ field }) => (
-                    <FormItem className="flex items-center m-0">
+                    <FormItem className="flex">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -143,7 +143,7 @@ export const TimelineContent = memo(
                   )}
                 />
                 <span
-                  className={`text-sm font-medium inline-flex items-center ${yearData.completed ? 'text-muted-foreground' : ''}`}>
+                  className={`text-sm ${yearData.completed ? 'text-muted-foreground' : ''}`}>
                   {yearIndex === 0 && !usesNormalNumbering
                     ? 'Prologue'
                     : usesNormalNumbering
@@ -154,18 +154,18 @@ export const TimelineContent = memo(
 
               {/* Story Event Icon */}
               {showStoryEventIcon && (
-                <div className="flex justify-center items-center mt-1">
+                <div className="flex items-center">
                   {yearIndex !== 0 && (
-                    <ScrollIcon className="h-5 w-5 text-muted-foreground" />
+                    <ScrollIcon className="h-4 w-4 text-muted-foreground" />
                   )}
                 </div>
               )}
 
               {/* Events Section */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col">
                 {/* Saved Event Badges */}
                 {(yearData.entries || []).length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-1">
+                  <div className="flex flex-wrap gap-1 ">
                     {(yearData.entries || []).map((entry, entryIndex) => {
                       if (
                         !isEventBeingEdited(yearIndex, entryIndex) &&
@@ -197,7 +197,7 @@ export const TimelineContent = memo(
                           control={form.control}
                           name={`timeline.${yearIndex}.entries.${entryIndex}`}
                           render={() => (
-                            <FormItem className="flex-1 m-0">
+                            <FormItem className="flex-1">
                               <FormControl>
                                 <Input
                                   placeholder={`${
@@ -215,6 +215,7 @@ export const TimelineContent = memo(
                                     handleKeyDown(e, yearIndex, entryIndex)
                                   }
                                   autoFocus
+                                  className="mt-1"
                                   id={`timeline.${yearIndex}.entries.${entryIndex}`}
                                   name={`timeline.${yearIndex}.entries.${entryIndex}`}
                                 />
@@ -248,7 +249,7 @@ export const TimelineContent = memo(
                 })}
 
                 {(yearData.entries || []).length === 0 && (
-                  <div className="text-sm text-muted-foreground italic">
+                  <div className="text-xs text-muted-foreground italic">
                     No events recorded.
                   </div>
                 )}
@@ -256,7 +257,7 @@ export const TimelineContent = memo(
 
               {/* Add Event Button */}
               {!yearData.completed && (
-                <div className="flex justify-end mr-5">
+                <div className="flex justify-end">
                   <Button
                     type="button"
                     variant="outline"
@@ -265,7 +266,7 @@ export const TimelineContent = memo(
                       startTransition(() => addEventToYear(yearIndex))
                     }}
                     className="h-8">
-                    <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Event
+                    <PlusCircleIcon className="h-4 w-4" /> Add Event
                   </Button>
                 </div>
               )}

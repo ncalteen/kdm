@@ -2,7 +2,6 @@
 
 import { SelectCampaign } from '@/components/menu/select-campaign'
 import { SelectSurvivorType } from '@/components/menu/select-survivor-type'
-import { SettlementNameCard } from '@/components/settlement/settlement-name/settlement-name-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -12,6 +11,7 @@ import {
   FormItem,
   FormLabel
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { DefaultSquiresSuspicion } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import {
@@ -136,8 +136,6 @@ export function CreateSettlementForm(): ReactElement {
   // Define a submit handler with the correct schema type
   function onSubmit(values: Settlement) {
     try {
-      console.log('Form values at submission:', values)
-
       // Get campaign data based on the selected campaign type
       const campaignData = getCampaignData(values.campaignType)
 
@@ -163,9 +161,7 @@ export function CreateSettlementForm(): ReactElement {
       localStorage.setItem('campaign', JSON.stringify(campaign))
 
       // Show success message
-      toast.success(
-        'A lantern pierces the overwhelming darkness. A new settlement is born.'
-      )
+      toast.success('A lantern pierces the darkness. A new settlement is born.')
 
       // Redirect to the settlement page, passing the ID via query parameters
       router.push(`/settlement?settlementId=${values.id}`)
@@ -182,71 +178,88 @@ export function CreateSettlementForm(): ReactElement {
       })}
       className="space-y-6">
       <Form {...form}>
-        <Card className="max-w-[800px] min-w-[560px] mx-auto">
-          <CardContent className="w-full pt-6 pb-6">
+        <Card className="max-w-[500px] mx-auto">
+          <CardContent className="w-full p-4 space-y-2">
             {/* Campaign Type */}
-            <Card className="mb-2">
-              <CardContent className="pt-2 pb-2">
-                <div className="flex flex-row justify-between items-center">
-                  <FormField
-                    control={form.control}
-                    name="campaignType"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <div className="flex items-center justify-between">
-                          <FormLabel className="text-left pr-2">
-                            Campaign Type
-                          </FormLabel>
-                          <FormControl>
-                            <SelectCampaign
-                              {...field}
-                              value={campaignType}
-                              onChange={handleCampaignChange}
-                            />
-                          </FormControl>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <FormField
+              control={form.control}
+              name="campaignType"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Campaign Type
+                    </FormLabel>
+                    <FormControl>
+                      <SelectCampaign
+                        {...field}
+                        value={campaignType}
+                        onChange={handleCampaignChange}
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
 
             {/* Survivor Type */}
-            <Card className="mb-2">
-              <CardContent className="pt-2 pb-2">
-                <div className="flex flex-row justify-between items-center">
-                  <FormField
-                    control={form.control}
-                    name="survivorType"
-                    render={() => (
-                      <FormItem className="w-full">
-                        <div className="flex items-center justify-between">
-                          <FormLabel className="text-left pr-2">
-                            Survivor Type
-                          </FormLabel>
-                          <FormControl>
-                            <SelectSurvivorType
-                              value={survivorType}
-                              onChange={handleSurvivorTypeChange}
-                              disabled={
-                                campaignType ===
-                                  CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-                                campaignType ===
-                                  CampaignType.SQUIRES_OF_THE_CITADEL
-                              }
-                            />
-                          </FormControl>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <FormField
+              control={form.control}
+              name="survivorType"
+              render={() => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Survivor Type
+                    </FormLabel>
+                    <FormControl>
+                      <SelectSurvivorType
+                        value={survivorType}
+                        onChange={handleSurvivorTypeChange}
+                        disabled={
+                          campaignType ===
+                            CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
+                          campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+                        }
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
 
             {/* Settlement Name */}
-            <SettlementNameCard {...form} />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Settlement
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Settlement Name"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          form.setValue(field.name, e.target.value)
+                        }
+                        className="w-[300px]"
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <hr className="my-2" />
+
+            <div className="text-xs text-muted-foreground">
+              When the settlement is named for the first time,{' '}
+              <strong>returning survivors</strong> gain +1 survival.
+            </div>
           </CardContent>
         </Card>
       </Form>

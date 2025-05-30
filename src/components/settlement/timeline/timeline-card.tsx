@@ -266,7 +266,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
 
       saveToLocalStorage(
         updatedTimeline,
-        'The chronicle is altered - this memory fades into darkness.'
+        'The chronicle is altered - a memory fades into darkness.'
       )
     },
     [timeline, form, saveToLocalStorage]
@@ -323,7 +323,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
 
       saveToLocalStorage(
         updatedTimeline,
-        'The chronicles remember - your memory is etched in stone.'
+        'The chronicles remember - a memory is etched in stone.'
       )
     },
     [form, inputRefs, timeline, saveToLocalStorage]
@@ -429,8 +429,8 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   const cachedTimeline = useMemo(() => timeline, [timeline])
 
   return (
-    <Card className="mt-1 border-0">
-      <CardContent className="p-1 pb-0">
+    <Card className="border-0">
+      <CardContent className="p-0">
         {/* Timeline Content */}
         <TimelineContent
           timeline={cachedTimeline}
@@ -451,7 +451,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
           <Button
             type="button"
             variant="outline"
-            className="mt-4 w-full"
+            className="mt-2 w-full"
             size="lg"
             onClick={() => {
               startTransition(() => {
@@ -469,7 +469,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
                 )
               })
             }}>
-            <PlusCircleIcon className="h-4 w-4 mr-2" /> Add Lantern Year
+            <PlusCircleIcon className="h-4 w-4" /> Add Lantern Year
           </Button>
         )}
       </CardContent>

@@ -82,14 +82,16 @@ export function NotesCard({
   }
 
   return (
-    <Card className="mt-2 border-0">
-      <CardHeader className="px-3 py-2">
-        <CardTitle className="text-md flex items-center gap-1">
+    <Card className="p-0 pb-1 border-0">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <StickyNoteIcon className="h-4 w-4" /> Notes
         </CardTitle>
       </CardHeader>
+
+      {/* Notes Textarea */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           <Textarea
             value={draft}
             name="notes"

@@ -32,22 +32,24 @@ const SquireProgressionCard = ({
   squire
 }: SquireProgressionCardProps): ReactElement => {
   return (
-    <Card className="w-full">
-      <CardHeader className="px-3 py-2 pb-2">
-        <CardTitle className="text-md text-left font-bold">
+    <Card className="p-0 pb-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           {squire.name}
         </CardTitle>
         <CardDescription className="text-xs text-left">
           Gain the following in addition to <strong>Age</strong>.
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-1 py-0">
+
+      {/* Card Content with Squire Stats */}
+      <CardContent className="p-1 pb-0">
         <Table>
           <TableBody className="text-xs">
             {squire.rows.map((stat, index) => (
               <TableRow key={index} className="border-b">
-                <TableCell className="text-left py-2">
-                  <strong>{stat.name}</strong>
+                <TableCell className="text-left font-bold">
+                  {stat.name}
                 </TableCell>
                 <TableCell className="text-left py-2 whitespace-normal break-words">
                   {stat.value}
@@ -66,7 +68,7 @@ const SquireProgressionCard = ({
  */
 export function SquireProgressionCards(): ReactElement {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       {SquireCardData.map((squire, index) => (
         <SquireProgressionCard key={index} squire={squire} />
       ))}

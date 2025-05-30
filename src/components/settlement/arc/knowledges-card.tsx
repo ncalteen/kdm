@@ -23,7 +23,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { GraduationCapIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -133,10 +133,7 @@ export function KnowledgesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentKnowledges,
-      'Forbidden insight banished to the void.'
-    )
+    saveToLocalStorage(currentKnowledges, 'Knowledge banished to the void.')
   }
 
   /**
@@ -243,11 +240,11 @@ export function KnowledgesCard({
   }
 
   return (
-    <Card className="mt-1 px-2">
-      <CardHeader className="px-3 py-2 pb-2">
-        {/* Title */}
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          Knowledges{' '}
+          <GraduationCapIcon className="h-4 w-4" />
+          Knowledges
           {!isAddingNew && (
             <div className="flex justify-center">
               <Button
@@ -268,8 +265,8 @@ export function KnowledgesCard({
       </CardHeader>
 
       {/* Knowledges List */}
-      <CardContent className="p-1 pb-2">
-        <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           {knowledges.length !== 0 && (
             <DndContext
               sensors={sensors}

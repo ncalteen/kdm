@@ -110,7 +110,7 @@ export function PrincipleItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex flex-col gap-2 rounded-md p-1">
+      className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
         {/* Drag Handle */}
         <div
@@ -121,61 +121,76 @@ export function PrincipleItem({
         </div>
 
         {/* Form Fields */}
-        <div className="flex-1 flex flex-col gap-1">
-          {/* Principle Name */}
-          <Input
-            ref={nameInputRef}
-            placeholder="Principle Name"
-            value={nameValue}
-            disabled={isDisabled}
-            onChange={(e) => setNameValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full"
-            autoFocus={!isDisabled}
-          />
+        <div className="flex-1">
+          {isDisabled ? (
+            // Display mode - principle name left, options in columns
+            <div className="grid grid-cols-12 items-center gap-2">
+              <div className="col-span-4 text-sm text-left font-bold">
+                {principle.name}
+              </div>
+              <div className="col-span-4 flex items-center gap-2">
+                <Checkbox
+                  checked={principle.option1Selected}
+                  onCheckedChange={(checked) => {
+                    if (checked) handleOptionSelect(index, 1)
+                  }}
+                />
+                <span className="text-sm text-left">
+                  {principle.option1Name}
+                </span>
+              </div>
+              <div className="col-span-4 flex items-center gap-2">
+                <Checkbox
+                  checked={principle.option2Selected}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      handleOptionSelect(index, 2)
+                    }
+                  }}
+                />
+                <span className="text-sm text-left">
+                  {principle.option2Name}
+                </span>
+              </div>
+            </div>
+          ) : (
+            // Edit mode - multi-line with input fields
+            <div className="flex flex-col gap-1">
+              {/* Principle Name */}
+              <Input
+                ref={nameInputRef}
+                placeholder="Principle Name"
+                value={nameValue}
+                onChange={(e) => setNameValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
 
-          {/* Options */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={principle.option1Selected}
-              disabled={!isDisabled}
-              onCheckedChange={(checked) => {
-                if (checked) {
-                  handleOptionSelect(index, 1)
-                }
-              }}
-            />
-            <Input
-              placeholder="Option 1"
-              value={option1Value}
-              disabled={isDisabled}
-              onChange={(e) => setOption1Value(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1"
-            />
-            <strong>or</strong>
-            <Checkbox
-              checked={principle.option2Selected}
-              disabled={!isDisabled}
-              onCheckedChange={(checked) => {
-                if (checked) {
-                  handleOptionSelect(index, 2)
-                }
-              }}
-            />
-            <Input
-              placeholder="Option 2"
-              value={option2Value}
-              disabled={isDisabled}
-              onChange={(e) => setOption2Value(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1"
-            />
-          </div>
+              {/* Options */}
+              <div className="flex items-center gap-2">
+                <Checkbox checked={principle.option1Selected} disabled />
+                <Input
+                  placeholder="Option 1"
+                  value={option1Value}
+                  onChange={(e) => setOption1Value(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-1"
+                />
+                <Checkbox checked={principle.option2Selected} disabled />
+                <Input
+                  placeholder="Option 2"
+                  value={option2Value}
+                  onChange={(e) => setOption2Value(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 ml-2">
+        <div className="flex items-center gap-1 ml-auto">
           {isDisabled ? (
             <Button
               type="button"
@@ -252,7 +267,7 @@ export function NewPrincipleItem({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-md p-1">
+    <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
         {/* Drag Handle */}
         <div className="p-1">
@@ -260,7 +275,7 @@ export function NewPrincipleItem({
         </div>
 
         {/* Form Fields */}
-        <div className="flex-1 flex flex-col gap-2">
+        <div className="flex-1 flex flex-col gap-1">
           {/* Principle Name */}
           <Input
             ref={nameInputRef}
@@ -282,7 +297,6 @@ export function NewPrincipleItem({
               onKeyDown={handleKeyDown}
               className="flex-1"
             />
-            <strong>or</strong>
             <Checkbox checked={false} disabled />
             <Input
               placeholder="Option 2"
@@ -295,7 +309,7 @@ export function NewPrincipleItem({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 ml-2">
+        <div className="flex items-center gap-1 ml-auto">
           <Button
             type="button"
             variant="ghost"

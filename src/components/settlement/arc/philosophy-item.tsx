@@ -84,7 +84,7 @@ export function PhilosophyItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex items-center">
+      className="flex items-center gap-2">
       {/* Drag Handle */}
       <div
         {...attributes}
@@ -94,46 +94,56 @@ export function PhilosophyItem({
       </div>
 
       {/* Select Field */}
-      <SelectPhilosophy
-        ref={selectRef}
-        options={Object.values(Philosophy)}
-        value={form.getValues(`philosophies.${index}`)}
-        onChange={(value) => {
-          if (!isDisabled) onSave(value, index)
-        }}
-        onKeyDown={handleKeyDown}
-        disabled={isDisabled}
-      />
-
-      {/* Interaction Buttons */}
       {isDisabled ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => onEdit(index)}
-          title="Edit philosophy">
-          <PencilIcon className="h-4 w-4" />
-        </Button>
+        <div className="flex ml-1">
+          <span className="text-sm">
+            {form.getValues(`philosophies.${index}`)}
+          </span>
+        </div>
       ) : (
+        <SelectPhilosophy
+          ref={selectRef}
+          options={Object.values(Philosophy)}
+          value={form.getValues(`philosophies.${index}`)}
+          onChange={(value) => {
+            if (!isDisabled) onSave(value, index)
+          }}
+          onKeyDown={handleKeyDown}
+          disabled={isDisabled}
+        />
+      )}
+
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(index)}
+            title="Edit philosophy">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              onSave(form.getValues(`philosophies.${index}`), index)
+            }
+            title="Save philosophy">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
         <Button
-          type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
-          onClick={() => onSave(form.getValues(`philosophies.${index}`), index)}
-          title="Save philosophy">
-          <CheckIcon className="h-4 w-4" />
+          type="button"
+          onClick={() => onRemove(index)}>
+          <TrashIcon className="h-4 w-4" />
         </Button>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove(index)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      </div>
     </div>
   )
 }
@@ -171,7 +181,7 @@ export function NewPhilosophyItem({
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
@@ -187,24 +197,25 @@ export function NewPhilosophyItem({
         autoFocus
       />
 
-      {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() => onSave(selectedValue)}
-        title="Save philosophy">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(selectedValue)}
+          title="Save philosophy">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

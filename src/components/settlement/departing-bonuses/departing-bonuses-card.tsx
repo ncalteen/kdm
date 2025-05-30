@@ -23,7 +23,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { MapPinPlusIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -150,7 +150,7 @@ export function DepartingBonusesCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless blessing cannot be inscribed.')
+      return toast.error('A nameless blessing cannot be recorded.')
 
     try {
       SettlementSchema.shape.departingBonuses.parse([value])
@@ -235,35 +235,33 @@ export function DepartingBonusesCard({
   }
 
   return (
-    <Card>
-      <CardHeader className="px-4 pt-2 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Departing Survivor Bonuses{' '}
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addBonus}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <MapPinPlusIcon className="h-4 w-4" />
+          Departing Survivor Bonuses
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addBonus}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Departing Bonuses List */}
-      <CardContent className="p-1 pb-2">
-        <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           {departingBonuses.length !== 0 && (
             <DndContext
               sensors={sensors}

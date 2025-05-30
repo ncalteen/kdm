@@ -1,6 +1,7 @@
 'use client'
 
 import { SelectPhilosophy } from '@/components/menu/select-philosophy'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Philosophy } from '@/lib/enums'
@@ -100,78 +101,116 @@ export function KnowledgeItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex flex-col gap-2">
-      <div className="flex items-center">
-        {/* Drag Handle */}
-        <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1">
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
+      className={
+        isDisabled
+          ? 'flex items-center gap-1'
+          : 'flex flex-col gap-1 rounded-md'
+      }>
+      {isDisabled ? (
+        // Display mode - single line
+        <>
+          {/* Drag Handle */}
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1">
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+
+          {/* Knowledge Name */}
+          <div className="flex ml-1">
+            <span className="text-sm">
+              {form.getValues(`knowledges.${index}.name`)}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1 ml-auto">
+            {/* Philosophy Badge */}
+            <div className="flex ml-1">
+              <span className="text-sm">
+                <Badge variant="outline">
+                  {form.getValues(`knowledges.${index}.philosophy`) || 'None'}
+                </Badge>
+              </span>
+            </div>
+
+            {/* Interaction Buttons */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => onEdit(index)}
+              title="Edit knowledge">
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              type="button"
+              onClick={() => onRemove(index)}>
+              <TrashIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </>
+      ) : (
+        // Edit mode - multi-line
+        <div className="flex items-center gap-1">
+          {/* Drag Handle */}
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1">
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+
+          {/* Form Fields */}
+          <div className="flex flex-col gap-1">
+            {/* Knowledge Name Input */}
+            <Input
+              ref={inputRef}
+              placeholder="Knowledge name"
+              defaultValue={form.getValues(`knowledges.${index}.name`)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+
+            {/* Philosophy Selection */}
+            <SelectPhilosophy
+              ref={selectRef}
+              options={philosophies}
+              value={form.getValues(`knowledges.${index}.philosophy`)}
+              onChange={(value) => {
+                const currentName = form.getValues(`knowledges.${index}.name`)
+                onSave(currentName, value, index)
+              }}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1 ml-auto">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                const currentPhilosophy = form.getValues(
+                  `knowledges.${index}.philosophy`
+                )
+                onSave(inputRef.current!.value, currentPhilosophy, index)
+              }}
+              title="Save knowledge">
+              <CheckIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              type="button"
+              onClick={() => onRemove(index)}>
+              <TrashIcon className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-
-        {/* Input Field */}
-        <Input
-          ref={inputRef}
-          placeholder="Knowledge name"
-          defaultValue={form.getValues(`knowledges.${index}.name`)}
-          disabled={isDisabled}
-          onKeyDown={handleKeyDown}
-          className="flex-1"
-          autoFocus
-        />
-
-        {/* Interaction Buttons */}
-        {isDisabled ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="ml-2"
-            onClick={() => onEdit(index)}
-            title="Edit knowledge">
-            <PencilIcon className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="ml-2"
-            onClick={() => {
-              const currentPhilosophy = form.getValues(
-                `knowledges.${index}.philosophy`
-              )
-              onSave(inputRef.current!.value, currentPhilosophy, index)
-            }}
-            title="Save knowledge">
-            <CheckIcon className="h-4 w-4" />
-          </Button>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          type="button"
-          onClick={() => onRemove(index)}>
-          <TrashIcon className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Philosophy Selection */}
-      <div className="flex items-center pl-6">
-        <SelectPhilosophy
-          ref={selectRef}
-          options={philosophies}
-          value={form.getValues(`knowledges.${index}.philosophy`)}
-          onChange={(value) => {
-            if (!isDisabled) {
-              const currentName = form.getValues(`knowledges.${index}.name`)
-              onSave(currentName, value, index)
-            }
-          }}
-          disabled={isDisabled}
-        />
-      </div>
+      )}
     </div>
   )
 }
@@ -211,51 +250,52 @@ export function NewKnowledgeItem({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center">
+    <div className="flex flex-col gap-1 rounded-md">
+      <div className="flex items-center gap-1">
         {/* Drag Handle */}
         <div className="p-1">
           <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
         </div>
 
-        {/* Input Field */}
-        <Input
-          ref={inputRef}
-          placeholder="Knowledge name"
-          defaultValue={''}
-          onKeyDown={handleKeyDown}
-          className="flex-1"
-          autoFocus
-        />
+        {/* Form Fields */}
+        <div className="flex flex-col gap-1">
+          {/* Knowledge Name Input */}
+          <Input
+            ref={inputRef}
+            placeholder="Knowledge name"
+            defaultValue={''}
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
 
-        {/* Interaction Buttons */}
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => onSave(inputRef.current?.value, selectedPhilosophy)}
-          title="Save knowledge">
-          <CheckIcon className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={onCancel}
-          title="Cancel">
-          <TrashIcon className="h-4 w-4" />
-        </Button>
-      </div>
+          {/* Philosophy Selection */}
+          <SelectPhilosophy
+            ref={selectRef}
+            options={philosophies}
+            value={selectedPhilosophy}
+            onChange={(value) => setSelectedPhilosophy(value as Philosophy)}
+          />
+        </div>
 
-      {/* Philosophy Selection */}
-      <div className="flex items-center pl-6">
-        <SelectPhilosophy
-          ref={selectRef}
-          options={philosophies}
-          value={selectedPhilosophy}
-          onChange={(value) => setSelectedPhilosophy(value as Philosophy)}
-        />
+        {/* Action Buttons */}
+        <div className="flex items-center gap-1 ml-auto">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onSave(inputRef.current?.value, selectedPhilosophy)}
+            title="Save knowledge">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onCancel}
+            title="Cancel">
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   )

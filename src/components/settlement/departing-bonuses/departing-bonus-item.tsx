@@ -91,7 +91,7 @@ export function DepartingBonusItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex items-center">
+      className="flex items-center gap-2">
       {/* Drag Handle */}
       <div
         {...attributes}
@@ -101,45 +101,54 @@ export function DepartingBonusItem({
       </div>
 
       {/* Input Field */}
-      <Input
-        ref={inputRef}
-        placeholder="Departing bonus"
-        defaultValue={form.getValues(`departingBonuses.${index}`)}
-        disabled={isDisabled}
-        onKeyDown={handleKeyDown}
-        className="flex-1"
-        autoFocus
-      />
+      {isDisabled ? (
+        <div className="flex ml-1">
+          <span className="text-sm">
+            {form.getValues(`departingBonuses.${index}`)}
+          </span>
+        </div>
+      ) : (
+        <Input
+          ref={inputRef}
+          placeholder="Departing bonus"
+          defaultValue={form.getValues(`departingBonuses.${index}`)}
+          disabled={isDisabled}
+          onKeyDown={handleKeyDown}
+          autoFocus
+        />
+      )}
 
       {/* Interaction Buttons */}
-      {isDisabled ? (
+      <div className="flex items-center gap-1 ml-auto">
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="ml-2"
+            onClick={() => onEdit(index)}
+            title="Edit bonus">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="ml-2"
+            onClick={() => onSave(inputRef.current!.value, index)}
+            title="Save bonus">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
         <Button
-          type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
-          onClick={() => onEdit(index)}
-          title="Edit bonus">
-          <PencilIcon className="h-4 w-4" />
-        </Button>
-      ) : (
-        <Button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => onSave(inputRef.current!.value, index)}
-          title="Save bonus">
-          <CheckIcon className="h-4 w-4" />
+          onClick={() => onRemove(index)}>
+          <TrashIcon className="h-4 w-4" />
         </Button>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove(index)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      </div>
     </div>
   )
 }
@@ -174,7 +183,7 @@ export function NewDepartingBonusItem({
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
@@ -183,31 +192,33 @@ export function NewDepartingBonusItem({
       {/* Input Field */}
       <Input
         ref={inputRef}
-        placeholder="Departing bonus"
+        placeholder="Add a departing bonus..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
       />
 
-      {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() => onSave(inputRef.current?.value)}
-        title="Save bonus">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() => onSave(inputRef.current?.value)}
+          title="Save bonus">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

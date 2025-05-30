@@ -123,112 +123,108 @@ export function NemesisItem({
       </div>
 
       {/* Unlocked Checkbox */}
-      <div className="flex items-center">
-        <Checkbox
-          checked={nemesis.unlocked}
-          onCheckedChange={(checked) => {
-            if (checked !== 'indeterminate') {
-              onToggleUnlocked(index, !!checked)
-            }
-          }}
-          id={`nemesis-${index}-unlocked`}
-        />
-      </div>
+      <Checkbox
+        checked={nemesis.unlocked}
+        onCheckedChange={(checked) => {
+          if (checked !== 'indeterminate') onToggleUnlocked(index, !!checked)
+        }}
+        id={`nemesis-${index}-unlocked`}
+      />
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex-1 flex items-center">
-          <span className="text-sm font-medium">{nemesis.name}</span>
+        <div className="flex flex-1 ml-1">
+          <span className="text-sm">{nemesis.name}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
-          placeholder="Nemesis Name"
+          placeholder="Add a nemesis..."
           defaultValue={nemesis.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          className="flex-1"
           autoFocus
         />
       )}
 
       {/* Level Checkboxes */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center space-x-1">
-          <Checkbox
-            checked={nemesis.level1}
-            onCheckedChange={(checked) => {
-              if (checked !== 'indeterminate') {
-                onToggleLevel(index, 'level1', !!checked)
-              }
-            }}
-            id={`nemesis-${index}-level1`}
-          />
-          <label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
-            Lvl 1
-          </label>
-        </div>
+      <div className="flex items-center gap-1 ml-auto">
+        {isDisabled && (
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                checked={nemesis.level1}
+                onCheckedChange={(checked) => {
+                  if (checked !== 'indeterminate')
+                    onToggleLevel(index, 'level1', !!checked)
+                }}
+                id={`nemesis-${index}-level1`}
+              />
+              <label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
+                Lvl 1
+              </label>
+            </div>
 
-        <div className="flex items-center space-x-1">
-          <Checkbox
-            checked={nemesis.level2}
-            onCheckedChange={(checked) => {
-              if (checked !== 'indeterminate') {
-                onToggleLevel(index, 'level2', !!checked)
-              }
-            }}
-            id={`nemesis-${index}-level2`}
-          />
-          <label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
-            Lvl 2
-          </label>
-        </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                checked={nemesis.level2}
+                onCheckedChange={(checked) => {
+                  if (checked !== 'indeterminate')
+                    onToggleLevel(index, 'level2', !!checked)
+                }}
+                id={`nemesis-${index}-level2`}
+              />
+              <label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
+                Lvl 2
+              </label>
+            </div>
 
-        <div className="flex items-center space-x-1">
-          <Checkbox
-            checked={nemesis.level3}
-            onCheckedChange={(checked) => {
-              if (checked !== 'indeterminate') {
-                onToggleLevel(index, 'level3', !!checked)
-              }
-            }}
-            id={`nemesis-${index}-level3`}
-          />
-          <label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
-            Lvl 3
-          </label>
-        </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                checked={nemesis.level3}
+                onCheckedChange={(checked) => {
+                  if (checked !== 'indeterminate')
+                    onToggleLevel(index, 'level3', !!checked)
+                }}
+                id={`nemesis-${index}-level3`}
+              />
+              <label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
+                Lvl 3
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* Interaction Buttons */}
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(index)}
+            title="Edit nemesis">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              onSave(inputRef.current!.value, nemesis.unlocked, index)
+            }
+            title="Save nemesis">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          type="button"
+          onClick={() => onRemove(index)}>
+          <TrashIcon className="h-4 w-4" />
+        </Button>
       </div>
-
-      {/* Interaction Buttons */}
-      {isDisabled ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() => onEdit(index)}
-          title="Edit nemesis">
-          <PencilIcon className="h-4 w-4" />
-        </Button>
-      ) : (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            onSave(inputRef.current!.value, nemesis.unlocked, index)
-          }
-          title="Save nemesis">
-          <CheckIcon className="h-4 w-4" />
-        </Button>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove(index)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
     </div>
   )
 }
@@ -274,64 +270,45 @@ export function NewNemesisItem({
       </div>
 
       {/* Unlocked Checkbox */}
-      <div className="flex items-center space-x-2">
-        <Checkbox checked={false} disabled={true} id="nemesis-new-unlocked" />
-      </div>
+      <Checkbox checked={false} disabled={true} id="nemesis-new-unlocked" />
 
       {/* Input Field */}
       <Input
         ref={inputRef}
-        placeholder="Nemesis Name"
+        placeholder="Add a nemesis..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
         autoFocus
       />
 
-      {/* Level Checkboxes (disabled for new items) */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center space-x-1">
-          <Checkbox checked={false} disabled={true} id="nemesis-new-level1" />
-          <label className="text-xs opacity-50">Lvl 1</label>
-        </div>
-
-        <div className="flex items-center space-x-1">
-          <Checkbox checked={false} disabled={true} id="nemesis-new-level2" />
-          <label className="text-xs opacity-50">Lvl 2</label>
-        </div>
-
-        <div className="flex items-center space-x-1">
-          <Checkbox checked={false} disabled={true} id="nemesis-new-level3" />
-          <label className="text-xs opacity-50">Lvl 3</label>
-        </div>
-      </div>
-
       {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          if (
-            !inputRef.current?.value ||
-            inputRef.current.value.trim() === ''
-          ) {
-            toast.error('A nameless horror cannot be summoned.')
-            return
-          }
-          onSave(inputRef.current.value, false)
-        }}
-        title="Save nemesis">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            if (
+              !inputRef.current?.value ||
+              inputRef.current.value.trim() === ''
+            ) {
+              return toast.error('A nameless horror cannot be summoned.')
+            }
+            onSave(inputRef.current.value, false)
+          }}
+          title="Save nemesis">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

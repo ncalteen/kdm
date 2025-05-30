@@ -44,7 +44,7 @@ export const TimelineEventBadge = memo(
     return (
       <Badge
         key={entryIndex}
-        className={`my-1 inline-flex items-center gap-1 ${
+        className={`${
           isCompleted
             ? 'opacity-70 cursor-default'
             : 'cursor-pointer hover:bg-accent'

@@ -23,7 +23,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { BadgeCheckIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -150,7 +150,7 @@ export function MilestonesCard({
       return toast.error('A nameless milestone cannot be recorded.')
 
     if (!event || event.trim() === '')
-      return toast.error('A milestone without an event cannot be recorded.')
+      return toast.error('A milestone must include a story event.')
 
     try {
       SettlementSchema.shape.milestones.parse([
@@ -191,7 +191,7 @@ export function MilestonesCard({
     saveToLocalStorage(
       updatedMilestones,
       i !== undefined
-        ? 'Milestone chronicles have been updated.'
+        ? 'Milestones have been updated.'
         : "A new milestone marks the settlement's destiny."
     )
     setIsAddingNew(false)
@@ -254,41 +254,39 @@ export function MilestonesCard({
     saveToLocalStorage(
       updatedMilestones,
       checked
-        ? 'Milestone achieved - the settlement progresses through the darkness.'
+        ? 'Milestone achieved - the settlement persists through the darkness.'
         : 'Milestone status updated.'
     )
   }
 
   return (
-    <Card>
-      <CardHeader className="px-4 pt-2 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Milestones{' '}
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addMilestone}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <BadgeCheckIcon className="h-4 w-4" />
+          Milestones
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addMilestone}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Milestones List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {milestones.length !== 0 && (
             <DndContext
               sensors={sensors}

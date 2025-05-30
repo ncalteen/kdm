@@ -128,16 +128,14 @@ export function QuarryItem({
       <Checkbox
         checked={quarry.unlocked}
         onCheckedChange={(checked) => {
-          if (typeof checked === 'boolean') {
-            onToggleUnlocked(index, checked)
-          }
+          if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
       />
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex-1 flex items-center">
-          <span className="text-sm font-medium">{quarry.name}</span>
+        <div className="flex ml-1">
+          <span className="text-sm">{quarry.name}</span>
         </div>
       ) : (
         <Input
@@ -146,17 +144,14 @@ export function QuarryItem({
           defaultValue={quarry.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          className="flex-1"
           autoFocus
         />
       )}
 
       {/* Node Selection */}
-      <div className="flex items-center gap-2 ml-auto">
+      <div className="flex items-center gap-1 ml-auto">
         {isDisabled ? (
-          <Badge
-            variant="secondary"
-            className="h-8 w-20 px-3 flex items-center justify-center">
+          <Badge variant="secondary" className="h-8 w-20">
             {quarry.node}
           </Badge>
         ) : (
@@ -253,7 +248,7 @@ export function NewQuarryItem({
       </div>
 
       {/* Unlocked Checkbox */}
-      <Checkbox checked={false} disabled={true} className="flex-shrink-0" />
+      <Checkbox checked={false} disabled />
 
       {/* Input Field */}
       <Input
@@ -265,38 +260,42 @@ export function NewQuarryItem({
         autoFocus
       />
 
-      {/* Node Selection */}
-      <Select
-        defaultValue="Node 1"
-        onValueChange={(value) => (nodeRef.current = value)}>
-        <SelectTrigger className="h-8 w-24">
-          <SelectValue placeholder="Node" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="Node 1">Node 1</SelectItem>
-          <SelectItem value="Node 2">Node 2</SelectItem>
-          <SelectItem value="Node 3">Node 3</SelectItem>
-          <SelectItem value="Node 4">Node 4</SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Node Selection */}
+        <Select
+          defaultValue="Node 1"
+          onValueChange={(value) => (nodeRef.current = value)}>
+          <SelectTrigger className="h-8 w-24">
+            <SelectValue placeholder="Node" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Node 1">Node 1</SelectItem>
+            <SelectItem value="Node 2">Node 2</SelectItem>
+            <SelectItem value="Node 3">Node 3</SelectItem>
+            <SelectItem value="Node 4">Node 4</SelectItem>
+          </SelectContent>
+        </Select>
 
-      {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => onSave(inputRef.current?.value, nodeRef.current, false)}
-        title="Save quarry">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+        {/* Interaction Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() =>
+            onSave(inputRef.current?.value, nodeRef.current, false)
+          }
+          title="Save quarry">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

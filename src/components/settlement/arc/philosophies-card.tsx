@@ -24,7 +24,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { BrainCogIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -133,7 +133,10 @@ export function PhilosophiesCard({
       return next
     })
 
-    saveToLocalStorage(currentPhilosophies, 'Thoughts fade into the void.')
+    saveToLocalStorage(
+      currentPhilosophies,
+      'The philosophy fade into the void.'
+    )
   }
 
   /**
@@ -173,7 +176,7 @@ export function PhilosophiesCard({
       updatedPhilosophies,
       i !== undefined
         ? 'Philosophy etched into memory.'
-        : 'A new philosophy emerges from the darkness.'
+        : 'A new philosophy emerges.'
     )
     setIsAddingNew(false)
   }
@@ -219,35 +222,33 @@ export function PhilosophiesCard({
   }
 
   return (
-    <Card className="mt-1 px-2">
-      <CardHeader className="px-3 py-2 pb-2">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Philosophies{' '}
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addPhilosophy}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <BrainCogIcon className="h-4 w-4" />
+          Philosophies
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addPhilosophy}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Philosophies List */}
-      <CardContent className="p-1 pb-2">
-        <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           {philosophies.length !== 0 && (
             <DndContext
               sensors={sensors}

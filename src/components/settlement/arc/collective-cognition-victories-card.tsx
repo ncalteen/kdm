@@ -61,9 +61,9 @@ export function CollectiveCognitionVictoriesCard(
   }
 
   return (
-    <Card className="mt-1 border-0">
-      <CardHeader className="px-3 py-2 pb-2">
-        <CardTitle className="text-md flex items-center gap-1">
+    <Card className="p-0 pb-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <TrophyIcon className="h-4 w-4" /> Settlement Victories
         </CardTitle>
         <CardDescription className="text-left text-xs">
@@ -71,13 +71,14 @@ export function CollectiveCognitionVictoriesCard(
           monster&apos;s level.
         </CardDescription>
       </CardHeader>
+
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           <div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Quarry</TableHead>
+                  <TableHead className="font-bold">Quarry</TableHead>
                   <TableHead className="text-center">
                     Prologue
                     <br />1 CC
@@ -98,7 +99,7 @@ export function CollectiveCognitionVictoriesCard(
                 {quarries.map((quarry, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-left pl-5">
-                      {quarry.name || 'Unnamed Quarry'}
+                      {quarry.name}
                     </TableCell>
                     <TableCell className="text-center">
                       {index === 0 && (
@@ -214,11 +215,11 @@ export function CollectiveCognitionVictoriesCard(
             </Table>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-1">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nemesis</TableHead>
+                  <TableHead className="font-bold">Nemesis</TableHead>
                   <TableHead className="text-center">
                     Lvl 1<br />3 CC
                   </TableHead>

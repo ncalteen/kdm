@@ -86,7 +86,7 @@ export function ListSettlementsTable(): ReactElement {
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md">
       <Table>
         <TableHeader>
           <TableRow>
@@ -160,8 +160,8 @@ export function ListSettlementsTable(): ReactElement {
                       <AlertDialogDescription>
                         The darkness hungers for {settlement.name}.{' '}
                         <strong>
-                          Once consumed, it cannot return. All who dwelled
-                          within will be forgotten.
+                          Once consumed, all who dwelled within will be
+                          forgotten.
                         </strong>
                       </AlertDialogDescription>
                     </AlertDialogHeader>

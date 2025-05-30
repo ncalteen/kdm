@@ -140,7 +140,7 @@ export function QuarriesCard({
 
     saveToLocalStorage(
       currentQuarries,
-      'The beast has been banished to the void.'
+      'The beast retreats back into the void.'
     )
   }
 
@@ -159,9 +159,7 @@ export function QuarriesCard({
     index?: number
   ) => {
     if (!value || value.trim() === '')
-      return toast.error(
-        'A nameless horror cannot be recorded in your chronicles.'
-      )
+      return toast.error('A nameless quarry cannot be recorded.')
 
     const quarryWithCc: Quarry = {
       name: value,
@@ -214,8 +212,8 @@ export function QuarriesCard({
     saveToLocalStorage(
       updatedQuarries,
       index !== undefined
-        ? 'The monster prowls the darkness. Hunt or be hunted.'
-        : 'A new terror emerges from the mist.'
+        ? 'The quarry prowls the darkness. Hunt or be hunted.'
+        : 'A new quarry emerges.'
     )
     setIsAddingNew(false)
   }
@@ -243,7 +241,7 @@ export function QuarriesCard({
 
     saveToLocalStorage(
       updatedQuarries,
-      `${quarries[index]?.name} ${unlocked ? 'emerges from the mist, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
+      `${quarries[index]?.name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -297,30 +295,26 @@ export function QuarriesCard({
   }
 
   return (
-    <Card className="border-0">
-      <CardHeader className="px-1 py-4 pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <SwordIcon className="h-4 w-4" />
-            Quarries
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addQuarry}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <SwordIcon className="h-4 w-4" />
+          Quarries
+          {!isAddingNew && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addQuarry}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
+          )}
+        </CardTitle>
         <CardDescription className="text-left text-xs">
           The monsters your settlement can select to hunt.
         </CardDescription>
@@ -328,7 +322,7 @@ export function QuarriesCard({
 
       {/* Quarries List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {quarries.length !== 0 && (
             <DndContext
               sensors={sensors}

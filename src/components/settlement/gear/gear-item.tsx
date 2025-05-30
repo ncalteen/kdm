@@ -91,7 +91,7 @@ export function GearItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex items-center">
+      className="flex items-center gap-2">
       {/* Drag Handle */}
       <div
         {...attributes}
@@ -101,45 +101,50 @@ export function GearItem({
       </div>
 
       {/* Input Field */}
-      <Input
-        ref={inputRef}
-        placeholder="Gear item"
-        defaultValue={form.getValues(`gear.${index}`)}
-        disabled={isDisabled}
-        onKeyDown={handleKeyDown}
-        className="flex-1"
-        autoFocus
-      />
-
-      {/* Interaction Buttons */}
       {isDisabled ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => onEdit(index)}
-          title="Edit gear">
-          <PencilIcon className="h-4 w-4" />
-        </Button>
+        <div className="flex ml-1">
+          <span className="text-sm">{form.getValues(`gear.${index}`)}</span>
+        </div>
       ) : (
+        <Input
+          ref={inputRef}
+          placeholder="Gear item"
+          defaultValue={form.getValues(`gear.${index}`)}
+          disabled={isDisabled}
+          onKeyDown={handleKeyDown}
+          autoFocus
+        />
+      )}
+
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(index)}
+            title="Edit gear">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onSave(inputRef.current!.value, index)}
+            title="Save gear">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
         <Button
-          type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
-          onClick={() => onSave(inputRef.current!.value, index)}
-          title="Save gear">
-          <CheckIcon className="h-4 w-4" />
+          type="button"
+          onClick={() => onRemove(index)}>
+          <TrashIcon className="h-4 w-4" />
         </Button>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove(index)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      </div>
     </div>
   )
 }
@@ -174,7 +179,7 @@ export function NewGearItem({
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
@@ -190,24 +195,25 @@ export function NewGearItem({
         autoFocus
       />
 
-      {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() => onSave(inputRef.current?.value)}
-        title="Save gear">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(inputRef.current?.value)}
+          title="Save gear">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

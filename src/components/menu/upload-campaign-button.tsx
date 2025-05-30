@@ -75,7 +75,7 @@ export function UploadCampaignButton() {
       } catch (error) {
         console.error('Upload Campaign JSON Error:', error)
         setValidationErrors([
-          'Your records are unreadable. The darkness has corrupted them.'
+          'The darkness swallows your words. Please try again.'
         ])
 
         setUploadedData(undefined)
@@ -87,7 +87,7 @@ export function UploadCampaignButton() {
 
     reader.onerror = () => {
       console.error('Read Campaign JSON Error:', reader.error)
-      toast.error('The darkness consumes your record. Try again.')
+      toast.error('The darkness swallows your words. Please try again.')
       setIsUploading(false)
     }
 
@@ -103,7 +103,7 @@ export function UploadCampaignButton() {
     try {
       // Replace existing campaign data
       localStorage.setItem('campaign', JSON.stringify(uploadedData))
-      toast.success("Settlement chronicles illuminated by the lantern's light!")
+      toast.success('Settlement chronicles loaded!')
 
       // Reset state
       setUploadedData(undefined)
@@ -117,7 +117,7 @@ export function UploadCampaignButton() {
       window.location.reload()
     } catch (error) {
       console.error('Save Campaign Error:', error)
-      toast.error('The lantern fades. Your records are lost to the abyss')
+      toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
@@ -151,10 +151,10 @@ export function UploadCampaignButton() {
         <AlertDialogHeader>
           <AlertDialogTitle>
             {showConfirmation
-              ? 'The Lantern Flickers - Confirm Your Choice'
+              ? 'Your lantern flickers with indecision'
               : validationErrors.length > 0
-                ? 'The Darkness Rejects Your Offering'
-                : 'Illuminate Your Past'}
+                ? 'Your offering is tainted'
+                : 'Illuminate your past'}
           </AlertDialogTitle>
 
           {showConfirmation && (
@@ -186,7 +186,7 @@ export function UploadCampaignButton() {
               <p className="font-medium text-amber-500">
                 Warning: The darkness will consume your current settlements!
               </p>
-              <p>Your lantern currently illuminates:</p>
+              <p>Your currently have:</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li>
                   {getCampaign().settlements.length} settlement
@@ -208,7 +208,7 @@ export function UploadCampaignButton() {
                   {uploadedData?.survivors?.length !== 1 ? 's' : ''}
                 </li>
               </ul>
-              <p>Will you face the darkness and continue?</p>
+              <p>Do you wish to continue?</p>
             </div>
           ) : validationErrors.length > 0 ? (
             <div className="text-left">
@@ -230,7 +230,7 @@ export function UploadCampaignButton() {
           ) : (
             <div className="space-y-4">
               <p>
-                Surrender your chronicles to the lantern&apos;s light.{' '}
+                Surrender your chronicles.{' '}
                 <strong>
                   The darkness will consume your existing settlements.
                 </strong>
@@ -254,7 +254,7 @@ export function UploadCampaignButton() {
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Flee</AlertDialogCancel>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
           {showConfirmation && (
             <AlertDialogAction
               onClick={confirmUpload}

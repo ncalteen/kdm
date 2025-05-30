@@ -1,6 +1,18 @@
 'use client'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -11,18 +23,22 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { SurvivorType } from '@/lib/enums'
-import { getSurvivors } from '@/lib/utils'
+import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
+import { PencilIcon, Trash2Icon, UserIcon } from 'lucide-react'
+import Link from 'next/link'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 
 /**
  * Settlement Survivors Card Component
  *
  * Displays the list of survivors for a given settlement in a table format.
  * Shows survivor details including name, gender, hunt experience, philosophy
- * (for Arc survivors), status, and notes.
+ * (for Arc survivors), status, and edit/delete buttons to navigate to the
+ * survivor page or remove them from the settlement.
  */
 export function SettlementSurvivorsCard({
   ...form
@@ -31,6 +47,8 @@ export function SettlementSurvivorsCard({
   const survivorType = useMemo(() => form.watch('survivorType'), [form])
 
   const [survivors, setSurvivors] = useState<Survivor[]>([])
+  const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
   // Tracks if Arc survivors are in use for this settlement.
   const isArcSurvivorType = survivorType === SurvivorType.ARC
@@ -41,10 +59,49 @@ export function SettlementSurvivorsCard({
     setSurvivors(fetchedSurvivors)
   }, [settlementId])
 
+  /**
+   * Deletes a survivor from the campaign data.
+   *
+   * @param survivorId Survivor ID
+   */
+  const handleDeleteSurvivor = (survivorId: number) => {
+    try {
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s) => s.id === survivorId
+      )
+
+      if (survivorIndex === -1)
+        return toast.error(
+          'The darkness swallows your words. Please try again.'
+        )
+
+      const survivorName = campaign.survivors[survivorIndex].name
+
+      // Remove the survivor from the campaign
+      campaign.survivors.splice(survivorIndex, 1)
+
+      localStorage.setItem('campaign', JSON.stringify(campaign))
+      setSurvivors(getSurvivors(settlementId))
+      toast.success(
+        `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
+      )
+
+      setDeleteId(undefined)
+      setIsDeleteDialogOpen(false)
+    } catch (error) {
+      console.error('Survivor Delete Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
   return (
-    <Card className="mt-1 border-0">
-      <CardHeader className="px-3 py-2 pb-2">
-        <CardTitle className="text-md">Survivors</CardTitle>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1">
+          <UserIcon className="h-4 w-4" />
+          Survivors
+        </CardTitle>
       </CardHeader>
 
       <CardContent className="p-1 pb-0">
@@ -56,43 +113,32 @@ export function SettlementSurvivorsCard({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Gender</TableHead>
-                <TableHead>Hunt XP</TableHead>
-                {isArcSurvivorType && <TableHead>Philosophy</TableHead>}
-                <TableHead>Status</TableHead>
-                <TableHead>Notes</TableHead>
+                <TableHead className="font-bold">Name</TableHead>
+                <TableHead className="font-bold">Gender</TableHead>
+                <TableHead className="font-bold">Hunt XP</TableHead>
+                {isArcSurvivorType && (
+                  <TableHead className="font-bold">Philosophy</TableHead>
+                )}
+                <TableHead className="font-bold">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {survivors.map((survivor) => (
                 <TableRow key={survivor.id}>
-                  <TableCell className="font-semibold">
+                  <TableCell className="text-sm text-left">
                     {survivor.name}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-xs">
-                      {survivor.gender}
-                    </Badge>
+                  <TableCell className="text-sm text-left">
+                    <Badge variant="outline">{survivor.gender}</Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-sm text-left">
                     <Badge variant="secondary" className="text-xs">
                       {survivor.huntXP}
                     </Badge>
                   </TableCell>
                   {isArcSurvivorType && (
-                    <TableCell>
-                      {survivor.philosophy && (
-                        <div className="text-sm">
-                          {survivor.philosophy}
-                          {survivor.tenetKnowledgeObservationRank !==
-                            undefined && (
-                            <Badge variant="outline" className="ml-2 text-xs">
-                              Rank: {survivor.tenetKnowledgeObservationRank}
-                            </Badge>
-                          )}
-                        </div>
-                      )}
+                    <TableCell className="text-sm text-left">
+                      {survivor.philosophy}
                     </TableCell>
                   )}
                   <TableCell>
@@ -109,10 +155,56 @@ export function SettlementSurvivorsCard({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    {survivor.notes && (
-                      <div className="text-sm">{survivor.notes}</div>
-                    )}
+                  <TableCell className="text-right">
+                    <div className="flex gap-2 justify-end">
+                      <Link
+                        href={`/survivor?settlementId=${settlementId}&survivorId=${survivor.id}`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          title="Edit survivor">
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <AlertDialog
+                        open={isDeleteDialogOpen && deleteId === survivor.id}
+                        onOpenChange={(open) => {
+                          setIsDeleteDialogOpen(open)
+                          if (!open) setDeleteId(undefined)
+                        }}>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              setDeleteId(survivor.id)
+                              setIsDeleteDialogOpen(true)
+                            }}
+                            title="Delete survivor">
+                            <Trash2Icon className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Survivor</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              The darkness hungers for {survivor.name}.{' '}
+                              <strong>
+                                Once consumed, they cannot return.
+                              </strong>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteSurvivor(survivor.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

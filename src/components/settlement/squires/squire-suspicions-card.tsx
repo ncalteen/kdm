@@ -134,8 +134,8 @@ export function SquireSuspicionsCard({
   }
 
   return (
-    <Card className="border-0">
-      <CardHeader className="p-0">
+    <Card className="p-0 pb-1 border-0">
+      <CardHeader className="px-2 py-1">
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="text-md flex items-center gap-1">
@@ -147,27 +147,25 @@ export function SquireSuspicionsCard({
             </CardDescription>
           </div>
 
-          <div className="flex items-center">
-            <div className="flex flex-col items-center gap-1">
-              <Input
-                type="number"
-                className={`w-12 h-12 text-center no-spinners ${
-                  totalSuspicion >= 8
-                    ? 'text-red-500 font-bold border-red-500'
-                    : ''
-                }`}
-                value={totalSuspicion}
-                readOnly
-                disabled={false}
-              />
-              <Label className="text-center text-xs">Suspicion Level</Label>
-            </div>
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              type="number"
+              className={`w-12 h-12 text-center no-spinners ${
+                totalSuspicion >= 8
+                  ? 'text-red-500 font-bold border-red-500'
+                  : ''
+              }`}
+              value={totalSuspicion}
+              readOnly
+              disabled={false}
+            />
+            <Label className="text-center text-xs">Suspicion Level</Label>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="p-0">
-        <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           <Table>
             <TableBody>
               <TableRow className="border-b">
@@ -185,60 +183,52 @@ export function SquireSuspicionsCard({
                     {suspicion.name}&apos;s Suspicion
                   </TableCell>
                   <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <Checkbox
-                        checked={suspicion.level1 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(
-                            suspicion.name,
-                            1,
-                            checked === true
-                          )
-                        }
-                      />
-                    </div>
+                    <Checkbox
+                      checked={suspicion.level1 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(
+                          suspicion.name,
+                          1,
+                          checked === true
+                        )
+                      }
+                    />
                   </TableCell>
                   <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <Checkbox
-                        checked={suspicion.level2 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(
-                            suspicion.name,
-                            2,
-                            checked === true
-                          )
-                        }
-                      />
-                    </div>
+                    <Checkbox
+                      checked={suspicion.level2 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(
+                          suspicion.name,
+                          2,
+                          checked === true
+                        )
+                      }
+                    />
                   </TableCell>
                   <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <Checkbox
-                        checked={suspicion.level3 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(
-                            suspicion.name,
-                            3,
-                            checked === true
-                          )
-                        }
-                      />
-                    </div>
+                    <Checkbox
+                      checked={suspicion.level3 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(
+                          suspicion.name,
+                          3,
+                          checked === true
+                        )
+                      }
+                    />
                   </TableCell>
                   <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <Checkbox
-                        checked={suspicion.level4 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(
-                            suspicion.name,
-                            4,
-                            checked === true
-                          )
-                        }
-                      />
-                    </div>
+                    <Checkbox
+                      checked={suspicion.level4 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(
+                          suspicion.name,
+                          4,
+                          checked === true
+                        )
+                      }
+                    />
                   </TableCell>
                 </TableRow>
               ))}

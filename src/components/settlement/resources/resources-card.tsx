@@ -24,7 +24,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { BeefIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -136,10 +136,7 @@ export function ResourcesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentResources,
-      'The harvest is returned to the darkness.'
-    )
+    saveToLocalStorage(currentResources, 'The resource is destroyed.')
   }
 
   /**
@@ -210,8 +207,8 @@ export function ResourcesCard({
     saveToLocalStorage(
       updatedResources,
       i !== undefined
-        ? 'The harvest has been preserved.'
-        : 'Your settlement claims new resources.'
+        ? 'The resource has been updated.'
+        : 'A resource has been added to settlement storage.'
     )
     setIsAddingNew(false)
   }
@@ -257,33 +254,33 @@ export function ResourcesCard({
   }
 
   return (
-    <Card className="mt-1">
-      <CardHeader className="px-4 pt-2 pb-0">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Resource Storage
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  onClick={addResource}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <BeefIcon className="h-4 w-4" />
+          Resource Storage
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={addResource}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
-      <CardContent className="p-2">
-        <div className="space-y-1">
+      {/* Resources List */}
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col gap-1">
           {resources.length !== 0 && (
             <DndContext
               sensors={sensors}

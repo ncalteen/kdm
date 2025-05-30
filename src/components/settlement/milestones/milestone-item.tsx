@@ -104,7 +104,7 @@ export function MilestoneItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex items-center">
+      className="flex items-center gap-2">
       {/* Drag Handle */}
       <div
         {...attributes}
@@ -123,12 +123,13 @@ export function MilestoneItem({
             onToggleComplete(index, checked)
           }
         }}
-        className="mr-2"
       />
 
       {/* Name Display/Input Field */}
       {isDisabled ? (
-        <span className="flex-1 text-sm text-left">{milestone.name}</span>
+        <div className="flex ml-1">
+          <span className="text-sm">{milestone.name}</span>
+        </div>
       ) : (
         <Input
           ref={nameRef}
@@ -140,53 +141,56 @@ export function MilestoneItem({
         />
       )}
 
-      {/* Event Display/Input Field */}
-      {isDisabled ? (
-        <Badge variant="secondary" className="flex-1 justify-start">
-          <BookOpenIcon className="h-4 w-4" />
-          {milestone.event}
-        </Badge>
-      ) : (
-        <Input
-          ref={eventRef}
-          placeholder="Event description"
-          defaultValue={milestone.event}
-          disabled={isDisabled}
-          onKeyDown={handleKeyDown}
-        />
-      )}
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Event Display/Input Field */}
+        {isDisabled ? (
+          <Badge variant="secondary" className="h-8 w-60">
+            <BookOpenIcon className="h-4 w-4" />
+            {milestone.event}
+          </Badge>
+        ) : (
+          <Input
+            ref={eventRef}
+            placeholder="Event description"
+            defaultValue={milestone.event}
+            disabled={isDisabled}
+            onKeyDown={handleKeyDown}
+            className="w-60"
+          />
+        )}
 
-      {/* Interaction Buttons */}
-      {isDisabled ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => onEdit(index)}
-          title="Edit milestone">
-          <PencilIcon className="h-4 w-4" />
-        </Button>
-      ) : (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() =>
-            onSave(index, nameRef.current!.value, eventRef.current!.value)
-          }
-          title="Save milestone">
-          <CheckIcon className="h-4 w-4" />
-        </Button>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove(index)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+        <div className="flex items-center gap-1 ml-auto">
+          {/* Interaction Buttons */}
+          {isDisabled ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => onEdit(index)}
+              title="Edit milestone">
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                onSave(index, nameRef.current!.value, eventRef.current!.value)
+              }
+              title="Save milestone">
+              <CheckIcon className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            type="button"
+            onClick={() => onRemove(index)}>
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -218,22 +222,22 @@ export function NewMilestoneItem({
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
       </div>
 
       {/* Completion Checkbox */}
-      <Checkbox checked={false} disabled className="mr-1" />
+      <Checkbox checked={false} disabled />
 
       {/* Name Input Field */}
       <Input
         ref={nameRef}
         placeholder="Milestone name"
-        defaultValue=""
+        defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1 mr-2"
+        className="flex-1"
         autoFocus
       />
 
@@ -241,31 +245,33 @@ export function NewMilestoneItem({
       <Input
         ref={eventRef}
         placeholder="Event description"
-        defaultValue=""
+        defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1 pr-8"
+        className="flex-1"
       />
 
-      {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() =>
-          onSave(nameRef.current?.value || '', eventRef.current?.value || '')
-        }
-        title="Save milestone">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="ml-2"
+          onClick={() =>
+            onSave(nameRef.current?.value || '', eventRef.current?.value || '')
+          }
+          title="Save milestone">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

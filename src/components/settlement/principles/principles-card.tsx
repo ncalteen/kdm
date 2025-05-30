@@ -23,7 +23,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, StampIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -140,7 +140,7 @@ export function PrinciplesCard({
 
     saveToLocalStorage(
       currentPrinciples,
-      'The settlement has cleansed a belief from its memory.'
+      'The settlement has cleansed a principle from its memory.'
     )
   }
 
@@ -159,7 +159,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless conviction cannot guide your settlement.')
+      return toast.error('A nameless principle cannot be recorded.')
 
     const updatedPrinciples = [...principles]
 
@@ -180,7 +180,7 @@ export function PrinciplesCard({
 
       saveToLocalStorage(
         updatedPrinciples,
-        "The settlement's conviction has been etched in stone."
+        "The settlement's principle has been etched in stone."
       )
     }
     setIsAddingNew(false)
@@ -237,7 +237,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless principle cannot guide your settlement.')
+      return toast.error('A nameless principle cannot be recorded.')
 
     const updatedPrinciples = [
       ...principles,
@@ -257,10 +257,7 @@ export function PrinciplesCard({
       [updatedPrinciples.length - 1]: true
     }))
 
-    saveToLocalStorage(
-      updatedPrinciples,
-      'A new guiding principle emerges from the darkness.'
-    )
+    saveToLocalStorage(updatedPrinciples, 'A new principle emerges.')
     setIsAddingNew(false)
   }
 
@@ -297,35 +294,33 @@ export function PrinciplesCard({
   }
 
   return (
-    <Card className="mt-1">
-      <CardHeader className="px-4 py-4 pb-2">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Principles
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  onClick={addPrinciple}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <StampIcon className="h-4 w-4" />
+          Principles
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={addPrinciple}
+                className="border-0 h-8 w-8"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Principles List */}
-      <CardContent className="p-0">
-        <div>
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col">
           {principles.length !== 0 && (
             <DndContext
               sensors={sensors}

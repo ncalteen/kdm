@@ -117,52 +117,60 @@ export function LocationItem({
       />
 
       {/* Input Field */}
-      <Input
-        ref={inputRef}
-        placeholder="Location Name"
-        defaultValue={form.getValues(`locations.${index}.name`)}
-        disabled={isDisabled}
-        onKeyDown={handleKeyDown}
-        className="flex-1"
-        autoFocus
-      />
+      {isDisabled ? (
+        <div className="flex ml-1">
+          <span className="text-sm">
+            {form.getValues(`locations.${index}.name`)}
+          </span>
+        </div>
+      ) : (
+        <Input
+          ref={inputRef}
+          placeholder="Location Name"
+          defaultValue={form.getValues(`locations.${index}.name`)}
+          disabled={isDisabled}
+          onKeyDown={handleKeyDown}
+          className="flex-1"
+          autoFocus
+        />
+      )}
 
       {/* Interaction Buttons */}
-      {isDisabled ? (
+      <div className="flex items-center gap-1 ml-auto">
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit(index)}
+            title="Edit location">
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              const locationData = form.getValues(`locations.${index}`)
+              onSave(
+                inputRef.current!.value,
+                locationData?.unlocked || false,
+                index
+              )
+            }}
+            title="Save location">
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
         <Button
-          type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
-          onClick={() => onEdit(index)}
-          title="Edit location">
-          <PencilIcon className="h-4 w-4" />
-        </Button>
-      ) : (
-        <Button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => {
-            const locationData = form.getValues(`locations.${index}`)
-            onSave(
-              inputRef.current!.value,
-              locationData?.unlocked || false,
-              index
-            )
-          }}
-          title="Save location">
-          <CheckIcon className="h-4 w-4" />
+          onClick={() => onRemove(index)}>
+          <TrashIcon className="h-4 w-4" />
         </Button>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove(index)}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      </div>
     </div>
   )
 }
@@ -216,24 +224,25 @@ export function NewLocationItem({
         autoFocus
       />
 
-      {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() => onSave(inputRef.current?.value, false)}
-        title="Save location">
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(inputRef.current?.value, false)}
+          title="Save location">
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }
