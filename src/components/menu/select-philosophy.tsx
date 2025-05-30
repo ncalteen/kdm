@@ -91,7 +91,7 @@ export const SelectPhilosophy = forwardRef<
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="p-0">
           <Command>
             <CommandInput placeholder="Search philosophy..." />
             <CommandList>
@@ -104,7 +104,7 @@ export const SelectPhilosophy = forwardRef<
                     onSelect={handleSelect}>
                     <Check
                       className={cn(
-                        'mr-2 h-4 w-4',
+                        'mr-1 h-4 w-4',
                         value === p.value ? 'opacity-100' : 'opacity-0'
                       )}
                     />

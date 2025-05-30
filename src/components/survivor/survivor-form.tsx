@@ -108,28 +108,28 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
   }
 
   return (
-    <div className="grid grid-rows-[0px_1fr_0px] grid-rows-[1fr] items-center justify-items-center sm:p-8 pb-20 gap-8 sm:gap-16 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid justify-items-center sm:p-4">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Form {...form}>
-          <Card className="pt-2 min-w-[500px]">
+          <Card className="pt-1 mx-auto">
             <CardContent>
-              <div className="flex flex-col md:flex-row gap-1">
-                <div className="w-[500px]">
+              <div className="flex flex-col md:flex-row gap-2">
+                <div className="w-[435px]">
                   <NameGenderCard {...form} />
                   <SurvivalCard {...form} />
                   <AttributeCard {...form} />
                   <SanityCard {...form} />
                   <CombatCard {...form} />
+                  <NextDepartureCard {...form} />
+                  <OncePerLifetimeCard {...form} />
                 </div>
                 <div className="w-[500px]">
                   <HuntXPCard {...form} />
                   <WeaponProficiencyCard {...form} />
                   <CourageUnderstandingCard {...form} />
-                  <NextDepartureCard {...form} />
                   <FightingArtsCard {...form} />
                   <DisordersCard {...form} />
                   <AbilitiesAndImpairmentsCard {...form} />
-                  <OncePerLifetimeCard {...form} />
                 </div>
                 {settlement?.survivorType === SurvivorType.ARC && (
                   <div className="w-[500px]">

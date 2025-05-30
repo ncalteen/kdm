@@ -23,7 +23,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { BrainCircuitIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -238,10 +238,11 @@ export function DisordersCard({
   }
 
   return (
-    <Card className="mt-1 border-0">
-      <CardHeader className="px-3 py-2 pb-2">
+    <Card className="p-0 pb-1 mt-1 border-3">
+      <CardHeader className="px-2 py-1">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          Disorders{' '}
+          <BrainCircuitIcon className="h-4 w-4" />
+          Disorders
           {!isAddingNew && (
             <div className="flex justify-center">
               <Button
@@ -264,7 +265,7 @@ export function DisordersCard({
 
       {/* Disorders List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {disorders.length !== 0 && (
             <DndContext
               sensors={sensors}

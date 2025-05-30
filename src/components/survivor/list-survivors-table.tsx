@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -90,15 +91,15 @@ export function ListSurvivorsTable(): ReactElement {
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
+            <TableHead>Gender</TableHead>
             <TableHead>Settlement Name</TableHead>
             <TableHead>Hunt XP</TableHead>
-            <TableHead>Dead</TableHead>
-            <TableHead>Retired</TableHead>
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -113,18 +114,39 @@ export function ListSurvivorsTable(): ReactElement {
           )}
           {survivors.map((survivor) => (
             <TableRow key={survivor.id}>
-              <TableCell className="font-medium">{survivor.name}</TableCell>
+              <TableCell className="text-sm text-left">
+                {survivor.name}
+              </TableCell>
+              <TableCell className="text-sm text-left">
+                <Badge variant="outline">{survivor.gender}</Badge>
+              </TableCell>
               <TableCell>
                 <Button
-                  variant="link"
+                  variant="default"
                   size="sm"
                   onClick={() => handleViewSurvivor(survivor.id)}>
                   {getSettlement(survivor.settlementId)?.name}
                 </Button>
               </TableCell>
               <TableCell>{survivor.huntXP}</TableCell>
-              <TableCell>{survivor.dead}</TableCell>
-              <TableCell>{survivor.retired}</TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  {(survivor.dead && (
+                    <Badge variant="destructive" className="text-xs">
+                      Dead
+                    </Badge>
+                  )) || (
+                    <Badge variant="secondary" className="text-xs">
+                      Alive
+                    </Badge>
+                  )}
+                  {survivor.retired && (
+                    <Badge variant="outline" className="text-xs">
+                      Retired
+                    </Badge>
+                  )}
+                </div>
+              </TableCell>
               <TableCell className="flex justify-end gap-2">
                 <Button
                   variant="outline"

@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { cn, getCampaign } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { Shield, UserRoundIcon } from 'lucide-react'
+import { HardHatIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -78,46 +78,46 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   }
 
   return (
-    <div className="flex flex-row w-full">
+    <div className="flex flex-row">
       <FormField
         control={form.control}
         name="headArmor"
         render={({ field }) => (
           <FormItem>
-            <div className="flex flex-col items-center gap-2">
-              <FormControl>
-                <div className="relative flex items-center">
-                  <Shield
-                    className="h-14 w-14 text-muted-foreground"
-                    strokeWidth={1}
-                  />
-                  <Input
-                    placeholder="1"
-                    type="number"
-                    className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-center p-0 bg-transparent border-none no-spinners"
-                    defaultValue={field.value ?? '0'}
-                    min={0}
-                    onChange={(e) => {
-                      let val = parseInt(e.target.value)
-                      if (isNaN(val) || val < 0) val = 0
-                      form.setValue(field.name, val)
-                      saveToLocalStorage('headArmor', val)
-                    }}
-                  />
-                </div>
-              </FormControl>
-            </div>
+            <FormControl>
+              <div className="relative flex items-center">
+                <Shield
+                  className="h-14 w-14 text-muted-foreground"
+                  strokeWidth={1}
+                />
+                <Input
+                  placeholder="1"
+                  type="number"
+                  className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-2xl sm:text-2xl md:text-2xl text-center p-0 bg-transparent border-none no-spinners"
+                  defaultValue={field.value ?? '0'}
+                  min={0}
+                  onChange={(e) => {
+                    let val = parseInt(e.target.value)
+                    if (isNaN(val) || val < 0) val = 0
+                    form.setValue(field.name, val)
+                    saveToLocalStorage('headArmor', val)
+                  }}
+                />
+              </div>
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      <div className="mx-3 w-px bg-border" />
+
+      <div className="mx-2 w-px bg-border" />
+
       {/* Body part label and severe injuries in a single row */}
       <div className="flex flex-row items-start w-full">
-        <div className="font-bold text-l flex flex-row gap-1 min-w-[70px]">
-          <UserRoundIcon /> Head
+        <div className="font-bold flex flex-row gap-1 w-[70px]">
+          <HardHatIcon /> Head
         </div>
-        <div className="flex flex-col items-start gap-0.5 ml-2">
+        <div className="flex flex-col items-start gap-1 ml-2">
           {/* Severe Injuries */}
           <FormField
             control={form.control}

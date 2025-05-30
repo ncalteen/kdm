@@ -107,21 +107,21 @@ export function AttributeCard({
   }
 
   return (
-    <Card className="m-0 mt-1 border-2">
+    <Card className="p-0 pb-1 mt-1 border-3">
       <CardContent className="p-2">
-        <div className="flex flex-row flex-wrap justify-between">
+        <div className="flex flex-row justify-between">
           {/* Movement */}
           <FormField
             control={form.control}
             name="movement"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       placeholder="1"
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       defaultValue={field.value ?? '1'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -145,12 +145,12 @@ export function AttributeCard({
             name="accuracy"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -172,12 +172,12 @@ export function AttributeCard({
             name="strength"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -199,12 +199,12 @@ export function AttributeCard({
             name="evasion"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -226,12 +226,12 @@ export function AttributeCard({
             name="luck"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -253,12 +253,12 @@ export function AttributeCard({
             name="speed"
             render={({ field }) => (
               <FormItem>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -283,12 +283,12 @@ export function AttributeCard({
                 name="lumi"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center gap-1">
                       <FormControl>
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 text-center no-spinners"
+                          className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                           defaultValue={field.value ?? '0'}
                           min={0}
                           onChange={(e) => {

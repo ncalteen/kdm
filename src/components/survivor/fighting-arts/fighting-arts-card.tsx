@@ -33,7 +33,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, ZapIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -493,12 +493,13 @@ export function FightingArtsCard({
     return <></>
 
   return (
-    <Card className="mt-1 border-0">
-      <CardHeader className="px-3 py-2 pb-2">
+    <Card className="p-0 pb-1 mt-1 border-3">
+      <CardHeader className="px-2 py-1">
         <div className="flex justify-between items-center">
           {/* Title */}
           <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Fighting Arts &amp; Secret Fighting Arts{' '}
+            <ZapIcon className="h-4 w-4" />
+            Fighting Arts &amp; Secret Fighting Arts
             {!isAddingNew && (
               <div className="flex justify-center">
                 <DropdownMenu>
@@ -548,7 +549,7 @@ export function FightingArtsCard({
             <Label
               htmlFor="canUseFightingArtsOrKnowledges"
               className="text-xs cursor-pointer">
-              Cannot use fighting arts
+              Cannot Use Fighting Arts
             </Label>
           </div>
         </div>
@@ -556,7 +557,7 @@ export function FightingArtsCard({
 
       {/* Fighting Arts List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {/* Regular Fighting Arts */}
           {fightingArts.length !== 0 && (
             <DndContext

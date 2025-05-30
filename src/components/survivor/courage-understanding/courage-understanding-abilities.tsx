@@ -148,7 +148,7 @@ export function CourageUnderstandingAbilities({
         : ''
 
   return (
-    <div className="flex flex-wrap items-start justify-evenly">
+    <div className="flex flex-row items-start justify-between mx-2">
       {/* Courage Abilities */}
       <div className="flex flex-col w-[45%]">
         <RadioGroup

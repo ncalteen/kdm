@@ -97,7 +97,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
   }
 
   return (
-    <Card className="m-0 mt-2 border-2">
+    <Card className="p-0 pb-1 mt-1 border-3">
       <CardContent className="p-2">
         <div className="flex">
           {/* Left - Survival and cannot spend survival inputs */}
@@ -116,7 +116,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                           placeholder="1"
                           type="number"
                           className={cn(
-                            'w-16 h-16 text-center md:text-3xl no-spinners'
+                            'w-14 h-14 text-center no-spinners text-3xl sm:text-3xl md:text-3xl'
                           )}
                           {...field}
                           value={field.value ?? '1'}
@@ -126,7 +126,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                             // Enforce minimum value of 0
                             if (value < 0) {
                               value = 0
-                              toast.error('Survival cannot be negative..')
+                              toast.error('Survival cannot be negative.')
                             }
 
                             // Enforce maximum value of survivalLimit
@@ -142,7 +142,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                           }}
                         />
                       </FormControl>
-                      <FormLabel className="min-w-20 font-bold text-left text-l">
+                      <FormLabel className="font-bold text-left">
                         Survival
                       </FormLabel>
                     </div>
@@ -150,7 +150,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                       control={form.control}
                       name="canSpendSurvival"
                       render={({ field: canSpendField }) => (
-                        <FormItem className="flex flex-row items-center gap-2 space-y-0 mt-1">
+                        <FormItem className="flex flex-row items-center gap-2 space-y-0">
                           <FormControl>
                             <Checkbox
                               checked={!canSpendField.value}
@@ -161,7 +161,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                                   'canSpendSurvival',
                                   canSpend,
                                   canSpend
-                                    ? 'The survivor can once again spend their precious survival.'
+                                    ? 'The survivor can once again spend survival.'
                                     : 'The survivor freezes - survival cannot be spent.'
                                 )
                               }}
@@ -184,7 +184,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
 
           {/* Middle - Survival Actions */}
           <div className="flex">
-            <div className="flex flex-col gap-1 mb-0">
+            <div className="flex flex-col gap-1">
               {/* Dodge */}
               <FormField
                 control={form.control}
@@ -207,9 +207,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         }}
                       />
                     </FormControl>
-                    <FormLabel className="text-xs font-medium leading-none">
-                      Dodge
-                    </FormLabel>
+                    <FormLabel className="text-xs">Dodge</FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -237,9 +235,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         }}
                       />
                     </FormControl>
-                    <FormLabel className="text-xs font-medium leading-none">
-                      Encourage
-                    </FormLabel>
+                    <FormLabel className="text-xs">Encourage</FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -267,9 +263,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         }}
                       />
                     </FormControl>
-                    <FormLabel className="text-xs font-medium leading-none">
-                      Surge
-                    </FormLabel>
+                    <FormLabel className="text-xs">Surge</FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -297,9 +291,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         }}
                       />
                     </FormControl>
-                    <FormLabel className="text-xs font-medium leading-none">
-                      Dash
-                    </FormLabel>
+                    <FormLabel className="text-xs">Dash</FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -330,9 +322,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="text-xs font-medium leading-none">
-                          Fist Pump
-                        </FormLabel>
+                        <FormLabel className="text-xs">Fist Pump</FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -362,9 +352,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="text-xs font-medium leading-none">
-                          Endure
-                        </FormLabel>
+                        <FormLabel className="text-xs">Endure</FormLabel>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -378,37 +366,35 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
               <>
                 <div className="mx-2.5 w-px bg-border" />
 
-                <div className="ml-0">
-                  {/* Systemic Pressure */}
-                  <FormField
-                    control={form.control}
-                    name="systemicPressure"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-center">
-                        <FormControl>
-                          <Input
-                            placeholder="0"
-                            type="number"
-                            className="w-12 text-center no-spinners"
-                            {...field}
-                            value={field.value ?? '0'}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value) || 0
-                              form.setValue(field.name, value)
-                              saveToLocalStorage('systemicPressure', value)
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="mt-1 text-xs font-medium">
-                          Systemic
-                          <br />
-                          Pressure
-                        </FormLabel>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                {/* Systemic Pressure */}
+                <FormField
+                  control={form.control}
+                  name="systemicPressure"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col items-center">
+                      <FormControl>
+                        <Input
+                          placeholder="0"
+                          type="number"
+                          className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                          {...field}
+                          value={field.value ?? '0'}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 0
+                            form.setValue(field.name, value)
+                            saveToLocalStorage('systemicPressure', value)
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-xs">
+                        Systemic
+                        <br />
+                        Pressure
+                      </FormLabel>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </>
             )}
           </div>

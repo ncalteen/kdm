@@ -121,7 +121,7 @@ export const TimelineContent = memo(
                 showStoryEventIcon
                   ? 'grid-cols-[80px_40px_1fr_auto]'
                   : 'grid-cols-[80px_1fr_auto]'
-              } items-start border-t py-1`}>
+              } items-start border-t py-1 min-h-[40px]`}>
               {/* Year Number and Completion Checkbox */}
               <div className="flex gap-2">
                 <FormField

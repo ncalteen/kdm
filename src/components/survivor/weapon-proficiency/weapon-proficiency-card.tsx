@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { WeaponType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { SwordsIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -105,17 +106,20 @@ export function WeaponProficiencyCard(
   }
 
   return (
-    <Card className="mt-2 border-2">
-      <CardContent className="p-3">
+    <Card className="p-0 pb-1 mt-2 border-3">
+      <CardContent className="p-2 pb-0">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col gap-1">
-            <CardTitle className="text-l">Weapon Proficiency</CardTitle>
+            <CardTitle className="text-md flex flex-row items-center gap-1">
+              <SwordsIcon className="h-4 w-4" />
+              Weapon Proficiency
+            </CardTitle>
             <SelectWeaponType
               value={weaponProficiencyType}
               onChange={handleWeaponTypeChange}
             />
           </div>
-          <div className="flex flex-col pt-1">
+          <div className="flex flex-col pt-2">
             <div className="flex flex-row gap-2">
               {Array.from({ length: 8 }, (_, i) => (
                 <div
@@ -135,7 +139,7 @@ export function WeaponProficiencyCard(
               ))}
             </div>
 
-            <hr className="mt-2 mb-2" />
+            <hr className="mt-3 mb-2" />
 
             <div className="flex flex-row justify-between gap-2">
               {Array.from({ length: 2 }, (_, i) => (

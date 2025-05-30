@@ -102,7 +102,7 @@ export function FightingArtItem({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex items-center">
+      className="flex items-center gap-2">
       {/* Drag Handle */}
       <div
         {...attributes}
@@ -114,50 +114,57 @@ export function FightingArtItem({
       {/* Type Badge */}
       <Badge
         variant={arrayName === 'fightingArts' ? 'default' : 'secondary'}
-        className="mr-2 min-w-[70px] text-center">
+        className="w-[70px]">
         {arrayName === 'fightingArts' ? 'Fighting' : 'Secret'}
       </Badge>
 
       {/* Input Field */}
-      <Input
-        ref={inputRef}
-        placeholder={placeholder}
-        defaultValue={form.getValues(`${arrayName}.${index}`) || ''}
-        disabled={isDisabled}
-        onKeyDown={handleKeyDown}
-        className="flex-1"
-        autoFocus
-      />
-
-      {/* Interaction Buttons */}
       {isDisabled ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="ml-2"
-          onClick={() => onEdit()}
-          title={`Edit ${placeholder.toLowerCase()}`}>
-          <PencilIcon className="h-4 w-4" />
-        </Button>
+        <div className="flex ml-1">
+          <span className="text-sm">
+            {form.getValues(`${arrayName}.${index}`) || ''}
+          </span>
+        </div>
       ) : (
+        <Input
+          ref={inputRef}
+          placeholder={placeholder}
+          defaultValue={form.getValues(`${arrayName}.${index}`) || ''}
+          disabled={isDisabled}
+          onKeyDown={handleKeyDown}
+          autoFocus
+        />
+      )}
+
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        {isDisabled ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onEdit()}
+            title={`Edit ${placeholder.toLowerCase()}`}>
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onSave(inputRef.current!.value)}
+            title={`Save ${placeholder.toLowerCase()}`}>
+            <CheckIcon className="h-4 w-4" />
+          </Button>
+        )}
         <Button
-          type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
-          onClick={() => onSave(inputRef.current!.value)}
-          title={`Save ${placeholder.toLowerCase()}`}>
-          <CheckIcon className="h-4 w-4" />
+          type="button"
+          onClick={() => onRemove()}>
+          <TrashIcon className="h-4 w-4" />
         </Button>
-      )}
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        onClick={() => onRemove()}>
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      </div>
     </div>
   )
 }
@@ -195,7 +202,7 @@ export function NewFightingArtItem({
   }
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center gap-2">
       {/* Drag Handle */}
       <div className="p-1">
         <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
@@ -204,7 +211,7 @@ export function NewFightingArtItem({
       {/* Type Badge */}
       <Badge
         variant={artType === 'regular' ? 'default' : 'secondary'}
-        className="mr-2 min-w-[70px] text-center">
+        className="w-[70px]">
         {artType === 'regular' ? 'Fighting' : 'Secret'}
       </Badge>
 
@@ -214,28 +221,28 @@ export function NewFightingArtItem({
         placeholder={placeholder}
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1"
         autoFocus
       />
 
-      {/* Interaction Buttons */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="ml-2"
-        onClick={() => onSave(inputRef.current?.value)}
-        title={`Save ${placeholder.toLowerCase()}`}>
-        <CheckIcon className="h-4 w-4" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={onCancel}
-        title="Cancel">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center gap-1 ml-auto">
+        {/* Interaction Buttons */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => onSave(inputRef.current?.value)}
+          title={`Save ${placeholder.toLowerCase()}`}>
+          <CheckIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          title="Cancel">
+          <TrashIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

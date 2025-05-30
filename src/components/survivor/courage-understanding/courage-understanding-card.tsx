@@ -123,12 +123,12 @@ export function CourageUnderstandingCard({
     campaignType === CampaignType.PEOPLE_OF_THE_STARS ? 'Awake' : 'Insight'
 
   return (
-    <Card className="mt-1 border-2">
-      <CardContent className="pt-2 pb-2 pl-0 pr-0">
-        <div className="flex flex-wrap justify-evenly items-center">
+    <Card className="p-0 pb-1 mt-1 border-3">
+      <CardContent className="py-2 px-0">
+        <div className="flex flex-wrap justify-between mx-2">
           {/* Courage Section */}
           <div className="flex flex-col">
-            <div className="font-bold text-md mb-1">Courage</div>
+            <div className="font-bold text-sm mb-1">Courage</div>
 
             <div className="flex flex-row gap-2">
               {Array.from({ length: 9 }, (_, i) => (
@@ -147,9 +147,9 @@ export function CourageUnderstandingCard({
               ))}
             </div>
 
-            <hr className="mt-1 mb-1" />
+            <hr className="my-2" />
 
-            <div className="flex flex-row gap-3 justify-between">
+            <div className="flex flex-row justify-between">
               {Array.from({ length: 2 }, (_, i) => (
                 <div key={i} className="flex items-center gap-1">
                   {Array.from({ length: i + 1 }, (_, j) => (
@@ -179,7 +179,7 @@ export function CourageUnderstandingCard({
 
           {/* Understanding Section */}
           <div className="flex flex-col">
-            <div className="font-bold text-md mb-1">Understanding</div>
+            <div className="font-bold text-sm mb-1">Understanding</div>
 
             <div className="flex flex-row gap-2">
               {Array.from({ length: 9 }, (_, i) => (
@@ -198,9 +198,9 @@ export function CourageUnderstandingCard({
               ))}
             </div>
 
-            <hr className="mt-1 mb-1" />
+            <hr className="my-2" />
 
-            <div className="flex flex-row gap-3 justify-between">
+            <div className="flex flex-row justify-between">
               {Array.from({ length: 2 }, (_, i) => (
                 <div key={i} className="flex items-center gap-1">
                   {Array.from({ length: i + 1 }, (_, j) => (

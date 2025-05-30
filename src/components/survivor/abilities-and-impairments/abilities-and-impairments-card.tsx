@@ -247,8 +247,8 @@ export function AbilitiesAndImpairmentsCard({
   }
 
   return (
-    <Card className="mt-1 border-0">
-      <CardHeader className="px-3 py-2 pb-2">
+    <Card className="p-0 pb-1 mt-1 border-3">
+      <CardHeader className="px-2 py-1">
         <div className="flex justify-between items-center">
           {/* Title */}
           <CardTitle className="text-md flex flex-row items-center gap-1 h-8">

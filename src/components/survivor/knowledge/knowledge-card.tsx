@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { saveSurvivorToLocalStorage } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
+import { LightBulbIcon } from '@primer/octicons-react'
 import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -116,18 +117,22 @@ export function KnowledgeCard({
   }
 
   return (
-    <Card className="mt-1 border-2">
-      <CardHeader className="px-3 pt-2 pb-0">
-        <CardTitle className="text-md">Knowledges</CardTitle>
+    <Card className="p-0 pb-1 mt-1 border-3">
+      <CardHeader className="px-2 py-1">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <LightBulbIcon className="h-4 w-4" />
+          Knowledges
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-3 pt-2">
+
+      <CardContent className="px-2 py-0">
         {/* Knowledge 1 */}
-        <div className="flex items-start gap-2">
+        <div className="flex items-start">
           <div className="flex-grow">
             <div className="flex flex-col gap-1">
               <Input
                 placeholder="Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-lg"
+                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
                 {...form.register('knowledge1')}
                 defaultValue={form.getValues('knowledge1') || ''}
                 onKeyDown={(e) =>
@@ -145,7 +150,7 @@ export function KnowledgeCard({
             </div>
           </div>
           <div>
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
                 const rank = index + 1
                 return (
@@ -166,7 +171,7 @@ export function KnowledgeCard({
         </div>
 
         {/* Knowledge 1 Rules */}
-        <div className="mt-2">
+        <div className="mt-1">
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter knowledge rules..."
@@ -190,7 +195,7 @@ export function KnowledgeCard({
         </div>
 
         {/* Knowledge 1 Observation Conditions */}
-        <div className="mt-2">
+        <div className="mt-1">
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter observation conditions..."
@@ -215,15 +220,15 @@ export function KnowledgeCard({
           </div>
         </div>
 
-        <hr className="mt-2 mb-2" />
+        <hr className="mt-2 mb-2 border-2" />
 
         {/* Knowledge 2 */}
-        <div className="flex items-start gap-2 mt-2">
+        <div className="flex items-start gap-2">
           <div className="flex-grow">
             <div className="flex flex-col gap-1">
               <Input
                 placeholder="Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-lg"
+                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
                 {...form.register('knowledge2')}
                 defaultValue={form.getValues('knowledge2') || ''}
                 onKeyDown={(e) =>
@@ -241,7 +246,7 @@ export function KnowledgeCard({
             </div>
           </div>
           <div>
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
                 const rank = index + 1
                 return (
@@ -262,7 +267,7 @@ export function KnowledgeCard({
         </div>
 
         {/* Knowledge 2 Rules */}
-        <div className="mt-2">
+        <div className="mt-1">
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter knowledge rules..."
@@ -286,7 +291,7 @@ export function KnowledgeCard({
         </div>
 
         {/* Knowledge 2 Observation Conditions */}
-        <div className="mt-2">
+        <div className="mt-1">
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter observation conditions..."

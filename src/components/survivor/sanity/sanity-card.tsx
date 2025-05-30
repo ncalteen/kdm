@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSettlement } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { Shield } from 'lucide-react'
+import { BrainIcon, Shield } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -93,8 +93,8 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
   }
 
   return (
-    <Card className="m-0 mt-1 border-2">
-      <CardContent className="p-2">
+    <Card className="p-0 pb-1 mt-1 border-3">
+      <CardContent className="p-2 pl-1">
         <div className="flex">
           {/* Insanity */}
           <FormField
@@ -112,7 +112,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                       <Input
                         placeholder="1"
                         type="number"
-                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-center p-0 bg-transparent border-none no-spinners"
+                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-2xl sm:text-2xl md:text-2xl text-center p-0 bg-transparent border-none no-spinners"
                         {...field}
                         value={field.value ?? '0'}
                         onChange={(e) => {
@@ -136,11 +136,14 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
             )}
           />
 
-          <div className="mx-2.5 w-px bg-border" />
+          <div className="mx-2 w-px bg-border" />
 
           {/* Brain */}
           <div className="relative flex-1 flex flex-col justify-between">
-            <div className="font-bold text-l">Brain</div>
+            <div className="font-bold flex gap-1 items-center">
+              <BrainIcon />
+              Brain
+            </div>
             <div className="absolute top-0 right-0 flex items-center">
               <FormField
                 control={form.control}
@@ -176,19 +179,19 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
           {/* Torment (Arc) */}
           {survivorType === SurvivorType.ARC && (
             <>
-              <div className="mx-2.5 w-px bg-border" />
+              <div className="mx-2 w-px bg-border" />
 
               <FormField
                 control={form.control}
                 name="torment"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center gap-1">
                       <FormControl>
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 text-center no-spinners"
+                          className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {

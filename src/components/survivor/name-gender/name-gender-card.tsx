@@ -158,7 +158,7 @@ export function NameGenderCard({
     )
   }
   return (
-    <Card className="border-0">
+    <Card className="p-0 pb-1 border-0">
       <CardContent className="p-0">
         <div className="flex flex-col">
           <div className="flex items-center">
@@ -168,18 +168,16 @@ export function NameGenderCard({
               name="name"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <div className="flex items-center gap-4">
-                    <FormLabel className="font-bold text-left text-l">
-                      Name
-                    </FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormLabel className="font-bold text-left">Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Survivor name..."
                         {...field}
                         value={field.value ?? ''}
-                        onChange={(e) => {
+                        onChange={(e) =>
                           form.setValue(field.name, e.target.value)
-                        }}
+                        }
                         onKeyDown={(e) =>
                           handleNameKeyDown(e, field.value ?? '')
                         }
@@ -196,12 +194,10 @@ export function NameGenderCard({
               control={form.control}
               name="gender"
               render={({ field }) => (
-                <FormItem className="ml-6 mt-1">
-                  <div className="flex items-center gap-2 pr-2">
+                <FormItem className="ml-4">
+                  <div className="flex items-center gap-2">
                     <div className="flex items-center space-x-1">
-                      <label
-                        htmlFor="male-checkbox"
-                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <label htmlFor="male-checkbox" className="text-sm">
                         M
                       </label>
                       <Checkbox
@@ -213,9 +209,7 @@ export function NameGenderCard({
                       />
                     </div>
                     <div className="flex items-center space-x-1">
-                      <label
-                        htmlFor="female-checkbox"
-                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <label htmlFor="female-checkbox" className="text-sm">
                         F
                       </label>
                       <Checkbox
@@ -233,9 +227,9 @@ export function NameGenderCard({
             />
           </div>
 
-          <hr className="mt-2" />
+          <hr className="my-1" />
 
-          <FormDescription className="mt-2 text-xs">
+          <FormDescription className="text-xs">
             When you name your survivor, gain +1 <strong>survival</strong>.
           </FormDescription>
         </div>

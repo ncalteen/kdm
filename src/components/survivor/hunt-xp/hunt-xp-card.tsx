@@ -116,8 +116,8 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   )
 
   return (
-    <Card className="border-0">
-      <CardContent className="p-1 pt-3 pb-0">
+    <Card className="p-0 border-0">
+      <CardContent className="p-0 pt-3">
         <div className="flex flex-col">
           <div className="flex items-center">
             {/* Hunt XP */}
@@ -126,8 +126,8 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
               name="huntXP"
               render={() => (
                 <FormItem className="flex-1">
-                  <div className="flex justify-between items-center gap-4">
-                    <FormLabel className="font-bold text-left text-l">
+                  <div className="flex justify-between items-center">
+                    <FormLabel className="font-bold text-left">
                       Hunt XP
                     </FormLabel>
                     <FormControl>
@@ -168,9 +168,9 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
           </div>
         </div>
 
-        <hr className="mt-4" />
+        <hr className="mt-3 mb-1" />
 
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between">
           {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="flex items-center gap-1">
               {Array.from({ length: i + 1 }, (_, j) => (

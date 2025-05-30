@@ -25,7 +25,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { CopyCheckIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -161,7 +161,7 @@ export function OncePerLifetimeCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless event cannot be inscribed in memory.')
+      return toast.error('A nameless event cannot be recorded.')
 
     try {
       SurvivorSchema.shape.oncePerLifetime.parse([value])
@@ -244,12 +244,13 @@ export function OncePerLifetimeCard({
   }
 
   return (
-    <Card className="mt-1 border-0">
-      <CardHeader className="px-3 py-2 pb-2">
+    <Card className="p-0 pb-1 mt-1 border-3">
+      <CardHeader className="px-2 py-1">
         <div className="flex justify-between items-center">
           {/* Title */}
           <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Once Per Lifetime{' '}
+            <CopyCheckIcon className="h-4 w-4" />
+            Once Per Lifetime
             {!isAddingNew && (
               <div className="flex justify-center">
                 <Button
@@ -269,7 +270,7 @@ export function OncePerLifetimeCard({
           </CardTitle>
 
           {/* Skip Next Hunt */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Checkbox
               id="rerollUsed"
               checked={rerollUsedState}
@@ -286,7 +287,7 @@ export function OncePerLifetimeCard({
 
       {/* Once Per Lifetime List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
+        <div className="flex flex-col">
           {oncePerLifetime.length !== 0 && (
             <DndContext
               sensors={sensors}
