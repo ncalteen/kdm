@@ -19,6 +19,17 @@ import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { ZodError } from 'zod'
 
+/**
+ * Duration to cache the loaded campaign in milliseconds.
+ *
+ * This is used to reduce the number of reads from localStorage
+ * and improve performance when accessing campaign data frequently.
+ */
+const CACHE_DURATION = 5000
+
+let cachedCampaign: Campaign | null = null
+let lastCacheUpdate: number = 0
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -29,13 +40,42 @@ export function cn(...inputs: ClassValue[]) {
  * @returns Campaign
  */
 export function getCampaign(): Campaign {
-  return JSON.parse(
+  const now = Date.now()
+
+  // Return cached campaign if available and recent
+  if (cachedCampaign && now - lastCacheUpdate < CACHE_DURATION)
+    return cachedCampaign
+
+  const campaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
       })
   )
+
+  cachedCampaign = campaign
+  lastCacheUpdate = now
+
+  return campaign
+}
+
+/**
+ * Invalidates the campaign cache to force fresh data on next getCampaign call
+ */
+export function invalidateCampaignCache(): void {
+  cachedCampaign = null
+  lastCacheUpdate = 0
+}
+
+/**
+ * Saves campaign data to localStorage and invalidates cache
+ *
+ * @param campaign Campaign data to save
+ */
+export function saveCampaignToLocalStorage(campaign: Campaign): void {
+  localStorage.setItem('campaign', JSON.stringify(campaign))
+  invalidateCampaignCache()
 }
 
 /**
