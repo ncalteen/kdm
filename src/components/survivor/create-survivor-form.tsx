@@ -30,8 +30,9 @@ import {
   SurvivorSchema
 } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ArrowLeft } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -137,113 +138,138 @@ export function CreateSurvivorForm(): ReactElement {
     }
   }
 
+  /**
+   * Handles back navigation to settlement
+   */
+  const handleBackToSettlement = useCallback(
+    () =>
+      settlementId
+        ? router.push(`/settlement?settlementId=${settlementId}`)
+        : router.push('/settlement/list'),
+    [router, settlementId]
+  )
+
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error('The darkness swallows your words. Please try again.')
-      })}
-      className="space-y-6">
-      <Form {...form}>
-        <Card className="max-w-[500px] mx-auto">
-          <CardContent className="w-full p-4 space-y-2">
-            {/* Settlement */}
-            <FormField
-              control={form.control}
-              name="settlementId"
-              render={() => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
-                      Settlement
-                    </FormLabel>
-                    <FormControl>
-                      <SelectSettlement
-                        onChange={(value) => {
-                          setSettlementId(parseInt(value, 10))
-                          form.setValue('settlementId', parseInt(value, 10))
-                        }}
-                        value={settlementId.toString()}
-                      />
-                    </FormControl>
-                  </div>
-                </FormItem>
-              )}
-            />
+    <div className="space-y-6">
+      {/* Back Navigation Button */}
+      <div className="max-w-[500px] mx-auto">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleBackToSettlement}
+          className="flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Settlement
+        </Button>
+      </div>
 
-            {/* Survivor Name */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
-                      Name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Survivor name..."
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) => {
-                          form.setValue('name', e.target.value)
-                        }}
-                      />
-                    </FormControl>
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            {/* Survivor Gender */}
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
-                      Gender
-                    </FormLabel>
-                    <div className="flex w-[75%] items-center gap-2">
-                      <Checkbox
-                        id="male-checkbox"
-                        checked={field.value === Gender.MALE}
-                        onCheckedChange={(checked) => {
-                          if (checked) form.setValue('gender', Gender.MALE)
-                        }}
-                      />
-                      <label htmlFor="male-checkbox" className="text-sm">
-                        M
-                      </label>
-                      <Checkbox
-                        id="female-checkbox"
-                        checked={field.value === Gender.FEMALE}
-                        onCheckedChange={(checked) => {
-                          if (checked) form.setValue('gender', Gender.FEMALE)
-                        }}
-                      />
-                      <label htmlFor="female-checkbox" className="text-sm">
-                        F
-                      </label>
+      <form
+        onSubmit={form.handleSubmit(onSubmit, () => {
+          toast.error('The darkness swallows your words. Please try again.')
+        })}
+        className="space-y-6">
+        <Form {...form}>
+          <Card className="max-w-[500px] mx-auto">
+            <CardContent className="w-full p-4 space-y-2">
+              {/* Settlement */}
+              <FormField
+                control={form.control}
+                name="settlementId"
+                render={() => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                        Settlement
+                      </FormLabel>
+                      <FormControl>
+                        <SelectSettlement
+                          onChange={(value) => {
+                            setSettlementId(parseInt(value, 10))
+                            form.setValue('settlementId', parseInt(value, 10))
+                          }}
+                          value={settlementId.toString()}
+                        />
+                      </FormControl>
                     </div>
-                  </div>
-                </FormItem>
-              )}
-            />
+                  </FormItem>
+                )}
+              />
 
-            <hr className="my-2" />
+              {/* Survivor Name */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                        Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Survivor name..."
+                          {...field}
+                          value={field.value ?? ''}
+                          onChange={(e) => {
+                            form.setValue('name', e.target.value)
+                          }}
+                        />
+                      </FormControl>
+                    </div>
+                  </FormItem>
+                )}
+              />
 
-            <div className="text-xs text-muted-foreground">
-              When you name your survivor, gain +1 <strong>survival</strong>.
-            </div>
-          </CardContent>
-        </Card>
-      </Form>
+              {/* Survivor Gender */}
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                        Gender
+                      </FormLabel>
+                      <div className="flex w-[75%] items-center gap-2">
+                        <Checkbox
+                          id="male-checkbox"
+                          checked={field.value === Gender.MALE}
+                          onCheckedChange={(checked) => {
+                            if (checked) form.setValue('gender', Gender.MALE)
+                          }}
+                        />
+                        <label htmlFor="male-checkbox" className="text-sm">
+                          M
+                        </label>
+                        <Checkbox
+                          id="female-checkbox"
+                          checked={field.value === Gender.FEMALE}
+                          onCheckedChange={(checked) => {
+                            if (checked) form.setValue('gender', Gender.FEMALE)
+                          }}
+                        />
+                        <label htmlFor="female-checkbox" className="text-sm">
+                          F
+                        </label>
+                      </div>
+                    </div>
+                  </FormItem>
+                )}
+              />
 
-      <Button type="submit" className="mx-auto block">
-        Create Survivor
-      </Button>
-    </form>
+              <hr className="my-2" />
+
+              <div className="text-xs text-muted-foreground">
+                When you name your survivor, gain +1 <strong>survival</strong>.
+              </div>
+            </CardContent>
+          </Card>
+        </Form>
+
+        <Button type="submit" className="mx-auto block">
+          Create Survivor
+        </Button>
+      </form>
+    </div>
   )
 }

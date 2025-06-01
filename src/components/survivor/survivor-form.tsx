@@ -15,6 +15,7 @@ import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
@@ -26,6 +27,8 @@ import {
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -45,6 +48,8 @@ export interface SurvivorFormProps {
  * This component is used to display/edit a survivor.
  */
 export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
+  const router = useRouter()
+
   const [settlement, setSettlement] = useState<Settlement | undefined>()
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -173,8 +178,31 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
     [saveToLocalStorageDebounced]
   )
 
+  /**
+   * Handles back navigation to settlement
+   */
+  const handleBackToSettlement = useCallback(
+    () =>
+      survivor.settlementId
+        ? router.push(`/settlement?settlementId=${survivor.settlementId}`)
+        : router.push('/settlement/list'),
+    [router, survivor.settlementId]
+  )
+
   return (
     <div className="grid justify-items-center sm:p-4">
+      {/* Back Navigation Button */}
+      <div className="w-full max-w-[1500px] mb-4">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleBackToSettlement}
+          className="flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Settlement
+        </Button>
+      </div>
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Form {...form}>
           <Card className="pt-1 mx-auto">
