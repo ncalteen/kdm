@@ -26,7 +26,7 @@ import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
-import { PencilIcon, Trash2Icon, UserIcon } from 'lucide-react'
+import { PencilIcon, PlusIcon, Trash2Icon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -100,10 +100,22 @@ export function SettlementSurvivorsCard({
   return (
     <Card className="p-0 pb-1 mt-2 border-3">
       <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1">
-          <UserIcon className="h-4 w-4" />
-          Survivors
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-md flex flex-row items-center gap-1">
+            <UserIcon className="h-4 w-4" />
+            Survivors
+          </CardTitle>
+          <Link href={`/survivor/create?settlementId=${settlementId}`}>
+            <Button
+              variant="outline"
+              size="sm"
+              title="Create new survivor"
+              className="h-8">
+              <PlusIcon className="h-4 w-4" />
+              New Survivor
+            </Button>
+          </Link>
+        </div>
       </CardHeader>
 
       <CardContent className="p-1 pb-0">
