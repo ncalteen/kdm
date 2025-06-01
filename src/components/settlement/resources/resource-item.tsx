@@ -216,14 +216,12 @@ export function ResourceItem({
                 <ResourceCategoriesCombobox
                   selectedCategory={selectedCategory}
                   onChange={setSelectedCategory}
-                  disabled={false}
                 />
               </div>
               <div className="flex flex-wrap gap-1 col-span-3">
                 <ResourceTypesCombobox
                   selectedTypes={selectedTypes}
                   onChange={setSelectedTypes}
-                  disabled={false}
                 />
               </div>
               <div className="col-span-1">
