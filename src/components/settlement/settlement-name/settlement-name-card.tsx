@@ -47,6 +47,23 @@ export function SettlementNameCard({
       }
     }
   }, [])
+
+  // Focus the input field when the component mounts
+  useEffect(() => {
+    const inputElement = document.querySelector(
+      '#settlement-name'
+    ) as HTMLInputElement | null
+
+    if (inputElement) {
+      inputElement.focus()
+
+      // Reset the input value to trigger any validation or effects
+      const currentValue = inputElement.value
+      inputElement.value = ''
+      inputElement.value = currentValue
+    }
+  }, [])
+
   /**
    * Debounced save function to reduce localStorage operations
    *
@@ -173,6 +190,7 @@ export function SettlementNameCard({
                   {/* Settlement Name Input */}
                   <FormControl>
                     <Input
+                      id="settlement-name"
                       placeholder="Settlement Name"
                       {...field}
                       value={field.value ?? ''}
