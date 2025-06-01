@@ -1,31 +1,11 @@
 'use client'
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table'
-import { getCampaign, getCurrentYear } from '@/lib/utils'
+import { createColumns } from '@/components/settlement/list-settlements/columns'
+import { SettlementsDataTable } from '@/components/settlement/list-settlements/data-table'
+import { getCampaign } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
-import { SearchIcon, Trash2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -52,15 +32,18 @@ export function ListSettlementsTable(): ReactElement {
    *
    * @param settlementId Settlement ID
    */
-  const handleViewSettlement = (settlementId: number) =>
-    router.push(`/settlement?settlementId=${settlementId}`)
+  const handleViewSettlement = useCallback(
+    (settlementId: number) =>
+      router.push(`/settlement?settlementId=${settlementId}`),
+    [router]
+  )
 
   /**
    * Deletes a settlement and all associated survivors from the campaign data.
    *
    * @param settlementId Settlement ID
    */
-  const handleDeleteSettlement = (settlementId: number) => {
+  const handleDeleteSettlement = useCallback((settlementId: number) => {
     const campaign = getCampaign()
     const settlementIndex = campaign.settlements.findIndex(
       (s) => s.id === settlementId
@@ -83,103 +66,32 @@ export function ListSettlementsTable(): ReactElement {
 
     setDeleteId(undefined)
     setIsDeleteDialogOpen(false)
-  }
+  }, [])
+
+  // Create columns with required functions
+  const columns = useMemo(
+    () =>
+      createColumns({
+        deleteId,
+        isDeleteDialogOpen,
+        handleViewSettlement,
+        handleDeleteSettlement,
+        setDeleteId,
+        setIsDeleteDialogOpen
+      }),
+    [
+      deleteId,
+      isDeleteDialogOpen,
+      handleViewSettlement,
+      handleDeleteSettlement,
+      setDeleteId,
+      setIsDeleteDialogOpen
+    ]
+  )
 
   return (
     <div className="rounded-md">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Campaign Type</TableHead>
-            <TableHead>Lantern Year</TableHead>
-            <TableHead>Population</TableHead>
-            <TableHead>Deaths</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {settlements.length === 0 && (
-            <TableRow>
-              <TableCell
-                colSpan={7}
-                className="text-center text-muted-foreground py-4">
-                The darkness remains unbroken. No lanterns light the way.
-              </TableCell>
-            </TableRow>
-          )}
-          {settlements.map((settlement) => (
-            <TableRow key={settlement.id}>
-              {/* Settlment Name */}
-              <TableCell className="font-medium">{settlement.name}</TableCell>
-
-              {/* Campaign Type */}
-              <TableCell>
-                <Badge variant="secondary">{settlement.campaignType}</Badge>
-              </TableCell>
-
-              {/* Current Lantern Year */}
-              <TableCell>{getCurrentYear(settlement.timeline)}</TableCell>
-
-              {/* Population */}
-              <TableCell>{settlement.population}</TableCell>
-
-              {/* Death Count */}
-              <TableCell>{settlement.deathCount}</TableCell>
-
-              {/* Action Buttons */}
-              <TableCell className="flex justify-end gap-2">
-                {/* View Settlement */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleViewSettlement(settlement.id)}>
-                  <SearchIcon className="h-4 w-4" />
-                </Button>
-
-                {/* Delete Settlement */}
-                <AlertDialog
-                  open={isDeleteDialogOpen && deleteId === settlement.id}
-                  onOpenChange={(open) => {
-                    setIsDeleteDialogOpen(open)
-                    if (!open) setDeleteId(undefined)
-                  }}>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        setDeleteId(settlement.id)
-                        setIsDeleteDialogOpen(true)
-                      }}>
-                      <Trash2Icon className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Settlement</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        The darkness hungers for {settlement.name}.{' '}
-                        <strong>
-                          Once consumed, all who dwelled within will be
-                          forgotten.
-                        </strong>
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDeleteSettlement(settlement.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <SettlementsDataTable columns={columns} data={settlements} />
     </div>
   )
 }
