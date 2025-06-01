@@ -42,13 +42,8 @@ export function CourageUnderstandingAbilities({
       )
 
       if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          [attrName]: value
-        }
-
         try {
-          SurvivorSchema.parse(updatedSurvivor)
+          SurvivorSchema.shape[attrName].parse(value)
         } catch (error) {
           if (error instanceof ZodError && error.errors[0]?.message)
             return toast.error(error.errors[0].message)

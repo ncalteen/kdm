@@ -37,6 +37,8 @@ export interface ResourceItemProps {
     types: ResourceType[],
     amount: number
   ) => void
+  /** OnAmountChange Handler */
+  onAmountChange?: (index: number, amount: number) => void
 }
 
 /**
@@ -67,7 +69,8 @@ export function ResourceItem({
   form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  onAmountChange
 }: ResourceItemProps): ReactElement {
   const resource = form.watch(`resources.${index}`)
 
@@ -103,14 +106,14 @@ export function ResourceItem({
   }, [resource, isDisabled, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handles the key down event for the name input field.
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and values.
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleNameKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && nameInputRef.current && amountInputRef.current) {
       e.preventDefault()
       onSave(
@@ -120,6 +123,18 @@ export function ResourceItem({
         selectedTypes,
         Number(amountInputRef.current.value)
       )
+    }
+  }
+
+  /**
+   * Handles the amount input change for immediate saving.
+   *
+   * @param e Change Event
+   */
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const amount = Number(e.target.value)
+    if (onAmountChange && !isNaN(amount) && amount >= 0) {
+      onAmountChange(index, amount)
     }
   }
 
@@ -161,7 +176,7 @@ export function ResourceItem({
                   min={0}
                   placeholder="0"
                   defaultValue={resource?.amount}
-                  onKeyDown={handleKeyDown}
+                  onChange={handleAmountChange}
                   className="w-16 text-center no-spinners"
                 />
               </div>
@@ -189,20 +204,24 @@ export function ResourceItem({
             <div className="grid grid-cols-12 items-center gap-2">
               {/* Form Fields */}
               <div className="col-span-4 text-sm text-left font-bold">
-                {resource?.name}
+                <Input
+                  ref={nameInputRef}
+                  placeholder="Resource Name"
+                  defaultValue={resource?.name}
+                  onKeyDown={handleNameKeyDown}
+                  autoFocus
+                />
               </div>
               <div className="col-span-2">
                 <ResourceCategoriesCombobox
                   selectedCategory={selectedCategory}
                   onChange={setSelectedCategory}
-                  disabled={isDisabled}
                 />
               </div>
               <div className="flex flex-wrap gap-1 col-span-3">
                 <ResourceTypesCombobox
                   selectedTypes={selectedTypes}
                   onChange={setSelectedTypes}
-                  disabled={isDisabled}
                 />
               </div>
               <div className="col-span-1">
@@ -212,7 +231,7 @@ export function ResourceItem({
                   min={0}
                   placeholder="0"
                   defaultValue={resource?.amount}
-                  onKeyDown={handleKeyDown}
+                  onChange={handleAmountChange}
                   className="w-16 text-center no-spinners"
                 />
               </div>
@@ -223,9 +242,19 @@ export function ResourceItem({
                   type="button"
                   variant="ghost"
                   size="icon"
-                  onClick={() => onEdit(index)}
-                  title="Edit resource">
-                  <PencilIcon className="h-4 w-4" />
+                  onClick={() => {
+                    if (nameInputRef.current && amountInputRef.current) {
+                      onSave(
+                        index,
+                        nameInputRef.current.value,
+                        selectedCategory,
+                        selectedTypes,
+                        Number(amountInputRef.current.value)
+                      )
+                    }
+                  }}
+                  title="Save resource">
+                  <CheckIcon className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"

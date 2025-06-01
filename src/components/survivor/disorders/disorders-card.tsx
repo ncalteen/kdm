@@ -38,7 +38,8 @@ import { ZodError } from 'zod'
 export function DisordersCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const disorders = useMemo(() => form.watch('disorders') || [], [form])
+  const watchedDisorders = form.watch('disorders')
+  const disorders = useMemo(() => watchedDisorders || [], [watchedDisorders])
   const MAX_DISORDERS = 3
 
   const [disabledInputs, setDisabledInputs] = useState<{
@@ -86,13 +87,8 @@ export function DisordersCard({
       )
 
       if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          disorders: updatedDisorders
-        }
-
         try {
-          SurvivorSchema.parse(updatedSurvivor)
+          SurvivorSchema.shape.disorders.parse(updatedDisorders)
         } catch (error) {
           if (error instanceof ZodError && error.errors[0]?.message)
             return toast.error(error.errors[0].message)

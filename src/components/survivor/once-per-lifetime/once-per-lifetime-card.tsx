@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import type { DragEndEvent } from '@dnd-kit/core'
 import {
@@ -26,7 +26,14 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CopyCheckIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -37,15 +44,19 @@ import { ZodError } from 'zod'
 export function OncePerLifetimeCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
+  const watchedOncePerLifetime = form.watch('oncePerLifetime')
   const oncePerLifetime = useMemo(
-    () => form.watch('oncePerLifetime') || [],
-    [form]
+    () => watchedOncePerLifetime || [],
+    [watchedOncePerLifetime]
   )
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  // Create a ref for the timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -57,6 +68,14 @@ export function OncePerLifetimeCard({
 
       return next
     })
+
+    // Cleanup function for timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
   }, [oncePerLifetime])
 
   const [rerollUsedState, setRerollUsedState] = useState<boolean>(
@@ -83,46 +102,66 @@ export function OncePerLifetimeCard({
    *
    * @param updatedOncePerLifetime Updated Once Per Lifetime
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    updatedOncePerLifetime: string[],
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          oncePerLifetime: updatedOncePerLifetime
-        }
-
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      updatedOncePerLifetime: string[],
+      successMsg?: string,
+      immediate: boolean = false
+    ) => {
+      const saveFunction = () => {
         try {
-          SurvivorSchema.parse(updatedSurvivor)
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape.oncePerLifetime.parse(updatedOncePerLifetime)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            // Save to localStorage using the optimized utility
+            saveCampaignToLocalStorage({
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id
+                  ? { ...s, oncePerLifetime: updatedOncePerLifetime }
+                  : s
+              )
+            })
+
+            if (successMsg) toast.success(successMsg)
+          }
         } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
+          console.error('Once Per Lifetime Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-
-        campaign.survivors[survivorIndex].oncePerLifetime =
-          updatedOncePerLifetime
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
       }
-    } catch (error) {
-      console.error('Once Per Lifetime Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
 
   /**
    * Handles the removal of a once per lifetime event.
@@ -147,7 +186,7 @@ export function OncePerLifetimeCard({
       return next
     })
 
-    saveToLocalStorage(
+    saveToLocalStorageDebounced(
       currentOncePerLifetime,
       'The fleeting moment fades back into darkness.'
     )
@@ -196,7 +235,7 @@ export function OncePerLifetimeCard({
       }))
     }
 
-    saveToLocalStorage(
+    saveToLocalStorageDebounced(
       updatedOncePerLifetime,
       'The once-in-a-lifetime moment has been inscribed in memory.'
     )
@@ -225,7 +264,7 @@ export function OncePerLifetimeCard({
       const newOrder = arrayMove(oncePerLifetime, oldIndex, newIndex)
 
       form.setValue('oncePerLifetime', newOrder)
-      saveToLocalStorage(newOrder)
+      saveToLocalStorageDebounced(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

@@ -6,7 +6,7 @@ import {
 } from '@/components/settlement/arc/knowledge-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Knowledge, Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
   DndContext,
@@ -24,7 +24,14 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { GraduationCapIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -35,13 +42,20 @@ import { ZodError } from 'zod'
 export function KnowledgesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const knowledges = useMemo(() => form.watch('knowledges') || [], [form])
-  const philosophies = useMemo(() => form.watch('philosophies') || [], [form])
+  const watchedKnowledges = form.watch('knowledges')
+  const watchedPhilosophies = form.watch('philosophies')
+
+  const knowledges = useMemo(() => watchedKnowledges || [], [watchedKnowledges])
+  const philosophies = useMemo(
+    () => watchedPhilosophies || [],
+    [watchedPhilosophies]
+  )
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -55,6 +69,15 @@ export function KnowledgesCard({
     })
   }, [knowledges])
 
+  useEffect(() => {
+    return () => {
+      const currentTimeout = timeoutRef.current
+      if (currentTimeout) {
+        clearTimeout(currentTimeout)
+      }
+    }
+  }, [])
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -65,50 +88,71 @@ export function KnowledgesCard({
   const addKnowledge = () => setIsAddingNew(true)
 
   /**
-   * Save knowledges to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
-   *
-   * @param updatedKnowledges Updated Knowledges
-   * @param successMsg Success Message
+   * Debounced save function to reduce localStorage operations
    */
-  const saveToLocalStorage = (
-    updatedKnowledges: Knowledge[],
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+  const saveToLocalStorageDebounced = useCallback(
+    (updatedKnowledges: Knowledge[], successMsg?: string) => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
 
-      if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          knowledges: updatedKnowledges
-        }
-
+      timeoutRef.current = setTimeout(() => {
         try {
-          SettlementSchema.parse(updatedSettlement)
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (settlementIndex !== -1) {
+            campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+            saveCampaignToLocalStorage(campaign)
+          }
+
+          if (successMsg) toast.success(successMsg)
         } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
+          console.error('Knowledge Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
+      }, 300)
+    },
+    [form]
+  )
 
-        campaign.settlements[settlementIndex].knowledges = updatedKnowledges
-        localStorage.setItem('campaign', JSON.stringify(campaign))
+  /**
+   * Immediate save function for user-triggered actions
+   */
+  const saveToLocalStorage = useCallback(
+    (updatedKnowledges: Knowledge[], successMsg?: string) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-        if (successMsg) toast.success(successMsg)
+        if (settlementIndex !== -1) {
+          try {
+            SettlementSchema.shape.knowledges.parse(updatedKnowledges)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          campaign.settlements[settlementIndex].knowledges = updatedKnowledges
+          saveCampaignToLocalStorage(campaign)
+
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error('Knowledge Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
-    } catch (error) {
-      console.error('Knowledge Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+    },
+    [form]
+  )
 
   /**
    * Handles the removal of a knowledge.
@@ -133,7 +177,10 @@ export function KnowledgesCard({
       return next
     })
 
-    saveToLocalStorage(currentKnowledges, 'Knowledge banished to the void.')
+    saveToLocalStorageDebounced(
+      currentKnowledges,
+      'Knowledge banished to the void.'
+    )
   }
 
   /**
@@ -221,7 +268,7 @@ export function KnowledgesCard({
       const newOrder = arrayMove(knowledges, oldIndex, newIndex)
 
       form.setValue('knowledges', newOrder)
-      saveToLocalStorage(newOrder)
+      saveToLocalStorageDebounced(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

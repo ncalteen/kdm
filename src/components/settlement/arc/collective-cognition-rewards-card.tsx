@@ -6,7 +6,7 @@ import {
 } from '@/components/settlement/arc/collective-cognition-reward-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -24,7 +24,14 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BrainIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -40,12 +47,21 @@ import { toast } from 'sonner'
 export function CollectiveCognitionRewardsCard(
   form: UseFormReturn<Settlement>
 ): ReactElement {
-  const ccRewards = useMemo(() => form.watch('ccRewards') || [], [form])
+  const watchedCcRewards = form.watch('ccRewards')
+  const ccRewards = useMemo(() => watchedCcRewards || [], [watchedCcRewards])
 
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -60,33 +76,49 @@ export function CollectiveCognitionRewardsCard(
   }, [ccRewards])
 
   /**
-   * Save collective cognition rewards to localStorage for the current settlement.
+   * Save collective cognition rewards to localStorage for the current
+   * settlement with debouncing.
    *
    * @param updatedRewards Updated Rewards
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    updatedRewards: typeof ccRewards,
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      updatedRewards: typeof ccRewards,
+      successMsg?: string,
+      immediate: boolean = false
+    ) => {
+      const saveFunction = () => {
+        try {
+          const formValues = form.getValues()
+          saveCampaignToLocalStorage({
+            ...getCampaign(),
+            settlements: getCampaign().settlements.map((s) =>
+              s.id === formValues.id ? { ...s, ccRewards: updatedRewards } : s
+            )
+          })
 
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].ccRewards = updatedRewards
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
+          if (successMsg) toast.success(successMsg)
+        } catch (error) {
+          console.error('CC Reward Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
       }
-    } catch (error) {
-      console.error('CC Reward Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -106,7 +138,11 @@ export function CollectiveCognitionRewardsCard(
     currentRewards[index] = { ...currentRewards[index], unlocked }
     form.setValue('ccRewards', currentRewards)
 
-    saveToLocalStorage(currentRewards, 'Reward transformed by the darkness.')
+    saveToLocalStorageDebounced(
+      currentRewards,
+      'Reward transformed by the darkness.',
+      true
+    )
   }
 
   /**
@@ -131,7 +167,11 @@ export function CollectiveCognitionRewardsCard(
       return next
     })
 
-    saveToLocalStorage(currentRewards, 'The dark gift recedes into shadow.')
+    saveToLocalStorageDebounced(
+      currentRewards,
+      'The dark gift recedes into shadow.',
+      true
+    )
   }
 
   /**
@@ -172,9 +212,10 @@ export function CollectiveCognitionRewardsCard(
       }))
     }
 
-    saveToLocalStorage(
+    saveToLocalStorageDebounced(
       updatedRewards,
-      "The settlement's culinary knowledge expands."
+      "The settlement's culinary knowledge expands.",
+      true
     )
     setIsAddingNew(false)
   }
@@ -216,7 +257,7 @@ export function CollectiveCognitionRewardsCard(
         return next
       })
 
-      saveToLocalStorage(newOrder)
+      saveToLocalStorageDebounced(newOrder)
     }
   }
 

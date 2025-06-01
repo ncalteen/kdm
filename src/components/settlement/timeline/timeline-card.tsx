@@ -4,7 +4,7 @@ import { TimelineContent } from '@/components/settlement/timeline/timeline-conte
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { CampaignType } from '@/lib/enums'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import {
   Settlement,
   SettlementSchema,
@@ -36,8 +36,10 @@ import { ZodError } from 'zod'
  * @returns Timeline Card Component
  */
 export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
-  const campaignType = form.watch('campaignType')
-  const formTimeline = form.watch('timeline')
+  const watchedCampaignType = form.watch('campaignType')
+  const watchedTimeline = form.watch('timeline')
+  const campaignType = useMemo(() => watchedCampaignType, [watchedCampaignType])
+  const formTimeline = useMemo(() => watchedTimeline, [watchedTimeline])
 
   const [timeline, setTimeline] = useState<TimelineYear[]>(formTimeline || [])
   const [editingEvents, setEditingEvents] = useState<{
@@ -48,10 +50,24 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
     [key: string]: HTMLInputElement | null
   }>({})
 
-  const isSquiresCampaign = campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-  const isStarsCampaign = campaignType === CampaignType.PEOPLE_OF_THE_STARS
-  const isSunCampaign = campaignType === CampaignType.PEOPLE_OF_THE_SUN
-  const isCustomCampaign = campaignType === CampaignType.CUSTOM
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const campaignTypeFlags = useMemo(
+    () => ({
+      isSquiresCampaign: campaignType === CampaignType.SQUIRES_OF_THE_CITADEL,
+      isStarsCampaign: campaignType === CampaignType.PEOPLE_OF_THE_STARS,
+      isSunCampaign: campaignType === CampaignType.PEOPLE_OF_THE_SUN,
+      isCustomCampaign: campaignType === CampaignType.CUSTOM
+    }),
+    [campaignType]
+  )
+
+  const {
+    isSquiresCampaign,
+    isStarsCampaign,
+    isSunCampaign,
+    isCustomCampaign
+  } = campaignTypeFlags
 
   // Check if the campaign uses normal numbering (no Prologue). Prologue is
   // only used in the People of the Lantern and People of the Dream Keeper
@@ -89,6 +105,66 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   )
 
   /**
+   * Debounced save timeline to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
+   *
+   * @param updatedTimeline Updated Timeline
+   * @param successMsg Success Message
+   * @param immediate Whether to save immediately without debouncing
+   */
+  const debouncedSaveToLocalStorage = useCallback(
+    (
+      updatedTimeline: TimelineYear[],
+      successMsg?: string,
+      immediate = false
+    ) => {
+      // Clear existing timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+
+      const saveFunction = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (settlementIndex !== -1) {
+            try {
+              SettlementSchema.shape.timeline.parse(updatedTimeline)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            campaign.settlements[settlementIndex].timeline = updatedTimeline
+            saveCampaignToLocalStorage(campaign)
+
+            if (successMsg) toast.success(successMsg)
+          }
+        } catch (error) {
+          console.error('Timeline Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
+      }
+
+      if (immediate) {
+        saveFunction()
+      } else {
+        // Debounce saves by 300ms to reduce localStorage writes
+        saveTimeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form, saveTimeoutRef]
+  )
+
+  /**
    * Save timeline to localStorage for the current settlement, with Zod
    * validation and toast feedback.
    *
@@ -97,41 +173,9 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
    */
   const saveToLocalStorage = useCallback(
     (updatedTimeline: TimelineYear[], successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
-
-        if (settlementIndex !== -1) {
-          const updatedSettlement = {
-            ...campaign.settlements[settlementIndex],
-            timeline: updatedTimeline
-          }
-
-          try {
-            SettlementSchema.parse(updatedSettlement)
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
-              )
-          }
-
-          campaign.settlements[settlementIndex].timeline = updatedTimeline
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          if (successMsg) toast.success(successMsg)
-        }
-      } catch (error) {
-        console.error('Timeline Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
-      }
+      debouncedSaveToLocalStorage(updatedTimeline, successMsg, true)
     },
-    [form]
+    [debouncedSaveToLocalStorage]
   )
 
   useEffect(() => {
@@ -170,6 +214,13 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
       form.setValue('timeline', expandedTimeline)
     }
   }, [campaignType, isSquiresCampaign, form])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    }
+  }, [])
 
   /**
    * Adds an Event to a Year
@@ -330,6 +381,40 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   )
 
   /**
+   * Handles updating year completion status.
+   *
+   * @param yearIndex Year Index
+   * @param completed Completion Status
+   */
+  const handleYearCompletionChange = useCallback(
+    (yearIndex: number, completed: boolean) => {
+      setTimeline((prevTimeline) => {
+        const updatedTimeline = [...prevTimeline]
+        const year = { ...updatedTimeline[yearIndex] }
+        year.completed = completed
+        updatedTimeline[yearIndex] = year
+        return updatedTimeline
+      })
+
+      form.setValue(`timeline.${yearIndex}.completed`, completed)
+
+      // Save to localStorage with the updated timeline
+      const updatedTimeline = [...timeline]
+      const year = { ...updatedTimeline[yearIndex] }
+      year.completed = completed
+      updatedTimeline[yearIndex] = year
+
+      saveToLocalStorage(
+        updatedTimeline,
+        completed
+          ? 'The year concludes in triumph.'
+          : 'The year remains unfinished.'
+      )
+    },
+    [timeline, form, saveToLocalStorage]
+  )
+
+  /**
    * Edits an Event in the Timeline
    *
    * @param yearIndex Year Index
@@ -444,6 +529,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
           form={form}
           editEvent={editEvent}
           showStoryEventIcon={showStoryEventIcon}
+          handleYearCompletionChange={handleYearCompletionChange}
         />
 
         {/* Add Lantern Year Button */}

@@ -26,6 +26,8 @@ follow when generating code. The instructions are grouped by category.
     pressed.
   - ShadCN reusable components can be found in the `src/components/ui`
     directory.
+  - Where applicable, components should include `name` and `id` attributes for
+    accessibility and testing purposes.
 
 The following component implementation illustrates these standards. This
 component displays an editable and draggable list of abilities for a character.

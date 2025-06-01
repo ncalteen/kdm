@@ -43,8 +43,10 @@ import { toast } from 'sonner'
 export function SettlementSurvivorsCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const settlementId = useMemo(() => form.watch('id'), [form])
-  const survivorType = useMemo(() => form.watch('survivorType'), [form])
+  const watchedSettlementId = form.watch('id')
+  const watchedSurvivorType = form.watch('survivorType')
+  const settlementId = useMemo(() => watchedSettlementId, [watchedSettlementId])
+  const survivorType = useMemo(() => watchedSurvivorType, [watchedSurvivorType])
 
   const [survivors, setSurvivors] = useState<Survivor[]>([])
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
