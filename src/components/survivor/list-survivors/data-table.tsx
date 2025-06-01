@@ -29,7 +29,7 @@ interface DataTableProps<TData, TValue> {
   initialColumnVisibility?: VisibilityState
 }
 
-export function SettlementsDataTable<TData, TValue>({
+export function SurvivorsDataTable<TData, TValue>({
   columns,
   data,
   initialColumnVisibility = {}
@@ -64,7 +64,7 @@ export function SettlementsDataTable<TData, TValue>({
     <div className="w-full">
       <div className="flex flex-col gap-2">
         <Input
-          placeholder="Filter settlements..."
+          placeholder="Filter survivors..."
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
