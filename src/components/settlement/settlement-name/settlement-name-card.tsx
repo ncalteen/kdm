@@ -37,6 +37,8 @@ export function SettlementNameCard({
 }: UseFormReturn<Settlement>): ReactElement {
   // Ref to store timeout ID for cleanup
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  // Ref to store reference to the input element
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -48,21 +50,33 @@ export function SettlementNameCard({
     }
   }, [])
 
-  // Focus the input field when the component mounts
+  // Focus the input field when the component renders
   useEffect(() => {
-    const inputElement = document.querySelector(
-      '#settlement-name'
-    ) as HTMLInputElement | null
+    if (inputRef.current) {
+      // Only focus if no other input/textarea/select element currently has focus
+      const activeElement = document.activeElement
+      const isFormElementFocused =
+        activeElement &&
+        (activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA' ||
+          activeElement.tagName === 'SELECT' ||
+          activeElement.getAttribute('role') === 'combobox')
 
-    if (inputElement) {
-      inputElement.focus()
+      if (!isFormElementFocused) {
+        // Use setTimeout to ensure this happens after React has finished rendering
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus()
 
-      // Reset the input value to trigger any validation or effects
-      const currentValue = inputElement.value
-      inputElement.value = ''
-      inputElement.value = currentValue
+            // Reset the input value to trigger any validation or effects
+            const currentValue = inputRef.current.value
+            inputRef.current.value = ''
+            inputRef.current.value = currentValue
+          }
+        }, 0)
+      }
     }
-  }, [])
+  })
 
   /**
    * Debounced save function to reduce localStorage operations
@@ -190,9 +204,10 @@ export function SettlementNameCard({
                   {/* Settlement Name Input */}
                   <FormControl>
                     <Input
+                      ref={inputRef}
                       id="settlement-name"
                       placeholder="Settlement Name"
-                      {...field}
+                      name={field.name}
                       value={field.value ?? ''}
                       onChange={(e) =>
                         form.setValue(field.name, e.target.value)

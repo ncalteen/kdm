@@ -39,6 +39,29 @@ import { ZodError } from 'zod'
  */
 export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Auto-focus the name input field
+  useEffect(() => {
+    // Check if any form element is currently focused to avoid stealing focus
+    const activeElement = document.activeElement
+    const isFormElementFocused =
+      activeElement &&
+      (activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.tagName === 'SELECT' ||
+        (activeElement.hasAttribute('role') &&
+          activeElement.getAttribute('role') === 'combobox'))
+
+    if (!isFormElementFocused && inputRef.current) {
+      // Use setTimeout to ensure focus happens after React rendering
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus()
+        }
+      }, 10)
+    }
+  })
 
   useEffect(() => {
     return () => {
@@ -319,8 +342,10 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     <FormLabel className="font-bold text-left">Name</FormLabel>
                     <FormControl>
                       <Input
+                        ref={inputRef}
                         placeholder="Survivor name..."
-                        {...field}
+                        id="survivor-name"
+                        name={field.name}
                         value={field.value ?? ''}
                         onChange={(e) =>
                           form.setValue(field.name, e.target.value)
