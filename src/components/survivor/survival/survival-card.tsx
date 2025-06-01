@@ -11,10 +11,15 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
-import { cn, getCampaign, getSettlement } from '@/lib/utils'
+import {
+  cn,
+  getCampaign,
+  getSettlement,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { Lock } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -38,11 +43,22 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
   )
   const [survivalLimit, setSurvivalLimit] = useState<number>(1)
 
+  // Create a ref for the timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   // Set the survivor type and survival limit when the component mounts.
   useEffect(() => {
     const settlement = getSettlement(form.getValues('settlementId'))
     setSurvivorType(settlement?.survivorType)
     setSurvivalLimit(settlement?.survivalLimit || 1)
+
+    // Cleanup function for timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
   }, [form])
 
   /**
@@ -52,49 +68,65 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
    * @param field Field name to update
    * @param value New value
    * @param successMsg Optional success message
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    field: keyof Survivor,
-    value: number | boolean,
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          [field]: value
-        }
-
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      field: keyof Survivor,
+      value: number | boolean,
+      successMsg?: string,
+      immediate: boolean = false
+    ) => {
+      const saveFunction = () => {
         try {
-          SurvivorSchema.parse(updatedSurvivor)
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape[field].parse(value)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            // Save to localStorage using the optimized utility
+            saveCampaignToLocalStorage({
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id ? { ...s, [field]: value } : s
+              )
+            })
+
+            if (successMsg) toast.success(successMsg)
+          }
         } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
+          console.error('Survival Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-
-        campaign.survivors[survivorIndex] = {
-          ...campaign.survivors[survivorIndex],
-          [field]: value
-        }
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
       }
-    } catch (error) {
-      console.error('Survival Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
 
   return (
     <Card className="p-0 pb-1 mt-1 border-3">
@@ -138,7 +170,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                             }
 
                             form.setValue(field.name, value)
-                            saveToLocalStorage('survival', value)
+                            saveToLocalStorageDebounced('survival', value)
                           }}
                         />
                       </FormControl>
@@ -157,7 +189,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                               onCheckedChange={(checked) => {
                                 const canSpend = !checked
                                 form.setValue(canSpendField.name, canSpend)
-                                saveToLocalStorage(
+                                saveToLocalStorageDebounced(
                                   'canSpendSurvival',
                                   canSpend,
                                   canSpend
@@ -197,7 +229,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) => {
                           const canDodge = !!checked
                           form.setValue(field.name, canDodge)
-                          saveToLocalStorage(
+                          saveToLocalStorageDebounced(
                             'canDodge',
                             canDodge,
                             canDodge
@@ -225,7 +257,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) => {
                           const canEncourage = !!checked
                           form.setValue(field.name, canEncourage)
-                          saveToLocalStorage(
+                          saveToLocalStorageDebounced(
                             'canEncourage',
                             canEncourage,
                             canEncourage
@@ -253,7 +285,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) => {
                           const canSurge = !!checked
                           form.setValue(field.name, canSurge)
-                          saveToLocalStorage(
+                          saveToLocalStorageDebounced(
                             'canSurge',
                             canSurge,
                             canSurge
@@ -281,7 +313,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) => {
                           const canDash = !!checked
                           form.setValue(field.name, canDash)
-                          saveToLocalStorage(
+                          saveToLocalStorageDebounced(
                             'canDash',
                             canDash,
                             canDash
@@ -312,7 +344,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                             onCheckedChange={(checked) => {
                               const canFistPump = !!checked
                               form.setValue(field.name, canFistPump)
-                              saveToLocalStorage(
+                              saveToLocalStorageDebounced(
                                 'canFistPump',
                                 canFistPump,
                                 canFistPump
@@ -342,7 +374,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                             onCheckedChange={(checked) => {
                               const canEndure = !!checked
                               form.setValue(field.name, canEndure)
-                              saveToLocalStorage(
+                              saveToLocalStorageDebounced(
                                 'canEndure',
                                 canEndure,
                                 canEndure
@@ -382,7 +414,10 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                           onChange={(e) => {
                             const value = parseInt(e.target.value) || 0
                             form.setValue(field.name, value)
-                            saveToLocalStorage('systemicPressure', value)
+                            saveToLocalStorageDebounced(
+                              'systemicPressure',
+                              value
+                            )
                           }}
                         />
                       </FormControl>

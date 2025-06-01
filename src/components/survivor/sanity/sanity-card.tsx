@@ -11,10 +11,14 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
-import { getCampaign, getSettlement } from '@/lib/utils'
+import {
+  getCampaign,
+  getSettlement,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BrainIcon, Shield } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -35,10 +39,21 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
     undefined
   )
 
+  // Create a ref for the timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   // Set the survivor type when the component mounts.
   useEffect(() => {
     const settlement = getSettlement(form.getValues('settlementId'))
     setSurvivorType(settlement?.survivorType)
+
+    // Cleanup function for timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
   }, [form])
 
   /**
@@ -48,49 +63,65 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
    * @param field Field name to update
    * @param value New value
    * @param successMsg Optional success message
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    field: keyof Survivor,
-    value: number | boolean,
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          [field]: value
-        }
-
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      field: keyof Survivor,
+      value: number | boolean,
+      successMsg?: string,
+      immediate: boolean = false
+    ) => {
+      const saveFunction = () => {
         try {
-          SurvivorSchema.parse(updatedSurvivor)
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape[field].parse(value)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            // Save to localStorage using the optimized utility
+            saveCampaignToLocalStorage({
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id ? { ...s, [field]: value } : s
+              )
+            })
+
+            if (successMsg) toast.success(successMsg)
+          }
         } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
+          console.error('Sanity Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-
-        campaign.survivors[survivorIndex] = {
-          ...campaign.survivors[survivorIndex],
-          [field]: value
-        }
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
       }
-    } catch (error) {
-      console.error('Sanity Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
 
   return (
     <Card className="p-0 pb-1 mt-1 border-3">
@@ -125,7 +156,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                           }
 
                           form.setValue(field.name, value)
-                          saveToLocalStorage('insanity', value)
+                          saveToLocalStorageDebounced('insanity', value)
                         }}
                       />
                     </div>
@@ -156,12 +187,13 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) => {
                           const brainLightDamage = !!checked
                           field.onChange(brainLightDamage)
-                          saveToLocalStorage(
+                          saveToLocalStorageDebounced(
                             'brainLightDamage',
                             brainLightDamage,
                             brainLightDamage
                               ? 'The survivor suffers brain damage from the horrors witnessed.'
-                              : 'The survivor recovers from their brain injury.'
+                              : 'The survivor recovers from their brain injury.',
+                            true
                           )
                         }}
                       />
@@ -204,7 +236,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                             }
 
                             form.setValue(field.name, value)
-                            saveToLocalStorage('torment', value)
+                            saveToLocalStorageDebounced('torment', value)
                           }}
                         />
                       </FormControl>

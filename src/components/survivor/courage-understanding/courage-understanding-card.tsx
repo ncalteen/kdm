@@ -6,10 +6,14 @@ import { FacesInTheSky } from '@/components/survivor/courage-understanding/faces
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CampaignType } from '@/lib/enums'
-import { getCampaign, getSettlement } from '@/lib/utils'
+import {
+  getCampaign,
+  getSettlement,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -36,60 +40,89 @@ export function CourageUnderstandingCard({
     undefined
   )
 
+  // Create a ref for the timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   // Set the survivor type when the component mounts.
-  useEffect(
-    () => setCampaignType(getSettlement(settlementId)?.campaignType),
-    [settlementId]
-  )
+  useEffect(() => {
+    setCampaignType(getSettlement(settlementId)?.campaignType)
+
+    // Cleanup timeouts on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
+  }, [settlementId])
 
   /**
    * Save a courage/understanding stat change to localStorage for the current survivor.
    *
    * @param attrName Attribute name
    * @param value New value
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    attrName: 'courage' | 'understanding',
-    value: number
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          [attrName]: value
-        }
-
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      attrName: 'courage' | 'understanding',
+      value: number,
+      immediate: boolean = false
+    ) => {
+      const saveFunction = () => {
         try {
-          SurvivorSchema.parse(updatedSurvivor)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape[attrName].parse(value)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            // Save to localStorage using the optimized utility
+            saveCampaignToLocalStorage({
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id ? { ...s, [attrName]: value } : s
+              )
+            })
+
+            toast.success(
+              attrName === 'courage'
+                ? 'Courage burns brighter in the darkness.'
+                : 'Understanding illuminates the path forward.'
             )
+          }
+        } catch (error) {
+          console.error('Courage/Understanding Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-
-        campaign.survivors[survivorIndex][attrName] = value
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success(
-          attrName === 'courage'
-            ? 'Courage burns brighter in the darkness.'
-            : 'Understanding illuminates the path forward.'
-        )
       }
-    } catch (error) {
-      console.error('Courage/Understanding Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
 
   /**
    * Handles the change of the courage checkbox.
@@ -100,7 +133,7 @@ export function CourageUnderstandingCard({
   const handleCourageChange = (index: number, checked: boolean) => {
     const newValue = checked ? index + 1 : index
     form.setValue('courage', newValue)
-    saveToLocalStorage('courage', newValue)
+    saveToLocalStorageDebounced('courage', newValue)
   }
 
   /**
@@ -112,7 +145,7 @@ export function CourageUnderstandingCard({
   const handleUnderstandingChange = (index: number, checked: boolean) => {
     const newValue = checked ? index + 1 : index
     form.setValue('understanding', newValue)
-    saveToLocalStorage('understanding', newValue)
+    saveToLocalStorageDebounced('understanding', newValue)
   }
 
   // Determine the label texts based on campaign type. Currently only People of

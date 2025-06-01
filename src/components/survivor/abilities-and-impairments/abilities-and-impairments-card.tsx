@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import {
   DndContext,
@@ -26,7 +26,14 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -37,15 +44,19 @@ import { ZodError } from 'zod'
 export function AbilitiesAndImpairmentsCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
+  const watchedAbilitiesAndImpairments = form.watch('abilitiesAndImpairments')
   const abilitiesAndImpairments = useMemo(
-    () => form.watch('abilitiesAndImpairments') || [],
-    [form]
+    () => watchedAbilitiesAndImpairments || [],
+    [watchedAbilitiesAndImpairments]
   )
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  // Timeout reference for debounced saves
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -57,6 +68,14 @@ export function AbilitiesAndImpairmentsCard({
 
       return next
     })
+
+    // Cleanup on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
   }, [abilitiesAndImpairments])
 
   const [skipNextHuntState, setSkipNextHuntState] = useState<boolean>(
@@ -79,51 +98,79 @@ export function AbilitiesAndImpairmentsCard({
   const addAbility = () => setIsAddingNew(true)
 
   /**
-   * Save abilities/impairments to localStorage for the current survivor, with
-   * Zod validation and toast feedback.
+   * Save abilities/impairments to localStorage for the current survivor using debouncing,
+   * with Zod validation and toast feedback.
    *
    * @param updatedAbilitiesAndImpairments Updated Abilities/Impairments
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    updatedAbilitiesAndImpairments: string[],
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          abilitiesAndImpairments: updatedAbilitiesAndImpairments
-        }
-
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      updatedAbilitiesAndImpairments: string[],
+      successMsg?: string,
+      immediate = false
+    ) => {
+      const saveFunction = () => {
         try {
-          SurvivorSchema.parse(updatedSurvivor)
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape.abilitiesAndImpairments.parse(
+                updatedAbilitiesAndImpairments
+              )
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            // Use the saveCampaignToLocalStorage helper
+            saveCampaignToLocalStorage({
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id
+                  ? {
+                      ...s,
+                      abilitiesAndImpairments: updatedAbilitiesAndImpairments
+                    }
+                  : s
+              )
+            })
+
+            if (successMsg) toast.success(successMsg)
+          }
         } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
+          console.error('Ability/Impairment Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-
-        campaign.survivors[survivorIndex].abilitiesAndImpairments =
-          updatedAbilitiesAndImpairments
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
       }
-    } catch (error) {
-      console.error('Ability/Impairment Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      // Either save immediately or debounce
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
+
+  // saveToLocalStorage function has been replaced with saveToLocalStorageDebounced
 
   /**
    * Handles the removal of an ability or impairment.
@@ -148,9 +195,11 @@ export function AbilitiesAndImpairmentsCard({
       return next
     })
 
-    saveToLocalStorage(
+    // Use immediate save with feedback for user actions
+    saveToLocalStorageDebounced(
       currentAbilitiesAndImpairments,
-      'The ability/impairment has been removed.'
+      'The ability/impairment has been removed.',
+      true
     )
   }
 
@@ -197,11 +246,13 @@ export function AbilitiesAndImpairmentsCard({
       }))
     }
 
-    saveToLocalStorage(
+    // Use immediate save with feedback for user actions
+    saveToLocalStorageDebounced(
       updatedAbilitiesAndImpairments,
       i !== undefined
         ? 'The ability/impairment has been updated.'
-        : 'The survivor gains a new ability/impairment.'
+        : 'The survivor gains a new ability/impairment.',
+      true
     )
     setIsAddingNew(false)
   }
@@ -228,7 +279,8 @@ export function AbilitiesAndImpairmentsCard({
       const newOrder = arrayMove(abilitiesAndImpairments, oldIndex, newIndex)
 
       form.setValue('abilitiesAndImpairments', newOrder)
-      saveToLocalStorage(newOrder)
+      // Use debounced save for drag operations
+      saveToLocalStorageDebounced(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -277,7 +329,22 @@ export function AbilitiesAndImpairmentsCard({
               id="skipNextHunt"
               checked={skipNextHuntState}
               onCheckedChange={(checked) => {
-                if (typeof checked === 'boolean') setSkipNextHuntState(checked)
+                if (typeof checked === 'boolean') {
+                  setSkipNextHuntState(checked)
+
+                  // Save the updated skipNextHunt status
+                  const formValues = form.getValues()
+                  const campaign = getCampaign()
+
+                  saveCampaignToLocalStorage({
+                    ...campaign,
+                    survivors: campaign.survivors.map((s) =>
+                      s.id === formValues.id
+                        ? { ...s, skipNextHunt: checked }
+                        : s
+                    )
+                  })
+                }
               }}
             />
             <Label htmlFor="skipNextHunt" className="text-xs cursor-pointer">

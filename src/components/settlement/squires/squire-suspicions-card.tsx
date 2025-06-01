@@ -12,10 +12,10 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { EyeIcon } from 'lucide-react'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -26,7 +26,21 @@ import { ZodError } from 'zod'
 export function SquireSuspicionsCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const suspicions = useMemo(() => form.watch('suspicions') || [], [form])
+  const watchedSuspicions = form.watch('suspicions')
+  const suspicions = useMemo(() => watchedSuspicions || [], [watchedSuspicions])
+
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        saveTimeoutRef.current = null
+      }
+    }
+  }, [])
 
   // Calculate total suspicion level
   const totalSuspicion = suspicions.reduce((total, suspicion) => {
@@ -41,50 +55,61 @@ export function SquireSuspicionsCard({
   }, 0)
 
   /**
-   * Save suspicions to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
+   * Debounced save function to reduce localStorage operations
    *
    * @param updatedSuspicions Updated Suspicions
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorage = (
-    updatedSuspicions: typeof suspicions,
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          suspicions: updatedSuspicions
-        }
-
-        try {
-          SettlementSchema.parse(updatedSettlement)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].suspicions = updatedSuspicions
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      updatedSuspicions: typeof suspicions,
+      successMsg?: string,
+      immediate = false
+    ) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
       }
-    } catch (error) {
-      console.error('Suspicion Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      const doSave = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (settlementIndex !== -1) {
+            try {
+              SettlementSchema.shape.suspicions.parse(updatedSuspicions)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            campaign.settlements[settlementIndex].suspicions = updatedSuspicions
+            saveCampaignToLocalStorage(campaign)
+
+            if (successMsg) toast.success(successMsg)
+          }
+        } catch (error) {
+          console.error('Suspicion Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
+      }
+
+      if (immediate) {
+        doSave()
+      } else {
+        saveTimeoutRef.current = setTimeout(doSave, 300)
+      }
+    },
+    [form]
+  )
 
   /**
    * Handles the change of suspicion levels for a squire.
@@ -130,7 +155,10 @@ export function SquireSuspicionsCard({
 
     form.setValue('suspicions', updatedSuspicions)
 
-    saveToLocalStorage(updatedSuspicions, `${squireName}'s doubt grows deeper.`)
+    saveToLocalStorageDebounced(
+      updatedSuspicions,
+      `${squireName}'s doubt grows deeper.`
+    )
   }
 
   return (

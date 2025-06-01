@@ -12,10 +12,16 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Gender } from '@/lib/enums'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { SkullIcon, UserXIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useCallback } from 'react'
+import {
+  KeyboardEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -37,47 +43,81 @@ export function NameGenderCard({
   const dead = form.watch('dead') || false
   const retired = form.watch('retired') || false
 
+  // Timeout reference for debounced saves
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
+  }, [])
+
   /**
    * Save name to localStorage for the current survivor, with
-   * Zod validation and toast feedback.
+   * Zod validation and toast feedback. Uses debounced saving to improve performance.
    *
    * @param name Survivor Name
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately (for user-triggered actions)
    */
-  const saveNameToLocalStorage = useCallback(
-    (name: string, successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const survivorIndex = campaign.survivors.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+  const saveNameToLocalStorageDebounced = useCallback(
+    (name: string, successMsg?: string, immediate = false) => {
+      const saveFunction = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s) => s.id === formValues.id
+          )
 
-        if (survivorIndex !== -1) {
-          const updatedSurvivor = {
-            ...campaign.survivors[survivorIndex],
-            name
-          }
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape.name.parse(name)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
 
-          try {
-            SurvivorSchema.parse(updatedSurvivor)
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
+            const updatedCampaign = {
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id
+                  ? {
+                      ...s,
+                      name: name.trim() || 'Unnamed Survivor'
+                    }
+                  : s
               )
+            }
+
+            saveCampaignToLocalStorage(updatedCampaign)
+
+            if (successMsg) toast.success(successMsg)
           }
-
-          campaign.survivors[survivorIndex].name = name
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          if (successMsg) toast.success(successMsg)
+        } catch (error) {
+          console.error('Name Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-      } catch (error) {
-        console.error('Name Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
+      }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
       }
     },
     [form]
@@ -85,45 +125,66 @@ export function NameGenderCard({
 
   /**
    * Save gender to localStorage for the current survivor, with
-   * Zod validation and toast feedback.
+   * Zod validation and toast feedback. Uses debounced saving to improve performance.
    *
    * @param gender Survivor Gender
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately (for user-triggered actions)
    */
-  const saveGenderToLocalStorage = useCallback(
-    (gender: Gender, successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const survivorIndex = campaign.survivors.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+  const saveGenderToLocalStorageDebounced = useCallback(
+    (gender: Gender, successMsg?: string, immediate = false) => {
+      const saveFunction = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s) => s.id === formValues.id
+          )
 
-        if (survivorIndex !== -1) {
-          const updatedSurvivor = {
-            ...campaign.survivors[survivorIndex],
-            gender
-          }
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape.gender.parse(gender)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
 
-          try {
-            SurvivorSchema.parse(updatedSurvivor)
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
+            const updatedCampaign = {
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id
+                  ? {
+                      ...s,
+                      gender
+                    }
+                  : s
               )
+            }
+
+            saveCampaignToLocalStorage(updatedCampaign)
+
+            if (successMsg) toast.success(successMsg)
           }
-
-          campaign.survivors[survivorIndex].gender = gender
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          if (successMsg) toast.success(successMsg)
+        } catch (error) {
+          console.error('Gender Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-      } catch (error) {
-        console.error('Gender Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
+      }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
       }
     },
     [form]
@@ -131,52 +192,74 @@ export function NameGenderCard({
 
   /**
    * Save survivor status to localStorage for the current survivor, with Zod
-   * validation and toast feedback.
+   * validation and toast feedback. Uses debounced saving to improve performance.
    *
    * @param updatedDead Updated dead status
    * @param updatedRetired Updated retired status
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately (for user-triggered actions)
    */
-  const saveStatusToLocalStorage = useCallback(
-    (updatedDead?: boolean, updatedRetired?: boolean, successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const survivorIndex = campaign.survivors.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+  const saveStatusToLocalStorageDebounced = useCallback(
+    (
+      updatedDead?: boolean,
+      updatedRetired?: boolean,
+      successMsg?: string,
+      immediate = false
+    ) => {
+      const saveFunction = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s) => s.id === formValues.id
+          )
 
-        if (survivorIndex !== -1) {
-          const updatedSurvivor = {
-            ...campaign.survivors[survivorIndex],
-            ...(updatedDead !== undefined && { dead: updatedDead }),
-            ...(updatedRetired !== undefined && { retired: updatedRetired })
-          }
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape.dead.parse(updatedDead)
+              SurvivorSchema.shape.retired.parse(updatedRetired)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
 
-          try {
-            SurvivorSchema.parse(updatedSurvivor)
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
+            const updatedCampaign = {
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id
+                  ? {
+                      ...s,
+                      dead: updatedDead ?? s.dead,
+                      retired: updatedRetired ?? s.retired
+                    }
+                  : s
               )
+            }
+
+            saveCampaignToLocalStorage(updatedCampaign)
+
+            if (successMsg) toast.success(successMsg)
           }
-
-          campaign.survivors[survivorIndex] = {
-            ...campaign.survivors[survivorIndex],
-            ...(updatedDead !== undefined && { dead: updatedDead }),
-            ...(updatedRetired !== undefined && { retired: updatedRetired })
-          }
-
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          if (successMsg) toast.success(successMsg)
+        } catch (error) {
+          console.error('Survivor Status Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-      } catch (error) {
-        console.error('Survivor Status Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
+      }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
       }
     },
     [form]
@@ -194,11 +277,12 @@ export function NameGenderCard({
   ) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      saveNameToLocalStorage(
+      saveNameToLocalStorageDebounced(
         value,
         value.trim()
           ? "The survivor's name echoes through the lantern light."
-          : undefined
+          : undefined,
+        true
       )
     }
   }
@@ -210,9 +294,10 @@ export function NameGenderCard({
    */
   const handleGenderChange = (gender: Gender) => {
     form.setValue('gender', gender)
-    saveGenderToLocalStorage(
+    saveGenderToLocalStorageDebounced(
       gender,
-      "The survivor's essence is recorded in the lantern's glow."
+      "The survivor's essence is recorded in the lantern's glow.",
+      true
     )
   }
 
@@ -229,9 +314,14 @@ export function NameGenderCard({
         ? 'The darkness claims another soul. The survivor has fallen.'
         : 'Against all odds, life returns. The survivor lives again.'
 
-      saveStatusToLocalStorage(checked, undefined, successMessage)
+      saveStatusToLocalStorageDebounced(
+        checked,
+        undefined,
+        successMessage,
+        true
+      )
     },
-    [form, saveStatusToLocalStorage]
+    [form, saveStatusToLocalStorageDebounced]
   )
 
   /**
@@ -247,9 +337,14 @@ export function NameGenderCard({
         ? 'The survivor steps back from the hunt, seeking peace in the settlement.'
         : 'The call of adventure stirs once more. The survivor returns to active duty.'
 
-      saveStatusToLocalStorage(undefined, checked, successMessage)
+      saveStatusToLocalStorageDebounced(
+        undefined,
+        checked,
+        successMessage,
+        true
+      )
     },
-    [form, saveStatusToLocalStorage]
+    [form, saveStatusToLocalStorageDebounced]
   )
   return (
     <Card className="p-0 pb-1 border-0">

@@ -9,10 +9,10 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { cn, getCampaign } from '@/lib/utils'
+import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { RibbonIcon, Shield } from 'lucide-react'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback, useEffect, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -27,58 +27,94 @@ import { ZodError } from 'zod'
  * @returns Waist Card Component
  */
 export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
+  // Reference to the debounce timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
+  }, [])
+
   /**
    * Save a waist-related value to localStorage for the current survivor.
    *
    * @param attrName Attribute name
    * @param value New value
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    attrName:
-      | 'waistArmor'
-      | 'waistBrokenHip'
-      | 'waistIntestinalProlapse'
-      | 'waistDestroyedGenitals'
-      | 'waistWarpedPelvis'
-      | 'waistLightDamage'
-      | 'waistHeavyDamage',
-    value: number | boolean
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        // Prepare a copy for validation
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          [attrName]: value
-        }
-
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      attrName:
+        | 'waistArmor'
+        | 'waistBrokenHip'
+        | 'waistIntestinalProlapse'
+        | 'waistDestroyedGenitals'
+        | 'waistWarpedPelvis'
+        | 'waistLightDamage'
+        | 'waistHeavyDamage',
+      value: number | boolean,
+      immediate = false
+    ) => {
+      const saveFunction = () => {
         try {
-          SurvivorSchema.parse(updatedSurvivor)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
 
-        // @ts-expect-error: dynamic assignment is safe for known keys
-        campaign.survivors[survivorIndex][attrName] = value
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        toast.success('The core withstands the relentless onslaught.')
+          if (survivorIndex !== -1) {
+            try {
+              SurvivorSchema.shape[attrName].parse(value)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            // Use the optimized utility function to save to localStorage
+            saveCampaignToLocalStorage({
+              ...campaign,
+              survivors: campaign.survivors.map((s) =>
+                s.id === formValues.id
+                  ? {
+                      ...s,
+                      [attrName]: value
+                    }
+                  : s
+              )
+            })
+
+            toast.success('The core withstands the relentless onslaught.')
+          }
+        } catch (error) {
+          console.error('Waist Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
       }
-    } catch (error) {
-      console.error('Waist Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
 
   return (
     <div className="flex flex-row">
@@ -103,7 +139,7 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     let val = parseInt(e.target.value)
                     if (isNaN(val) || val < 0) val = 0
                     form.setValue(field.name, val)
-                    saveToLocalStorage('waistArmor', val)
+                    saveToLocalStorageDebounced('waistArmor', val, true)
                   }}
                 />
               </div>
@@ -133,7 +169,11 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorage('waistBrokenHip', boolValue)
+                      saveToLocalStorageDebounced(
+                        'waistBrokenHip',
+                        boolValue,
+                        true
+                      )
                     }}
                   />
                 </FormControl>
@@ -153,7 +193,11 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorage('waistIntestinalProlapse', boolValue)
+                      saveToLocalStorageDebounced(
+                        'waistIntestinalProlapse',
+                        boolValue,
+                        true
+                      )
                     }}
                   />
                 </FormControl>
@@ -173,7 +217,11 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorage('waistDestroyedGenitals', boolValue)
+                      saveToLocalStorageDebounced(
+                        'waistDestroyedGenitals',
+                        boolValue,
+                        true
+                      )
                     }}
                   />
                 </FormControl>
@@ -197,7 +245,11 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           const newValue = checked ? value : value - 1
                           const safeValue = Math.max(0, Math.min(5, newValue))
                           field.onChange(safeValue)
-                          saveToLocalStorage('waistWarpedPelvis', safeValue)
+                          saveToLocalStorageDebounced(
+                            'waistWarpedPelvis',
+                            safeValue,
+                            true
+                          )
                         }}
                       />
                     ))}
@@ -227,7 +279,11 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorage('waistLightDamage', boolValue)
+                      saveToLocalStorageDebounced(
+                        'waistLightDamage',
+                        boolValue,
+                        true
+                      )
                     }}
                   />
                 </FormControl>
@@ -252,7 +308,11 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorage('waistHeavyDamage', boolValue)
+                      saveToLocalStorageDebounced(
+                        'waistHeavyDamage',
+                        boolValue,
+                        true
+                      )
                     }}
                   />
                 </FormControl>

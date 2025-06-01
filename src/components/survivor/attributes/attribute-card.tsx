@@ -10,9 +10,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
-import { getCampaign, getSettlement } from '@/lib/utils'
+import {
+  getCampaign,
+  getSettlement,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -35,76 +39,100 @@ export function AttributeCard({
     undefined
   )
 
+  // Create a ref for the timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   // Set the survivor type when the component mounts.
   useEffect(() => {
     const settlement = getSettlement(form.getValues('settlementId'))
     setSurvivorType(settlement?.survivorType)
+
+    // Cleanup function to clear any pending timeout when component unmounts
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
   }, [form])
 
   /**
-   * Save attribute changes to localStorage for the current survivor.
+   * Save attribute changes to localStorage for the current survivor with debouncing.
    *
    * @param attrName Attribute name
    * @param value New value
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorage = (
-    attrName:
-      | 'movement'
-      | 'accuracy'
-      | 'strength'
-      | 'evasion'
-      | 'luck'
-      | 'speed'
-      | 'lumi',
-    value: number
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          [attrName]: value
-        }
-
-        try {
-          SurvivorSchema.parse(updatedSurvivor)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.survivors[survivorIndex][attrName] = value
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        // Thematic success messages for each attribute
-        const attributeMessages: Record<string, string> = {
-          movement: 'Strides through darkness grow more confident.',
-          accuracy: "The survivor's aim pierces through shadow.",
-          strength: 'Muscles forged in adversity grow stronger.',
-          evasion: 'Grace in the face of death improves.',
-          luck: 'Fortune favors the desperate soul.',
-          speed: 'Swift as shadows, the survivor advances.',
-          lumi: 'Arc energy courses through enlightened veins.'
-        }
-
-        toast.success(
-          attributeMessages[attrName] || "The survivor's potential grows."
-        )
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      attrName:
+        | 'movement'
+        | 'accuracy'
+        | 'strength'
+        | 'evasion'
+        | 'luck'
+        | 'speed'
+        | 'lumi',
+      value: number,
+      immediate: boolean = false
+    ) => {
+      // Thematic success messages for each attribute
+      const attributeMessages: Record<string, string> = {
+        movement: 'Strides through darkness grow more confident.',
+        accuracy: "The survivor's aim pierces through shadow.",
+        strength: 'Muscles forged in adversity grow stronger.',
+        evasion: 'Grace in the face of death improves.',
+        luck: 'Fortune favors the desperate soul.',
+        speed: 'Swift as shadows, the survivor advances.',
+        lumi: 'Arc energy courses through enlightened veins.'
       }
-    } catch (error) {
-      console.error('Attribute Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      const saveFunction = () => {
+        try {
+          const formValues = form.getValues()
+
+          try {
+            SurvivorSchema.shape[attrName].parse(value)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          // Save to localStorage using the optimized utility
+          saveCampaignToLocalStorage({
+            ...getCampaign(),
+            survivors: getCampaign().survivors.map((s) =>
+              s.id === formValues.id ? { ...s, [attrName]: value } : s
+            )
+          })
+
+          toast.success(
+            attributeMessages[attrName] || "The survivor's potential grows."
+          )
+        } catch (error) {
+          console.error('Attribute Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
+      }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
 
   return (
     <Card className="p-0 pb-1 mt-1 border-3">
@@ -126,7 +154,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorage('movement', val)
+                        saveToLocalStorageDebounced('movement', val)
                       }}
                     />
                   </FormControl>
@@ -155,7 +183,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorage('accuracy', val)
+                        saveToLocalStorageDebounced('accuracy', val)
                       }}
                     />
                   </FormControl>
@@ -182,7 +210,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorage('strength', val)
+                        saveToLocalStorageDebounced('strength', val)
                       }}
                     />
                   </FormControl>
@@ -209,7 +237,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorage('evasion', val)
+                        saveToLocalStorageDebounced('evasion', val)
                       }}
                     />
                   </FormControl>
@@ -236,7 +264,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorage('luck', val)
+                        saveToLocalStorageDebounced('luck', val)
                       }}
                     />
                   </FormControl>
@@ -263,7 +291,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorage('speed', val)
+                        saveToLocalStorageDebounced('speed', val)
                       }}
                     />
                   </FormControl>
@@ -295,7 +323,7 @@ export function AttributeCard({
                             let val = parseInt(e.target.value)
                             if (isNaN(val) || val < 0) val = 0
                             form.setValue(field.name, val)
-                            saveToLocalStorage('lumi', val)
+                            saveToLocalStorageDebounced('lumi', val)
                           }}
                         />
                       </FormControl>

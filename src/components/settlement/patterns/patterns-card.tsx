@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -30,7 +30,14 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, ScissorsLineDashedIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -48,12 +55,26 @@ import { ZodError } from 'zod'
 export function PatternsCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const patterns = useMemo(() => form.watch('patterns') || [], [form])
+  const watchedPatterns = form.watch('patterns')
+  const patterns = useMemo(() => watchedPatterns || [], [watchedPatterns])
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      const timeoutId = saveTimeoutRef.current
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -77,50 +98,57 @@ export function PatternsCard({
   const addPattern = () => setIsAddingNew(true)
 
   /**
-   * Save patterns to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
+   * Debounced save function to reduce localStorage operations
    *
    * @param updatedPatterns Updated Patterns
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorage = (
-    updatedPatterns: string[],
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          patterns: updatedPatterns
-        }
-
-        try {
-          SettlementSchema.parse(updatedSettlement)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].patterns = updatedPatterns
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
+  const saveToLocalStorageDebounced = useCallback(
+    (updatedPatterns: string[], successMsg?: string, immediate = false) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
       }
-    } catch (error) {
-      console.error('Pattern Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      const doSave = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (settlementIndex !== -1) {
+            try {
+              SettlementSchema.shape.patterns.parse(updatedPatterns)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            campaign.settlements[settlementIndex].patterns = updatedPatterns
+            saveCampaignToLocalStorage(campaign)
+
+            if (successMsg) toast.success(successMsg)
+          }
+        } catch (error) {
+          console.error('Pattern Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
+      }
+
+      if (immediate) {
+        doSave()
+      } else {
+        saveTimeoutRef.current = setTimeout(doSave, 300)
+      }
+    },
+    [form]
+  )
 
   /**
    * Handles the removal of a pattern.
@@ -145,9 +173,10 @@ export function PatternsCard({
       return next
     })
 
-    saveToLocalStorage(
+    saveToLocalStorageDebounced(
       currentPatterns,
-      'The pattern has been banished from memory.'
+      'The pattern has been banished from memory.',
+      true
     )
   }
 
@@ -194,7 +223,7 @@ export function PatternsCard({
       }))
     }
 
-    saveToLocalStorage(
+    saveToLocalStorageDebounced(
       updatedPatterns,
       i !== undefined
         ? 'The pattern has been etched into memory.'
@@ -225,7 +254,7 @@ export function PatternsCard({
       const newOrder = arrayMove(patterns, oldIndex, newIndex)
 
       form.setValue('patterns', newOrder)
-      saveToLocalStorage(newOrder)
+      saveToLocalStorageDebounced(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

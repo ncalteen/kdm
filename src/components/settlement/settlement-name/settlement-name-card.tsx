@@ -9,9 +9,15 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
-import { KeyboardEvent, ReactElement } from 'react'
+import {
+  KeyboardEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef
+} from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -29,48 +35,70 @@ import { ZodError } from 'zod'
 export function SettlementNameCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      const timeoutId = saveTimeoutRef.current
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [])
   /**
-   * Save settlement name to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
+   * Debounced save function to reduce localStorage operations
    *
    * @param name Updated Settlement Name
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorage = (name: string, successMsg?: string) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          name: name
-        }
-
-        try {
-          SettlementSchema.parse(updatedSettlement)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].name = name
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
+  const saveToLocalStorageDebounced = useCallback(
+    (name: string, successMsg?: string, immediate = false) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
       }
-    } catch (error) {
-      console.error('Settlement Name Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      const doSave = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (settlementIndex !== -1) {
+            try {
+              SettlementSchema.shape.name.parse(name)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            campaign.settlements[settlementIndex].name = name
+            saveCampaignToLocalStorage(campaign)
+
+            if (successMsg) toast.success(successMsg)
+          }
+        } catch (error) {
+          console.error('Settlement Name Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
+      }
+
+      if (immediate) {
+        doSave()
+      } else {
+        saveTimeoutRef.current = setTimeout(doSave, 300)
+      }
+    },
+    [form]
+  )
 
   /**
    * Handles Key Down Events
@@ -113,7 +141,7 @@ export function SettlementNameCard({
 
         // If settlement already exists, save the name
         if (settlementIndex !== -1) {
-          saveToLocalStorage(
+          saveToLocalStorageDebounced(
             inputValue,
             "The settlement's name echoes through the darkness."
           )

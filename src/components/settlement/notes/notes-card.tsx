@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -25,57 +25,81 @@ export function NotesCard({
   const [draft, setDraft] = useState<string | undefined>(notes)
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      const timeoutId = saveTimeoutRef.current
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [])
+
   /**
-   * Save notes to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
+   * Debounced save function to reduce localStorage operations
    *
    * @param updatedNotes Updated Notes
    * @param successMsg Success Message
+   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorage = (
-    updatedNotes: string | undefined,
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          notes: updatedNotes
-        }
-
-        try {
-          SettlementSchema.parse(updatedSettlement)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].notes = updatedNotes
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      updatedNotes: string | undefined,
+      successMsg?: string,
+      immediate = false
+    ) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
       }
-    } catch (error) {
-      console.error('Notes Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      const doSave = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (settlementIndex !== -1) {
+            try {
+              SettlementSchema.shape.notes.parse(updatedNotes)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            campaign.settlements[settlementIndex].notes = updatedNotes
+            saveCampaignToLocalStorage(campaign)
+
+            if (successMsg) toast.success(successMsg)
+          }
+        } catch (error) {
+          console.error('Notes Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
+      }
+
+      if (immediate) {
+        doSave()
+      } else {
+        saveTimeoutRef.current = setTimeout(doSave, 300)
+      }
+    },
+    [form]
+  )
 
   const handleSave = () => {
     form.setValue('notes', draft)
     setIsDirty(false)
 
-    saveToLocalStorage(
+    saveToLocalStorageDebounced(
       draft,
       'As stories are shared amongst survivors, they are etched into the history of your settlement.'
     )

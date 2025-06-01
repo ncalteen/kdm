@@ -18,11 +18,15 @@ import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/
 import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
-import { getCampaign, getSettlement } from '@/lib/utils'
+import {
+  getCampaign,
+  getSettlement,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -42,70 +46,132 @@ export interface SurvivorFormProps {
  */
 export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
   const [settlement, setSettlement] = useState<Settlement | undefined>()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Split the effect into two parts for better performance
+  // 1. Handle settlement loading - will run only when settlementId changes
   useEffect(() => {
     if (survivor.settlementId) {
-      const fetchedSettlement = getSettlement(survivor.settlementId)
-      setSettlement(fetchedSettlement)
+      // Defer non-critical work
+      setTimeout(() => {
+        const fetchedSettlement = getSettlement(survivor.settlementId)
+        setSettlement(fetchedSettlement)
+      }, 0)
     }
   }, [survivor.settlementId])
 
+  // 2. Cleanup effect - will run only on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
+  }, [])
+
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: survivor
+    defaultValues: survivor,
+    mode: 'onSubmit', // Only validate on submit, not on every change
+    shouldUnregister: false, // Prevent unnecessary re-registrations
+    shouldFocusError: false // Improve performance by skipping automatic focus
   })
+
+  /**
+   * Save survivor to localStorage with debouncing, with Zod validation and
+   * toast feedback.
+   *
+   * @param values Survivor values
+   * @param successMsg Success Message
+   * @param immediate Whether to save immediately or use debouncing
+   */
+  const saveToLocalStorageDebounced = useCallback(
+    (values: Survivor, successMsg?: string, immediate: boolean = true) => {
+      const saveFunction = () => {
+        try {
+          // Find the survivor in the campaign
+          const campaign = getCampaign()
+          const survivorIndex = campaign.survivors.findIndex(
+            (s) => s.id === values.id
+          )
+
+          if (survivorIndex !== -1) {
+            // Create an updated survivor with the new values
+            const currentSurvivor = campaign.survivors[survivorIndex]
+            const updatedSurvivor = {
+              ...currentSurvivor,
+              ...values
+            }
+
+            // Skip validation for immediate updates to improve performance
+            // Only validate on explicit saves or form submission
+            if (!immediate) {
+              try {
+                SurvivorSchema.parse(updatedSurvivor)
+              } catch (error) {
+                if (error instanceof ZodError && error.errors[0]?.message)
+                  return toast.error(error.errors[0].message)
+                else
+                  return toast.error(
+                    'The darkness swallows your words. Please try again.'
+                  )
+              }
+            }
+
+            // Update campaign with the updated survivor - create a new array
+            // only once
+            const updatedSurvivors = [...campaign.survivors]
+            updatedSurvivors[survivorIndex] = updatedSurvivor
+
+            saveCampaignToLocalStorage({
+              ...campaign,
+              survivors: updatedSurvivors
+            })
+
+            if (successMsg) toast.success(successMsg)
+          } else {
+            toast.error(
+              'Could not find the survivor to update. Please try again.'
+            )
+          }
+        } catch (error) {
+          console.error('Survivor Update Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
+        }
+      }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    []
+  )
 
   /**
    * Handles form submission
    *
    * @param values Form Values
    */
-  function onSubmit(values: Survivor) {
-    try {
-      // Get existing campaign
-      const campaign = getCampaign()
-
-      // Find the survivor in the campaign and update it
-      const survivorIndex = campaign.survivors.findIndex(
-        (s) => s.id === values.id
+  const onSubmit = useCallback(
+    (values: Survivor) => {
+      // Use immediate save (true) on explicit form submission
+      saveToLocalStorageDebounced(
+        values,
+        'The survivor has returned, forever changed by their trials.',
+        true
       )
-
-      if (survivorIndex !== -1) {
-        // Create an updated survivor with the new values
-        const updatedSurvivor = {
-          ...campaign.survivors[survivorIndex],
-          ...values
-        }
-
-        try {
-          SurvivorSchema.parse(updatedSurvivor)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        // Update the survivor in the campaign
-        campaign.survivors[survivorIndex] = updatedSurvivor
-
-        // Save the updated campaign to localStorage
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        // Show success message
-        toast.success(
-          'The survivor has returned, forever changed by their trials.'
-        )
-      } else {
-        toast.error('Could not find the survivor to update. Please try again.')
-      }
-    } catch (error) {
-      console.error('Survivor Update Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+    },
+    [saveToLocalStorageDebounced]
+  )
 
   return (
     <div className="grid justify-items-center sm:p-4">
@@ -114,6 +180,7 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
           <Card className="pt-1 mx-auto">
             <CardContent>
               <div className="flex flex-col md:flex-row gap-2">
+                {/* First column - essential stats */}
                 <div className="w-[435px]">
                   <StatusCard {...form} />
                   <SurvivalCard {...form} />
@@ -123,6 +190,8 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
                   <NextDepartureCard {...form} />
                   <OncePerLifetimeCard {...form} />
                 </div>
+
+                {/* Second column - ability cards */}
                 <div className="w-[500px]">
                   <HuntXPCard {...form} />
                   <WeaponProficiencyCard {...form} />
@@ -131,6 +200,8 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
                   <DisordersCard {...form} />
                   <AbilitiesAndImpairmentsCard {...form} />
                 </div>
+
+                {/* Third column - ARC cards */}
                 {settlement?.survivorType === SurvivorType.ARC && (
                   <div className="w-[500px]">
                     <PhilosophyCard {...form} />

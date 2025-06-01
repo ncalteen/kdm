@@ -24,7 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { MapPinPlusIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -35,15 +35,29 @@ import { ZodError } from 'zod'
 export function DepartingBonusesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
+  const watchedDepartingBonuses = form.watch('departingBonuses')
   const departingBonuses = useMemo(
-    () => form.watch('departingBonuses') || [],
-    [form]
+    () => watchedDepartingBonuses || [],
+    [watchedDepartingBonuses]
   )
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        saveTimeoutRef.current = null
+      }
+    }
+  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -85,13 +99,8 @@ export function DepartingBonusesCard({
       )
 
       if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          departingBonuses: updatedDepartingBonuses
-        }
-
         try {
-          SettlementSchema.parse(updatedSettlement)
+          SettlementSchema.shape.departingBonuses.parse(updatedDepartingBonuses)
         } catch (error) {
           if (error instanceof ZodError && error.errors[0]?.message)
             return toast.error(error.errors[0].message)

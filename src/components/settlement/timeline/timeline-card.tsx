@@ -36,8 +36,10 @@ import { ZodError } from 'zod'
  * @returns Timeline Card Component
  */
 export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
-  const campaignType = useMemo(() => form.watch('campaignType'), [form])
-  const formTimeline = useMemo(() => form.watch('timeline'), [form])
+  const watchedCampaignType = form.watch('campaignType')
+  const watchedTimeline = form.watch('timeline')
+  const campaignType = useMemo(() => watchedCampaignType, [watchedCampaignType])
+  const formTimeline = useMemo(() => watchedTimeline, [watchedTimeline])
 
   const [timeline, setTimeline] = useState<TimelineYear[]>(formTimeline || [])
   const [editingEvents, setEditingEvents] = useState<{
@@ -130,13 +132,8 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
           )
 
           if (settlementIndex !== -1) {
-            const updatedSettlement = {
-              ...campaign.settlements[settlementIndex],
-              timeline: updatedTimeline
-            }
-
             try {
-              SettlementSchema.parse(updatedSettlement)
+              SettlementSchema.shape.timeline.parse(updatedTimeline)
             } catch (error) {
               if (error instanceof ZodError && error.errors[0]?.message)
                 return toast.error(error.errors[0].message)

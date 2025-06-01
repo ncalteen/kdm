@@ -338,13 +338,8 @@ export function saveSurvivorToLocalStorage(
     )
 
     if (survivorIndex !== -1) {
-      const updatedSurvivor = {
-        ...campaign.survivors[survivorIndex],
-        [fieldName]: value
-      }
-
       try {
-        SurvivorSchema.parse(updatedSurvivor)
+        SurvivorSchema.shape[fieldName].parse(value)
       } catch (error) {
         if (error instanceof ZodError && error.errors[0]?.message)
           return toast.error(error.errors[0].message)
@@ -354,8 +349,18 @@ export function saveSurvivorToLocalStorage(
           )
       }
 
-      campaign.survivors[survivorIndex] = updatedSurvivor
-      localStorage.setItem('campaign', JSON.stringify(campaign))
+      // Update campaign with the updated survivor
+      saveCampaignToLocalStorage({
+        ...campaign,
+        survivors: campaign.survivors.map((s) =>
+          s.id === formValues.id
+            ? {
+                ...s,
+                [fieldName]: value
+              }
+            : s
+        )
+      })
 
       if (successMsg) toast.success(successMsg)
     }

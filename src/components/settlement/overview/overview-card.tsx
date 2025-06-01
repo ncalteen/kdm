@@ -10,9 +10,14 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import { getCampaign, getLostSettlementCount, getSurvivors } from '@/lib/utils'
+import {
+  getCampaign,
+  getLostSettlementCount,
+  getSurvivors,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -36,8 +41,10 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
     campaignType === CampaignType.PEOPLE_OF_THE_SUN
 
   // Watch for changes to nemesis victories, quarry victories for ARC campaigns
-  const nemeses = useMemo(() => form.watch('nemeses') || [], [form])
-  const quarries = useMemo(() => form.watch('quarries') || [], [form])
+  const watchedNemeses = form.watch('nemeses')
+  const watchedQuarries = form.watch('quarries')
+  const nemeses = useMemo(() => watchedNemeses || [], [watchedNemeses])
+  const quarries = useMemo(() => watchedQuarries || [], [watchedQuarries])
 
   useEffect(() => {
     const survivors = getSurvivors(settlementId)
@@ -86,89 +93,86 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
     form.setValue('ccValue', totalCc)
   }, [isArcCampaign, nemeses, quarries, form])
 
-  /**
-   * Save survival limit to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
-   *
-   * @param value Updated survival limit value
-   */
-  const saveSurvivalLimit = (value: number) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
+  // Reference to the debounce timeout
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-      if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          survivalLimit: value
-        }
-
-        try {
-          SettlementSchema.parse(updatedSettlement)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].survivalLimit = value
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success("The settlement's will to live grows stronger.")
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
       }
-    } catch (error) {
-      console.error('Survival Limit Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
     }
-  }
+  }, [])
 
   /**
-   * Save lantern research level to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
+   * Save a settlement-related value to localStorage for the current settlement.
    *
-   * @param value Updated lantern research level value
+   * @param attrName Attribute name
+   * @param value New value
+   * @param successMsg Success message to show
+   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveLanternResearchLevel = (value: number) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        const updatedSettlement = {
-          ...campaign.settlements[settlementIndex],
-          lanternResearchLevel: value
-        }
-
+  const saveToLocalStorageDebounced = useCallback(
+    (
+      attrName: 'survivalLimit' | 'lanternResearchLevel',
+      value: number,
+      successMsg: string,
+      immediate = false
+    ) => {
+      const saveFunction = () => {
         try {
-          SettlementSchema.parse(updatedSettlement)
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
+
+          if (settlementIndex !== -1) {
+            try {
+              SettlementSchema.shape[attrName].parse(value)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
+
+            // Use the optimized utility function to save to localStorage
+            saveCampaignToLocalStorage({
+              ...campaign,
+              settlements: campaign.settlements.map((s, index) =>
+                index === settlementIndex ? { ...s, [attrName]: value } : s
+              )
+            })
+
+            toast.success(successMsg)
+          }
         } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
+          console.error(`${attrName} Save Error:`, error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-
-        campaign.settlements[settlementIndex].lanternResearchLevel = value
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        toast.success('The lantern burns brighter with newfound knowledge.')
       }
-    } catch (error) {
-      console.error('Lantern Research Level Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+
+      if (immediate) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        saveFunction()
+      } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+        timeoutRef.current = setTimeout(saveFunction, 300)
+      }
+    },
+    [form]
+  )
+
+  // The saveLanternResearchLevel function has been replaced by saveToLocalStorageDebounced
 
   return (
     <Card className="border-0">
@@ -191,7 +195,12 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                       onChange={(e) => {
                         const value = parseInt(e.target.value)
                         form.setValue(field.name, value)
-                        saveSurvivalLimit(value)
+                        saveToLocalStorageDebounced(
+                          'survivalLimit',
+                          value,
+                          "The settlement's will to live grows stronger.",
+                          true
+                        )
                       }}
                     />
                   </FormControl>
@@ -340,7 +349,12 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                             const finalValue =
                               isNaN(value) || value < 0 ? 0 : value
                             form.setValue(field.name, finalValue)
-                            saveLanternResearchLevel(finalValue)
+                            saveToLocalStorageDebounced(
+                              'lanternResearchLevel',
+                              finalValue,
+                              'The lantern burns brighter with newfound knowledge.',
+                              true
+                            )
                           }}
                         />
                       </FormControl>
