@@ -23,12 +23,21 @@ import {
 } from '@tanstack/react-table'
 import { useState } from 'react'
 
+/**
+ * DataTableProps Interface
+ */
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   initialColumnVisibility?: VisibilityState
 }
 
+/**
+ * Survivors Data Table Component
+ *
+ * @param props DataTableProps
+ * @returns Survivors Data Table Component
+ */
 export function SurvivorsDataTable<TData, TValue>({
   columns,
   data,
