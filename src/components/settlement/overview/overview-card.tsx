@@ -172,11 +172,9 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
     [form]
   )
 
-  // The saveLanternResearchLevel function has been replaced by saveToLocalStorageDebounced
-
   return (
-    <Card className="border-0">
-      <CardContent className="py-2">
+    <Card className="border-0 p-0">
+      <CardContent>
         <div className="flex flex-row items-center justify-between">
           {/* Survival Limit */}
           <FormField
@@ -189,7 +187,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     <Input
                       type="number"
                       placeholder="1"
-                      className="w-12 text-center no-spinners"
+                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
@@ -225,7 +223,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -252,7 +250,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-12 text-center no-spinners"
+                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -280,7 +278,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     <Input
                       type="number"
                       placeholder="0"
-                      className="w-12 text-center no-spinners"
+                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -309,7 +307,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                       <FormControl>
                         <Input
                           type="number"
-                          className="w-12 text-center no-spinners"
+                          className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                           {...field}
                           value={field.value ?? '0'}
                           disabled
@@ -341,7 +339,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                         <Input
                           type="number"
                           placeholder="0"
-                          className="w-12 text-center no-spinners"
+                          className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {
