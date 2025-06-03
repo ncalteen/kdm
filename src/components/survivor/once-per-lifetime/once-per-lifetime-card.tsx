@@ -326,36 +326,38 @@ export function OncePerLifetimeCard({
 
       {/* Once Per Lifetime List */}
       <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {oncePerLifetime.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={oncePerLifetime.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {oncePerLifetime.map((event, index) => (
-                  <OncePerLifetimeItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewOncePerLifetimeItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+        <div className="flex flex-col h-[240px]">
+          <div className="flex-1 overflow-y-auto">
+            {oncePerLifetime.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={oncePerLifetime.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {oncePerLifetime.map((event, index) => (
+                    <OncePerLifetimeItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewOncePerLifetimeItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
