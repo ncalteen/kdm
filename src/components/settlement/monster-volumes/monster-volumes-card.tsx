@@ -24,14 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BookOpenIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -52,19 +45,6 @@ export function MonsterVolumesCard({
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      const timeoutId = saveTimeoutRef.current
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -88,62 +68,45 @@ export function MonsterVolumesCard({
   const addMonsterVolume = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedMonsterVolumes Updated Monster Volumes
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedMonsterVolumes: string[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+  const saveToLocalStorage = (
+    updatedMonsterVolumes: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.monsterVolumes.parse(updatedMonsterVolumes)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].monsterVolumes =
-              updatedMonsterVolumes
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.monsterVolumes.parse(updatedMonsterVolumes)
         } catch (error) {
-          console.error('Monster Volume Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
+        campaign.settlements[settlementIndex].monsterVolumes =
+          updatedMonsterVolumes
+        saveCampaignToLocalStorage(campaign)
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Monster Volume Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a monster volume.
@@ -168,10 +131,9 @@ export function MonsterVolumesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentMonsterVolumes,
-      'The monster volume has been consigned to darkness.',
-      true
+      'The monster volume has been consigned to darkness.'
     )
   }
 
@@ -218,7 +180,7 @@ export function MonsterVolumesCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedMonsterVolumes,
       i !== undefined
         ? 'Monster volume inscribed in blood.'
@@ -249,7 +211,7 @@ export function MonsterVolumesCard({
       const newOrder = arrayMove(monsterVolumes, oldIndex, newIndex)
 
       form.setValue('monsterVolumes', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

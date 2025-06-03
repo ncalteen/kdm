@@ -18,7 +18,7 @@ import {
   saveCampaignToLocalStorage
 } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
-import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -100,84 +100,52 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
     setValue('ccValue', totalCc)
   }, [isArcCampaign, nemeses, quarries, setValue])
 
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save a settlement-related value to localStorage for the current settlement.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
    * @param successMsg Success message to show
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName: 'survivalLimit' | 'lanternResearchLevel',
-      value: number,
-      successMsg: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    attrName: 'survivalLimit' | 'lanternResearchLevel',
+    value: number,
+    successMsg: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape[attrName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function to save to localStorage
-            saveCampaignToLocalStorage({
-              ...campaign,
-              settlements: campaign.settlements.map((s, index) =>
-                index === settlementIndex ? { ...s, [attrName]: value } : s
-              )
-            })
-
-            toast.success(successMsg)
-          }
+          SettlementSchema.shape[attrName].parse(value)
         } catch (error) {
-          console.error(`${attrName} Save Error:`, error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        // Use the optimized utility function to save to localStorage
+        saveCampaignToLocalStorage({
+          ...campaign,
+          settlements: campaign.settlements.map((s, index) =>
+            index === settlementIndex ? { ...s, [attrName]: value } : s
+          )
+        })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error(`${attrName} Save Error:`, error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <Card className="border-0 p-0 py-2">
@@ -200,11 +168,10 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                       onChange={(e) => {
                         const value = parseInt(e.target.value)
                         form.setValue(field.name, value)
-                        saveToLocalStorageDebounced(
+                        saveToLocalStorage(
                           'survivalLimit',
                           value,
-                          "The settlement's will to live grows stronger.",
-                          true
+                          "The settlement's will to live grows stronger."
                         )
                       }}
                     />
@@ -369,11 +336,10 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                             const finalValue =
                               isNaN(value) || value < 0 ? 0 : value
                             form.setValue(field.name, finalValue)
-                            saveToLocalStorageDebounced(
+                            saveToLocalStorage(
                               'lanternResearchLevel',
                               finalValue,
-                              'The lantern burns brighter with newfound knowledge.',
-                              true
+                              'The lantern burns brighter with newfound knowledge.'
                             )
                           }}
                         />

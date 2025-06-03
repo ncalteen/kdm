@@ -30,14 +30,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, SwordIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -55,18 +48,6 @@ export function QuarriesCard({
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-    }
-  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -90,57 +71,44 @@ export function QuarriesCard({
   const addQuarry = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedQuarries Updated Quarries
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (updatedQuarries: Quarry[], successMsg?: string, immediate = false) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+  const saveToLocalStorage = (
+    updatedQuarries: Quarry[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.quarries.parse(updatedQuarries)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].quarries = updatedQuarries
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.quarries.parse(updatedQuarries)
         } catch (error) {
-          console.error('Quarry Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
+        campaign.settlements[settlementIndex].quarries = updatedQuarries
+        saveCampaignToLocalStorage(campaign)
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Quarry Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a quarry.
@@ -165,10 +133,9 @@ export function QuarriesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentQuarries,
-      'The beast retreats back into the void.',
-      true // immediate save for removal
+      'The beast retreats back into the void.'
     )
   }
 
@@ -237,12 +204,11 @@ export function QuarriesCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedQuarries,
       index !== undefined
         ? 'The quarry prowls the darkness. Hunt or be hunted.'
-        : 'A new quarry emerges.',
-      true // immediate save for create/update
+        : 'A new quarry emerges.'
     )
     setIsAddingNew(false)
   }
@@ -268,7 +234,7 @@ export function QuarriesCard({
 
     form.setValue('quarries', updatedQuarries)
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedQuarries,
       `${quarries[index]?.name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
     )
@@ -288,7 +254,7 @@ export function QuarriesCard({
     )
 
     form.setValue('quarries', updatedQuarries)
-    saveToLocalStorageDebounced(updatedQuarries)
+    saveToLocalStorage(updatedQuarries)
   }
 
   /**
@@ -305,7 +271,7 @@ export function QuarriesCard({
       const newOrder = arrayMove(quarries, oldIndex, newIndex)
 
       form.setValue('quarries', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

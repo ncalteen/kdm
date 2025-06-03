@@ -24,14 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { GiftIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -56,9 +49,6 @@ export function NextDepartureCard({
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Create a ref for the timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -69,14 +59,6 @@ export function NextDepartureCard({
 
       return next
     })
-
-    // Cleanup function for timeout on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
   }, [nextDeparture])
 
   const sensors = useSensors(
@@ -89,71 +71,51 @@ export function NextDepartureCard({
   const addNextDeparture = () => setIsAddingNew(true)
 
   /**
-   * Save next departure bonuses to localStorage for the current survivor, with
-   * Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param updatedNextDeparture Updated Next Departure Bonuses
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedNextDeparture: string[],
-      successMsg?: string,
-      immediate: boolean = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    updatedNextDeparture: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape.nextDeparture.parse(updatedNextDeparture)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Save to localStorage using the optimized utility
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? { ...s, nextDeparture: updatedNextDeparture }
-                  : s
-              )
-            })
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SurvivorSchema.shape.nextDeparture.parse(updatedNextDeparture)
         } catch (error) {
-          console.error('Next Departure Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        // Save to localStorage using the optimized utility
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? { ...s, nextDeparture: updatedNextDeparture }
+              : s
+          )
+        })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Next Departure Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a next departure item.
@@ -178,7 +140,7 @@ export function NextDepartureCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentNextDeparture,
       'The lantern dims. Next departure bonus removed.'
     )
@@ -227,7 +189,7 @@ export function NextDepartureCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedNextDeparture,
       i !== undefined
         ? 'The lantern glows. Next departure bonus updated.'
@@ -258,7 +220,7 @@ export function NextDepartureCard({
       const newOrder = arrayMove(nextDeparture, oldIndex, newIndex)
 
       form.setValue('nextDeparture', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

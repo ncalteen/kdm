@@ -25,14 +25,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BrainCogIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -53,17 +46,6 @@ export function PhilosophiesCard({
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      const timeoutId = saveTimeoutRef.current
-      if (timeoutId) clearTimeout(timeoutId)
-    }
-  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -87,57 +69,44 @@ export function PhilosophiesCard({
   const addPhilosophy = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedPhilosophies Updated Philosophies
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedPhilosophies: Philosophy[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+  const saveToLocalStorage = (
+    updatedPhilosophies: Philosophy[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.philosophies.parse(updatedPhilosophies)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].philosophies =
-              updatedPhilosophies
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.philosophies.parse(updatedPhilosophies)
         } catch (error) {
-          console.error('Philosophy Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) doSave()
-      else saveTimeoutRef.current = setTimeout(doSave, 300)
-    },
-    [form]
-  )
+        campaign.settlements[settlementIndex].philosophies = updatedPhilosophies
+        saveCampaignToLocalStorage(campaign)
+
+        if (successMsg) toast.success(successMsg)
+      }
+    } catch (error) {
+      console.error('Philosophy Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a philosophy.
@@ -162,10 +131,9 @@ export function PhilosophiesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentPhilosophies,
-      'The philosophy fade into the void.',
-      true
+      'The philosophy fade into the void.'
     )
   }
 
@@ -202,12 +170,11 @@ export function PhilosophiesCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedPhilosophies,
       i !== undefined
         ? 'Philosophy etched into memory.'
-        : 'A new philosophy emerges.',
-      true
+        : 'A new philosophy emerges.'
     )
     setIsAddingNew(false)
   }
@@ -234,7 +201,7 @@ export function PhilosophiesCard({
       const newOrder = arrayMove(philosophies, oldIndex, newIndex)
 
       form.setValue('philosophies', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

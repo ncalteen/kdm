@@ -20,7 +20,7 @@ import {
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -39,53 +39,31 @@ export function CollectiveCognitionVictoriesCard(
   const quarries = form.watch('quarries') || []
   const nemeses = form.watch('nemeses') || []
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      const timeoutId = saveTimeoutRef.current
-      if (timeoutId) clearTimeout(timeoutId)
-    }
-  }, [])
-
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (successMsg?: string, immediate = false) => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+  const saveToLocalStorage = (successMsg?: string) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].quarries = formValues.quarries
+        campaign.settlements[settlementIndex].nemeses = formValues.nemeses
+        saveCampaignToLocalStorage(campaign)
 
-          if (settlementIndex !== -1) {
-            campaign.settlements[settlementIndex].quarries = formValues.quarries
-            campaign.settlements[settlementIndex].nemeses = formValues.nemeses
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('CC Victory Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
+        if (successMsg) toast.success(successMsg)
       }
-
-      if (immediate) doSave()
-      else saveTimeoutRef.current = setTimeout(doSave, 300)
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('CC Victory Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <Card className="p-0 border-1 gap-2">
@@ -141,9 +119,8 @@ export function CollectiveCognitionVictoriesCard(
                                   onCheckedChange={(checked) => {
                                     if (checked !== 'indeterminate') {
                                       field.onChange(checked)
-                                      saveToLocalStorageDebounced(
-                                        "The settlement's legacy grows stronger.",
-                                        true
+                                      saveToLocalStorage(
+                                        "The settlement's legacy grows stronger."
                                       )
                                     }
                                   }}
@@ -168,9 +145,8 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorageDebounced(
-                                      "The settlement's legacy grows stronger.",
-                                      true
+                                    saveToLocalStorage(
+                                      "The settlement's legacy grows stronger."
                                     )
                                   }
                                 }}
@@ -198,7 +174,7 @@ export function CollectiveCognitionVictoriesCard(
                                       onCheckedChange={(checked) => {
                                         if (checked !== 'indeterminate') {
                                           field.onChange(checked)
-                                          saveToLocalStorageDebounced()
+                                          saveToLocalStorage()
                                         }
                                       }}
                                       id={`quarries-${index}-ccLevel2-${lvl2Index}`}
@@ -228,7 +204,7 @@ export function CollectiveCognitionVictoriesCard(
                                       onCheckedChange={(checked) => {
                                         if (checked !== 'indeterminate') {
                                           field.onChange(checked)
-                                          saveToLocalStorageDebounced()
+                                          saveToLocalStorage()
                                         }
                                       }}
                                       id={`quarries-${index}-ccLevel3-${lvl3Index}`}
@@ -283,7 +259,7 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorageDebounced()
+                                    saveToLocalStorage()
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel1`}
@@ -306,7 +282,7 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorageDebounced()
+                                    saveToLocalStorage()
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel2`}
@@ -329,7 +305,7 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorageDebounced()
+                                    saveToLocalStorage()
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel3`}

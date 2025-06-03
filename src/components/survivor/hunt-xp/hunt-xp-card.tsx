@@ -18,14 +18,7 @@ import {
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -53,95 +46,65 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
     undefined
   )
 
-  // Create a ref for the timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   // When the component mounts, get the settlement from localStorage
-  useEffect(() => {
-    setSettlement(getSettlement(settlementId))
-
-    // Cleanup function for timeout on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [settlementId])
+  useEffect(() => setSettlement(getSettlement(settlementId)), [settlementId])
 
   /**
-   * Save Hunt XP and rank up milestones to localStorage for the current
-   * survivor, with Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param updatedHuntXP Updated Hunt XP value
    * @param updatedHuntXPRankUp Updated Hunt XP rank up milestones
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
+  const saveToLocalStorage = useCallback(
     (
       updatedHuntXP?: number,
       updatedHuntXPRankUp?: number[],
-      successMsg?: string,
-      immediate: boolean = false
+      successMsg?: string
     ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape.huntXP.parse(updatedHuntXP)
-              SurvivorSchema.shape.huntXPRankUp.parse(updatedHuntXPRankUp)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Save to localStorage using the optimized utility
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      ...(updatedHuntXP !== undefined && {
-                        huntXP: updatedHuntXP
-                      }),
-                      ...(updatedHuntXPRankUp !== undefined && {
-                        huntXPRankUp: updatedHuntXPRankUp
-                      })
-                    }
-                  : s
+        if (survivorIndex !== -1) {
+          try {
+            SurvivorSchema.shape.huntXP.parse(updatedHuntXP)
+            SurvivorSchema.shape.huntXPRankUp.parse(updatedHuntXPRankUp)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
               )
-            })
-
-            if (successMsg) toast.success(successMsg)
           }
-        } catch (error) {
-          console.error('Hunt XP Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+          // Save to localStorage using the optimized utility
+          saveCampaignToLocalStorage({
+            ...campaign,
+            survivors: campaign.survivors.map((s) =>
+              s.id === formValues.id
+                ? {
+                    ...s,
+                    ...(updatedHuntXP !== undefined && {
+                      huntXP: updatedHuntXP
+                    }),
+                    ...(updatedHuntXPRankUp !== undefined && {
+                      huntXPRankUp: updatedHuntXPRankUp
+                    })
+                  }
+                : s
+            )
+          })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error('Hunt XP Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
     },
     [form]
@@ -164,9 +127,9 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
         ? 'The survivor rises through struggle and triumph. Rank up achieved!'
         : 'The lantern grows brighter. Hunt XP updated.'
 
-      saveToLocalStorageDebounced(newXP, undefined, successMessage)
+      saveToLocalStorage(newXP, undefined, successMessage)
     },
-    [form, huntXPRankUp, saveToLocalStorageDebounced]
+    [form, huntXPRankUp, saveToLocalStorage]
   )
 
   /**
@@ -186,7 +149,7 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
         // Remove from rank up milestones
         currentRankUps.splice(rankUpIndex, 1)
         form.setValue('huntXPRankUp', currentRankUps, { shouldDirty: true })
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           undefined,
           currentRankUps,
           'Rank up milestone removed.'
@@ -196,14 +159,14 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
         currentRankUps.push(index)
         currentRankUps.sort((a, b) => a - b) // Keep sorted
         form.setValue('huntXPRankUp', currentRankUps, { shouldDirty: true })
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           undefined,
           currentRankUps,
           'Rank up milestone added.'
         )
       }
     },
-    [form, huntXPRankUp, saveToLocalStorageDebounced]
+    [form, huntXPRankUp, saveToLocalStorage]
   )
 
   /**

@@ -25,14 +25,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BeefIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -50,19 +43,6 @@ export function ResourcesCard({
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -84,66 +64,49 @@ export function ResourcesCard({
   const addResource = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedResources Updated Resources
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedResources: {
-        name: string
-        category: ResourceCategory
-        types: ResourceType[]
-        amount: number
-      }[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+  const saveToLocalStorage = (
+    updatedResources: {
+      name: string
+      category: ResourceCategory
+      types: ResourceType[]
+      amount: number
+    }[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.resources.parse(updatedResources)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].resources = updatedResources
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.resources.parse(updatedResources)
         } catch (error) {
-          console.error('Resource Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
+        campaign.settlements[settlementIndex].resources = updatedResources
+        saveCampaignToLocalStorage(campaign)
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Resource Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the amount change for a resource.
@@ -156,11 +119,7 @@ export function ResourcesCard({
     currentResources[index] = { ...currentResources[index], amount }
     form.setValue(`resources.${index}.amount`, amount)
 
-    saveToLocalStorageDebounced(
-      currentResources,
-      undefined, // No success message for amount changes
-      false // Use debouncing for amount changes
-    )
+    saveToLocalStorage(currentResources)
   }
 
   /**
@@ -186,11 +145,7 @@ export function ResourcesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
-      currentResources,
-      'The resource is destroyed.',
-      true
-    )
+    saveToLocalStorage(currentResources, 'The resource is destroyed.')
   }
 
   /**
@@ -258,12 +213,11 @@ export function ResourcesCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedResources,
       i !== undefined
         ? 'The resource has been updated.'
-        : 'A resource has been added to settlement storage.',
-      true
+        : 'A resource has been added to settlement storage.'
     )
     setIsAddingNew(false)
   }
@@ -290,7 +244,7 @@ export function ResourcesCard({
       const newOrder = arrayMove(resources, oldIndex, newIndex)
 
       form.setValue('resources', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

@@ -26,14 +26,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { CopyCheckIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -55,9 +48,6 @@ export function OncePerLifetimeCard({
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Create a ref for the timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -68,14 +58,6 @@ export function OncePerLifetimeCard({
 
       return next
     })
-
-    // Cleanup function for timeout on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
   }, [oncePerLifetime])
 
   const [rerollUsedState, setRerollUsedState] = useState<boolean>(
@@ -97,71 +79,51 @@ export function OncePerLifetimeCard({
   const addOncePerLifetime = () => setIsAddingNew(true)
 
   /**
-   * Save once per lifetime data to localStorage for the current survivor, with
-   * Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param updatedOncePerLifetime Updated Once Per Lifetime
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedOncePerLifetime: string[],
-      successMsg?: string,
-      immediate: boolean = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    updatedOncePerLifetime: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape.oncePerLifetime.parse(updatedOncePerLifetime)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Save to localStorage using the optimized utility
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? { ...s, oncePerLifetime: updatedOncePerLifetime }
-                  : s
-              )
-            })
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SurvivorSchema.shape.oncePerLifetime.parse(updatedOncePerLifetime)
         } catch (error) {
-          console.error('Once Per Lifetime Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        // Save to localStorage using the optimized utility
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? { ...s, oncePerLifetime: updatedOncePerLifetime }
+              : s
+          )
+        })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Once Per Lifetime Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a once per lifetime event.
@@ -186,7 +148,7 @@ export function OncePerLifetimeCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentOncePerLifetime,
       'The fleeting moment fades back into darkness.'
     )
@@ -235,7 +197,7 @@ export function OncePerLifetimeCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedOncePerLifetime,
       'The once-in-a-lifetime moment has been inscribed in memory.'
     )
@@ -264,7 +226,7 @@ export function OncePerLifetimeCard({
       const newOrder = arrayMove(oncePerLifetime, oldIndex, newIndex)
 
       form.setValue('oncePerLifetime', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

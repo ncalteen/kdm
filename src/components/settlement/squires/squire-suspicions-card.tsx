@@ -15,7 +15,7 @@ import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { EyeIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -28,19 +28,6 @@ export function SquireSuspicionsCard({
 }: UseFormReturn<Settlement>): ReactElement {
   const watchedSuspicions = form.watch('suspicions')
   const suspicions = useMemo(() => watchedSuspicions || [], [watchedSuspicions])
-
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
 
   // Calculate total suspicion level
   const totalSuspicion = suspicions.reduce((total, suspicion) => {
@@ -55,61 +42,44 @@ export function SquireSuspicionsCard({
   }, 0)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedSuspicions Updated Suspicions
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedSuspicions: typeof suspicions,
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+  const saveToLocalStorage = (
+    updatedSuspicions: typeof suspicions,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.suspicions.parse(updatedSuspicions)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].suspicions = updatedSuspicions
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.suspicions.parse(updatedSuspicions)
         } catch (error) {
-          console.error('Suspicion Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
+        campaign.settlements[settlementIndex].suspicions = updatedSuspicions
+        saveCampaignToLocalStorage(campaign)
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Suspicion Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the change of suspicion levels for a squire.
@@ -155,10 +125,7 @@ export function SquireSuspicionsCard({
 
     form.setValue('suspicions', updatedSuspicions)
 
-    saveToLocalStorageDebounced(
-      updatedSuspicions,
-      `${squireName}'s doubt grows deeper.`
-    )
+    saveToLocalStorage(updatedSuspicions, `${squireName}'s doubt grows deeper.`)
   }
 
   return (

@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { HardHatIcon, Shield } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -27,93 +27,61 @@ import { ZodError } from 'zod'
  * @returns Head Card Component
  */
 export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save a head-related value to localStorage for the current survivor.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName:
-        | 'headArmor'
-        | 'headDeaf'
-        | 'headBlind'
-        | 'headShatteredJaw'
-        | 'headIntracranialHemorrhage'
-        | 'headHeavyDamage',
-      value: number | boolean,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    attrName:
+      | 'headArmor'
+      | 'headDeaf'
+      | 'headBlind'
+      | 'headShatteredJaw'
+      | 'headIntracranialHemorrhage'
+      | 'headHeavyDamage',
+    value: number | boolean
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[attrName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function to save to localStorage
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      [attrName]: value
-                    }
-                  : s
-              )
-            })
-
-            toast.success('The mind endures what the flesh cannot.')
-          }
+          SurvivorSchema.shape[attrName].parse(value)
         } catch (error) {
-          console.error('Head Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        // Use the optimized utility function to save to localStorage
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? {
+                  ...s,
+                  [attrName]: value
+                }
+              : s
+          )
+        })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        toast.success('The mind endures what the flesh cannot.')
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Head Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <div className="flex flex-row">
@@ -138,7 +106,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     let val = parseInt(e.target.value)
                     if (isNaN(val) || val < 0) val = 0
                     form.setValue(field.name, val)
-                    saveToLocalStorageDebounced('headArmor', val, true)
+                    saveToLocalStorage('headArmor', val)
                   }}
                 />
               </div>
@@ -169,7 +137,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced('headDeaf', boolValue, true)
+                      saveToLocalStorage('headDeaf', boolValue)
                     }}
                   />
                 </FormControl>
@@ -194,11 +162,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           else if ((field.value || 0) === index + 1)
                             newValue = index
                           form.setValue('headBlind', newValue)
-                          saveToLocalStorageDebounced(
-                            'headBlind',
-                            newValue,
-                            true
-                          )
+                          saveToLocalStorage('headBlind', newValue)
                         }}
                       />
                     ))}
@@ -220,11 +184,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'headShatteredJaw',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('headShatteredJaw', boolValue)
                     }}
                   />
                 </FormControl>
@@ -244,10 +204,9 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
+                      saveToLocalStorage(
                         'headIntracranialHemorrhage',
-                        boolValue,
-                        true
+                        boolValue
                       )
                     }}
                   />
@@ -277,11 +236,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'headHeavyDamage',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('headHeavyDamage', boolValue)
                     }}
                   />
                 </FormControl>

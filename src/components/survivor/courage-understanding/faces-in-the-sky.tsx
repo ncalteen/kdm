@@ -11,7 +11,7 @@ import {
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -49,84 +49,52 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
   const hasGoblinStorm = form.watch('hasGoblinStorm')
   const hasGoblinReaper = form.watch('hasGoblinReaper')
 
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save a Faces in the Sky trait change to localStorage for the current survivor.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (attrName: keyof Survivor, value: boolean, immediate = false) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (attrName: keyof Survivor, value: boolean) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[attrName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function to save to localStorage
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      [attrName]: value
-                    }
-                  : s
-              )
-            })
-
-            toast.success('The stars align. Celestial traits recorded.')
-          }
+          SurvivorSchema.shape[attrName].parse(value)
         } catch (error) {
-          console.error('Faces in the Sky Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-        }
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        // Use the optimized utility function to save to localStorage
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? {
+                  ...s,
+                  [attrName]: value
+                }
+              : s
+          )
+        })
+
+        toast.success('The stars align. Celestial traits recorded.')
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Faces in the Sky Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles toggling a cell in the table
@@ -140,7 +108,7 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
   ) => {
     const newValue = !currentValue
     form.setValue(property, newValue)
-    saveToLocalStorageDebounced(property, newValue, true)
+    saveToLocalStorage(property, newValue)
   }
 
   return (

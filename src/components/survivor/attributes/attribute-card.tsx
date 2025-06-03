@@ -16,7 +16,7 @@ import {
   saveCampaignToLocalStorage
 } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -39,100 +39,70 @@ export function AttributeCard({
     undefined
   )
 
-  // Create a ref for the timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   // Set the survivor type when the component mounts.
   useEffect(() => {
     const settlement = getSettlement(form.getValues('settlementId'))
     setSurvivorType(settlement?.survivorType)
-
-    // Cleanup function to clear any pending timeout when component unmounts
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
   }, [form])
 
   /**
-   * Save attribute changes to localStorage for the current survivor with debouncing.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName:
-        | 'movement'
-        | 'accuracy'
-        | 'strength'
-        | 'evasion'
-        | 'luck'
-        | 'speed'
-        | 'lumi',
-      value: number,
-      immediate: boolean = false
-    ) => {
-      // Thematic success messages for each attribute
-      const attributeMessages: Record<string, string> = {
-        movement: 'Strides through darkness grow more confident.',
-        accuracy: "The survivor's aim pierces through shadow.",
-        strength: 'Muscles forged in adversity grow stronger.',
-        evasion: 'Grace in the face of death improves.',
-        luck: 'Fortune favors the desperate soul.',
-        speed: 'Swift as shadows, the survivor advances.',
-        lumi: 'Arc energy courses through enlightened veins.'
-      }
+  const saveToLocalStorage = (
+    attrName:
+      | 'movement'
+      | 'accuracy'
+      | 'strength'
+      | 'evasion'
+      | 'luck'
+      | 'speed'
+      | 'lumi',
+    value: number
+  ) => {
+    // Thematic success messages for each attribute
+    const attributeMessages: Record<string, string> = {
+      movement: 'Strides through darkness grow more confident.',
+      accuracy: "The survivor's aim pierces through shadow.",
+      strength: 'Muscles forged in adversity grow stronger.',
+      evasion: 'Grace in the face of death improves.',
+      luck: 'Fortune favors the desperate soul.',
+      speed: 'Swift as shadows, the survivor advances.',
+      lumi: 'Arc energy courses through enlightened veins.'
+    }
 
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
+    try {
+      const formValues = form.getValues()
 
-          try {
-            SurvivorSchema.shape[attrName].parse(value)
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
-              )
-          }
-
-          // Save to localStorage using the optimized utility
-          saveCampaignToLocalStorage({
-            ...getCampaign(),
-            survivors: getCampaign().survivors.map((s) =>
-              s.id === formValues.id ? { ...s, [attrName]: value } : s
-            )
-          })
-
-          toast.success(
-            attributeMessages[attrName] || "The survivor's potential grows."
+      try {
+        SurvivorSchema.shape[attrName].parse(value)
+      } catch (error) {
+        if (error instanceof ZodError && error.errors[0]?.message)
+          return toast.error(error.errors[0].message)
+        else
+          return toast.error(
+            'The darkness swallows your words. Please try again.'
           )
-        } catch (error) {
-          console.error('Attribute Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
       }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      // Save to localStorage using the optimized utility
+      saveCampaignToLocalStorage({
+        ...getCampaign(),
+        survivors: getCampaign().survivors.map((s) =>
+          s.id === formValues.id ? { ...s, [attrName]: value } : s
+        )
+      })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
-  )
+      toast.success(
+        attributeMessages[attrName] || "The survivor's potential grows."
+      )
+    } catch (error) {
+      console.error('Attribute Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <Card className="p-0 pb-1 mt-1 border-3">
@@ -154,7 +124,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorageDebounced('movement', val)
+                        saveToLocalStorage('movement', val)
                       }}
                     />
                   </FormControl>
@@ -183,7 +153,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorageDebounced('accuracy', val)
+                        saveToLocalStorage('accuracy', val)
                       }}
                     />
                   </FormControl>
@@ -210,7 +180,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorageDebounced('strength', val)
+                        saveToLocalStorage('strength', val)
                       }}
                     />
                   </FormControl>
@@ -237,7 +207,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorageDebounced('evasion', val)
+                        saveToLocalStorage('evasion', val)
                       }}
                     />
                   </FormControl>
@@ -264,7 +234,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorageDebounced('luck', val)
+                        saveToLocalStorage('luck', val)
                       }}
                     />
                   </FormControl>
@@ -291,7 +261,7 @@ export function AttributeCard({
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
                         form.setValue(field.name, val)
-                        saveToLocalStorageDebounced('speed', val)
+                        saveToLocalStorage('speed', val)
                       }}
                     />
                   </FormControl>
@@ -323,7 +293,7 @@ export function AttributeCard({
                             let val = parseInt(e.target.value)
                             if (isNaN(val) || val < 0) val = 0
                             form.setValue(field.name, val)
-                            saveToLocalStorageDebounced('lumi', val)
+                            saveToLocalStorage('lumi', val)
                           }}
                         />
                       </FormControl>

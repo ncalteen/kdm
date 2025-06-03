@@ -51,8 +51,6 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
     [key: string]: HTMLInputElement | null
   }>({})
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   const campaignTypeFlags = useMemo(
     () => ({
       isSquiresCampaign: campaignType === CampaignType.SQUIRES_OF_THE_CITADEL,
@@ -106,75 +104,43 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   )
 
   /**
-   * Debounced save timeline to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
-   *
-   * @param updatedTimeline Updated Timeline
-   * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
-   */
-  const debouncedSaveToLocalStorage = useCallback(
-    (
-      updatedTimeline: TimelineYear[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      // Clear existing timeout
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
-
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.timeline.parse(updatedTimeline)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].timeline = updatedTimeline
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Timeline Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        saveFunction()
-      } else {
-        // Debounce saves by 300ms to reduce localStorage writes
-        saveTimeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form, saveTimeoutRef]
-  )
-
-  /**
-   * Save timeline to localStorage for the current settlement, with Zod
-   * validation and toast feedback.
+   * Save to Local Storage
    *
    * @param updatedTimeline Updated Timeline
    * @param successMsg Success Message
    */
   const saveToLocalStorage = useCallback(
     (updatedTimeline: TimelineYear[], successMsg?: string) => {
-      debouncedSaveToLocalStorage(updatedTimeline, successMsg, true)
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
+
+        if (settlementIndex !== -1) {
+          try {
+            SettlementSchema.shape.timeline.parse(updatedTimeline)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
+
+          campaign.settlements[settlementIndex].timeline = updatedTimeline
+          saveCampaignToLocalStorage(campaign)
+
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error('Timeline Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
+      }
     },
-    [debouncedSaveToLocalStorage]
+    [form]
   )
 
   useEffect(() => {
@@ -213,13 +179,6 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
       form.setValue('timeline', expandedTimeline)
     }
   }, [campaignType, isSquiresCampaign, form])
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
-    }
-  }, [])
 
   /**
    * Adds an Event to a Year

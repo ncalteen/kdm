@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { HandMetalIcon, Shield } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -27,80 +27,50 @@ import { ZodError } from 'zod'
  * @returns Arms Card Component
  */
 export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save an arms-related value to localStorage for the current survivor with debouncing.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName:
-        | 'armArmor'
-        | 'armBroken'
-        | 'armContracture'
-        | 'armDismembered'
-        | 'armRupturedMuscle'
-        | 'armLightDamage'
-        | 'armHeavyDamage',
-      value: number | boolean,
-      immediate: boolean = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
+  const saveToLocalStorage = (
+    attrName:
+      | 'armArmor'
+      | 'armBroken'
+      | 'armContracture'
+      | 'armDismembered'
+      | 'armRupturedMuscle'
+      | 'armLightDamage'
+      | 'armHeavyDamage',
+    value: number | boolean
+  ) => {
+    try {
+      const formValues = form.getValues()
 
-          try {
-            SurvivorSchema.shape[attrName].parse(value)
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
-              )
-          }
-
-          saveCampaignToLocalStorage({
-            ...getCampaign(),
-            survivors: getCampaign().survivors.map((s) =>
-              s.id === formValues.id ? { ...s, [attrName]: value } : s
-            )
-          })
-
-          toast.success('Arms endure another battle.')
-        } catch (error) {
-          console.error('Arms Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
+      try {
+        SurvivorSchema.shape[attrName].parse(value)
+      } catch (error) {
+        if (error instanceof ZodError && error.errors[0]?.message)
+          return toast.error(error.errors[0].message)
+        else
+          return toast.error(
+            'The darkness swallows your words. Please try again.'
+          )
       }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      saveCampaignToLocalStorage({
+        ...getCampaign(),
+        survivors: getCampaign().survivors.map((s) =>
+          s.id === formValues.id ? { ...s, [attrName]: value } : s
+        )
+      })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
-  )
+      toast.success('Arms endure another battle.')
+    } catch (error) {
+      console.error('Arms Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <div className="flex flex-row">
@@ -125,7 +95,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     let val = parseInt(e.target.value)
                     if (isNaN(val) || val < 0) val = 0
                     form.setValue(field.name, val)
-                    saveToLocalStorageDebounced('armArmor', val)
+                    saveToLocalStorage('armArmor', val)
                   }}
                 />
               </div>
@@ -160,11 +130,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           else if ((field.value || 0) === index + 1)
                             newValue = index
                           form.setValue('armBroken', newValue)
-                          saveToLocalStorageDebounced(
-                            'armBroken',
-                            newValue,
-                            true
-                          )
+                          saveToLocalStorage('armBroken', newValue)
                         }}
                       />
                     ))}
@@ -186,11 +152,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'armRupturedMuscle',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('armRupturedMuscle', boolValue)
                     }}
                   />
                 </FormControl>
@@ -215,11 +177,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           else if ((field.value || 0) === index + 1)
                             newValue = index
                           form.setValue('armDismembered', newValue)
-                          saveToLocalStorageDebounced(
-                            'armDismembered',
-                            newValue,
-                            true
-                          )
+                          saveToLocalStorage('armDismembered', newValue)
                         }}
                       />
                     ))}
@@ -245,11 +203,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           const newValue = checked ? value : value - 1
                           const safeValue = Math.max(0, Math.min(5, newValue))
                           field.onChange(safeValue)
-                          saveToLocalStorageDebounced(
-                            'armContracture',
-                            safeValue,
-                            true
-                          )
+                          saveToLocalStorage('armContracture', safeValue)
                         }}
                       />
                     ))}
@@ -279,11 +233,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'armLightDamage',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('armLightDamage', boolValue)
                     }}
                   />
                 </FormControl>
@@ -308,11 +258,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'armHeavyDamage',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('armHeavyDamage', boolValue)
                     }}
                   />
                 </FormControl>

@@ -29,14 +29,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { HouseIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -54,19 +47,6 @@ export function LocationsCard({
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -90,57 +70,44 @@ export function LocationsCard({
   const addLocation = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedLocations Updated Locations
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (updatedLocations: Location[], successMsg?: string, immediate = false) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+  const saveToLocalStorage = (
+    updatedLocations: Location[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.locations.parse(updatedLocations)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].locations = updatedLocations
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.locations.parse(updatedLocations)
         } catch (error) {
-          console.error('Location Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
+        campaign.settlements[settlementIndex].locations = updatedLocations
+        saveCampaignToLocalStorage(campaign)
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Location Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a location.
@@ -165,11 +132,7 @@ export function LocationsCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
-      currentLocations,
-      'The location has been destroyed.',
-      true
-    )
+    saveToLocalStorage(currentLocations, 'The location has been destroyed.')
   }
 
   /**
@@ -218,12 +181,11 @@ export function LocationsCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedLocations,
       i !== undefined
         ? 'The location has been updated.'
-        : 'A new location illuminates within settlement.',
-      true
+        : 'A new location illuminates within settlement.'
     )
     setIsAddingNew(false)
   }
@@ -239,12 +201,11 @@ export function LocationsCard({
     currentLocations[index] = { ...currentLocations[index], unlocked }
 
     form.setValue('locations', currentLocations)
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentLocations,
       unlocked
         ? 'The location has been illuminated.'
-        : 'The location fades into darkness.',
-      true
+        : 'The location fades into darkness.'
     )
   }
 
@@ -270,7 +231,7 @@ export function LocationsCard({
       const newOrder = arrayMove(locations, oldIndex, newIndex)
 
       form.setValue('locations', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

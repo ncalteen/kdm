@@ -24,14 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { GraduationCapIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -56,9 +49,6 @@ export function KnowledgesCard({
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Timeout reference for debounced saves
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -71,16 +61,6 @@ export function KnowledgesCard({
     })
   }, [knowledges])
 
-  useEffect(() => {
-    // Cleanup on unmount
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
-
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -91,75 +71,54 @@ export function KnowledgesCard({
   const addKnowledge = () => setIsAddingNew(true)
 
   /**
-   * Save knowledges to localStorage for the current settlement using debouncing,
-   * with Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param updatedKnowledges Updated Knowledges
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedKnowledges: Knowledge[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    updatedKnowledges: Knowledge[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.knowledges.parse(updatedKnowledges)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the saveCampaignToLocalStorage helper
-            saveCampaignToLocalStorage({
-              ...campaign,
-              settlements: campaign.settlements.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      knowledges: updatedKnowledges
-                    }
-                  : s
-              )
-            })
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.knowledges.parse(updatedKnowledges)
         } catch (error) {
-          console.error('Knowledge Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      // Either save immediately or debounce
-      if (immediate) {
-        if (saveTimeoutRef.current) {
-          clearTimeout(saveTimeoutRef.current)
-          saveTimeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+        // Use the saveCampaignToLocalStorage helper
+        saveCampaignToLocalStorage({
+          ...campaign,
+          settlements: campaign.settlements.map((s) =>
+            s.id === formValues.id
+              ? {
+                  ...s,
+                  knowledges: updatedKnowledges
+                }
+              : s
+          )
+        })
 
-        saveTimeoutRef.current = setTimeout(saveFunction, 300)
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Knowledge Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a knowledge.
@@ -185,11 +144,7 @@ export function KnowledgesCard({
     })
 
     // Use immediate save with feedback for user actions
-    saveToLocalStorageDebounced(
-      currentKnowledges,
-      'Knowledge banished to the void.',
-      true
-    )
+    saveToLocalStorage(currentKnowledges, 'Knowledge banished to the void.')
   }
 
   /**
@@ -247,12 +202,11 @@ export function KnowledgesCard({
     }
 
     // Use immediate save with feedback for user actions
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedKnowledges,
       i !== undefined
         ? 'Knowledge carved into memory.'
-        : 'New knowledge illuminates the settlement.',
-      true
+        : 'New knowledge illuminates the settlement.'
     )
     setIsAddingNew(false)
   }
@@ -279,8 +233,7 @@ export function KnowledgesCard({
       const newOrder = arrayMove(knowledges, oldIndex, newIndex)
 
       form.setValue('knowledges', newOrder)
-      // Use debounced save for drag operations
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

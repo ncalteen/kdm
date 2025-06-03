@@ -30,14 +30,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, SkullIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -55,16 +48,6 @@ export function NemesesCard({
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
-    }
-  }, [])
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -88,57 +71,44 @@ export function NemesesCard({
   const addNemesis = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedNemeses Updated Nemeses
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (updatedNemeses: Nemesis[], successMsg?: string, immediate = false) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+  const saveToLocalStorage = (
+    updatedNemeses: Nemesis[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
+      if (settlementIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.nemeses.parse(updatedNemeses)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].nemeses = updatedNemeses
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
+          SettlementSchema.shape.nemeses.parse(updatedNemeses)
         } catch (error) {
-          console.error('Nemesis Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
+        campaign.settlements[settlementIndex].nemeses = updatedNemeses
+        saveCampaignToLocalStorage(campaign)
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Nemesis Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a nemesis.
@@ -163,10 +133,9 @@ export function NemesesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentNemeses,
-      'The nemesis has returned to the darkness.',
-      true // immediate save for removal
+      'The nemesis has returned to the darkness.'
     )
   }
 
@@ -229,12 +198,11 @@ export function NemesesCard({
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedNemeses,
       index !== undefined
         ? 'The nemesis waits outside your settlement.'
-        : 'A new nemesis emerges.',
-      true // immediate save for create/update
+        : 'A new nemesis emerges.'
     )
     setIsAddingNew(false)
   }
@@ -260,7 +228,7 @@ export function NemesesCard({
 
     form.setValue('nemeses', updatedNemeses)
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedNemeses,
       `${nemeses[index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
     )
@@ -289,7 +257,7 @@ export function NemesesCard({
     )
 
     form.setValue('nemeses', updatedNemeses)
-    saveToLocalStorageDebounced(updatedNemeses)
+    saveToLocalStorage(updatedNemeses)
   }
 
   /**
@@ -306,7 +274,7 @@ export function NemesesCard({
       const newOrder = arrayMove(nemeses, oldIndex, newIndex)
 
       form.setValue('nemeses', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

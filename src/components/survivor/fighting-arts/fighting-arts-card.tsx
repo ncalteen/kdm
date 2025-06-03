@@ -38,14 +38,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, ZapIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -117,9 +110,6 @@ export function FightingArtsCard({
   const [newArtType, setNewArtType] = useState<'regular' | 'secret'>('regular')
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Timeout reference for debounced saves
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   // Initialize disabled inputs for fighting arts
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -137,14 +127,6 @@ export function FightingArtsCard({
 
       return next
     })
-
-    // Cleanup on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
   }, [fightingArts, secretFightingArts])
 
   const sensors = useSensors(
@@ -155,81 +137,61 @@ export function FightingArtsCard({
   )
 
   /**
-   * Save fighting arts and secret fighting arts to localStorage for the current survivor, with Zod validation and toast feedback.
-   * Uses debounced saving to improve performance.
+   * Save to Local Storage
    *
    * @param updatedFightingArts Updated Fighting Arts
    * @param updatedSecretFightingArts Updated Secret Fighting Arts
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately (for user-triggered actions)
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedFightingArts: string[],
-      updatedSecretFightingArts: string[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    updatedFightingArts: string[],
+    updatedSecretFightingArts: string[],
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
+          SurvivorSchema.shape.fightingArts.parse(updatedFightingArts)
+          SurvivorSchema.shape.secretFightingArts.parse(
+            updatedSecretFightingArts
           )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape.fightingArts.parse(updatedFightingArts)
-              SurvivorSchema.shape.secretFightingArts.parse(
-                updatedSecretFightingArts
-              )
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            const updatedCampaign = {
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      fightingArts: updatedFightingArts,
-                      secretFightingArts: updatedSecretFightingArts
-                    }
-                  : s
-              )
-            }
-
-            saveCampaignToLocalStorage(updatedCampaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
         } catch (error) {
-          console.error('Fighting Art Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
+        const updatedCampaign = {
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? {
+                  ...s,
+                  fightingArts: updatedFightingArts,
+                  secretFightingArts: updatedSecretFightingArts
+                }
+              : s
+          )
         }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        saveCampaignToLocalStorage(updatedCampaign)
+
+        if (successMsg) toast.success(successMsg)
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Fighting Art Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the removal of a fighting art.
@@ -259,11 +221,10 @@ export function FightingArtsCard({
         return next
       })
 
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         currentArts,
         secretFightingArts,
-        'The fighting art has been forgotten.',
-        true
+        'The fighting art has been forgotten.'
       )
     } else {
       const currentArts = [...secretFightingArts]
@@ -287,11 +248,10 @@ export function FightingArtsCard({
         return next
       })
 
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         fightingArts,
         currentArts,
-        'The secret fighting art has been banished from memory.',
-        true
+        'The secret fighting art has been banished from memory.'
       )
     }
   }
@@ -321,11 +281,10 @@ export function FightingArtsCard({
           [key]: true
         }))
 
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           updated,
           secretFightingArts,
-          'The fighting art has been perfected.',
-          true
+          'The fighting art has been perfected.'
         )
       } else {
         const updated = [...secretFightingArts]
@@ -338,11 +297,10 @@ export function FightingArtsCard({
           [key]: true
         }))
 
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           fightingArts,
           updated,
-          'The secret fighting art has been perfected.',
-          true
+          'The secret fighting art has been perfected.'
         )
       }
     } else {
@@ -363,11 +321,10 @@ export function FightingArtsCard({
           [`regular-${newArts.length - 1}`]: true
         }))
 
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           newArts,
           secretFightingArts,
-          'A new fighting art has been mastered.',
-          true
+          'A new fighting art has been mastered.'
         )
       } else {
         if (isAtSecretFightingArtLimit())
@@ -385,11 +342,10 @@ export function FightingArtsCard({
           [`secret-${newArts.length - 1}`]: true
         }))
 
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           fightingArts,
           newArts,
-          'A new secret fighting art has been mastered.',
-          true
+          'A new secret fighting art has been mastered.'
         )
       }
       setIsAddingNew(false)
@@ -499,7 +455,7 @@ export function FightingArtsCard({
       if (artType === 'regular') {
         const newOrder = arrayMove(fightingArts, oldIndex, newIndex)
         form.setValue('fightingArts', newOrder)
-        saveToLocalStorageDebounced(newOrder, secretFightingArts)
+        saveToLocalStorage(newOrder, secretFightingArts)
 
         setDisabledInputs((prev) => {
           const next: { [key: string]: boolean } = {}
@@ -523,7 +479,7 @@ export function FightingArtsCard({
       } else {
         const newOrder = arrayMove(secretFightingArts, oldIndex, newIndex)
         form.setValue('secretFightingArts', newOrder)
-        saveToLocalStorageDebounced(fightingArts, newOrder)
+        saveToLocalStorage(fightingArts, newOrder)
 
         setDisabledInputs((prev) => {
           const next: { [key: string]: boolean } = {}

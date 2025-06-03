@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -27,93 +27,61 @@ import { ZodError } from 'zod'
  * @returns Legs Card Component
  */
 export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save a legs-related value to localStorage for the current survivor.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName:
-        | 'legArmor'
-        | 'legHamstrung'
-        | 'legBroken'
-        | 'legDismembered'
-        | 'legLightDamage'
-        | 'legHeavyDamage',
-      value: number | boolean,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    attrName:
+      | 'legArmor'
+      | 'legHamstrung'
+      | 'legBroken'
+      | 'legDismembered'
+      | 'legLightDamage'
+      | 'legHeavyDamage',
+    value: number | boolean
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[attrName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function to save to localStorage
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      [attrName]: value
-                    }
-                  : s
-              )
-            })
-
-            toast.success('Each step forward defies the consuming darkness.')
-          }
+          SurvivorSchema.shape[attrName].parse(value)
         } catch (error) {
-          console.error('Legs Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        // Use the optimized utility function to save to localStorage
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? {
+                  ...s,
+                  [attrName]: value
+                }
+              : s
+          )
+        })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        toast.success('Each step forward defies the consuming darkness.')
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Legs Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <div className="flex flex-row">
@@ -138,7 +106,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     let val = parseInt(e.target.value)
                     if (isNaN(val) || val < 0) val = 0
                     form.setValue(field.name, val)
-                    saveToLocalStorageDebounced('legArmor', val, true)
+                    saveToLocalStorage('legArmor', val)
                   }}
                 />
               </div>
@@ -168,11 +136,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'legHamstrung',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('legHamstrung', boolValue)
                     }}
                   />
                 </FormControl>
@@ -197,11 +161,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           else if ((field.value || 0) === index + 1)
                             newValue = index
                           form.setValue('legBroken', newValue)
-                          saveToLocalStorageDebounced(
-                            'legBroken',
-                            newValue,
-                            true
-                          )
+                          saveToLocalStorage('legBroken', newValue)
                         }}
                       />
                     ))}
@@ -228,11 +188,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           else if ((field.value || 0) === index + 1)
                             newValue = index
                           form.setValue('legDismembered', newValue)
-                          saveToLocalStorageDebounced(
-                            'legDismembered',
-                            newValue,
-                            true
-                          )
+                          saveToLocalStorage('legDismembered', newValue)
                         }}
                       />
                     ))}
@@ -263,11 +219,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'legLightDamage',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('legLightDamage', boolValue)
                     }}
                   />
                 </FormControl>
@@ -292,11 +244,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'legHeavyDamage',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('legHeavyDamage', boolValue)
                     }}
                   />
                 </FormControl>

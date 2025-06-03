@@ -14,9 +14,7 @@ import {
   KeyboardEvent,
   ReactElement,
   useCallback,
-  useEffect,
-  useMemo,
-  useRef
+  useMemo
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -28,8 +26,6 @@ import { ZodError } from 'zod'
 export function KnowledgeCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   // Watch the observation rank values to ensure UI updates correctly
   const knowledge1ObservationRank = form.watch('knowledge1ObservationRank') || 0
   const knowledge2ObservationRank = form.watch('knowledge2ObservationRank') || 0
@@ -55,82 +51,56 @@ export function KnowledgeCard({
     [watchedCanUseFightingArtsOrKnowledges]
   )
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save knowledge data to localStorage for the current survivor with debouncing, with
-   * Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param fieldName Field Name
    * @param value Field Value
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
+  const saveToLocalStorage = useCallback(
     (
       fieldName: keyof Survivor,
       value: string | number | boolean,
-      successMsg?: string,
-      immediate = false
+      successMsg?: string
     ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[fieldName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Save to localStorage using the optimized utility
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      [fieldName]: value
-                    }
-                  : s
+        if (survivorIndex !== -1) {
+          try {
+            SurvivorSchema.shape[fieldName].parse(value)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
               )
-            })
-
-            if (successMsg) toast.success(successMsg)
           }
-        } catch (error) {
-          console.error(`[${fieldName}] Save Error:`, error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+          // Save to localStorage using the optimized utility
+          saveCampaignToLocalStorage({
+            ...campaign,
+            survivors: campaign.survivors.map((s) =>
+              s.id === formValues.id
+                ? {
+                    ...s,
+                    [fieldName]: value
+                  }
+                : s
+            )
+          })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error(`[${fieldName}] Save Error:`, error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
     },
     [form]
@@ -153,15 +123,14 @@ export function KnowledgeCard({
     ) => {
       if (e.key === 'Enter') {
         e.preventDefault()
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           fieldName,
           value,
-          value.trim() ? successMsg : undefined,
-          true
+          value.trim() ? successMsg : undefined
         )
       }
     },
-    [saveToLocalStorageDebounced]
+    [saveToLocalStorage]
   )
 
   /**
@@ -181,15 +150,14 @@ export function KnowledgeCard({
     ) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
-        saveToLocalStorageDebounced(
+        saveToLocalStorage(
           fieldName,
           value,
-          value.trim() ? successMsg : undefined,
-          true
+          value.trim() ? successMsg : undefined
         )
       }
     },
-    [saveToLocalStorageDebounced]
+    [saveToLocalStorage]
   )
 
   /**
@@ -201,14 +169,13 @@ export function KnowledgeCard({
   const handleRankChange = useCallback(
     (fieldName: keyof Survivor, rank: number) => {
       form.setValue(fieldName, rank, { shouldDirty: true })
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         fieldName,
         rank,
-        'The lantern illuminates newfound wisdom.',
-        true
+        'The lantern illuminates newfound wisdom.'
       )
     },
-    [form, saveToLocalStorageDebounced]
+    [form, saveToLocalStorage]
   )
 
   /**
@@ -227,16 +194,15 @@ export function KnowledgeCard({
     (checked: boolean) => {
       const updatedValue = !checked
       form.setValue('canUseFightingArtsOrKnowledges', updatedValue)
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         'canUseFightingArtsOrKnowledges',
         updatedValue,
         updatedValue
           ? 'The survivor recalls their knowledge.'
-          : 'The survivor has forgotten their learnings.',
-        true
+          : 'The survivor has forgotten their learnings.'
       )
     },
-    [form, saveToLocalStorageDebounced]
+    [form, saveToLocalStorage]
   )
 
   /**
@@ -252,16 +218,15 @@ export function KnowledgeCard({
       const newRankUp = knowledge1RankUp === index ? undefined : index
 
       form.setValue('knowledge1RankUp', newRankUp, { shouldDirty: true })
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         'knowledge1RankUp',
         newRankUp ?? 0,
         newRankUp !== undefined
           ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.',
-        true
+          : 'Knowledge rank up milestone removed.'
       )
     },
-    [form, knowledge1RankUp, saveToLocalStorageDebounced]
+    [form, knowledge1RankUp, saveToLocalStorage]
   )
 
   /**
@@ -277,16 +242,15 @@ export function KnowledgeCard({
       const newRankUp = knowledge2RankUp === index ? undefined : index
 
       form.setValue('knowledge2RankUp', newRankUp, { shouldDirty: true })
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         'knowledge2RankUp',
         newRankUp ?? 0,
         newRankUp !== undefined
           ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.',
-        true
+          : 'Knowledge rank up milestone removed.'
       )
     },
-    [form, knowledge2RankUp, saveToLocalStorageDebounced]
+    [form, knowledge2RankUp, saveToLocalStorage]
   )
 
   return (

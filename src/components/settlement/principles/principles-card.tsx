@@ -24,14 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, StampIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -56,19 +49,6 @@ export function PrinciplesCard({
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -91,57 +71,40 @@ export function PrinciplesCard({
   const addPrinciple = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedPrinciples Updated Principles
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedPrinciples: Settlement['principles'],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+  const saveToLocalStorage = useCallback(
+    (updatedPrinciples: Settlement['principles'], successMsg?: string) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const settlementIndex = campaign.settlements.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-      const doSave = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.principles.parse(updatedPrinciples)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].principles = updatedPrinciples
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
+        if (settlementIndex !== -1) {
+          try {
+            SettlementSchema.shape.principles.parse(updatedPrinciples)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
           }
-        } catch (error) {
-          console.error('Principle Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
 
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
+          campaign.settlements[settlementIndex].principles = updatedPrinciples
+          saveCampaignToLocalStorage(campaign)
+
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error('Principle Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
     },
     [form]
@@ -170,10 +133,9 @@ export function PrinciplesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentPrinciples,
-      'The settlement has cleansed a principle from its memory.',
-      true
+      'The settlement has cleansed a principle from its memory.'
     )
   }
 
@@ -211,10 +173,9 @@ export function PrinciplesCard({
         [index]: true
       }))
 
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         updatedPrinciples,
-        "The settlement's principle has been etched in stone.",
-        true
+        "The settlement's principle has been etched in stone."
       )
     }
     setIsAddingNew(false)
@@ -246,7 +207,7 @@ export function PrinciplesCard({
       }
 
       form.setValue('principles', updatedPrinciples)
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         updatedPrinciples,
         `The settlement has chosen ${
           option === 1
@@ -255,7 +216,7 @@ export function PrinciplesCard({
         }.`
       )
     },
-    [principles, form, saveToLocalStorageDebounced]
+    [principles, form, saveToLocalStorage]
   )
 
   /**
@@ -291,7 +252,7 @@ export function PrinciplesCard({
       [updatedPrinciples.length - 1]: true
     }))
 
-    saveToLocalStorageDebounced(updatedPrinciples, 'A new principle emerges.')
+    saveToLocalStorage(updatedPrinciples, 'A new principle emerges.')
     setIsAddingNew(false)
   }
 
@@ -309,7 +270,7 @@ export function PrinciplesCard({
       const newOrder = arrayMove(principles, oldIndex, newIndex)
 
       form.setValue('principles', newOrder)
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

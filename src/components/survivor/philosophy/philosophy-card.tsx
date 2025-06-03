@@ -16,7 +16,7 @@ import { Philosophy } from '@/lib/enums'
 import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { BrainCogIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
+import { ReactElement, useCallback, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -34,84 +34,51 @@ export function PhilosophyCard({
     [watchedTenetKnowledgeRankUp]
   )
 
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save philosophy data to localStorage for the current survivor, with
-   * Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param updatedData Updated philosophy data
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedData: Partial<Survivor>,
-      successMsg?: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
+  const saveToLocalStorage = useCallback(
+    (updatedData: Partial<Survivor>, successMsg?: string) => {
+      try {
+        const formValues = form.getValues()
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s: { id: number }) => s.id === formValues.id
+        )
 
-          if (survivorIndex !== -1) {
-            const updatedSurvivor = {
-              ...campaign.survivors[survivorIndex],
-              ...updatedData
-            }
-
-            try {
-              SurvivorSchema.parse(updatedSurvivor)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id ? updatedSurvivor : s
-              )
-            })
-
-            if (successMsg) toast.success(successMsg)
+        if (survivorIndex !== -1) {
+          const updatedSurvivor = {
+            ...campaign.survivors[survivorIndex],
+            ...updatedData
           }
-        } catch (error) {
-          console.error('Philosophy Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+          try {
+            SurvivorSchema.parse(updatedSurvivor)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+          // Use the optimized utility function
+          saveCampaignToLocalStorage({
+            ...campaign,
+            survivors: campaign.survivors.map((s) =>
+              s.id === formValues.id ? updatedSurvivor : s
+            )
+          })
+
+          if (successMsg) toast.success(successMsg)
+        }
+      } catch (error) {
+        console.error('Philosophy Save Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
     },
     [form]
@@ -135,15 +102,14 @@ export function PhilosophyCard({
       form.setValue('philosophyRank', 0, { shouldDirty: true })
 
     // Save to localStorage with immediate execution
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       {
         philosophy: philosophyValue,
         ...(value ? {} : { philosophyRank: 0 })
       },
       value
         ? 'The path of wisdom begins to illuminate the darkness.'
-        : 'The philosophical path returns to shadow.',
-      true
+        : 'The philosophical path returns to shadow.'
     )
   }
 
@@ -162,15 +128,14 @@ export function PhilosophyCard({
       form.setValue('tenetKnowledgeRankUp', newRankUp, { shouldDirty: true })
 
       // Save to localStorage with immediate execution
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         { tenetKnowledgeRankUp: newRankUp },
         newRankUp !== undefined
           ? 'Tenet knowledge rank up milestone marked.'
-          : 'Tenet knowledge rank up milestone removed.',
-        true
+          : 'Tenet knowledge rank up milestone removed.'
       )
     },
-    [form, tenetKnowledgeRankUp, saveToLocalStorageDebounced]
+    [form, tenetKnowledgeRankUp, saveToLocalStorage]
   )
 
   return (
@@ -209,10 +174,9 @@ export function PhilosophyCard({
                       form.setValue(field.name, clampedValue)
 
                       // Save to localStorage
-                      saveToLocalStorageDebounced(
+                      saveToLocalStorage(
                         { philosophyRank: clampedValue },
-                        'Philosophy rank has been updated.',
-                        true
+                        'Philosophy rank has been updated.'
                       )
                     }}
                   />
@@ -248,12 +212,11 @@ export function PhilosophyCard({
                     value={field.value || ''}
                     onBlur={(e) => {
                       field.onBlur()
-                      saveToLocalStorageDebounced(
+                      saveToLocalStorage(
                         { neurosis: e.target.value },
                         e.target.value
                           ? 'The neurosis manifests in the mind.'
-                          : 'The neurosis fades into darkness.',
-                        false
+                          : 'The neurosis fades into darkness.'
                       )
                     }}
                   />
@@ -283,12 +246,11 @@ export function PhilosophyCard({
                         value={field.value || ''}
                         onBlur={(e) => {
                           field.onBlur()
-                          saveToLocalStorageDebounced(
+                          saveToLocalStorage(
                             { tenetKnowledge: e.target.value },
                             e.target.value
                               ? 'Tenet knowledge is inscribed in memory.'
-                              : 'Tenet knowledge dissolves into shadow.',
-                            false
+                              : 'Tenet knowledge dissolves into shadow.'
                           )
                         }}
                       />
@@ -339,10 +301,9 @@ export function PhilosophyCard({
                               : `Observation rank ${newRank} burns bright in the lantern's glow.`
 
                             // Save to localStorage
-                            saveToLocalStorageDebounced(
+                            saveToLocalStorage(
                               { tenetKnowledgeObservationRank: newRank },
-                              successMessage,
-                              true
+                              successMessage
                             )
                           }}
                           onContextMenu={(event) =>
@@ -384,12 +345,11 @@ export function PhilosophyCard({
                     value={field.value || ''}
                     onBlur={(e) => {
                       field.onBlur()
-                      saveToLocalStorageDebounced(
+                      saveToLocalStorage(
                         { tenetKnowledgeRules: e.target.value },
                         e.target.value
                           ? 'The rules of knowledge are etched in stone.'
-                          : 'The rules fade back into mystery.',
-                        false
+                          : 'The rules fade back into mystery.'
                       )
                     }}
                   />
@@ -423,12 +383,11 @@ export function PhilosophyCard({
                     value={field.value || ''}
                     onBlur={(e) => {
                       field.onBlur()
-                      saveToLocalStorageDebounced(
+                      saveToLocalStorage(
                         { tenetKnowledgeObservationConditions: e.target.value },
                         e.target.value
                           ? "Observation conditions are recorded in the survivor's memory."
-                          : 'The conditions vanish into the void.',
-                        false
+                          : 'The conditions vanish into the void.'
                       )
                     }}
                   />

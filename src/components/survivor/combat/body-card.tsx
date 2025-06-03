@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { Shield, ShirtIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -27,93 +27,61 @@ import { ZodError } from 'zod'
  * @returns Body Card Component
  */
 export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save a body-related value to localStorage for the current survivor.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName:
-        | 'bodyArmor'
-        | 'bodyDestroyedBack'
-        | 'bodyBrokenRib'
-        | 'bodyGapingChestWound'
-        | 'bodyLightDamage'
-        | 'bodyHeavyDamage',
-      value: number | boolean,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
+  const saveToLocalStorage = (
+    attrName:
+      | 'bodyArmor'
+      | 'bodyDestroyedBack'
+      | 'bodyBrokenRib'
+      | 'bodyGapingChestWound'
+      | 'bodyLightDamage'
+      | 'bodyHeavyDamage',
+    value: number | boolean
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
+
+      if (survivorIndex !== -1) {
         try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[attrName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function to save to localStorage
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      [attrName]: value
-                    }
-                  : s
-              )
-            })
-
-            toast.success('The body persists through torment and pain.')
-          }
+          SurvivorSchema.shape[attrName].parse(value)
         } catch (error) {
-          console.error('Body Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        // Use the optimized utility function to save to localStorage
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? {
+                  ...s,
+                  [attrName]: value
+                }
+              : s
+          )
+        })
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        toast.success('The body persists through torment and pain.')
       }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('Body Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   return (
     <div className="flex flex-row">
@@ -138,7 +106,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     let val = parseInt(e.target.value)
                     if (isNaN(val) || val < 0) val = 0
                     form.setValue(field.name, val)
-                    saveToLocalStorageDebounced('bodyArmor', val, true)
+                    saveToLocalStorage('bodyArmor', val)
                   }}
                 />
               </div>
@@ -168,11 +136,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'bodyDestroyedBack',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('bodyDestroyedBack', boolValue)
                     }}
                   />
                 </FormControl>
@@ -196,11 +160,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           const newValue = checked ? value : value - 1
                           const safeValue = Math.max(0, Math.min(5, newValue))
                           field.onChange(safeValue)
-                          saveToLocalStorageDebounced(
-                            'bodyBrokenRib',
-                            safeValue,
-                            true
-                          )
+                          saveToLocalStorage('bodyBrokenRib', safeValue)
                         }}
                       />
                     ))}
@@ -226,11 +186,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           const newValue = checked ? value : value - 1
                           const safeValue = Math.max(0, Math.min(5, newValue))
                           field.onChange(safeValue)
-                          saveToLocalStorageDebounced(
-                            'bodyGapingChestWound',
-                            safeValue,
-                            true
-                          )
+                          saveToLocalStorage('bodyGapingChestWound', safeValue)
                         }}
                       />
                     ))}
@@ -261,11 +217,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'bodyLightDamage',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('bodyLightDamage', boolValue)
                     }}
                   />
                 </FormControl>
@@ -290,11 +242,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                     onCheckedChange={(checked) => {
                       const boolValue = checked === true
                       field.onChange(boolValue)
-                      saveToLocalStorageDebounced(
-                        'bodyHeavyDamage',
-                        boolValue,
-                        true
-                      )
+                      saveToLocalStorage('bodyHeavyDamage', boolValue)
                     }}
                   />
                 </FormControl>

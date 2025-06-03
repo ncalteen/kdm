@@ -24,14 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BrainIcon, PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -55,17 +48,6 @@ export function CollectiveCognitionRewardsCard(
     [key: number]: boolean
   }>({})
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      const timeoutId = saveTimeoutRef.current
-      if (timeoutId) clearTimeout(timeoutId)
-    }
-  }, [])
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -79,48 +61,33 @@ export function CollectiveCognitionRewardsCard(
   }, [ccRewards])
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedRewards Updated Rewards
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedRewards: typeof ccRewards,
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+  const saveToLocalStorage = (
+    updatedRewards: typeof ccRewards,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s: { id: number }) => s.id === formValues.id
+      )
 
-      const doSave = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
+      if (settlementIndex !== -1) {
+        campaign.settlements[settlementIndex].ccRewards = updatedRewards
+        saveCampaignToLocalStorage(campaign)
 
-          if (settlementIndex !== -1) {
-            campaign.settlements[settlementIndex].ccRewards = updatedRewards
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('CC Reward Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
+        if (successMsg) toast.success(successMsg)
       }
-
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
-      }
-    },
-    [form]
-  )
+    } catch (error) {
+      console.error('CC Reward Save Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -140,11 +107,7 @@ export function CollectiveCognitionRewardsCard(
     currentRewards[index] = { ...currentRewards[index], unlocked }
     form.setValue('ccRewards', currentRewards)
 
-    saveToLocalStorageDebounced(
-      currentRewards,
-      'Reward transformed by the darkness.',
-      true
-    )
+    saveToLocalStorage(currentRewards, 'Reward transformed by the darkness.')
   }
 
   /**
@@ -169,11 +132,7 @@ export function CollectiveCognitionRewardsCard(
       return next
     })
 
-    saveToLocalStorageDebounced(
-      currentRewards,
-      'The dark gift recedes into shadow.',
-      true
-    )
+    saveToLocalStorage(currentRewards, 'The dark gift recedes into shadow.')
   }
 
   /**
@@ -214,10 +173,9 @@ export function CollectiveCognitionRewardsCard(
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedRewards,
-      "The settlement's culinary knowledge expands.",
-      true
+      "The settlement's culinary knowledge expands."
     )
     setIsAddingNew(false)
   }
@@ -259,7 +217,7 @@ export function CollectiveCognitionRewardsCard(
         return next
       })
 
-      saveToLocalStorageDebounced(newOrder)
+      saveToLocalStorage(newOrder)
     }
   }
 

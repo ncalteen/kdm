@@ -21,18 +21,10 @@ import { useSettlement } from '@/contexts/settlement-context'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
-
-/**
- * Survivor Form Component Properties
- */
-export interface SurvivorFormProps {
-  /** Survivor Data */
-  survivor: Survivor
-}
 
 /**
  * Survivor Form Component
@@ -42,93 +34,61 @@ export interface SurvivorFormProps {
 export function SurvivorCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   const settlement = useSettlement().selectedSettlement
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
   /**
-   * Save survivor to localStorage with debouncing, with Zod validation and
-   * toast feedback.
+   * Save to Local Storage
    *
    * @param values Survivor values
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (values: Survivor, successMsg?: string, immediate: boolean = true) => {
-      const saveFunction = () => {
-        try {
-          // Find the survivor in the campaign
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s) => s.id === values.id
-          )
+  const saveToLocalStorage = useCallback(
+    (values: Survivor, successMsg?: string) => {
+      try {
+        // Find the survivor in the campaign
+        const campaign = getCampaign()
+        const survivorIndex = campaign.survivors.findIndex(
+          (s) => s.id === values.id
+        )
 
-          if (survivorIndex !== -1) {
-            // Create an updated survivor with the new values
-            const currentSurvivor = campaign.survivors[survivorIndex]
-            const updatedSurvivor = {
-              ...currentSurvivor,
-              ...values
-            }
-
-            // Skip validation for immediate updates to improve performance
-            // Only validate on explicit saves or form submission
-            if (!immediate) {
-              try {
-                SurvivorSchema.parse(updatedSurvivor)
-              } catch (error) {
-                if (error instanceof ZodError && error.errors[0]?.message)
-                  return toast.error(error.errors[0].message)
-                else
-                  return toast.error(
-                    'The darkness swallows your words. Please try again.'
-                  )
-              }
-            }
-
-            // Update campaign with the updated survivor - create a new array
-            // only once
-            const updatedSurvivors = [...campaign.survivors]
-            updatedSurvivors[survivorIndex] = updatedSurvivor
-
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: updatedSurvivors
-            })
-
-            if (successMsg) toast.success(successMsg)
-          } else {
-            toast.error(
-              'Could not find the survivor to update. Please try again.'
-            )
+        if (survivorIndex !== -1) {
+          // Create an updated survivor with the new values
+          const currentSurvivor = campaign.survivors[survivorIndex]
+          const updatedSurvivor = {
+            ...currentSurvivor,
+            ...values
           }
-        } catch (error) {
-          console.error('Survivor Update Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+          try {
+            SurvivorSchema.parse(updatedSurvivor)
+          } catch (error) {
+            if (error instanceof ZodError && error.errors[0]?.message)
+              return toast.error(error.errors[0].message)
+            else
+              return toast.error(
+                'The darkness swallows your words. Please try again.'
+              )
+          }
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
+          // Update campaign with the updated survivor - create a new array
+          // only once
+          const updatedSurvivors = [...campaign.survivors]
+          updatedSurvivors[survivorIndex] = updatedSurvivor
+
+          saveCampaignToLocalStorage({
+            ...campaign,
+            survivors: updatedSurvivors
+          })
+
+          if (successMsg) toast.success(successMsg)
+        } else {
+          toast.error(
+            'Could not find the survivor to update. Please try again.'
+          )
+        }
+      } catch (error) {
+        console.error('Survivor Update Error:', error)
+        toast.error('The darkness swallows your words. Please try again.')
       }
     },
     []
@@ -142,13 +102,12 @@ export function SurvivorCard({
   const onSubmit = useCallback(
     (values: Survivor) => {
       // Use immediate save (true) on explicit form submission
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         values,
-        'The survivor has returned, forever changed by their trials.',
-        true
+        'The survivor has returned, forever changed by their trials.'
       )
     },
-    [saveToLocalStorageDebounced]
+    [saveToLocalStorage]
   )
 
   return (
