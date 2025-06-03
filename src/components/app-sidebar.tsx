@@ -295,7 +295,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent className="flex flex-col justify-between">
         <NavMain items={navItems} />
-        <SidebarGroup {...props}>
+        <SidebarGroup
+          className="group-data-[collapsible=icon]:hidden"
+          {...props}>
           <SidebarGroupContent>
             <p className="text-center text-xs text-gray-500 pb-2">
               This project is not affiliated with or endorsed by Kingdom Death:
