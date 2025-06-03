@@ -71,19 +71,25 @@ export const createColumns = ({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            type="button">
+            type="button"
+            className="font-bold">
             Name
             <ArrowUpDownIcon />
           </Button>
         )
       },
       cell: ({ row }) => (
-        <div className="text-left text-xs">{row.getValue('name')}</div>
-      )
+        <div className="text-left text-sm pl-2">{row.getValue('name')}</div>
+      ),
+      sortingFn: (rowA, rowB, columnId) => {
+        const nameA = rowA.getValue(columnId) as string
+        const nameB = rowB.getValue(columnId) as string
+        return nameA.toLowerCase().localeCompare(nameB.toLowerCase())
+      }
     },
     {
       accessorKey: 'gender',
-      header: () => <div className="font-bold text-center">Gender</div>,
+      header: 'Gender',
       cell: ({ row }) => (
         <div className="text-center text-xs">
           <Badge variant="outline">{row.getValue('gender')}</Badge>
@@ -92,7 +98,7 @@ export const createColumns = ({
     },
     {
       accessorKey: 'huntXP',
-      header: () => <div className="font-bold text-center">Hunt XP</div>,
+      header: 'Hunt XP',
       cell: ({ row }) => (
         <div className="text-center text-xs">
           <Badge variant="outline">{row.getValue('huntXP')}</Badge>
@@ -101,14 +107,14 @@ export const createColumns = ({
     },
     {
       accessorKey: 'philosophy',
-      header: () => <div className="font-bold text-left">Philosophy</div>,
+      header: 'Philosophy',
       cell: ({ row }) => (
         <div className="text-left text-xs">{row.getValue('philosophy')}</div>
       )
     },
     {
       accessorKey: 'retired',
-      header: () => <div className="font-bold text-center">Retired</div>,
+      header: 'Retired',
       cell: ({ row }) =>
         row.getValue('retired') && (
           <div className="text-center">
@@ -120,7 +126,7 @@ export const createColumns = ({
     },
     {
       accessorKey: 'dead',
-      header: () => <div className="font-bold text-center">Dead</div>,
+      header: 'Dead',
       cell: ({ row }) =>
         row.getValue('dead') && (
           <div className="text-center">
@@ -135,8 +141,9 @@ export const createColumns = ({
       enableHiding: false,
       cell: ({ row }) => {
         const survivor = row.original
+
         return (
-          <div className="flex gap-2 justify-end">
+          <div className="flex gap-2 justify-end align-center w-full pr-2">
             <Button
               variant="outline"
               size="sm"

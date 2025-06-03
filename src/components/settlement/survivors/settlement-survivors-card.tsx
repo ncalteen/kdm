@@ -115,7 +115,7 @@ export function SettlementSurvivorsCard({
   }, [settlementId])
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-0 gap-2 h-full">
+    <Card className="p-0 pb-1 mt-2 border-0 gap-2">
       <CardHeader className="px-2 py-1">
         <CardTitle className="text-md flex flex-row items-center gap-1">
           <UserIcon className="h-4 w-4" />
@@ -125,7 +125,7 @@ export function SettlementSurvivorsCard({
 
       <CardContent className="p-1 pb-0">
         <div className="flex flex-col">
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1">
             {survivors.length === 0 ? (
               <div className="text-center text-muted-foreground py-4">
                 Silence echoes through the darkness. No survivors present.

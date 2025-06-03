@@ -1,10 +1,15 @@
 'use client'
 
 import {
+  getSelectedTab,
+  setSelectedTab as setSelectedTabInStorage
+} from '@/lib/utils'
+import {
   createContext,
   ReactElement,
   ReactNode,
   useContext,
+  useEffect,
   useState
 } from 'react'
 
@@ -28,7 +33,19 @@ export function TabProvider({
   initialTab: string
   children: ReactNode
 }): ReactElement {
-  const [selectedTab, setSelectedTab] = useState<string>(initialTab)
+  const [selectedTab, setSelectedTabState] = useState<string>(initialTab)
+
+  // Load selected tab from localStorage on mount
+  useEffect(() => {
+    const savedSelectedTab = getSelectedTab()
+    if (savedSelectedTab) setSelectedTabState(savedSelectedTab)
+  }, [])
+
+  // Function to update selected tab and persist to localStorage
+  const setSelectedTab = (tab: string) => {
+    setSelectedTabState(tab)
+    setSelectedTabInStorage(tab)
+  }
 
   return (
     <TabContext.Provider value={{ selectedTab, setSelectedTab }}>

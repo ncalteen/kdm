@@ -59,7 +59,9 @@ export function getCampaign(): Campaign {
     settlements: storedCampaign.settlements || [],
     survivors: storedCampaign.survivors || [],
     // If selectedSettlementId is not present, add it as undefined
-    selectedSettlementId: storedCampaign.selectedSettlementId || undefined
+    selectedSettlementId: storedCampaign.selectedSettlementId || undefined,
+    selectedSurvivorId: storedCampaign.selectedSurvivorId || undefined,
+    selectedTab: storedCampaign.selectedTab || undefined
   }
 
   cachedCampaign = campaign
@@ -199,6 +201,60 @@ export function setSelectedSettlement(settlementId: number | null): void {
   const campaign = getCampaign()
 
   campaign.selectedSettlementId = settlementId || undefined
+
+  saveCampaignToLocalStorage(campaign)
+}
+
+/**
+ * Gets the currently selected survivor from localStorage.
+ *
+ * @returns Selected Survivor or null if none is selected or not found
+ */
+export function getSelectedSurvivor(): Survivor | null {
+  const campaign = getCampaign()
+
+  if (!campaign.selectedSurvivorId) return null
+
+  const survivor = campaign.survivors.find(
+    (s) => s.id === campaign.selectedSurvivorId
+  )
+
+  return survivor || null
+}
+
+/**
+ * Sets the currently selected survivor in localStorage.
+ *
+ * @param survivorId Survivor ID to select, or null to clear selection
+ */
+export function setSelectedSurvivor(survivorId: number | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedSurvivorId = survivorId || undefined
+
+  saveCampaignToLocalStorage(campaign)
+}
+
+/**
+ * Gets the currently selected tab from localStorage.
+ *
+ * @returns Selected Tab or null if none is selected
+ */
+export function getSelectedTab(): string | null {
+  const campaign = getCampaign()
+
+  return campaign.selectedTab || null
+}
+
+/**
+ * Sets the currently selected tab in localStorage.
+ *
+ * @param tab Tab to select, or null to clear selection
+ */
+export function setSelectedTab(tab: string | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedTab = tab || undefined
 
   saveCampaignToLocalStorage(campaign)
 }

@@ -1,11 +1,16 @@
 'use client'
 
+import {
+  getSelectedSurvivor,
+  setSelectedSurvivor as setSelectedSurvivorInStorage
+} from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import {
   createContext,
   ReactElement,
   ReactNode,
   useContext,
+  useEffect,
   useState
 } from 'react'
 
@@ -34,9 +39,20 @@ export function SurvivorProvider({
   survivor: Survivor | null
   children: ReactNode
 }): ReactElement {
-  const [selectedSurvivor, setSelectedSurvivor] = useState<Survivor | null>(
-    survivor
-  )
+  const [selectedSurvivor, setSelectedSurvivorState] =
+    useState<Survivor | null>(survivor)
+
+  // Load selected survivor from localStorage on mount
+  useEffect(() => {
+    const savedSelectedSurvivor = getSelectedSurvivor()
+    if (savedSelectedSurvivor) setSelectedSurvivorState(savedSelectedSurvivor)
+  }, [])
+
+  // Function to update selected survivor and persist to localStorage
+  const setSelectedSurvivor = (survivor: Survivor | null) => {
+    setSelectedSurvivorState(survivor)
+    setSelectedSurvivorInStorage(survivor?.id || null)
+  }
 
   return (
     <SurvivorContext.Provider value={{ selectedSurvivor, setSelectedSurvivor }}>

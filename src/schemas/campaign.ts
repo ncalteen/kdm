@@ -10,7 +10,9 @@ import { z } from 'zod'
 export const CampaignSchema = z.object({
   settlements: z.array(SettlementSchema),
   survivors: z.array(SurvivorSchema),
-  selectedSettlementId: z.number().optional()
+  selectedSettlementId: z.number().optional(),
+  selectedSurvivorId: z.number().optional(),
+  selectedTab: z.string().optional()
 })
 
 /**

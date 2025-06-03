@@ -126,6 +126,8 @@ function MainPage(): ReactElement {
     resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
     defaultValues: selectedSettlement || undefined
   })
+
+  // Initialize the survivor form data from the context
   const survivorForm = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
     defaultValues: selectedSurvivor || undefined
@@ -133,24 +135,23 @@ function MainPage(): ReactElement {
 
   useEffect(() => {
     // If the settlement changes, reset the settlement form with the selected
-    // settlement data and clear the selected survivor form and context.
+    // settlement data. Clear the selected survivor only if it doesn't belong
+    // to the current settlement.
     if (selectedSettlement) {
       settlementForm.reset(selectedSettlement)
-      setSelectedSurvivor(null)
-      survivorForm.reset()
-    }
 
-    // If a survivor is selected, reset the survivor form with the selected
-    // survivor data. Only do this if a settlement is selected to avoid
-    // resetting the survivor form when no settlement is selected.
-    if (selectedSurvivor && selectedSettlement)
-      survivorForm.reset(selectedSurvivor)
+      // Clear selected survivor if it doesn't belong to current settlement
+      if (
+        selectedSurvivor &&
+        selectedSurvivor.settlementId !== selectedSettlement.id
+      )
+        setSelectedSurvivor(null)
+    }
   }, [
     selectedSettlement,
     selectedSurvivor,
     setSelectedSurvivor,
-    settlementForm,
-    survivorForm
+    settlementForm
   ])
 
   // If no settlement is selected, display the create settlement form
@@ -162,133 +163,132 @@ function MainPage(): ReactElement {
       <Form {...settlementForm}>
         <AppHeader {...settlementForm} />
       </Form>
-      <div className="flex flex-1 flex-col h-full">
-        <div className="flex flex-col gap-2 py-2 px-2 flex-1">
-          <Form {...settlementForm}>
-            {/* Timeline */}
-            {selectedTab === 'timeline' && (
-              <div className="flex flex-row gap-2">
-                <div className="flex-1">
-                  <TimelineCard {...settlementForm} />
-                </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  {/* <ActionsCard {...settlementForm} /> */}
-                  <DepartingBonusesCard {...settlementForm} />
-                  <ArrivalBonusesCard {...settlementForm} />
-                </div>
-              </div>
-            )}
-
-            {/* Monsters (Nemeses and Quarries) */}
-            {selectedTab === 'monsters' && (
-              <div className="flex flex-col pl-2 gap-2">
-                {/* Quarries and Nemeses */}
+      <Form {...settlementForm}>
+        <Form {...survivorForm}>
+          <div className="flex flex-1 flex-col h-full">
+            <div className="flex flex-col gap-2 py-2 px-2 flex-1">
+              {/* Timeline */}
+              {selectedTab === 'timeline' && (
                 <div className="flex flex-row gap-2">
                   <div className="flex-1">
-                    <QuarriesCard {...settlementForm} />
+                    <TimelineCard {...settlementForm} />
                   </div>
-                  <div className="flex-1">
-                    <NemesesCard {...settlementForm} />
+                  <div className="flex-1 flex flex-col gap-2">
+                    {/* <ActionsCard {...settlementForm} /> */}
+                    <DepartingBonusesCard {...settlementForm} />
+                    <ArrivalBonusesCard {...settlementForm} />
                   </div>
-                </div>
-                {/* Monster Volumes (PotL and PotSun) */}
-                {(selectedSettlement.campaignType ===
-                  CampaignType.PEOPLE_OF_THE_LANTERN ||
-                  selectedSettlement.campaignType ===
-                    CampaignType.PEOPLE_OF_THE_SUN) && (
-                  <MonsterVolumesCard {...settlementForm} />
-                )}
-              </div>
-            )}
-
-            {/* Squires of the Citadel (Suspicions and Progression) */}
-            {selectedTab === 'squires' &&
-              selectedSettlement.campaignType ===
-                CampaignType.SQUIRES_OF_THE_CITADEL && (
-                <>
-                  <SquireSuspicionsCard {...settlementForm} />
-                  <SquireProgressionCards />
-                </>
-              )}
-
-            {/* Survivors */}
-            {selectedTab === 'survivors' &&
-              selectedSettlement.campaignType !==
-                CampaignType.SQUIRES_OF_THE_CITADEL && (
-                <div className="pl-2">
-                  {/* Survivors */}
-                  <SettlementSurvivorsCard {...settlementForm} />
                 </div>
               )}
 
-            {/* Society */}
-            {selectedTab === 'society' &&
-              selectedSettlement.campaignType !==
-                CampaignType.SQUIRES_OF_THE_CITADEL && (
-                <div className="flex flex-col gap-2 pl-2">
+              {/* Monsters (Nemeses and Quarries) */}
+              {selectedTab === 'monsters' && (
+                <div className="flex flex-col pl-2 gap-2">
+                  {/* Quarries and Nemeses */}
                   <div className="flex flex-row gap-2">
                     <div className="flex-1">
-                      <MilestonesCard {...settlementForm} />
+                      <QuarriesCard {...settlementForm} />
                     </div>
                     <div className="flex-1">
-                      <PrinciplesCard {...settlementForm} />
+                      <NemesesCard {...settlementForm} />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <InnovationsCard {...settlementForm} />
-                    <LocationsCard {...settlementForm} />
-                  </div>
+                  {/* Monster Volumes (PotL and PotSun) */}
+                  {(selectedSettlement.campaignType ===
+                    CampaignType.PEOPLE_OF_THE_LANTERN ||
+                    selectedSettlement.campaignType ===
+                      CampaignType.PEOPLE_OF_THE_SUN) && (
+                    <MonsterVolumesCard {...settlementForm} />
+                  )}
                 </div>
               )}
 
-            {/* Society - Squires of the Citadel */}
-            {selectedTab === 'society' &&
-              selectedSettlement.campaignType ===
-                CampaignType.SQUIRES_OF_THE_CITADEL && (
-                <LocationsCard {...settlementForm} />
-              )}
-
-            {/* Crafting */}
-            {selectedTab === 'crafting' && (
-              <div className="flex flex-col gap-2 pl-2">
-                {selectedSettlement.campaignType !==
+              {/* Squires of the Citadel (Suspicions and Progression) */}
+              {selectedTab === 'squires' &&
+                selectedSettlement.campaignType ===
                   CampaignType.SQUIRES_OF_THE_CITADEL && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <SeedPatternsCard {...settlementForm} />
-                    <PatternsCard {...settlementForm} />
+                  <>
+                    <SquireSuspicionsCard {...settlementForm} />
+                    <SquireProgressionCards />
+                  </>
+                )}
+
+              {/* Survivors */}
+              {selectedTab === 'survivors' &&
+                selectedSettlement.campaignType !==
+                  CampaignType.SQUIRES_OF_THE_CITADEL && (
+                  <div className="pl-2">
+                    {/* Survivors */}
+                    <SettlementSurvivorsCard {...settlementForm} />
+                    {selectedSurvivor && (
+                      <SurvivorForm survivor={selectedSurvivor} />
+                    )}
                   </div>
                 )}
-                <ResourcesCard {...settlementForm} />
-                <GearCard {...settlementForm} />
-              </div>
-            )}
 
-            {/* Arc */}
-            {selectedTab === 'arc' &&
-              selectedSettlement.survivorType === SurvivorType.ARC && (
+              {/* Society */}
+              {selectedTab === 'society' &&
+                selectedSettlement.campaignType !==
+                  CampaignType.SQUIRES_OF_THE_CITADEL && (
+                  <div className="flex flex-col gap-2 pl-2">
+                    <div className="flex flex-row gap-2">
+                      <div className="flex-1">
+                        <MilestonesCard {...settlementForm} />
+                      </div>
+                      <div className="flex-1">
+                        <PrinciplesCard {...settlementForm} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <InnovationsCard {...settlementForm} />
+                      <LocationsCard {...settlementForm} />
+                    </div>
+                  </div>
+                )}
+
+              {/* Society - Squires of the Citadel */}
+              {selectedTab === 'society' &&
+                selectedSettlement.campaignType ===
+                  CampaignType.SQUIRES_OF_THE_CITADEL && (
+                  <LocationsCard {...settlementForm} />
+                )}
+
+              {/* Crafting */}
+              {selectedTab === 'crafting' && (
                 <div className="flex flex-col gap-2 pl-2">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <CollectiveCognitionVictoriesCard {...settlementForm} />
-                    <CollectiveCognitionRewardsCard {...settlementForm} />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <PhilosophiesCard {...settlementForm} />
-                    <KnowledgesCard {...settlementForm} />
-                  </div>
+                  {selectedSettlement.campaignType !==
+                    CampaignType.SQUIRES_OF_THE_CITADEL && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <SeedPatternsCard {...settlementForm} />
+                      <PatternsCard {...settlementForm} />
+                    </div>
+                  )}
+                  <ResourcesCard {...settlementForm} />
+                  <GearCard {...settlementForm} />
                 </div>
               )}
 
-            {/* Notes */}
-            {selectedTab === 'notes' && <NotesCard {...settlementForm} />}
-          </Form>
+              {/* Arc */}
+              {selectedTab === 'arc' &&
+                selectedSettlement.survivorType === SurvivorType.ARC && (
+                  <div className="flex flex-col gap-2 pl-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <CollectiveCognitionVictoriesCard {...settlementForm} />
+                      <CollectiveCognitionRewardsCard {...settlementForm} />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <PhilosophiesCard {...settlementForm} />
+                      <KnowledgesCard {...settlementForm} />
+                    </div>
+                  </div>
+                )}
 
-          <Form {...survivorForm}>
-            {selectedTab === 'selectedSurvivor' && (
-              <SurvivorForm survivor={survivorForm.getValues()} />
-            )}
-          </Form>
-        </div>
-      </div>
+              {/* Notes */}
+              {selectedTab === 'notes' && <NotesCard {...settlementForm} />}
+            </div>
+          </div>
+        </Form>
+      </Form>
     </>
   )
 }
