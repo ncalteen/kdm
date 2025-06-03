@@ -181,10 +181,10 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
   )
 
   return (
-    <Card className="p-0 border-0">
-      <CardContent className="p-0 pt-3">
+    <Card className="p-2 border-0 h-[85px]">
+      <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex items-center">
+          <div className="flex items-center h-[36px]">
             {/* Hunt XP */}
             <FormField
               control={form.control}
@@ -236,7 +236,7 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
           </div>
         </div>
 
-        <hr className="mt-3 mb-1" />
+        <hr className="my-2" />
 
         <div className="flex items-center justify-between">
           {Array.from({ length: 4 }, (_, i) => (
@@ -250,9 +250,9 @@ export function HuntXPCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
               ))}
               <span className="text-xs">
                 {settlement?.survivorType === SurvivorType.CORE ? (
-                  <>
+                  <div className="flex items-center gap-1">
                     <BookOpenIcon className="h-4 w-4" /> Age
-                  </>
+                  </div>
                 ) : i === 0 ? (
                   'Adopt Philosophy'
                 ) : (

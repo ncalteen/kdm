@@ -6,7 +6,7 @@ import {
 } from '@/components/survivor/disorders/disorder-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign } from '@/lib/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -31,9 +31,6 @@ import { ZodError } from 'zod'
 
 /**
  * Disorders Card Component
- *
- * @param form Form
- * @returns Disorders Card Component
  */
 export function DisordersCard({
   ...form
@@ -69,11 +66,10 @@ export function DisordersCard({
   const addDisorder = () => setIsAddingNew(true)
 
   /**
-   * Save disorders to localStorage for the current survivor, with Zod
-   * validation and toast feedback.
+   * Save to Local Storage
    *
-   * @param updatedDisorders Updated disorders array
-   * @param successMsg Success message for toast
+   * @param updatedDisorders Updated Disorders
+   * @param successMsg Success Message
    */
   const saveToLocalStorage = (
     updatedDisorders: string[],
@@ -98,8 +94,13 @@ export function DisordersCard({
             )
         }
 
-        campaign.survivors[survivorIndex].disorders = updatedDisorders
-        localStorage.setItem('campaign', JSON.stringify(campaign))
+        // Save to localStorage using the optimized utility
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id ? { ...s, disorders: updatedDisorders } : s
+          )
+        })
 
         if (successMsg) toast.success(successMsg)
       }
@@ -234,34 +235,32 @@ export function DisordersCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <BrainCircuitIcon className="h-4 w-4" />
           Disorders
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addDisorder}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  disorders.length >= MAX_DISORDERS ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addDisorder}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                disorders.length >= MAX_DISORDERS ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
 
       {/* Disorders List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col h-[240px]">
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[125px]">
           <div className="flex-1 overflow-y-auto">
             {disorders.length !== 0 && (
               <DndContext

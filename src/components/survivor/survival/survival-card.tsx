@@ -10,6 +10,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import { SurvivorType } from '@/lib/enums'
 import {
   cn,
@@ -18,7 +19,7 @@ import {
   saveCampaignToLocalStorage
 } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { Lock } from 'lucide-react'
+import { LockIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -98,89 +99,87 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardContent className="p-2">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0">
         <div className="flex">
           {/* Left - Survival and cannot spend survival inputs */}
-          <div className="flex-1">
-            <div className="flex flex-col">
-              {/* Survival Points */}
-              <FormField
-                control={form.control}
-                name="survival"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center gap-2">
-                      {/* Survival Input */}
-                      <FormControl>
-                        <Input
-                          placeholder="1"
-                          type="number"
-                          className={cn(
-                            'w-14 h-14 text-center no-spinners text-3xl sm:text-3xl md:text-3xl'
-                          )}
-                          {...field}
-                          value={field.value ?? '1'}
-                          onChange={(e) => {
-                            let value = parseInt(e.target.value) || 0
+          <div className="flex-1 flex flex-col justify-between">
+            {/* Survival Points */}
+            <FormField
+              control={form.control}
+              name="survival"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-2">
+                    {/* Survival Input */}
+                    <FormControl>
+                      <Input
+                        placeholder="1"
+                        type="number"
+                        className={cn(
+                          'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl'
+                        )}
+                        {...field}
+                        value={field.value ?? '1'}
+                        onChange={(e) => {
+                          let value = parseInt(e.target.value) || 0
 
-                            // Enforce minimum value of 0
-                            if (value < 0) {
-                              value = 0
-                              toast.error('Survival cannot be negative.')
-                            }
+                          // Enforce minimum value of 0
+                          if (value < 0) {
+                            value = 0
+                            toast.error('Survival cannot be negative.')
+                          }
 
-                            // Enforce maximum value of survivalLimit
-                            if (value > survivalLimit) {
-                              value = survivalLimit
-                              toast.error(
-                                `Survival cannot exceed the settlement's limit of ${survivalLimit}.`
-                              )
-                            }
+                          // Enforce maximum value of survivalLimit
+                          if (value > survivalLimit) {
+                            value = survivalLimit
+                            toast.error(
+                              `Survival cannot exceed the settlement's limit of ${survivalLimit}.`
+                            )
+                          }
 
-                            form.setValue(field.name, value)
-                            saveToLocalStorage('survival', value)
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-bold text-left">
-                        Survival
-                      </FormLabel>
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="canSpendSurvival"
-                      render={({ field: canSpendField }) => (
-                        <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={!canSpendField.value}
-                              onCheckedChange={(checked) => {
-                                const canSpend = !checked
-                                form.setValue(canSpendField.name, canSpend)
-                                saveToLocalStorage(
-                                  'canSpendSurvival',
-                                  canSpend,
-                                  canSpend
-                                    ? 'The survivor can once again spend survival.'
-                                    : 'The survivor freezes - survival cannot be spent.'
-                                )
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="text-xs font-medium leading-none flex items-center">
-                            <Lock className="inline h-3 w-3 mr-1" /> Cannot
-                            spend survival
-                          </FormLabel>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                          form.setValue(field.name, value)
+                          saveToLocalStorage('survival', value)
+                        }}
+                      />
+                    </FormControl>
+                    <FormLabel className="font-bold text-left">
+                      Survival
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="canSpendSurvival"
+              render={({ field: canSpendField }) => (
+                <FormItem className="flex flex-row items-center gap-2 space-y-0">
+                  <FormControl>
+                    <Checkbox
+                      checked={!canSpendField.value}
+                      onCheckedChange={(checked) => {
+                        const canSpend = !checked
+                        form.setValue(canSpendField.name, canSpend)
+                        saveToLocalStorage(
+                          'canSpendSurvival',
+                          canSpend,
+                          canSpend
+                            ? 'The survivor can once again spend survival.'
+                            : 'The survivor freezes - survival cannot be spent.'
+                        )
+                      }}
                     />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  </FormControl>
+                  <FormLabel className="text-xs font-medium leading-none flex items-center">
+                    <LockIcon className="inline h-3 w-3 mr-1" /> Cannot spend
+                    survival
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           {/* Middle - Survival Actions */}
@@ -365,7 +364,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
             {/* Right - (Arc) Systemic pressure */}
             {survivorType === SurvivorType.ARC && (
               <>
-                <div className="mx-2.5 w-px bg-border" />
+                <Separator orientation="vertical" className="mx-2.5" />
 
                 {/* Systemic Pressure */}
                 <FormField
@@ -377,7 +376,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {

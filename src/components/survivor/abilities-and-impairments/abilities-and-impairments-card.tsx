@@ -11,21 +11,21 @@ import { Label } from '@/components/ui/label'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import {
+  closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  SortableContext,
   arrayMove,
+  SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
+import { BicepsFlexedIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -110,7 +110,6 @@ export function AbilitiesAndImpairmentsCard({
             )
         }
 
-        // Use the saveCampaignToLocalStorage helper
         saveCampaignToLocalStorage({
           ...campaign,
           survivors: campaign.survivors.map((s) =>
@@ -154,7 +153,6 @@ export function AbilitiesAndImpairmentsCard({
       return next
     })
 
-    // Use immediate save with feedback for user actions
     saveToLocalStorage(
       currentAbilitiesAndImpairments,
       'The ability/impairment has been removed.'
@@ -204,7 +202,6 @@ export function AbilitiesAndImpairmentsCard({
       }))
     }
 
-    // Use immediate save with feedback for user actions
     saveToLocalStorage(
       updatedAbilitiesAndImpairments,
       i !== undefined
@@ -255,12 +252,13 @@ export function AbilitiesAndImpairmentsCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
         <div className="flex justify-between items-center">
           {/* Title */}
           <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Abilities & Impairments{' '}
+            <BicepsFlexedIcon className="h-4 w-4" />
+            Abilities & Impairments
             {!isAddingNew && (
               <div className="flex justify-center">
                 <Button
@@ -280,10 +278,10 @@ export function AbilitiesAndImpairmentsCard({
           </CardTitle>
 
           {/* Skip Next Hunt */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Checkbox
               id="skipNextHunt"
-              checked={skipNextHuntState}
+              checked={!skipNextHuntState}
               onCheckedChange={(checked) => {
                 if (typeof checked === 'boolean') {
                   setSkipNextHuntState(checked)
@@ -312,7 +310,7 @@ export function AbilitiesAndImpairmentsCard({
 
       {/* Abilities/Impairments List */}
       <CardContent className="p-1 pb-0">
-        <div className="flex flex-col h-[240px]">
+        <div className="flex flex-col h-[120px]">
           <div className="flex-1 overflow-y-auto">
             <div className="space-y-1">
               {abilitiesAndImpairments.length !== 0 && (

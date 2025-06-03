@@ -24,7 +24,8 @@ import { SquireProgressionCards } from '@/components/settlement/squires/squire-p
 import { SquireSuspicionsCard } from '@/components/settlement/squires/squire-suspicions-card'
 import { SettlementSurvivorsCard } from '@/components/settlement/survivors/settlement-survivors-card'
 import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
-import { SurvivorForm } from '@/components/survivor/survivor-form'
+import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
+import { SurvivorCard } from '@/components/survivor/survivor-card'
 import { Form } from '@/components/ui/form'
 import { useSettlement } from '@/contexts/settlement-context'
 import { useSurvivor } from '@/contexts/survivor-context'
@@ -118,7 +119,8 @@ function MainPageContent(): ReactElement {
 function MainPage(): ReactElement {
   // Get selected context
   const { selectedSettlement } = useSettlement()
-  const { selectedSurvivor, setSelectedSurvivor } = useSurvivor()
+  const { selectedSurvivor, setSelectedSurvivor, isCreatingNewSurvivor } =
+    useSurvivor()
   const { selectedTab } = useTab()
 
   // Initialize the settlement form data from the context
@@ -133,6 +135,8 @@ function MainPage(): ReactElement {
     defaultValues: selectedSurvivor || undefined
   })
 
+  const selectedSurvivorSettlementId = selectedSurvivor?.settlementId
+
   useEffect(() => {
     // If the settlement changes, reset the settlement form with the selected
     // settlement data. Clear the selected survivor only if it doesn't belong
@@ -141,18 +145,20 @@ function MainPage(): ReactElement {
       settlementForm.reset(selectedSettlement)
 
       // Clear selected survivor if it doesn't belong to current settlement
-      if (
-        selectedSurvivor &&
-        selectedSurvivor.settlementId !== selectedSettlement.id
-      )
+      if (selectedSurvivorSettlementId !== selectedSettlement.id)
         setSelectedSurvivor(null)
     }
   }, [
     selectedSettlement,
-    selectedSurvivor,
+    selectedSurvivorSettlementId,
     setSelectedSurvivor,
     settlementForm
   ])
+
+  useEffect(() => {
+    // Reset the survivor form when the selected survivor changes
+    if (selectedSurvivor) survivorForm.reset(selectedSurvivor)
+  }, [selectedSurvivor, survivorForm])
 
   // If no settlement is selected, display the create settlement form
   if (!selectedSettlement) return <CreateSettlementForm />
@@ -220,9 +226,10 @@ function MainPage(): ReactElement {
                   <div className="pl-2">
                     {/* Survivors */}
                     <SettlementSurvivorsCard {...settlementForm} />
-                    {selectedSurvivor && (
-                      <SurvivorForm survivor={selectedSurvivor} />
+                    {selectedSurvivor && !isCreatingNewSurvivor && (
+                      <SurvivorCard {...survivorForm} />
                     )}
+                    {isCreatingNewSurvivor && <CreateSurvivorForm />}
                   </div>
                 )}
 

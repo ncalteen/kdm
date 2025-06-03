@@ -10,18 +10,18 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import type { DragEndEvent } from '@dnd-kit/core'
 import {
+  closestCenter,
   DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  SortableContext,
   arrayMove,
+  SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
@@ -155,7 +155,7 @@ export function OncePerLifetimeCard({
   }
 
   /**
-   * Handles the saving of a new once per lifetime event.
+   * Handles saving a new once per lifetime event.
    *
    * @param value Event Value
    * @param i Event Index (When Updating Only)
@@ -245,11 +245,11 @@ export function OncePerLifetimeCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
         <div className="flex justify-between items-center">
           {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
             <CopyCheckIcon className="h-4 w-4" />
             Once Per Lifetime
             {!isAddingNew && (
@@ -287,8 +287,8 @@ export function OncePerLifetimeCard({
       </CardHeader>
 
       {/* Once Per Lifetime List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col h-[240px]">
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[55px]">
           <div className="flex-1 overflow-y-auto">
             {oncePerLifetime.length !== 0 && (
               <DndContext

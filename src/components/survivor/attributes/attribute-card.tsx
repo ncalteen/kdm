@@ -105,8 +105,8 @@ export function AttributeCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardContent className="p-2">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0">
         <div className="flex flex-row justify-between">
           {/* Movement */}
           <FormField
@@ -119,7 +119,7 @@ export function AttributeCard({
                     <Input
                       placeholder="1"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '1'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -135,7 +135,7 @@ export function AttributeCard({
             )}
           />
 
-          <div className="w-px bg-border"></div>
+          <div className="w-px bg-border" />
 
           {/* Accuracy */}
           <FormField
@@ -148,7 +148,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -175,7 +175,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -202,7 +202,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -229,7 +229,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -256,7 +256,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
                       onChange={(e) => {
                         const val = parseInt(e.target.value)
@@ -286,7 +286,7 @@ export function AttributeCard({
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           defaultValue={field.value ?? '0'}
                           min={0}
                           onChange={(e) => {

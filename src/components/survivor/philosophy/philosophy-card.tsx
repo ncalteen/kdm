@@ -1,7 +1,7 @@
 'use client'
 
 import { SelectPhilosophy } from '@/components/menu/select-philosophy'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   FormControl,
@@ -139,10 +139,10 @@ export function PhilosophyCard({
   )
 
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardContent className="p-2 flex flex-col">
-        {/* Philosophy and Rank */}
-        <div className="flex flex-row justify-between pb-2">
+    <Card className="p-0 border-1 gap-2 h-[483px] justify-between">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <div className="flex flex-row justify-between">
+          {/* Philosophy */}
           <div className="flex flex-col gap-1">
             <CardTitle className="text-md flex flex-row items-center gap-1">
               <BrainCogIcon className="h-4 w-4" />
@@ -154,6 +154,8 @@ export function PhilosophyCard({
               onChange={handlePhilosophyChange}
             />
           </div>
+
+          {/* Rank */}
           <FormField
             control={form.control}
             name="philosophyRank"
@@ -164,7 +166,7 @@ export function PhilosophyCard({
                     placeholder="0"
                     type="number"
                     className={cn(
-                      'w-14 h-14 text-center no-spinners text-3xl sm:text-3xl md:text-3xl'
+                      'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl'
                     )}
                     {...field}
                     value={field.value ?? '0'}
@@ -193,10 +195,11 @@ export function PhilosophyCard({
           <strong>returning survivor</strong> and reach a new Hunt XP milestone,
           you must rank up your philosophy. Limit, once per settlement phase.
         </p>
+      </CardHeader>
 
-        {/* Horizontal Divider */}
-        <hr className="mt-2 mb-1" />
+      <hr className="my-1" />
 
+      <CardContent className="p-2 flex flex-col">
         {/* Neurosis */}
         <FormField
           control={form.control}
@@ -335,12 +338,7 @@ export function PhilosophyCard({
                 <FormControl>
                   <Textarea
                     placeholder="Enter tenet knowledge rules..."
-                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement
-                      target.style.height = 'auto'
-                      target.style.height = `${target.scrollHeight}px`
-                    }}
+                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
                     {...field}
                     value={field.value || ''}
                     onBlur={(e) => {
@@ -373,12 +371,7 @@ export function PhilosophyCard({
                 <FormControl>
                   <Textarea
                     placeholder="Enter observation conditions..."
-                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement
-                      target.style.height = 'auto'
-                      target.style.height = `${target.scrollHeight}px`
-                    }}
+                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
                     {...field}
                     value={field.value || ''}
                     onBlur={(e) => {

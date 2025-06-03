@@ -9,13 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { LightBulbIcon } from '@primer/octicons-react'
-import {
-  FormEvent,
-  KeyboardEvent,
-  ReactElement,
-  useCallback,
-  useMemo
-} from 'react'
+import { KeyboardEvent, ReactElement, useCallback, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -134,33 +128,6 @@ export function KnowledgeCard({
   )
 
   /**
-   * Handles textarea changes - saves on Enter key press.
-   *
-   * @param e Keyboard Event
-   * @param fieldName Field Name
-   * @param value Current Input Value
-   * @param successMsg Success Message
-   */
-  const handleTextareaKeyDown = useCallback(
-    (
-      e: KeyboardEvent<HTMLTextAreaElement>,
-      fieldName: keyof Survivor,
-      value: string,
-      successMsg: string
-    ) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        saveToLocalStorage(
-          fieldName,
-          value,
-          value.trim() ? successMsg : undefined
-        )
-      }
-    },
-    [saveToLocalStorage]
-  )
-
-  /**
    * Handles observation rank changes - saves immediately.
    *
    * @param fieldName Field Name
@@ -177,15 +144,6 @@ export function KnowledgeCard({
     },
     [form, saveToLocalStorage]
   )
-
-  /**
-   * Helper function to handle textarea auto-resize
-   */
-  const handleTextareaInput = (e: FormEvent<HTMLTextAreaElement>) => {
-    const target = e.target as HTMLTextAreaElement
-    target.style.height = 'auto'
-    target.style.height = `${target.scrollHeight}px`
-  }
 
   /**
    * Handle toggling the canUseFightingArtsOrKnowledges checkbox
@@ -254,9 +212,9 @@ export function KnowledgeCard({
   )
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <div className="flex justify-between items-center">
+    <Card className="p-0 border-1 gap-2 h-[615px]">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <div className="flex flex-row justify-between">
           {/* Title */}
           <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             <LightBulbIcon className="h-4 w-4" />
@@ -279,7 +237,7 @@ export function KnowledgeCard({
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 py-0">
+      <CardContent className="p-2 flex flex-col">
         {/* Knowledge 1 */}
         <div className="flex items-start">
           <div className="flex-grow">
@@ -349,18 +307,18 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter knowledge rules..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge1Rules')}
               defaultValue={form.getValues('knowledge1Rules') || ''}
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
+              onBlur={(e) => {
+                saveToLocalStorage(
                   'knowledge1Rules',
-                  e.currentTarget.value,
-                  'The rules of wisdom are inscribed in lantern light.'
+                  e.target.value,
+                  e.target.value.trim()
+                    ? 'The rules of wisdom are inscribed in lantern light.'
+                    : undefined
                 )
-              }
+              }}
             />
             <FormLabel className="text-xs text-muted-foreground">
               Rules
@@ -373,20 +331,20 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter observation conditions..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge1ObservationConditions')}
               defaultValue={
                 form.getValues('knowledge1ObservationConditions') || ''
               }
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
+              onBlur={(e) => {
+                saveToLocalStorage(
                   'knowledge1ObservationConditions',
-                  e.currentTarget.value,
-                  'Observation conditions etched in the darkness.'
+                  e.target.value,
+                  e.target.value.trim()
+                    ? 'Observation conditions etched in the darkness.'
+                    : undefined
                 )
-              }
+              }}
             />
             <FormLabel className="text-xs text-muted-foreground">
               Observation Conditions
@@ -465,18 +423,18 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter knowledge rules..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge2Rules')}
               defaultValue={form.getValues('knowledge2Rules') || ''}
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
+              onBlur={(e) => {
+                saveToLocalStorage(
                   'knowledge2Rules',
-                  e.currentTarget.value,
-                  'The rules of wisdom are inscribed in lantern light.'
+                  e.target.value,
+                  e.target.value.trim()
+                    ? 'The rules of wisdom are inscribed in lantern light.'
+                    : undefined
                 )
-              }
+              }}
             />
             <FormLabel className="text-xs text-muted-foreground">
               Rules
@@ -489,20 +447,20 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter observation conditions..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge2ObservationConditions')}
               defaultValue={
                 form.getValues('knowledge2ObservationConditions') || ''
               }
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
+              onBlur={(e) => {
+                saveToLocalStorage(
                   'knowledge2ObservationConditions',
-                  e.currentTarget.value,
-                  'Observation conditions etched in the darkness.'
+                  e.target.value,
+                  e.target.value.trim()
+                    ? 'Observation conditions etched in the darkness.'
+                    : undefined
                 )
-              }
+              }}
             />
             <FormLabel className="text-xs text-muted-foreground">
               Observation Conditions

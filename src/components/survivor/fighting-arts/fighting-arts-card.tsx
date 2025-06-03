@@ -136,6 +136,16 @@ export function FightingArtsCard({
     })
   )
 
+  const addRegularFightingArt = () => {
+    setNewArtType('regular')
+    setIsAddingNew(true)
+  }
+
+  const addSecretFightingArt = () => {
+    setNewArtType('secret')
+    setIsAddingNew(true)
+  }
+
   /**
    * Save to Local Storage
    *
@@ -170,7 +180,7 @@ export function FightingArtsCard({
             )
         }
 
-        const updatedCampaign = {
+        saveCampaignToLocalStorage({
           ...campaign,
           survivors: campaign.survivors.map((s) =>
             s.id === formValues.id
@@ -181,9 +191,7 @@ export function FightingArtsCard({
                 }
               : s
           )
-        }
-
-        saveCampaignToLocalStorage(updatedCampaign)
+        })
 
         if (successMsg) toast.success(successMsg)
       }
@@ -257,10 +265,10 @@ export function FightingArtsCard({
   }
 
   /**
-   * Handles saving of a new fighting art.
+   * Handles saving of a fighting art.
    *
    * @param value Fighting Art Value
-   * @returns void
+   * @param art Fighting Art (when updating existing)
    */
   const onSave = (value?: string, art?: CombinedFightingArt) => {
     if (!value || value.trim() === '')
@@ -272,15 +280,10 @@ export function FightingArtsCard({
 
       if (art.type === 'regular') {
         const updated = [...fightingArts]
-
         updated[art.originalIndex] = value
         form.setValue(`fightingArts.${art.originalIndex}`, value)
 
-        setDisabledInputs((prev) => ({
-          ...prev,
-          [key]: true
-        }))
-
+        setDisabledInputs((prev) => ({ ...prev, [key]: true }))
         saveToLocalStorage(
           updated,
           secretFightingArts,
@@ -288,15 +291,10 @@ export function FightingArtsCard({
         )
       } else {
         const updated = [...secretFightingArts]
-
         updated[art.originalIndex] = value
         form.setValue(`secretFightingArts.${art.originalIndex}`, value)
 
-        setDisabledInputs((prev) => ({
-          ...prev,
-          [key]: true
-        }))
-
+        setDisabledInputs((prev) => ({ ...prev, [key]: true }))
         saveToLocalStorage(
           fightingArts,
           updated,
@@ -369,39 +367,39 @@ export function FightingArtsCard({
     (checked: boolean) => {
       try {
         const formValues = form.getValues()
-        const campaign = getCampaign()
-        const survivorIndex = campaign.survivors.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+        const updatedValue = !checked
 
-        if (survivorIndex !== -1) {
-          const updatedValue = !checked
-
-          try {
-            SurvivorSchema.shape.canUseFightingArtsOrKnowledges.parse(
-              updatedValue
-            )
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
-              )
-          }
-
-          form.setValue('canUseFightingArtsOrKnowledges', updatedValue)
-
-          campaign.survivors[survivorIndex].canUseFightingArtsOrKnowledges =
+        try {
+          SurvivorSchema.shape.canUseFightingArtsOrKnowledges.parse(
             updatedValue
-          localStorage.setItem('campaign', JSON.stringify(campaign))
-
-          toast.success(
-            updatedValue
-              ? 'The survivor recalls the ways of battle.'
-              : 'The survivor has forgotten their fighting techniques.'
           )
+        } catch (error) {
+          if (error instanceof ZodError && error.errors[0]?.message)
+            return toast.error(error.errors[0].message)
+          else
+            return toast.error(
+              'The darkness swallows your words. Please try again.'
+            )
         }
+
+        form.setValue('canUseFightingArtsOrKnowledges', updatedValue)
+
+        // Save to localStorage using the optimized utility
+        const campaign = getCampaign()
+        saveCampaignToLocalStorage({
+          ...campaign,
+          survivors: campaign.survivors.map((s) =>
+            s.id === formValues.id
+              ? { ...s, canUseFightingArtsOrKnowledges: updatedValue }
+              : s
+          )
+        })
+
+        toast.success(
+          updatedValue
+            ? 'The survivor recalls the ways of battle.'
+            : 'The survivor has forgotten their fighting techniques.'
+        )
       } catch (error) {
         console.error('Fighting Art Toggle Save Error:', error)
         toast.error('The darkness swallows your words. Please try again.')
@@ -509,11 +507,11 @@ export function FightingArtsCard({
     return <></>
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
         <div className="flex justify-between items-center">
           {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+          <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
             <ZapIcon className="h-4 w-4" />
             Fighting Arts &amp; Secret Fighting Arts
             {!isAddingNew && (
@@ -534,18 +532,12 @@ export function FightingArtsCard({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem
-                      onClick={() => {
-                        setNewArtType('regular')
-                        setIsAddingNew(true)
-                      }}
+                      onClick={addRegularFightingArt}
                       disabled={isAtRegularFightingArtLimit()}>
                       Fighting Art
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => {
-                        setNewArtType('secret')
-                        setIsAddingNew(true)
-                      }}
+                      onClick={addSecretFightingArt}
                       disabled={isAtSecretFightingArtLimit()}>
                       Secret Fighting Art
                     </DropdownMenuItem>
@@ -572,8 +564,8 @@ export function FightingArtsCard({
       </CardHeader>
 
       {/* Fighting Arts List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col h-[240px]">
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[120px]">
           <div className="flex-1 overflow-y-auto">
             {/* Regular Fighting Arts */}
             {fightingArts.length !== 0 && (

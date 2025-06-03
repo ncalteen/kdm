@@ -119,10 +119,10 @@ export function WeaponProficiencyCard(
   )
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardContent className="p-2 pb-0">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0">
         <div className="flex flex-row justify-between">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col justify-between">
             <CardTitle className="text-md flex flex-row items-center gap-1">
               <SwordsIcon className="h-4 w-4" />
               Weapon Proficiency
@@ -152,7 +152,7 @@ export function WeaponProficiencyCard(
               ))}
             </div>
 
-            <hr className="mt-3 mb-2" />
+            <hr className="my-3" />
 
             <div className="flex flex-row justify-between gap-2">
               {Array.from({ length: 2 }, (_, i) => (

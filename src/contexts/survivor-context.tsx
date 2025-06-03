@@ -20,6 +20,8 @@ import {
 interface SurvivorContextType {
   selectedSurvivor: Survivor | null
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  isCreatingNewSurvivor: boolean
+  setIsCreatingNewSurvivor: (isCreating: boolean) => void
 }
 
 /**
@@ -41,6 +43,8 @@ export function SurvivorProvider({
 }): ReactElement {
   const [selectedSurvivor, setSelectedSurvivorState] =
     useState<Survivor | null>(survivor)
+  const [isCreatingNewSurvivor, setIsCreatingNewSurvivor] =
+    useState<boolean>(false)
 
   // Load selected survivor from localStorage on mount
   useEffect(() => {
@@ -52,10 +56,18 @@ export function SurvivorProvider({
   const setSelectedSurvivor = (survivor: Survivor | null) => {
     setSelectedSurvivorState(survivor)
     setSelectedSurvivorInStorage(survivor?.id || null)
+    // When selecting a survivor, stop creating mode
+    if (survivor) setIsCreatingNewSurvivor(false)
   }
 
   return (
-    <SurvivorContext.Provider value={{ selectedSurvivor, setSelectedSurvivor }}>
+    <SurvivorContext.Provider
+      value={{
+        selectedSurvivor,
+        setSelectedSurvivor,
+        isCreatingNewSurvivor,
+        setIsCreatingNewSurvivor
+      }}>
       {children}
     </SurvivorContext.Provider>
   )

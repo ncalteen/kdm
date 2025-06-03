@@ -18,7 +18,6 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { PlusIcon } from 'lucide-react'
-import Link from 'next/link'
 import { useRef, useState } from 'react'
 
 /**
@@ -27,8 +26,8 @@ import { useRef, useState } from 'react'
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  settlementId: number
   initialColumnVisibility?: VisibilityState
+  onNewSurvivor?: () => void
 }
 
 /**
@@ -40,8 +39,8 @@ interface DataTableProps<TData, TValue> {
 export function SurvivorDataTable<TData, TValue>({
   columns,
   data,
-  settlementId,
-  initialColumnVisibility = {}
+  initialColumnVisibility = {},
+  onNewSurvivor
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -97,16 +96,15 @@ export function SurvivorDataTable<TData, TValue>({
           className="max-w-sm"
         />
 
-        <Link href={`/survivor/create?settlementId=${settlementId}`}>
-          <Button
-            variant="outline"
-            size="sm"
-            title="Create new survivor"
-            className="h-9">
-            <PlusIcon className="h-4 w-4" />
-            New Survivor
-          </Button>
-        </Link>
+        <Button
+          variant="outline"
+          size="sm"
+          title="Create new survivor"
+          className="h-9"
+          onClick={onNewSurvivor}>
+          <PlusIcon className="h-4 w-4" />
+          New Survivor
+        </Button>
       </div>
 
       <div

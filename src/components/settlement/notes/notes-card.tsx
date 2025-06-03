@@ -76,16 +76,16 @@ export function NotesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 border-0">
-      <CardHeader className="px-2 py-0">
+    <Card className="p-0 pb-1 border-0 h-full flex flex-col">
+      <CardHeader className="px-2 py-0 flex-shrink-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <StickyNoteIcon className="h-4 w-4" /> Notes
         </CardTitle>
       </CardHeader>
 
       {/* Notes Textarea */}
-      <CardContent className="p-1 py-0">
-        <div className="flex flex-col">
+      <CardContent className="p-1 py-0 flex-1 flex flex-col">
+        <div className="flex flex-col h-full">
           <Textarea
             value={draft}
             name="notes"
@@ -93,17 +93,12 @@ export function NotesCard({
             onChange={(e) => {
               setDraft(e.target.value)
               setIsDirty(e.target.value !== notes)
-
-              // Auto-resize textarea
-              const textarea = e.target as HTMLTextAreaElement
-              textarea.style.height = 'auto'
-              textarea.style.height = textarea.scrollHeight + 'px'
             }}
             placeholder="Add notes about your settlement..."
-            className="w-full min-h-[100px] resize-none overflow-hidden"
-            style={{ height: 'auto' }}
+            className="w-full flex-1 resize-none"
+            style={{ minHeight: '200px' }}
           />
-          <div className="flex justify-end pt-1">
+          <div className="flex justify-end pt-1 flex-shrink-0">
             <Button
               type="button"
               size="sm"

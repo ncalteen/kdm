@@ -31,9 +31,6 @@ import { ZodError } from 'zod'
 
 /**
  * Next Departure Card Component
- *
- * @param form Form
- * @returns Next Departure Card Component
  */
 export function NextDepartureCard({
   ...form
@@ -68,12 +65,12 @@ export function NextDepartureCard({
     })
   )
 
-  const addNextDeparture = () => setIsAddingNew(true)
+  const addInnovation = () => setIsAddingNew(true)
 
   /**
    * Save to Local Storage
    *
-   * @param updatedNextDeparture Updated Next Departure Bonuses
+   * @param updatedNextDeparture Updated Next Departure
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (
@@ -118,7 +115,7 @@ export function NextDepartureCard({
   }
 
   /**
-   * Handles the removal of a next departure item.
+   * Handles the removal of a next departure.
    *
    * @param index Next Departure Index
    */
@@ -147,7 +144,7 @@ export function NextDepartureCard({
   }
 
   /**
-   * Handles saving a new next departure bonus.
+   * Handles saving a new next departure.
    *
    * @param value Next Departure Value
    * @param i Next Departure Index (When Updating Only)
@@ -239,33 +236,31 @@ export function NextDepartureCard({
   }
 
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <GiftIcon className="h-4 w-4" />
           Next Departure
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addNextDeparture}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addInnovation}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
 
-      {/* Next Departure Bonus List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col h-[240px]">
+      {/* Next Departure List */}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[150px]">
           <div className="flex-1 overflow-y-auto">
             {nextDeparture.length !== 0 && (
               <DndContext
@@ -275,7 +270,7 @@ export function NextDepartureCard({
                 <SortableContext
                   items={nextDeparture.map((_, index) => index.toString())}
                   strategy={verticalListSortingStrategy}>
-                  {nextDeparture.map((nextDepart, index) => (
+                  {nextDeparture.map((innovation, index) => (
                     <NextDepartureItem
                       key={index}
                       id={index.toString()}

@@ -94,8 +94,8 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardContent className="p-2 pl-1">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0 h-[80px]">
         <div className="flex">
           {/* Insanity */}
           <FormField
@@ -113,7 +113,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                       <Input
                         placeholder="1"
                         type="number"
-                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-2xl sm:text-2xl md:text-2xl text-center p-0 bg-transparent border-none no-spinners"
+                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners"
                         {...field}
                         value={field.value ?? '0'}
                         onChange={(e) => {
@@ -137,7 +137,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
             )}
           />
 
-          <div className="mx-2 w-px bg-border" />
+          <div className="mx-2 w-px bg-border h-[80px]" />
 
           {/* Brain */}
           <div className="relative flex-1 flex flex-col justify-between">
@@ -192,7 +192,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {

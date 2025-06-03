@@ -1,13 +1,12 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { useSurvivor } from '@/contexts/survivor-context'
 import { useTab } from '@/contexts/tab-context'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
-import { UserIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -35,11 +34,21 @@ export function SettlementSurvivorsCard({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
   // Get context hooks for survivor and tab management
-  const { setSelectedSurvivor } = useSurvivor()
+  const { setSelectedSurvivor, setIsCreatingNewSurvivor, selectedSurvivor } = useSurvivor()
   const { setSelectedTab } = useTab()
 
   // Tracks if Arc survivors are in use for this settlement.
   const isArcSurvivorType = survivorType === SurvivorType.ARC
+
+  /**
+   * Handles creating a new survivor
+   */
+  const handleNewSurvivor = useCallback(() => {
+    // Clear any selected survivor
+    setSelectedSurvivor(null)
+    // Set creating mode to true
+    setIsCreatingNewSurvivor(true)
+  }, [setSelectedSurvivor, setIsCreatingNewSurvivor])
 
   /**
    * Deletes a survivor from the campaign data.
@@ -112,34 +121,23 @@ export function SettlementSurvivorsCard({
   useEffect(() => {
     const fetchedSurvivors = getSurvivors(settlementId)
     setSurvivors(fetchedSurvivors)
-  }, [settlementId])
+  }, [settlementId, selectedSurvivor])
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-0 gap-2">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1">
-          <UserIcon className="h-4 w-4" />
-          Survivors
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          <div className="flex-1">
-            {survivors.length === 0 ? (
-              <div className="text-center text-muted-foreground py-4">
-                Silence echoes through the darkness. No survivors present.
-              </div>
-            ) : (
-              <SurvivorDataTable
-                columns={columns}
-                data={survivors}
-                settlementId={settlementId}
-                initialColumnVisibility={columnVisibility}
-              />
-            )}
+    <Card className="p-0 pb-2 mt-2 border-0">
+      <CardContent className="p-0">
+        {survivors.length === 0 ? (
+          <div className="text-center text-muted-foreground py-4">
+            Silence echoes through the darkness. No survivors present.
           </div>
-        </div>
+        ) : (
+          <SurvivorDataTable
+            columns={columns}
+            data={survivors}
+            initialColumnVisibility={columnVisibility}
+            onNewSurvivor={handleNewSurvivor}
+          />
+        )}
       </CardContent>
     </Card>
   )

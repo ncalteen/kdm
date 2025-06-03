@@ -103,7 +103,7 @@ export function NextDepartureItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`nextDeparture.${index}`)}
           </span>
         </div>
@@ -118,8 +118,8 @@ export function NextDepartureItem({
         />
       )}
 
+      {/* Interaction Buttons */}
       <div className="flex items-center gap-1 ml-auto">
-        {/* Interaction Buttons */}
         {isDisabled ? (
           <Button
             type="button"
@@ -155,7 +155,6 @@ export function NextDepartureItem({
  * New Next Departure Item Component
  *
  * @param props New Next Departure Item Component Props
- * @returns New Next Departure Item Component
  */
 export function NewNextDepartureItem({
   onCancel,
@@ -194,7 +193,6 @@ export function NewNextDepartureItem({
         placeholder="Next Departure"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        className="flex-1"
         autoFocus
       />
 

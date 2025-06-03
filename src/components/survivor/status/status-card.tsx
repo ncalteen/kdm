@@ -217,11 +217,12 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
     },
     [form, saveStatusToLocalStorage]
   )
+
   return (
-    <Card className="p-0 pb-1 border-0">
+    <Card className="p-2 border-0 h-[85px]">
       <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex items-center">
+          <div className="flex items-center h-[36px]">
             {/* Survivor Name */}
             <FormField
               control={form.control}
@@ -288,7 +289,7 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
           </div>
         </div>
 
-        <hr className="my-1" />
+        <hr className="my-2" />
 
         {/* Status Section */}
         <div className="flex justify-between items-center">

@@ -127,8 +127,8 @@ export function CourageUnderstandingCard({
     campaignType === CampaignType.PEOPLE_OF_THE_STARS ? 'Awake' : 'Insight'
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardContent className="py-2 px-0">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0">
         <div className="flex flex-wrap justify-between mx-2">
           {/* Courage Section */}
           <div className="flex flex-col">

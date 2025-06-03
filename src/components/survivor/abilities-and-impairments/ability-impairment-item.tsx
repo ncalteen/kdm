@@ -104,7 +104,7 @@ export function AbilityImpairmentItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`abilitiesAndImpairments.${index}`)}
           </span>
         </div>
@@ -119,8 +119,8 @@ export function AbilityImpairmentItem({
         />
       )}
 
+      {/* Interaction Buttons */}
       <div className="flex items-center gap-1 ml-auto">
-        {/* Interaction Buttons */}
         {isDisabled ? (
           <Button
             type="button"
