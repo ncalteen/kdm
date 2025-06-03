@@ -24,6 +24,7 @@ import { SquireProgressionCards } from '@/components/settlement/squires/squire-p
 import { SquireSuspicionsCard } from '@/components/settlement/squires/squire-suspicions-card'
 import { SettlementSurvivorsCard } from '@/components/settlement/survivors/settlement-survivors-card'
 import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
+import { SurvivorForm } from '@/components/survivor/survivor-form'
 import { Form } from '@/components/ui/form'
 import { useSettlement } from '@/contexts/settlement-context'
 import { useSurvivor } from '@/contexts/survivor-context'
@@ -161,9 +162,9 @@ function MainPage(): ReactElement {
       <Form {...settlementForm}>
         <AppHeader {...settlementForm} />
       </Form>
-      <Form {...settlementForm}>
-        <div className="flex flex-1 flex-col h-full">
-          <div className="flex flex-col gap-2 py-2 px-2 flex-1">
+      <div className="flex flex-1 flex-col h-full">
+        <div className="flex flex-col gap-2 py-2 px-2 flex-1">
+          <Form {...settlementForm}>
             {/* Timeline */}
             {selectedTab === 'timeline' && (
               <div className="flex flex-row gap-2">
@@ -279,9 +280,15 @@ function MainPage(): ReactElement {
 
             {/* Notes */}
             {selectedTab === 'notes' && <NotesCard {...settlementForm} />}
-          </div>
+          </Form>
+
+          <Form {...survivorForm}>
+            {selectedTab === 'selectedSurvivor' && (
+              <SurvivorForm survivor={survivorForm.getValues()} />
+            )}
+          </Form>
         </div>
-      </Form>
+      </div>
     </>
   )
 }

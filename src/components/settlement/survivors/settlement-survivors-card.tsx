@@ -1,6 +1,8 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useTab } from '@/contexts/tab-context'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
@@ -31,6 +33,10 @@ export function SettlementSurvivorsCard({
   const [survivors, setSurvivors] = useState<Survivor[]>([])
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+
+  // Get context hooks for survivor and tab management
+  const { setSelectedSurvivor } = useSurvivor()
+  const { setSelectedTab } = useTab()
 
   // Tracks if Arc survivors are in use for this settlement.
   const isArcSurvivorType = survivorType === SurvivorType.ARC
@@ -78,14 +84,21 @@ export function SettlementSurvivorsCard({
   const columns = useMemo(
     () =>
       createColumns({
-        settlementId,
         deleteId,
         isDeleteDialogOpen,
         handleDeleteSurvivor,
         setDeleteId,
-        setIsDeleteDialogOpen
+        setIsDeleteDialogOpen,
+        setSelectedSurvivor,
+        setSelectedTab
       }),
-    [settlementId, deleteId, isDeleteDialogOpen, handleDeleteSurvivor]
+    [
+      deleteId,
+      isDeleteDialogOpen,
+      handleDeleteSurvivor,
+      setSelectedSurvivor,
+      setSelectedTab
+    ]
   )
 
   // Configure column visibility based on survivor type
