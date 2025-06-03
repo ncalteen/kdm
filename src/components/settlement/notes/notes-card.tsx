@@ -107,14 +107,14 @@ export function NotesCard({
 
   return (
     <Card className="p-0 pb-1 border-0">
-      <CardHeader className="px-2 py-1">
+      <CardHeader className="px-2 py-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <StickyNoteIcon className="h-4 w-4" /> Notes
         </CardTitle>
       </CardHeader>
 
       {/* Notes Textarea */}
-      <CardContent className="p-1 pb-0">
+      <CardContent className="p-1 py-0">
         <div className="flex flex-col">
           <Textarea
             value={draft}

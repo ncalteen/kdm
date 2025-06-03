@@ -96,7 +96,7 @@ export function PhilosophyItem({
       {/* Select Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`philosophies.${index}`)}
           </span>
         </div>

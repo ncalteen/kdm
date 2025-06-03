@@ -325,9 +325,9 @@ export function NemesesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <SkullIcon className="h-4 w-4" />
           Nemesis Monsters
           {!isAddingNew && (
@@ -353,39 +353,41 @@ export function NemesesCard({
       </CardHeader>
 
       {/* Nemeses List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {nemeses.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={nemeses.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {nemeses.map((nemesis, index) => (
-                  <NemesisItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
-                    onEdit={onEdit}
-                    onToggleUnlocked={onToggleUnlocked}
-                    onToggleLevel={onToggleLevel}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewNemesisItem
-              onSave={(name, unlocked) => onSave(name, unlocked)}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2">
+        <div className="flex flex-col h-[200px]">
+          <div className="flex-1 overflow-y-auto">
+            {nemeses.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={nemeses.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {nemeses.map((nemesis, index) => (
+                    <NemesisItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
+                      onEdit={onEdit}
+                      onToggleUnlocked={onToggleUnlocked}
+                      onToggleLevel={onToggleLevel}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewNemesisItem
+                onSave={(name, unlocked) => onSave(name, unlocked)}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

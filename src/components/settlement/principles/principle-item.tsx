@@ -125,7 +125,7 @@ export function PrincipleItem({
           {isDisabled ? (
             // Display mode - principle name left, options in columns
             <div className="grid grid-cols-12 items-center gap-2">
-              <div className="col-span-4 text-sm text-left font-bold">
+              <div className="col-span-4 text-xs text-left font-bold">
                 {principle.name}
               </div>
               <div className="col-span-4 flex items-center gap-2">
@@ -135,7 +135,7 @@ export function PrincipleItem({
                     if (checked) handleOptionSelect(index, 1)
                   }}
                 />
-                <span className="text-sm text-left">
+                <span className="text-xs text-left">
                   {principle.option1Name}
                 </span>
               </div>
@@ -148,7 +148,7 @@ export function PrincipleItem({
                     }
                   }}
                 />
-                <span className="text-sm text-left">
+                <span className="text-xs text-left">
                   {principle.option2Name}
                 </span>
               </div>

@@ -32,8 +32,7 @@ This site makes use of your browser's local storage to save your data. This
 means that you can close the tab or even your browser and come back later to
 find your data still there. However, this also means that if you clear your
 browser's local storage, your data will be lost. If you want to back up your
-data, use the `Preserve Settlement Records` button on the
-[Settlements](https://ncalteen.github.io/kdm/settlement/list) page.
+data, use the `Preserve Records` button.
 
 This will download a JSON file containing all of your settlements. You can then
 upload this file later to restore your settlements at any time!

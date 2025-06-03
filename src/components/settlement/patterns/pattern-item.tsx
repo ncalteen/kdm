@@ -103,7 +103,7 @@ export function PatternItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">{form.getValues(`patterns.${index}`)}</span>
+          <span className="text-xs">{form.getValues(`patterns.${index}`)}</span>
         </div>
       ) : (
         <Input
@@ -116,8 +116,8 @@ export function PatternItem({
         />
       )}
 
+      {/* Interaction Buttons */}
       <div className="flex items-center gap-1 ml-auto">
-        {/* Interaction Buttons */}
         {isDisabled ? (
           <Button
             type="button"
@@ -188,7 +188,7 @@ export function NewPatternItem({
       {/* Input Field */}
       <Input
         ref={inputRef}
-        placeholder="Pattern"
+        placeholder="Add a pattern..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"

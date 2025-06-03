@@ -328,9 +328,9 @@ export function PrinciplesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <StampIcon className="h-4 w-4" />
           Principles
           {!isAddingNew && (
@@ -353,38 +353,40 @@ export function PrinciplesCard({
       </CardHeader>
 
       {/* Principles List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {principles.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={principles.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {principles.map((principle, index) => (
-                  <PrincipleItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    principle={principle}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={onSave}
-                    onEdit={onEdit}
-                    handleOptionSelect={handleOptionSelect}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewPrincipleItem
-              onSave={onSaveNew}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2">
+        <div className="flex flex-col h-[200px]">
+          <div className="flex-1 overflow-y-auto">
+            {principles.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={principles.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {principles.map((principle, index) => (
+                    <PrincipleItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      principle={principle}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={onSave}
+                      onEdit={onEdit}
+                      handleOptionSelect={handleOptionSelect}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewPrincipleItem
+                onSave={onSaveNew}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

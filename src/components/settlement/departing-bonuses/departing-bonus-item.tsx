@@ -103,7 +103,7 @@ export function DepartingBonusItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`departingBonuses.${index}`)}
           </span>
         </div>
@@ -125,7 +125,6 @@ export function DepartingBonusItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="ml-2"
             onClick={() => onEdit(index)}
             title="Edit bonus">
             <PencilIcon className="h-4 w-4" />
@@ -135,7 +134,6 @@ export function DepartingBonusItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="ml-2"
             onClick={() => onSave(inputRef.current!.value, index)}
             title="Save bonus">
             <CheckIcon className="h-4 w-4" />

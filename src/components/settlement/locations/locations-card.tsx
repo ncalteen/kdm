@@ -222,7 +222,8 @@ export function LocationsCard({
       updatedLocations,
       i !== undefined
         ? 'The location has been updated.'
-        : 'A new location illuminates within settlement.'
+        : 'A new location illuminates within settlement.',
+      true
     )
     setIsAddingNew(false)
   }
@@ -288,9 +289,9 @@ export function LocationsCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <HouseIcon className="h-4 w-4" />
           Locations
           {!isAddingNew && (
@@ -311,38 +312,40 @@ export function LocationsCard({
       </CardHeader>
 
       {/* Locations List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {locations.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={locations.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {locations.map((location, index) => (
-                  <LocationItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
-                    onToggleUnlocked={onToggleUnlocked}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewLocationItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[400px]">
+          <div className="flex-1 overflow-y-auto">
+            {locations.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={locations.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {locations.map((location, index) => (
+                    <LocationItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
+                      onToggleUnlocked={onToggleUnlocked}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewLocationItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

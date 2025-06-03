@@ -617,110 +617,112 @@ export function FightingArtsCard({
 
       {/* Fighting Arts List */}
       <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {/* Regular Fighting Arts */}
-          {fightingArts.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={(event) => handleDragEnd(event, 'regular')}>
-              <SortableContext
-                items={fightingArts.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {fightingArts.map((art, index) => (
-                  <FightingArtItem
-                    key={`regular-${index}`}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    arrayName="fightingArts"
-                    onRemove={() =>
-                      onRemove({
-                        value: art,
-                        type: 'regular',
-                        originalIndex: index
-                      })
-                    }
-                    isDisabled={!!disabledInputs[`regular-${index}`]}
-                    onSave={(value) =>
-                      onSave(value, {
-                        value: art,
-                        type: 'regular',
-                        originalIndex: index
-                      })
-                    }
-                    onEdit={() =>
-                      onEdit({
-                        value: art,
-                        type: 'regular',
-                        originalIndex: index
-                      })
-                    }
-                    placeholder="Fighting Art"
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
+        <div className="flex flex-col h-[240px]">
+          <div className="flex-1 overflow-y-auto">
+            {/* Regular Fighting Arts */}
+            {fightingArts.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => handleDragEnd(event, 'regular')}>
+                <SortableContext
+                  items={fightingArts.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {fightingArts.map((art, index) => (
+                    <FightingArtItem
+                      key={`regular-${index}`}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      arrayName="fightingArts"
+                      onRemove={() =>
+                        onRemove({
+                          value: art,
+                          type: 'regular',
+                          originalIndex: index
+                        })
+                      }
+                      isDisabled={!!disabledInputs[`regular-${index}`]}
+                      onSave={(value) =>
+                        onSave(value, {
+                          value: art,
+                          type: 'regular',
+                          originalIndex: index
+                        })
+                      }
+                      onEdit={() =>
+                        onEdit({
+                          value: art,
+                          type: 'regular',
+                          originalIndex: index
+                        })
+                      }
+                      placeholder="Fighting Art"
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
 
-          {/* Secret Fighting Arts */}
-          {secretFightingArts.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={(event) => handleDragEnd(event, 'secret')}>
-              <SortableContext
-                items={secretFightingArts.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {secretFightingArts.map((art, index) => (
-                  <FightingArtItem
-                    key={`secret-${index}`}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    arrayName="secretFightingArts"
-                    onRemove={() =>
-                      onRemove({
-                        value: art,
-                        type: 'secret',
-                        originalIndex: index
-                      })
-                    }
-                    isDisabled={!!disabledInputs[`secret-${index}`]}
-                    onSave={(value) =>
-                      onSave(value, {
-                        value: art,
-                        type: 'secret',
-                        originalIndex: index
-                      })
-                    }
-                    onEdit={() =>
-                      onEdit({
-                        value: art,
-                        type: 'secret',
-                        originalIndex: index
-                      })
-                    }
-                    placeholder="Secret Fighting Art"
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
+            {/* Secret Fighting Arts */}
+            {secretFightingArts.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => handleDragEnd(event, 'secret')}>
+                <SortableContext
+                  items={secretFightingArts.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {secretFightingArts.map((art, index) => (
+                    <FightingArtItem
+                      key={`secret-${index}`}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      arrayName="secretFightingArts"
+                      onRemove={() =>
+                        onRemove({
+                          value: art,
+                          type: 'secret',
+                          originalIndex: index
+                        })
+                      }
+                      isDisabled={!!disabledInputs[`secret-${index}`]}
+                      onSave={(value) =>
+                        onSave(value, {
+                          value: art,
+                          type: 'secret',
+                          originalIndex: index
+                        })
+                      }
+                      onEdit={() =>
+                        onEdit({
+                          value: art,
+                          type: 'secret',
+                          originalIndex: index
+                        })
+                      }
+                      placeholder="Secret Fighting Art"
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
 
-          {/* Add New Fighting Art */}
-          {isAddingNew && (
-            <NewFightingArtItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-              placeholder={
-                newArtType === 'regular'
-                  ? 'Fighting Art'
-                  : 'Secret Fighting Art'
-              }
-              artType={newArtType}
-            />
-          )}
+            {/* Add New Fighting Art */}
+            {isAddingNew && (
+              <NewFightingArtItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+                placeholder={
+                  newArtType === 'regular'
+                    ? 'Fighting Art'
+                    : 'Secret Fighting Art'
+                }
+                artType={newArtType}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -75,18 +75,18 @@ export const createColumns = ({
   },
   {
     accessorKey: 'gender',
-    header: () => <div className="font-bold text-left">Gender</div>,
+    header: () => <div className="font-bold text-center">Gender</div>,
     cell: ({ row }) => (
-      <div className="text-left text-xs">
+      <div className="text-center text-xs">
         <Badge variant="outline">{row.getValue('gender')}</Badge>
       </div>
     )
   },
   {
     accessorKey: 'huntXP',
-    header: () => <div className="font-bold text-left">Hunt XP</div>,
+    header: () => <div className="font-bold text-center">Hunt XP</div>,
     cell: ({ row }) => (
-      <div className="text-left text-xs">
+      <div className="text-center text-xs">
         <Badge variant="outline">{row.getValue('huntXP')}</Badge>
       </div>
     )
@@ -100,21 +100,27 @@ export const createColumns = ({
   },
   {
     accessorKey: 'retired',
-    header: () => <div className="font-bold text-left">Retired</div>,
-    cell: ({}) => (
-      <Badge variant="secondary" className="text-xs h-8 w-8">
-        <ShieldOffIcon />
-      </Badge>
-    )
+    header: () => <div className="font-bold text-center">Retired</div>,
+    cell: ({ row }) =>
+      row.getValue('retired') && (
+        <div className="text-center">
+          <Badge variant="secondary" className="text-xs h-8 w-8">
+            <ShieldOffIcon />
+          </Badge>
+        </div>
+      )
   },
   {
     accessorKey: 'dead',
-    header: () => <div className="font-bold text-left">Dead</div>,
-    cell: ({}) => (
-      <Badge variant="destructive" className="text-xs h-8 w-8">
-        <SkullIcon />
-      </Badge>
-    )
+    header: () => <div className="font-bold text-center">Dead</div>,
+    cell: ({ row }) =>
+      row.getValue('retired') && (
+        <div className="text-center">
+          <Badge variant="destructive" className="text-xs h-8 w-8">
+            <SkullIcon />
+          </Badge>
+        </div>
+      )
   },
   {
     id: 'actions',

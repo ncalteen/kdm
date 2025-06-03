@@ -262,7 +262,8 @@ export function ResourcesCard({
       updatedResources,
       i !== undefined
         ? 'The resource has been updated.'
-        : 'A resource has been added to settlement storage.'
+        : 'A resource has been added to settlement storage.',
+      true
     )
     setIsAddingNew(false)
   }
@@ -308,9 +309,9 @@ export function ResourcesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <BeefIcon className="h-4 w-4" />
           Resource Storage
           {!isAddingNew && (
@@ -333,42 +334,44 @@ export function ResourcesCard({
       </CardHeader>
 
       {/* Resources List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col gap-1">
-          {resources.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={resources.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {resources.map((_, index) => (
-                  <ResourceItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(i, name, category, types, amount) =>
-                      onSave(name, category, types, amount, i)
-                    }
-                    onEdit={onEdit}
-                    onAmountChange={onAmountChange}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewResourceItem
-              onSave={(name, category, types, amount) =>
-                onSave(name, category, types, amount)
-              }
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="h-[200px] overflow-y-auto">
+          <div className="space-y-1">
+            {resources.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={resources.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {resources.map((_, index) => (
+                    <ResourceItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(i, name, category, types, amount) =>
+                        onSave(name, category, types, amount, i)
+                      }
+                      onEdit={onEdit}
+                      onAmountChange={onAmountChange}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewResourceItem
+                onSave={(name, category, types, amount) =>
+                  onSave(name, category, types, amount)
+                }
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

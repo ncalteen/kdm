@@ -75,9 +75,9 @@ export function SurvivorDataTable<TData, TValue>({
   })
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex flex-col gap-2 flex-shrink-0">
+        <div className="flex justify-between items-center pb-4">
           <Input
             placeholder="Filter survivors..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -98,7 +98,9 @@ export function SurvivorDataTable<TData, TValue>({
             </Button>
           </Link>
         </div>
+      </div>
 
+      <div className="flex-1 overflow-auto">
         <div className="rounded-md border-0">
           <Table>
             <TableHeader>

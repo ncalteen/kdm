@@ -268,9 +268,9 @@ export function MonsterVolumesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <BookOpenIcon className="h-4 w-4" />
           Monster Volumes
           {!isAddingNew && (
@@ -291,37 +291,39 @@ export function MonsterVolumesCard({
       </CardHeader>
 
       {/* Monster Volumes List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {monsterVolumes.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={monsterVolumes.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {monsterVolumes.map((volume, index) => (
-                  <MonsterVolumeItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewMonsterVolumeItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[200px]">
+          <div className="flex-1 overflow-y-auto">
+            {monsterVolumes.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={monsterVolumes.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {monsterVolumes.map((volume, index) => (
+                    <MonsterVolumeItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewMonsterVolumeItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -9,10 +9,11 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { useSettlement } from '@/contexts/settlement-context'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import {
   getCampaign,
-  getLostSettlementCount,
   getSurvivors,
   saveCampaignToLocalStorage
 } from '@/lib/utils'
@@ -32,33 +33,39 @@ import { ZodError } from 'zod'
  * @returns Population Card Component
  */
 export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
-  const settlementId = form.watch('id')
-  const survivorType = form.watch('survivorType')
-  const campaignType = form.watch('campaignType')
-  const isArcCampaign = survivorType === SurvivorType.ARC
+  const settlement = useSettlement().selectedSettlement
+  const isArcCampaign = settlement?.survivorType === SurvivorType.ARC
   const isLanternCampaign =
-    campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-    campaignType === CampaignType.PEOPLE_OF_THE_SUN
+    settlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+    settlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN
 
   // Watch for changes to nemesis victories, quarry victories for ARC campaigns
-  const watchedNemeses = form.watch('nemeses')
-  const watchedQuarries = form.watch('quarries')
-  const nemeses = useMemo(() => watchedNemeses || [], [watchedNemeses])
-  const quarries = useMemo(() => watchedQuarries || [], [watchedQuarries])
+  const nemeses = useMemo(
+    () => (settlement ? settlement.nemeses : []),
+    [settlement]
+  )
+  const quarries = useMemo(
+    () => (settlement ? settlement.quarries : []),
+    [settlement]
+  )
+
+  //, nemeses, quarries, setValue])
+
+  // Extract setValue function to avoid form dependency
+  const setValue = form.setValue
 
   useEffect(() => {
-    const survivors = getSurvivors(settlementId)
+    const survivors = getSurvivors(settlement?.id)
 
-    form.setValue(
+    setValue(
       'population',
       survivors ? survivors.filter((survivor) => !survivor.dead).length : 0
     )
-    form.setValue(
+    setValue(
       'deathCount',
       survivors ? survivors.filter((survivor) => survivor.dead).length : 0
     )
-    form.setValue('lostSettlements', getLostSettlementCount())
-  }, [settlementId, form])
+  }, [settlement?.id, setValue])
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
@@ -90,8 +97,8 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
         if (level3Victory) totalCc += 3
     }
 
-    form.setValue('ccValue', totalCc)
-  }, [isArcCampaign, nemeses, quarries, form])
+    setValue('ccValue', totalCc)
+  }, [isArcCampaign, nemeses, quarries, setValue])
 
   // Reference to the debounce timeout
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -173,21 +180,21 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
   )
 
   return (
-    <Card className="border-0 p-0">
+    <Card className="border-0 p-0 py-2">
       <CardContent>
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center justify-between gap-4">
           {/* Survival Limit */}
           <FormField
             control={form.control}
             name="survivalLimit"
             render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
                       placeholder="1"
-                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
@@ -211,19 +218,22 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
             )}
           />
 
-          <div className="sm:h-12 w-px bg-border" />
+          <Separator
+            orientation="vertical"
+            className="mx-2 data-[orientation=vertical]:h-12"
+          />
 
           {/* Population */}
           <FormField
             control={form.control}
             name="population"
             render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -238,19 +248,22 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
             )}
           />
 
-          <div className="sm:h-12 w-px bg-border" />
+          <Separator
+            orientation="vertical"
+            className="mx-2 data-[orientation=vertical]:h-12"
+          />
 
           {/* Death Count */}
           <FormField
             control={form.control}
             name="deathCount"
             render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -265,20 +278,23 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
             )}
           />
 
-          <div className="sm:h-12 w-px bg-border" />
+          <Separator
+            orientation="vertical"
+            className="mx-2 data-[orientation=vertical]:h-12"
+          />
 
           {/* Lost Settlement Count */}
           <FormField
             control={form.control}
             name="lostSettlements"
             render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
                       placeholder="0"
-                      className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -296,18 +312,21 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
           {/* Collective Cognition (ARC only) */}
           {isArcCampaign && (
             <>
-              <div className="sm:h-12 w-px bg-border" />
+              <Separator
+                orientation="vertical"
+                className="mx-2 data-[orientation=vertical]:h-12"
+              />
 
               <FormField
                 control={form.control}
                 name="ccValue"
                 render={({ field }) => (
-                  <FormItem className="flex-1 flex justify-center">
+                  <FormItem>
                     <div className="flex flex-col items-center gap-1">
                       <FormControl>
                         <Input
                           type="number"
-                          className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
                           disabled
@@ -327,19 +346,22 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
           {/* Lantern Research Level (People of the Lantern/Sun only) */}
           {isLanternCampaign && (
             <>
-              <div className="sm:h-12 w-px bg-border" />
+              <Separator
+                orientation="vertical"
+                className="mx-2 data-[orientation=vertical]:h-12"
+              />
 
               <FormField
                 control={form.control}
                 name="lanternResearchLevel"
                 render={({ field }) => (
-                  <FormItem className="flex-1 flex justify-center">
+                  <FormItem>
                     <div className="flex flex-col items-center gap-1">
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="0"
-                          className="w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {

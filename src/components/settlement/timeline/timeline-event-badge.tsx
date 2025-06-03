@@ -48,15 +48,15 @@ export const TimelineEventBadge = memo(
           isCompleted
             ? 'opacity-70 cursor-default'
             : 'cursor-pointer hover:bg-accent'
-        }`}
+        } text-xs px-1.5 py-0.5 h-5 gap-1`}
         onClick={handleClick}>
         {entry.toLowerCase().startsWith('nemesis') ||
         entry.toLowerCase().startsWith('special showdown') ? (
-          <SwordsIcon className="h-3 w-3" />
+          <SwordsIcon className="h-2.5 w-2.5" />
         ) : (
-          <BookOpenIcon className="h-3 w-3" />
+          <BookOpenIcon className="h-2.5 w-2.5" />
         )}
-        <span>{entry}</span>
+        <span className="text-xs leading-none">{entry}</span>
       </Badge>
     )
   }

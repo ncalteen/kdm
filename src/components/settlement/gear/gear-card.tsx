@@ -51,10 +51,8 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
+      const timeoutId = saveTimeoutRef.current
+      if (timeoutId) clearTimeout(timeoutId)
     }
   }, [])
 
@@ -205,7 +203,8 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
       updatedGear,
       i !== undefined
         ? 'Gear has been modified.'
-        : 'New gear added to settlement storage.'
+        : 'New gear added to settlement storage.',
+      true
     )
     setIsAddingNew(false)
   }
@@ -251,9 +250,9 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <WrenchIcon className="h-4 w-4" />
           Gear Storage
           {!isAddingNew && (
@@ -276,37 +275,39 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
       </CardHeader>
 
       {/* Gear List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {gear.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={gear.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {gear.map((gearItem, index) => (
-                  <GearItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewGearItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="h-[200px] overflow-y-auto">
+          <div className="space-y-1">
+            {gear.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={gear.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {gear.map((gearItem, index) => (
+                    <GearItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewGearItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

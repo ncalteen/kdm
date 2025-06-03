@@ -1,63 +1,75 @@
 'use client'
 
 import {
-  DisorderItem,
-  NewDisorderItem
-} from '@/components/survivor/disorders/disorder-item'
+  ArrivalBonusItem,
+  NewArrivalBonusItem
+} from '@/components/settlement/arrival-bonuses/arrival-bonus-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
-  closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { BrainCircuitIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { MapPinPlusIcon, PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
 /**
- * Disorders Card Component
- *
- * @param form Form
- * @returns Disorders Card Component
+ * Arrival Bonuses Card Component
  */
-export function DisordersCard({
+export function ArrivalBonusesCard({
   ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const watchedDisorders = form.watch('disorders')
-  const disorders = useMemo(() => watchedDisorders || [], [watchedDisorders])
-  const MAX_DISORDERS = 3
+}: UseFormReturn<Settlement>): ReactElement {
+  const watchedArrivalBonuses = form.watch('arrivalBonuses')
+  const arrivalBonuses = useMemo(
+    () => watchedArrivalBonuses || [],
+    [watchedArrivalBonuses]
+  )
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        saveTimeoutRef.current = null
+      }
+    }
+  }, [])
+
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      disorders.forEach((_, i) => {
+      arrivalBonuses.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [disorders])
+  }, [arrivalBonuses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -66,29 +78,29 @@ export function DisordersCard({
     })
   )
 
-  const addDisorder = () => setIsAddingNew(true)
+  const addBonus = () => setIsAddingNew(true)
 
   /**
-   * Save disorders to localStorage for the current survivor, with Zod
-   * validation and toast feedback.
+   * Save arrival bonuses to localStorage for the current settlement, with
+   * Zod validation and toast feedback.
    *
-   * @param updatedDisorders Updated disorders array
-   * @param successMsg Success message for toast
+   * @param updatedArrivalBonuses Updated Arrival Bonuses
+   * @param successMsg Success Message
    */
   const saveToLocalStorage = (
-    updatedDisorders: string[],
+    updatedArrivalBonuses: string[],
     successMsg?: string
   ) => {
     try {
       const formValues = form.getValues()
       const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
+      const settlementIndex = campaign.settlements.findIndex(
         (s: { id: number }) => s.id === formValues.id
       )
 
-      if (survivorIndex !== -1) {
+      if (settlementIndex !== -1) {
         try {
-          SurvivorSchema.shape.disorders.parse(updatedDisorders)
+          SettlementSchema.shape.arrivalBonuses.parse(updatedArrivalBonuses)
         } catch (error) {
           if (error instanceof ZodError && error.errors[0]?.message)
             return toast.error(error.errors[0].message)
@@ -98,27 +110,28 @@ export function DisordersCard({
             )
         }
 
-        campaign.survivors[survivorIndex].disorders = updatedDisorders
+        campaign.settlements[settlementIndex].arrivalBonuses =
+          updatedArrivalBonuses
         localStorage.setItem('campaign', JSON.stringify(campaign))
 
         if (successMsg) toast.success(successMsg)
       }
     } catch (error) {
-      console.error('Disorder Save Error:', error)
+      console.error('Arrival Bonus Save Error:', error)
       toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
   /**
-   * Handles the removal of a disorder.
+   * Handles the removal of a arrival bonus.
    *
-   * @param index Disorder Index
+   * @param index Arrival Bonus Index
    */
   const onRemove = (index: number) => {
-    const currentDisorders = [...disorders]
+    const currentArrivalBonuses = [...arrivalBonuses]
 
-    currentDisorders.splice(index, 1)
-    form.setValue('disorders', currentDisorders)
+    currentArrivalBonuses.splice(index, 1)
+    form.setValue('arrivalBonuses', currentArrivalBonuses)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -132,27 +145,21 @@ export function DisordersCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentDisorders,
-      'The survivor has overcome their disorder.'
-    )
+    saveToLocalStorage(currentArrivalBonuses, 'A blessing fades into the void.')
   }
 
   /**
-   * Handles saving a new disorder.
+   * Handles saving arrival bonus.
    *
-   * @param value Disorder Value
-   * @param i Disorder Index (When Updating Only)
+   * @param value Arrival Bonus Value
+   * @param i Arrival Bonus Index (When Updating Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless disorder cannot be recorded.')
-
-    if (i === undefined && disorders.length >= MAX_DISORDERS)
-      return toast.error('A survivor can have at most 3 disorders.')
+      return toast.error('A nameless blessing cannot be recorded.')
 
     try {
-      SurvivorSchema.shape.disorders.parse([value])
+      SettlementSchema.shape.arrivalBonuses.parse([value])
     } catch (error) {
       if (error instanceof ZodError) return toast.error(error.errors[0].message)
       else
@@ -161,12 +168,12 @@ export function DisordersCard({
         )
     }
 
-    const updatedDisorders = [...disorders]
+    const updatedArrivalBonuses = [...arrivalBonuses]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedDisorders[i] = value
-      form.setValue(`disorders.${i}`, value)
+      updatedArrivalBonuses[i] = value
+      form.setValue(`arrivalBonuses.${i}`, value)
 
       setDisabledInputs((prev) => ({
         ...prev,
@@ -174,35 +181,35 @@ export function DisordersCard({
       }))
     } else {
       // Adding a new value
-      updatedDisorders.push(value)
+      updatedArrivalBonuses.push(value)
 
-      form.setValue('disorders', updatedDisorders)
+      form.setValue('arrivalBonuses', updatedArrivalBonuses)
 
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedDisorders.length - 1]: true
+        [updatedArrivalBonuses.length - 1]: true
       }))
     }
 
     saveToLocalStorage(
-      updatedDisorders,
+      updatedArrivalBonuses,
       i !== undefined
-        ? 'The disorder has been updated.'
-        : 'The survivor gains a new disorder.'
+        ? 'The blessing has been inscribed.'
+        : 'A new blessing graces your settlement.'
     )
     setIsAddingNew(false)
   }
 
   /**
-   * Enables editing a value.
+   * Enables editing a arrival bonus.
    *
-   * @param index Disorder Index
+   * @param index Arrival Bonus Index
    */
   const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handles the end of a drag event for reordering arrival bonuses.
    *
    * @param event Drag End Event
    */
@@ -212,9 +219,9 @@ export function DisordersCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(disorders, oldIndex, newIndex)
+      const newOrder = arrayMove(arrivalBonuses, oldIndex, newIndex)
 
-      form.setValue('disorders', newOrder)
+      form.setValue('arrivalBonuses', newOrder)
       saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
@@ -234,22 +241,21 @@ export function DisordersCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          <BrainCircuitIcon className="h-4 w-4" />
-          Disorders
+    <Card className="p-0 pb-1 border-1 w-full gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
+          <MapPinPlusIcon className="h-4 w-4" />
+          Arriving Survivor Bonuses
           {!isAddingNew && (
             <div className="flex justify-center">
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
-                onClick={addDisorder}
+                onClick={addBonus}
                 className="border-0 h-8 w-8"
                 disabled={
                   isAddingNew ||
-                  disorders.length >= MAX_DISORDERS ||
                   Object.values(disabledInputs).some((v) => v === false)
                 }>
                 <PlusIcon className="h-4 w-4" />
@@ -259,20 +265,20 @@ export function DisordersCard({
         </CardTitle>
       </CardHeader>
 
-      {/* Disorders List */}
+      {/* Arrival Bonuses List */}
       <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[240px]">
           <div className="flex-1 overflow-y-auto">
-            {disorders.length !== 0 && (
+            {arrivalBonuses.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={disorders.map((_, index) => index.toString())}
+                  items={arrivalBonuses.map((_, index) => index.toString())}
                   strategy={verticalListSortingStrategy}>
-                  {disorders.map((disorder, index) => (
-                    <DisorderItem
+                  {arrivalBonuses.map((bonus, index) => (
+                    <ArrivalBonusItem
                       key={index}
                       id={index.toString()}
                       index={index}
@@ -287,7 +293,7 @@ export function DisordersCard({
               </DndContext>
             )}
             {isAddingNew && (
-              <NewDisorderItem
+              <NewArrivalBonusItem
                 onSave={onSave}
                 onCancel={() => setIsAddingNew(false)}
               />

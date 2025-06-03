@@ -303,36 +303,38 @@ export function NextDepartureCard({
 
       {/* Next Departure Bonus List */}
       <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {nextDeparture.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={nextDeparture.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {nextDeparture.map((nextDepart, index) => (
-                  <NextDepartureItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewNextDepartureItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+        <div className="flex flex-col h-[240px]">
+          <div className="flex-1 overflow-y-auto">
+            {nextDeparture.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={nextDeparture.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {nextDeparture.map((nextDepart, index) => (
+                    <NextDepartureItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewNextDepartureItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

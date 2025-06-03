@@ -38,46 +38,59 @@ export function CollectiveCognitionVictoriesCard(
 ): ReactElement {
   const quarries = form.watch('quarries') || []
   const nemeses = form.watch('nemeses') || []
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
-      const currentTimeout = timeoutRef.current
-      if (currentTimeout) {
-        clearTimeout(currentTimeout)
-      }
+      const timeoutId = saveTimeoutRef.current
+      if (timeoutId) clearTimeout(timeoutId)
     }
   }, [])
 
-  const saveToLocalStorageDebounced = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  /**
+   * Debounced save function to reduce localStorage operations
+   *
+   * @param successMsg Success Message
+   * @param immediate Whether to save immediately without debouncing
+   */
+  const saveToLocalStorageDebounced = useCallback(
+    (successMsg?: string, immediate = false) => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
 
-    timeoutRef.current = setTimeout(() => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+      const doSave = () => {
+        try {
+          const formValues = form.getValues()
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
 
-        if (settlementIndex !== -1) {
-          campaign.settlements[settlementIndex].quarries = formValues.quarries
-          campaign.settlements[settlementIndex].nemeses = formValues.nemeses
-          saveCampaignToLocalStorage(campaign)
+          if (settlementIndex !== -1) {
+            campaign.settlements[settlementIndex].quarries = formValues.quarries
+            campaign.settlements[settlementIndex].nemeses = formValues.nemeses
+            saveCampaignToLocalStorage(campaign)
 
-          toast.success("The settlement's legacy grows stronger.")
+            if (successMsg) toast.success(successMsg)
+          }
+        } catch (error) {
+          console.error('CC Victory Save Error:', error)
+          toast.error('The darkness swallows your words. Please try again.')
         }
-      } catch (error) {
-        console.error('CC Victory Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
       }
-    }, 300)
-  }, [form])
+
+      if (immediate) doSave()
+      else saveTimeoutRef.current = setTimeout(doSave, 300)
+    },
+    [form]
+  )
 
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <TrophyIcon className="h-4 w-4" /> Settlement Victories
         </CardTitle>
         <CardDescription className="text-left text-xs">
@@ -86,7 +99,7 @@ export function CollectiveCognitionVictoriesCard(
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="p-1 pb-0">
+      <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col">
           <div>
             <Table>
@@ -128,7 +141,10 @@ export function CollectiveCognitionVictoriesCard(
                                   onCheckedChange={(checked) => {
                                     if (checked !== 'indeterminate') {
                                       field.onChange(checked)
-                                      saveToLocalStorageDebounced()
+                                      saveToLocalStorageDebounced(
+                                        "The settlement's legacy grows stronger.",
+                                        true
+                                      )
                                     }
                                   }}
                                   id={`quarries-${index}-ccPrologue`}
@@ -152,7 +168,10 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorageDebounced()
+                                    saveToLocalStorageDebounced(
+                                      "The settlement's legacy grows stronger.",
+                                      true
+                                    )
                                   }
                                 }}
                                 id={`quarries-${index}-ccLevel1`}

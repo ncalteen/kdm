@@ -5,13 +5,7 @@ import {
   PatternItem
 } from '@/components/settlement/patterns/pattern-item'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import {
@@ -227,7 +221,8 @@ export function PatternsCard({
       updatedPatterns,
       i !== undefined
         ? 'The pattern has been etched into memory.'
-        : 'Insight has granted a new pattern.'
+        : 'Insight has granted a new pattern.',
+      true
     )
     setIsAddingNew(false)
   }
@@ -273,65 +268,62 @@ export function PatternsCard({
   }
 
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <ScissorsLineDashedIcon className="h-4 w-4" />
           Patterns
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addPattern}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addPattern}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
-        <CardDescription className="text-left text-xs text-muted-foreground">
-          Patterns gained only when instructed.
-        </CardDescription>
       </CardHeader>
 
       {/* Patterns List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {patterns.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={patterns.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {patterns.map((pattern, index) => (
-                  <PatternItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewPatternItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[200px]">
+          <div className="flex-1 overflow-y-auto">
+            {patterns.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={patterns.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {patterns.map((pattern, index) => (
+                    <PatternItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewPatternItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

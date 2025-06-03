@@ -23,8 +23,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { LightBulbIcon } from '@primer/octicons-react'
-import { PlusIcon } from 'lucide-react'
+import { LightbulbIcon, PlusIcon } from 'lucide-react'
 import {
   ReactElement,
   useCallback,
@@ -219,7 +218,8 @@ export function InnovationsCard({
       updatedInnovations,
       i !== undefined
         ? 'The innovation has been updated.'
-        : 'The settlement has innovated.'
+        : 'The settlement has innovated.',
+      true
     )
     setIsAddingNew(false)
   }
@@ -265,61 +265,62 @@ export function InnovationsCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          <LightBulbIcon className="h-4 w-4" />
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
+          <LightbulbIcon className="h-4 w-4" />
           Innovations
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addInnovation}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addInnovation}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {innovations.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={innovations.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {innovations.map((innovation, index) => (
-                  <InnovationItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewInnovationItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      {/* Innovations List */}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[400px]">
+          <div className="flex-1 overflow-y-auto">
+            {innovations.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={innovations.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {innovations.map((innovation, index) => (
+                    <InnovationItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewInnovationItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

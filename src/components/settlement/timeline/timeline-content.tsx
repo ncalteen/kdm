@@ -4,7 +4,6 @@ import { TimelineYearRow } from '@/components/settlement/timeline/timeline-year-
 import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { KeyboardEvent, memo, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { FixedSizeList as List } from 'react-window'
 
 /**
  * Timeline Content Component Properties
@@ -94,49 +93,25 @@ export const TimelineContent = memo(
       ]
     )
 
-    // Only use virtualization for timelines with more than 20 items
-    if (timeline.length <= 20) {
-      return (
-        <div>
-          <div
-            className={`grid ${showStoryEventIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} px-2 py-1 text-sm text-left`}>
-            <div>Year</div>
-            {showStoryEventIcon && <div />}
-            <div>Events</div>
-            <div />
-          </div>
-          <div className="flex flex-col">
-            {timeline.map((_, yearIndex) => (
-              <TimelineYearRow
-                key={yearIndex}
-                index={yearIndex}
-                style={{}}
-                data={itemData}
-              />
-            ))}
-          </div>
-        </div>
-      )
-    }
-
     return (
-      <div>
+      <div className="flex flex-col h-full">
         <div
-          className={`grid ${showStoryEventIcon ? 'grid-cols-[80px_40px_1fr_auto]' : 'grid-cols-[80px_1fr_auto]'} px-2 py-1 text-sm text-left`}>
+          className={`grid ${showStoryEventIcon ? 'grid-cols-[60px_30px_1fr_auto]' : 'grid-cols-[60px_1fr_auto]'} px-2 py-0.5 text-sm text-left border-b`}>
           <div>Year</div>
           {showStoryEventIcon && <div />}
           <div>Events</div>
           <div />
         </div>
-        <List
-          height={600}
-          width="100%"
-          itemCount={timeline.length}
-          itemSize={80}
-          itemData={itemData}
-          overscanCount={5}>
-          {TimelineYearRow}
-        </List>
+        <div className="flex-1 overflow-y-auto">
+          {timeline.map((yearData, index) => (
+            <TimelineYearRow
+              key={index}
+              index={index}
+              style={{}}
+              data={itemData}
+            />
+          ))}
+        </div>
       </div>
     )
   }

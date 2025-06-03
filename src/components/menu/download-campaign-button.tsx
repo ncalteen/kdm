@@ -41,7 +41,7 @@ export function DownloadCampaignButton() {
       toast.success('Settlement records preserved!')
     } catch (error) {
       console.error('Download Campaign Error:', error)
-      toast.error('Failed to preserve settlement records. Please try again.')
+      toast.error('Failed to preserve records. Please try again.')
     } finally {
       setIsDownloading(false)
     }
@@ -55,7 +55,7 @@ export function DownloadCampaignButton() {
       size="sm"
       className="w-full sm:w-auto">
       <DownloadIcon className="h-4 w-4" />
-      Preserve Settlement Records
+      Preserve Records
     </Button>
   )
 }

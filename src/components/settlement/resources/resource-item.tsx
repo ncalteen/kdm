@@ -156,7 +156,7 @@ export function ResourceItem({
           {isDisabled ? (
             <div className="grid grid-cols-12 items-center gap-2">
               {/* Form Fields */}
-              <div className="col-span-4 text-sm text-left font-bold">
+              <div className="col-span-4 text-xs text-left font-bold">
                 {resource?.name}
               </div>
               <div className="col-span-2">
@@ -182,7 +182,7 @@ export function ResourceItem({
               </div>
 
               {/* Action Buttons */}
-              <div className="col-span-2">
+              <div className="col-span-2 text-right">
                 <Button
                   type="button"
                   variant="ghost"
@@ -324,7 +324,7 @@ export function NewResourceItem({
         <div className="col-span-4 text-sm text-left font-bold">
           <Input
             ref={nameInputRef}
-            placeholder="Resource Name"
+            placeholder="Add a resource..."
             defaultValue={''}
             onKeyDown={handleKeyDown}
             autoFocus

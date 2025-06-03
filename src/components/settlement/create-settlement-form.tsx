@@ -19,7 +19,8 @@ import {
   getCampaign,
   getCampaignData,
   getLostSettlementCount,
-  getNextSettlementId
+  getNextSettlementId,
+  saveCampaignToLocalStorage
 } from '@/lib/utils'
 import {
   BaseSettlementSchema,
@@ -157,8 +158,11 @@ export function CreateSettlementForm(): ReactElement {
       // Add the new settlement to the campaign
       campaign.settlements.push(values)
 
+      // Set the newly created settlement as selected
+      campaign.selectedSettlementId = values.id
+
       // Save the updated campaign to localStorage
-      localStorage.setItem('campaign', JSON.stringify(campaign))
+      saveCampaignToLocalStorage(campaign)
 
       // Update the selected settlement in the context
       setSelectedSettlement(values)

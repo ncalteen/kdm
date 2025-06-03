@@ -103,7 +103,7 @@ export function InnovationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`innovations.${index}`)}
           </span>
         </div>
@@ -114,7 +114,6 @@ export function InnovationItem({
           defaultValue={form.getValues(`innovations.${index}`)}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          className="flex-1"
           autoFocus
         />
       )}
@@ -191,7 +190,7 @@ export function NewInnovationItem({
       {/* Input Field */}
       <Input
         ref={inputRef}
-        placeholder="Innovation"
+        placeholder="Add an innovation..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"

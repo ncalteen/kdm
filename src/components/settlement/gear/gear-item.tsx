@@ -103,12 +103,12 @@ export function GearItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">{form.getValues(`gear.${index}`)}</span>
+          <span className="text-xs">{form.getValues(`gear.${index}`)}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
-          placeholder="Gear item"
+          placeholder="Add gear..."
           defaultValue={form.getValues(`gear.${index}`)}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
@@ -188,7 +188,7 @@ export function NewGearItem({
       {/* Input Field */}
       <Input
         ref={inputRef}
-        placeholder="Gear item"
+        placeholder="Add gear..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"

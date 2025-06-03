@@ -356,38 +356,42 @@ export function AbilitiesAndImpairmentsCard({
 
       {/* Abilities/Impairments List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
-          {abilitiesAndImpairments.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={abilitiesAndImpairments.map((_, index) =>
-                  index.toString()
-                )}
-                strategy={verticalListSortingStrategy}>
-                {abilitiesAndImpairments.map((ability, index) => (
-                  <AbilityImpairmentItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewAbilityImpairmentItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+        <div className="flex flex-col h-[240px]">
+          <div className="flex-1 overflow-y-auto">
+            <div className="space-y-1">
+              {abilitiesAndImpairments.length !== 0 && (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}>
+                  <SortableContext
+                    items={abilitiesAndImpairments.map((_, index) =>
+                      index.toString()
+                    )}
+                    strategy={verticalListSortingStrategy}>
+                    {abilitiesAndImpairments.map((ability, index) => (
+                      <AbilityImpairmentItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              )}
+              {isAddingNew && (
+                <NewAbilityImpairmentItem
+                  onSave={onSave}
+                  onCancel={() => setIsAddingNew(false)}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

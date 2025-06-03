@@ -292,9 +292,9 @@ export function MilestonesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <BadgeCheckIcon className="h-4 w-4" />
           Milestones
           {!isAddingNew && (
@@ -317,39 +317,41 @@ export function MilestonesCard({
       </CardHeader>
 
       {/* Milestones List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {milestones.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={milestones.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {milestones.map((milestone, index) => (
-                  <MilestoneItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    milestone={milestone}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(i, name, event) => onSave(name, event, i)}
-                    onEdit={onEdit}
-                    onToggleComplete={onToggleComplete}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewMilestoneItem
-              onSave={(name, event) => onSave(name, event)}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2">
+        <div className="flex flex-col h-[200px]">
+          <div className="flex-1 overflow-y-auto">
+            {milestones.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={milestones.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {milestones.map((milestone, index) => (
+                    <MilestoneItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      milestone={milestone}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(i, name, event) => onSave(name, event, i)}
+                      onEdit={onEdit}
+                      onToggleComplete={onToggleComplete}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewMilestoneItem
+                onSave={(name, event) => onSave(name, event)}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -102,7 +102,7 @@ export function SettlementSurvivorsCard({
   }, [settlementId])
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
+    <Card className="p-0 pb-1 mt-2 border-0 gap-2 h-full">
       <CardHeader className="px-2 py-1">
         <CardTitle className="text-md flex flex-row items-center gap-1">
           <UserIcon className="h-4 w-4" />
@@ -111,18 +111,22 @@ export function SettlementSurvivorsCard({
       </CardHeader>
 
       <CardContent className="p-1 pb-0">
-        {survivors.length === 0 ? (
-          <div className="text-center text-muted-foreground py-4">
-            Silence echoes through the darkness. No survivors present.
+        <div className="flex flex-col">
+          <div className="flex-1 overflow-hidden">
+            {survivors.length === 0 ? (
+              <div className="text-center text-muted-foreground py-4">
+                Silence echoes through the darkness. No survivors present.
+              </div>
+            ) : (
+              <SurvivorDataTable
+                columns={columns}
+                data={survivors}
+                settlementId={settlementId}
+                initialColumnVisibility={columnVisibility}
+              />
+            )}
           </div>
-        ) : (
-          <SurvivorDataTable
-            columns={columns}
-            data={survivors}
-            settlementId={settlementId}
-            initialColumnVisibility={columnVisibility}
-          />
-        )}
+        </div>
       </CardContent>
     </Card>
   )

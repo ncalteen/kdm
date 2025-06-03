@@ -1,11 +1,17 @@
 'use client'
 
+import {
+  getCampaign,
+  getSelectedSettlement,
+  setSelectedSettlement as setSelectedSettlementInStorage
+} from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import {
   createContext,
   ReactElement,
   ReactNode,
   useContext,
+  useEffect,
   useState
 } from 'react'
 
@@ -34,8 +40,30 @@ export function SettlementProvider({
   settlement: Settlement | null
   children: ReactNode
 }): ReactElement {
-  const [selectedSettlement, setSelectedSettlement] =
+  const [selectedSettlement, setSelectedSettlementState] =
     useState<Settlement | null>(settlement)
+
+  // Load selected settlement from localStorage on mount
+  useEffect(() => {
+    const savedSelectedSettlement = getSelectedSettlement()
+    if (savedSelectedSettlement)
+      setSelectedSettlementState(savedSelectedSettlement)
+    else {
+      // If no selected settlement found, clear any stale localStorage reference
+      const campaign = getCampaign()
+
+      if (campaign.selectedSettlementId) {
+        campaign.selectedSettlementId = undefined
+        setSelectedSettlementInStorage(null)
+      }
+    }
+  }, [])
+
+  // Function to update selected settlement and persist to localStorage
+  const setSelectedSettlement = (settlement: Settlement | null) => {
+    setSelectedSettlementState(settlement)
+    setSelectedSettlementInStorage(settlement?.id || null)
+  }
 
   return (
     <SettlementContext.Provider

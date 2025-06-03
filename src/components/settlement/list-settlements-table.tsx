@@ -2,7 +2,8 @@
 
 import { createColumns } from '@/components/settlement/list-settlements/columns'
 import { SettlementsDataTable } from '@/components/settlement/list-settlements/data-table'
-import { getCampaign } from '@/lib/utils'
+import { useSettlement } from '@/contexts/settlement-context'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { useRouter } from 'next/navigation'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
@@ -19,6 +20,7 @@ import { toast } from 'sonner'
  */
 export function ListSettlementsTable(): ReactElement {
   const router = useRouter()
+  const { selectedSettlement, setSelectedSettlement } = useSettlement()
 
   const [settlements, setSettlements] = useState<Settlement[]>([])
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
@@ -33,9 +35,13 @@ export function ListSettlementsTable(): ReactElement {
    * @param settlementId Settlement ID
    */
   const handleViewSettlement = useCallback(
-    (settlementId: number) =>
-      router.push(`/settlement?settlementId=${settlementId}`),
-    [router]
+    (settlementId: number) => {
+      // Find and set the selected settlement
+      const settlement = settlements.find((s) => s.id === settlementId)
+      if (settlement) setSelectedSettlement(settlement)
+      router.push(`/settlement?settlementId=${settlementId}`)
+    },
+    [router, settlements, setSelectedSettlement]
   )
 
   /**
@@ -43,30 +49,40 @@ export function ListSettlementsTable(): ReactElement {
    *
    * @param settlementId Settlement ID
    */
-  const handleDeleteSettlement = useCallback((settlementId: number) => {
-    const campaign = getCampaign()
-    const settlementIndex = campaign.settlements.findIndex(
-      (s) => s.id === settlementId
-    )
+  const handleDeleteSettlement = useCallback(
+    (settlementId: number) => {
+      const campaign = getCampaign()
+      const settlementIndex = campaign.settlements.findIndex(
+        (s) => s.id === settlementId
+      )
 
-    if (settlementIndex === -1) return toast.error('Settlement not found!')
+      if (settlementIndex === -1) return toast.error('Settlement not found!')
 
-    const settlementName = campaign.settlements[settlementIndex].name
+      const settlementName = campaign.settlements[settlementIndex].name
 
-    campaign.settlements.splice(settlementIndex, 1)
-    campaign.survivors = campaign.survivors.filter(
-      (s) => s.settlementId !== settlementId
-    )
+      // If the settlement being deleted is currently selected, clear the selection
+      if (selectedSettlement?.id === settlementId) setSelectedSettlement(null)
 
-    localStorage.setItem('campaign', JSON.stringify(campaign))
-    setSettlements(campaign.settlements)
-    toast.success(
-      `Darkness overtook ${settlementName}. Voices cried out, and were suddenly silenced.`
-    )
+      campaign.settlements.splice(settlementIndex, 1)
+      campaign.survivors = campaign.survivors.filter(
+        (s) => s.settlementId !== settlementId
+      )
 
-    setDeleteId(undefined)
-    setIsDeleteDialogOpen(false)
-  }, [])
+      // Clear selectedSettlementId if it's the one being deleted
+      if (campaign.selectedSettlementId === settlementId)
+        campaign.selectedSettlementId = undefined
+
+      saveCampaignToLocalStorage(campaign)
+      setSettlements(campaign.settlements)
+      toast.success(
+        `Darkness overtook ${settlementName}. Voices cried out, and were suddenly silenced.`
+      )
+
+      setDeleteId(undefined)
+      setIsDeleteDialogOpen(false)
+    },
+    [selectedSettlement, setSelectedSettlement]
+  )
 
   // Create columns with required functions
   const columns = useMemo(

@@ -38,6 +38,7 @@ import { ZodError } from 'zod'
 export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   const watchedCampaignType = form.watch('campaignType')
   const watchedTimeline = form.watch('timeline')
+
   const campaignType = useMemo(() => watchedCampaignType, [watchedCampaignType])
   const formTimeline = useMemo(() => watchedTimeline, [watchedTimeline])
 
@@ -119,9 +120,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
       immediate = false
     ) => {
       // Clear existing timeout
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
 
       const saveFunction = () => {
         try {
@@ -514,8 +513,8 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   const cachedTimeline = useMemo(() => timeline, [timeline])
 
   return (
-    <Card className="border-0">
-      <CardContent className="p-0">
+    <Card className="border-0 w-full h-full pt-0">
+      <CardContent className="flex flex-col justify-between h-full">
         {/* Timeline Content */}
         <TimelineContent
           timeline={cachedTimeline}

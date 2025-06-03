@@ -216,6 +216,10 @@ export type SquireSuspicion = z.infer<typeof SquireSuspicionSchema>
  * before the user tries to create one.
  */
 export const BaseSettlementSchema = z.object({
+  /** Arriving Survivor Bonuses */
+  arrivalBonuses: z
+    .array(z.string().min(1, 'A nameless arrival bonus cannot be recorded.'))
+    .default([]),
   /** Campaign Type */
   campaignType: z
     .nativeEnum(CampaignType)

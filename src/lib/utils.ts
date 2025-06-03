@@ -46,13 +46,21 @@ export function getCampaign(): Campaign {
   if (cachedCampaign && now - lastCacheUpdate < CACHE_DURATION)
     return cachedCampaign
 
-  const campaign = JSON.parse(
+  const storedCampaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
       })
   )
+
+  // Ensure backwards compatibility for existing campaign data
+  const campaign: Campaign = {
+    settlements: storedCampaign.settlements || [],
+    survivors: storedCampaign.survivors || [],
+    // If selectedSettlementId is not present, add it as undefined
+    selectedSettlementId: storedCampaign.selectedSettlementId || undefined
+  }
 
   cachedCampaign = campaign
   lastCacheUpdate = now
@@ -163,6 +171,36 @@ export function getSettlement(settlementId: number): Settlement | undefined {
   return getCampaign().settlements.find(
     (settlement) => settlement.id === settlementId
   )
+}
+
+/**
+ * Gets the currently selected settlement from localStorage.
+ *
+ * @returns Selected Settlement or null if none is selected or not found
+ */
+export function getSelectedSettlement(): Settlement | null {
+  const campaign = getCampaign()
+
+  if (!campaign.selectedSettlementId) return null
+
+  const settlement = campaign.settlements.find(
+    (s) => s.id === campaign.selectedSettlementId
+  )
+
+  return settlement || null
+}
+
+/**
+ * Sets the currently selected settlement in localStorage.
+ *
+ * @param settlementId Settlement ID to select, or null to clear selection
+ */
+export function setSelectedSettlement(settlementId: number | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedSettlementId = settlementId || undefined
+
+  saveCampaignToLocalStorage(campaign)
 }
 
 /**

@@ -162,8 +162,8 @@ export function SquireSuspicionsCard({
   }
 
   return (
-    <Card className="p-0 pb-1 border-0">
-      <CardHeader className="px-2 py-1">
+    <Card className="p-0 border-0 gap-1">
+      <CardHeader className="px-2 py-0">
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="text-md flex items-center gap-1">
@@ -192,7 +192,7 @@ export function SquireSuspicionsCard({
         </div>
       </CardHeader>
 
-      <CardContent className="p-1 pb-0">
+      <CardContent className="p-0">
         <div className="flex flex-col">
           <Table>
             <TableBody>

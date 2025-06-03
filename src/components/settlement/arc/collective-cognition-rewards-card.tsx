@@ -55,11 +55,14 @@ export function CollectiveCognitionRewardsCard(
     [key: number]: boolean
   }>({})
 
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  // Ref to store timeout ID for cleanup
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      const timeoutId = saveTimeoutRef.current
+      if (timeoutId) clearTimeout(timeoutId)
     }
   }, [])
 
@@ -76,30 +79,34 @@ export function CollectiveCognitionRewardsCard(
   }, [ccRewards])
 
   /**
-   * Save collective cognition rewards to localStorage for the current
-   * settlement with debouncing.
+   * Debounced save function to reduce localStorage operations
    *
    * @param updatedRewards Updated Rewards
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
+   * @param immediate Whether to save immediately without debouncing
    */
   const saveToLocalStorageDebounced = useCallback(
     (
       updatedRewards: typeof ccRewards,
       successMsg?: string,
-      immediate: boolean = false
+      immediate = false
     ) => {
-      const saveFunction = () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+
+      const doSave = () => {
         try {
           const formValues = form.getValues()
-          saveCampaignToLocalStorage({
-            ...getCampaign(),
-            settlements: getCampaign().settlements.map((s) =>
-              s.id === formValues.id ? { ...s, ccRewards: updatedRewards } : s
-            )
-          })
+          const campaign = getCampaign()
+          const settlementIndex = campaign.settlements.findIndex(
+            (s: { id: number }) => s.id === formValues.id
+          )
 
-          if (successMsg) toast.success(successMsg)
+          if (settlementIndex !== -1) {
+            campaign.settlements[settlementIndex].ccRewards = updatedRewards
+            saveCampaignToLocalStorage(campaign)
+
+            if (successMsg) toast.success(successMsg)
+          }
         } catch (error) {
           console.error('CC Reward Save Error:', error)
           toast.error('The darkness swallows your words. Please try again.')
@@ -107,14 +114,9 @@ export function CollectiveCognitionRewardsCard(
       }
 
       if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
+        doSave()
       } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
-        timeoutRef.current = setTimeout(saveFunction, 300)
+        saveTimeoutRef.current = setTimeout(doSave, 300)
       }
     },
     [form]
@@ -264,9 +266,9 @@ export function CollectiveCognitionRewardsCard(
   const addReward = () => setIsAddingNew(true)
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <BrainIcon className="h-4 w-4" /> Collective Cognition Rewards{' '}
           {!isAddingNew && (
             <div className="flex justify-center">
@@ -288,38 +290,40 @@ export function CollectiveCognitionRewardsCard(
       </CardHeader>
 
       {/* Rewards List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col gap-1">
-          {ccRewards.length > 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={ccRewards.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {ccRewards.map((reward, index) => (
-                  <RewardItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    isDisabled={!!disabledInputs[index]}
-                    onToggleUnlocked={handleToggleUnlocked}
-                    onRemove={onRemove}
-                    onSave={(name, cc, i) => onSave(name, cc, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewRewardItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="h-full">
+          <div className="space-y-1">
+            {ccRewards.length > 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={ccRewards.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {ccRewards.map((reward, index) => (
+                    <RewardItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      isDisabled={!!disabledInputs[index]}
+                      onToggleUnlocked={handleToggleUnlocked}
+                      onRemove={onRemove}
+                      onSave={(name, cc, i) => onSave(name, cc, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewRewardItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

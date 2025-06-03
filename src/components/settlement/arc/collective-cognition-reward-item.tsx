@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
@@ -125,28 +124,25 @@ export function RewardItem({
       />
 
       {/* CC Value Input */}
-      <div className="flex items-center">
-        <FormLabel className="mr-2 text-sm">CC:</FormLabel>
-        <Input
-          ref={ccInputRef}
-          type="number"
-          className="w-12 text-center no-spinners"
-          defaultValue={reward?.cc || 1}
-          disabled={isDisabled}
-          min={0}
-          onKeyDown={handleKeyDown}
-        />
-      </div>
+      <Input
+        ref={ccInputRef}
+        type="number"
+        className="w-12 text-center no-spinners"
+        defaultValue={reward?.cc || 1}
+        disabled={isDisabled}
+        min={0}
+        onKeyDown={handleKeyDown}
+      />
 
       {/* Reward Name Input */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">{reward.name}</span>
+          <span className="text-xs">{reward.name}</span>
         </div>
       ) : (
         <Input
           ref={nameInputRef}
-          placeholder="Reward Name"
+          placeholder="Add a reward..."
           defaultValue={reward.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
@@ -235,22 +231,19 @@ export function NewRewardItem({
       <Checkbox disabled />
 
       {/* CC Value Input */}
-      <div className="flex items-center">
-        <FormLabel className="mr-2 text-sm">CC:</FormLabel>
-        <Input
-          ref={ccInputRef}
-          type="number"
-          className="w-12 text-center no-spinners"
-          defaultValue={1}
-          min={0}
-          onKeyDown={handleKeyDown}
-        />
-      </div>
+      <Input
+        ref={ccInputRef}
+        type="number"
+        className="w-12 text-center no-spinners"
+        defaultValue={1}
+        min={0}
+        onKeyDown={handleKeyDown}
+      />
 
       {/* Reward Name Input */}
       <Input
         ref={nameInputRef}
-        placeholder="Reward Name"
+        placeholder="Add a reward..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
         autoFocus

@@ -23,3 +23,11 @@ The maintainers of this repository will review your changes and provide any
 feedback. Once approved, they will be merged in and a new version of the site
 will be deployed. You'll also be able to see your GitHub profile tagged in the
 contributors list for any pages you contribute to!
+
+## Schema Updates
+
+If you intend to add, remove, or change the [schemas](./src/schemas/) used in
+this project, please ensure that your changes adhere to following guidelines:
+
+- All changes must be backwards-compatible
+- Existing user data must be automatically migrated to the new schema

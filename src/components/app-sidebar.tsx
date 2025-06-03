@@ -24,6 +24,8 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '@/components/ui/sidebar'
+import { useSettlement } from '@/contexts/settlement-context'
+import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { MarkGithubIcon } from '@primer/octicons-react'
@@ -52,7 +54,7 @@ const footer = [
   }
 ]
 
-const navPrimary = [
+const baseNavPrimary = [
   {
     title: 'Timeline',
     tab: 'timeline',
@@ -79,9 +81,37 @@ const navPrimary = [
     icon: WrenchIcon
   },
   {
-    title: 'Arc',
-    tab: 'arc',
-    icon: LightbulbIcon
+    title: 'Notes',
+    tab: 'notes',
+    icon: NotebookPenIcon
+  }
+]
+
+const navSquires = [
+  {
+    title: 'Timeline',
+    tab: 'timeline',
+    icon: HourglassIcon
+  },
+  {
+    title: 'Monsters',
+    tab: 'monsters',
+    icon: SwordsIcon
+  },
+  {
+    title: 'Squires',
+    tab: 'squires',
+    icon: UsersIcon
+  },
+  {
+    title: 'Society',
+    tab: 'society',
+    icon: SchoolIcon
+  },
+  {
+    title: 'Crafting',
+    tab: 'crafting',
+    icon: WrenchIcon
   },
   {
     title: 'Notes',
@@ -100,10 +130,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   )
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [navItems, setNavItems] = useState(baseNavPrimary)
+  const [isMounted, setIsMounted] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => setCampaign(getCampaign()), [])
+  const settlementContext = useSettlement()
+  const campaignType = settlementContext.selectedSettlement?.campaignType
+  const survivorType = settlementContext.selectedSettlement?.survivorType
+
+  // Update navigation items based on settlement context
+  useEffect(() => {
+    if (!isMounted) return setIsMounted(true)
+
+    if (campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
+      return setNavItems([...navSquires])
+
+    // Start with base navigation
+    const newNavItems = [...baseNavPrimary]
+
+    if (survivorType === SurvivorType.ARC) {
+      const notesIndex = newNavItems.findIndex((item) => item.tab === 'notes')
+
+      if (notesIndex !== -1)
+        newNavItems.splice(notesIndex, 0, {
+          title: 'Arc',
+          tab: 'arc',
+          icon: LightbulbIcon
+        })
+    }
+
+    setNavItems(newNavItems)
+    setCampaign(getCampaign())
+  }, [campaignType, survivorType, isMounted])
 
   const handleDownload = () => {
     try {
@@ -129,7 +188,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       toast.success('Settlement records preserved!')
     } catch (error) {
       console.error('Download Campaign Error:', error)
-      toast.error('Failed to preserve settlement records. Please try again.')
+      toast.error('Failed to preserve records. Please try again.')
     } finally {
       setIsDownloading(false)
     }
@@ -235,9 +294,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SettlementSwitcher settlements={campaign?.settlements || []} />
       </SidebarHeader>
       <SidebarContent className="flex flex-col justify-between">
-        <NavMain items={navPrimary} />
+        <NavMain items={navItems} />
         <SidebarGroup {...props}>
           <SidebarGroupContent>
+            <p className="text-center text-xs text-gray-500 pb-2">
+              This project is not affiliated with or endorsed by Kingdom Death:
+              Monster or its creators. It is a fan-made project created for
+              personal use and entertainment purposes only. All rights to
+              Kingdom Death: Monster and its associated materials are owned by
+              their respective copyright holders. This project is intended to be
+              a tool for players to enhance their experience with the game and
+              is not intended for commercial use or distribution.
+            </p>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -246,7 +314,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   variant="outline"
                   size="sm">
                   <DownloadIcon className="h-4 w-4" />
-                  Preserve Settlement Records
+                  Preserve Records
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -258,7 +326,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       variant="outline"
                       size="sm">
                       <UploadIcon className="h-4 w-4" />
-                      Upload Settlement Records
+                      Upload Records
                     </SidebarMenuButton>
                   </AlertDialogTrigger>{' '}
                   <AlertDialogContent

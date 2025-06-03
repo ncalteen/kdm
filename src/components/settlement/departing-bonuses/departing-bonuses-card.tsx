@@ -244,9 +244,9 @@ export function DepartingBonusesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 pb-1 border-1 w-full gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <MapPinPlusIcon className="h-4 w-4" />
           Departing Survivor Bonuses
           {!isAddingNew && (
@@ -270,36 +270,38 @@ export function DepartingBonusesCard({
 
       {/* Departing Bonuses List */}
       <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {departingBonuses.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={departingBonuses.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {departingBonuses.map((bonus, index) => (
-                  <DepartingBonusItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewDepartingBonusItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+        <div className="flex flex-col h-[240px]">
+          <div className="flex-1 overflow-y-auto">
+            {departingBonuses.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={departingBonuses.map((_, index) => index.toString())}
+                  strategy={verticalListSortingStrategy}>
+                  {departingBonuses.map((bonus, index) => (
+                    <DepartingBonusItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewDepartingBonusItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

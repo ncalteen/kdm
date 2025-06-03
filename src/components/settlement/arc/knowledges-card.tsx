@@ -55,7 +55,9 @@ export function KnowledgesCard({
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Timeout reference for debounced saves
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setDisabledInputs((prev) => {
@@ -70,10 +72,11 @@ export function KnowledgesCard({
   }, [knowledges])
 
   useEffect(() => {
+    // Cleanup on unmount
     return () => {
-      const currentTimeout = timeoutRef.current
-      if (currentTimeout) {
-        clearTimeout(currentTimeout)
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        saveTimeoutRef.current = null
       }
     }
   }, [])
@@ -88,13 +91,20 @@ export function KnowledgesCard({
   const addKnowledge = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save knowledges to localStorage for the current settlement using debouncing,
+   * with Zod validation and toast feedback.
+   *
+   * @param updatedKnowledges Updated Knowledges
+   * @param successMsg Success Message
+   * @param immediate Whether to save immediately or use debouncing
    */
   const saveToLocalStorageDebounced = useCallback(
-    (updatedKnowledges: Knowledge[], successMsg?: string) => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-      timeoutRef.current = setTimeout(() => {
+    (
+      updatedKnowledges: Knowledge[],
+      successMsg?: string,
+      immediate = false
+    ) => {
+      const saveFunction = () => {
         try {
           const formValues = form.getValues()
           const campaign = getCampaign()
@@ -103,52 +113,49 @@ export function KnowledgesCard({
           )
 
           if (settlementIndex !== -1) {
-            campaign.settlements[settlementIndex].knowledges = updatedKnowledges
-            saveCampaignToLocalStorage(campaign)
-          }
+            try {
+              SettlementSchema.shape.knowledges.parse(updatedKnowledges)
+            } catch (error) {
+              if (error instanceof ZodError && error.errors[0]?.message)
+                return toast.error(error.errors[0].message)
+              else
+                return toast.error(
+                  'The darkness swallows your words. Please try again.'
+                )
+            }
 
-          if (successMsg) toast.success(successMsg)
+            // Use the saveCampaignToLocalStorage helper
+            saveCampaignToLocalStorage({
+              ...campaign,
+              settlements: campaign.settlements.map((s) =>
+                s.id === formValues.id
+                  ? {
+                      ...s,
+                      knowledges: updatedKnowledges
+                    }
+                  : s
+              )
+            })
+
+            if (successMsg) toast.success(successMsg)
+          }
         } catch (error) {
           console.error('Knowledge Save Error:', error)
           toast.error('The darkness swallows your words. Please try again.')
         }
-      }, 300)
-    },
-    [form]
-  )
+      }
 
-  /**
-   * Immediate save function for user-triggered actions
-   */
-  const saveToLocalStorage = useCallback(
-    (updatedKnowledges: Knowledge[], successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const settlementIndex = campaign.settlements.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
-
-        if (settlementIndex !== -1) {
-          try {
-            SettlementSchema.shape.knowledges.parse(updatedKnowledges)
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
-              )
-          }
-
-          campaign.settlements[settlementIndex].knowledges = updatedKnowledges
-          saveCampaignToLocalStorage(campaign)
-
-          if (successMsg) toast.success(successMsg)
+      // Either save immediately or debounce
+      if (immediate) {
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current)
+          saveTimeoutRef.current = null
         }
-      } catch (error) {
-        console.error('Knowledge Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
+        saveFunction()
+      } else {
+        if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+
+        saveTimeoutRef.current = setTimeout(saveFunction, 300)
       }
     },
     [form]
@@ -177,9 +184,11 @@ export function KnowledgesCard({
       return next
     })
 
+    // Use immediate save with feedback for user actions
     saveToLocalStorageDebounced(
       currentKnowledges,
-      'Knowledge banished to the void.'
+      'Knowledge banished to the void.',
+      true
     )
   }
 
@@ -237,11 +246,13 @@ export function KnowledgesCard({
       }))
     }
 
-    saveToLocalStorage(
+    // Use immediate save with feedback for user actions
+    saveToLocalStorageDebounced(
       updatedKnowledges,
       i !== undefined
         ? 'Knowledge carved into memory.'
-        : 'New knowledge illuminates the settlement.'
+        : 'New knowledge illuminates the settlement.',
+      true
     )
     setIsAddingNew(false)
   }
@@ -268,6 +279,7 @@ export function KnowledgesCard({
       const newOrder = arrayMove(knowledges, oldIndex, newIndex)
 
       form.setValue('knowledges', newOrder)
+      // Use debounced save for drag operations
       saveToLocalStorageDebounced(newOrder)
 
       setDisabledInputs((prev) => {
@@ -287,9 +299,9 @@ export function KnowledgesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 pb-1 mt-1 border-1">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <GraduationCapIcon className="h-4 w-4" />
           Knowledges
           {!isAddingNew && (
@@ -312,8 +324,8 @@ export function KnowledgesCard({
       </CardHeader>
 
       {/* Knowledges List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="h-[200px] overflow-y-auto space-y-1">
           {knowledges.length !== 0 && (
             <DndContext
               sensors={sensors}
