@@ -15,22 +15,14 @@ import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
+import { useSettlement } from '@/contexts/settlement-context'
 import { SurvivorType } from '@/lib/enums'
-import {
-  getCampaign,
-  getSettlement,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
-import { Resolver, useForm } from 'react-hook-form'
+import { ReactElement, useCallback, useEffect, useRef } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
@@ -47,25 +39,14 @@ export interface SurvivorFormProps {
  *
  * This component is used to display/edit a survivor.
  */
-export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
-  const router = useRouter()
-
-  const [settlement, setSettlement] = useState<Settlement | undefined>()
+export function SurvivorCard({
+  ...form
+}: UseFormReturn<Survivor>): ReactElement {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Split the effect into two parts for better performance
-  // 1. Handle settlement loading - will run only when settlementId changes
-  useEffect(() => {
-    if (survivor.settlementId) {
-      // Defer non-critical work
-      setTimeout(() => {
-        const fetchedSettlement = getSettlement(survivor.settlementId)
-        setSettlement(fetchedSettlement)
-      }, 0)
-    }
-  }, [survivor.settlementId])
+  const settlement = useSettlement().selectedSettlement
 
-  // 2. Cleanup effect - will run only on unmount
+  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -74,14 +55,6 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
       }
     }
   }, [])
-
-  const form = useForm<Survivor>({
-    resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: survivor,
-    mode: 'onSubmit', // Only validate on submit, not on every change
-    shouldUnregister: false, // Prevent unnecessary re-registrations
-    shouldFocusError: false // Improve performance by skipping automatic focus
-  })
 
   /**
    * Save survivor to localStorage with debouncing, with Zod validation and
@@ -178,31 +151,8 @@ export function SurvivorForm({ survivor }: SurvivorFormProps): ReactElement {
     [saveToLocalStorageDebounced]
   )
 
-  /**
-   * Handles back navigation to settlement
-   */
-  const handleBackToSettlement = useCallback(
-    () =>
-      survivor.settlementId
-        ? router.push(`/settlement?settlementId=${survivor.settlementId}`)
-        : router.push('/settlement/list'),
-    [router, survivor.settlementId]
-  )
-
   return (
     <div className="grid justify-items-center sm:p-4">
-      {/* Back Navigation Button */}
-      <div className="w-full max-w-[1500px] mb-4">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={handleBackToSettlement}
-          className="flex items-center gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Settlement
-        </Button>
-      </div>
-
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Form {...form}>
           <Card className="pt-1 mx-auto">

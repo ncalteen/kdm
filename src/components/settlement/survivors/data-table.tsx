@@ -110,7 +110,7 @@ export function SurvivorDataTable<TData, TValue>({
       </div>
 
       <div
-        className="container relative overflow-auto h-[250px] w-full rounded-md border-1"
+        className="relative overflow-auto h-[250px] w-full rounded-md border-1"
         ref={tableContainerRef}>
         <table className="grid w-full">
           <thead className="grid sticky top-0 z-1 w-full bg-accent">

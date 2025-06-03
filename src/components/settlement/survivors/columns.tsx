@@ -60,7 +60,7 @@ export const createColumns = ({
 }: ColumnProps): ColumnDef<Survivor>[] => {
   const handleEditSurvivor = (survivor: Survivor) => {
     setSelectedSurvivor(survivor)
-    setSelectedTab('selectedSurvivor')
+    setSelectedTab('survivors')
   }
 
   return [
