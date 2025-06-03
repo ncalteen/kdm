@@ -17,10 +17,10 @@ import { Survivor } from '@/schemas/survivor'
 import { ColumnDef } from '@tanstack/react-table'
 import {
   ArrowUpDownIcon,
-  PencilIcon,
   ShieldOffIcon,
   SkullIcon,
-  Trash2Icon
+  Trash2Icon,
+  UserRoundSearchIcon
 } from 'lucide-react'
 
 /**
@@ -140,9 +140,9 @@ export const createColumns = ({
             <Button
               variant="outline"
               size="sm"
-              title="Edit survivor"
+              title="View survivor"
               onClick={() => handleEditSurvivor(survivor)}>
-              <PencilIcon className="h-4 w-4" />
+              <UserRoundSearchIcon className="h-4 w-4" />
             </Button>
             <AlertDialog
               open={isDeleteDialogOpen && deleteId === survivor.id}
