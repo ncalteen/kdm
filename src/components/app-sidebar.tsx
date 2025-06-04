@@ -15,7 +15,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -28,7 +27,6 @@ import { useSettlement } from '@/contexts/settlement-context'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
-import { MarkGithubIcon } from '@primer/octicons-react'
 import {
   DownloadIcon,
   HourglassIcon,
@@ -38,21 +36,11 @@ import {
   SwordsIcon,
   UploadIcon,
   UsersIcon,
-  WrenchIcon,
-  type LucideIcon
+  WrenchIcon
 } from 'lucide-react'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { SettlementSwitcher } from './menu/settlement-switcher'
-import { NavFooter } from './nav-footer'
-
-const footer = [
-  {
-    name: 'ncalteen/kdm',
-    url: 'https://github.com/ncalteen/kdm',
-    icon: MarkGithubIcon as LucideIcon
-  }
-]
 
 const baseNavPrimary = [
   {
@@ -289,7 +277,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar
+      collapsible="icon"
+      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+      {...props}>
       <SidebarHeader>
         <SettlementSwitcher settlements={campaign?.settlements || []} />
       </SidebarHeader>
@@ -468,9 +459,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <NavFooter projects={footer} />
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

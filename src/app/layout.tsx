@@ -1,5 +1,3 @@
-import { AppSidebar } from '@/components/app-sidebar'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { SettlementProvider } from '@/contexts/settlement-context'
 import { SurvivorProvider } from '@/contexts/survivor-context'
@@ -34,12 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SettlementProvider settlement={null}>
           <SurvivorProvider survivor={null}>
-            <TabProvider initialTab="timeline">
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>{children}</SidebarInset>
-              </SidebarProvider>
-            </TabProvider>
+            <TabProvider initialTab="timeline">{children}</TabProvider>
           </SurvivorProvider>
         </SettlementProvider>
         <Toaster />
