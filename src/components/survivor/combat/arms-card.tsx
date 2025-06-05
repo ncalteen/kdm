@@ -10,13 +10,12 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { cn } from '@/lib/utils'
+import { Survivor } from '@/schemas/survivor'
 import { HandMetalIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Arms Card Component
@@ -28,6 +27,8 @@ import { ZodError } from 'zod'
  * @returns Arms Card Component
  */
 export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
+  const { saveSurvivor } = useSurvivorSave(form)
+
   /**
    * Save to Local Storage
    *
@@ -44,34 +45,13 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
       | 'armLightDamage'
       | 'armHeavyDamage',
     value: number | boolean
-  ) => {
-    try {
-      const formValues = form.getValues()
-
-      try {
-        SurvivorSchema.shape[attrName].parse(value)
-      } catch (error) {
-        if (error instanceof ZodError && error.errors[0]?.message)
-          return toast.error(error.errors[0].message)
-        else
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
-      }
-
-      saveCampaignToLocalStorage({
-        ...getCampaign(),
-        survivors: getCampaign().survivors.map((s) =>
-          s.id === formValues.id ? { ...s, [attrName]: value } : s
-        )
-      })
-
-      toast.success('Arms endure another battle.')
-    } catch (error) {
-      console.error('Arms Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) =>
+    saveSurvivor(
+      {
+        [attrName]: value
+      },
+      'Arms endure another battle.'
+    )
 
   return (
     <Card className="p-2 border-0">
@@ -94,12 +74,9 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                       className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners"
                       defaultValue={field.value ?? '0'}
                       min={0}
-                      onChange={(e) => {
-                        let val = parseInt(e.target.value)
-                        if (isNaN(val) || val < 0) val = 0
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('armArmor', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage('armArmor', parseInt(e.target.value))
+                      }
                     />
                   </div>
                 </FormControl>
@@ -132,7 +109,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                               if (checked) newValue = index + 1
                               else if ((field.value || 0) === index + 1)
                                 newValue = index
-                              form.setValue('armBroken', newValue)
+
                               saveToLocalStorage('armBroken', newValue)
                             }}
                           />
@@ -152,11 +129,12 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                       <Checkbox
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const boolValue = checked === true
-                          field.onChange(boolValue)
-                          saveToLocalStorage('armRupturedMuscle', boolValue)
-                        }}
+                        onCheckedChange={(checked) =>
+                          saveToLocalStorage(
+                            'armRupturedMuscle',
+                            checked === true
+                          )
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs">Ruptured Muscle</FormLabel>
@@ -179,7 +157,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                               if (checked) newValue = index + 1
                               else if ((field.value || 0) === index + 1)
                                 newValue = index
-                              form.setValue('armDismembered', newValue)
+
                               saveToLocalStorage('armDismembered', newValue)
                             }}
                           />
@@ -208,7 +186,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                                 0,
                                 Math.min(5, newValue)
                               )
-                              field.onChange(safeValue)
+
                               saveToLocalStorage('armContracture', safeValue)
                             }}
                           />
@@ -236,11 +214,9 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           !field.value && 'border-2 border-primary'
                         )}
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const boolValue = checked === true
-                          field.onChange(boolValue)
-                          saveToLocalStorage('armLightDamage', boolValue)
-                        }}
+                        onCheckedChange={(checked) =>
+                          saveToLocalStorage('armLightDamage', checked === true)
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs mt-1">L</FormLabel>
@@ -261,11 +237,9 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           !field.value && 'border-4 border-primary'
                         )}
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const boolValue = checked === true
-                          field.onChange(boolValue)
-                          saveToLocalStorage('armHeavyDamage', boolValue)
-                        }}
+                        onCheckedChange={(checked) =>
+                          saveToLocalStorage('armHeavyDamage', checked === true)
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs mt-1">H</FormLabel>

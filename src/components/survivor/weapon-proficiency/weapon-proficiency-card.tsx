@@ -3,14 +3,13 @@
 import { SelectWeaponType } from '@/components/menu/select-weapon-type'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { WeaponType } from '@/lib/enums'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { SwordsIcon } from 'lucide-react'
 import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Weapon Proficiency Card Component
@@ -26,8 +25,8 @@ import { ZodError } from 'zod'
 export function WeaponProficiencyCard(
   form: UseFormReturn<Survivor>
 ): ReactElement {
-  const weaponProficiency = form.watch('weaponProficiency') || 0
-  const weaponProficiencyType = form.watch('weaponProficiencyType')
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
 
   /**
    * Save to Local Storage
@@ -36,56 +35,21 @@ export function WeaponProficiencyCard(
    * @param updatedType Updated weapon proficiency type
    */
   const saveToLocalStorage = useCallback(
-    (updatedProficiency: number, updatedType?: WeaponType) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const survivorIndex = campaign.survivors.findIndex(
-          (s: { id: number }) => s.id === formValues.id
-        )
+    (
+      updatedProficiency?: number,
+      updatedType?: WeaponType,
+      successMsg?: string
+    ) => {
+      const updateData: Partial<Survivor> = {}
 
-        if (survivorIndex !== -1) {
-          try {
-            SurvivorSchema.shape.weaponProficiency.parse(
-              updatedProficiency || weaponProficiency
-            )
-            SurvivorSchema.shape.weaponProficiencyType.parse(
-              updatedType || weaponProficiencyType
-            )
-          } catch (error) {
-            if (error instanceof ZodError && error.errors[0]?.message)
-              return toast.error(error.errors[0].message)
-            else
-              return toast.error(
-                'The darkness swallows your words. Please try again.'
-              )
-          }
+      if (updatedProficiency !== undefined)
+        updateData.weaponProficiency = updatedProficiency
+      if (updatedType !== undefined)
+        updateData.weaponProficiencyType = updatedType
 
-          // Use the optimized utility function to save to localStorage
-          saveCampaignToLocalStorage({
-            ...campaign,
-            survivors: campaign.survivors.map((s) =>
-              s.id === formValues.id
-                ? {
-                    ...s,
-                    weaponProficiency: updatedProficiency || weaponProficiency,
-                    weaponProficiencyType: updatedType || weaponProficiencyType
-                  }
-                : s
-            )
-          })
-
-          if (updatedProficiency === 3)
-            toast.success('The survivor becomes a specialist in their craft.')
-          else if (updatedProficiency === 8)
-            toast.success('The survivor achieves mastery beyond mortal limits.')
-        }
-      } catch (error) {
-        console.error('Weapon Proficiency Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
-      }
+      saveSurvivor(updateData, successMsg)
     },
-    [form, weaponProficiency, weaponProficiencyType]
+    [saveSurvivor]
   )
 
   /**
@@ -94,29 +58,31 @@ export function WeaponProficiencyCard(
    * @param index Checkbox index (0-7)
    * @param checked Whether the checkbox is checked
    */
-  const handleProficiencyChange = useCallback(
-    (index: number, checked: boolean) => {
-      const newProficiency = checked ? index + 1 : index
-      form.setValue('weaponProficiency', newProficiency)
-      saveToLocalStorage(newProficiency, undefined)
-    },
-    [form, saveToLocalStorage]
-  )
+  const handleProficiencyChange = (index: number, checked: boolean) => {
+    const updatedProficiency = checked ? index + 1 : index
+
+    saveToLocalStorage(
+      updatedProficiency,
+      undefined,
+      updatedProficiency === 3
+        ? 'The survivor becomes a specialist in their craft.'
+        : updatedProficiency === 8
+          ? 'The survivor achieves mastery beyond mortal limits.'
+          : 'The survivor hones their weapon proficiency.'
+    )
+  }
 
   /**
    * Handle weapon type selection change
    *
    * @param type Selected weapon type
    */
-  const handleWeaponTypeChange = useCallback(
-    (type: string) => {
-      const weaponType = type as WeaponType
-      form.setValue('weaponProficiencyType', weaponType)
-      saveToLocalStorage(weaponProficiency, weaponType)
-      toast.success('The survivor turns their focus to a new weapon.')
-    },
-    [form, weaponProficiency, saveToLocalStorage]
-  )
+  const handleWeaponTypeChange = (type: string) =>
+    saveToLocalStorage(
+      undefined,
+      type as WeaponType,
+      'The survivor turns their focus to a new weapon.'
+    )
 
   return (
     <Card className="p-2 border-0">
@@ -128,7 +94,7 @@ export function WeaponProficiencyCard(
               Weapon Proficiency
             </CardTitle>
             <SelectWeaponType
-              value={weaponProficiencyType}
+              value={selectedSurvivor?.weaponProficiencyType}
               onChange={handleWeaponTypeChange}
             />
           </div>
@@ -139,7 +105,7 @@ export function WeaponProficiencyCard(
                   key={i}
                   className="w-4 h-4 flex items-center justify-center">
                   <Checkbox
-                    checked={weaponProficiency > i}
+                    checked={(selectedSurvivor?.weaponProficiency || 0) > i}
                     onCheckedChange={(checked) =>
                       handleProficiencyChange(i, !!checked)
                     }

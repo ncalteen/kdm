@@ -11,14 +11,12 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Gender } from '@/lib/enums'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { SkullIcon, UserXIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Survivor Name, Gender, and Status Card Component
@@ -32,40 +30,16 @@ import { ZodError } from 'zod'
  * @returns Name, Gender, and Status Card Component
  */
 export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
+  const { saveSurvivor } = useSurvivorSave(form)
+
   /**
    * Save Name to LocalStorage
    *
    * @param name Survivor Name
    * @param successMsg Success Message
    */
-  const saveNameToLocalStorage = (name: string, successMsg?: string) => {
-    try {
-      const formValues = form.getValues()
-
-      try {
-        SurvivorSchema.shape.name.parse(name)
-      } catch (error) {
-        if (error instanceof ZodError && error.errors[0]?.message)
-          return toast.error(error.errors[0].message)
-        else
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
-      }
-
-      saveCampaignToLocalStorage({
-        ...getCampaign(),
-        survivors: getCampaign().survivors.map((s) =>
-          s.id === formValues.id ? { ...s, name } : s
-        )
-      })
-
-      if (successMsg) toast.success(successMsg)
-    } catch (error) {
-      console.error('Name Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  const saveNameToLocalStorage = (name: string, successMsg?: string) =>
+    saveSurvivor({ name }, successMsg)
 
   /**
    * Save Gender to Local Storage
@@ -73,34 +47,8 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
    * @param gender Survivor Gender
    * @param successMsg Success Message
    */
-  const saveGenderToLocalStorage = (gender: Gender, successMsg?: string) => {
-    try {
-      const formValues = form.getValues()
-
-      try {
-        SurvivorSchema.shape.gender.parse(gender)
-      } catch (error) {
-        if (error instanceof ZodError && error.errors[0]?.message)
-          return toast.error(error.errors[0].message)
-        else
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
-      }
-
-      saveCampaignToLocalStorage({
-        ...getCampaign(),
-        survivors: getCampaign().survivors.map((s) =>
-          s.id === formValues.id ? { ...s, gender } : s
-        )
-      })
-
-      if (successMsg) toast.success(successMsg)
-    } catch (error) {
-      console.error('Gender Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  const saveGenderToLocalStorage = (gender: Gender, successMsg?: string) =>
+    saveSurvivor({ gender }, successMsg)
 
   /**
    * Save Status to Local Storage
@@ -111,41 +59,14 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
    */
   const saveStatusToLocalStorage = useCallback(
     (updatedDead?: boolean, updatedRetired?: boolean, successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
+      const updateData: Partial<Survivor> = {}
 
-        try {
-          SurvivorSchema.shape.dead.parse(updatedDead)
-          SurvivorSchema.shape.retired.parse(updatedRetired)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
+      if (updatedDead !== undefined) updateData.dead = updatedDead
+      if (updatedRetired !== undefined) updateData.retired = updatedRetired
 
-        saveCampaignToLocalStorage({
-          ...getCampaign(),
-          survivors: getCampaign().survivors.map((s) =>
-            s.id === formValues.id
-              ? {
-                  ...s,
-                  dead: updatedDead ?? s.dead,
-                  retired: updatedRetired ?? s.retired
-                }
-              : s
-          )
-        })
-
-        if (successMsg) toast.success(successMsg)
-      } catch (error) {
-        console.error('Survivor Status Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
-      }
+      saveSurvivor(updateData, successMsg)
     },
-    [form]
+    [saveSurvivor]
   )
 
   /**
@@ -175,7 +96,6 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
    * @param gender Selected Gender
    */
   const handleGenderChange = (gender: Gender) => {
-    form.setValue('gender', gender)
     saveGenderToLocalStorage(
       gender,
       "The survivor's essence is recorded in the lantern's glow."
@@ -189,15 +109,15 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
    */
   const handleDeadToggle = useCallback(
     (checked: boolean) => {
-      form.setValue('dead', checked, { shouldDirty: true })
-
-      const successMessage = checked
-        ? 'The darkness claims another soul. The survivor has fallen.'
-        : 'Against all odds, life returns. The survivor lives again.'
-
-      saveStatusToLocalStorage(checked, undefined, successMessage)
+      saveStatusToLocalStorage(
+        checked,
+        undefined,
+        checked
+          ? 'The darkness claims another soul. The survivor has fallen.'
+          : 'Against all odds, life returns. The survivor lives again.'
+      )
     },
-    [form, saveStatusToLocalStorage]
+    [saveStatusToLocalStorage]
   )
 
   /**
@@ -207,15 +127,15 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
    */
   const handleRetiredToggle = useCallback(
     (checked: boolean) => {
-      form.setValue('retired', checked, { shouldDirty: true })
-
-      const successMessage = checked
-        ? 'The survivor retires from the hunt, seeking peace in the settlement.'
-        : 'The call of adventure stirs once more. The survivor returns from retirement.'
-
-      saveStatusToLocalStorage(undefined, checked, successMessage)
+      saveStatusToLocalStorage(
+        undefined,
+        checked,
+        checked
+          ? 'The survivor retires from the hunt, seeking peace in the settlement.'
+          : 'The call of adventure stirs once more. The survivor returns from retirement.'
+      )
     },
-    [form, saveStatusToLocalStorage]
+    [saveStatusToLocalStorage]
   )
 
   return (
@@ -236,9 +156,6 @@ export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         placeholder="Survivor name..."
                         {...field}
                         value={field.value ?? ''}
-                        onChange={(e) =>
-                          form.setValue(field.name, e.target.value)
-                        }
                         onKeyDown={(e) =>
                           handleNameKeyDown(e, field.value ?? '')
                         }

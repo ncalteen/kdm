@@ -11,19 +11,16 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { SurvivorType } from '@/lib/enums'
-import {
-  cn,
-  getCampaign,
-  getSettlement,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { cn } from '@/lib/utils'
+import { Survivor } from '@/schemas/survivor'
 import { LockIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Survivor Survival Card Component
@@ -38,18 +35,9 @@ import { ZodError } from 'zod'
  * @returns Survival Card Component
  */
 export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
-  // Get the survivor type and survival limit from the settlement data.
-  const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
-    undefined
-  )
-  const [survivalLimit, setSurvivalLimit] = useState<number>(1)
-
-  // Set the survivor type and survival limit when the component mounts.
-  useEffect(() => {
-    const settlement = getSettlement(form.getValues('settlementId'))
-    setSurvivorType(settlement?.survivorType)
-    setSurvivalLimit(settlement?.survivalLimit || 1)
-  }, [form])
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
+  const { selectedSettlement } = useSettlement()
 
   /**
    * Save to Local Storage
@@ -62,41 +50,125 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
     field: keyof Survivor,
     value: number | boolean,
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
+  ) => saveSurvivor({ [field]: value }, successMsg)
+
+  /**
+   * Update Survival Points
+   */
+  const updateSurvival = (val: string) => {
+    const value = parseInt(val) || 0
+
+    // Enforce minimum value of 0
+    if (value < 0) return toast.error('Survival cannot be negative.')
+
+    // Enforce maximum value of survivalLimit
+    if (value > (selectedSettlement?.survivalLimit || 0))
+      return toast.error(
+        `Survival cannot exceed the settlement's limit of ${selectedSettlement?.survivalLimit || 0}.`
       )
 
-      if (survivorIndex !== -1) {
-        try {
-          SurvivorSchema.shape[field].parse(value)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        // Save to localStorage using the optimized utility
-        saveCampaignToLocalStorage({
-          ...campaign,
-          survivors: campaign.survivors.map((s) =>
-            s.id === formValues.id ? { ...s, [field]: value } : s
-          )
-        })
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Survival Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
+    saveToLocalStorage('survival', value, 'Survival updated successfully.')
   }
+
+  /**
+   * Update Can Spend Survival Flag
+   */
+  const updateCanSpendSurvival = (checked: boolean) =>
+    saveToLocalStorage(
+      'canSpendSurvival',
+      !checked,
+      !checked
+        ? 'The survivor can once again spend survival.'
+        : 'The survivor freezes - survival cannot be spent.'
+    )
+
+  /**
+   * Update Can Dodge Flag
+   */
+  const updateCanDodge = (checked: boolean) =>
+    saveToLocalStorage(
+      'canDodge',
+      !!checked,
+      !!checked
+        ? 'The survivor learns to dodge with grace.'
+        : 'The survivor loses the ability to dodge.'
+    )
+
+  /**
+   * Update Can Encourage Flag
+   */
+  const updateCanEncourage = (checked: boolean) =>
+    saveToLocalStorage(
+      'canEncourage',
+      checked,
+      checked
+        ? 'The survivor finds their voice to inspire others.'
+        : 'The survivor falls silent, unable to encourage.'
+    )
+
+  /**
+   * Update Can Surge Flag
+   */
+  const updateCanSurge = (checked: boolean) =>
+    saveToLocalStorage(
+      'canSurge',
+      checked,
+      checked
+        ? 'The survivor feels a surge of power within.'
+        : 'The survivor loses their ability to surge.'
+    )
+
+  /**
+   * Update Can Dash Flag
+   */
+  const updateCanDash = (checked: boolean) =>
+    saveToLocalStorage(
+      'canDash',
+      checked,
+      checked
+        ? 'The survivor gains swift feet to dash ahead.'
+        : 'The survivor loses their speed, unable to dash.'
+    )
+
+  /**
+   * Update Can Fist Pump Flag (Arc-specific)
+   */
+  const updateCanFistPump = (checked: boolean) =>
+    saveToLocalStorage(
+      'canFistPump',
+      checked,
+      checked
+        ? 'The survivor raises their fist in triumph.'
+        : 'The survivor loses their fighting spirit.'
+    )
+
+  /**
+   * Update Systemic Pressure (Arc-specific)
+   */
+  const updateSystemicPressure = (val: string) => {
+    const value = parseInt(val) || 0
+
+    // Enforce minimum value of 0
+    if (value < 0) return toast.error('Systemic pressure cannot be negative.')
+
+    saveToLocalStorage(
+      'systemicPressure',
+      value,
+      'Systemic pressure updated successfully.'
+    )
+  }
+
+  /**
+   * Update Can Endure Flag
+   */
+  const updateCanEndure = (checked: boolean) =>
+    saveToLocalStorage(
+      'canEndure',
+      checked,
+      checked
+        ? 'The survivor finds strength to endure the darkness.'
+        : 'The survivor loses their resilience to endure.'
+    )
 
   return (
     <Card className="p-2 border-0">
@@ -120,27 +192,8 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                           'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl'
                         )}
                         {...field}
-                        value={field.value ?? '1'}
-                        onChange={(e) => {
-                          let value = parseInt(e.target.value) || 0
-
-                          // Enforce minimum value of 0
-                          if (value < 0) {
-                            value = 0
-                            toast.error('Survival cannot be negative.')
-                          }
-
-                          // Enforce maximum value of survivalLimit
-                          if (value > survivalLimit) {
-                            value = survivalLimit
-                            toast.error(
-                              `Survival cannot exceed the settlement's limit of ${survivalLimit}.`
-                            )
-                          }
-
-                          form.setValue(field.name, value)
-                          saveToLocalStorage('survival', value)
-                        }}
+                        value={selectedSurvivor?.survival ?? '1'}
+                        onChange={(e) => updateSurvival(e.target.value)}
                       />
                     </FormControl>
                     <FormLabel className="font-bold text-left">
@@ -159,17 +212,9 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                   <FormControl>
                     <Checkbox
                       checked={!canSpendField.value}
-                      onCheckedChange={(checked) => {
-                        const canSpend = !checked
-                        form.setValue(canSpendField.name, canSpend)
-                        saveToLocalStorage(
-                          'canSpendSurvival',
-                          canSpend,
-                          canSpend
-                            ? 'The survivor can once again spend survival.'
-                            : 'The survivor freezes - survival cannot be spent.'
-                        )
-                      }}
+                      onCheckedChange={(checked) =>
+                        updateCanSpendSurvival(!!checked)
+                      }
                     />
                   </FormControl>
                   <FormLabel className="text-xs font-medium leading-none flex items-center">
@@ -194,17 +239,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const canDodge = !!checked
-                          form.setValue(field.name, canDodge)
-                          saveToLocalStorage(
-                            'canDodge',
-                            canDodge,
-                            canDodge
-                              ? 'The survivor learns to dodge with grace.'
-                              : 'The survivor loses the ability to dodge.'
-                          )
-                        }}
+                        onCheckedChange={(checked) => updateCanDodge(!!checked)}
                       />
                     </FormControl>
                     <FormLabel className="text-xs">Dodge</FormLabel>
@@ -222,17 +257,9 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const canEncourage = !!checked
-                          form.setValue(field.name, canEncourage)
-                          saveToLocalStorage(
-                            'canEncourage',
-                            canEncourage,
-                            canEncourage
-                              ? 'The survivor finds their voice to inspire others.'
-                              : 'The survivor falls silent, unable to encourage.'
-                          )
-                        }}
+                        onCheckedChange={(checked) =>
+                          updateCanEncourage(!!checked)
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs">Encourage</FormLabel>
@@ -250,17 +277,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const canSurge = !!checked
-                          form.setValue(field.name, canSurge)
-                          saveToLocalStorage(
-                            'canSurge',
-                            canSurge,
-                            canSurge
-                              ? 'The survivor feels a surge of power within.'
-                              : 'The survivor loses their ability to surge.'
-                          )
-                        }}
+                        onCheckedChange={(checked) => updateCanSurge(!!checked)}
                       />
                     </FormControl>
                     <FormLabel className="text-xs">Surge</FormLabel>
@@ -278,17 +295,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const canDash = !!checked
-                          form.setValue(field.name, canDash)
-                          saveToLocalStorage(
-                            'canDash',
-                            canDash,
-                            canDash
-                              ? 'The survivor gains swift feet to dash ahead.'
-                              : 'The survivor loses their speed, unable to dash.'
-                          )
-                        }}
+                        onCheckedChange={(checked) => updateCanDash(!!checked)}
                       />
                     </FormControl>
                     <FormLabel className="text-xs">Dash</FormLabel>
@@ -298,7 +305,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
               />
 
               {/* Conditional rendering for Arc-specific attributes */}
-              {survivorType === SurvivorType.ARC ? (
+              {selectedSettlement?.survivorType === SurvivorType.ARC ? (
                 <>
                   {/* Fist Pump */}
                   <FormField
@@ -309,17 +316,9 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         <FormControl>
                           <Checkbox
                             checked={field.value}
-                            onCheckedChange={(checked) => {
-                              const canFistPump = !!checked
-                              form.setValue(field.name, canFistPump)
-                              saveToLocalStorage(
-                                'canFistPump',
-                                canFistPump,
-                                canFistPump
-                                  ? 'The survivor raises their fist in triumph.'
-                                  : 'The survivor loses their fighting spirit.'
-                              )
-                            }}
+                            onCheckedChange={(checked) =>
+                              updateCanFistPump(!!checked)
+                            }
                           />
                         </FormControl>
                         <FormLabel className="text-xs">Fist Pump</FormLabel>
@@ -339,17 +338,9 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                         <FormControl>
                           <Checkbox
                             checked={field.value}
-                            onCheckedChange={(checked) => {
-                              const canEndure = !!checked
-                              form.setValue(field.name, canEndure)
-                              saveToLocalStorage(
-                                'canEndure',
-                                canEndure,
-                                canEndure
-                                  ? 'The survivor finds strength to endure the darkness.'
-                                  : 'The survivor loses their resilience to endure.'
-                              )
-                            }}
+                            onCheckedChange={(checked) =>
+                              updateCanEndure(!!checked)
+                            }
                           />
                         </FormControl>
                         <FormLabel className="text-xs">Endure</FormLabel>
@@ -362,7 +353,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
             </div>
 
             {/* Right - (Arc) Systemic pressure */}
-            {survivorType === SurvivorType.ARC && (
+            {selectedSettlement?.survivorType === SurvivorType.ARC && (
               <>
                 <Separator orientation="vertical" className="mx-2.5" />
 
@@ -379,11 +370,9 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value) || 0
-                            form.setValue(field.name, value)
-                            saveToLocalStorage('systemicPressure', value)
-                          }}
+                          onChange={(e) =>
+                            updateSystemicPressure(e.target.value)
+                          }
                         />
                       </FormControl>
                       <FormLabel className="text-xs">

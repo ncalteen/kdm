@@ -10,13 +10,12 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { cn } from '@/lib/utils'
+import { Survivor } from '@/schemas/survivor'
 import { HardHatIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Head Card Component
@@ -28,6 +27,8 @@ import { ZodError } from 'zod'
  * @returns Head Card Component
  */
 export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
+  const { saveSurvivor } = useSurvivorSave(form)
+
   /**
    * Save to Local Storage
    *
@@ -43,46 +44,13 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
       | 'headIntracranialHemorrhage'
       | 'headHeavyDamage',
     value: number | boolean
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        try {
-          SurvivorSchema.shape[attrName].parse(value)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        // Use the optimized utility function to save to localStorage
-        saveCampaignToLocalStorage({
-          ...campaign,
-          survivors: campaign.survivors.map((s) =>
-            s.id === formValues.id
-              ? {
-                  ...s,
-                  [attrName]: value
-                }
-              : s
-          )
-        })
-
-        toast.success('The mind endures what the flesh cannot.')
-      }
-    } catch (error) {
-      console.error('Head Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) =>
+    saveSurvivor(
+      {
+        [attrName]: value
+      },
+      'The flesh endures what the mind cannot.'
+    )
 
   return (
     <Card className="p-2 border-0">
@@ -105,12 +73,12 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                       className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners"
                       defaultValue={field.value ?? '0'}
                       min={0}
-                      onChange={(e) => {
-                        let val = parseInt(e.target.value)
-                        if (isNaN(val) || val < 0) val = 0
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('headArmor', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage(
+                          'headArmor',
+                          parseInt(e.target.value)
+                        )
+                      }
                     />
                   </div>
                 </FormControl>
@@ -137,11 +105,9 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                       <Checkbox
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const boolValue = checked === true
-                          field.onChange(boolValue)
-                          saveToLocalStorage('headDeaf', boolValue)
-                        }}
+                        onCheckedChange={(checked) =>
+                          saveToLocalStorage('headDeaf', checked === true)
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs">Deaf</FormLabel>
@@ -164,7 +130,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                               if (checked) newValue = index + 1
                               else if ((field.value || 0) === index + 1)
                                 newValue = index
-                              form.setValue('headBlind', newValue)
+
                               saveToLocalStorage('headBlind', newValue)
                             }}
                           />
@@ -184,11 +150,12 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                       <Checkbox
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const boolValue = checked === true
-                          field.onChange(boolValue)
-                          saveToLocalStorage('headShatteredJaw', boolValue)
-                        }}
+                        onCheckedChange={(checked) =>
+                          saveToLocalStorage(
+                            'headShatteredJaw',
+                            checked === true
+                          )
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs">Shattered Jaw</FormLabel>
@@ -204,14 +171,12 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                       <Checkbox
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const boolValue = checked === true
-                          field.onChange(boolValue)
+                        onCheckedChange={(checked) =>
                           saveToLocalStorage(
                             'headIntracranialHemorrhage',
-                            boolValue
+                            checked === true
                           )
-                        }}
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs">
@@ -236,11 +201,12 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                           !field.value && 'border-4 border-primary'
                         )}
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const boolValue = checked === true
-                          field.onChange(boolValue)
-                          saveToLocalStorage('headHeavyDamage', boolValue)
-                        }}
+                        onCheckedChange={(checked) =>
+                          saveToLocalStorage(
+                            'headHeavyDamage',
+                            checked === true
+                          )
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs mt-1">H</FormLabel>

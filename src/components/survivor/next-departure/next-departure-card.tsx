@@ -6,8 +6,9 @@ import {
 } from '@/components/survivor/next-departure/next-departure-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
   DndContext,
@@ -24,10 +25,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { GiftIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Next Departure Card Component
@@ -35,11 +35,8 @@ import { ZodError } from 'zod'
 export function NextDepartureCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const watchedNextDeparture = form.watch('nextDeparture')
-  const nextDeparture = useMemo(
-    () => watchedNextDeparture || [],
-    [watchedNextDeparture]
-  )
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -50,13 +47,13 @@ export function NextDepartureCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      nextDeparture.forEach((_, i) => {
+      selectedSurvivor?.nextDeparture.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [nextDeparture])
+  }, [selectedSurvivor?.nextDeparture])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -76,43 +73,7 @@ export function NextDepartureCard({
   const saveToLocalStorage = (
     updatedNextDeparture: string[],
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        try {
-          SurvivorSchema.shape.nextDeparture.parse(updatedNextDeparture)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        // Save to localStorage using the optimized utility
-        saveCampaignToLocalStorage({
-          ...campaign,
-          survivors: campaign.survivors.map((s) =>
-            s.id === formValues.id
-              ? { ...s, nextDeparture: updatedNextDeparture }
-              : s
-          )
-        })
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Next Departure Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) => saveSurvivor({ nextDeparture: updatedNextDeparture }, successMsg)
 
   /**
    * Handles the removal of a next departure.
@@ -120,10 +81,8 @@ export function NextDepartureCard({
    * @param index Next Departure Index
    */
   const onRemove = (index: number) => {
-    const currentNextDeparture = [...nextDeparture]
-
+    const currentNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
     currentNextDeparture.splice(index, 1)
-    form.setValue('nextDeparture', currentNextDeparture)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -153,23 +112,11 @@ export function NextDepartureCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless departure bonus cannot be recorded.')
 
-    try {
-      SurvivorSchema.shape.nextDeparture.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedNextDeparture = [...nextDeparture]
+    const updatedNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedNextDeparture[i] = value
-      form.setValue(`nextDeparture.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -177,9 +124,6 @@ export function NextDepartureCard({
     } else {
       // Adding a new value
       updatedNextDeparture.push(value)
-
-      form.setValue('nextDeparture', updatedNextDeparture)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedNextDeparture.length - 1]: true
@@ -214,9 +158,12 @@ export function NextDepartureCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(nextDeparture, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSurvivor?.nextDeparture || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('nextDeparture', newOrder)
       saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
@@ -262,26 +209,30 @@ export function NextDepartureCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[150px]">
           <div className="flex-1 overflow-y-auto">
-            {nextDeparture.length !== 0 && (
+            {selectedSurvivor?.nextDeparture.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={nextDeparture.map((_, index) => index.toString())}
+                  items={(selectedSurvivor?.nextDeparture || []).map(
+                    (_, index) => index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {nextDeparture.map((innovation, index) => (
-                    <NextDepartureItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSurvivor?.nextDeparture || []).map(
+                    (innovation, index) => (
+                      <NextDepartureItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

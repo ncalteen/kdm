@@ -8,13 +8,12 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Faces in the Sky Component
@@ -28,26 +27,8 @@ import { ZodError } from 'zod'
  * @returns Faces in the Sky Component
  */
 export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
-  // Watch the props from the form
-  const hasGamblerWitch = form.watch('hasGamblerWitch')
-  const hasGamblerRust = form.watch('hasGamblerRust')
-  const hasGamblerStorm = form.watch('hasGamblerStorm')
-  const hasGamblerReaper = form.watch('hasGamblerReaper')
-
-  const hasAbsoluteWitch = form.watch('hasAbsoluteWitch')
-  const hasAbsoluteRust = form.watch('hasAbsoluteRust')
-  const hasAbsoluteStorm = form.watch('hasAbsoluteStorm')
-  const hasAbsoluteReaper = form.watch('hasAbsoluteReaper')
-
-  const hasSculptorWitch = form.watch('hasSculptorWitch')
-  const hasSculptorRust = form.watch('hasSculptorRust')
-  const hasSculptorStorm = form.watch('hasSculptorStorm')
-  const hasSculptorReaper = form.watch('hasSculptorReaper')
-
-  const hasGoblinWitch = form.watch('hasGoblinWitch')
-  const hasGoblinRust = form.watch('hasGoblinRust')
-  const hasGoblinStorm = form.watch('hasGoblinStorm')
-  const hasGoblinReaper = form.watch('hasGoblinReaper')
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
 
   /**
    * Save to Local Storage
@@ -55,46 +36,13 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
    * @param attrName Attribute name
    * @param value New value
    */
-  const saveToLocalStorage = (attrName: keyof Survivor, value: boolean) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        try {
-          SurvivorSchema.shape[attrName].parse(value)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        // Use the optimized utility function to save to localStorage
-        saveCampaignToLocalStorage({
-          ...campaign,
-          survivors: campaign.survivors.map((s) =>
-            s.id === formValues.id
-              ? {
-                  ...s,
-                  [attrName]: value
-                }
-              : s
-          )
-        })
-
-        toast.success('The stars align. Celestial traits recorded.')
-      }
-    } catch (error) {
-      console.error('Faces in the Sky Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  const saveToLocalStorage = (attrName: keyof Survivor, value: boolean) =>
+    saveSurvivor(
+      {
+        [attrName]: value
+      },
+      'The stars align. Celestial traits recorded.'
+    )
 
   /**
    * Handles toggling a cell in the table
@@ -102,14 +50,8 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
    * @param property The property to toggle
    * @param currentValue The current value of the property
    */
-  const handleToggleCell = (
-    property: keyof Survivor,
-    currentValue: boolean
-  ) => {
-    const newValue = !currentValue
-    form.setValue(property, newValue)
-    saveToLocalStorage(property, newValue)
-  }
+  const handleToggleCell = (property: keyof Survivor, currentValue: boolean) =>
+    saveToLocalStorage(property, !currentValue)
 
   return (
     <div>
@@ -144,30 +86,42 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
               Gambler
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerWitch', hasGamblerWitch)
+                handleToggleCell(
+                  'hasGamblerWitch',
+                  selectedSurvivor?.hasGamblerWitch || false
+                )
               }>
               9+ UND
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerRust', hasGamblerRust)
+                handleToggleCell(
+                  'hasGamblerRust',
+                  selectedSurvivor?.hasGamblerRust || false
+                )
               }>
               Destined Disorder
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerStorm', hasGamblerStorm)
+                handleToggleCell(
+                  'hasGamblerStorm',
+                  selectedSurvivor?.hasGamblerStorm || false
+                )
               }>
               Fated Blow FA
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerReaper', hasGamblerReaper)
+                handleToggleCell(
+                  'hasGamblerReaper',
+                  selectedSurvivor?.hasGamblerReaper || false
+                )
               }>
               Pristine Ability
             </TableCell>
@@ -179,30 +133,42 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
               Absolute
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasAbsoluteWitch', hasAbsoluteWitch)
+                handleToggleCell(
+                  'hasAbsoluteWitch',
+                  selectedSurvivor?.hasAbsoluteWitch || false
+                )
               }>
               Reincarnated
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasAbsoluteRust', hasAbsoluteRust)
+                handleToggleCell(
+                  'hasAbsoluteRust',
+                  selectedSurvivor?.hasAbsoluteRust || false
+                )
               }>
               Frozen Star FA
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasAbsoluteStorm', hasAbsoluteStorm)
+                handleToggleCell(
+                  'hasAbsoluteStorm',
+                  selectedSurvivor?.hasAbsoluteStorm || false
+                )
               }>
               Irid. Hide Abil.
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasAbsoluteReaper', hasAbsoluteReaper)
+                handleToggleCell(
+                  'hasAbsoluteReaper',
+                  selectedSurvivor?.hasAbsoluteReaper || false
+                )
               }>
               Champion&apos;s Rite FA
             </TableCell>
@@ -214,30 +180,42 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
               Sculptor
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasSculptorWitch', hasSculptorWitch)
+                handleToggleCell(
+                  'hasSculptorWitch',
+                  selectedSurvivor?.hasSculptorWitch || false
+                )
               }>
               Scar
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasSculptorRust', hasSculptorRust)
+                handleToggleCell(
+                  'hasSculptorRust',
+                  selectedSurvivor?.hasSculptorRust || false
+                )
               }>
               Noble
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasSculptorStorm', hasSculptorStorm)
+                handleToggleCell(
+                  'hasSculptorStorm',
+                  selectedSurvivor?.hasSculptorStorm || false
+                )
               }>
               Weapon Master
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasSculptorReaper', hasSculptorReaper)
+                handleToggleCell(
+                  'hasSculptorReaper',
+                  selectedSurvivor?.hasSculptorReaper || false
+                )
               }>
               1+ Base ACC
             </TableCell>
@@ -249,28 +227,42 @@ export function FacesInTheSky(form: UseFormReturn<Survivor>): ReactElement {
               Goblin
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGoblinWitch', hasGoblinWitch)
+                handleToggleCell(
+                  'hasGoblinWitch',
+                  selectedSurvivor?.hasGoblinWitch || false
+                )
               }>
               Oracle&apos;s Eye
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinRust ? 'bg-gray-200 text-gray-700' : ''}`}
-              onClick={() => handleToggleCell('hasGoblinRust', hasGoblinRust)}>
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              onClick={() =>
+                handleToggleCell(
+                  'hasGoblinRust',
+                  selectedSurvivor?.hasGoblinRust || false
+                )
+              }>
               Unbreakable FA
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGoblinStorm', hasGoblinStorm)
+                handleToggleCell(
+                  'hasGoblinStorm',
+                  selectedSurvivor?.hasGoblinStorm || false
+                )
               }>
               3+ Base STR
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGoblinReaper', hasGoblinReaper)
+                handleToggleCell(
+                  'hasGoblinReaper',
+                  selectedSurvivor?.hasGoblinReaper || false
+                )
               }>
               9+ COU
             </TableCell>

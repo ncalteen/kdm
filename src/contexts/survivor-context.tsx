@@ -18,9 +18,15 @@ import {
  * Survivor Context Shape
  */
 interface SurvivorContextType {
+  /** Selected Survivor */
   selectedSurvivor: Survivor | null
+  /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Update Selected Survivor */
+  updateSelectedSurvivor: () => void
+  /** Is Creating New Survivor */
   isCreatingNewSurvivor: boolean
+  /** Set Is Creating New Survivor */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
 }
 
@@ -41,6 +47,7 @@ export function SurvivorProvider({
   survivor: Survivor | null
   children: ReactNode
 }): ReactElement {
+  // State to hold the selected survivor and creation mode
   const [selectedSurvivor, setSelectedSurvivorState] =
     useState<Survivor | null>(survivor)
   const [isCreatingNewSurvivor, setIsCreatingNewSurvivor] =
@@ -49,15 +56,34 @@ export function SurvivorProvider({
   // Load selected survivor from localStorage on mount
   useEffect(() => {
     const savedSelectedSurvivor = getSelectedSurvivor()
+
     if (savedSelectedSurvivor) setSelectedSurvivorState(savedSelectedSurvivor)
   }, [])
 
-  // Function to update selected survivor and persist to localStorage
+  /**
+   * Set Selected Survivor
+   *
+   * Updates selected survivor and persists to localStorage
+   */
   const setSelectedSurvivor = (survivor: Survivor | null) => {
     setSelectedSurvivorState(survivor)
     setSelectedSurvivorInStorage(survivor?.id || null)
-    // When selecting a survivor, stop creating mode
+
+    // When selecting a survivor, stop creation mode
     if (survivor) setIsCreatingNewSurvivor(false)
+  }
+
+  /**
+   * Update Selected Survivor
+   *
+   * Refreshes the selected survivor from localStorage
+   */
+  const updateSelectedSurvivor = () => {
+    if (selectedSurvivor?.id) {
+      const updatedSurvivor = getSelectedSurvivor()
+
+      if (updatedSurvivor) setSelectedSurvivorState(updatedSurvivor)
+    }
   }
 
   return (
@@ -65,6 +91,7 @@ export function SurvivorProvider({
       value={{
         selectedSurvivor,
         setSelectedSurvivor,
+        updateSelectedSurvivor,
         isCreatingNewSurvivor,
         setIsCreatingNewSurvivor
       }}>
@@ -78,8 +105,11 @@ export function SurvivorProvider({
  */
 export function useSurvivor(): SurvivorContextType {
   const context = useContext(SurvivorContext)
+
   if (!context)
-    throw new Error('useSurvivor must be used within a SurvivorProvider')
+    throw new Error(
+      'Context hook useSurvivor must be used within a SurvivorProvider'
+    )
 
   return context
 }

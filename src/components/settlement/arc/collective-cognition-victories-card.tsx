@@ -174,7 +174,9 @@ export function CollectiveCognitionVictoriesCard(
                                       onCheckedChange={(checked) => {
                                         if (checked !== 'indeterminate') {
                                           field.onChange(checked)
-                                          saveToLocalStorage()
+                                          saveToLocalStorage(
+                                            "The settlement's legacy grows stronger."
+                                          )
                                         }
                                       }}
                                       id={`quarries-${index}-ccLevel2-${lvl2Index}`}
@@ -204,7 +206,9 @@ export function CollectiveCognitionVictoriesCard(
                                       onCheckedChange={(checked) => {
                                         if (checked !== 'indeterminate') {
                                           field.onChange(checked)
-                                          saveToLocalStorage()
+                                          saveToLocalStorage(
+                                            "The settlement's legacy grows stronger."
+                                          )
                                         }
                                       }}
                                       id={`quarries-${index}-ccLevel3-${lvl3Index}`}

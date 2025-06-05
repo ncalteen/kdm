@@ -37,11 +37,11 @@ export function SurvivorCard({
   const settlement = useSettlement().selectedSettlement
 
   return (
-    <Card className="grid py-2 mx-auto w-full border-0 bg-secondary">
+    <Card className="w-full py-2 border-0 bg-secondary">
       <CardContent className="px-2">
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col lg:flex-row gap-2 w-full">
           {/* First column - essential stats */}
-          <div className="flex flex-col min-w-[500px] gap-1">
+          <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
             <StatusCard {...form} />
             <SurvivalCard {...form} />
             <AttributeCard {...form} />
@@ -55,7 +55,7 @@ export function SurvivorCard({
           </div>
 
           {/* Second column - ability cards */}
-          <div className="flex flex-col min-w-[500px] gap-1">
+          <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
             <HuntXPCard {...form} />
             <WeaponProficiencyCard {...form} />
             <CourageUnderstandingCard {...form} />
@@ -67,7 +67,7 @@ export function SurvivorCard({
 
           {/* Third column - ARC cards */}
           {settlement?.survivorType === SurvivorType.ARC && (
-            <div className="flex flex-col min-w-[500px] gap-1">
+            <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
               <PhilosophyCard {...form} />
               <KnowledgeCard {...form} />
             </div>

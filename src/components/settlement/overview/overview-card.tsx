@@ -11,17 +11,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import {
-  getCampaign,
-  getSurvivors,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { getSurvivors } from '@/lib/utils'
+import { Settlement } from '@/schemas/settlement'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Population Card Component
@@ -33,39 +28,36 @@ import { ZodError } from 'zod'
  * @returns Population Card Component
  */
 export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
-  const settlement = useSettlement().selectedSettlement
-  const isArcCampaign = settlement?.survivorType === SurvivorType.ARC
+  const { selectedSettlement } = useSettlement()
+  const { saveSettlement } = useSettlementSave(form)
+
+  const isArcCampaign = selectedSettlement?.survivorType === SurvivorType.ARC
   const isLanternCampaign =
-    settlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-    settlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN
 
   // Watch for changes to nemesis victories, quarry victories for ARC campaigns
   const nemeses = useMemo(
-    () => (settlement ? settlement.nemeses : []),
-    [settlement]
+    () => selectedSettlement?.nemeses || [],
+    [selectedSettlement?.nemeses]
   )
   const quarries = useMemo(
-    () => (settlement ? settlement.quarries : []),
-    [settlement]
+    () => selectedSettlement?.quarries || [],
+    [selectedSettlement?.quarries]
   )
 
-  //, nemeses, quarries, setValue])
+  // Calculate population and death count from survivors
+  const survivors = useMemo(() => {
+    return getSurvivors(selectedSettlement?.id) || []
+  }, [selectedSettlement?.id])
 
-  // Extract setValue function to avoid form dependency
-  const setValue = form.setValue
+  const population = useMemo(() => {
+    return survivors.filter((survivor) => !survivor.dead).length
+  }, [survivors])
 
-  useEffect(() => {
-    const survivors = getSurvivors(settlement?.id)
-
-    setValue(
-      'population',
-      survivors ? survivors.filter((survivor) => !survivor.dead).length : 0
-    )
-    setValue(
-      'deathCount',
-      survivors ? survivors.filter((survivor) => survivor.dead).length : 0
-    )
-  }, [settlement?.id, setValue])
+  const deathCount = useMemo(() => {
+    return survivors.filter((survivor) => survivor.dead).length
+  }, [survivors])
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
@@ -97,8 +89,8 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
         if (level3Victory) totalCc += 3
     }
 
-    setValue('ccValue', totalCc)
-  }, [isArcCampaign, nemeses, quarries, setValue])
+    selectedSettlement.ccValue = totalCc
+  }, [isArcCampaign, nemeses, quarries, selectedSettlement])
 
   /**
    * Save to Local Storage
@@ -111,41 +103,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
     attrName: 'survivalLimit' | 'lanternResearchLevel',
     value: number,
     successMsg: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape[attrName].parse(value)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        // Use the optimized utility function to save to localStorage
-        saveCampaignToLocalStorage({
-          ...campaign,
-          settlements: campaign.settlements.map((s, index) =>
-            index === settlementIndex ? { ...s, [attrName]: value } : s
-          )
-        })
-
-        toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error(`${attrName} Save Error:`, error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) => saveSettlement({ [attrName]: value }, successMsg)
 
   return (
     <Card className="border-0 p-0 py-2">
@@ -194,15 +152,14 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
           <FormField
             control={form.control}
             name="population"
-            render={({ field }) => (
+            render={() => (
               <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? '0'}
+                      value={population}
                       disabled
                     />
                   </FormControl>
@@ -224,15 +181,14 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
           <FormField
             control={form.control}
             name="deathCount"
-            render={({ field }) => (
+            render={() => (
               <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? '0'}
+                      value={deathCount}
                       disabled
                     />
                   </FormControl>
@@ -287,15 +243,14 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
               <FormField
                 control={form.control}
                 name="ccValue"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <div className="flex flex-col items-center gap-1">
                       <FormControl>
                         <Input
                           type="number"
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                          {...field}
-                          value={field.value ?? '0'}
+                          value={selectedSettlement?.ccValue ?? '0'}
                           disabled
                         />
                       </FormControl>

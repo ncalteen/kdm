@@ -417,12 +417,14 @@ export function getCampaignData(campaignType: CampaignType) {
  * @param fieldName Field Name
  * @param value Field Value
  * @param successMsg Success Message
+ * @param onUpdate Optional callback to execute after successful update
  */
 export function saveSurvivorToLocalStorage(
   form: UseFormReturn<Survivor>,
   fieldName: keyof Survivor,
   value: string | number,
-  successMsg?: string
+  successMsg?: string,
+  onUpdate?: () => void
 ): string | number | void {
   try {
     const formValues = form.getValues()
@@ -457,6 +459,9 @@ export function saveSurvivorToLocalStorage(
       })
 
       if (successMsg) toast.success(successMsg)
+
+      // Call the update callback if provided
+      if (onUpdate) onUpdate()
     }
   } catch (error) {
     console.error(`[${fieldName}] Save Error:`, error)

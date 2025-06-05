@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useSettlement } from '@/contexts/settlement-context'
 import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Gender, SurvivorType } from '@/lib/enums'
 import {
   bornWithUnderstanding,
@@ -21,7 +22,6 @@ import {
   canEndure,
   canFistPump,
   canSurge,
-  getCampaign,
   getNextSurvivorId,
   getSettlement
 } from '@/lib/utils'
@@ -34,7 +34,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ReactElement, useCallback, useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Create Survivor Form Component
@@ -57,6 +56,8 @@ export function CreateSurvivorForm(): ReactElement {
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
     defaultValues: BaseSurvivorSchema.parse({})
   })
+
+  const { saveSurvivor } = useSurvivorSave(form)
 
   // Set the form values when the component mounts
   useEffect(() => {
@@ -95,39 +96,12 @@ export function CreateSurvivorForm(): ReactElement {
    * @param values Form Values
    */
   function onSubmit(values: Survivor) {
-    try {
-      // Validate the survivor data
-      try {
-        SurvivorSchema.parse(values)
-      } catch (error) {
-        if (error instanceof ZodError && error.errors[0]?.message)
-          return toast.error(error.errors[0].message)
-        else
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
-      }
-
-      // Get existing campaign
-      const campaign = getCampaign()
-
-      // Add the new survivor
-      campaign.survivors.push(values)
-
-      // Save the updated campaign to localStorage
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      // Show success message
-      toast.success(
-        'A lantern approaches. A new survivor emerges from the darkness.'
-      )
-
-      setSelectedSurvivor(values)
-      setIsCreatingNewSurvivor(false)
-    } catch (error) {
-      console.error('Survivor Create Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
+    saveSurvivor(
+      values,
+      'A lantern approaches. A new survivor emerges from the darkness.'
+    )
+    setSelectedSurvivor(values)
+    setIsCreatingNewSurvivor(false)
   }
 
   /**

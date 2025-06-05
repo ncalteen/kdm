@@ -9,17 +9,12 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { SurvivorType } from '@/lib/enums'
-import {
-  getCampaign,
-  getSettlement,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
-import { ReactElement, useEffect, useState } from 'react'
+import { Survivor } from '@/schemas/survivor'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Survivor Attribute Card Component
@@ -34,16 +29,8 @@ import { ZodError } from 'zod'
 export function AttributeCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  // Get the survivor type from the settlement data.
-  const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
-    undefined
-  )
-
-  // Set the survivor type when the component mounts.
-  useEffect(() => {
-    const settlement = getSettlement(form.getValues('settlementId'))
-    setSurvivorType(settlement?.survivorType)
-  }, [form])
+  const { saveSurvivor } = useSurvivorSave(form)
+  const { selectedSettlement } = useSettlement()
 
   /**
    * Save to Local Storage
@@ -73,35 +60,14 @@ export function AttributeCard({
       lumi: 'Arc energy courses through enlightened veins.'
     }
 
-    try {
-      const formValues = form.getValues()
-
-      try {
-        SurvivorSchema.shape[attrName].parse(value)
-      } catch (error) {
-        if (error instanceof ZodError && error.errors[0]?.message)
-          return toast.error(error.errors[0].message)
-        else
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
-      }
-
-      // Save to localStorage using the optimized utility
-      saveCampaignToLocalStorage({
-        ...getCampaign(),
-        survivors: getCampaign().survivors.map((s) =>
-          s.id === formValues.id ? { ...s, [attrName]: value } : s
-        )
-      })
-
-      toast.success(
-        attributeMessages[attrName] || "The survivor's potential grows."
-      )
-    } catch (error) {
-      console.error('Attribute Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+    const updateData: Partial<Survivor> = {
+      [attrName]: value
     }
+
+    saveSurvivor(
+      updateData,
+      attributeMessages[attrName] || "The survivor's potential grows."
+    )
   }
 
   return (
@@ -121,11 +87,9 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '1'}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value)
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('movement', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage('movement', parseInt(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormLabel className="text-xs">Movement</FormLabel>
@@ -150,11 +114,9 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value)
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('accuracy', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage('accuracy', parseInt(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormLabel className="text-xs">Accuracy</FormLabel>
@@ -177,11 +139,9 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value)
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('strength', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage('strength', parseInt(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormLabel className="text-xs">Strength</FormLabel>
@@ -204,11 +164,9 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value)
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('evasion', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage('evasion', parseInt(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormLabel className="text-xs">Evasion</FormLabel>
@@ -231,11 +189,9 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value)
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('luck', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage('luck', parseInt(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormLabel className="text-xs">Luck</FormLabel>
@@ -258,11 +214,9 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       defaultValue={field.value ?? '0'}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value)
-                        form.setValue(field.name, val)
-                        saveToLocalStorage('speed', val)
-                      }}
+                      onChange={(e) =>
+                        saveToLocalStorage('speed', parseInt(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormLabel className="text-xs">Speed</FormLabel>
@@ -273,7 +227,7 @@ export function AttributeCard({
           />
 
           {/* Lumi (Arc) */}
-          {survivorType === SurvivorType.ARC && (
+          {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <>
               <div className="w-px bg-border" />
               <FormField
@@ -289,12 +243,9 @@ export function AttributeCard({
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           defaultValue={field.value ?? '0'}
                           min={0}
-                          onChange={(e) => {
-                            let val = parseInt(e.target.value)
-                            if (isNaN(val) || val < 0) val = 0
-                            form.setValue(field.name, val)
-                            saveToLocalStorage('lumi', val)
-                          }}
+                          onChange={(e) =>
+                            saveToLocalStorage('lumi', parseInt(e.target.value))
+                          }
                         />
                       </FormControl>
                       <FormLabel className="text-xs">Lumi</FormLabel>

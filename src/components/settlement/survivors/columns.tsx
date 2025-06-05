@@ -99,11 +99,17 @@ export const createColumns = ({
     {
       accessorKey: 'huntXP',
       header: 'Hunt XP',
-      cell: ({ row }) => (
-        <div className="text-center text-xs">
-          <Badge variant="outline">{row.getValue('huntXP')}</Badge>
-        </div>
-      )
+      cell: ({ row }) => {
+        const huntXP = parseInt(row.getValue('huntXP'), 10)
+
+        return (
+          <div className="text-center text-xs">
+            <Badge variant="outline">
+              {isNaN(huntXP) ? huntXP : huntXP + 1}
+            </Badge>
+          </div>
+        )
+      }
     },
     {
       accessorKey: 'philosophy',
