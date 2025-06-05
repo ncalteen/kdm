@@ -185,12 +185,10 @@ export function TimelineCard({
         return newEditingEvents
       })
 
-      // Save to localStorage with the updated timeline
+      // Save to localStorage with the updated timeline using the already modified entries
       const updatedTimeline = form.watch('timeline') || []
       const year = { ...updatedTimeline[yearIndex] }
-
-      year.entries = [...(year.entries || [])]
-      year.entries.splice(eventIndex, 1)
+      year.entries = newEntries
       updatedTimeline[yearIndex] = year
 
       saveToLocalStorage(
