@@ -46,13 +46,13 @@ export interface NewOncePerLifetimeItemProps {
  * @returns Once Per Lifetime Item Component
  */
 export function OncePerLifetimeItem({
-  index,
-  form,
-  onRemove,
   id,
+  index,
   isDisabled,
-  onSave,
-  onEdit
+  form,
+  onEdit,
+  onRemove,
+  onSave
 }: OncePerLifetimeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -80,7 +80,7 @@ export function OncePerLifetimeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -103,7 +103,7 @@ export function OncePerLifetimeItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`oncePerLifetime.${index}`)}
           </span>
         </div>
@@ -125,7 +125,6 @@ export function OncePerLifetimeItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="ml-2"
             onClick={() => onEdit(index)}
             title="Edit event">
             <PencilIcon className="h-4 w-4" />
@@ -171,7 +170,7 @@ export function NewOncePerLifetimeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

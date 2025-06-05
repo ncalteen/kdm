@@ -6,8 +6,9 @@ import {
 } from '@/components/survivor/disorders/disorder-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
   DndContext,
@@ -24,23 +25,20 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BrainCircuitIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
+
+const MAX_DISORDERS = 3
 
 /**
  * Disorders Card Component
- *
- * @param form Form
- * @returns Disorders Card Component
  */
 export function DisordersCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const watchedDisorders = form.watch('disorders')
-  const disorders = useMemo(() => watchedDisorders || [], [watchedDisorders])
-  const MAX_DISORDERS = 3
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -51,13 +49,13 @@ export function DisordersCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      disorders.forEach((_, i) => {
+      selectedSurvivor?.disorders.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [disorders])
+  }, [selectedSurvivor?.disorders])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -69,44 +67,22 @@ export function DisordersCard({
   const addDisorder = () => setIsAddingNew(true)
 
   /**
-   * Save disorders to localStorage for the current survivor, with Zod
-   * validation and toast feedback.
+   * Save to Local Storage
    *
-   * @param updatedDisorders Updated disorders array
-   * @param successMsg Success message for toast
+   * @param updatedDisorders Updated Disorders
+   * @param successMsg Success Message
    */
   const saveToLocalStorage = (
     updatedDisorders: string[],
     successMsg?: string
   ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (survivorIndex !== -1) {
-        try {
-          SurvivorSchema.shape.disorders.parse(updatedDisorders)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.survivors[survivorIndex].disorders = updatedDisorders
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Disorder Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
+    saveSurvivor(
+      {
+        disorders: updatedDisorders
+      },
+      successMsg
+    )
+    setIsAddingNew(false)
   }
 
   /**
@@ -115,10 +91,9 @@ export function DisordersCard({
    * @param index Disorder Index
    */
   const onRemove = (index: number) => {
-    const currentDisorders = [...disorders]
+    const currentDisorders = [...(selectedSurvivor?.disorders || [])]
 
     currentDisorders.splice(index, 1)
-    form.setValue('disorders', currentDisorders)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -148,26 +123,17 @@ export function DisordersCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless disorder cannot be recorded.')
 
-    if (i === undefined && disorders.length >= MAX_DISORDERS)
+    if (
+      i === undefined &&
+      (selectedSurvivor?.disorders.length || 0) >= MAX_DISORDERS
+    )
       return toast.error('A survivor can have at most 3 disorders.')
 
-    try {
-      SurvivorSchema.shape.disorders.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedDisorders = [...disorders]
+    const updatedDisorders = [...(selectedSurvivor?.disorders || [])]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedDisorders[i] = value
-      form.setValue(`disorders.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -175,9 +141,6 @@ export function DisordersCard({
     } else {
       // Adding a new value
       updatedDisorders.push(value)
-
-      form.setValue('disorders', updatedDisorders)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedDisorders.length - 1]: true
@@ -190,7 +153,6 @@ export function DisordersCard({
         ? 'The disorder has been updated.'
         : 'The survivor gains a new disorder.'
     )
-    setIsAddingNew(false)
   }
 
   /**
@@ -212,9 +174,12 @@ export function DisordersCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(disorders, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSurvivor?.disorders || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('disorders', newOrder)
       saveToLocalStorage(newOrder)
 
       setDisabledInputs((prev) => {
@@ -234,63 +199,67 @@ export function DisordersCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <BrainCircuitIcon className="h-4 w-4" />
           Disorders
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addDisorder}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  disorders.length >= MAX_DISORDERS ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={addDisorder}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                (selectedSurvivor?.disorders.length || 0) >= MAX_DISORDERS ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
 
       {/* Disorders List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {disorders.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={disorders.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {disorders.map((disorder, index) => (
-                  <DisorderItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewDisorderItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="flex flex-col h-[125px]">
+          <div className="flex-1 overflow-y-auto">
+            {selectedSurvivor?.disorders.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={(selectedSurvivor?.disorders || []).map((_, index) =>
+                    index.toString()
+                  )}
+                  strategy={verticalListSortingStrategy}>
+                  {(selectedSurvivor?.disorders || []).map(
+                    (disorder, index) => (
+                      <DisorderItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewDisorderItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

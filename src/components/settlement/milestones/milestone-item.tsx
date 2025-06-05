@@ -128,7 +128,7 @@ export function MilestoneItem({
       {/* Name Display/Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">{milestone.name}</span>
+          <span className="text-xs">{milestone.name}</span>
         </div>
       ) : (
         <Input
@@ -144,7 +144,7 @@ export function MilestoneItem({
       <div className="flex items-center gap-1 ml-auto">
         {/* Event Display/Input Field */}
         {isDisabled ? (
-          <Badge variant="secondary" className="h-8 w-60">
+          <Badge variant="secondary" className="h-8 w-40">
             <BookOpenIcon className="h-4 w-4" />
             {milestone.event}
           </Badge>
@@ -155,7 +155,7 @@ export function MilestoneItem({
             defaultValue={milestone.event}
             disabled={isDisabled}
             onKeyDown={handleKeyDown}
-            className="w-60"
+            className="w-40"
           />
         )}
 
@@ -256,7 +256,6 @@ export function NewMilestoneItem({
           type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
           onClick={() =>
             onSave(nameRef.current?.value || '', eventRef.current?.value || '')
           }

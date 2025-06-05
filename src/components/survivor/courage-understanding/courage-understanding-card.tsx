@@ -5,18 +5,14 @@ import { CourageUnderstandingAbilities } from '@/components/survivor/courage-und
 import { FacesInTheSky } from '@/components/survivor/courage-understanding/faces-in-the-sky'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { CampaignType } from '@/lib/enums'
-import {
-  getCampaign,
-  getSettlement,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Courage and Understanding Card Component
@@ -31,133 +27,61 @@ import { ZodError } from 'zod'
 export function CourageUnderstandingCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const courage = form.watch('courage') || 0
-  const understanding = form.watch('understanding') || 0
-  const settlementId = form.watch('settlementId')
-
-  // Get the survivor type from the settlement data.
-  const [campaignType, setCampaignType] = useState<CampaignType | undefined>(
-    undefined
-  )
-
-  // Create a ref for the timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Set the survivor type when the component mounts.
-  useEffect(() => {
-    setCampaignType(getSettlement(settlementId)?.campaignType)
-
-    // Cleanup timeouts on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [settlementId])
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
+  const { selectedSettlement } = useSettlement()
 
   /**
-   * Save a courage/understanding stat change to localStorage for the current survivor.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName: 'courage' | 'understanding',
-      value: number,
-      immediate: boolean = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[attrName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Save to localStorage using the optimized utility
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id ? { ...s, [attrName]: value } : s
-              )
-            })
-
-            toast.success(
-              attrName === 'courage'
-                ? 'Courage burns brighter in the darkness.'
-                : 'Understanding illuminates the path forward.'
-            )
-          }
-        } catch (error) {
-          console.error('Courage/Understanding Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
-  )
+  const saveToLocalStorage = (
+    attrName: 'courage' | 'understanding',
+    value: number
+  ) =>
+    saveSurvivor(
+      {
+        [attrName]: value
+      },
+      attrName === 'courage'
+        ? 'Courage burns brighter in the darkness.'
+        : 'Understanding illuminates the path forward.'
+    )
 
   /**
-   * Handles the change of the courage checkbox.
+   * Update Courage
    *
    * @param index Index
    * @param checked Checked
    */
-  const handleCourageChange = (index: number, checked: boolean) => {
-    const newValue = checked ? index + 1 : index
-    form.setValue('courage', newValue)
-    saveToLocalStorageDebounced('courage', newValue)
-  }
+  const updateCourage = (index: number, checked: boolean) =>
+    saveToLocalStorage('courage', checked ? index + 1 : index)
 
   /**
-   * Handles the change of the understanding checkbox.
+   * Update Understanding
    *
    * @param index Index
    * @param checked Checked
    */
-  const handleUnderstandingChange = (index: number, checked: boolean) => {
-    const newValue = checked ? index + 1 : index
-    form.setValue('understanding', newValue)
-    saveToLocalStorageDebounced('understanding', newValue)
-  }
+  const updateUnderstanding = (index: number, checked: boolean) =>
+    saveToLocalStorage('understanding', checked ? index + 1 : index)
 
   // Determine the label texts based on campaign type. Currently only People of
   // the Stars has different labels.
   const courageMilestoneText =
-    campaignType === CampaignType.PEOPLE_OF_THE_STARS ? 'Awake' : 'Bold'
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS
+      ? 'Awake'
+      : 'Bold'
   const understandingMilestoneText =
-    campaignType === CampaignType.PEOPLE_OF_THE_STARS ? 'Awake' : 'Insight'
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS
+      ? 'Awake'
+      : 'Insight'
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardContent className="py-2 px-0">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0">
         <div className="flex flex-wrap justify-between mx-2">
           {/* Courage Section */}
           <div className="flex flex-col">
@@ -167,10 +91,8 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={courage > i}
-                    onCheckedChange={(checked) =>
-                      handleCourageChange(i, !!checked)
-                    }
+                    checked={(selectedSurvivor?.courage || 0) > i}
+                    onCheckedChange={(checked) => updateCourage(i, !!checked)}
                     className={
                       'h-4 w-4 rounded-sm' +
                       (i === 2 || i === 8 ? ' border-2 border-primary' : '')
@@ -218,9 +140,9 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={understanding > i}
+                    checked={(selectedSurvivor?.understanding || 0) > i}
                     onCheckedChange={(checked) =>
-                      handleUnderstandingChange(i, !!checked)
+                      updateUnderstanding(i, !!checked)
                     }
                     className={
                       'h-4 w-4 rounded-sm' +
@@ -261,7 +183,8 @@ export function CourageUnderstandingCard({
 
         <hr className="my-2 mx-1" />
 
-        {campaignType !== CampaignType.PEOPLE_OF_THE_STARS ? (
+        {selectedSettlement?.campaignType !==
+        CampaignType.PEOPLE_OF_THE_STARS ? (
           <CourageUnderstandingAbilities {...form} />
         ) : (
           <FacesInTheSky {...form} />

@@ -25,11 +25,11 @@ export interface FightingArtItemProps {
   /** Is Disabled */
   isDisabled: boolean
   /** OnEdit Handler */
-  onEdit: () => void
+  onEdit: (index: number) => void
   /** OnRemove Handler */
-  onRemove: () => void
+  onRemove: (index: number) => void
   /** OnSave Handler */
-  onSave: (value?: string) => void
+  onSave: (value?: string, index?: number) => void
   /** Placeholder Text */
   placeholder: string
 }
@@ -94,7 +94,7 @@ export function FightingArtItem({
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(inputRef.current.value)
+      onSave(inputRef.current.value, index)
     }
   }
 
@@ -121,29 +121,29 @@ export function FightingArtItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
-            {form.getValues(`${arrayName}.${index}`) || ''}
+          <span className="text-xs">
+            {form.getValues(`${arrayName}.${index}`)}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder={placeholder}
-          defaultValue={form.getValues(`${arrayName}.${index}`) || ''}
+          defaultValue={form.getValues(`${arrayName}.${index}`)}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
         />
       )}
 
+      {/* Interaction Buttons */}
       <div className="flex items-center gap-1 ml-auto">
-        {/* Interaction Buttons */}
         {isDisabled ? (
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => onEdit()}
+            onClick={() => onEdit(index)}
             title={`Edit ${placeholder.toLowerCase()}`}>
             <PencilIcon className="h-4 w-4" />
           </Button>
@@ -152,7 +152,7 @@ export function FightingArtItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => onSave(inputRef.current!.value)}
+            onClick={() => onSave(inputRef.current!.value, index)}
             title={`Save ${placeholder.toLowerCase()}`}>
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -161,7 +161,7 @@ export function FightingArtItem({
           variant="ghost"
           size="icon"
           type="button"
-          onClick={() => onRemove()}>
+          onClick={() => onRemove(index)}>
           <TrashIcon className="h-4 w-4" />
         </Button>
       </div>

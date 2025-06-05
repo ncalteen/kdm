@@ -3,27 +3,22 @@
 import { TimelineContent } from '@/components/settlement/timeline/timeline-content'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { CampaignType } from '@/lib/enums'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import {
-  Settlement,
-  SettlementSchema,
-  TimelineYear
-} from '@/schemas/settlement'
+import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { PlusCircleIcon } from 'lucide-react'
 import {
   KeyboardEvent,
   ReactElement,
   startTransition,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState
 } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Timeline Card Component
@@ -35,13 +30,12 @@ import { ZodError } from 'zod'
  * @param form Settlement form instance
  * @returns Timeline Card Component
  */
-export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
-  const watchedCampaignType = form.watch('campaignType')
-  const watchedTimeline = form.watch('timeline')
-  const campaignType = useMemo(() => watchedCampaignType, [watchedCampaignType])
-  const formTimeline = useMemo(() => watchedTimeline, [watchedTimeline])
+export function TimelineCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
-  const [timeline, setTimeline] = useState<TimelineYear[]>(formTimeline || [])
   const [editingEvents, setEditingEvents] = useState<{
     [key: string]: boolean
   }>({})
@@ -50,24 +44,24 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
     [key: string]: HTMLInputElement | null
   }>({})
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  const campaignTypeFlags = useMemo(
-    () => ({
-      isSquiresCampaign: campaignType === CampaignType.SQUIRES_OF_THE_CITADEL,
-      isStarsCampaign: campaignType === CampaignType.PEOPLE_OF_THE_STARS,
-      isSunCampaign: campaignType === CampaignType.PEOPLE_OF_THE_SUN,
-      isCustomCampaign: campaignType === CampaignType.CUSTOM
-    }),
-    [campaignType]
-  )
-
   const {
     isSquiresCampaign,
     isStarsCampaign,
     isSunCampaign,
     isCustomCampaign
-  } = campaignTypeFlags
+  } = useMemo(
+    () => ({
+      isSquiresCampaign:
+        selectedSettlement?.campaignType ===
+        CampaignType.SQUIRES_OF_THE_CITADEL,
+      isStarsCampaign:
+        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS,
+      isSunCampaign:
+        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
+      isCustomCampaign: selectedSettlement?.campaignType === CampaignType.CUSTOM
+    }),
+    [selectedSettlement?.campaignType]
+  )
 
   // Check if the campaign uses normal numbering (no Prologue). Prologue is
   // only used in the People of the Lantern and People of the Dream Keeper
@@ -83,10 +77,11 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   // settlement's timeline.
   const showStoryEventIcon = useMemo(
     () =>
-      campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-      campaignType === CampaignType.CUSTOM,
-    [campaignType]
+      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      selectedSettlement?.campaignType ===
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
+      selectedSettlement?.campaignType === CampaignType.CUSTOM,
+    [selectedSettlement?.campaignType]
   )
 
   /**
@@ -105,132 +100,35 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
   )
 
   /**
-   * Debounced save timeline to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
+   * Save timeline data to localStorage and update context
    *
    * @param updatedTimeline Updated Timeline
-   * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
-   */
-  const debouncedSaveToLocalStorage = useCallback(
-    (
-      updatedTimeline: TimelineYear[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      // Clear existing timeout
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.timeline.parse(updatedTimeline)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].timeline = updatedTimeline
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Timeline Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        saveFunction()
-      } else {
-        // Debounce saves by 300ms to reduce localStorage writes
-        saveTimeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form, saveTimeoutRef]
-  )
-
-  /**
-   * Save timeline to localStorage for the current settlement, with Zod
-   * validation and toast feedback.
-   *
-   * @param updatedTimeline Updated Timeline
-   * @param successMsg Success Message
+   * @param successMsg Optional success message to display
    */
   const saveToLocalStorage = useCallback(
-    (updatedTimeline: TimelineYear[], successMsg?: string) => {
-      debouncedSaveToLocalStorage(updatedTimeline, successMsg, true)
-    },
-    [debouncedSaveToLocalStorage]
+    (updatedTimeline: TimelineYear[], successMsg?: string) =>
+      saveSettlement(
+        {
+          timeline: updatedTimeline
+        },
+        successMsg
+      ),
+    [saveSettlement]
   )
-
-  useEffect(() => {
-    // Update the form value when the timeline state changes
-    if (formTimeline) {
-      setTimeline(formTimeline)
-
-      // When timeline is first loaded or changed, all events should be in
-      // non-editing mode (badges)
-      setEditingEvents({})
-    }
-  }, [formTimeline])
-
-  // Update timeline when campaign type changes
-  useEffect(() => {
-    const currentTimeline = form.getValues('timeline') || []
-
-    if (isSquiresCampaign && currentTimeline.length > 5) {
-      // Trim timeline to 5 rows for Squires campaign
-      const trimmedTimeline = currentTimeline.slice(0, 5)
-
-      setTimeline(trimmedTimeline)
-      form.setValue('timeline', trimmedTimeline)
-    } else if (!isSquiresCampaign && currentTimeline.length < 40) {
-      // Expand timeline to 40 rows for other campaigns
-      // Preserve existing timeline entries and add empty ones to reach 40
-      const expandedTimeline = [
-        ...currentTimeline,
-        ...Array.from({ length: 40 - currentTimeline.length }, () => ({
-          completed: false,
-          entries: []
-        }))
-      ]
-
-      setTimeline(expandedTimeline)
-      form.setValue('timeline', expandedTimeline)
-    }
-  }, [campaignType, isSquiresCampaign, form])
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
-    }
-  }, [])
 
   /**
    * Adds an Event to a Year
+   *
+   * This uses the form state directly instead of the settlement context, to
+   * ensure that the timeline is updated immediately without needing to
+   * re-render the entire settlement context.
    *
    * @param yearIndex Year Index
    */
   const addEventToYear = useCallback(
     (yearIndex: number) => {
       // Prevent adding another input if an empty event already exists this year
-      const yearEntries = timeline[yearIndex]?.entries || []
+      const yearEntries = form.watch(`timeline.${yearIndex}.entries`) || []
 
       // Check if any entry in this year is being edited
       const isEditing = yearEntries.some(
@@ -247,17 +145,6 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
           'Finish editing the current event before adding another.'
         )
 
-      setTimeline((prevTimeline) => {
-        // Only update the affected year
-        const updatedTimeline = [...prevTimeline]
-        const year = { ...updatedTimeline[yearIndex] }
-
-        year.entries = [...(year.entries || []), '']
-        updatedTimeline[yearIndex] = year
-
-        return updatedTimeline
-      })
-
       // Update the form state for just the affected year.
       form.setValue(`timeline.${yearIndex}.entries`, [...yearEntries, ''])
 
@@ -271,7 +158,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
       // string which would fail Zod validation. We only save when the user
       // actually enters content.
     },
-    [timeline, form, editingEvents]
+    [form, editingEvents]
   )
 
   /**
@@ -282,23 +169,13 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
    */
   const removeEventFromYear = useCallback(
     (yearIndex: number, eventIndex: number) => {
-      setTimeline((prevTimeline) => {
-        const updatedTimeline = [...prevTimeline]
-        const year = { ...updatedTimeline[yearIndex] }
-
-        year.entries = [...(year.entries || [])]
-        year.entries.splice(eventIndex, 1)
-        updatedTimeline[yearIndex] = year
-
-        return updatedTimeline
-      })
-
-      // Update form state for just the affected year.
-      const yearEntries = timeline[yearIndex]?.entries || []
+      const yearEntries = form.watch(`timeline.${yearIndex}.entries`) || []
       const newEntries = [...yearEntries]
       const inputKey = `${yearIndex}-${eventIndex}`
 
       newEntries.splice(eventIndex, 1)
+
+      // Update form state
       form.setValue(`timeline.${yearIndex}.entries`, newEntries)
 
       // Remove from editingEvents
@@ -308,11 +185,10 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         return newEditingEvents
       })
 
-      // Save to localStorage with the updated timeline
-      const updatedTimeline = [...timeline]
+      // Save to localStorage with the updated timeline using the already modified entries
+      const updatedTimeline = form.watch('timeline') || []
       const year = { ...updatedTimeline[yearIndex] }
-      year.entries = [...(year.entries || [])]
-      year.entries.splice(eventIndex, 1)
+      year.entries = newEntries
       updatedTimeline[yearIndex] = year
 
       saveToLocalStorage(
@@ -320,7 +196,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         'The chronicle is altered - a memory fades into darkness.'
       )
     },
-    [timeline, form, saveToLocalStorage]
+    [form, saveToLocalStorage]
   )
 
   /**
@@ -349,24 +225,13 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         return newEditingEvents
       })
 
-      setTimeline((prevTimeline) => {
-        const updatedTimeline = [...prevTimeline]
-        const year = { ...updatedTimeline[yearIndex] }
-
-        year.entries = [...(year.entries || [])]
-        year.entries[entryIndex] = newEventValue
-        updatedTimeline[yearIndex] = year
-
-        return updatedTimeline
-      })
-
       form.setValue(
         `timeline.${yearIndex}.entries.${entryIndex}`,
         newEventValue
       )
 
       // Save to localStorage with the updated timeline
-      const updatedTimeline = [...timeline]
+      const updatedTimeline = form.watch('timeline') || []
       const year = { ...updatedTimeline[yearIndex] }
       year.entries = [...(year.entries || [])]
       year.entries[entryIndex] = newEventValue
@@ -377,7 +242,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         'The chronicles remember - a memory is etched in stone.'
       )
     },
-    [form, inputRefs, timeline, saveToLocalStorage]
+    [form, inputRefs, saveToLocalStorage]
   )
 
   /**
@@ -388,18 +253,10 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
    */
   const handleYearCompletionChange = useCallback(
     (yearIndex: number, completed: boolean) => {
-      setTimeline((prevTimeline) => {
-        const updatedTimeline = [...prevTimeline]
-        const year = { ...updatedTimeline[yearIndex] }
-        year.completed = completed
-        updatedTimeline[yearIndex] = year
-        return updatedTimeline
-      })
-
       form.setValue(`timeline.${yearIndex}.completed`, completed)
 
       // Save to localStorage with the updated timeline
-      const updatedTimeline = [...timeline]
+      const updatedTimeline = form.watch('timeline') || []
       const year = { ...updatedTimeline[yearIndex] }
       year.completed = completed
       updatedTimeline[yearIndex] = year
@@ -411,7 +268,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
           : 'The year remains unfinished.'
       )
     },
-    [timeline, form, saveToLocalStorage]
+    [form, saveToLocalStorage]
   )
 
   /**
@@ -422,27 +279,8 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
    */
   const editEvent = useCallback(
     (yearIndex: number, entryIndex: number) => {
-      // Remove any empty (unsaved) event in this year before editing.
-      setTimeline((prevTimeline) => {
-        const updatedTimeline = [...prevTimeline]
-        const year = { ...updatedTimeline[yearIndex] }
-        const entries = [...(year.entries || [])]
-
-        for (let i = entries.length - 1; i >= 0; i--)
-          if (
-            (entries[i] === '' || entries[i]?.trim() === '') &&
-            i !== entryIndex
-          )
-            entries.splice(i, 1)
-
-        year.entries = entries
-        updatedTimeline[yearIndex] = year
-
-        return updatedTimeline
-      })
-
       // Update the form state
-      const yearEntries = timeline[yearIndex]?.entries || []
+      const yearEntries = form.watch(`timeline.${yearIndex}.entries`) || []
       const filteredEntries = yearEntries.filter(
         (e, i) => !(i !== entryIndex && (!e || e.trim() === ''))
       )
@@ -467,7 +305,7 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
         return newEditingEvents
       })
     },
-    [setEditingEvents, setTimeline, form, timeline]
+    [setEditingEvents, form]
   )
 
   /**
@@ -510,12 +348,12 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
     []
   )
 
-  // Preload essential data when component mounts
-  const cachedTimeline = useMemo(() => timeline, [timeline])
+  // Use form state as source of truth for timeline data to ensure immediate updates
+  const cachedTimeline = useMemo(() => form.watch('timeline') || [], [form])
 
   return (
-    <Card className="border-0">
-      <CardContent className="p-0">
+    <Card className="border-0 w-full h-full pt-0">
+      <CardContent className="flex flex-col justify-between h-full">
         {/* Timeline Content */}
         <TimelineContent
           timeline={cachedTimeline}
@@ -540,20 +378,15 @@ export function TimelineCard(form: UseFormReturn<Settlement>): ReactElement {
             className="mt-2 w-full"
             size="lg"
             onClick={() => {
-              startTransition(() => {
-                const updatedTimeline = [
-                  ...timeline,
-                  { completed: false, entries: [] }
-                ]
-
-                setTimeline(updatedTimeline)
-                form.setValue('timeline', updatedTimeline)
-
+              startTransition(() =>
                 saveToLocalStorage(
-                  updatedTimeline,
+                  [
+                    ...(form.watch('timeline') || []),
+                    { completed: false, entries: [] }
+                  ],
                   'A new lantern year is added - the chronicles expand.'
                 )
-              })
+              )
             }}>
             <PlusCircleIcon className="h-4 w-4" /> Add Lantern Year
           </Button>

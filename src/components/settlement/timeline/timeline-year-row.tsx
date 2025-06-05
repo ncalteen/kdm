@@ -7,7 +7,7 @@ import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { CheckIcon, PlusCircleIcon, ScrollIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, memo, startTransition } from 'react'
+import { KeyboardEvent, memo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -82,11 +82,11 @@ export const TimelineYearRow = memo(
         <div
           className={`grid ${
             showStoryEventIcon
-              ? 'grid-cols-[80px_40px_1fr_auto]'
-              : 'grid-cols-[80px_1fr_auto]'
-          } items-start border-t py-1 min-h-[40px]`}>
+              ? 'grid-cols-[60px_30px_1fr_auto]'
+              : 'grid-cols-[60px_1fr_auto]'
+          } items-start border-t py-1`}>
           {/* Year Number and Completion Checkbox */}
-          <div className="flex gap-2">
+          <div className="flex gap-1 items-center">
             <FormField
               control={form.control}
               name={`timeline.${yearIndex}.completed`}
@@ -106,7 +106,7 @@ export const TimelineYearRow = memo(
               )}
             />
             <span
-              className={`text-sm ${yearData.completed ? 'text-muted-foreground' : ''}`}>
+              className={`text-xs leading-none ${yearData.completed ? 'text-muted-foreground' : ''}`}>
               {yearIndex === 0 && !usesNormalNumbering
                 ? 'Prologue'
                 : usesNormalNumbering
@@ -117,18 +117,18 @@ export const TimelineYearRow = memo(
 
           {/* Story Event Icon */}
           {showStoryEventIcon && (
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               {yearIndex !== 0 && (
-                <ScrollIcon className="h-4 w-4 text-muted-foreground" />
+                <ScrollIcon className="h-3 w-3 text-muted-foreground" />
               )}
             </div>
           )}
 
           {/* Events Section */}
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-0.5">
             {/* Saved Event Badges */}
             {(yearData.entries || []).length > 0 && (
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-0.5">
                 {(yearData.entries || []).map(
                   (entry: string, entryIndex: number) => {
                     if (
@@ -158,12 +158,12 @@ export const TimelineYearRow = memo(
               (entry: string, entryIndex: number) => {
                 if (isEventBeingEdited(yearIndex, entryIndex)) {
                   return (
-                    <div key={entryIndex} className="flex items-center">
+                    <div key={entryIndex} className="flex items-center gap-1">
                       <FormField
                         control={form.control}
                         name={`timeline.${yearIndex}.entries.${entryIndex}`}
                         render={() => (
-                          <FormItem className="flex-1">
+                          <FormItem className="flex-1 pt-1">
                             <FormControl>
                               <Input
                                 placeholder={`${
@@ -181,7 +181,7 @@ export const TimelineYearRow = memo(
                                   handleKeyDown(e, yearIndex, entryIndex)
                                 }
                                 autoFocus
-                                className="mt-1"
+                                className="h-7 text-xs"
                                 id={`timeline.${yearIndex}.entries.${entryIndex}`}
                                 name={`timeline.${yearIndex}.entries.${entryIndex}`}
                               />
@@ -193,20 +193,21 @@ export const TimelineYearRow = memo(
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="ml-2"
+                        className="h-6 w-6"
                         onClick={() => saveEvent(yearIndex, entryIndex)}
                         title="Save event">
-                        <CheckIcon className="h-4 w-4" />
+                        <CheckIcon className="h-3 w-3" />
                       </Button>
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
+                        className="h-6 w-6"
                         onClick={() =>
                           removeEventFromYear(yearIndex, entryIndex)
                         }
                         title="Remove event">
-                        <TrashIcon className="h-4 w-4" />
+                        <TrashIcon className="h-3 w-3" />
                       </Button>
                     </div>
                   )
@@ -216,7 +217,7 @@ export const TimelineYearRow = memo(
             )}
 
             {(yearData.entries || []).length === 0 && (
-              <div className="text-xs text-muted-foreground italic">
+              <div className="text-xs text-muted-foreground italic leading-none">
                 No events recorded.
               </div>
             )}
@@ -224,16 +225,17 @@ export const TimelineYearRow = memo(
 
           {/* Add Event Button */}
           {!yearData.completed && (
-            <div className="flex justify-end">
+            <div className="flex justify-end pr-2">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  startTransition(() => addEventToYear(yearIndex))
+                  addEventToYear(yearIndex)
                 }}
-                className="h-8">
-                <PlusCircleIcon className="h-4 w-4" /> Add Event
+                className="h-6 px-2 text-xs">
+                <PlusCircleIcon className="h-3 w-3" />
+                <span className="text-xs">Add Event</span>
               </Button>
             </div>
           )}

@@ -142,7 +142,7 @@ export function UploadCampaignButton() {
           size="sm"
           className="w-full sm:w-auto">
           <UploadIcon className="h-4 w-4" />
-          Upload Settlement Records
+          Upload Records
         </Button>
       </AlertDialogTrigger>{' '}
       <AlertDialogContent

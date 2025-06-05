@@ -12,8 +12,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Nemesis, Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Nemesis, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -30,17 +31,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, SkullIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Nemeses Card Component
@@ -48,35 +41,25 @@ import { ZodError } from 'zod'
 export function NemesesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedNemeses = form.watch('nemeses')
-  const nemeses = useMemo(() => watchedNemeses || [], [watchedNemeses])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
-    }
-  }, [])
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      nemeses.forEach((_, i) => {
+      selectedSettlement?.nemeses.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [nemeses])
+  }, [selectedSettlement?.nemeses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -88,57 +71,13 @@ export function NemesesCard({
   const addNemesis = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedNemeses Updated Nemeses
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (updatedNemeses: Nemesis[], successMsg?: string, immediate = false) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-
-      const doSave = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.nemeses.parse(updatedNemeses)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].nemeses = updatedNemeses
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Nemesis Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
-      }
-    },
-    [form]
-  )
+  const saveToLocalStorage = (updatedNemeses: Nemesis[], successMsg?: string) =>
+    saveSettlement({ nemeses: updatedNemeses }, successMsg)
 
   /**
    * Handles the removal of a nemesis.
@@ -146,10 +85,8 @@ export function NemesesCard({
    * @param index Nemesis Index
    */
   const onRemove = (index: number) => {
-    const currentNemeses = [...nemeses]
-
+    const currentNemeses = [...(selectedSettlement?.nemeses || [])]
     currentNemeses.splice(index, 1)
-    form.setValue('nemeses', currentNemeses)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -163,10 +100,9 @@ export function NemesesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentNemeses,
-      'The nemesis has returned to the darkness.',
-      true // immediate save for removal
+      'The nemesis has returned to the darkness.'
     )
   }
 
@@ -192,17 +128,7 @@ export function NemesesCard({
       ccLevel3: false
     }
 
-    try {
-      SettlementSchema.shape.nemeses.parse([nemesisWithCc])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedNemeses = [...nemeses]
+    const updatedNemeses = [...(selectedSettlement?.nemeses || [])]
 
     if (index !== undefined) {
       // Updating an existing value - preserve existing properties
@@ -211,8 +137,6 @@ export function NemesesCard({
         name: value,
         unlocked: unlocked || false
       }
-      form.setValue(`nemeses.${index}`, updatedNemeses[index])
-
       setDisabledInputs((prev) => ({
         ...prev,
         [index]: true
@@ -220,21 +144,17 @@ export function NemesesCard({
     } else {
       // Adding a new value
       updatedNemeses.push(nemesisWithCc)
-
-      form.setValue('nemeses', updatedNemeses)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedNemeses.length - 1]: true
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedNemeses,
       index !== undefined
         ? 'The nemesis waits outside your settlement.'
-        : 'A new nemesis emerges.',
-      true // immediate save for create/update
+        : 'A new nemesis emerges.'
     )
     setIsAddingNew(false)
   }
@@ -254,15 +174,12 @@ export function NemesesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedNemeses = nemeses.map((n, i) =>
+    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
       i === index ? { ...n, unlocked } : n
     )
-
-    form.setValue('nemeses', updatedNemeses)
-
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedNemeses,
-      `${nemeses[index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
+      `${selectedSettlement!.nemeses[index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -284,12 +201,10 @@ export function NemesesCard({
       | 'ccLevel3',
     checked: boolean
   ) => {
-    const updatedNemeses = nemeses.map((n, i) =>
+    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
       i === index ? { ...n, [level]: checked } : n
     )
-
-    form.setValue('nemeses', updatedNemeses)
-    saveToLocalStorageDebounced(updatedNemeses)
+    saveToLocalStorage(updatedNemeses)
   }
 
   /**
@@ -303,11 +218,13 @@ export function NemesesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(nemeses, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.nemeses || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('nemeses', newOrder)
-      saveToLocalStorageDebounced(newOrder)
-
+      saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -325,9 +242,9 @@ export function NemesesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <SkullIcon className="h-4 w-4" />
           Nemesis Monsters
           {!isAddingNew && (
@@ -353,39 +270,43 @@ export function NemesesCard({
       </CardHeader>
 
       {/* Nemeses List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {nemeses.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={nemeses.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {nemeses.map((nemesis, index) => (
-                  <NemesisItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
-                    onEdit={onEdit}
-                    onToggleUnlocked={onToggleUnlocked}
-                    onToggleLevel={onToggleLevel}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewNemesisItem
-              onSave={(name, unlocked) => onSave(name, unlocked)}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2">
+        <div className="flex flex-col h-[200px]">
+          <div className="flex-1 overflow-y-auto">
+            {selectedSettlement?.nemeses.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={(selectedSettlement?.nemeses || []).map((_, index) =>
+                    index.toString()
+                  )}
+                  strategy={verticalListSortingStrategy}>
+                  {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
+                    <NemesisItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
+                      onEdit={onEdit}
+                      onToggleUnlocked={onToggleUnlocked}
+                      onToggleLevel={onToggleLevel}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewNemesisItem
+                onSave={(name, unlocked) => onSave(name, unlocked)}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -46,13 +46,23 @@ export function getCampaign(): Campaign {
   if (cachedCampaign && now - lastCacheUpdate < CACHE_DURATION)
     return cachedCampaign
 
-  const campaign = JSON.parse(
+  const storedCampaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
         settlements: [],
         survivors: []
       })
   )
+
+  // Ensure backwards compatibility for existing campaign data
+  const campaign: Campaign = {
+    settlements: storedCampaign.settlements || [],
+    survivors: storedCampaign.survivors || [],
+    // If selectedSettlementId is not present, add it as undefined
+    selectedSettlementId: storedCampaign.selectedSettlementId || undefined,
+    selectedSurvivorId: storedCampaign.selectedSurvivorId || undefined,
+    selectedTab: storedCampaign.selectedTab || undefined
+  }
 
   cachedCampaign = campaign
   lastCacheUpdate = now
@@ -163,6 +173,90 @@ export function getSettlement(settlementId: number): Settlement | undefined {
   return getCampaign().settlements.find(
     (settlement) => settlement.id === settlementId
   )
+}
+
+/**
+ * Gets the currently selected settlement from localStorage.
+ *
+ * @returns Selected Settlement or null if none is selected or not found
+ */
+export function getSelectedSettlement(): Settlement | null {
+  const campaign = getCampaign()
+
+  if (!campaign.selectedSettlementId) return null
+
+  const settlement = campaign.settlements.find(
+    (s) => s.id === campaign.selectedSettlementId
+  )
+
+  return settlement || null
+}
+
+/**
+ * Sets the currently selected settlement in localStorage.
+ *
+ * @param settlementId Settlement ID to select, or null to clear selection
+ */
+export function setSelectedSettlement(settlementId: number | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedSettlementId = settlementId || undefined
+
+  saveCampaignToLocalStorage(campaign)
+}
+
+/**
+ * Gets the currently selected survivor from localStorage.
+ *
+ * @returns Selected Survivor or null if none is selected or not found
+ */
+export function getSelectedSurvivor(): Survivor | null {
+  const campaign = getCampaign()
+
+  if (!campaign.selectedSurvivorId) return null
+
+  const survivor = campaign.survivors.find(
+    (s) => s.id === campaign.selectedSurvivorId
+  )
+
+  return survivor || null
+}
+
+/**
+ * Sets the currently selected survivor in localStorage.
+ *
+ * @param survivorId Survivor ID to select, or null to clear selection
+ */
+export function setSelectedSurvivor(survivorId: number | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedSurvivorId = survivorId || undefined
+
+  saveCampaignToLocalStorage(campaign)
+}
+
+/**
+ * Gets the currently selected tab from localStorage.
+ *
+ * @returns Selected Tab or null if none is selected
+ */
+export function getSelectedTab(): string | null {
+  const campaign = getCampaign()
+
+  return campaign.selectedTab || null
+}
+
+/**
+ * Sets the currently selected tab in localStorage.
+ *
+ * @param tab Tab to select, or null to clear selection
+ */
+export function setSelectedTab(tab: string | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedTab = tab || undefined
+
+  saveCampaignToLocalStorage(campaign)
 }
 
 /**
@@ -323,12 +417,14 @@ export function getCampaignData(campaignType: CampaignType) {
  * @param fieldName Field Name
  * @param value Field Value
  * @param successMsg Success Message
+ * @param onUpdate Optional callback to execute after successful update
  */
 export function saveSurvivorToLocalStorage(
   form: UseFormReturn<Survivor>,
   fieldName: keyof Survivor,
   value: string | number,
-  successMsg?: string
+  successMsg?: string,
+  onUpdate?: () => void
 ): string | number | void {
   try {
     const formValues = form.getValues()
@@ -363,6 +459,9 @@ export function saveSurvivorToLocalStorage(
       })
 
       if (successMsg) toast.success(successMsg)
+
+      // Call the update callback if provided
+      if (onUpdate) onUpdate()
     }
   } catch (error) {
     console.error(`[${fieldName}] Save Error:`, error)

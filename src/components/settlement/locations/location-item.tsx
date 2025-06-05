@@ -119,7 +119,7 @@ export function LocationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`locations.${index}.name`)}
           </span>
         </div>
@@ -130,7 +130,6 @@ export function LocationItem({
           defaultValue={form.getValues(`locations.${index}.name`)}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          className="flex-1"
           autoFocus
         />
       )}
@@ -217,7 +216,7 @@ export function NewLocationItem({
       {/* Input Field */}
       <Input
         ref={inputRef}
-        placeholder="Location Name"
+        placeholder="Add a location..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"

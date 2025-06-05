@@ -12,13 +12,15 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useSettlement } from '@/contexts/settlement-context'
 import { DefaultSquiresSuspicion } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import {
   getCampaign,
   getCampaignData,
   getLostSettlementCount,
-  getNextSettlementId
+  getNextSettlementId,
+  saveCampaignToLocalStorage
 } from '@/lib/utils'
 import {
   BaseSettlementSchema,
@@ -26,7 +28,6 @@ import {
   SettlementSchema
 } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
 import { ReactElement, useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -41,7 +42,7 @@ import { toast } from 'sonner'
  * @returns Create Settlement Form Component
  */
 export function CreateSettlementForm(): ReactElement {
-  const router = useRouter()
+  const { selectedSettlement, setSelectedSettlement } = useSettlement()
 
   const form = useForm<Settlement>({
     // Need to set the type here directly, because the schema includes a lot of
@@ -50,13 +51,12 @@ export function CreateSettlementForm(): ReactElement {
     defaultValues: BaseSettlementSchema.parse({})
   })
 
-  const campaignType = form.watch('campaignType')
-  const survivorType = form.watch('survivorType')
-
   // Set the form values when the component mounts.
   useEffect(() => {
     // Get campaign data for the campaign type.
-    const campaignData = getCampaignData(campaignType)
+    const campaignData = getCampaignData(
+      selectedSettlement?.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
+    )
 
     // Calculate the next settlement ID based on the latest in localStorage.
     form.setValue('id', getNextSettlementId())
@@ -74,7 +74,7 @@ export function CreateSettlementForm(): ReactElement {
     form.setValue('principles', campaignData.principles)
     form.setValue('quarries', campaignData.quarries)
     form.setValue('timeline', campaignData.timeline)
-  }, [form, campaignType])
+  }, [form, selectedSettlement?.campaignType])
 
   /**
    * Handles the user changing the campaign type.
@@ -157,14 +157,17 @@ export function CreateSettlementForm(): ReactElement {
       // Add the new settlement to the campaign
       campaign.settlements.push(values)
 
+      // Set the newly created settlement as selected
+      campaign.selectedSettlementId = values.id
+
       // Save the updated campaign to localStorage
-      localStorage.setItem('campaign', JSON.stringify(campaign))
+      saveCampaignToLocalStorage(campaign)
+
+      // Update the selected settlement in the context
+      setSelectedSettlement(values)
 
       // Show success message
       toast.success('A lantern pierces the darkness. A new settlement is born.')
-
-      // Redirect to the settlement page, passing the ID via query parameters
-      router.push(`/settlement?settlementId=${values.id}`)
     } catch (error) {
       console.error('Settlement Create Error:', error)
       toast.error('The darkness swallows your words. Please try again.')
@@ -178,8 +181,8 @@ export function CreateSettlementForm(): ReactElement {
       })}
       className="space-y-6">
       <Form {...form}>
-        <Card className="max-w-[500px] mx-auto">
-          <CardContent className="w-full p-4 space-y-2">
+        <Card className="max-w-[500px] mt-10 mx-auto">
+          <CardContent className="flex flex-col gap-2 w-full">
             {/* Campaign Type */}
             <FormField
               control={form.control}
@@ -193,7 +196,7 @@ export function CreateSettlementForm(): ReactElement {
                     <FormControl>
                       <SelectCampaign
                         {...field}
-                        value={campaignType}
+                        value={selectedSettlement?.campaignType}
                         onChange={handleCampaignChange}
                       />
                     </FormControl>
@@ -214,12 +217,13 @@ export function CreateSettlementForm(): ReactElement {
                     </FormLabel>
                     <FormControl>
                       <SelectSurvivorType
-                        value={survivorType}
+                        value={selectedSettlement?.survivorType}
                         onChange={handleSurvivorTypeChange}
                         disabled={
-                          campaignType ===
+                          selectedSettlement?.campaignType ===
                             CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-                          campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+                          selectedSettlement?.campaignType ===
+                            CampaignType.SQUIRES_OF_THE_CITADEL
                         }
                       />
                     </FormControl>
@@ -254,7 +258,7 @@ export function CreateSettlementForm(): ReactElement {
               )}
             />
 
-            <hr className="my-2" />
+            <hr className="my-0" />
 
             <div className="text-xs text-muted-foreground">
               When the settlement is named for the first time,{' '}

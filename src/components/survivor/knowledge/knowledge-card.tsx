@@ -2,25 +2,22 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FormLabel } from '@/components/ui/form'
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { cn } from '@/lib/utils'
+import { Survivor } from '@/schemas/survivor'
 import { LightBulbIcon } from '@primer/octicons-react'
-import {
-  FormEvent,
-  KeyboardEvent,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react'
+import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Knowledge Card Component
@@ -28,271 +25,208 @@ import { ZodError } from 'zod'
 export function KnowledgeCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Watch the observation rank values to ensure UI updates correctly
-  const knowledge1ObservationRank = form.watch('knowledge1ObservationRank') || 0
-  const knowledge2ObservationRank = form.watch('knowledge2ObservationRank') || 0
-
-  // Watch the rank up milestone values
-  const watchedKnowledge1RankUp = form.watch('knowledge1RankUp')
-  const watchedKnowledge2RankUp = form.watch('knowledge2RankUp')
-  const knowledge1RankUp = useMemo(
-    () => watchedKnowledge1RankUp,
-    [watchedKnowledge1RankUp]
-  )
-  const knowledge2RankUp = useMemo(
-    () => watchedKnowledge2RankUp,
-    [watchedKnowledge2RankUp]
-  )
-
-  // Get the canUseFightingArtsOrKnowledges value
-  const watchedCanUseFightingArtsOrKnowledges = form.watch(
-    'canUseFightingArtsOrKnowledges'
-  )
-  const canUseFightingArtsOrKnowledges = useMemo(
-    () => watchedCanUseFightingArtsOrKnowledges,
-    [watchedCanUseFightingArtsOrKnowledges]
-  )
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
 
   /**
-   * Save knowledge data to localStorage for the current survivor with debouncing, with
-   * Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param fieldName Field Name
    * @param value Field Value
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
+  const saveToLocalStorage = useCallback(
     (
       fieldName: keyof Survivor,
       value: string | number | boolean,
-      successMsg?: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[fieldName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Save to localStorage using the optimized utility
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      [fieldName]: value
-                    }
-                  : s
-              )
-            })
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error(`[${fieldName}] Save Error:`, error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
+      successMsg?: string
+    ) =>
+      saveSurvivor(
+        {
+          [fieldName]: value
+        },
+        successMsg
+      ),
+    [saveSurvivor]
   )
 
   /**
-   * Handles text input changes - saves on Enter key press.
-   *
-   * @param e Keyboard Event
-   * @param fieldName Field Name
-   * @param value Current Input Value
-   * @param successMsg Success Message
-   */
-  const handleTextKeyDown = useCallback(
-    (
-      e: KeyboardEvent<HTMLInputElement>,
-      fieldName: keyof Survivor,
-      value: string,
-      successMsg: string
-    ) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        saveToLocalStorageDebounced(
-          fieldName,
-          value,
-          value.trim() ? successMsg : undefined,
-          true
-        )
-      }
-    },
-    [saveToLocalStorageDebounced]
-  )
-
-  /**
-   * Handles textarea changes - saves on Enter key press.
-   *
-   * @param e Keyboard Event
-   * @param fieldName Field Name
-   * @param value Current Input Value
-   * @param successMsg Success Message
-   */
-  const handleTextareaKeyDown = useCallback(
-    (
-      e: KeyboardEvent<HTMLTextAreaElement>,
-      fieldName: keyof Survivor,
-      value: string,
-      successMsg: string
-    ) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        saveToLocalStorageDebounced(
-          fieldName,
-          value,
-          value.trim() ? successMsg : undefined,
-          true
-        )
-      }
-    },
-    [saveToLocalStorageDebounced]
-  )
-
-  /**
-   * Handles observation rank changes - saves immediately.
+   * Handles observation rank changes
    *
    * @param fieldName Field Name
    * @param rank Selected Rank
    */
   const handleRankChange = useCallback(
     (fieldName: keyof Survivor, rank: number) => {
-      form.setValue(fieldName, rank, { shouldDirty: true })
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         fieldName,
         rank,
-        'The lantern illuminates newfound wisdom.',
-        true
+        'The lantern illuminates newfound wisdom.'
       )
     },
-    [form, saveToLocalStorageDebounced]
+    [saveToLocalStorage]
   )
 
   /**
-   * Helper function to handle textarea auto-resize
+   * Update Can Use Fighting Arts or Knowledges
    */
-  const handleTextareaInput = (e: FormEvent<HTMLTextAreaElement>) => {
-    const target = e.target as HTMLTextAreaElement
-    target.style.height = 'auto'
-    target.style.height = `${target.scrollHeight}px`
+  const updateCanUseFightingArtsOrKnowledges = useCallback(
+    (checked: boolean) => {
+      saveToLocalStorage(
+        'canUseFightingArtsOrKnowledges',
+        !checked,
+        !checked
+          ? 'The survivor recalls their knowledge.'
+          : 'The survivor has forgotten their learnings.'
+      )
+    },
+    [saveToLocalStorage]
+  )
+
+  /**
+   * Update Knowledge 1
+   */
+  const updateKnowledge1 = (value: string) =>
+    saveSurvivor(
+      { knowledge1: value },
+      value
+        ? 'Knowledge inscribed in the lantern light.'
+        : 'Knowledge forgotten in the darkness.'
+    )
+
+  /**
+   * Update Knowledge 1 Observation Rank
+   */
+  const updateKnowledge1ObservationRank = (checked: boolean, index: number) => {
+    const rank = index + 1
+
+    if (checked) handleRankChange('knowledge1ObservationRank', rank)
+    else if (selectedSurvivor?.knowledge1ObservationRank === rank)
+      handleRankChange('knowledge1ObservationRank', rank - 1)
   }
 
   /**
-   * Handle toggling the canUseFightingArtsOrKnowledges checkbox
-   */
-  const handleCanUseToggle = useCallback(
-    (checked: boolean) => {
-      const updatedValue = !checked
-      form.setValue('canUseFightingArtsOrKnowledges', updatedValue)
-      saveToLocalStorageDebounced(
-        'canUseFightingArtsOrKnowledges',
-        updatedValue,
-        updatedValue
-          ? 'The survivor recalls their knowledge.'
-          : 'The survivor has forgotten their learnings.',
-        true
-      )
-    },
-    [form, saveToLocalStorageDebounced]
-  )
-
-  /**
-   * Handles right-clicking on knowledge1 observation rank checkboxes to toggle rank up milestone
+   * Update Knowledge 1 Rank Up Milestone
    *
    * @param index The index of the checkbox (0-based)
    * @param event The mouse event
    */
-  const handleKnowledge1RightClick = useCallback(
+  const updateKnowledge1RankUp = useCallback(
     (index: number, event: React.MouseEvent) => {
       event.preventDefault()
 
-      const newRankUp = knowledge1RankUp === index ? undefined : index
+      const newRankUp =
+        selectedSurvivor?.knowledge1RankUp === index ? undefined : index
 
-      form.setValue('knowledge1RankUp', newRankUp, { shouldDirty: true })
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         'knowledge1RankUp',
         newRankUp ?? 0,
         newRankUp !== undefined
           ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.',
-        true
+          : 'Knowledge rank up milestone removed.'
       )
     },
-    [form, knowledge1RankUp, saveToLocalStorageDebounced]
+    [selectedSurvivor?.knowledge1RankUp, saveToLocalStorage]
   )
 
   /**
-   * Handles right-clicking on knowledge2 observation rank checkboxes to toggle rank up milestone
+   * Update Knowledge 1 Rules
+   */
+  const updateKnowledge1Rules = (value: string) =>
+    saveToLocalStorage(
+      'knowledge1Rules',
+      value,
+      value.trim()
+        ? 'The rules of wisdom are inscribed in lantern light.'
+        : undefined
+    )
+
+  /**
+   * Update Knowledge 1 Observation Conditions
+   */
+  const updateKnowledge1ObservationConditions = (value: string) =>
+    saveToLocalStorage(
+      'knowledge1ObservationConditions',
+      value,
+      value.trim()
+        ? 'Observation conditions etched in the darkness.'
+        : undefined
+    )
+
+  /**
+   * Update Knowledge 2
+   */
+  const updateKnowledge2 = (value: string) =>
+    saveSurvivor(
+      { knowledge2: value },
+      value
+        ? 'Knowledge inscribed in the lantern light.'
+        : 'Knowledge forgotten in the darkness.'
+    )
+
+  /**
+   * Update Knowledge 2 Observation Rank
+   */
+  const updateKnowledge2ObservationRank = (checked: boolean, index: number) => {
+    const rank = index + 1
+
+    if (checked) handleRankChange('knowledge2ObservationRank', rank)
+    else if (selectedSurvivor?.knowledge2ObservationRank === rank)
+      handleRankChange('knowledge2ObservationRank', rank - 1)
+  }
+
+  /**
+   * Update Knowledge 2 Rank Up Milestone
    *
    * @param index The index of the checkbox (0-based)
    * @param event The mouse event
    */
-  const handleKnowledge2RightClick = useCallback(
+  const updateKnowledge2RankUp = useCallback(
     (index: number, event: React.MouseEvent) => {
       event.preventDefault()
 
-      const newRankUp = knowledge2RankUp === index ? undefined : index
+      const newRankUp =
+        selectedSurvivor?.knowledge1RankUp === index ? undefined : index
 
-      form.setValue('knowledge2RankUp', newRankUp, { shouldDirty: true })
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         'knowledge2RankUp',
         newRankUp ?? 0,
         newRankUp !== undefined
           ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.',
-        true
+          : 'Knowledge rank up milestone removed.'
       )
     },
-    [form, knowledge2RankUp, saveToLocalStorageDebounced]
+    [selectedSurvivor?.knowledge1RankUp, saveToLocalStorage]
   )
 
+  /**
+   * Update Knowledge 2 Rules
+   */
+  const updateKnowledge2Rules = (value: string) =>
+    saveToLocalStorage(
+      'knowledge2Rules',
+      value,
+      value.trim()
+        ? 'The rules of wisdom are inscribed in lantern light.'
+        : undefined
+    )
+
+  /**
+   * Update Knowledge 1 Observation Conditions
+   */
+  const updateKnowledge2ObservationConditions = (value: string) =>
+    saveToLocalStorage(
+      'knowledge2ObservationConditions',
+      value,
+      value.trim()
+        ? 'Observation conditions etched in the darkness.'
+        : undefined
+    )
+
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <div className="flex justify-between items-center">
+    <Card className="p-0 border-1 gap-2 h-[615px]">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <div className="flex flex-row justify-between">
           {/* Title */}
           <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             <LightBulbIcon className="h-4 w-4" />
@@ -303,8 +237,8 @@ export function KnowledgeCard({
           <div className="flex items-center gap-2">
             <Checkbox
               id="canUseFightingArtsOrKnowledges"
-              checked={!canUseFightingArtsOrKnowledges}
-              onCheckedChange={handleCanUseToggle}
+              checked={!selectedSurvivor?.canUseFightingArtsOrKnowledges}
+              onCheckedChange={updateCanUseFightingArtsOrKnowledges}
             />
             <Label
               htmlFor="canUseFightingArtsOrKnowledges"
@@ -315,59 +249,56 @@ export function KnowledgeCard({
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 py-0">
+      <CardContent className="p-2 flex flex-col">
         {/* Knowledge 1 */}
         <div className="flex items-start">
           <div className="flex-grow">
             <div className="flex flex-col gap-1">
-              <Input
-                placeholder="Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
-                {...form.register('knowledge1')}
-                defaultValue={form.getValues('knowledge1') || ''}
-                onKeyDown={(e) =>
-                  handleTextKeyDown(
-                    e,
-                    'knowledge1',
-                    e.currentTarget.value,
-                    'Knowledge of the darkness expands.'
-                  )
-                }
+              <FormField
+                control={form.control}
+                name="knowledge1"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex flex-col gap-1">
+                      <FormControl>
+                        <Input
+                          placeholder="Enter knowledge..."
+                          className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
+                          {...field}
+                          value={field.value || ''}
+                          onBlur={(e) => {
+                            field.onBlur()
+                            updateKnowledge1(e.target.value)
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-xs text-muted-foreground">
+                        Knowledge Name
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
               />
-              <FormLabel className="text-xs text-muted-foreground">
-                Knowledge Name
-              </FormLabel>
             </div>
           </div>
           <div>
             <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
-                const rank = index + 1
-                const checked = knowledge1ObservationRank >= rank
-                const isRankUpMilestone = knowledge1RankUp === index
+                const checked =
+                  (selectedSurvivor?.knowledge1ObservationRank || 0) >=
+                  index + 1
+                const isRankUpMilestone =
+                  selectedSurvivor?.knowledge1RankUp === index
+
                 return (
                   <Checkbox
                     key={index}
                     checked={checked}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        // Check if this is a rank up milestone
-                        const isRankUp = knowledge1RankUp === index
-                        const successMessage = isRankUp
-                          ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
-                          : 'The lantern illuminates newfound wisdom.'
-
-                        handleRankChange('knowledge1ObservationRank', rank)
-                        if (isRankUp) {
-                          // Override the default success message
-                          toast.success(successMessage)
-                        }
-                      } else if (knowledge1ObservationRank === rank) {
-                        handleRankChange('knowledge1ObservationRank', rank - 1)
-                      }
-                    }}
+                    onCheckedChange={(checked) =>
+                      updateKnowledge1ObservationRank(!!checked, index)
+                    }
                     onContextMenu={(event) =>
-                      handleKnowledge1RightClick(index, event)
+                      updateKnowledge1RankUp(index, event)
                     }
                     className={cn(
                       'h-4 w-4 rounded-sm',
@@ -385,18 +316,10 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter knowledge rules..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge1Rules')}
               defaultValue={form.getValues('knowledge1Rules') || ''}
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
-                  'knowledge1Rules',
-                  e.currentTarget.value,
-                  'The rules of wisdom are inscribed in lantern light.'
-                )
-              }
+              onBlur={(e) => updateKnowledge1Rules(e.target.value)}
             />
             <FormLabel className="text-xs text-muted-foreground">
               Rules
@@ -409,19 +332,13 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter observation conditions..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge1ObservationConditions')}
               defaultValue={
                 form.getValues('knowledge1ObservationConditions') || ''
               }
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
-                  'knowledge1ObservationConditions',
-                  e.currentTarget.value,
-                  'Observation conditions etched in the darkness.'
-                )
+              onBlur={(e) =>
+                updateKnowledge1ObservationConditions(e.target.value)
               }
             />
             <FormLabel className="text-xs text-muted-foreground">
@@ -436,54 +353,51 @@ export function KnowledgeCard({
         <div className="flex items-start gap-2">
           <div className="flex-grow">
             <div className="flex flex-col gap-1">
-              <Input
-                placeholder="Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
-                {...form.register('knowledge2')}
-                defaultValue={form.getValues('knowledge2') || ''}
-                onKeyDown={(e) =>
-                  handleTextKeyDown(
-                    e,
-                    'knowledge2',
-                    e.currentTarget.value,
-                    'Knowledge of the darkness expands.'
-                  )
-                }
+              <FormField
+                control={form.control}
+                name="knowledge2"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex flex-col gap-1">
+                      <FormControl>
+                        <Input
+                          placeholder="Enter knowledge..."
+                          className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
+                          {...field}
+                          value={field.value || ''}
+                          onBlur={(e) => {
+                            field.onBlur()
+                            updateKnowledge2(e.target.value)
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-xs text-muted-foreground">
+                        Knowledge Name
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
               />
-              <FormLabel className="text-xs text-muted-foreground">
-                Knowledge Name
-              </FormLabel>
             </div>
           </div>
           <div>
             <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
                 const rank = index + 1
-                const checked = knowledge2ObservationRank >= rank
-                const isRankUpMilestone = knowledge2RankUp === index
+                const checked =
+                  (selectedSurvivor?.knowledge2ObservationRank || 0) >= rank
+                const isRankUpMilestone =
+                  selectedSurvivor?.knowledge2RankUp === index
+
                 return (
                   <Checkbox
                     key={index}
                     checked={checked}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        // Check if this is a rank up milestone
-                        const isRankUp = knowledge2RankUp === index
-                        const successMessage = isRankUp
-                          ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
-                          : 'The lantern illuminates newfound wisdom.'
-
-                        handleRankChange('knowledge2ObservationRank', rank)
-                        if (isRankUp) {
-                          // Override the default success message
-                          toast.success(successMessage)
-                        }
-                      } else if (knowledge2ObservationRank === rank) {
-                        handleRankChange('knowledge2ObservationRank', rank - 1)
-                      }
-                    }}
+                    onCheckedChange={(checked) =>
+                      updateKnowledge2ObservationRank(!!checked, index)
+                    }
                     onContextMenu={(event) =>
-                      handleKnowledge2RightClick(index, event)
+                      updateKnowledge2RankUp(index, event)
                     }
                     className={cn(
                       'h-4 w-4 rounded-sm',
@@ -501,18 +415,10 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter knowledge rules..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge2Rules')}
               defaultValue={form.getValues('knowledge2Rules') || ''}
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
-                  'knowledge2Rules',
-                  e.currentTarget.value,
-                  'The rules of wisdom are inscribed in lantern light.'
-                )
-              }
+              onBlur={(e) => updateKnowledge2Rules(e.target.value)}
             />
             <FormLabel className="text-xs text-muted-foreground">
               Rules
@@ -525,19 +431,13 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder="Enter observation conditions..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-              onInput={handleTextareaInput}
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
               {...form.register('knowledge2ObservationConditions')}
               defaultValue={
                 form.getValues('knowledge2ObservationConditions') || ''
               }
-              onKeyDown={(e) =>
-                handleTextareaKeyDown(
-                  e,
-                  'knowledge2ObservationConditions',
-                  e.currentTarget.value,
-                  'Observation conditions etched in the darkness.'
-                )
+              onBlur={(e) =>
+                updateKnowledge2ObservationConditions(e.target.value)
               }
             />
             <FormLabel className="text-xs text-muted-foreground">

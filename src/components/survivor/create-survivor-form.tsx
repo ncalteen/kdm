@@ -1,6 +1,5 @@
 'use client'
 
-import { SelectSettlement } from '@/components/menu/select-settlement'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -12,6 +11,9 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Gender, SurvivorType } from '@/lib/enums'
 import {
   bornWithUnderstanding,
@@ -20,7 +22,6 @@ import {
   canEndure,
   canFistPump,
   canSurge,
-  getCampaign,
   getNextSurvivorId,
   getSettlement
 } from '@/lib/utils'
@@ -30,11 +31,9 @@ import {
   SurvivorSchema
 } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Create Survivor Form Component
@@ -48,15 +47,8 @@ import { ZodError } from 'zod'
  * @returns Create Survivor Form
  */
 export function CreateSurvivorForm(): ReactElement {
-  const router = useRouter()
-
-  // If present, get the settlementId from the URL.
-  const searchParams = useSearchParams()
-  const settlementIdParam = searchParams.get('settlementId')
-
-  const [settlementId, setSettlementId] = useState<number>(
-    settlementIdParam ? parseInt(settlementIdParam, 10) : 0
-  )
+  const { selectedSettlement } = useSettlement()
+  const { setSelectedSurvivor, setIsCreatingNewSurvivor } = useSurvivor()
 
   const form = useForm<Survivor>({
     // Need to set the type here directly, because the schema includes a lot of
@@ -65,26 +57,30 @@ export function CreateSurvivorForm(): ReactElement {
     defaultValues: BaseSurvivorSchema.parse({})
   })
 
+  const { saveSurvivor } = useSurvivorSave(form)
+
   // Set the form values when the component mounts
   useEffect(() => {
+    if (!selectedSettlement) return
+
     // Get campaign data for the campaign type.
-    const settlement = getSettlement(settlementId)
+    const settlement = getSettlement(selectedSettlement.id)
 
     if (!settlement) return
 
     const updatedValues = {
-      settlementId,
-      canDash: canDash(settlementId),
-      canFistPump: canFistPump(settlementId),
-      canEncourage: canEncourage(settlementId),
-      canEndure: canEndure(settlementId),
-      canSurge: canSurge(settlementId),
+      settlementId: selectedSettlement.id,
+      canDash: canDash(selectedSettlement.id),
+      canFistPump: canFistPump(selectedSettlement.id),
+      canEncourage: canEncourage(selectedSettlement.id),
+      canEndure: canEndure(selectedSettlement.id),
+      canSurge: canSurge(selectedSettlement.id),
       huntXPRankUp:
         settlement.survivorType !== SurvivorType.ARC
           ? [1, 5, 9, 14] // Core
           : [1], // Arc
       id: getNextSurvivorId(),
-      understanding: bornWithUnderstanding(settlementId) ? 1 : 0
+      understanding: bornWithUnderstanding(selectedSettlement.id) ? 1 : 0
     }
 
     // Reset form with updated values while preserving user-entered fields
@@ -92,7 +88,7 @@ export function CreateSurvivorForm(): ReactElement {
       ...form.getValues(),
       ...updatedValues
     })
-  }, [form, settlementId])
+  }, [form, selectedSettlement])
 
   /**
    * Handles form submission
@@ -100,76 +96,30 @@ export function CreateSurvivorForm(): ReactElement {
    * @param values Form Values
    */
   function onSubmit(values: Survivor) {
-    try {
-      // Validate the survivor data
-      try {
-        SurvivorSchema.parse(values)
-      } catch (error) {
-        if (error instanceof ZodError && error.errors[0]?.message)
-          return toast.error(error.errors[0].message)
-        else
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
-      }
-
-      // Get existing campaign
-      const campaign = getCampaign()
-
-      // Add the new survivor
-      campaign.survivors.push(values)
-
-      // Save the updated campaign to localStorage
-      localStorage.setItem('campaign', JSON.stringify(campaign))
-
-      // Show success message
-      toast.success(
-        'A lantern approaches. A new survivor emerges from the darkness.'
-      )
-
-      // Redirect to the survivor page
-      router.push(
-        `/survivor?settlementId=${values.settlementId}&survivorId=${values.id}`
-      )
-    } catch (error) {
-      console.error('Survivor Create Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
+    saveSurvivor(
+      values,
+      'A lantern approaches. A new survivor emerges from the darkness.'
+    )
+    setSelectedSurvivor(values)
+    setIsCreatingNewSurvivor(false)
   }
+
+  /**
+   * Handles back navigation to settlement
+   */
+  const handleBackToSettlement = useCallback(() => {
+    setIsCreatingNewSurvivor(false)
+  }, [setIsCreatingNewSurvivor])
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
         toast.error('The darkness swallows your words. Please try again.')
       })}
-      className="space-y-6">
+      className="py-3 space-y-6">
       <Form {...form}>
         <Card className="max-w-[500px] mx-auto">
-          <CardContent className="w-full p-4 space-y-2">
-            {/* Settlement */}
-            <FormField
-              control={form.control}
-              name="settlementId"
-              render={() => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
-                      Settlement
-                    </FormLabel>
-                    <FormControl>
-                      <SelectSettlement
-                        onChange={(value) => {
-                          setSettlementId(parseInt(value, 10))
-                          form.setValue('settlementId', parseInt(value, 10))
-                        }}
-                        value={settlementId.toString()}
-                      />
-                    </FormControl>
-                  </div>
-                </FormItem>
-              )}
-            />
-
+          <CardContent className="w-full space-y-2">
             {/* Survivor Name */}
             <FormField
               control={form.control}
@@ -241,9 +191,15 @@ export function CreateSurvivorForm(): ReactElement {
         </Card>
       </Form>
 
-      <Button type="submit" className="mx-auto block">
-        Create Survivor
-      </Button>
+      <div className="flex gap-2 justify-center">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleBackToSettlement}>
+          Cancel
+        </Button>
+        <Button type="submit">Create Survivor</Button>
+      </div>
     </form>
   )
 }

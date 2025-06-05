@@ -9,18 +9,15 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import {
-  getCampaign,
-  getLostSettlementCount,
-  getSurvivors,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
-import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
+import { getSurvivors } from '@/lib/utils'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Population Card Component
@@ -32,49 +29,112 @@ import { ZodError } from 'zod'
  * @returns Population Card Component
  */
 export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
-  const settlementId = form.watch('id')
-  const survivorType = form.watch('survivorType')
-  const campaignType = form.watch('campaignType')
-  const isArcCampaign = survivorType === SurvivorType.ARC
+  const { selectedSettlement } = useSettlement()
+  const { saveSettlement } = useSettlementSave(form)
+
+  const isArcCampaign = selectedSettlement?.survivorType === SurvivorType.ARC
   const isLanternCampaign =
-    campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-    campaignType === CampaignType.PEOPLE_OF_THE_SUN
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN
 
-  // Watch for changes to nemesis victories, quarry victories for ARC campaigns
-  const watchedNemeses = form.watch('nemeses')
-  const watchedQuarries = form.watch('quarries')
-  const nemeses = useMemo(() => watchedNemeses || [], [watchedNemeses])
-  const quarries = useMemo(() => watchedQuarries || [], [watchedQuarries])
+  // Track survivors state to trigger re-calculations when survivors change
+  const [survivors, setSurvivors] = useState<Survivor[]>([])
 
+  // Update survivors when settlement changes or when localStorage changes
   useEffect(() => {
-    const survivors = getSurvivors(settlementId)
+    if (selectedSettlement?.id) {
+      setSurvivors(getSurvivors(selectedSettlement.id))
+    }
+  }, [selectedSettlement?.id])
 
-    form.setValue(
-      'population',
-      survivors ? survivors.filter((survivor) => !survivor.dead).length : 0
-    )
-    form.setValue(
-      'deathCount',
-      survivors ? survivors.filter((survivor) => survivor.dead).length : 0
-    )
-    form.setValue('lostSettlements', getLostSettlementCount())
-  }, [settlementId, form])
+  // Listen for storage events to update survivors when they change in other tabs/components
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (selectedSettlement?.id) {
+        setSurvivors(getSurvivors(selectedSettlement.id))
+      }
+    }
+
+    // Listen for localStorage changes
+    window.addEventListener('storage', handleStorageChange)
+
+    // Also listen for custom events when survivors are updated in the same tab
+    window.addEventListener('survivorsUpdated', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('survivorsUpdated', handleStorageChange)
+    }
+  }, [selectedSettlement?.id])
+
+  // Periodically check for survivor changes (fallback for same-tab updates)
+  useEffect(() => {
+    if (!selectedSettlement?.id) return
+
+    const interval = setInterval(() => {
+      const currentSurvivors = getSurvivors(selectedSettlement.id)
+      // Check if survivors have changed
+      if (JSON.stringify(currentSurvivors) !== JSON.stringify(survivors)) {
+        setSurvivors(currentSurvivors)
+      }
+    }, 1000) // Check every second
+
+    return () => clearInterval(interval)
+  }, [selectedSettlement?.id, survivors])
+
+  // Calculate current population from living survivors
+  const currentPopulation = useMemo(() => {
+    return survivors.filter((survivor) => !survivor.dead).length
+  }, [survivors])
+
+  // Calculate death count from dead survivors
+  const currentDeathCount = useMemo(() => {
+    return survivors.filter((survivor) => survivor.dead).length
+  }, [survivors])
+
+  // Update population and death count when they change
+  useEffect(() => {
+    if (!selectedSettlement?.id) return
+
+    const formValues = form.getValues()
+
+    // Update population if it differs from current count
+    if (formValues.population !== currentPopulation) {
+      form.setValue('population', currentPopulation)
+      saveSettlement({ population: currentPopulation })
+    }
+
+    // Update death count if it differs from current count
+    if (formValues.deathCount !== currentDeathCount) {
+      form.setValue('deathCount', currentDeathCount)
+      saveSettlement({ deathCount: currentDeathCount })
+    }
+  }, [
+    currentPopulation,
+    currentDeathCount,
+    selectedSettlement?.id,
+    form,
+    saveSettlement
+  ])
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
-    if (!isArcCampaign) return
+    if (!isArcCampaign || !selectedSettlement) return
 
     let totalCc = 0
 
+    // Get current form values to ensure we're working with the latest data
+    const formValues = form.getValues()
+
     // Calculate CC from nemesis victories. Each nemesis victory gives 3 CC.
-    for (const nemesis of nemeses) {
+    for (const nemesis of formValues.nemeses || []) {
       if (nemesis.ccLevel1) totalCc += 3
       if (nemesis.ccLevel2) totalCc += 3
       if (nemesis.ccLevel3) totalCc += 3
     }
 
     // Calculate CC from quarry victories.
-    for (const quarry of quarries) {
+    for (const quarry of formValues.quarries || []) {
       // Prologue Monster (1 CC)
       if (quarry.ccPrologue) totalCc += 1
 
@@ -90,116 +150,52 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
         if (level3Victory) totalCc += 3
     }
 
-    form.setValue('ccValue', totalCc)
-  }, [isArcCampaign, nemeses, quarries, form])
-
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
+    // Update form value and save if different
+    const currentCcValue = form.getValues('ccValue')
+    if (currentCcValue !== totalCc) {
+      form.setValue('ccValue', totalCc)
+      saveSettlement({ ccValue: totalCc })
     }
-  }, [])
+  }, [isArcCampaign, selectedSettlement, form, saveSettlement])
 
   /**
-   * Save a settlement-related value to localStorage for the current settlement.
+   * Save to Local Storage
    *
    * @param attrName Attribute name
    * @param value New value
    * @param successMsg Success message to show
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      attrName: 'survivalLimit' | 'lanternResearchLevel',
-      value: number,
-      successMsg: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape[attrName].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function to save to localStorage
-            saveCampaignToLocalStorage({
-              ...campaign,
-              settlements: campaign.settlements.map((s, index) =>
-                index === settlementIndex ? { ...s, [attrName]: value } : s
-              )
-            })
-
-            toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error(`${attrName} Save Error:`, error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
-  )
-
-  // The saveLanternResearchLevel function has been replaced by saveToLocalStorageDebounced
+  const saveToLocalStorage = (
+    attrName: 'survivalLimit' | 'lanternResearchLevel',
+    value: number,
+    successMsg: string
+  ) => saveSettlement({ [attrName]: value }, successMsg)
 
   return (
-    <Card className="border-0">
-      <CardContent className="py-2">
-        <div className="flex flex-row items-center justify-between">
+    <Card className="border-0 p-0 py-2">
+      <CardContent>
+        <div className="flex flex-row items-center justify-between gap-4">
           {/* Survival Limit */}
           <FormField
             control={form.control}
             name="survivalLimit"
             render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
                       placeholder="1"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
                         const value = parseInt(e.target.value)
                         form.setValue(field.name, value)
-                        saveToLocalStorageDebounced(
+                        saveToLocalStorage(
                           'survivalLimit',
                           value,
-                          "The settlement's will to live grows stronger.",
-                          true
+                          "The settlement's will to live grows stronger."
                         )
                       }}
                     />
@@ -213,21 +209,23 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
             )}
           />
 
-          <div className="sm:h-12 w-px bg-border" />
+          <Separator
+            orientation="vertical"
+            className="mx-2 data-[orientation=vertical]:h-12"
+          />
 
           {/* Population */}
           <FormField
             control={form.control}
             name="population"
-            render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+            render={() => (
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '0'}
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      value={currentPopulation}
                       disabled
                     />
                   </FormControl>
@@ -240,21 +238,23 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
             )}
           />
 
-          <div className="sm:h-12 w-px bg-border" />
+          <Separator
+            orientation="vertical"
+            className="mx-2 data-[orientation=vertical]:h-12"
+          />
 
           {/* Death Count */}
           <FormField
             control={form.control}
             name="deathCount"
-            render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+            render={() => (
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-12 text-center no-spinners"
-                      {...field}
-                      value={field.value ?? '0'}
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      value={currentDeathCount}
                       disabled
                     />
                   </FormControl>
@@ -267,20 +267,23 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
             )}
           />
 
-          <div className="sm:h-12 w-px bg-border" />
+          <Separator
+            orientation="vertical"
+            className="mx-2 data-[orientation=vertical]:h-12"
+          />
 
           {/* Lost Settlement Count */}
           <FormField
             control={form.control}
             name="lostSettlements"
             render={({ field }) => (
-              <FormItem className="flex-1 flex justify-center">
+              <FormItem>
                 <div className="flex flex-col items-center gap-1">
                   <FormControl>
                     <Input
                       type="number"
                       placeholder="0"
-                      className="w-12 text-center no-spinners"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -298,20 +301,22 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
           {/* Collective Cognition (ARC only) */}
           {isArcCampaign && (
             <>
-              <div className="sm:h-12 w-px bg-border" />
+              <Separator
+                orientation="vertical"
+                className="mx-2 data-[orientation=vertical]:h-12"
+              />
 
               <FormField
                 control={form.control}
                 name="ccValue"
-                render={({ field }) => (
-                  <FormItem className="flex-1 flex justify-center">
+                render={() => (
+                  <FormItem>
                     <div className="flex flex-col items-center gap-1">
                       <FormControl>
                         <Input
                           type="number"
-                          className="w-12 text-center no-spinners"
-                          {...field}
-                          value={field.value ?? '0'}
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                          value={selectedSettlement?.ccValue ?? '0'}
                           disabled
                         />
                       </FormControl>
@@ -329,19 +334,22 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
           {/* Lantern Research Level (People of the Lantern/Sun only) */}
           {isLanternCampaign && (
             <>
-              <div className="sm:h-12 w-px bg-border" />
+              <Separator
+                orientation="vertical"
+                className="mx-2 data-[orientation=vertical]:h-12"
+              />
 
               <FormField
                 control={form.control}
                 name="lanternResearchLevel"
                 render={({ field }) => (
-                  <FormItem className="flex-1 flex justify-center">
+                  <FormItem>
                     <div className="flex flex-col items-center gap-1">
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="0"
-                          className="w-12 text-center no-spinners"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {
@@ -349,11 +357,10 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                             const finalValue =
                               isNaN(value) || value < 0 ? 0 : value
                             form.setValue(field.name, finalValue)
-                            saveToLocalStorageDebounced(
+                            saveToLocalStorage(
                               'lanternResearchLevel',
                               finalValue,
-                              'The lantern burns brighter with newfound knowledge.',
-                              true
+                              'The lantern burns brighter with newfound knowledge.'
                             )
                           }}
                         />

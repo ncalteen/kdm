@@ -134,7 +134,7 @@ export function NemesisItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex flex-1 ml-1">
-          <span className="text-sm">{nemesis.name}</span>
+          <span className="text-xs">{nemesis.name}</span>
         </div>
       ) : (
         <Input

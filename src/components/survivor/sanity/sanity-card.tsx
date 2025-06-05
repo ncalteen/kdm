@@ -10,18 +10,14 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { SurvivorType } from '@/lib/enums'
-import {
-  getCampaign,
-  getSettlement,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { Survivor } from '@/schemas/survivor'
 import { BrainIcon, Shield } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Survivor Sanity Card Component
@@ -34,27 +30,8 @@ import { ZodError } from 'zod'
  * @returns Sanity Card Component
  */
 export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
-  // Get the survivor type from the settlement data.
-  const [survivorType, setSurvivorType] = useState<SurvivorType | undefined>(
-    undefined
-  )
-
-  // Create a ref for the timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Set the survivor type when the component mounts.
-  useEffect(() => {
-    const settlement = getSettlement(form.getValues('settlementId'))
-    setSurvivorType(settlement?.survivorType)
-
-    // Cleanup function for timeout on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [form])
+  const { saveSurvivor } = useSurvivorSave(form)
+  const { selectedSettlement } = useSettlement()
 
   /**
    * Save sanity data to localStorage for the current survivor, with Zod
@@ -63,69 +40,64 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
    * @param field Field name to update
    * @param value New value
    * @param successMsg Optional success message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      field: keyof Survivor,
-      value: number | boolean,
-      successMsg?: string,
-      immediate: boolean = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
+  const saveToLocalStorage = (
+    field: keyof Survivor,
+    value: number | boolean,
+    successMsg?: string
+  ) =>
+    saveSurvivor(
+      {
+        [field]: value
+      },
+      successMsg
+    )
 
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape[field].parse(value)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
+  /**
+   * Update Insanity
+   */
+  const updateInsanity = (val: string) => {
+    let value = parseInt(val) || 0
 
-            // Save to localStorage using the optimized utility
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id ? { ...s, [field]: value } : s
-              )
-            })
+    // Enforce minimum value of 0
+    if (value < 0) {
+      value = 0
+      return toast.error('Insanity cannot be negative..')
+    }
 
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Sanity Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
+    saveToLocalStorage('insanity', value, 'Insanity level updated.')
+  }
 
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  /**
+   * Update Brain Light Damage
+   */
+  const updateBrainLightDamage = (checked: boolean) =>
+    saveToLocalStorage(
+      'brainLightDamage',
+      !!checked,
+      !!checked
+        ? 'The survivor suffers brain damage from the horrors witnessed.'
+        : 'The survivor recovers from their brain injury.'
+    )
 
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
-  )
+  /**
+   * Update Torment (Arc)
+   */
+  const updateTorment = (val: string) => {
+    let value = parseInt(val) || 0
+
+    // Enforce minimum value of 0
+    if (value < 0) {
+      value = 0
+      return toast.error('Torment cannot be negative.')
+    }
+
+    saveToLocalStorage('torment', value, 'Torment level updated.')
+  }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardContent className="p-2 pl-1">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0 h-[80px]">
         <div className="flex">
           {/* Insanity */}
           <FormField
@@ -143,21 +115,10 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                       <Input
                         placeholder="1"
                         type="number"
-                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-2xl sm:text-2xl md:text-2xl text-center p-0 bg-transparent border-none no-spinners"
+                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners"
                         {...field}
                         value={field.value ?? '0'}
-                        onChange={(e) => {
-                          let value = parseInt(e.target.value) || 0
-
-                          // Enforce minimum value of 0
-                          if (value < 0) {
-                            value = 0
-                            toast.error('Insanity cannot be negative..')
-                          }
-
-                          form.setValue(field.name, value)
-                          saveToLocalStorageDebounced('insanity', value)
-                        }}
+                        onChange={(e) => updateInsanity(e.target.value)}
                       />
                     </div>
                   </FormControl>
@@ -167,7 +128,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
             )}
           />
 
-          <div className="mx-2 w-px bg-border" />
+          <div className="mx-2 w-px bg-border h-[80px]" />
 
           {/* Brain */}
           <div className="relative flex-1 flex flex-col justify-between">
@@ -184,18 +145,9 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={(checked) => {
-                          const brainLightDamage = !!checked
-                          field.onChange(brainLightDamage)
-                          saveToLocalStorageDebounced(
-                            'brainLightDamage',
-                            brainLightDamage,
-                            brainLightDamage
-                              ? 'The survivor suffers brain damage from the horrors witnessed.'
-                              : 'The survivor recovers from their brain injury.',
-                            true
-                          )
-                        }}
+                        onCheckedChange={(checked) =>
+                          updateBrainLightDamage(!!checked)
+                        }
                       />
                     </FormControl>
                     <FormLabel className="text-xs mt-1">L</FormLabel>
@@ -209,7 +161,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
           </div>
 
           {/* Torment (Arc) */}
-          {survivorType === SurvivorType.ARC && (
+          {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <>
               <div className="mx-2 w-px bg-border" />
 
@@ -223,21 +175,10 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
-                          onChange={(e) => {
-                            let value = parseInt(e.target.value) || 0
-
-                            // Enforce minimum value of 0
-                            if (value < 0) {
-                              value = 0
-                              toast.error('Torment cannot be negative.')
-                            }
-
-                            form.setValue(field.name, value)
-                            saveToLocalStorageDebounced('torment', value)
-                          }}
+                          onChange={(e) => updateTorment(e.target.value)}
                         />
                       </FormControl>
                       <FormLabel className="text-xs">Torment</FormLabel>

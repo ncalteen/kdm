@@ -8,35 +8,28 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { Survivor } from '@/schemas/survivor'
 import {
+  closestCenter,
   DndContext,
   DragEndEvent,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
 import {
-  SortableContext,
   arrayMove,
+  SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { BicepsFlexedIcon, PlusIcon } from 'lucide-react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Abilities and Impairments Card Component
@@ -44,49 +37,25 @@ import { ZodError } from 'zod'
 export function AbilitiesAndImpairmentsCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const watchedAbilitiesAndImpairments = form.watch('abilitiesAndImpairments')
-  const abilitiesAndImpairments = useMemo(
-    () => watchedAbilitiesAndImpairments || [],
-    [watchedAbilitiesAndImpairments]
-  )
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Timeout reference for debounced saves
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      abilitiesAndImpairments.forEach((_, i) => {
+      selectedSurvivor?.abilitiesAndImpairments.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-
-    // Cleanup on unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [abilitiesAndImpairments])
-
-  const [skipNextHuntState, setSkipNextHuntState] = useState<boolean>(
-    !!form.getValues('skipNextHunt')
-  )
-
-  useEffect(
-    () =>
-      form.setValue('skipNextHunt', skipNextHuntState, { shouldDirty: true }),
-    [skipNextHuntState, form]
-  )
+  }, [selectedSurvivor?.abilitiesAndImpairments])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -98,79 +67,26 @@ export function AbilitiesAndImpairmentsCard({
   const addAbility = () => setIsAddingNew(true)
 
   /**
-   * Save abilities/impairments to localStorage for the current survivor using debouncing,
-   * with Zod validation and toast feedback.
+   * Save to Local Storage
    *
    * @param updatedAbilitiesAndImpairments Updated Abilities/Impairments
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedAbilitiesAndImpairments: string[],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
+  const saveToLocalStorage = (
+    updatedAbilitiesAndImpairments?: string[],
+    updatedSkipNextHunt?: boolean,
+    successMsg?: string
+  ) => {
+    const updateData: Partial<Survivor> = {}
 
-          if (survivorIndex !== -1) {
-            try {
-              SurvivorSchema.shape.abilitiesAndImpairments.parse(
-                updatedAbilitiesAndImpairments
-              )
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
+    if (updatedAbilitiesAndImpairments !== undefined)
+      updateData.abilitiesAndImpairments = updatedAbilitiesAndImpairments
+    if (updatedSkipNextHunt !== undefined)
+      updateData.skipNextHunt = updatedSkipNextHunt
 
-            // Use the saveCampaignToLocalStorage helper
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id
-                  ? {
-                      ...s,
-                      abilitiesAndImpairments: updatedAbilitiesAndImpairments
-                    }
-                  : s
-              )
-            })
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Ability/Impairment Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      // Either save immediately or debounce
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
-  )
-
-  // saveToLocalStorage function has been replaced with saveToLocalStorageDebounced
+    saveSurvivor(updateData, successMsg)
+    setIsAddingNew(false)
+  }
 
   /**
    * Handles the removal of an ability or impairment.
@@ -178,10 +94,10 @@ export function AbilitiesAndImpairmentsCard({
    * @param index Ability Index
    */
   const onRemove = (index: number) => {
-    const currentAbilitiesAndImpairments = [...abilitiesAndImpairments]
-
-    currentAbilitiesAndImpairments.splice(index, 1)
-    form.setValue('abilitiesAndImpairments', currentAbilitiesAndImpairments)
+    const updatedAbilitiesAndImpairments = [
+      ...(selectedSurvivor?.abilitiesAndImpairments || [])
+    ]
+    updatedAbilitiesAndImpairments.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -195,11 +111,10 @@ export function AbilitiesAndImpairmentsCard({
       return next
     })
 
-    // Use immediate save with feedback for user actions
-    saveToLocalStorageDebounced(
-      currentAbilitiesAndImpairments,
-      'The ability/impairment has been removed.',
-      true
+    saveToLocalStorage(
+      updatedAbilitiesAndImpairments,
+      undefined,
+      'The ability/impairment has been removed.'
     )
   }
 
@@ -209,27 +124,17 @@ export function AbilitiesAndImpairmentsCard({
    * @param value Ability/Impairment Value
    * @param i Ability/Impairment Index (When Updating Only)
    */
-  const onSave = (value?: string, i?: number) => {
+  const onSaveAbilityOrImpairment = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error('A nameless ability/impairment cannot be recorded.')
 
-    try {
-      SurvivorSchema.shape.abilitiesAndImpairments.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedAbilitiesAndImpairments = [...abilitiesAndImpairments]
+    const updatedAbilitiesAndImpairments = [
+      ...(selectedSurvivor?.abilitiesAndImpairments || [])
+    ]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedAbilitiesAndImpairments[i] = value
-      form.setValue(`abilitiesAndImpairments.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -237,24 +142,19 @@ export function AbilitiesAndImpairmentsCard({
     } else {
       // Adding a new value
       updatedAbilitiesAndImpairments.push(value)
-
-      form.setValue('abilitiesAndImpairments', updatedAbilitiesAndImpairments)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedAbilitiesAndImpairments.length - 1]: true
       }))
     }
 
-    // Use immediate save with feedback for user actions
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedAbilitiesAndImpairments,
+      undefined,
       i !== undefined
         ? 'The ability/impairment has been updated.'
-        : 'The survivor gains a new ability/impairment.',
-      true
+        : 'The survivor gains a new ability/impairment.'
     )
-    setIsAddingNew(false)
   }
 
   /**
@@ -276,12 +176,13 @@ export function AbilitiesAndImpairmentsCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(abilitiesAndImpairments, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSurvivor?.abilitiesAndImpairments || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('abilitiesAndImpairments', newOrder)
-      // Use debounced save for drag operations
-      saveToLocalStorageDebounced(newOrder)
-
+      saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -299,12 +200,13 @@ export function AbilitiesAndImpairmentsCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-1 border-3">
-      <CardHeader className="px-2 py-1">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
         <div className="flex justify-between items-center">
           {/* Title */}
           <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            Abilities & Impairments{' '}
+            <BicepsFlexedIcon className="h-4 w-4" />
+            Abilities & Impairments
             {!isAddingNew && (
               <div className="flex justify-center">
                 <Button
@@ -324,28 +226,19 @@ export function AbilitiesAndImpairmentsCard({
           </CardTitle>
 
           {/* Skip Next Hunt */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Checkbox
               id="skipNextHunt"
-              checked={skipNextHuntState}
-              onCheckedChange={(checked) => {
-                if (typeof checked === 'boolean') {
-                  setSkipNextHuntState(checked)
-
-                  // Save the updated skipNextHunt status
-                  const formValues = form.getValues()
-                  const campaign = getCampaign()
-
-                  saveCampaignToLocalStorage({
-                    ...campaign,
-                    survivors: campaign.survivors.map((s) =>
-                      s.id === formValues.id
-                        ? { ...s, skipNextHunt: checked }
-                        : s
-                    )
-                  })
-                }
-              }}
+              checked={!!selectedSurvivor?.skipNextHunt}
+              onCheckedChange={(checked) =>
+                saveToLocalStorage(
+                  undefined,
+                  !!checked,
+                  !!checked
+                    ? 'The survivor will skip the next hunt.'
+                    : 'The survivor will not skip the next hunt.'
+                )
+              }
             />
             <Label htmlFor="skipNextHunt" className="text-xs cursor-pointer">
               Skip Next Hunt
@@ -356,38 +249,46 @@ export function AbilitiesAndImpairmentsCard({
 
       {/* Abilities/Impairments List */}
       <CardContent className="p-1 pb-0">
-        <div className="space-y-1">
-          {abilitiesAndImpairments.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={abilitiesAndImpairments.map((_, index) =>
-                  index.toString()
-                )}
-                strategy={verticalListSortingStrategy}>
-                {abilitiesAndImpairments.map((ability, index) => (
-                  <AbilityImpairmentItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewAbilityImpairmentItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+        <div className="flex flex-col h-[120px]">
+          <div className="flex-1 overflow-y-auto">
+            <div className="space-y-1">
+              {selectedSurvivor?.abilitiesAndImpairments.length !== 0 && (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}>
+                  <SortableContext
+                    items={(
+                      selectedSurvivor?.abilitiesAndImpairments || []
+                    ).map((_, index) => index.toString())}
+                    strategy={verticalListSortingStrategy}>
+                    {selectedSurvivor?.abilitiesAndImpairments.map(
+                      (ability, index) => (
+                        <AbilityImpairmentItem
+                          key={index}
+                          id={index.toString()}
+                          index={index}
+                          form={form}
+                          onRemove={onRemove}
+                          isDisabled={!!disabledInputs[index]}
+                          onSave={(value, i) =>
+                            onSaveAbilityOrImpairment(value, i)
+                          }
+                          onEdit={onEdit}
+                        />
+                      )
+                    )}
+                  </SortableContext>
+                </DndContext>
+              )}
+              {isAddingNew && (
+                <NewAbilityImpairmentItem
+                  onSave={onSaveAbilityOrImpairment}
+                  onCancel={() => setIsAddingNew(false)}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

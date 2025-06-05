@@ -3,8 +3,9 @@
 import { GearItem, NewGearItem } from '@/components/settlement/gear/gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -21,54 +22,33 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, WrenchIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Gear Card Component
  */
 export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
-  const watchedGear = form.watch('gear')
-  const gear = useMemo(() => watchedGear || [], [watchedGear])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState(false)
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      gear.forEach((_, i) => {
+      selectedSettlement?.gear.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [gear])
+  }, [selectedSettlement?.gear])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -80,57 +60,13 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
   const addGear = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedGear Updated Gear
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (updatedGear: string[], successMsg?: string, immediate = false) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-
-      const doSave = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.gear.parse(updatedGear)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].gear = updatedGear
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Gear Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
-      }
-    },
-    [form]
-  )
+  const saveToLocalStorage = (updatedGear: string[], successMsg?: string) =>
+    saveSettlement({ gear: updatedGear }, successMsg)
 
   /**
    * Handles the removal of gear.
@@ -138,10 +74,8 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
    * @param index Gear Index
    */
   const onRemove = (index: number) => {
-    const currentGear = [...gear]
-
+    const currentGear = [...(selectedSettlement?.gear || [])]
     currentGear.splice(index, 1)
-    form.setValue('gear', currentGear)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -155,7 +89,7 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
       return next
     })
 
-    saveToLocalStorageDebounced(currentGear, 'Gear has been archived.', true)
+    saveToLocalStorage(currentGear, 'Gear has been archived.')
   }
 
   /**
@@ -168,23 +102,11 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     if (!value || value.trim() === '')
       return toast.error('Nameless gear cannot be stored.')
 
-    try {
-      SettlementSchema.shape.gear.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedGear = [...gear]
+    const updatedGear = [...(selectedSettlement?.gear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedGear[i] = value
-      form.setValue(`gear.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -192,16 +114,13 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     } else {
       // Adding a new value
       updatedGear.push(value)
-
-      form.setValue('gear', updatedGear)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedGear.length - 1]: true
       }))
     }
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       updatedGear,
       i !== undefined
         ? 'Gear has been modified.'
@@ -229,11 +148,13 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(gear, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.gear || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('gear', newOrder)
-      saveToLocalStorageDebounced(newOrder)
-
+      saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -251,9 +172,9 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <WrenchIcon className="h-4 w-4" />
           Gear Storage
           {!isAddingNew && (
@@ -276,37 +197,41 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
       </CardHeader>
 
       {/* Gear List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {gear.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={gear.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {gear.map((gearItem, index) => (
-                  <GearItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewGearItem
-              onSave={onSave}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2 pt-0">
+        <div className="h-[200px] overflow-y-auto">
+          <div className="space-y-1">
+            {selectedSettlement?.gear.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={(selectedSettlement?.gear || []).map((_, index) =>
+                    index.toString()
+                  )}
+                  strategy={verticalListSortingStrategy}>
+                  {(selectedSettlement?.gear || []).map((gearItem, index) => (
+                    <GearItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewGearItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

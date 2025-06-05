@@ -32,9 +32,9 @@ const SquireProgressionCard = ({
   squire
 }: SquireProgressionCardProps): ReactElement => {
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           {squire.name}
         </CardTitle>
         <CardDescription className="text-xs text-left">
@@ -43,7 +43,7 @@ const SquireProgressionCard = ({
       </CardHeader>
 
       {/* Card Content with Squire Stats */}
-      <CardContent className="p-1 pb-0">
+      <CardContent className="px-1 py-0">
         <Table>
           <TableBody className="text-xs">
             {squire.rows.map((stat, index) => (

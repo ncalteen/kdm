@@ -103,7 +103,7 @@ export function DisorderItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`disorders.${index}`)}
           </span>
         </div>
@@ -118,8 +118,8 @@ export function DisorderItem({
         />
       )}
 
+      {/* Interaction Buttons */}
       <div className="flex items-center gap-1 ml-auto">
-        {/* Interaction Buttons */}
         {isDisabled ? (
           <Button
             type="button"

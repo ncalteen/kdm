@@ -103,7 +103,7 @@ export function MonsterVolumeItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`monsterVolumes.${index}`)}
           </span>
         </div>
@@ -125,7 +125,6 @@ export function MonsterVolumeItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="ml-2"
             onClick={() => onEdit(index)}
             title="Edit volume">
             <PencilIcon className="h-4 w-4" />
@@ -135,7 +134,6 @@ export function MonsterVolumeItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="ml-2"
             onClick={() => onSave(inputRef.current!.value, index)}
             title="Save volume">
             <CheckIcon className="h-4 w-4" />
@@ -205,7 +203,6 @@ export function NewMonsterVolumeItem({
           type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
           onClick={() => onSave(inputRef.current?.value)}
           title="Save volume">
           <CheckIcon className="h-4 w-4" />

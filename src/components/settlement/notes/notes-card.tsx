@@ -3,13 +3,12 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Notes Card Component
@@ -20,120 +19,63 @@ import { ZodError } from 'zod'
 export function NotesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const notes = form.watch('notes')
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
-  const [draft, setDraft] = useState<string | undefined>(notes)
+  const [draft, setDraft] = useState<string | undefined>(
+    selectedSettlement?.notes || ''
+  )
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      const timeoutId = saveTimeoutRef.current
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [])
-
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedNotes Updated Notes
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedNotes: string | undefined,
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-
-      const doSave = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.notes.parse(updatedNotes)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].notes = updatedNotes
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Notes Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
-      }
-    },
-    [form]
-  )
+  const saveToLocalStorage = (
+    updatedNotes: string | undefined,
+    successMsg?: string
+  ) =>
+    saveSettlement(
+      {
+        notes: updatedNotes
+      },
+      successMsg
+    )
 
   const handleSave = () => {
-    form.setValue('notes', draft)
     setIsDirty(false)
-
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       draft,
       'As stories are shared amongst survivors, they are etched into the history of your settlement.'
     )
   }
 
   return (
-    <Card className="p-0 pb-1 border-0">
-      <CardHeader className="px-2 py-1">
+    <Card className="p-0 pb-1 border-0 h-full flex flex-col">
+      <CardHeader className="px-2 py-0 flex-shrink-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <StickyNoteIcon className="h-4 w-4" /> Notes
         </CardTitle>
       </CardHeader>
 
       {/* Notes Textarea */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
+      <CardContent className="p-1 py-0 flex-1 flex flex-col">
+        <div className="flex flex-col h-full">
           <Textarea
             value={draft}
             name="notes"
             id="settlement-notes"
             onChange={(e) => {
               setDraft(e.target.value)
-              setIsDirty(e.target.value !== notes)
-
-              // Auto-resize textarea
-              const textarea = e.target as HTMLTextAreaElement
-              textarea.style.height = 'auto'
-              textarea.style.height = textarea.scrollHeight + 'px'
+              setIsDirty(e.target.value !== selectedSettlement?.notes)
             }}
             placeholder="Add notes about your settlement..."
-            className="w-full min-h-[100px] resize-none overflow-hidden"
-            style={{ height: 'auto' }}
+            className="w-full flex-1 resize-none"
+            style={{ minHeight: '200px' }}
           />
-          <div className="flex justify-end pt-1">
+          <div className="flex justify-end pt-1 flex-shrink-0">
             <Button
               type="button"
               size="sm"

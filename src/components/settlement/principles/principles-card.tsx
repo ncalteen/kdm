@@ -6,8 +6,9 @@ import {
 } from '@/components/settlement/principles/principle-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -24,17 +25,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, StampIcon } from 'lucide-react'
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Principles Card Component
@@ -48,38 +41,25 @@ import { ZodError } from 'zod'
 export function PrinciplesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedPrinciples = form.watch('principles')
-  const principles = useMemo(() => watchedPrinciples || [], [watchedPrinciples])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      principles.forEach((_, i) => {
+      selectedSettlement?.principles.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [principles])
+  }, [selectedSettlement?.principles])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -91,61 +71,21 @@ export function PrinciplesCard({
   const addPrinciple = () => setIsAddingNew(true)
 
   /**
-   * Debounced save function to reduce localStorage operations
+   * Save to Local Storage
    *
    * @param updatedPrinciples Updated Principles
    * @param successMsg Success Message
-   * @param immediate Whether to save immediately without debouncing
    */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedPrinciples: Settlement['principles'],
-      successMsg?: string,
-      immediate = false
-    ) => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-
-      const doSave = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const settlementIndex = campaign.settlements.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (settlementIndex !== -1) {
-            try {
-              SettlementSchema.shape.principles.parse(updatedPrinciples)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            campaign.settlements[settlementIndex].principles = updatedPrinciples
-            saveCampaignToLocalStorage(campaign)
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Principle Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        doSave()
-      } else {
-        saveTimeoutRef.current = setTimeout(doSave, 300)
-      }
-    },
-    [form]
-  )
+  const saveToLocalStorage = (
+    updatedPrinciples: Settlement['principles'],
+    successMsg?: string
+  ) =>
+    saveSettlement(
+      {
+        principles: updatedPrinciples
+      },
+      successMsg
+    )
 
   /**
    * Handles the removal of a principle.
@@ -153,10 +93,8 @@ export function PrinciplesCard({
    * @param index Principle Index
    */
   const onRemove = (index: number) => {
-    const currentPrinciples = [...principles]
-
+    const currentPrinciples = [...(selectedSettlement?.principles || [])]
     currentPrinciples.splice(index, 1)
-    form.setValue('principles', currentPrinciples)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -170,10 +108,9 @@ export function PrinciplesCard({
       return next
     })
 
-    saveToLocalStorageDebounced(
+    saveToLocalStorage(
       currentPrinciples,
-      'The settlement has cleansed a principle from its memory.',
-      true
+      'The settlement has cleansed a principle from its memory.'
     )
   }
 
@@ -194,7 +131,7 @@ export function PrinciplesCard({
     if (!name || name.trim() === '')
       return toast.error('A nameless principle cannot be recorded.')
 
-    const updatedPrinciples = [...principles]
+    const updatedPrinciples = [...(selectedSettlement?.principles || [])]
 
     if (index < updatedPrinciples.length) {
       // Updating an existing principle
@@ -204,17 +141,13 @@ export function PrinciplesCard({
         option1Name,
         option2Name
       }
-      form.setValue('principles', updatedPrinciples)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [index]: true
       }))
-
-      saveToLocalStorageDebounced(
+      saveToLocalStorage(
         updatedPrinciples,
-        "The settlement's principle has been etched in stone.",
-        true
+        "The settlement's principle has been etched in stone."
       )
     }
     setIsAddingNew(false)
@@ -234,29 +167,25 @@ export function PrinciplesCard({
    * @param index Principle Index
    * @param option Which option (1 or 2)
    */
-  const handleOptionSelect = useCallback(
-    (index: number, option: 1 | 2) => {
-      const updatedPrinciples = [...principles]
+  const handleOptionSelect = (index: number, option: 1 | 2) => {
+    const updatedPrinciples = [...(selectedSettlement?.principles || [])]
 
-      // Update the option selected, ensuring only one is selected at a time
-      updatedPrinciples[index] = {
-        ...updatedPrinciples[index],
-        option1Selected: option === 1,
-        option2Selected: option === 2
-      }
+    // Update the option selected, ensuring only one is selected at a time
+    updatedPrinciples[index] = {
+      ...updatedPrinciples[index],
+      option1Selected: option === 1,
+      option2Selected: option === 2
+    }
 
-      form.setValue('principles', updatedPrinciples)
-      saveToLocalStorageDebounced(
-        updatedPrinciples,
-        `The settlement has chosen ${
-          option === 1
-            ? updatedPrinciples[index].option1Name
-            : updatedPrinciples[index].option2Name
-        }.`
-      )
-    },
-    [principles, form, saveToLocalStorageDebounced]
-  )
+    saveToLocalStorage(
+      updatedPrinciples,
+      `The settlement has chosen ${
+        option === 1
+          ? updatedPrinciples[index].option1Name
+          : updatedPrinciples[index].option2Name
+      }.`
+    )
+  }
 
   /**
    * Handles saving a new principle.
@@ -274,7 +203,7 @@ export function PrinciplesCard({
       return toast.error('A nameless principle cannot be recorded.')
 
     const updatedPrinciples = [
-      ...principles,
+      ...(selectedSettlement?.principles || []),
       {
         name,
         option1Name,
@@ -284,14 +213,11 @@ export function PrinciplesCard({
       }
     ]
 
-    form.setValue('principles', updatedPrinciples)
-
     setDisabledInputs((prev) => ({
       ...prev,
       [updatedPrinciples.length - 1]: true
     }))
-
-    saveToLocalStorageDebounced(updatedPrinciples, 'A new principle emerges.')
+    saveToLocalStorage(updatedPrinciples, 'A new principle emerges.')
     setIsAddingNew(false)
   }
 
@@ -306,11 +232,13 @@ export function PrinciplesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(principles, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.principles || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('principles', newOrder)
-      saveToLocalStorageDebounced(newOrder)
-
+      saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -328,9 +256,9 @@ export function PrinciplesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 mt-2 border-3">
-      <CardHeader className="px-2 py-1">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
+    <Card className="p-0 border-1 gap-2">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
           <StampIcon className="h-4 w-4" />
           Principles
           {!isAddingNew && (
@@ -353,38 +281,44 @@ export function PrinciplesCard({
       </CardHeader>
 
       {/* Principles List */}
-      <CardContent className="p-1 pb-0">
-        <div className="flex flex-col">
-          {principles.length !== 0 && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}>
-              <SortableContext
-                items={principles.map((_, index) => index.toString())}
-                strategy={verticalListSortingStrategy}>
-                {principles.map((principle, index) => (
-                  <PrincipleItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    principle={principle}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={onSave}
-                    onEdit={onEdit}
-                    handleOptionSelect={handleOptionSelect}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          )}
-          {isAddingNew && (
-            <NewPrincipleItem
-              onSave={onSaveNew}
-              onCancel={() => setIsAddingNew(false)}
-            />
-          )}
+      <CardContent className="p-1 pb-2">
+        <div className="flex flex-col h-[200px]">
+          <div className="flex-1 overflow-y-auto">
+            {selectedSettlement?.principles.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={(selectedSettlement?.principles || []).map(
+                    (_, index) => index.toString()
+                  )}
+                  strategy={verticalListSortingStrategy}>
+                  {(selectedSettlement?.principles || []).map(
+                    (principle, index) => (
+                      <PrincipleItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        principle={principle}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={onSave}
+                        onEdit={onEdit}
+                        handleOptionSelect={handleOptionSelect}
+                      />
+                    )
+                  )}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewPrincipleItem
+                onSave={onSaveNew}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

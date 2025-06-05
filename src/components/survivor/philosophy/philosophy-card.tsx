@@ -1,7 +1,7 @@
 'use client'
 
 import { SelectPhilosophy } from '@/components/menu/select-philosophy'
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   FormControl,
@@ -12,14 +12,15 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { useSurvivor } from '@/contexts/survivor-context'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Philosophy } from '@/lib/enums'
-import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { cn } from '@/lib/utils'
+import { Survivor } from '@/schemas/survivor'
 import { BrainCogIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
+import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Philosophy Card Component
@@ -27,95 +28,8 @@ import { ZodError } from 'zod'
 export function PhilosophyCard({
   ...form
 }: UseFormReturn<Survivor>): ReactElement {
-  const watchedPhilosophy = form.watch('philosophy')
-  const watchedTenetKnowledgeRankUp = form.watch('tenetKnowledgeRankUp')
-  const tenetKnowledgeRankUp = useMemo(
-    () => watchedTenetKnowledgeRankUp,
-    [watchedTenetKnowledgeRankUp]
-  )
-
-  // Reference to the debounce timeout
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
-
-  /**
-   * Save philosophy data to localStorage for the current survivor, with
-   * Zod validation and toast feedback.
-   *
-   * @param updatedData Updated philosophy data
-   * @param successMsg Success Message
-   * @param immediate Whether to save immediately or use debouncing
-   */
-  const saveToLocalStorageDebounced = useCallback(
-    (
-      updatedData: Partial<Survivor>,
-      successMsg?: string,
-      immediate = false
-    ) => {
-      const saveFunction = () => {
-        try {
-          const formValues = form.getValues()
-          const campaign = getCampaign()
-          const survivorIndex = campaign.survivors.findIndex(
-            (s: { id: number }) => s.id === formValues.id
-          )
-
-          if (survivorIndex !== -1) {
-            const updatedSurvivor = {
-              ...campaign.survivors[survivorIndex],
-              ...updatedData
-            }
-
-            try {
-              SurvivorSchema.parse(updatedSurvivor)
-            } catch (error) {
-              if (error instanceof ZodError && error.errors[0]?.message)
-                return toast.error(error.errors[0].message)
-              else
-                return toast.error(
-                  'The darkness swallows your words. Please try again.'
-                )
-            }
-
-            // Use the optimized utility function
-            saveCampaignToLocalStorage({
-              ...campaign,
-              survivors: campaign.survivors.map((s) =>
-                s.id === formValues.id ? updatedSurvivor : s
-              )
-            })
-
-            if (successMsg) toast.success(successMsg)
-          }
-        } catch (error) {
-          console.error('Philosophy Save Error:', error)
-          toast.error('The darkness swallows your words. Please try again.')
-        }
-      }
-
-      if (immediate) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
-        }
-        saveFunction()
-      } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current)
-
-        timeoutRef.current = setTimeout(saveFunction, 300)
-      }
-    },
-    [form]
-  )
+  const { selectedSurvivor } = useSurvivor()
+  const { saveSurvivor } = useSurvivorSave(form)
 
   /**
    * Handles the change of philosophy selection.
@@ -123,27 +37,16 @@ export function PhilosophyCard({
    * @param value Value
    */
   const handlePhilosophyChange = (value: string) => {
-    const philosophyValue = value ? (value as Philosophy) : undefined
+    if (selectedSurvivor) selectedSurvivor.philosophy = value as Philosophy
 
-    // Update the form directly
-    form.setValue('philosophy', philosophyValue, {
-      shouldDirty: true
-    })
-
-    // If philosophy is cleared or changed, reset rank to 0
-    if (!value || value.trim() === '')
-      form.setValue('philosophyRank', 0, { shouldDirty: true })
-
-    // Save to localStorage with immediate execution
-    saveToLocalStorageDebounced(
+    saveSurvivor(
       {
-        philosophy: philosophyValue,
+        philosophy: value as Philosophy,
         ...(value ? {} : { philosophyRank: 0 })
       },
       value
         ? 'The path of wisdom begins to illuminate the darkness.'
-        : 'The philosophical path returns to shadow.',
-      true
+        : 'The philosophical path returns to shadow.'
     )
   }
 
@@ -157,27 +60,107 @@ export function PhilosophyCard({
     (index: number, event: React.MouseEvent) => {
       event.preventDefault()
 
-      const newRankUp = tenetKnowledgeRankUp === index ? undefined : index
+      const newRankUp =
+        selectedSurvivor?.tenetKnowledgeRankUp === index ? undefined : index
 
-      form.setValue('tenetKnowledgeRankUp', newRankUp, { shouldDirty: true })
-
-      // Save to localStorage with immediate execution
-      saveToLocalStorageDebounced(
+      saveSurvivor(
         { tenetKnowledgeRankUp: newRankUp },
         newRankUp !== undefined
           ? 'Tenet knowledge rank up milestone marked.'
-          : 'Tenet knowledge rank up milestone removed.',
-        true
+          : 'Tenet knowledge rank up milestone removed.'
       )
     },
-    [form, tenetKnowledgeRankUp, saveToLocalStorageDebounced]
+    [selectedSurvivor, saveSurvivor]
   )
 
+  /**
+   * Update Philosophy Rank
+   */
+  const updatePhilosophyRank = (val: string) => {
+    const value = parseInt(val) || 0
+
+    // Enforce minimum value of 0
+    if (value < 0) return toast.error('Philosophy rank cannot be negative.')
+
+    saveSurvivor({ philosophyRank: value }, 'Philosophy rank has been updated.')
+  }
+
+  /**
+   * Update Neurosis
+   */
+  const updateNeurosis = (value: string) =>
+    saveSurvivor(
+      { neurosis: value },
+      value
+        ? 'The neurosis manifests in the mind.'
+        : 'The neurosis fades into darkness.'
+    )
+
+  /**
+   * Update Tenet Knowledge
+   */
+  const updateTenetKnowledge = (value: string) =>
+    saveSurvivor(
+      { tenetKnowledge: value },
+      value
+        ? 'Tenet knowledge is inscribed in memory.'
+        : 'Tenet knowledge dissolves into shadow.'
+    )
+
+  /**
+   * Update Tenet Knowledge Observation Rank
+   */
+  const updateTenetKnowledgeObservationRank = (
+    checked: boolean,
+    index: number
+  ) => {
+    const newRank = checked
+      ? index + 1
+      : (selectedSurvivor?.tenetKnowledgeObservationRank || 0) === index + 1
+        ? index
+        : undefined
+
+    if (newRank === undefined) return
+
+    // Check if this is a rank up milestone
+    const isRankUp = checked && selectedSurvivor?.tenetKnowledgeRankUp === index
+
+    // Save to localStorage
+    saveSurvivor(
+      { tenetKnowledgeObservationRank: newRank },
+      isRankUp
+        ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
+        : `Observation rank ${newRank} burns bright in the lantern's glow.`
+    )
+  }
+
+  /**
+   * Update Tenet Knowledge Rules
+   */
+  const updateTenetKnowledgeRules = (value: string) =>
+    saveSurvivor(
+      { tenetKnowledgeRules: value },
+      value
+        ? 'The rules of knowledge are etched in stone.'
+        : 'The rules fade back into mystery.'
+    )
+
+  /**
+   * Update Tenet Knowledge Observation Conditions
+   */
+  const updateTenetKnowledgeObservationConditions = (value: string) =>
+    saveSurvivor(
+      { tenetKnowledgeObservationConditions: value },
+      value
+        ? "Observation conditions are recorded in the survivor's memory."
+        : 'The conditions vanish into the void.'
+    )
+
   return (
-    <Card className="p-0 pb-1 border-3">
-      <CardContent className="p-2 flex flex-col">
-        {/* Philosophy and Rank */}
-        <div className="flex flex-row justify-between pb-2">
+    <Card className="p-0 border-1 gap-2 h-[483px] justify-between">
+      <CardHeader className="px-2 pt-1 pb-0">
+        <div className="flex flex-row justify-between">
+          {/* Philosophy */}
           <div className="flex flex-col gap-1">
             <CardTitle className="text-md flex flex-row items-center gap-1">
               <BrainCogIcon className="h-4 w-4" />
@@ -185,10 +168,12 @@ export function PhilosophyCard({
             </CardTitle>
             <SelectPhilosophy
               options={Object.values(Philosophy)}
-              value={watchedPhilosophy}
+              value={selectedSurvivor?.philosophy}
               onChange={handlePhilosophyChange}
             />
           </div>
+
+          {/* Rank */}
           <FormField
             control={form.control}
             name="philosophyRank"
@@ -199,22 +184,11 @@ export function PhilosophyCard({
                     placeholder="0"
                     type="number"
                     className={cn(
-                      'w-14 h-14 text-center no-spinners text-3xl sm:text-3xl md:text-3xl'
+                      'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl'
                     )}
                     {...field}
                     value={field.value ?? '0'}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value)
-                      const clampedValue = Math.min(Math.max(value, 0), 9)
-                      form.setValue(field.name, clampedValue)
-
-                      // Save to localStorage
-                      saveToLocalStorageDebounced(
-                        { philosophyRank: clampedValue },
-                        'Philosophy rank has been updated.',
-                        true
-                      )
-                    }}
+                    onChange={(e) => updatePhilosophyRank(e.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -229,10 +203,11 @@ export function PhilosophyCard({
           <strong>returning survivor</strong> and reach a new Hunt XP milestone,
           you must rank up your philosophy. Limit, once per settlement phase.
         </p>
+      </CardHeader>
 
-        {/* Horizontal Divider */}
-        <hr className="mt-2 mb-1" />
+      <hr className="my-1" />
 
+      <CardContent className="p-2 flex flex-col">
         {/* Neurosis */}
         <FormField
           control={form.control}
@@ -248,13 +223,7 @@ export function PhilosophyCard({
                     value={field.value || ''}
                     onBlur={(e) => {
                       field.onBlur()
-                      saveToLocalStorageDebounced(
-                        { neurosis: e.target.value },
-                        e.target.value
-                          ? 'The neurosis manifests in the mind.'
-                          : 'The neurosis fades into darkness.',
-                        false
-                      )
+                      updateNeurosis(e.target.value)
                     }}
                   />
                 </FormControl>
@@ -283,13 +252,7 @@ export function PhilosophyCard({
                         value={field.value || ''}
                         onBlur={(e) => {
                           field.onBlur()
-                          saveToLocalStorageDebounced(
-                            { tenetKnowledge: e.target.value },
-                            e.target.value
-                              ? 'Tenet knowledge is inscribed in memory.'
-                              : 'Tenet knowledge dissolves into shadow.',
-                            false
-                          )
+                          updateTenetKnowledge(e.target.value)
                         }}
                       />
                     </FormControl>
@@ -310,41 +273,19 @@ export function PhilosophyCard({
                   <div className="flex gap-1 pt-2">
                     {[...Array(9)].map((_, index) => {
                       const checked = (field.value || 0) > index
-                      const isRankUpMilestone = tenetKnowledgeRankUp === index
+                      const isRankUpMilestone =
+                        selectedSurvivor?.tenetKnowledgeRankUp === index
+
                       return (
                         <Checkbox
                           key={index}
                           checked={checked}
-                          onCheckedChange={(checked) => {
-                            let newRank
-                            if (checked) {
-                              newRank = index + 1
-                              form.setValue(
-                                'tenetKnowledgeObservationRank',
-                                newRank
-                              )
-                            } else if ((field.value || 0) === index + 1) {
-                              newRank = index
-                              form.setValue(
-                                'tenetKnowledgeObservationRank',
-                                newRank
-                              )
-                            } else return
-
-                            // Check if this is a rank up milestone
-                            const isRankUp =
-                              checked && tenetKnowledgeRankUp === index
-                            const successMessage = isRankUp
-                              ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
-                              : `Observation rank ${newRank} burns bright in the lantern's glow.`
-
-                            // Save to localStorage
-                            saveToLocalStorageDebounced(
-                              { tenetKnowledgeObservationRank: newRank },
-                              successMessage,
-                              true
+                          onCheckedChange={(checked) =>
+                            updateTenetKnowledgeObservationRank(
+                              !!checked,
+                              index
                             )
-                          }}
+                          }
                           onContextMenu={(event) =>
                             handleRightClick(index, event)
                           }
@@ -374,23 +315,12 @@ export function PhilosophyCard({
                 <FormControl>
                   <Textarea
                     placeholder="Enter tenet knowledge rules..."
-                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement
-                      target.style.height = 'auto'
-                      target.style.height = `${target.scrollHeight}px`
-                    }}
+                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
                     {...field}
                     value={field.value || ''}
                     onBlur={(e) => {
                       field.onBlur()
-                      saveToLocalStorageDebounced(
-                        { tenetKnowledgeRules: e.target.value },
-                        e.target.value
-                          ? 'The rules of knowledge are etched in stone.'
-                          : 'The rules fade back into mystery.',
-                        false
-                      )
+                      updateTenetKnowledgeRules(e.target.value)
                     }}
                   />
                 </FormControl>
@@ -413,23 +343,12 @@ export function PhilosophyCard({
                 <FormControl>
                   <Textarea
                     placeholder="Enter observation conditions..."
-                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-auto overflow-hidden"
-                    onInput={(e) => {
-                      const target = e.target as HTMLTextAreaElement
-                      target.style.height = 'auto'
-                      target.style.height = `${target.scrollHeight}px`
-                    }}
+                    className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
                     {...field}
                     value={field.value || ''}
                     onBlur={(e) => {
                       field.onBlur()
-                      saveToLocalStorageDebounced(
-                        { tenetKnowledgeObservationConditions: e.target.value },
-                        e.target.value
-                          ? "Observation conditions are recorded in the survivor's memory."
-                          : 'The conditions vanish into the void.',
-                        false
-                      )
+                      updateTenetKnowledgeObservationConditions(e.target.value)
                     }}
                   />
                 </FormControl>

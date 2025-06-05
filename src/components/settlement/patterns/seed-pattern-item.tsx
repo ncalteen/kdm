@@ -103,7 +103,7 @@ export function SeedPatternItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <span className="text-xs">
             {form.getValues(`seedPatterns.${index}`)}
           </span>
         </div>
@@ -190,9 +190,10 @@ export function NewSeedPatternItem({
       {/* Input Field */}
       <Input
         ref={inputRef}
-        placeholder="Seed Pattern"
+        placeholder="Add a seed pattern..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
+        className="flex-1"
         autoFocus
       />
 

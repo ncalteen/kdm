@@ -1,37 +1,26 @@
 'use client'
 
-import { ChevronRight, type LucideIcon } from 'lucide-react'
-import Link from 'next/link'
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger
-} from '@/components/ui/collapsible'
+import { Collapsible } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem
+  SidebarMenuItem
 } from '@/components/ui/sidebar'
+import { useTab } from '@/contexts/tab-context'
+import { LucideIcon } from 'lucide-react'
 
 export function NavMain({
   items
 }: {
   items: {
     title: string
-    url: string
+    tab: string
     icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
   }[]
 }) {
+  const { selectedTab, setSelectedTab } = useTab()
+
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -39,29 +28,21 @@ export function NavMain({
           <Collapsible
             key={item.title}
             asChild
-            defaultOpen={true}
+            defaultOpen={selectedTab === item.tab}
             className="group/collapsible">
             <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
+              <SidebarMenuButton
+                tooltip={item.title}
+                aria-current={selectedTab === item.tab ? 'page' : undefined}
+                onClick={() => setSelectedTab(item.tab)}
+                className={
+                  selectedTab === item.tab
+                    ? 'bg-accent text-accent-foreground'
+                    : ''
+                }>
+                {item.icon && <item.icon />}
+                <span>{item.title}</span>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </Collapsible>
         ))}

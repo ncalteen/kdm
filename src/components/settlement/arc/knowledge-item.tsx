@@ -119,7 +119,7 @@ export function KnowledgeItem({
 
           {/* Knowledge Name */}
           <div className="flex ml-1">
-            <span className="text-sm">
+            <span className="text-xs">
               {form.getValues(`knowledges.${index}.name`)}
             </span>
           </div>
@@ -127,7 +127,7 @@ export function KnowledgeItem({
           <div className="flex items-center gap-1 ml-auto">
             {/* Philosophy Badge */}
             <div className="flex ml-1">
-              <span className="text-sm">
+              <span className="text-xs">
                 <Badge variant="outline">
                   {form.getValues(`knowledges.${index}.philosophy`) || 'None'}
                 </Badge>
@@ -168,7 +168,7 @@ export function KnowledgeItem({
             {/* Knowledge Name Input */}
             <Input
               ref={inputRef}
-              placeholder="Knowledge name"
+              placeholder="Add knowledge..."
               defaultValue={form.getValues(`knowledges.${index}.name`)}
               onKeyDown={handleKeyDown}
               autoFocus
@@ -262,7 +262,7 @@ export function NewKnowledgeItem({
           {/* Knowledge Name Input */}
           <Input
             ref={inputRef}
-            placeholder="Knowledge name"
+            placeholder="Add knowledge..."
             defaultValue={''}
             onKeyDown={handleKeyDown}
             autoFocus
