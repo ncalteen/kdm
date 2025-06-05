@@ -174,7 +174,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
   return (
     <Card className="border-0 p-0 py-2">
       <CardContent>
-        <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-row items-start justify-between gap-4">
           {/* Survival Limit */}
           <FormField
             control={form.control}
