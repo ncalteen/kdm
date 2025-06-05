@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useSurvivor } from '@/contexts/survivor-context'
 import { useTab } from '@/contexts/tab-context'
@@ -8,6 +9,7 @@ import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -88,6 +90,9 @@ export function SettlementSurvivorsCard({
         const updatedSurvivors = [...campaign.survivors]
         updatedSurvivors.splice(survivorIndex, 1)
 
+        // Clear selected survivor if the deleted survivor is currently selected
+        if (selectedSurvivor?.id === survivorId) setSelectedSurvivor(null)
+
         saveToLocalStorage(
           updatedSurvivors,
           `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
@@ -101,7 +106,7 @@ export function SettlementSurvivorsCard({
         toast.error('The darkness swallows your words. Please try again.')
       }
     },
-    [saveToLocalStorage, settlementId]
+    [saveToLocalStorage, settlementId, selectedSurvivor, setSelectedSurvivor]
   )
 
   // Create columns with the required props
@@ -142,8 +147,19 @@ export function SettlementSurvivorsCard({
     <Card className="p-0 pb-2 mt-2 border-0">
       <CardContent className="p-0">
         {survivors.length === 0 ? (
-          <div className="text-center text-muted-foreground py-4">
-            Silence echoes through the darkness. No survivors present.
+          <div className="flex flex-col gap-2 justify-center items-center p-4">
+            <div className="text-center text-muted-foreground py-4">
+              Silence echoes through the darkness. No survivors present.
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              title="Create new survivor"
+              className="h-9 w-50"
+              onClick={handleNewSurvivor}>
+              <PlusIcon className="h-4 w-4" />
+              New Survivor
+            </Button>
           </div>
         ) : (
           <SurvivorDataTable
