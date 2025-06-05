@@ -47,7 +47,7 @@ export function NextDepartureCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSurvivor?.nextDeparture.forEach((_, i) => {
+      ;(selectedSurvivor?.nextDeparture || []).forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
@@ -209,7 +209,7 @@ export function NextDepartureCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[150px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSurvivor?.nextDeparture.length !== 0 && (
+            {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}

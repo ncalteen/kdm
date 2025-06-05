@@ -3,6 +3,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { useSurvivor } from '@/contexts/survivor-context'
 import { useTab } from '@/contexts/tab-context'
+import { useCampaignSave } from '@/hooks/use-campaign-save'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
@@ -24,6 +25,8 @@ import { SurvivorDataTable } from './data-table'
 export function SettlementSurvivorsCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
+  const { saveCampaign } = useCampaignSave()
+
   const watchedSettlementId = form.watch('id')
   const watchedSurvivorType = form.watch('survivorType')
   const settlementId = useMemo(() => watchedSettlementId, [watchedSettlementId])
@@ -34,7 +37,8 @@ export function SettlementSurvivorsCard({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
   // Get context hooks for survivor and tab management
-  const { setSelectedSurvivor, setIsCreatingNewSurvivor, selectedSurvivor } = useSurvivor()
+  const { setSelectedSurvivor, setIsCreatingNewSurvivor, selectedSurvivor } =
+    useSurvivor()
   const { setSelectedTab } = useTab()
 
   // Tracks if Arc survivors are in use for this settlement.
@@ -49,6 +53,18 @@ export function SettlementSurvivorsCard({
     // Set creating mode to true
     setIsCreatingNewSurvivor(true)
   }, [setSelectedSurvivor, setIsCreatingNewSurvivor])
+
+  /**
+   * Save to Local Storage
+   *
+   * @param updatedSurvivors Updated Survivors
+   * @param successMsg Success Message
+   */
+  const saveToLocalStorage = useCallback(
+    (updatedSurvivors: Survivor[], successMsg?: string) =>
+      saveCampaign({ survivors: updatedSurvivors }, successMsg),
+    [saveCampaign]
+  )
 
   /**
    * Deletes a survivor from the campaign data.
@@ -69,15 +85,14 @@ export function SettlementSurvivorsCard({
           )
 
         const survivorName = campaign.survivors[survivorIndex].name
+        const updatedSurvivors = [...campaign.survivors]
+        updatedSurvivors.splice(survivorIndex, 1)
 
-        // Remove the survivor from the campaign
-        campaign.survivors.splice(survivorIndex, 1)
-
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-        setSurvivors(getSurvivors(settlementId))
-        toast.success(
+        saveToLocalStorage(
+          updatedSurvivors,
           `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
         )
+        setSurvivors(getSurvivors(settlementId))
 
         setDeleteId(undefined)
         setIsDeleteDialogOpen(false)
@@ -86,7 +101,7 @@ export function SettlementSurvivorsCard({
         toast.error('The darkness swallows your words. Please try again.')
       }
     },
-    [settlementId]
+    [saveToLocalStorage, settlementId]
   )
 
   // Create columns with the required props

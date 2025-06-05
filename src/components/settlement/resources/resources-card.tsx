@@ -6,9 +6,10 @@ import {
 } from '@/components/settlement/resources/resource-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -25,10 +26,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BeefIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Resources Card Component
@@ -36,8 +36,8 @@ import { ZodError } from 'zod'
 export function ResourcesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedResources = form.watch('resources')
-  const resources = useMemo(() => watchedResources || [], [watchedResources])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -47,12 +47,12 @@ export function ResourcesCard({
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
-      resources.forEach((_, i) => {
+      selectedSettlement?.resources.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
       return next
     })
-  }, [resources])
+  }, [selectedSettlement?.resources])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -77,36 +77,7 @@ export function ResourcesCard({
       amount: number
     }[],
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.resources.parse(updatedResources)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].resources = updatedResources
-        saveCampaignToLocalStorage(campaign)
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Resource Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) => saveSettlement({ resources: updatedResources }, successMsg)
 
   /**
    * Handles the amount change for a resource.
@@ -115,10 +86,8 @@ export function ResourcesCard({
    * @param amount New Amount
    */
   const onAmountChange = (index: number, amount: number) => {
-    const currentResources = [...resources]
+    const currentResources = [...(selectedSettlement?.resources || [])]
     currentResources[index] = { ...currentResources[index], amount }
-    form.setValue(`resources.${index}.amount`, amount)
-
     saveToLocalStorage(currentResources)
   }
 
@@ -128,10 +97,8 @@ export function ResourcesCard({
    * @param index Resource Index
    */
   const onRemove = (index: number) => {
-    const currentResources = [...resources]
-
+    const currentResources = [...(selectedSettlement?.resources || [])]
     currentResources.splice(index, 1)
-    form.setValue('resources', currentResources)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -167,19 +134,7 @@ export function ResourcesCard({
     if (!name || name.trim() === '')
       return toast.error('A nameless resource cannot be recorded.')
 
-    try {
-      SettlementSchema.shape.resources.parse([
-        { name, category, types, amount }
-      ])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedResources = [...resources]
+    const updatedResources = [...(selectedSettlement?.resources || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -189,24 +144,18 @@ export function ResourcesCard({
         types: types!,
         amount: amount!
       }
-      form.setValue(`resources.${i}`, updatedResources[i])
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      const newResource = {
+      updatedResources.push({
         name,
         category: category!,
         types: types!,
         amount: amount!
-      }
-      updatedResources.push(newResource)
-
-      form.setValue('resources', updatedResources)
-
+      })
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedResources.length - 1]: true
@@ -241,11 +190,13 @@ export function ResourcesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(resources, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.resources || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('resources', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -291,15 +242,17 @@ export function ResourcesCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {resources.length !== 0 && (
+            {selectedSettlement?.resources.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={resources.map((_, index) => index.toString())}
+                  items={(selectedSettlement?.resources || []).map((_, index) =>
+                    index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {resources.map((_, index) => (
+                  {(selectedSettlement?.resources || []).map((_, index) => (
                     <ResourceItem
                       key={index}
                       id={index.toString()}

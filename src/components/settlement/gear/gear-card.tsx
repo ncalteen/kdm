@@ -3,8 +3,9 @@
 import { GearItem, NewGearItem } from '@/components/settlement/gear/gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -21,17 +22,16 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, WrenchIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Gear Card Component
  */
 export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
-  const watchedGear = form.watch('gear')
-  const gear = useMemo(() => watchedGear || [], [watchedGear])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -42,13 +42,13 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      gear.forEach((_, i) => {
+      selectedSettlement?.gear.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [gear])
+  }, [selectedSettlement?.gear])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -65,36 +65,8 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
    * @param updatedGear Updated Gear
    * @param successMsg Success Message
    */
-  const saveToLocalStorage = (updatedGear: string[], successMsg?: string) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.gear.parse(updatedGear)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].gear = updatedGear
-        saveCampaignToLocalStorage(campaign)
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Gear Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  const saveToLocalStorage = (updatedGear: string[], successMsg?: string) =>
+    saveSettlement({ gear: updatedGear }, successMsg)
 
   /**
    * Handles the removal of gear.
@@ -102,10 +74,8 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
    * @param index Gear Index
    */
   const onRemove = (index: number) => {
-    const currentGear = [...gear]
-
+    const currentGear = [...(selectedSettlement?.gear || [])]
     currentGear.splice(index, 1)
-    form.setValue('gear', currentGear)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -132,23 +102,11 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     if (!value || value.trim() === '')
       return toast.error('Nameless gear cannot be stored.')
 
-    try {
-      SettlementSchema.shape.gear.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedGear = [...gear]
+    const updatedGear = [...(selectedSettlement?.gear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedGear[i] = value
-      form.setValue(`gear.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -156,9 +114,6 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     } else {
       // Adding a new value
       updatedGear.push(value)
-
-      form.setValue('gear', updatedGear)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedGear.length - 1]: true
@@ -193,11 +148,13 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(gear, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.gear || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('gear', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -243,15 +200,17 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {gear.length !== 0 && (
+            {selectedSettlement?.gear.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={gear.map((_, index) => index.toString())}
+                  items={(selectedSettlement?.gear || []).map((_, index) =>
+                    index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {gear.map((gearItem, index) => (
+                  {(selectedSettlement?.gear || []).map((gearItem, index) => (
                     <GearItem
                       key={index}
                       id={index.toString()}

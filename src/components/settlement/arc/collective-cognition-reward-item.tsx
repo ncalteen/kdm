@@ -3,25 +3,23 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Reward Item Component Properties
  */
 export interface RewardItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Reward ID */
   id: string
   /** Index */
   index: number
   /** Is Disabled */
   isDisabled: boolean
+  /** Reward Data */
+  reward: { name: string; cc: number; unlocked: boolean }
   /** OnEdit Handler */
   onEdit: (index: number) => void
   /** OnRemove Handler */
@@ -52,7 +50,7 @@ export function RewardItem({
   id,
   index,
   isDisabled,
-  form,
+  reward,
   onEdit,
   onRemove,
   onSave,
@@ -66,11 +64,9 @@ export function RewardItem({
 
   useEffect(() => {
     if (nameInputRef.current) {
-      const reward = form.getValues(`ccRewards.${index}`)
       nameInputRef.current.value = reward?.name || ''
     }
     if (ccInputRef.current) {
-      const reward = form.getValues(`ccRewards.${index}`)
       ccInputRef.current.value = reward?.cc?.toString() || '1'
     }
 
@@ -81,7 +77,7 @@ export function RewardItem({
       nameInputRef.current.value = ''
       nameInputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [reward, isDisabled])
 
   /**
    * Handles the key down event for the input fields.
@@ -98,8 +94,6 @@ export function RewardItem({
       onSave(nameInputRef.current.value, ccValue, index)
     }
   }
-
-  const reward = form.getValues(`ccRewards.${index}`)
 
   return (
     <div

@@ -42,7 +42,7 @@ import { toast } from 'sonner'
  * @returns Create Settlement Form Component
  */
 export function CreateSettlementForm(): ReactElement {
-  const { setSelectedSettlement } = useSettlement()
+  const { selectedSettlement, setSelectedSettlement } = useSettlement()
 
   const form = useForm<Settlement>({
     // Need to set the type here directly, because the schema includes a lot of
@@ -51,13 +51,12 @@ export function CreateSettlementForm(): ReactElement {
     defaultValues: BaseSettlementSchema.parse({})
   })
 
-  const campaignType = form.watch('campaignType')
-  const survivorType = form.watch('survivorType')
-
   // Set the form values when the component mounts.
   useEffect(() => {
     // Get campaign data for the campaign type.
-    const campaignData = getCampaignData(campaignType)
+    const campaignData = getCampaignData(
+      selectedSettlement?.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
+    )
 
     // Calculate the next settlement ID based on the latest in localStorage.
     form.setValue('id', getNextSettlementId())
@@ -75,7 +74,7 @@ export function CreateSettlementForm(): ReactElement {
     form.setValue('principles', campaignData.principles)
     form.setValue('quarries', campaignData.quarries)
     form.setValue('timeline', campaignData.timeline)
-  }, [form, campaignType])
+  }, [form, selectedSettlement?.campaignType])
 
   /**
    * Handles the user changing the campaign type.
@@ -197,7 +196,7 @@ export function CreateSettlementForm(): ReactElement {
                     <FormControl>
                       <SelectCampaign
                         {...field}
-                        value={campaignType}
+                        value={selectedSettlement?.campaignType}
                         onChange={handleCampaignChange}
                       />
                     </FormControl>
@@ -218,12 +217,13 @@ export function CreateSettlementForm(): ReactElement {
                     </FormLabel>
                     <FormControl>
                       <SelectSurvivorType
-                        value={survivorType}
+                        value={selectedSettlement?.survivorType}
                         onChange={handleSurvivorTypeChange}
                         disabled={
-                          campaignType ===
+                          selectedSettlement?.campaignType ===
                             CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-                          campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+                          selectedSettlement?.campaignType ===
+                            CampaignType.SQUIRES_OF_THE_CITADEL
                         }
                       />
                     </FormControl>

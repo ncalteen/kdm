@@ -13,9 +13,8 @@ import { Separator } from '@/components/ui/separator'
 import { useSettlement } from '@/contexts/settlement-context'
 import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import { getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -36,44 +35,24 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
     selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
     selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN
 
-  // Watch for changes to nemesis victories, quarry victories for ARC campaigns
-  const nemeses = useMemo(
-    () => selectedSettlement?.nemeses || [],
-    [selectedSettlement?.nemeses]
-  )
-  const quarries = useMemo(
-    () => selectedSettlement?.quarries || [],
-    [selectedSettlement?.quarries]
-  )
-
-  // Calculate population and death count from survivors
-  const survivors = useMemo(() => {
-    return getSurvivors(selectedSettlement?.id) || []
-  }, [selectedSettlement?.id])
-
-  const population = useMemo(() => {
-    return survivors.filter((survivor) => !survivor.dead).length
-  }, [survivors])
-
-  const deathCount = useMemo(() => {
-    return survivors.filter((survivor) => survivor.dead).length
-  }, [survivors])
-
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
-    if (!isArcCampaign) return
+    if (!isArcCampaign || !selectedSettlement) return
 
     let totalCc = 0
 
+    // Get current form values to ensure we're working with the latest data
+    const formValues = form.getValues()
+
     // Calculate CC from nemesis victories. Each nemesis victory gives 3 CC.
-    for (const nemesis of nemeses) {
+    for (const nemesis of formValues.nemeses || []) {
       if (nemesis.ccLevel1) totalCc += 3
       if (nemesis.ccLevel2) totalCc += 3
       if (nemesis.ccLevel3) totalCc += 3
     }
 
     // Calculate CC from quarry victories.
-    for (const quarry of quarries) {
+    for (const quarry of formValues.quarries || []) {
       // Prologue Monster (1 CC)
       if (quarry.ccPrologue) totalCc += 1
 
@@ -89,8 +68,13 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
         if (level3Victory) totalCc += 3
     }
 
-    selectedSettlement.ccValue = totalCc
-  }, [isArcCampaign, nemeses, quarries, selectedSettlement])
+    // Update form value and save if different
+    const currentCcValue = form.getValues('ccValue')
+    if (currentCcValue !== totalCc) {
+      form.setValue('ccValue', totalCc)
+      saveSettlement({ ccValue: totalCc })
+    }
+  }, [isArcCampaign, selectedSettlement, form, saveSettlement])
 
   /**
    * Save to Local Storage
@@ -159,7 +143,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     <Input
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      value={population}
+                      value={selectedSettlement?.population}
                       disabled
                     />
                   </FormControl>
@@ -188,7 +172,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     <Input
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      value={deathCount}
+                      value={selectedSettlement?.deathCount}
                       disabled
                     />
                   </FormControl>

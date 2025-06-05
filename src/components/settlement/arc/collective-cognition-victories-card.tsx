@@ -17,12 +17,12 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 
 /**
  * Collective Cognition Victories Card Component
@@ -33,11 +33,11 @@ import { toast } from 'sonner'
  * @param form Settlement form instance
  * @returns Collective Cognition Victories Card Component
  */
-export function CollectiveCognitionVictoriesCard(
-  form: UseFormReturn<Settlement>
-): ReactElement {
-  const quarries = form.watch('quarries') || []
-  const nemeses = form.watch('nemeses') || []
+export function CollectiveCognitionVictoriesCard({
+  ...form
+}: UseFormReturn<Settlement>): ReactElement {
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   /**
    * Save to Local Storage
@@ -45,24 +45,14 @@ export function CollectiveCognitionVictoriesCard(
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (successMsg?: string) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        campaign.settlements[settlementIndex].quarries = formValues.quarries
-        campaign.settlements[settlementIndex].nemeses = formValues.nemeses
-        saveCampaignToLocalStorage(campaign)
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('CC Victory Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+    // Get the current form values which include the updated checkbox states
+    const formValues = form.getValues()
+    const updateData: Partial<Settlement> = {
+      quarries: formValues.quarries,
+      nemeses: formValues.nemeses
     }
+
+    saveSettlement(updateData, successMsg)
   }
 
   return (
@@ -101,7 +91,7 @@ export function CollectiveCognitionVictoriesCard(
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {quarries.map((quarry, index) => (
+                {(selectedSettlement?.quarries || []).map((quarry, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-left pl-5">
                       {quarry.name}
@@ -246,7 +236,7 @@ export function CollectiveCognitionVictoriesCard(
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {nemeses.map((nemesis, index) => (
+                {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-left pl-5">
                       {nemesis.name || 'Unnamed Nemesis'}
@@ -263,7 +253,9 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorage()
+                                    saveToLocalStorage(
+                                      "The settlement's legacy grows stronger."
+                                    )
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel1`}
@@ -286,7 +278,9 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorage()
+                                    saveToLocalStorage(
+                                      "The settlement's legacy grows stronger."
+                                    )
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel2`}
@@ -309,7 +303,9 @@ export function CollectiveCognitionVictoriesCard(
                                 onCheckedChange={(checked) => {
                                   if (checked !== 'indeterminate') {
                                     field.onChange(checked)
-                                    saveToLocalStorage()
+                                    saveToLocalStorage(
+                                      "The settlement's legacy grows stronger."
+                                    )
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel3`}

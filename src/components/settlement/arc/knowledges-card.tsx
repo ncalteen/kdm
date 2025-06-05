@@ -6,8 +6,9 @@ import {
 } from '@/components/settlement/arc/knowledge-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Knowledge, Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Knowledge, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -24,10 +25,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { GraduationCapIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Knowledges Card Component
@@ -35,14 +35,8 @@ import { ZodError } from 'zod'
 export function KnowledgesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedKnowledges = form.watch('knowledges')
-  const watchedPhilosophies = form.watch('philosophies')
-
-  const knowledges = useMemo(() => watchedKnowledges || [], [watchedKnowledges])
-  const philosophies = useMemo(
-    () => watchedPhilosophies || [],
-    [watchedPhilosophies]
-  )
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -53,13 +47,13 @@ export function KnowledgesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      knowledges.forEach((_, i) => {
+      selectedSettlement?.knowledges.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [knowledges])
+  }, [selectedSettlement?.knowledges])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -79,46 +73,13 @@ export function KnowledgesCard({
   const saveToLocalStorage = (
     updatedKnowledges: Knowledge[],
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.knowledges.parse(updatedKnowledges)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        // Use the saveCampaignToLocalStorage helper
-        saveCampaignToLocalStorage({
-          ...campaign,
-          settlements: campaign.settlements.map((s) =>
-            s.id === formValues.id
-              ? {
-                  ...s,
-                  knowledges: updatedKnowledges
-                }
-              : s
-          )
-        })
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Knowledge Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) =>
+    saveSettlement(
+      {
+        knowledges: updatedKnowledges
+      },
+      successMsg
+    )
 
   /**
    * Handles the removal of a knowledge.
@@ -126,10 +87,8 @@ export function KnowledgesCard({
    * @param index Knowledge Index
    */
   const onRemove = (index: number) => {
-    const currentKnowledges = [...knowledges]
-
+    const currentKnowledges = [...(selectedSettlement?.knowledges || [])]
     currentKnowledges.splice(index, 1)
-    form.setValue('knowledges', currentKnowledges)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -162,19 +121,7 @@ export function KnowledgesCard({
     const processedPhilosophy =
       philosophy && philosophy.trim() !== '' ? philosophy : undefined
 
-    try {
-      SettlementSchema.shape.knowledges.parse([
-        { name: name.trim(), philosophy: processedPhilosophy }
-      ])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedKnowledges = [...knowledges]
+    const updatedKnowledges = [...(selectedSettlement?.knowledges || [])]
     const knowledgeData: Knowledge = {
       name: name.trim(),
       philosophy: processedPhilosophy as Knowledge['philosophy']
@@ -183,8 +130,6 @@ export function KnowledgesCard({
     if (i !== undefined) {
       // Updating an existing value
       updatedKnowledges[i] = knowledgeData
-      form.setValue(`knowledges.${i}`, knowledgeData)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -192,9 +137,6 @@ export function KnowledgesCard({
     } else {
       // Adding a new value
       updatedKnowledges.push(knowledgeData)
-
-      form.setValue('knowledges', updatedKnowledges)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedKnowledges.length - 1]: true
@@ -230,11 +172,13 @@ export function KnowledgesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(knowledges, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.knowledges || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('knowledges', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -279,29 +223,33 @@ export function KnowledgesCard({
       {/* Knowledges List */}
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto space-y-1">
-          {knowledges.length !== 0 && (
+          {selectedSettlement?.knowledges.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={knowledges.map((_, index) => index.toString())}
+                items={(selectedSettlement?.knowledges || []).map((_, index) =>
+                  index.toString()
+                )}
                 strategy={verticalListSortingStrategy}>
-                {knowledges.map((knowledge, index) => (
-                  <KnowledgeItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(name, philosophy, i) =>
-                      onSave(name, philosophy, i)
-                    }
-                    onEdit={onEdit}
-                    philosophies={philosophies}
-                  />
-                ))}
+                {(selectedSettlement?.knowledges || []).map(
+                  (knowledge, index) => (
+                    <KnowledgeItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(name, philosophy, i) =>
+                        onSave(name, philosophy, i)
+                      }
+                      onEdit={onEdit}
+                      philosophies={selectedSettlement?.philosophies || []}
+                    />
+                  )
+                )}
               </SortableContext>
             </DndContext>
           )}
@@ -309,7 +257,7 @@ export function KnowledgesCard({
             <NewKnowledgeItem
               onSave={(name, philosophy) => onSave(name, philosophy)}
               onCancel={() => setIsAddingNew(false)}
-              philosophies={philosophies}
+              philosophies={selectedSettlement?.philosophies || []}
             />
           )}
         </div>

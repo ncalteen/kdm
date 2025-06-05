@@ -3,13 +3,12 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Notes Card Component
@@ -20,9 +19,12 @@ import { ZodError } from 'zod'
 export function NotesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const notes = form.watch('notes')
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
-  const [draft, setDraft] = useState<string | undefined>(notes)
+  const [draft, setDraft] = useState<string | undefined>(
+    selectedSettlement?.notes || ''
+  )
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
   /**
@@ -34,41 +36,16 @@ export function NotesCard({
   const saveToLocalStorage = (
     updatedNotes: string | undefined,
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.notes.parse(updatedNotes)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].notes = updatedNotes
-        saveCampaignToLocalStorage(campaign)
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Notes Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) =>
+    saveSettlement(
+      {
+        notes: updatedNotes
+      },
+      successMsg
+    )
 
   const handleSave = () => {
-    form.setValue('notes', draft)
     setIsDirty(false)
-
     saveToLocalStorage(
       draft,
       'As stories are shared amongst survivors, they are etched into the history of your settlement.'
@@ -92,7 +69,7 @@ export function NotesCard({
             id="settlement-notes"
             onChange={(e) => {
               setDraft(e.target.value)
-              setIsDirty(e.target.value !== notes)
+              setIsDirty(e.target.value !== selectedSettlement?.notes)
             }}
             placeholder="Add notes about your settlement..."
             className="w-full flex-1 resize-none"

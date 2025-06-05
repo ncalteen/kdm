@@ -58,15 +58,6 @@ export function SettlementProvider({
 
     if (savedSelectedSettlement)
       setSelectedSettlementState(savedSelectedSettlement)
-    // else {
-    //   // If no selected settlement found, clear any stale localStorage reference
-    //   const campaign = getCampaign()
-
-    //   if (campaign.selectedSettlementId) {
-    //     campaign.selectedSettlementId = undefined
-    //     setSelectedSettlementInStorage(null)
-    //   }
-    // }
   }, [])
 
   /**

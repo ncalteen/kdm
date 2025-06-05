@@ -6,8 +6,9 @@ import {
 } from '@/components/settlement/patterns/pattern-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
   DndContext,
@@ -24,10 +25,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, ScissorsLineDashedIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Patterns Card Component
@@ -42,8 +42,8 @@ import { ZodError } from 'zod'
 export function PatternsCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedPatterns = form.watch('patterns')
-  const patterns = useMemo(() => watchedPatterns || [], [watchedPatterns])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -54,13 +54,13 @@ export function PatternsCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      patterns.forEach((_, i) => {
+      selectedSettlement?.patterns.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [patterns])
+  }, [selectedSettlement?.patterns])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -77,39 +77,13 @@ export function PatternsCard({
    * @param updatedPatterns Updated Patterns
    * @param successMsg Success Message
    */
-  const saveToLocalStorage = (
-    updatedPatterns: string[],
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.patterns.parse(updatedPatterns)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].patterns = updatedPatterns
-        saveCampaignToLocalStorage(campaign)
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Pattern Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  const saveToLocalStorage = (updatedPatterns: string[], successMsg?: string) =>
+    saveSettlement(
+      {
+        patterns: updatedPatterns
+      },
+      successMsg
+    )
 
   /**
    * Handles the removal of a pattern.
@@ -117,10 +91,8 @@ export function PatternsCard({
    * @param index Pattern Index
    */
   const onRemove = (index: number) => {
-    const currentPatterns = [...patterns]
-
+    const currentPatterns = [...(selectedSettlement?.patterns || [])]
     currentPatterns.splice(index, 1)
-    form.setValue('patterns', currentPatterns)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -150,23 +122,11 @@ export function PatternsCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless pattern cannot be preserved.')
 
-    try {
-      SettlementSchema.shape.patterns.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedPatterns = [...patterns]
+    const updatedPatterns = [...(selectedSettlement?.patterns || [])]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedPatterns[i] = value
-      form.setValue(`patterns.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -174,9 +134,6 @@ export function PatternsCard({
     } else {
       // Adding a new value
       updatedPatterns.push(value)
-
-      form.setValue('patterns', updatedPatterns)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedPatterns.length - 1]: true
@@ -211,11 +168,13 @@ export function PatternsCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(patterns, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.patterns || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('patterns', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -259,26 +218,30 @@ export function PatternsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {patterns.length !== 0 && (
+            {selectedSettlement?.patterns.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={patterns.map((_, index) => index.toString())}
+                  items={(selectedSettlement?.patterns || []).map((_, index) =>
+                    index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {patterns.map((pattern, index) => (
-                    <PatternItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSettlement?.patterns || []).map(
+                    (pattern, index) => (
+                      <PatternItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

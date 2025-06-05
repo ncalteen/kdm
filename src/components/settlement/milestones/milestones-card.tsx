@@ -6,8 +6,9 @@ import {
 } from '@/components/settlement/milestones/milestone-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -24,10 +25,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BadgeCheckIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Milestones Card Component
@@ -35,8 +35,8 @@ import { ZodError } from 'zod'
 export function MilestonesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedMilestones = form.watch('milestones')
-  const milestones = useMemo(() => watchedMilestones || [], [watchedMilestones])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -47,13 +47,13 @@ export function MilestonesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      milestones.forEach((_, i) => {
+      selectedSettlement?.milestones.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [milestones])
+  }, [selectedSettlement?.milestones])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -71,38 +71,9 @@ export function MilestonesCard({
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (
-    updatedMilestones: typeof milestones,
+    updatedMilestones: { name: string; complete: boolean; event: string }[],
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.milestones.parse(updatedMilestones)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].milestones = updatedMilestones
-        saveCampaignToLocalStorage(campaign)
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Milestone Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) => saveSettlement({ milestones: updatedMilestones }, successMsg)
 
   /**
    * Handles the removal of a milestone.
@@ -110,7 +81,7 @@ export function MilestonesCard({
    * @param index Milestone Index
    */
   const onRemove = (index: number) => {
-    const currentMilestones = [...milestones]
+    const currentMilestones = [...(selectedSettlement?.milestones || [])]
 
     currentMilestones.splice(index, 1)
     form.setValue('milestones', currentMilestones)
@@ -147,26 +118,11 @@ export function MilestonesCard({
     if (!event || event.trim() === '')
       return toast.error('A milestone must include a story event.')
 
-    try {
-      SettlementSchema.shape.milestones.parse([
-        { name, event, complete: false }
-      ])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedMilestones = [...milestones]
+    const updatedMilestones = [...(selectedSettlement?.milestones || [])]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedMilestones[i] = { ...updatedMilestones[i], name, event }
-      form.setValue(`milestones.${i}.name`, name)
-      form.setValue(`milestones.${i}.event`, event)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -174,9 +130,6 @@ export function MilestonesCard({
     } else {
       // Adding a new value
       updatedMilestones.push({ name, event, complete: false })
-
-      form.setValue('milestones', updatedMilestones)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedMilestones.length - 1]: true
@@ -211,11 +164,13 @@ export function MilestonesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(milestones, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.milestones || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('milestones', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -239,13 +194,12 @@ export function MilestonesCard({
    * @param checked Completion Status
    */
   const onToggleComplete = (index: number, checked: boolean) => {
-    const updatedMilestones = [...milestones]
+    const updatedMilestones = [...(selectedSettlement?.milestones || [])]
     updatedMilestones[index] = {
       ...updatedMilestones[index],
       complete: checked
     }
 
-    form.setValue('milestones', updatedMilestones)
     saveToLocalStorage(
       updatedMilestones,
       checked
@@ -283,28 +237,32 @@ export function MilestonesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {milestones.length !== 0 && (
+            {selectedSettlement?.milestones.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={milestones.map((_, index) => index.toString())}
+                  items={(selectedSettlement?.milestones || []).map(
+                    (_, index) => index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {milestones.map((milestone, index) => (
-                    <MilestoneItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      milestone={milestone}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(i, name, event) => onSave(name, event, i)}
-                      onEdit={onEdit}
-                      onToggleComplete={onToggleComplete}
-                    />
-                  ))}
+                  {(selectedSettlement?.milestones || []).map(
+                    (milestone, index) => (
+                      <MilestoneItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        milestone={milestone}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(i, name, event) => onSave(name, event, i)}
+                        onEdit={onEdit}
+                        onToggleComplete={onToggleComplete}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

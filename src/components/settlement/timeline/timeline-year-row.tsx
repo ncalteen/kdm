@@ -7,7 +7,7 @@ import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { CheckIcon, PlusCircleIcon, ScrollIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, memo, startTransition } from 'react'
+import { KeyboardEvent, memo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -231,7 +231,7 @@ export const TimelineYearRow = memo(
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  startTransition(() => addEventToYear(yearIndex))
+                  addEventToYear(yearIndex)
                 }}
                 className="h-6 px-2 text-xs">
                 <PlusCircleIcon className="h-3 w-3" />

@@ -109,7 +109,7 @@ const navSquires = [
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [campaign, setCampaign] = useState<Campaign | undefined>()
+  const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
@@ -123,16 +123,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const settlementContext = useSettlement()
-  const campaignType = settlementContext.selectedSettlement?.campaignType
-  const survivorType = settlementContext.selectedSettlement?.survivorType
+  const { selectedSettlement } = useSettlement()
+
+  const campaignType = selectedSettlement?.campaignType
+  const survivorType = selectedSettlement?.survivorType
 
   // Update navigation items based on settlement context
   useEffect(() => {
-    if (!isMounted) return setIsMounted(true)
+    if (!isMounted) {
+      setIsMounted(true)
+      return
+    }
 
-    if (campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
-      return setNavItems([...navSquires])
+    if (campaignType === CampaignType.SQUIRES_OF_THE_CITADEL) {
+      setNavItems([...navSquires])
+      return
+    }
 
     // Start with base navigation
     const newNavItems = [...baseNavPrimary]
@@ -149,8 +155,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
 
     setNavItems(newNavItems)
-    setCampaign(getCampaign())
   }, [campaignType, survivorType, isMounted])
+
+  // Update campaign data when it changes (e.g., after creating settlements)
+  useEffect(() => {
+    setCampaign(getCampaign())
+  }, [selectedSettlement])
 
   const handleDownload = () => {
     try {
@@ -282,7 +292,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
       {...props}>
       <SidebarHeader>
-        <SettlementSwitcher settlements={campaign?.settlements || []} />
+        <SettlementSwitcher settlements={campaign.settlements || []} />
       </SidebarHeader>
       <SidebarContent className="flex flex-col justify-between">
         <NavMain items={navItems} />
@@ -367,14 +377,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           <p>Your currently have:</p>
                           <ul className="list-disc pl-5 space-y-1">
                             <li>
-                              {getCampaign().settlements.length} settlement
-                              {getCampaign().settlements.length !== 1
-                                ? 's'
-                                : ''}
+                              {campaign.settlements.length} settlement
+                              {campaign.settlements.length !== 1 ? 's' : ''}
                             </li>
                             <li>
-                              {getCampaign().survivors.length} survivor
-                              {getCampaign().survivors.length !== 1 ? 's' : ''}
+                              {campaign.survivors.length} survivor
+                              {campaign.survivors.length !== 1 ? 's' : ''}
                             </li>
                           </ul>
                           <p>The records you seek to restore contain:</p>

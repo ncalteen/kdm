@@ -6,8 +6,9 @@ import {
 } from '@/components/settlement/arrival-bonuses/arrival-bonus-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -24,10 +25,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { MapPinPlusIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Arrival Bonuses Card Component
@@ -35,41 +35,25 @@ import { ZodError } from 'zod'
 export function ArrivalBonusesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedArrivalBonuses = form.watch('arrivalBonuses')
-  const arrivalBonuses = useMemo(
-    () => watchedArrivalBonuses || [],
-    [watchedArrivalBonuses]
-  )
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      arrivalBonuses.forEach((_, i) => {
+      ;(selectedSettlement?.arrivalBonuses || []).forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [arrivalBonuses])
+  }, [selectedSettlement?.arrivalBonuses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -90,37 +74,13 @@ export function ArrivalBonusesCard({
   const saveToLocalStorage = (
     updatedArrivalBonuses: string[],
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.arrivalBonuses.parse(updatedArrivalBonuses)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].arrivalBonuses =
-          updatedArrivalBonuses
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Arrival Bonus Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) =>
+    saveSettlement(
+      {
+        arrivalBonuses: updatedArrivalBonuses
+      },
+      successMsg
+    )
 
   /**
    * Handles the removal of a arrival bonus.
@@ -128,10 +88,10 @@ export function ArrivalBonusesCard({
    * @param index Arrival Bonus Index
    */
   const onRemove = (index: number) => {
-    const currentArrivalBonuses = [...arrivalBonuses]
-
+    const currentArrivalBonuses = [
+      ...(selectedSettlement?.arrivalBonuses || [])
+    ]
     currentArrivalBonuses.splice(index, 1)
-    form.setValue('arrivalBonuses', currentArrivalBonuses)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -158,23 +118,13 @@ export function ArrivalBonusesCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless blessing cannot be recorded.')
 
-    try {
-      SettlementSchema.shape.arrivalBonuses.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedArrivalBonuses = [...arrivalBonuses]
+    const updatedArrivalBonuses = [
+      ...(selectedSettlement?.arrivalBonuses || [])
+    ]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedArrivalBonuses[i] = value
-      form.setValue(`arrivalBonuses.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -182,9 +132,6 @@ export function ArrivalBonusesCard({
     } else {
       // Adding a new value
       updatedArrivalBonuses.push(value)
-
-      form.setValue('arrivalBonuses', updatedArrivalBonuses)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedArrivalBonuses.length - 1]: true
@@ -219,11 +166,13 @@ export function ArrivalBonusesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(arrivalBonuses, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.arrivalBonuses || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('arrivalBonuses', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -269,26 +218,30 @@ export function ArrivalBonusesCard({
       <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[240px]">
           <div className="flex-1 overflow-y-auto">
-            {arrivalBonuses.length !== 0 && (
+            {(selectedSettlement?.arrivalBonuses || []).length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={arrivalBonuses.map((_, index) => index.toString())}
+                  items={(selectedSettlement?.arrivalBonuses || []).map(
+                    (_, index) => index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {arrivalBonuses.map((bonus, index) => (
-                    <ArrivalBonusItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSettlement?.arrivalBonuses || []).map(
+                    (bonus, index) => (
+                      <ArrivalBonusItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

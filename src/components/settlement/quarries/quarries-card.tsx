@@ -12,8 +12,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
-import { Quarry, Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Quarry, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -30,10 +31,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, SwordIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Quarries Card Component
@@ -41,8 +41,8 @@ import { ZodError } from 'zod'
 export function QuarriesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedQuarries = form.watch('quarries')
-  const quarries = useMemo(() => watchedQuarries || [], [watchedQuarries])
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -53,13 +53,13 @@ export function QuarriesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      quarries.forEach((_, i) => {
+      selectedSettlement?.quarries.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [quarries])
+  }, [selectedSettlement?.quarries])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -76,39 +76,8 @@ export function QuarriesCard({
    * @param updatedQuarries Updated Quarries
    * @param successMsg Success Message
    */
-  const saveToLocalStorage = (
-    updatedQuarries: Quarry[],
-    successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.quarries.parse(updatedQuarries)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].quarries = updatedQuarries
-        saveCampaignToLocalStorage(campaign)
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Quarry Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  const saveToLocalStorage = (updatedQuarries: Quarry[], successMsg?: string) =>
+    saveSettlement({ quarries: updatedQuarries }, successMsg)
 
   /**
    * Handles the removal of a quarry.
@@ -116,10 +85,8 @@ export function QuarriesCard({
    * @param index Quarry Index
    */
   const onRemove = (index: number) => {
-    const currentQuarries = [...quarries]
-
+    const currentQuarries = [...(selectedSettlement?.quarries || [])]
     currentQuarries.splice(index, 1)
-    form.setValue('quarries', currentQuarries)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -166,17 +133,7 @@ export function QuarriesCard({
       ccLevel3: [false, false, false]
     }
 
-    try {
-      SettlementSchema.shape.quarries.parse([quarryWithCc])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedQuarries = [...quarries]
+    const updatedQuarries = [...(selectedSettlement?.quarries || [])]
 
     if (index !== undefined) {
       // Updating an existing value - preserve existing CC properties
@@ -186,8 +143,6 @@ export function QuarriesCard({
         node: (node || 'Node 1') as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4',
         unlocked: unlocked || false
       }
-      form.setValue(`quarries.${index}`, updatedQuarries[index])
-
       setDisabledInputs((prev) => ({
         ...prev,
         [index]: true
@@ -195,9 +150,6 @@ export function QuarriesCard({
     } else {
       // Adding a new value
       updatedQuarries.push(quarryWithCc)
-
-      form.setValue('quarries', updatedQuarries)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedQuarries.length - 1]: true
@@ -228,15 +180,12 @@ export function QuarriesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedQuarries = quarries.map((q, i) =>
+    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
       i === index ? { ...q, unlocked } : q
     )
-
-    form.setValue('quarries', updatedQuarries)
-
     saveToLocalStorage(
       updatedQuarries,
-      `${quarries[index]?.name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
+      `${selectedSettlement!.quarries[index]?.name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -247,13 +196,11 @@ export function QuarriesCard({
    * @param node Node Value
    */
   const onUpdateNode = (index: number, node: string) => {
-    const updatedQuarries = quarries.map((q, i) =>
+    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
       i === index
         ? { ...q, node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4' }
         : q
     )
-
-    form.setValue('quarries', updatedQuarries)
     saveToLocalStorage(updatedQuarries)
   }
 
@@ -268,11 +215,13 @@ export function QuarriesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(quarries, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.quarries || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('quarries', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -319,15 +268,17 @@ export function QuarriesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {quarries.length !== 0 && (
+            {selectedSettlement?.quarries.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={quarries.map((_, index) => index.toString())}
+                  items={(selectedSettlement?.quarries || []).map((_, index) =>
+                    index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {quarries.map((quarry, index) => (
+                  {(selectedSettlement?.quarries || []).map((quarry, index) => (
                     <QuarryItem
                       key={index}
                       id={index.toString()}

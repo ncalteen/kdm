@@ -6,8 +6,9 @@ import {
 } from '@/components/settlement/departing-bonuses/departing-bonus-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCampaign } from '@/lib/utils'
-import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { useSettlement } from '@/contexts/settlement-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -24,10 +25,9 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { MapPinPlusIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Departing Bonuses Card Component
@@ -35,41 +35,25 @@ import { ZodError } from 'zod'
 export function DepartingBonusesCard({
   ...form
 }: UseFormReturn<Settlement>): ReactElement {
-  const watchedDepartingBonuses = form.watch('departingBonuses')
-  const departingBonuses = useMemo(
-    () => watchedDepartingBonuses || [],
-    [watchedDepartingBonuses]
-  )
+  const { saveSettlement } = useSettlementSave(form)
+  const { selectedSettlement } = useSettlement()
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Ref to store timeout ID for cleanup
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-        saveTimeoutRef.current = null
-      }
-    }
-  }, [])
-
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      departingBonuses.forEach((_, i) => {
+      selectedSettlement?.departingBonuses.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [departingBonuses])
+  }, [selectedSettlement?.departingBonuses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -90,37 +74,7 @@ export function DepartingBonusesCard({
   const saveToLocalStorage = (
     updatedDepartingBonuses: string[],
     successMsg?: string
-  ) => {
-    try {
-      const formValues = form.getValues()
-      const campaign = getCampaign()
-      const settlementIndex = campaign.settlements.findIndex(
-        (s: { id: number }) => s.id === formValues.id
-      )
-
-      if (settlementIndex !== -1) {
-        try {
-          SettlementSchema.shape.departingBonuses.parse(updatedDepartingBonuses)
-        } catch (error) {
-          if (error instanceof ZodError && error.errors[0]?.message)
-            return toast.error(error.errors[0].message)
-          else
-            return toast.error(
-              'The darkness swallows your words. Please try again.'
-            )
-        }
-
-        campaign.settlements[settlementIndex].departingBonuses =
-          updatedDepartingBonuses
-        localStorage.setItem('campaign', JSON.stringify(campaign))
-
-        if (successMsg) toast.success(successMsg)
-      }
-    } catch (error) {
-      console.error('Departing Bonus Save Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
-    }
-  }
+  ) => saveSettlement({ departingBonuses: updatedDepartingBonuses }, successMsg)
 
   /**
    * Handles the removal of a departing bonus.
@@ -128,10 +82,10 @@ export function DepartingBonusesCard({
    * @param index Departing Bonus Index
    */
   const onRemove = (index: number) => {
-    const currentDepartingBonuses = [...departingBonuses]
-
+    const currentDepartingBonuses = [
+      ...(selectedSettlement?.departingBonuses || [])
+    ]
     currentDepartingBonuses.splice(index, 1)
-    form.setValue('departingBonuses', currentDepartingBonuses)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -161,23 +115,13 @@ export function DepartingBonusesCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless blessing cannot be recorded.')
 
-    try {
-      SettlementSchema.shape.departingBonuses.parse([value])
-    } catch (error) {
-      if (error instanceof ZodError) return toast.error(error.errors[0].message)
-      else
-        return toast.error(
-          'The darkness swallows your words. Please try again.'
-        )
-    }
-
-    const updatedDepartingBonuses = [...departingBonuses]
+    const updatedDepartingBonuses = [
+      ...(selectedSettlement?.departingBonuses || [])
+    ]
 
     if (i !== undefined) {
       // Updating an existing value
       updatedDepartingBonuses[i] = value
-      form.setValue(`departingBonuses.${i}`, value)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
@@ -185,9 +129,6 @@ export function DepartingBonusesCard({
     } else {
       // Adding a new value
       updatedDepartingBonuses.push(value)
-
-      form.setValue('departingBonuses', updatedDepartingBonuses)
-
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedDepartingBonuses.length - 1]: true
@@ -222,11 +163,13 @@ export function DepartingBonusesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(departingBonuses, oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.departingBonuses || [],
+        oldIndex,
+        newIndex
+      )
 
-      form.setValue('departingBonuses', newOrder)
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -272,26 +215,30 @@ export function DepartingBonusesCard({
       <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[240px]">
           <div className="flex-1 overflow-y-auto">
-            {departingBonuses.length !== 0 && (
+            {selectedSettlement?.departingBonuses.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={departingBonuses.map((_, index) => index.toString())}
+                  items={(selectedSettlement?.departingBonuses || []).map(
+                    (_, index) => index.toString()
+                  )}
                   strategy={verticalListSortingStrategy}>
-                  {departingBonuses.map((bonus, index) => (
-                    <DepartingBonusItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSettlement?.departingBonuses || []).map(
+                    (bonus, index) => (
+                      <DepartingBonusItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}
