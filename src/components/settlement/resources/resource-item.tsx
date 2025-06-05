@@ -182,7 +182,7 @@ export function ResourceItem({
               </div>
 
               {/* Action Buttons */}
-              <div className="col-span-2 text-right">
+              <div className="col-span-2 flex justify-end">
                 <Button
                   type="button"
                   variant="ghost"
@@ -230,6 +230,7 @@ export function ResourceItem({
                   type="number"
                   min={0}
                   placeholder="0"
+                  disabled={true}
                   defaultValue={resource?.amount}
                   onChange={handleAmountChange}
                   className="w-16 text-center no-spinners"
@@ -237,7 +238,7 @@ export function ResourceItem({
               </div>
 
               {/* Action Buttons */}
-              <div className="col-span-2">
+              <div className="col-span-2 flex justify-end">
                 <Button
                   type="button"
                   variant="ghost"
@@ -313,70 +314,78 @@ export function NewResourceItem({
   }
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Drag Handle */}
-      <div className="p-1">
-        <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
-      </div>
-
-      <div className="grid grid-cols-12 items-center gap-2">
-        {/* Form Fields */}
-        <div className="col-span-4 text-sm text-left font-bold">
-          <Input
-            ref={nameInputRef}
-            placeholder="Add a resource..."
-            defaultValue={''}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-        </div>
-        <div className="col-span-2">
-          <ResourceCategoriesCombobox
-            selectedCategory={category}
-            onChange={setCategory}
-          />
-        </div>
-        <div className="flex flex-wrap gap-1 col-span-3">
-          <ResourceTypesCombobox selectedTypes={types} onChange={setTypes} />
-        </div>
-        <div className="col-span-1">
-          <Input
-            ref={amountInputRef}
-            type="number"
-            min={0}
-            placeholder="0"
-            defaultValue={''}
-            onKeyDown={handleKeyDown}
-            className="w-16 text-center no-spinners"
-          />
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        {/* Drag Handle */}
+        <div className="p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
         </div>
 
-        {/* Action Buttons */}
-        <div className="col-span-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              if (nameInputRef.current && amountInputRef.current)
-                onSave(
-                  nameInputRef.current.value,
-                  category,
-                  types,
-                  Number(amountInputRef.current.value)
-                )
-            }}
-            title="Save resource">
-            <CheckIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onCancel}
-            title="Cancel">
-            <TrashIcon className="h-4 w-4" />
-          </Button>
+        <div className="flex-1">
+          <div className="grid grid-cols-12 items-center gap-2">
+            {/* Form Fields */}
+            <div className="col-span-4 text-sm text-left font-bold">
+              <Input
+                ref={nameInputRef}
+                placeholder="Add a resource..."
+                defaultValue={''}
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
+            </div>
+            <div className="col-span-2">
+              <ResourceCategoriesCombobox
+                selectedCategory={category}
+                onChange={setCategory}
+              />
+            </div>
+            <div className="flex flex-wrap gap-1 col-span-3">
+              <ResourceTypesCombobox
+                selectedTypes={types}
+                onChange={setTypes}
+              />
+            </div>
+            <div className="col-span-1">
+              <Input
+                ref={amountInputRef}
+                type="number"
+                min={0}
+                placeholder="0"
+                disabled={true}
+                defaultValue={''}
+                onKeyDown={handleKeyDown}
+                className="w-16 text-center no-spinners"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="col-span-2 flex justify-end">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (nameInputRef.current && amountInputRef.current)
+                    onSave(
+                      nameInputRef.current.value,
+                      category,
+                      types,
+                      Number(amountInputRef.current.value)
+                    )
+                }}
+                title="Save resource">
+                <CheckIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={onCancel}
+                title="Cancel">
+                <TrashIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
