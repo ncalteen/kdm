@@ -13,8 +13,10 @@ import { Separator } from '@/components/ui/separator'
 import { useSettlement } from '@/contexts/settlement-context'
 import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import { getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
-import { ReactElement, useEffect } from 'react'
+import { Survivor } from '@/schemas/survivor'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -34,6 +36,86 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
   const isLanternCampaign =
     selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
     selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN
+
+  // Track survivors state to trigger re-calculations when survivors change
+  const [survivors, setSurvivors] = useState<Survivor[]>([])
+
+  // Update survivors when settlement changes or when localStorage changes
+  useEffect(() => {
+    if (selectedSettlement?.id) {
+      setSurvivors(getSurvivors(selectedSettlement.id))
+    }
+  }, [selectedSettlement?.id])
+
+  // Listen for storage events to update survivors when they change in other tabs/components
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (selectedSettlement?.id) {
+        setSurvivors(getSurvivors(selectedSettlement.id))
+      }
+    }
+
+    // Listen for localStorage changes
+    window.addEventListener('storage', handleStorageChange)
+
+    // Also listen for custom events when survivors are updated in the same tab
+    window.addEventListener('survivorsUpdated', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('survivorsUpdated', handleStorageChange)
+    }
+  }, [selectedSettlement?.id])
+
+  // Periodically check for survivor changes (fallback for same-tab updates)
+  useEffect(() => {
+    if (!selectedSettlement?.id) return
+
+    const interval = setInterval(() => {
+      const currentSurvivors = getSurvivors(selectedSettlement.id)
+      // Check if survivors have changed
+      if (JSON.stringify(currentSurvivors) !== JSON.stringify(survivors)) {
+        setSurvivors(currentSurvivors)
+      }
+    }, 1000) // Check every second
+
+    return () => clearInterval(interval)
+  }, [selectedSettlement?.id, survivors])
+
+  // Calculate current population from living survivors
+  const currentPopulation = useMemo(() => {
+    return survivors.filter((survivor) => !survivor.dead).length
+  }, [survivors])
+
+  // Calculate death count from dead survivors
+  const currentDeathCount = useMemo(() => {
+    return survivors.filter((survivor) => survivor.dead).length
+  }, [survivors])
+
+  // Update population and death count when they change
+  useEffect(() => {
+    if (!selectedSettlement?.id) return
+
+    const formValues = form.getValues()
+
+    // Update population if it differs from current count
+    if (formValues.population !== currentPopulation) {
+      form.setValue('population', currentPopulation)
+      saveSettlement({ population: currentPopulation })
+    }
+
+    // Update death count if it differs from current count
+    if (formValues.deathCount !== currentDeathCount) {
+      form.setValue('deathCount', currentDeathCount)
+      saveSettlement({ deathCount: currentDeathCount })
+    }
+  }, [
+    currentPopulation,
+    currentDeathCount,
+    selectedSettlement?.id,
+    form,
+    saveSettlement
+  ])
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
@@ -143,7 +225,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     <Input
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      value={selectedSettlement?.population}
+                      value={currentPopulation}
                       disabled
                     />
                   </FormControl>
@@ -172,7 +254,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     <Input
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      value={selectedSettlement?.deathCount}
+                      value={currentDeathCount}
                       disabled
                     />
                   </FormControl>

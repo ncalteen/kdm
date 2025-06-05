@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useSettlement } from '@/contexts/settlement-context'
+import { useSurvivor } from '@/contexts/survivor-context'
 import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { SurvivorType } from '@/lib/enums'
 import { Survivor } from '@/schemas/survivor'
@@ -31,6 +32,7 @@ export function AttributeCard({
 }: UseFormReturn<Survivor>): ReactElement {
   const { saveSurvivor } = useSurvivorSave(form)
   const { selectedSettlement } = useSettlement()
+  const { selectedSurvivor } = useSurvivor()
 
   /**
    * Save to Local Storage
@@ -86,7 +88,8 @@ export function AttributeCard({
                       placeholder="1"
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      defaultValue={field.value ?? '1'}
+                      {...field}
+                      value={selectedSurvivor?.movement}
                       onChange={(e) =>
                         saveToLocalStorage('movement', parseInt(e.target.value))
                       }
@@ -113,7 +116,8 @@ export function AttributeCard({
                       placeholder="0"
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      defaultValue={field.value ?? '0'}
+                      {...field}
+                      value={selectedSurvivor?.accuracy}
                       onChange={(e) =>
                         saveToLocalStorage('accuracy', parseInt(e.target.value))
                       }
@@ -138,7 +142,8 @@ export function AttributeCard({
                       placeholder="0"
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      defaultValue={field.value ?? '0'}
+                      {...field}
+                      value={selectedSurvivor?.strength}
                       onChange={(e) =>
                         saveToLocalStorage('strength', parseInt(e.target.value))
                       }
@@ -163,7 +168,8 @@ export function AttributeCard({
                       placeholder="0"
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      defaultValue={field.value ?? '0'}
+                      {...field}
+                      value={selectedSurvivor?.evasion}
                       onChange={(e) =>
                         saveToLocalStorage('evasion', parseInt(e.target.value))
                       }
@@ -188,7 +194,8 @@ export function AttributeCard({
                       placeholder="0"
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      defaultValue={field.value ?? '0'}
+                      {...field}
+                      value={selectedSurvivor?.luck}
                       onChange={(e) =>
                         saveToLocalStorage('luck', parseInt(e.target.value))
                       }
@@ -213,7 +220,8 @@ export function AttributeCard({
                       placeholder="0"
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      defaultValue={field.value ?? '0'}
+                      {...field}
+                      value={selectedSurvivor?.speed}
                       onChange={(e) =>
                         saveToLocalStorage('speed', parseInt(e.target.value))
                       }
@@ -241,7 +249,8 @@ export function AttributeCard({
                           placeholder="0"
                           type="number"
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                          defaultValue={field.value ?? '0'}
+                          {...field}
+                          value={selectedSurvivor?.lumi}
                           min={0}
                           onChange={(e) =>
                             saveToLocalStorage('lumi', parseInt(e.target.value))

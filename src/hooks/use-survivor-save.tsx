@@ -56,6 +56,9 @@ export function useSurvivorSave(form: UseFormReturn<Survivor>) {
         // Update the context to refresh the survivors table
         updateSelectedSurvivor()
 
+        // Dispatch custom event to notify other components about survivor changes
+        window.dispatchEvent(new CustomEvent('survivorsUpdated'))
+
         if (successMsg) toast.success(successMsg)
       } catch (error) {
         console.error('Survivor Save Error:', error)

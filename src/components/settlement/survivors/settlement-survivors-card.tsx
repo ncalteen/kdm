@@ -99,6 +99,9 @@ export function SettlementSurvivorsCard({
         )
         setSurvivors(getSurvivors(settlementId))
 
+        // Dispatch custom event to notify other components about survivor changes
+        window.dispatchEvent(new CustomEvent('survivorsUpdated'))
+
         setDeleteId(undefined)
         setIsDeleteDialogOpen(false)
       } catch (error) {
