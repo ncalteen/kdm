@@ -102,7 +102,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage('legHamstrung', checked === true)
+                          saveToLocalStorage('legHamstrung', !!checked)
                         }
                       />
                     </FormControl>
@@ -183,7 +183,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage('legLightDamage', checked === true)
+                          saveToLocalStorage('legLightDamage', !!checked)
                         }
                       />
                     </FormControl>
@@ -206,7 +206,7 @@ export function LegsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage('legHeavyDamage', checked === true)
+                          saveToLocalStorage('legHeavyDamage', !!checked)
                         }
                       />
                     </FormControl>

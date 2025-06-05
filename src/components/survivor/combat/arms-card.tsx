@@ -130,10 +130,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'armRupturedMuscle',
-                            checked === true
-                          )
+                          saveToLocalStorage('armRupturedMuscle', !!checked)
                         }
                       />
                     </FormControl>
@@ -215,7 +212,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage('armLightDamage', checked === true)
+                          saveToLocalStorage('armLightDamage', !!checked)
                         }
                       />
                     </FormControl>
@@ -238,7 +235,7 @@ export function ArmsCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage('armHeavyDamage', checked === true)
+                          saveToLocalStorage('armHeavyDamage', !!checked)
                         }
                       />
                     </FormControl>

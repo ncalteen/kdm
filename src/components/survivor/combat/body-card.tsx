@@ -105,10 +105,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'bodyDestroyedBack',
-                            checked === true
-                          )
+                          saveToLocalStorage('bodyDestroyedBack', !!checked)
                         }
                       />
                     </FormControl>
@@ -198,10 +195,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'bodyLightDamage',
-                            checked === true
-                          )
+                          saveToLocalStorage('bodyLightDamage', !!checked)
                         }
                       />
                     </FormControl>
@@ -224,10 +218,7 @@ export function BodyCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'bodyHeavyDamage',
-                            checked === true
-                          )
+                          saveToLocalStorage('bodyHeavyDamage', !!checked)
                         }
                       />
                     </FormControl>

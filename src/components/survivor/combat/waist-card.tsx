@@ -106,7 +106,7 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage('waistBrokenHip', checked === true)
+                          saveToLocalStorage('waistBrokenHip', !!checked)
                         }
                       />
                     </FormControl>
@@ -126,7 +126,7 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) =>
                           saveToLocalStorage(
                             'waistIntestinalProlapse',
-                            checked === true
+                            !!checked
                           )
                         }
                       />
@@ -149,7 +149,7 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) =>
                           saveToLocalStorage(
                             'waistDestroyedGenitals',
-                            checked === true
+                            !!checked
                           )
                         }
                       />
@@ -207,10 +207,7 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'waistLightDamage',
-                            checked === true
-                          )
+                          saveToLocalStorage('waistLightDamage', !!checked)
                         }
                       />
                     </FormControl>
@@ -233,10 +230,7 @@ export function WaistCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'waistHeavyDamage',
-                            checked === true
-                          )
+                          saveToLocalStorage('waistHeavyDamage', !!checked)
                         }
                       />
                     </FormControl>

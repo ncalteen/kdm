@@ -181,11 +181,7 @@ export function SquireSuspicionsCard({
                     <Checkbox
                       checked={suspicion.level1 || false}
                       onCheckedChange={(checked) =>
-                        handleSuspicionChange(
-                          suspicion.name,
-                          1,
-                          checked === true
-                        )
+                        handleSuspicionChange(suspicion.name, 1, !!checked)
                       }
                     />
                   </TableCell>
@@ -193,11 +189,7 @@ export function SquireSuspicionsCard({
                     <Checkbox
                       checked={suspicion.level2 || false}
                       onCheckedChange={(checked) =>
-                        handleSuspicionChange(
-                          suspicion.name,
-                          2,
-                          checked === true
-                        )
+                        handleSuspicionChange(suspicion.name, 2, !!checked)
                       }
                     />
                   </TableCell>
@@ -205,11 +197,7 @@ export function SquireSuspicionsCard({
                     <Checkbox
                       checked={suspicion.level3 || false}
                       onCheckedChange={(checked) =>
-                        handleSuspicionChange(
-                          suspicion.name,
-                          3,
-                          checked === true
-                        )
+                        handleSuspicionChange(suspicion.name, 3, !!checked)
                       }
                     />
                   </TableCell>
@@ -217,11 +205,7 @@ export function SquireSuspicionsCard({
                     <Checkbox
                       checked={suspicion.level4 || false}
                       onCheckedChange={(checked) =>
-                        handleSuspicionChange(
-                          suspicion.name,
-                          4,
-                          checked === true
-                        )
+                        handleSuspicionChange(suspicion.name, 4, !!checked)
                       }
                     />
                   </TableCell>

@@ -106,7 +106,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage('headDeaf', checked === true)
+                          saveToLocalStorage('headDeaf', !!checked)
                         }
                       />
                     </FormControl>
@@ -151,10 +151,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         className="h-4 w-4 rounded-sm"
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'headShatteredJaw',
-                            checked === true
-                          )
+                          saveToLocalStorage('headShatteredJaw', !!checked)
                         }
                       />
                     </FormControl>
@@ -174,7 +171,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         onCheckedChange={(checked) =>
                           saveToLocalStorage(
                             'headIntracranialHemorrhage',
-                            checked === true
+                            !!checked
                           )
                         }
                       />
@@ -202,10 +199,7 @@ export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
                         )}
                         checked={field.value}
                         onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'headHeavyDamage',
-                            checked === true
-                          )
+                          saveToLocalStorage('headHeavyDamage', !!checked)
                         }
                       />
                     </FormControl>
