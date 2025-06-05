@@ -27,7 +27,8 @@ contributors list for any pages you contribute to!
 ## Schema Updates
 
 If you intend to add, remove, or change the [schemas](./src/schemas/) used in
-this project, please ensure that your changes adhere to the following guidelines:
+this project, please ensure that your changes adhere to the following
+guidelines:
 
 - All changes must be backwards-compatible
 - Existing user data must be automatically migrated to the new schema
