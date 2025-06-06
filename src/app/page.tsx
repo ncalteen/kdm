@@ -178,15 +178,6 @@ function MainPage(): ReactElement {
     if (selectedSurvivor) survivorForm.reset(selectedSurvivor)
   }, [selectedSurvivor, survivorForm])
 
-  // If no settlement is selected, display the create settlement form
-  if (!selectedSettlement)
-    return (
-      <CreateSettlementForm
-        settlement={selectedSettlement}
-        setSelectedSettlement={setSelectedSettlement}
-      />
-    )
-
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
@@ -211,8 +202,15 @@ function MainPage(): ReactElement {
 
                 <div className="flex flex-1 flex-col h-full">
                   <div className="flex flex-col gap-2 py-2 px-2 flex-1">
+                    {/* Create Settlement Form */}
+                    {!selectedSettlement && (
+                      <CreateSettlementForm
+                        settlement={selectedSettlement}
+                        setSelectedSettlement={setSelectedSettlement}
+                      />
+                    )}
                     {/* Timeline */}
-                    {selectedTab === 'timeline' && (
+                    {selectedSettlement && selectedTab === 'timeline' && (
                       <div className="flex flex-row gap-2">
                         <div className="flex-1">
                           <TimelineCard
@@ -237,7 +235,7 @@ function MainPage(): ReactElement {
                     )}
 
                     {/* Monsters (Nemeses and Quarries) */}
-                    {selectedTab === 'monsters' && (
+                    {selectedSettlement && selectedTab === 'monsters' && (
                       <div className="flex flex-col pl-2 gap-2">
                         {/* Quarries and Nemeses */}
                         <div className="flex flex-row gap-2">
@@ -271,7 +269,8 @@ function MainPage(): ReactElement {
                     )}
 
                     {/* Squires of the Citadel (Suspicions and Progression) */}
-                    {selectedTab === 'squires' &&
+                    {selectedSettlement &&
+                      selectedTab === 'squires' &&
                       selectedSettlement.campaignType ===
                         CampaignType.SQUIRES_OF_THE_CITADEL && (
                         <>
@@ -284,7 +283,8 @@ function MainPage(): ReactElement {
                       )}
 
                     {/* Survivors */}
-                    {selectedTab === 'survivors' &&
+                    {selectedSettlement &&
+                      selectedTab === 'survivors' &&
                       selectedSettlement.campaignType !==
                         CampaignType.SQUIRES_OF_THE_CITADEL && (
                         <div className="pl-2">
@@ -317,7 +317,8 @@ function MainPage(): ReactElement {
                       )}
 
                     {/* Society */}
-                    {selectedTab === 'society' &&
+                    {selectedSettlement &&
+                      selectedTab === 'society' &&
                       selectedSettlement.campaignType !==
                         CampaignType.SQUIRES_OF_THE_CITADEL && (
                         <div className="flex flex-col gap-2 pl-2">
@@ -352,7 +353,8 @@ function MainPage(): ReactElement {
                       )}
 
                     {/* Society - Squires of the Citadel */}
-                    {selectedTab === 'society' &&
+                    {selectedSettlement &&
+                      selectedTab === 'society' &&
                       selectedSettlement.campaignType ===
                         CampaignType.SQUIRES_OF_THE_CITADEL && (
                         <LocationsCard
@@ -363,7 +365,7 @@ function MainPage(): ReactElement {
                       )}
 
                     {/* Crafting */}
-                    {selectedTab === 'crafting' && (
+                    {selectedSettlement && selectedTab === 'crafting' && (
                       <div className="flex flex-col gap-2 pl-2">
                         {selectedSettlement.campaignType !==
                           CampaignType.SQUIRES_OF_THE_CITADEL && (
@@ -394,7 +396,8 @@ function MainPage(): ReactElement {
                     )}
 
                     {/* Arc */}
-                    {selectedTab === 'arc' &&
+                    {selectedSettlement &&
+                      selectedTab === 'arc' &&
                       selectedSettlement.survivorType === SurvivorType.ARC && (
                         <div className="flex flex-col gap-2 pl-2">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -424,7 +427,7 @@ function MainPage(): ReactElement {
                       )}
 
                     {/* Notes */}
-                    {selectedTab === 'notes' && (
+                    {selectedSettlement && selectedTab === 'notes' && (
                       <NotesCard
                         {...selectedSettlement}
                         saveSettlement={saveSettlement}
