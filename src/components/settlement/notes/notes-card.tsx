@@ -3,12 +3,17 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Notes Card Props
+ */
+interface NotesCardProps extends Partial<Settlement> {
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
 
 /**
  * Notes Card Component
@@ -17,14 +22,10 @@ import { UseFormReturn } from 'react-hook-form'
  * @returns Notes Card Component
  */
 export function NotesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
-  const [draft, setDraft] = useState<string | undefined>(
-    selectedSettlement?.notes || ''
-  )
+  saveSettlement,
+  ...settlement
+}: NotesCardProps): ReactElement {
+  const [draft, setDraft] = useState<string | undefined>(settlement.notes || '')
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
   /**
@@ -69,7 +70,7 @@ export function NotesCard({
             id="settlement-notes"
             onChange={(e) => {
               setDraft(e.target.value)
-              setIsDirty(e.target.value !== selectedSettlement?.notes)
+              setIsDirty(e.target.value !== settlement.notes)
             }}
             placeholder="Add notes about your settlement..."
             className="w-full flex-1 resize-none"

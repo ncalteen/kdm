@@ -3,13 +3,21 @@
 import { SelectWeaponType } from '@/components/menu/select-weapon-type'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { WeaponType } from '@/lib/enums'
 import { Survivor } from '@/schemas/survivor'
 import { SwordsIcon } from 'lucide-react'
 import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Weapon Proficiency Card Props
+ */
+interface WeaponProficiencyCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Weapon Proficiency Card Component
@@ -22,12 +30,12 @@ import { UseFormReturn } from 'react-hook-form'
  * @param form Form
  * @returns Weapon Proficiency Card Component
  */
-export function WeaponProficiencyCard(
-  form: UseFormReturn<Survivor>
-): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-
+export function WeaponProficiencyCard({
+  form,
+  saveSurvivor
+}: WeaponProficiencyCardProps): ReactElement {
+  const weaponProficiency = form.watch('weaponProficiency')
+  const weaponProficiencyType = form.watch('weaponProficiencyType')
   /**
    * Save to Local Storage
    *
@@ -94,7 +102,7 @@ export function WeaponProficiencyCard(
               Weapon Proficiency
             </CardTitle>
             <SelectWeaponType
-              value={selectedSurvivor?.weaponProficiencyType}
+              value={weaponProficiencyType}
               onChange={handleWeaponTypeChange}
             />
           </div>
@@ -105,7 +113,7 @@ export function WeaponProficiencyCard(
                   key={i}
                   className="w-4 h-4 flex items-center justify-center">
                   <Checkbox
-                    checked={(selectedSurvivor?.weaponProficiency || 0) > i}
+                    checked={(weaponProficiency || 0) > i}
                     onCheckedChange={(checked) =>
                       handleProficiencyChange(i, !!checked)
                     }

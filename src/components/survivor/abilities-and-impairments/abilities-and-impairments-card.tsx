@@ -8,8 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -32,30 +30,41 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Abilities and Impairments Card Props
+ */
+interface AbilitiesAndImpairmentsCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
+
+/**
  * Abilities and Impairments Card Component
  */
 export function AbilitiesAndImpairmentsCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-
+  form,
+  saveSurvivor
+}: AbilitiesAndImpairmentsCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
+  const abilitiesAndImpairments = form.watch('abilitiesAndImpairments')
+  const skipNextHunt = form.watch('skipNextHunt')
+
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSurvivor?.abilitiesAndImpairments.forEach((_, i) => {
+      abilitiesAndImpairments?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSurvivor?.abilitiesAndImpairments])
+  }, [abilitiesAndImpairments])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -94,9 +103,7 @@ export function AbilitiesAndImpairmentsCard({
    * @param index Ability Index
    */
   const onRemove = (index: number) => {
-    const updatedAbilitiesAndImpairments = [
-      ...(selectedSurvivor?.abilitiesAndImpairments || [])
-    ]
+    const updatedAbilitiesAndImpairments = [...(abilitiesAndImpairments || [])]
     updatedAbilitiesAndImpairments.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -128,9 +135,7 @@ export function AbilitiesAndImpairmentsCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless ability/impairment cannot be recorded.')
 
-    const updatedAbilitiesAndImpairments = [
-      ...(selectedSurvivor?.abilitiesAndImpairments || [])
-    ]
+    const updatedAbilitiesAndImpairments = [...(abilitiesAndImpairments || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -177,7 +182,7 @@ export function AbilitiesAndImpairmentsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.abilitiesAndImpairments || [],
+        abilitiesAndImpairments || [],
         oldIndex,
         newIndex
       )
@@ -229,7 +234,7 @@ export function AbilitiesAndImpairmentsCard({
           <div className="flex items-center gap-2">
             <Checkbox
               id="skipNextHunt"
-              checked={!!selectedSurvivor?.skipNextHunt}
+              checked={!!skipNextHunt}
               onCheckedChange={(checked) =>
                 saveToLocalStorage(
                   undefined,
@@ -252,32 +257,30 @@ export function AbilitiesAndImpairmentsCard({
         <div className="flex flex-col h-[120px]">
           <div className="flex-1 overflow-y-auto">
             <div className="space-y-1">
-              {selectedSurvivor?.abilitiesAndImpairments.length !== 0 && (
+              {abilitiesAndImpairments?.length !== 0 && (
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
                   onDragEnd={handleDragEnd}>
                   <SortableContext
-                    items={(
-                      selectedSurvivor?.abilitiesAndImpairments || []
-                    ).map((_, index) => index.toString())}
-                    strategy={verticalListSortingStrategy}>
-                    {selectedSurvivor?.abilitiesAndImpairments.map(
-                      (ability, index) => (
-                        <AbilityImpairmentItem
-                          key={index}
-                          id={index.toString()}
-                          index={index}
-                          form={form}
-                          onRemove={onRemove}
-                          isDisabled={!!disabledInputs[index]}
-                          onSave={(value, i) =>
-                            onSaveAbilityOrImpairment(value, i)
-                          }
-                          onEdit={onEdit}
-                        />
-                      )
+                    items={(abilitiesAndImpairments || []).map((_, index) =>
+                      index.toString()
                     )}
+                    strategy={verticalListSortingStrategy}>
+                    {abilitiesAndImpairments?.map((ability, index) => (
+                      <AbilityImpairmentItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) =>
+                          onSaveAbilityOrImpairment(value, i)
+                        }
+                        onEdit={onEdit}
+                      />
+                    ))}
                   </SortableContext>
                 </DndContext>
               )}

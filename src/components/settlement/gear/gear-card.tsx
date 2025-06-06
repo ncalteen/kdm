@@ -3,8 +3,6 @@
 import { GearItem, NewGearItem } from '@/components/settlement/gear/gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -27,12 +25,23 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Gear Card Props
+ */
+interface GearCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Gear Card Component
  */
-export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+export function GearCard({
+  form,
+  saveSettlement,
+  ...settlement
+}: GearCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -42,13 +51,13 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.gear.forEach((_, i) => {
+      settlement.gear?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.gear])
+  }, [settlement.gear])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -74,7 +83,7 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
    * @param index Gear Index
    */
   const onRemove = (index: number) => {
-    const currentGear = [...(selectedSettlement?.gear || [])]
+    const currentGear = [...(settlement.gear || [])]
     currentGear.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -102,7 +111,7 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     if (!value || value.trim() === '')
       return toast.error('Nameless gear cannot be stored.')
 
-    const updatedGear = [...(selectedSettlement?.gear || [])]
+    const updatedGear = [...(settlement.gear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -148,11 +157,7 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(
-        selectedSettlement?.gear || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(settlement.gear || [], oldIndex, newIndex)
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -200,17 +205,17 @@ export function GearCard({ ...form }: UseFormReturn<Settlement>): ReactElement {
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {selectedSettlement?.gear.length !== 0 && (
+            {settlement.gear?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.gear || []).map((_, index) =>
+                  items={(settlement.gear || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.gear || []).map((gearItem, index) => (
+                  {(settlement.gear || []).map((gearItem, index) => (
                     <GearItem
                       key={index}
                       id={index.toString()}

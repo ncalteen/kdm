@@ -6,8 +6,6 @@ import {
 } from '@/components/settlement/principles/principle-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -26,8 +24,15 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, StampIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+
+/**
+ * Principles Card Props
+ */
+interface PrinciplesCardProps extends Partial<Settlement> {
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
 
 /**
  * Principles Card Component
@@ -39,11 +44,9 @@ import { toast } from 'sonner'
  * @returns Principles Card Component
  */
 export function PrinciplesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  saveSettlement,
+  ...settlement
+}: PrinciplesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -53,13 +56,13 @@ export function PrinciplesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.principles.forEach((_, i) => {
+      settlement.principles?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.principles])
+  }, [settlement.principles])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -93,7 +96,7 @@ export function PrinciplesCard({
    * @param index Principle Index
    */
   const onRemove = (index: number) => {
-    const currentPrinciples = [...(selectedSettlement?.principles || [])]
+    const currentPrinciples = [...(settlement.principles || [])]
     currentPrinciples.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -131,7 +134,7 @@ export function PrinciplesCard({
     if (!name || name.trim() === '')
       return toast.error('A nameless principle cannot be recorded.')
 
-    const updatedPrinciples = [...(selectedSettlement?.principles || [])]
+    const updatedPrinciples = [...(settlement.principles || [])]
 
     if (index < updatedPrinciples.length) {
       // Updating an existing principle
@@ -168,7 +171,7 @@ export function PrinciplesCard({
    * @param option Which option (1 or 2)
    */
   const handleOptionSelect = (index: number, option: 1 | 2) => {
-    const updatedPrinciples = [...(selectedSettlement?.principles || [])]
+    const updatedPrinciples = [...(settlement.principles || [])]
 
     // Update the option selected, ensuring only one is selected at a time
     updatedPrinciples[index] = {
@@ -203,7 +206,7 @@ export function PrinciplesCard({
       return toast.error('A nameless principle cannot be recorded.')
 
     const updatedPrinciples = [
-      ...(selectedSettlement?.principles || []),
+      ...(settlement.principles || []),
       {
         name,
         option1Name,
@@ -233,7 +236,7 @@ export function PrinciplesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.principles || [],
+        settlement.principles || [],
         oldIndex,
         newIndex
       )
@@ -284,31 +287,29 @@ export function PrinciplesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSettlement?.principles.length !== 0 && (
+            {settlement.principles?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.principles || []).map(
-                    (_, index) => index.toString()
+                  items={(settlement.principles || []).map((_, index) =>
+                    index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.principles || []).map(
-                    (principle, index) => (
-                      <PrincipleItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        principle={principle}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={onSave}
-                        onEdit={onEdit}
-                        handleOptionSelect={handleOptionSelect}
-                      />
-                    )
-                  )}
+                  {(settlement.principles || []).map((principle, index) => (
+                    <PrincipleItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      principle={principle}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={onSave}
+                      onEdit={onEdit}
+                      handleOptionSelect={handleOptionSelect}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}

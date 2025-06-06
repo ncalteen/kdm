@@ -6,8 +6,6 @@ import {
 } from '@/components/settlement/arc/philosophy-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Philosophy } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -31,14 +29,23 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Philosophies Card Props
+ */
+interface PhilosophiesCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Philosophies Card Component
  */
 export function PhilosophiesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: PhilosophiesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -48,13 +55,13 @@ export function PhilosophiesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.philosophies.forEach((_, i) => {
+      settlement.philosophies?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.philosophies])
+  }, [settlement.philosophies])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -88,7 +95,7 @@ export function PhilosophiesCard({
    * @param index Philosophy Index
    */
   const onRemove = (index: number) => {
-    const currentPhilosophies = [...(selectedSettlement?.philosophies || [])]
+    const currentPhilosophies = [...(settlement.philosophies || [])]
     currentPhilosophies.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -119,7 +126,7 @@ export function PhilosophiesCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless philosophy cannot be recorded.')
 
-    const updatedPhilosophies = [...(selectedSettlement?.philosophies || [])]
+    const updatedPhilosophies = [...(settlement.philosophies || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -166,7 +173,7 @@ export function PhilosophiesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.philosophies || [],
+        settlement.philosophies || [],
         oldIndex,
         newIndex
       )
@@ -217,30 +224,28 @@ export function PhilosophiesCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {selectedSettlement?.philosophies.length !== 0 && (
+            {settlement.philosophies?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.philosophies || []).map(
-                    (_, index) => index.toString()
+                  items={(settlement.philosophies || []).map((_, index) =>
+                    index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.philosophies || []).map(
-                    (philosophy, index) => (
-                      <PhilosophyItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        form={form}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
-                      />
-                    )
-                  )}
+                  {(settlement.philosophies || []).map((philosophy, index) => (
+                    <PhilosophyItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}

@@ -10,14 +10,25 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { SurvivorType } from '@/lib/enums'
+import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BrainIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+
+/**
+ * Sanity Card Props
+ */
+interface SanityCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Current settlement */
+  settlement: Settlement
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Survivor Sanity Card Component
@@ -29,10 +40,11 @@ import { toast } from 'sonner'
  * @param form Form
  * @returns Sanity Card Component
  */
-export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
-  const { saveSurvivor } = useSurvivorSave(form)
-  const { selectedSettlement } = useSettlement()
-
+export function SanityCard({
+  form,
+  settlement,
+  saveSurvivor
+}: SanityCardProps): ReactElement {
   /**
    * Save sanity data to localStorage for the current survivor, with Zod
    * validation and toast feedback.
@@ -161,7 +173,7 @@ export function SanityCard(form: UseFormReturn<Survivor>): ReactElement {
           </div>
 
           {/* Torment (Arc) */}
-          {selectedSettlement?.survivorType === SurvivorType.ARC && (
+          {settlement.survivorType === SurvivorType.ARC && (
             <>
               <div className="mx-2 w-px bg-border" />
 

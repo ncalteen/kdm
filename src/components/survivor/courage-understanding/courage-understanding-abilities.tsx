@@ -1,11 +1,19 @@
 'use client'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Courage Understanding Card Props
+ */
+interface CourageUnderstandingAbilitiesProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Courage/Understanding Abilities Component
@@ -17,11 +25,9 @@ import { UseFormReturn } from 'react-hook-form'
  * @returns Courage/Understanding Abilities Component
  */
 export function CourageUnderstandingAbilities({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-
+  form,
+  saveSurvivor
+}: CourageUnderstandingAbilitiesProps): ReactElement {
   /**
    * Handles the change of the ability in the courage group.
    *
@@ -56,19 +62,19 @@ export function CourageUnderstandingAbilities({
       "The survivor's inner strength grows brighter."
     )
 
-  const courageGroupValue = selectedSurvivor?.hasStalwart
+  const courageGroupValue = form.watch('hasStalwart')
     ? 'stalwart'
-    : selectedSurvivor?.hasPrepared
+    : form.watch('hasPrepared')
       ? 'prepared'
-      : selectedSurvivor?.hasMatchmaker
+      : form.watch('hasMatchmaker')
         ? 'matchmaker'
         : ''
 
-  const understandingGroupValue = selectedSurvivor?.hasAnalyze
+  const understandingGroupValue = form.watch('hasAnalyze')
     ? 'analyze'
-    : selectedSurvivor?.hasExplore
+    : form.watch('hasExplore')
       ? 'explore'
-      : selectedSurvivor?.hasTinker
+      : form.watch('hasTinker')
         ? 'tinker'
         : ''
 

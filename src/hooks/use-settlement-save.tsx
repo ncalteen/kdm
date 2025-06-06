@@ -1,6 +1,5 @@
 'use client'
 
-import { useSettlement } from '@/contexts/settlement-context'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { useCallback } from 'react'
@@ -15,9 +14,10 @@ import { ZodError } from 'zod'
  * context after saving data to localStorage, ensuring that the UI is
  * refreshed when settlement data changes.
  */
-export function useSettlementSave(form: UseFormReturn<Settlement>) {
-  const { updateSelectedSettlement } = useSettlement()
-
+export function useSettlementSave(
+  form: UseFormReturn<Settlement>,
+  updateSelectedSettlement: () => void
+) {
   /**
    * Save settlement data to localStorage and update context
    *

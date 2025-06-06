@@ -33,6 +33,8 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { useSettlement } from '@/contexts/settlement-context'
 import { useSurvivor } from '@/contexts/survivor-context'
 import { useTab } from '@/contexts/tab-context'
+import { useSettlementSave } from '@/hooks/use-settlement-save'
+import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
@@ -120,10 +122,18 @@ function MainPageContent(): ReactElement {
  * @returns Main Page Component
  */
 function MainPage(): ReactElement {
-  // Get selected context
-  const { selectedSettlement } = useSettlement()
-  const { selectedSurvivor, setSelectedSurvivor, isCreatingNewSurvivor } =
-    useSurvivor()
+  const {
+    selectedSettlement,
+    updateSelectedSettlement,
+    setSelectedSettlement
+  } = useSettlement()
+  const {
+    selectedSurvivor,
+    setSelectedSurvivor,
+    isCreatingNewSurvivor,
+    updateSelectedSurvivor,
+    setIsCreatingNewSurvivor
+  } = useSurvivor()
   const { selectedTab } = useTab()
 
   // Initialize the settlement form data from the context
@@ -131,12 +141,17 @@ function MainPage(): ReactElement {
     resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
     defaultValues: selectedSettlement || undefined
   })
+  const { saveSettlement } = useSettlementSave(
+    settlementForm,
+    updateSelectedSettlement
+  )
 
   // Initialize the survivor form data from the context
   const survivorForm = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
     defaultValues: selectedSurvivor || undefined
   })
+  const { saveSurvivor } = useSurvivorSave(survivorForm, updateSelectedSurvivor)
 
   const selectedSurvivorSettlementId = selectedSurvivor?.settlementId
 
@@ -164,7 +179,13 @@ function MainPage(): ReactElement {
   }, [selectedSurvivor, survivorForm])
 
   // If no settlement is selected, display the create settlement form
-  if (!selectedSettlement) return <CreateSettlementForm />
+  if (!selectedSettlement)
+    return (
+      <CreateSettlementForm
+        settlement={selectedSettlement}
+        setSelectedSettlement={setSelectedSettlement}
+      />
+    )
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
@@ -173,11 +194,18 @@ function MainPage(): ReactElement {
         <SiteHeader />
 
         <div className="flex flex-1">
-          <AppSidebar />
+          <AppSidebar
+            settlement={selectedSettlement}
+            setSelectedSettlement={setSelectedSettlement}
+          />
           <SidebarInset>
             <Form {...settlementForm}>
               <Form {...survivorForm}>
-                <OverviewCard {...settlementForm} />
+                <OverviewCard
+                  {...selectedSettlement}
+                  form={settlementForm}
+                  saveSettlement={saveSettlement}
+                />
 
                 <hr className="pt-2" />
 
@@ -187,12 +215,23 @@ function MainPage(): ReactElement {
                     {selectedTab === 'timeline' && (
                       <div className="flex flex-row gap-2">
                         <div className="flex-1">
-                          <TimelineCard {...settlementForm} />
+                          <TimelineCard
+                            {...selectedSettlement}
+                            form={settlementForm}
+                            saveSettlement={saveSettlement}
+                          />
                         </div>
                         <div className="flex-1 flex flex-col gap-2">
-                          {/* <ActionsCard {...settlementForm} /> */}
-                          <DepartingBonusesCard {...settlementForm} />
-                          <ArrivalBonusesCard {...settlementForm} />
+                          <DepartingBonusesCard
+                            {...selectedSettlement}
+                            form={settlementForm}
+                            saveSettlement={saveSettlement}
+                          />
+                          <ArrivalBonusesCard
+                            {...selectedSettlement}
+                            form={settlementForm}
+                            saveSettlement={saveSettlement}
+                          />
                         </div>
                       </div>
                     )}
@@ -203,10 +242,18 @@ function MainPage(): ReactElement {
                         {/* Quarries and Nemeses */}
                         <div className="flex flex-row gap-2">
                           <div className="flex-1">
-                            <QuarriesCard {...settlementForm} />
+                            <QuarriesCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
                           </div>
                           <div className="flex-1">
-                            <NemesesCard {...settlementForm} />
+                            <NemesesCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
                           </div>
                         </div>
                         {/* Monster Volumes (PotL and PotSun) */}
@@ -214,7 +261,11 @@ function MainPage(): ReactElement {
                           CampaignType.PEOPLE_OF_THE_LANTERN ||
                           selectedSettlement.campaignType ===
                             CampaignType.PEOPLE_OF_THE_SUN) && (
-                          <MonsterVolumesCard {...settlementForm} />
+                          <MonsterVolumesCard
+                            {...selectedSettlement}
+                            form={settlementForm}
+                            saveSettlement={saveSettlement}
+                          />
                         )}
                       </div>
                     )}
@@ -224,7 +275,10 @@ function MainPage(): ReactElement {
                       selectedSettlement.campaignType ===
                         CampaignType.SQUIRES_OF_THE_CITADEL && (
                         <>
-                          <SquireSuspicionsCard {...settlementForm} />
+                          <SquireSuspicionsCard
+                            {...selectedSettlement}
+                            saveSettlement={saveSettlement}
+                          />
                           <SquireProgressionCards />
                         </>
                       )}
@@ -235,11 +289,30 @@ function MainPage(): ReactElement {
                         CampaignType.SQUIRES_OF_THE_CITADEL && (
                         <div className="pl-2">
                           {/* Survivors */}
-                          <SettlementSurvivorsCard {...settlementForm} />
+                          <SettlementSurvivorsCard
+                            {...selectedSettlement}
+                            updateSelectedSurvivor={updateSelectedSurvivor}
+                            setSelectedSurvivor={setSelectedSurvivor}
+                            setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
+                            selectedSurvivor={selectedSurvivor}
+                          />
                           {selectedSurvivor && !isCreatingNewSurvivor && (
-                            <SurvivorCard {...survivorForm} />
+                            <SurvivorCard
+                              form={survivorForm}
+                              settlement={selectedSettlement}
+                              saveSurvivor={saveSurvivor}
+                            />
                           )}
-                          {isCreatingNewSurvivor && <CreateSurvivorForm />}
+                          {isCreatingNewSurvivor && (
+                            <CreateSurvivorForm
+                              settlement={selectedSettlement}
+                              setSelectedSurvivor={setSelectedSurvivor}
+                              setIsCreatingNewSurvivor={
+                                setIsCreatingNewSurvivor
+                              }
+                              saveSurvivor={saveSurvivor}
+                            />
+                          )}
                         </div>
                       )}
 
@@ -250,15 +323,30 @@ function MainPage(): ReactElement {
                         <div className="flex flex-col gap-2 pl-2">
                           <div className="flex flex-row gap-2">
                             <div className="flex-1">
-                              <MilestonesCard {...settlementForm} />
+                              <MilestonesCard
+                                {...selectedSettlement}
+                                form={settlementForm}
+                                saveSettlement={saveSettlement}
+                              />
                             </div>
                             <div className="flex-1">
-                              <PrinciplesCard {...settlementForm} />
+                              <PrinciplesCard
+                                {...selectedSettlement}
+                                saveSettlement={saveSettlement}
+                              />
                             </div>
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <InnovationsCard {...settlementForm} />
-                            <LocationsCard {...settlementForm} />
+                            <InnovationsCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
+                            <LocationsCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
                           </div>
                         </div>
                       )}
@@ -267,7 +355,11 @@ function MainPage(): ReactElement {
                     {selectedTab === 'society' &&
                       selectedSettlement.campaignType ===
                         CampaignType.SQUIRES_OF_THE_CITADEL && (
-                        <LocationsCard {...settlementForm} />
+                        <LocationsCard
+                          {...selectedSettlement}
+                          form={settlementForm}
+                          saveSettlement={saveSettlement}
+                        />
                       )}
 
                     {/* Crafting */}
@@ -276,12 +368,28 @@ function MainPage(): ReactElement {
                         {selectedSettlement.campaignType !==
                           CampaignType.SQUIRES_OF_THE_CITADEL && (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <SeedPatternsCard {...settlementForm} />
-                            <PatternsCard {...settlementForm} />
+                            <SeedPatternsCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
+                            <PatternsCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
                           </div>
                         )}
-                        <ResourcesCard {...settlementForm} />
-                        <GearCard {...settlementForm} />
+                        <ResourcesCard
+                          {...selectedSettlement}
+                          form={settlementForm}
+                          saveSettlement={saveSettlement}
+                        />
+                        <GearCard
+                          {...selectedSettlement}
+                          form={settlementForm}
+                          saveSettlement={saveSettlement}
+                        />
                       </div>
                     )}
 
@@ -291,22 +399,36 @@ function MainPage(): ReactElement {
                         <div className="flex flex-col gap-2 pl-2">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <CollectiveCognitionVictoriesCard
-                              {...settlementForm}
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
                             />
                             <CollectiveCognitionRewardsCard
-                              {...settlementForm}
+                              {...selectedSettlement}
+                              saveSettlement={saveSettlement}
                             />
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <PhilosophiesCard {...settlementForm} />
-                            <KnowledgesCard {...settlementForm} />
+                            <PhilosophiesCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
+                            <KnowledgesCard
+                              {...selectedSettlement}
+                              form={settlementForm}
+                              saveSettlement={saveSettlement}
+                            />
                           </div>
                         </div>
                       )}
 
                     {/* Notes */}
                     {selectedTab === 'notes' && (
-                      <NotesCard {...settlementForm} />
+                      <NotesCard
+                        {...selectedSettlement}
+                        saveSettlement={saveSettlement}
+                      />
                     )}
                   </div>
                 </div>

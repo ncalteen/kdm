@@ -11,12 +11,21 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Gender } from '@/lib/enums'
 import { Survivor } from '@/schemas/survivor'
 import { SkullIcon, UserXIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Status Card Props
+ */
+interface StatusCardProps extends Partial<Survivor> {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Survivor Name, Gender, and Status Card Component
@@ -29,9 +38,10 @@ import { UseFormReturn } from 'react-hook-form'
  * @param form Form
  * @returns Name, Gender, and Status Card Component
  */
-export function StatusCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
-  const { saveSurvivor } = useSurvivorSave(form)
-
+export function StatusCard({
+  form,
+  saveSurvivor
+}: StatusCardProps): ReactElement {
   /**
    * Save Name to LocalStorage
    *

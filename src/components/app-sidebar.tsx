@@ -23,10 +23,10 @@ import {
   SidebarMenuItem,
   SidebarRail
 } from '@/components/ui/sidebar'
-import { useSettlement } from '@/contexts/settlement-context'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
+import { Settlement } from '@/schemas/settlement'
 import {
   DownloadIcon,
   HourglassIcon,
@@ -108,7 +108,19 @@ const navSquires = [
   }
 ]
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+/**
+ * Application Sidebar Props
+ */
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  settlement: Settlement
+  setSelectedSettlement: (settlement: Settlement | null) => void
+}
+
+export function AppSidebar({
+  settlement,
+  setSelectedSettlement,
+  ...props
+}: AppSidebarProps) {
   const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -123,27 +135,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { selectedSettlement } = useSettlement()
-
-  const campaignType = selectedSettlement?.campaignType
-  const survivorType = selectedSettlement?.survivorType
-
   // Update navigation items based on settlement context
   useEffect(() => {
-    if (!isMounted) {
-      setIsMounted(true)
-      return
-    }
+    if (!isMounted) return setIsMounted(true)
 
-    if (campaignType === CampaignType.SQUIRES_OF_THE_CITADEL) {
-      setNavItems([...navSquires])
-      return
-    }
+    if (settlement.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
+      return setNavItems([...navSquires])
 
     // Start with base navigation
     const newNavItems = [...baseNavPrimary]
 
-    if (survivorType === SurvivorType.ARC) {
+    if (settlement.survivorType === SurvivorType.ARC) {
       const notesIndex = newNavItems.findIndex((item) => item.tab === 'notes')
 
       if (notesIndex !== -1)
@@ -155,12 +157,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
 
     setNavItems(newNavItems)
-  }, [campaignType, survivorType, isMounted])
+  }, [settlement.campaignType, settlement.survivorType, isMounted])
 
   // Update campaign data when it changes (e.g., after creating settlements)
   useEffect(() => {
     setCampaign(getCampaign())
-  }, [selectedSettlement])
+  }, [settlement])
 
   const handleDownload = () => {
     try {
@@ -292,7 +294,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
       {...props}>
       <SidebarHeader>
-        <SettlementSwitcher settlements={campaign.settlements || []} />
+        <SettlementSwitcher
+          settlement={settlement}
+          settlements={campaign.settlements || []}
+          setSelectedSettlement={setSelectedSettlement}
+        />
       </SidebarHeader>
       <SidebarContent className="flex flex-col justify-between">
         <NavMain items={navItems} />
@@ -438,12 +444,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               ref={fileInputRef}
                               accept=".json,application/json"
                               onChange={handleFileSelection}
-                              className="w-full text-sm file:mr-4 file:py-2 file:px-4
-                     file:rounded-md file:border-0
-                     file:text-sm file:font-medium
-                     file:bg-primary file:text-primary-foreground
-                     hover:file:bg-primary/90
-                     cursor-pointer"
+                              className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
                             />
                           </div>
                         </div>

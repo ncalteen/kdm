@@ -6,8 +6,6 @@ import {
 } from '@/components/settlement/locations/location-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Location, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -30,14 +28,23 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Locations Card Props
+ */
+interface LocationsCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Locations Card Component
  */
 export function LocationsCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: LocationsCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -47,13 +54,13 @@ export function LocationsCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.locations.forEach((_, i) => {
+      settlement.locations?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.locations])
+  }, [settlement.locations])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -81,7 +88,7 @@ export function LocationsCard({
    * @param index Location Index
    */
   const onRemove = (index: number) => {
-    const currentLocations = [...(selectedSettlement?.locations || [])]
+    const currentLocations = [...(settlement.locations || [])]
     currentLocations.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -112,7 +119,7 @@ export function LocationsCard({
 
     const locationData = { name: name.trim(), unlocked: unlocked || false }
 
-    const updatedLocations = [...(selectedSettlement?.locations || [])]
+    const updatedLocations = [...(settlement.locations || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -146,7 +153,7 @@ export function LocationsCard({
    * @param unlocked New Unlocked State
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const currentLocations = [...(selectedSettlement?.locations || [])]
+    const currentLocations = [...(settlement.locations || [])]
     currentLocations[index] = { ...currentLocations[index], unlocked }
 
     saveToLocalStorage(
@@ -176,11 +183,7 @@ export function LocationsCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(
-        selectedSettlement?.locations || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(settlement.locations || [], oldIndex, newIndex)
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -226,33 +229,29 @@ export function LocationsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[400px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSettlement?.locations.length !== 0 && (
+            {settlement.locations?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.locations || []).map((_, index) =>
+                  items={(settlement.locations || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.locations || []).map(
-                    (location, index) => (
-                      <LocationItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        form={form}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(name, unlocked, i) =>
-                          onSave(name, unlocked, i)
-                        }
-                        onToggleUnlocked={onToggleUnlocked}
-                        onEdit={onEdit}
-                      />
-                    )
-                  )}
+                  {(settlement.locations || []).map((location, index) => (
+                    <LocationItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
+                      onToggleUnlocked={onToggleUnlocked}
+                      onEdit={onEdit}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}

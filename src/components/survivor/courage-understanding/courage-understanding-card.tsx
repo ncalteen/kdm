@@ -5,14 +5,24 @@ import { CourageUnderstandingAbilities } from '@/components/survivor/courage-und
 import { FacesInTheSky } from '@/components/survivor/courage-understanding/faces-in-the-sky'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { CampaignType } from '@/lib/enums'
+import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Courage Understanding Card Props
+ */
+interface CourageUnderstandingCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Current settlement */
+  settlement: Settlement
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Courage and Understanding Card Component
@@ -25,12 +35,12 @@ import { UseFormReturn } from 'react-hook-form'
  * @returns Courage and Understanding Card Component
  */
 export function CourageUnderstandingCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  settlement,
+  saveSurvivor
+}: CourageUnderstandingCardProps): ReactElement {
+  const courage = form.watch('courage')
+  const understanding = form.watch('understanding')
   /**
    * Save to Local Storage
    *
@@ -71,11 +81,11 @@ export function CourageUnderstandingCard({
   // Determine the label texts based on campaign type. Currently only People of
   // the Stars has different labels.
   const courageMilestoneText =
-    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS
+    settlement.campaignType === CampaignType.PEOPLE_OF_THE_STARS
       ? 'Awake'
       : 'Bold'
   const understandingMilestoneText =
-    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS
+    settlement.campaignType === CampaignType.PEOPLE_OF_THE_STARS
       ? 'Awake'
       : 'Insight'
 
@@ -91,7 +101,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(selectedSurvivor?.courage || 0) > i}
+                    checked={(courage || 0) > i}
                     onCheckedChange={(checked) => updateCourage(i, !!checked)}
                     className={
                       'h-4 w-4 rounded-sm' +
@@ -140,7 +150,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(selectedSurvivor?.understanding || 0) > i}
+                    checked={(understanding || 0) > i}
                     onCheckedChange={(checked) =>
                       updateUnderstanding(i, !!checked)
                     }
@@ -183,11 +193,13 @@ export function CourageUnderstandingCard({
 
         <hr className="my-2 mx-1" />
 
-        {selectedSettlement?.campaignType !==
-        CampaignType.PEOPLE_OF_THE_STARS ? (
-          <CourageUnderstandingAbilities {...form} />
+        {settlement.campaignType !== CampaignType.PEOPLE_OF_THE_STARS ? (
+          <CourageUnderstandingAbilities
+            form={form}
+            saveSurvivor={saveSurvivor}
+          />
         ) : (
-          <FacesInTheSky {...form} />
+          <FacesInTheSky form={form} saveSurvivor={saveSurvivor} />
         )}
       </CardContent>
     </Card>

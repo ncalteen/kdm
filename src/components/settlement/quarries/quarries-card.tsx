@@ -12,8 +12,6 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Quarry, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -36,14 +34,23 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Quarries Card Props
+ */
+interface QuarriesCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Quarries Card Component
  */
 export function QuarriesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: QuarriesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -53,13 +60,13 @@ export function QuarriesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.quarries.forEach((_, i) => {
+      settlement.quarries?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.quarries])
+  }, [settlement.quarries])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -85,7 +92,7 @@ export function QuarriesCard({
    * @param index Quarry Index
    */
   const onRemove = (index: number) => {
-    const currentQuarries = [...(selectedSettlement?.quarries || [])]
+    const currentQuarries = [...(settlement.quarries || [])]
     currentQuarries.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -133,7 +140,7 @@ export function QuarriesCard({
       ccLevel3: [false, false, false]
     }
 
-    const updatedQuarries = [...(selectedSettlement?.quarries || [])]
+    const updatedQuarries = [...(settlement.quarries || [])]
 
     if (index !== undefined) {
       // Updating an existing value - preserve existing CC properties
@@ -180,12 +187,12 @@ export function QuarriesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
+    const updatedQuarries = (settlement.quarries || []).map((q, i) =>
       i === index ? { ...q, unlocked } : q
     )
     saveToLocalStorage(
       updatedQuarries,
-      `${selectedSettlement!.quarries[index]?.name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
+      `${settlement.quarries![index].name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -196,7 +203,7 @@ export function QuarriesCard({
    * @param node Node Value
    */
   const onUpdateNode = (index: number, node: string) => {
-    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
+    const updatedQuarries = (settlement.quarries || []).map((q, i) =>
       i === index
         ? { ...q, node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4' }
         : q
@@ -215,11 +222,7 @@ export function QuarriesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(
-        selectedSettlement?.quarries || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(settlement.quarries || [], oldIndex, newIndex)
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -268,17 +271,17 @@ export function QuarriesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSettlement?.quarries.length !== 0 && (
+            {settlement.quarries?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.quarries || []).map((_, index) =>
+                  items={(settlement.quarries || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.quarries || []).map((quarry, index) => (
+                  {(settlement.quarries || []).map((quarry, index) => (
                     <QuarryItem
                       key={index}
                       id={index.toString()}

@@ -17,12 +17,20 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Collective Cognition Victories Card Props
+ */
+interface CollectiveCognitionVictoriesCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
 
 /**
  * Collective Cognition Victories Card Component
@@ -34,19 +42,19 @@ import { UseFormReturn } from 'react-hook-form'
  * @returns Collective Cognition Victories Card Component
  */
 export function CollectiveCognitionVictoriesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: CollectiveCognitionVictoriesCardProps): ReactElement {
   /**
    * Save to Local Storage
    *
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (successMsg?: string) => {
-    // Get the current form values which include the updated checkbox states
+    // Get the current form values which include all updates
     const formValues = form.getValues()
+
     const updateData: Partial<Settlement> = {
       quarries: formValues.quarries,
       nemeses: formValues.nemeses
@@ -91,7 +99,7 @@ export function CollectiveCognitionVictoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(selectedSettlement?.quarries || []).map((quarry, index) => (
+                {(settlement.quarries || []).map((quarry, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-left pl-5">
                       {quarry.name}
@@ -236,7 +244,7 @@ export function CollectiveCognitionVictoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
+                {(settlement.nemeses || []).map((nemesis, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-left pl-5">
                       {nemesis.name || 'Unnamed Nemesis'}
@@ -259,7 +267,7 @@ export function CollectiveCognitionVictoriesCard({
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel1`}
-                                name={`nemesis.${index}.ccLevel1`}
+                                name={`nemeses.${index}.ccLevel1`}
                               />
                             </FormControl>
                           </FormItem>
@@ -284,7 +292,7 @@ export function CollectiveCognitionVictoriesCard({
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel2`}
-                                name={`nemesis.${index}.ccLevel2`}
+                                name={`nemeses.${index}.ccLevel2`}
                               />
                             </FormControl>
                           </FormItem>
@@ -309,7 +317,7 @@ export function CollectiveCognitionVictoriesCard({
                                   }
                                 }}
                                 id={`nemesis-${index}-ccLevel3`}
-                                name={`nemesis.${index}.ccLevel3`}
+                                name={`nemeses.${index}.ccLevel3`}
                               />
                             </FormControl>
                           </FormItem>

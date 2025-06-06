@@ -11,8 +11,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { LightBulbIcon } from '@primer/octicons-react'
@@ -20,14 +18,30 @@ import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
+ * Knowledge Card Props
+ */
+interface KnowledgeCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
+
+/**
  * Knowledge Card Component
  */
 export function KnowledgeCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-
+  form,
+  saveSurvivor
+}: KnowledgeCardProps): ReactElement {
+  // Watch form state
+  const canUseFightingArtsOrKnowledges = form.watch(
+    'canUseFightingArtsOrKnowledges'
+  )
+  const knowledge1ObservationRank = form.watch('knowledge1ObservationRank')
+  const knowledge1RankUp = form.watch('knowledge1RankUp')
+  const knowledge2ObservationRank = form.watch('knowledge2ObservationRank')
+  const knowledge2RankUp = form.watch('knowledge2RankUp')
   /**
    * Save to Local Storage
    *
@@ -101,7 +115,7 @@ export function KnowledgeCard({
     const rank = index + 1
 
     if (checked) handleRankChange('knowledge1ObservationRank', rank)
-    else if (selectedSurvivor?.knowledge1ObservationRank === rank)
+    else if (knowledge1ObservationRank === rank)
       handleRankChange('knowledge1ObservationRank', rank - 1)
   }
 
@@ -115,8 +129,7 @@ export function KnowledgeCard({
     (index: number, event: React.MouseEvent) => {
       event.preventDefault()
 
-      const newRankUp =
-        selectedSurvivor?.knowledge1RankUp === index ? undefined : index
+      const newRankUp = knowledge1RankUp === index ? undefined : index
 
       saveToLocalStorage(
         'knowledge1RankUp',
@@ -126,7 +139,7 @@ export function KnowledgeCard({
           : 'Knowledge rank up milestone removed.'
       )
     },
-    [selectedSurvivor?.knowledge1RankUp, saveToLocalStorage]
+    [knowledge1RankUp, saveToLocalStorage]
   )
 
   /**
@@ -171,7 +184,7 @@ export function KnowledgeCard({
     const rank = index + 1
 
     if (checked) handleRankChange('knowledge2ObservationRank', rank)
-    else if (selectedSurvivor?.knowledge2ObservationRank === rank)
+    else if (knowledge2ObservationRank === rank)
       handleRankChange('knowledge2ObservationRank', rank - 1)
   }
 
@@ -185,8 +198,7 @@ export function KnowledgeCard({
     (index: number, event: React.MouseEvent) => {
       event.preventDefault()
 
-      const newRankUp =
-        selectedSurvivor?.knowledge1RankUp === index ? undefined : index
+      const newRankUp = knowledge2RankUp === index ? undefined : index
 
       saveToLocalStorage(
         'knowledge2RankUp',
@@ -196,7 +208,7 @@ export function KnowledgeCard({
           : 'Knowledge rank up milestone removed.'
       )
     },
-    [selectedSurvivor?.knowledge1RankUp, saveToLocalStorage]
+    [knowledge2RankUp, saveToLocalStorage]
   )
 
   /**
@@ -237,7 +249,7 @@ export function KnowledgeCard({
           <div className="flex items-center gap-2">
             <Checkbox
               id="canUseFightingArtsOrKnowledges"
-              checked={!selectedSurvivor?.canUseFightingArtsOrKnowledges}
+              checked={!canUseFightingArtsOrKnowledges}
               onCheckedChange={updateCanUseFightingArtsOrKnowledges}
             />
             <Label
@@ -284,11 +296,8 @@ export function KnowledgeCard({
           <div>
             <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
-                const checked =
-                  (selectedSurvivor?.knowledge1ObservationRank || 0) >=
-                  index + 1
-                const isRankUpMilestone =
-                  selectedSurvivor?.knowledge1RankUp === index
+                const checked = (knowledge1ObservationRank || 0) >= index + 1
+                const isRankUpMilestone = knowledge1RankUp === index
 
                 return (
                   <Checkbox
@@ -384,10 +393,8 @@ export function KnowledgeCard({
             <div className="flex gap-1 pt-2">
               {[...Array(9)].map((_, index) => {
                 const rank = index + 1
-                const checked =
-                  (selectedSurvivor?.knowledge2ObservationRank || 0) >= rank
-                const isRankUpMilestone =
-                  selectedSurvivor?.knowledge2RankUp === index
+                const checked = (knowledge2ObservationRank || 0) >= rank
+                const isRankUpMilestone = knowledge2RankUp === index
 
                 return (
                   <Checkbox

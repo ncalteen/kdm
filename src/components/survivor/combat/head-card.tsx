@@ -10,12 +10,21 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { HardHatIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Head Card Props
+ */
+interface HeadCardProps extends Partial<Survivor> {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Head Card Component
@@ -26,9 +35,7 @@ import { UseFormReturn } from 'react-hook-form'
  * @param form Form
  * @returns Head Card Component
  */
-export function HeadCard({ ...form }: UseFormReturn<Survivor>): ReactElement {
-  const { saveSurvivor } = useSurvivorSave(form)
-
+export function HeadCard({ form, saveSurvivor }: HeadCardProps): ReactElement {
   /**
    * Save to Local Storage
    *

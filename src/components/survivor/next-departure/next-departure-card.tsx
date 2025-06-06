@@ -6,8 +6,6 @@ import {
 } from '@/components/survivor/next-departure/next-departure-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -30,30 +28,40 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Next Departure Card Props
+ */
+interface NextDepartureCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
+
+/**
  * Next Departure Card Component
  */
 export function NextDepartureCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-
+  form,
+  saveSurvivor
+}: NextDepartureCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
+  const nextDeparture = form.watch('nextDeparture')
+
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      ;(selectedSurvivor?.nextDeparture || []).forEach((_, i) => {
+      ;(nextDeparture || []).forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSurvivor?.nextDeparture])
+  }, [nextDeparture])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -81,7 +89,7 @@ export function NextDepartureCard({
    * @param index Next Departure Index
    */
   const onRemove = (index: number) => {
-    const currentNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
+    const currentNextDeparture = [...(nextDeparture || [])]
     currentNextDeparture.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -112,7 +120,7 @@ export function NextDepartureCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless departure bonus cannot be recorded.')
 
-    const updatedNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
+    const updatedNextDeparture = [...(nextDeparture || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -158,11 +166,7 @@ export function NextDepartureCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(
-        selectedSurvivor?.nextDeparture || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(nextDeparture || [], oldIndex, newIndex)
 
       saveToLocalStorage(newOrder)
 
@@ -209,30 +213,28 @@ export function NextDepartureCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[150px]">
           <div className="flex-1 overflow-y-auto">
-            {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
+            {(nextDeparture || []).length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSurvivor?.nextDeparture || []).map(
-                    (_, index) => index.toString()
+                  items={(nextDeparture || []).map((_, index) =>
+                    index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.nextDeparture || []).map(
-                    (innovation, index) => (
-                      <NextDepartureItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        form={form}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
-                      />
-                    )
-                  )}
+                  {(nextDeparture || []).map((innovation, index) => (
+                    <NextDepartureItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}

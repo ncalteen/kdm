@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSurvivor } from '@/contexts/survivor-context'
 import { useTab } from '@/contexts/tab-context'
 import { useCampaignSave } from '@/hooks/use-campaign-save'
 import { SurvivorType } from '@/lib/enums'
@@ -11,10 +10,23 @@ import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { PlusIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import { createColumns } from './columns'
 import { SurvivorDataTable } from './data-table'
+
+/**
+ * Settlement Survivors Card Props
+ */
+interface SettlementSurvivorsCardProps extends Partial<Settlement> {
+  /** Save settlement function */
+  updateSelectedSurvivor: () => void
+  /** Function to set selected survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Function to set creating new survivor state */
+  setIsCreatingNewSurvivor: (isCreating: boolean) => void
+  /** Currently selected survivor */
+  selectedSurvivor: Survivor | null
+}
 
 /**
  * Settlement Survivors Card Component
@@ -25,26 +37,22 @@ import { SurvivorDataTable } from './data-table'
  * survivor page or remove them from the settlement.
  */
 export function SettlementSurvivorsCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveCampaign } = useCampaignSave()
-
-  const watchedSettlementId = form.watch('id')
-  const watchedSurvivorType = form.watch('survivorType')
-  const settlementId = useMemo(() => watchedSettlementId, [watchedSettlementId])
-  const survivorType = useMemo(() => watchedSurvivorType, [watchedSurvivorType])
+  updateSelectedSurvivor,
+  setSelectedSurvivor,
+  setIsCreatingNewSurvivor,
+  selectedSurvivor,
+  ...settlement
+}: SettlementSurvivorsCardProps): ReactElement {
+  const { saveCampaign } = useCampaignSave(updateSelectedSurvivor)
 
   const [survivors, setSurvivors] = useState<Survivor[]>([])
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
-  // Get context hooks for survivor and tab management
-  const { setSelectedSurvivor, setIsCreatingNewSurvivor, selectedSurvivor } =
-    useSurvivor()
   const { setSelectedTab } = useTab()
 
   // Tracks if Arc survivors are in use for this settlement.
-  const isArcSurvivorType = survivorType === SurvivorType.ARC
+  const isArcSurvivorType = settlement.survivorType === SurvivorType.ARC
 
   /**
    * Handles creating a new survivor
@@ -97,7 +105,7 @@ export function SettlementSurvivorsCard({
           updatedSurvivors,
           `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
         )
-        setSurvivors(getSurvivors(settlementId))
+        setSurvivors(getSurvivors(settlement.id))
 
         // Dispatch custom event to notify other components about survivor changes
         window.dispatchEvent(new CustomEvent('survivorsUpdated'))
@@ -109,7 +117,7 @@ export function SettlementSurvivorsCard({
         toast.error('The darkness swallows your words. Please try again.')
       }
     },
-    [saveToLocalStorage, settlementId, selectedSurvivor, setSelectedSurvivor]
+    [saveToLocalStorage, settlement.id, selectedSurvivor, setSelectedSurvivor]
   )
 
   // Create columns with the required props
@@ -142,9 +150,9 @@ export function SettlementSurvivorsCard({
   )
 
   useEffect(() => {
-    const fetchedSurvivors = getSurvivors(settlementId)
+    const fetchedSurvivors = getSurvivors(settlement.id)
     setSurvivors(fetchedSurvivors)
-  }, [settlementId, selectedSurvivor])
+  }, [settlement.id, selectedSurvivor])
 
   return (
     <Card className="p-0 pb-2 mt-2 border-0">

@@ -12,8 +12,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Philosophy } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
@@ -23,13 +21,28 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Philosophy Card Props
+ */
+interface PhilosophyCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
+
+/**
  * Philosophy Card Component
  */
 export function PhilosophyCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
+  form,
+  saveSurvivor
+}: PhilosophyCardProps): ReactElement {
+  // Watch form state
+  const philosophy = form.watch('philosophy')
+  const tenetKnowledgeRankUp = form.watch('tenetKnowledgeRankUp')
+  const tenetKnowledgeObservationRank = form.watch(
+    'tenetKnowledgeObservationRank'
+  )
 
   /**
    * Handles the change of philosophy selection.
@@ -37,8 +50,6 @@ export function PhilosophyCard({
    * @param value Value
    */
   const handlePhilosophyChange = (value: string) => {
-    if (selectedSurvivor) selectedSurvivor.philosophy = value as Philosophy
-
     saveSurvivor(
       {
         philosophy: value as Philosophy,
@@ -60,8 +71,7 @@ export function PhilosophyCard({
     (index: number, event: React.MouseEvent) => {
       event.preventDefault()
 
-      const newRankUp =
-        selectedSurvivor?.tenetKnowledgeRankUp === index ? undefined : index
+      const newRankUp = tenetKnowledgeRankUp === index ? undefined : index
 
       saveSurvivor(
         { tenetKnowledgeRankUp: newRankUp },
@@ -70,7 +80,7 @@ export function PhilosophyCard({
           : 'Tenet knowledge rank up milestone removed.'
       )
     },
-    [selectedSurvivor, saveSurvivor]
+    [tenetKnowledgeRankUp, saveSurvivor]
   )
 
   /**
@@ -116,14 +126,14 @@ export function PhilosophyCard({
   ) => {
     const newRank = checked
       ? index + 1
-      : (selectedSurvivor?.tenetKnowledgeObservationRank || 0) === index + 1
+      : (tenetKnowledgeObservationRank || 0) === index + 1
         ? index
         : undefined
 
     if (newRank === undefined) return
 
     // Check if this is a rank up milestone
-    const isRankUp = checked && selectedSurvivor?.tenetKnowledgeRankUp === index
+    const isRankUp = checked && tenetKnowledgeRankUp === index
 
     // Save to localStorage
     saveSurvivor(
@@ -168,7 +178,7 @@ export function PhilosophyCard({
             </CardTitle>
             <SelectPhilosophy
               options={Object.values(Philosophy)}
-              value={selectedSurvivor?.philosophy}
+              value={philosophy}
               onChange={handlePhilosophyChange}
             />
           </div>
@@ -273,8 +283,7 @@ export function PhilosophyCard({
                   <div className="flex gap-1 pt-2">
                     {[...Array(9)].map((_, index) => {
                       const checked = (field.value || 0) > index
-                      const isRankUpMilestone =
-                        selectedSurvivor?.tenetKnowledgeRankUp === index
+                      const isRankUpMilestone = tenetKnowledgeRankUp === index
 
                       return (
                         <Checkbox

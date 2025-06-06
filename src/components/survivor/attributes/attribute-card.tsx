@@ -9,13 +9,23 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { SurvivorType } from '@/lib/enums'
+import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Attribute Card Props
+ */
+interface AttributeCardProps extends Partial<Survivor> {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Current settlement */
+  settlement: Settlement
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Survivor Attribute Card Component
@@ -28,12 +38,10 @@ import { UseFormReturn } from 'react-hook-form'
  * @returns Attribute Card Component
  */
 export function AttributeCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { saveSurvivor } = useSurvivorSave(form)
-  const { selectedSettlement } = useSettlement()
-  const { selectedSurvivor } = useSurvivor()
-
+  form,
+  settlement,
+  saveSurvivor
+}: AttributeCardProps): ReactElement {
   /**
    * Save to Local Storage
    *
@@ -89,7 +97,7 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
-                      value={selectedSurvivor?.movement}
+                      value={field.value ?? 1}
                       onChange={(e) =>
                         saveToLocalStorage('movement', parseInt(e.target.value))
                       }
@@ -117,7 +125,7 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
-                      value={selectedSurvivor?.accuracy}
+                      value={field.value ?? 0}
                       onChange={(e) =>
                         saveToLocalStorage('accuracy', parseInt(e.target.value))
                       }
@@ -143,7 +151,7 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
-                      value={selectedSurvivor?.strength}
+                      value={field.value ?? 0}
                       onChange={(e) =>
                         saveToLocalStorage('strength', parseInt(e.target.value))
                       }
@@ -169,7 +177,7 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
-                      value={selectedSurvivor?.evasion}
+                      value={field.value ?? 0}
                       onChange={(e) =>
                         saveToLocalStorage('evasion', parseInt(e.target.value))
                       }
@@ -195,7 +203,7 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
-                      value={selectedSurvivor?.luck}
+                      value={field.value ?? 0}
                       onChange={(e) =>
                         saveToLocalStorage('luck', parseInt(e.target.value))
                       }
@@ -221,7 +229,7 @@ export function AttributeCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
-                      value={selectedSurvivor?.speed}
+                      value={field.value ?? 0}
                       onChange={(e) =>
                         saveToLocalStorage('speed', parseInt(e.target.value))
                       }
@@ -235,7 +243,7 @@ export function AttributeCard({
           />
 
           {/* Lumi (Arc) */}
-          {selectedSettlement?.survivorType === SurvivorType.ARC && (
+          {settlement.survivorType === SurvivorType.ARC && (
             <>
               <div className="w-px bg-border" />
               <FormField
@@ -250,7 +258,7 @@ export function AttributeCard({
                           type="number"
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
-                          value={selectedSurvivor?.lumi}
+                          value={field.value ?? 0}
                           min={0}
                           onChange={(e) =>
                             saveToLocalStorage('lumi', parseInt(e.target.value))

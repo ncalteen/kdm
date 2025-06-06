@@ -6,8 +6,6 @@ import {
 } from '@/components/settlement/arc/collective-cognition-reward-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -26,8 +24,15 @@ import {
 } from '@dnd-kit/sortable'
 import { BrainIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+
+/**
+ * Collective Cognition Rewards Card Props
+ */
+interface CollectiveCognitionRewardsCardProps extends Partial<Settlement> {
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
 
 /**
  * Collective Cognition Rewards Card Component
@@ -38,12 +43,10 @@ import { toast } from 'sonner'
  * @param form Settlement form instance
  * @returns Collective Cognition Rewards Card Component
  */
-export function CollectiveCognitionRewardsCard(
-  form: UseFormReturn<Settlement>
-): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+export function CollectiveCognitionRewardsCard({
+  saveSettlement,
+  ...settlement
+}: CollectiveCognitionRewardsCardProps): ReactElement {
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -53,13 +56,13 @@ export function CollectiveCognitionRewardsCard(
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      ;(selectedSettlement?.ccRewards || []).forEach((_, i) => {
+      ;(settlement.ccRewards || []).forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.ccRewards])
+  }, [settlement.ccRewards])
 
   /**
    * Save to Local Storage
@@ -92,7 +95,7 @@ export function CollectiveCognitionRewardsCard(
    * @param unlocked Unlocked State
    */
   const handleToggleUnlocked = (index: number, unlocked: boolean) => {
-    const currentRewards = [...(selectedSettlement?.ccRewards || [])]
+    const currentRewards = [...(settlement.ccRewards || [])]
     currentRewards[index] = { ...currentRewards[index], unlocked }
 
     saveToLocalStorage(currentRewards, 'Reward transformed by the darkness.')
@@ -104,7 +107,7 @@ export function CollectiveCognitionRewardsCard(
    * @param index Reward Index
    */
   const onRemove = (index: number) => {
-    const currentRewards = [...(selectedSettlement?.ccRewards || [])]
+    const currentRewards = [...(settlement.ccRewards || [])]
     currentRewards.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -136,7 +139,7 @@ export function CollectiveCognitionRewardsCard(
     if (cc === undefined || cc < 0)
       return toast.error('A reward must have a collective cognition target.')
 
-    const updatedRewards = [...(selectedSettlement?.ccRewards || [])]
+    const updatedRewards = [...(settlement.ccRewards || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -182,11 +185,7 @@ export function CollectiveCognitionRewardsCard(
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
 
-      const newOrder = arrayMove(
-        selectedSettlement?.ccRewards || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(settlement.ccRewards || [], oldIndex, newIndex)
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -236,31 +235,29 @@ export function CollectiveCognitionRewardsCard(
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-full">
           <div className="space-y-1">
-            {(selectedSettlement?.ccRewards || []).length > 0 && (
+            {(settlement.ccRewards || []).length > 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.ccRewards || []).map((_, index) =>
+                  items={(settlement.ccRewards || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.ccRewards || []).map(
-                    (reward, index) => (
-                      <RewardItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        reward={reward}
-                        isDisabled={!!disabledInputs[index]}
-                        onToggleUnlocked={handleToggleUnlocked}
-                        onRemove={onRemove}
-                        onSave={(name, cc, i) => onSave(name, cc, i)}
-                        onEdit={onEdit}
-                      />
-                    )
-                  )}
+                  {(settlement.ccRewards || []).map((reward, index) => (
+                    <RewardItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      reward={reward}
+                      isDisabled={!!disabledInputs[index]}
+                      onToggleUnlocked={handleToggleUnlocked}
+                      onRemove={onRemove}
+                      onSave={(name, cc, i) => onSave(name, cc, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}
