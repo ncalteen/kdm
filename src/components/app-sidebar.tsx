@@ -15,8 +15,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -300,174 +299,164 @@ export function AppSidebar({
           setSelectedSettlement={setSelectedSettlement}
         />
       </SidebarHeader>
-      <SidebarContent className="flex flex-col justify-between">
+      <SidebarContent>
         <NavMain items={navItems} />
-        <SidebarGroup
-          className="group-data-[collapsible=icon]:hidden"
-          {...props}>
-          <SidebarGroupContent>
-            <p className="text-center text-xs text-gray-500 pb-2">
-              This project is not affiliated with or endorsed by Kingdom Death:
-              Monster or its creators. It is a fan-made project created for
-              personal use and entertainment purposes only. All rights to
-              Kingdom Death: Monster and its associated materials are owned by
-              their respective copyright holders. This project is intended to be
-              a tool for players to enhance their experience with the game and
-              is not intended for commercial use or distribution.
-            </p>
-            <SidebarMenu>
-              <SidebarMenuItem>
+      </SidebarContent>
+      <SidebarFooter>
+        <p className="text-center text-xs text-gray-500 pb-2">
+          This project is not affiliated with or endorsed by Kingdom Death:
+          Monster or its creators. It is a fan-made project created for personal
+          use and entertainment purposes only. All rights to Kingdom Death:
+          Monster and its associated materials are owned by their respective
+          copyright holders. This project is intended to be a tool for players
+          to enhance their experience with the game and is not intended for
+          commercial use or distribution.
+        </p>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleDownload}
+              disabled={isDownloading}
+              variant="outline"
+              size="sm">
+              <DownloadIcon className="h-4 w-4" />
+              Preserve Records
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+              <AlertDialogTrigger asChild>
                 <SidebarMenuButton
-                  onClick={handleDownload}
-                  disabled={isDownloading}
+                  onClick={() => setIsOpen(true)}
+                  disabled={isUploading}
                   variant="outline"
                   size="sm">
-                  <DownloadIcon className="h-4 w-4" />
-                  Preserve Records
+                  <UploadIcon className="h-4 w-4" />
+                  Upload Records
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-                  <AlertDialogTrigger asChild>
-                    <SidebarMenuButton
-                      onClick={() => setIsOpen(true)}
-                      disabled={isUploading}
-                      variant="outline"
-                      size="sm">
-                      <UploadIcon className="h-4 w-4" />
-                      Upload Records
-                    </SidebarMenuButton>
-                  </AlertDialogTrigger>{' '}
-                  <AlertDialogContent
-                    className="max-w-md"
-                    onCloseAutoFocus={handleDialogClose}>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        {showConfirmation
-                          ? 'Your lantern flickers with indecision'
-                          : validationErrors.length > 0
-                            ? 'Your offering is tainted'
-                            : 'Illuminate your past'}
-                      </AlertDialogTitle>
+              </AlertDialogTrigger>{' '}
+              <AlertDialogContent
+                className="max-w-md"
+                onCloseAutoFocus={handleDialogClose}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {showConfirmation
+                      ? 'Your lantern flickers with indecision'
+                      : validationErrors.length > 0
+                        ? 'Your offering is tainted'
+                        : 'Illuminate your past'}
+                  </AlertDialogTitle>
 
-                      {showConfirmation && (
-                        <AlertDialogDescription className="sr-only">
-                          This will replace your current campaign data with the
-                          uploaded file.
-                        </AlertDialogDescription>
-                      )}
+                  {showConfirmation && (
+                    <AlertDialogDescription className="sr-only">
+                      This will replace your current campaign data with the
+                      uploaded file.
+                    </AlertDialogDescription>
+                  )}
 
-                      {validationErrors.length > 0 && (
-                        <AlertDialogDescription className="sr-only">
-                          The uploaded file contains validation errors that need
-                          to be fixed.
-                        </AlertDialogDescription>
-                      )}
+                  {validationErrors.length > 0 && (
+                    <AlertDialogDescription className="sr-only">
+                      The uploaded file contains validation errors that need to
+                      be fixed.
+                    </AlertDialogDescription>
+                  )}
 
-                      {!showConfirmation && validationErrors.length === 0 && (
-                        <AlertDialogDescription className="sr-only">
-                          Upload a JSON file containing campaign data. This will
-                          replace your existing data.
-                        </AlertDialogDescription>
-                      )}
-                    </AlertDialogHeader>
+                  {!showConfirmation && validationErrors.length === 0 && (
+                    <AlertDialogDescription className="sr-only">
+                      Upload a JSON file containing campaign data. This will
+                      replace your existing data.
+                    </AlertDialogDescription>
+                  )}
+                </AlertDialogHeader>
 
-                    {/* Content outside of AlertDialogDescription to avoid nesting issues */}
-                    <div className="text-sm text-muted-foreground">
-                      {showConfirmation ? (
-                        <div className="text-left space-y-4">
-                          <p className="font-medium text-amber-500">
-                            Warning: The darkness will consume your current
-                            settlements!
-                          </p>
-                          <p>Your currently have:</p>
-                          <ul className="list-disc pl-5 space-y-1">
-                            <li>
-                              {campaign.settlements.length} settlement
-                              {campaign.settlements.length !== 1 ? 's' : ''}
-                            </li>
-                            <li>
-                              {campaign.survivors.length} survivor
-                              {campaign.survivors.length !== 1 ? 's' : ''}
-                            </li>
-                          </ul>
-                          <p>The records you seek to restore contain:</p>
-                          <ul className="list-disc pl-5 space-y-1">
-                            <li>
-                              {uploadedData?.settlements?.length} settlement
-                              {uploadedData?.settlements?.length !== 1
-                                ? 's'
-                                : ''}
-                            </li>
-                            <li>
-                              {uploadedData?.survivors?.length} survivor
-                              {uploadedData?.survivors?.length !== 1 ? 's' : ''}
-                            </li>
-                          </ul>
-                          <p>Do you wish to continue?</p>
-                        </div>
-                      ) : validationErrors.length > 0 ? (
-                        <div className="text-left">
-                          <p className="mb-2 text-destructive font-medium">
-                            The darkness corrupts your chronicles:
-                          </p>
-                          <ul className="list-disc pl-5 space-y-1 text-sm max-h-40 overflow-y-auto">
-                            {validationErrors
-                              .slice(0, 10)
-                              .map((error, index) => (
-                                <li key={index}>{error}</li>
-                              ))}
-                            {validationErrors.length > 10 && (
-                              <li>
-                                ...and {validationErrors.length - 10} more
-                                errors
-                              </li>
-                            )}
-                          </ul>
-                          <p className="mt-2">
-                            Mend your chronicles and try again, lest they be
-                            lost forever.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <p>
-                            Surrender your chronicles.{' '}
-                            <strong>
-                              The darkness will consume your existing
-                              settlements.
-                            </strong>
-                          </p>
-                          <div className="pt-2">
-                            <input
-                              type="file"
-                              ref={fileInputRef}
-                              accept=".json,application/json"
-                              onChange={handleFileSelection}
-                              className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                      )}
+                {/* Content outside of AlertDialogDescription to avoid nesting issues */}
+                <div className="text-sm text-muted-foreground">
+                  {showConfirmation ? (
+                    <div className="text-left space-y-4">
+                      <p className="font-medium text-amber-500">
+                        Warning: The darkness will consume your current
+                        settlements!
+                      </p>
+                      <p>Your currently have:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>
+                          {campaign.settlements.length} settlement
+                          {campaign.settlements.length !== 1 ? 's' : ''}
+                        </li>
+                        <li>
+                          {campaign.survivors.length} survivor
+                          {campaign.survivors.length !== 1 ? 's' : ''}
+                        </li>
+                      </ul>
+                      <p>The records you seek to restore contain:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>
+                          {uploadedData?.settlements?.length} settlement
+                          {uploadedData?.settlements?.length !== 1 ? 's' : ''}
+                        </li>
+                        <li>
+                          {uploadedData?.survivors?.length} survivor
+                          {uploadedData?.survivors?.length !== 1 ? 's' : ''}
+                        </li>
+                      </ul>
+                      <p>Do you wish to continue?</p>
                     </div>
+                  ) : validationErrors.length > 0 ? (
+                    <div className="text-left">
+                      <p className="mb-2 text-destructive font-medium">
+                        The darkness corrupts your chronicles:
+                      </p>
+                      <ul className="list-disc pl-5 space-y-1 text-sm max-h-40 overflow-y-auto">
+                        {validationErrors.slice(0, 10).map((error, index) => (
+                          <li key={index}>{error}</li>
+                        ))}
+                        {validationErrors.length > 10 && (
+                          <li>
+                            ...and {validationErrors.length - 10} more errors
+                          </li>
+                        )}
+                      </ul>
+                      <p className="mt-2">
+                        Mend your chronicles and try again, lest they be lost
+                        forever.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <p>
+                        Surrender your chronicles.{' '}
+                        <strong>
+                          The darkness will consume your existing settlements.
+                        </strong>
+                      </p>
+                      <div className="pt-2">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          accept=".json,application/json"
+                          onChange={handleFileSelection}
+                          className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      {showConfirmation && (
-                        <AlertDialogAction
-                          onClick={confirmUpload}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                          Embrace the Darkness
-                        </AlertDialogAction>
-                      )}
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  {showConfirmation && (
+                    <AlertDialogAction
+                      onClick={confirmUpload}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Embrace the Darkness
+                    </AlertDialogAction>
+                  )}
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

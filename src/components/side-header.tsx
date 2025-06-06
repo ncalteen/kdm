@@ -14,7 +14,7 @@ export function SiteHeader() {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <header className="bg-background sticky top-0 z-50 flex w-full items-center justify-between border-b px-4">
+    <header className="bg-background fixed top-0 left-0 right-0 z-50 flex w-full items-center justify-between border-b px-4 min-h-(--header-height)">
       <div className="flex h-(--header-height) items-center gap-2">
         <Button
           className="h-8 w-8"
@@ -26,16 +26,16 @@ export function SiteHeader() {
 
         <Separator orientation="vertical" className="mr-2 h-4" />
 
-        <h1 className="text-base text-sm">
+        <h1 className="text-xs sm:text-sm whitespace-nowrap">
           Kingdom Death: Monster - Recordkeeper
         </h1>
       </div>
 
       <Link
         href="https://github.com/ncalteen/kdm"
-        className="flex items-center gap-2 text-sm hover:underline">
+        className="flex items-center gap-2 text-xs sm:text-sm hover:underline">
         <MarkGithubIcon size={16} />
-        <span>ncalteen/kdm</span>
+        <span className="hidden sm:inline">ncalteen/kdm</span>
       </Link>
     </header>
   )

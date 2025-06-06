@@ -179,12 +179,12 @@ function MainPage(): ReactElement {
   }, [selectedSurvivor, survivorForm])
 
   return (
-    <div className="[--header-height:calc(--spacing(14))]">
+    <div className="[--header-height:calc(--spacing(10))]">
       <SidebarProvider className="flex flex-col">
         {/* Header requires the settlement form to display high-level data */}
         <SiteHeader />
 
-        <div className="flex flex-1">
+        <div className="flex flex-1 pt-(--header-height)">
           <AppSidebar
             settlement={selectedSettlement}
             setSelectedSettlement={setSelectedSettlement}
