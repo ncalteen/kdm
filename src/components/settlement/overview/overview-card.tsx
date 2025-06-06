@@ -90,7 +90,7 @@ export function OverviewCard({
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
     if (!isArcCampaign) return
-    
+
     // Check if we have a valid settlement with an ID in the form
     const formValues = form.getValues()
     if (!formValues.id || typeof formValues.id !== 'number') return
