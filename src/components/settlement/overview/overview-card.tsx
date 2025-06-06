@@ -89,7 +89,7 @@ export function OverviewCard({
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
-    if (!isArcCampaign || !settlement) return
+    if (!isArcCampaign || !settlement || !settlement.id) return
 
     let totalCc = 0
 

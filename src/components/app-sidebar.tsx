@@ -112,7 +112,7 @@ const navSquires = [
  * Application Sidebar Props
  */
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  settlement: Settlement
+  settlement: Settlement | null
   setSelectedSettlement: (settlement: Settlement | null) => void
 }
 
@@ -139,13 +139,13 @@ export function AppSidebar({
   useEffect(() => {
     if (!isMounted) return setIsMounted(true)
 
-    if (settlement.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
+    if (settlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
       return setNavItems([...navSquires])
 
     // Start with base navigation
     const newNavItems = [...baseNavPrimary]
 
-    if (settlement.survivorType === SurvivorType.ARC) {
+    if (settlement?.survivorType === SurvivorType.ARC) {
       const notesIndex = newNavItems.findIndex((item) => item.tab === 'notes')
 
       if (notesIndex !== -1)
@@ -157,7 +157,7 @@ export function AppSidebar({
     }
 
     setNavItems(newNavItems)
-  }, [settlement.campaignType, settlement.survivorType, isMounted])
+  }, [settlement?.campaignType, settlement?.survivorType, isMounted])
 
   // Update campaign data when it changes (e.g., after creating settlements)
   useEffect(() => {

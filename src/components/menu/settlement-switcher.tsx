@@ -28,7 +28,7 @@ export function SettlementSwitcher({
 }: {
   settlement: Settlement | null
   settlements: Settlement[]
-  setSelectedSettlement: (settlement: Settlement | null) => void
+  setSelectedSettlement?: (settlement: Settlement | null) => void
 }) {
   return (
     <SidebarMenu>
@@ -55,7 +55,10 @@ export function SettlementSwitcher({
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width)"
             align="start">
-            <DropdownMenuItem onSelect={() => setSelectedSettlement(null)}>
+            <DropdownMenuItem
+              onSelect={() => {
+                if (setSelectedSettlement) setSelectedSettlement(null)
+              }}>
               <div className="flex items-center">
                 <Plus className="mr-2 h-4 w-4" />
                 <span>Create a Settlement</span>
@@ -65,7 +68,9 @@ export function SettlementSwitcher({
             {settlements.map((s) => (
               <DropdownMenuItem
                 key={s.id}
-                onSelect={() => setSelectedSettlement(s)}>
+                onSelect={() => {
+                  if (setSelectedSettlement) setSelectedSettlement(s)
+                }}>
                 <div className="flex flex-col">
                   <span>{s.name}</span>
                   <span className="text-xs text-muted-foreground">
