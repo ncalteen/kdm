@@ -89,12 +89,13 @@ export function OverviewCard({
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
-    if (!isArcCampaign || !settlement || !settlement.id) return
+    if (!isArcCampaign) return
+    
+    // Check if we have a valid settlement with an ID in the form
+    const formValues = form.getValues()
+    if (!formValues.id || typeof formValues.id !== 'number') return
 
     let totalCc = 0
-
-    // Get current form values to ensure we're working with the latest data
-    const formValues = form.getValues()
 
     // Calculate CC from nemesis victories. Each nemesis victory gives 3 CC.
     for (const nemesis of formValues.nemeses || []) {
