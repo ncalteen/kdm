@@ -12,7 +12,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { useSettlement } from '@/contexts/settlement-context'
 import { Settlement } from '@/schemas/settlement'
 import { Check, ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react'
 
@@ -23,12 +22,14 @@ import { Check, ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react'
  * @returns Settlement Switcher Component
  */
 export function SettlementSwitcher({
-  settlements
+  settlement,
+  settlements,
+  setSelectedSettlement
 }: {
+  settlement: Settlement | null
   settlements: Settlement[]
+  setSelectedSettlement: (settlement: Settlement | null) => void
 }) {
-  const { selectedSettlement, setSelectedSettlement } = useSettlement()
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -42,10 +43,10 @@ export function SettlementSwitcher({
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-medium">
-                  {selectedSettlement?.name ?? 'Create a Settlement'}
+                  {settlement?.name ?? 'Create a Settlement'}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {selectedSettlement?.campaignType ?? 'Choose your destiny'}
+                  {settlement?.campaignType ?? 'Choose your destiny'}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
@@ -61,20 +62,19 @@ export function SettlementSwitcher({
               </div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {settlements.map((settlement) => (
+            {settlements.map((s) => (
               <DropdownMenuItem
-                key={settlement.id}
-                onSelect={() => setSelectedSettlement(settlement)}>
+                key={s.id}
+                onSelect={() => setSelectedSettlement(s)}>
                 <div className="flex flex-col">
-                  <span>{settlement.name}</span>
+                  <span>{s.name}</span>
                   <span className="text-xs text-muted-foreground">
-                    {settlement.campaignType}
+                    {s.campaignType}
                   </span>
                 </div>
-                {selectedSettlement &&
-                  settlement.name === selectedSettlement.name && (
-                    <Check className="ml-auto" />
-                  )}
+                {s && s.name === settlement?.name && (
+                  <Check className="ml-auto" />
+                )}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

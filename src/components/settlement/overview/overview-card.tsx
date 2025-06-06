@@ -5,13 +5,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage
+  FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
@@ -20,39 +17,62 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
+ * Overview Card Props
+ */
+interface OverviewCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Population Card Component
  *
  * Displays and manages population statistics for the settlement including
  * survival limit, population count, death count, and lost settlements.
  *
- * @param form Settlement form instance
+ * @param props OverviewCard props
  * @returns Population Card Component
  */
-export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
-  const { selectedSettlement } = useSettlement()
-  const { saveSettlement } = useSettlementSave(form)
-
-  const isArcCampaign = selectedSettlement?.survivorType === SurvivorType.ARC
-  const isLanternCampaign =
-    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN
+export function OverviewCard({
+  form,
+  saveSettlement,
+  ...settlement
+}: OverviewCardProps): ReactElement {
+  const isArcCampaign = useMemo(
+    () => settlement.survivorType === SurvivorType.ARC,
+    [settlement.survivorType]
+  )
+  const isLanternCampaign = useMemo(
+    () =>
+      settlement.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      settlement.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
+    [settlement.campaignType]
+  )
 
   // Track survivors state to trigger re-calculations when survivors change
   const [survivors, setSurvivors] = useState<Survivor[]>([])
 
+  // Calculate current population from living survivors
+  const currentPopulation = useMemo(() => {
+    return survivors.filter((survivor) => !survivor.dead).length
+  }, [survivors])
+
+  // Calculate death count from dead survivors
+  const currentDeathCount = useMemo(() => {
+    return survivors.filter((survivor) => survivor.dead).length
+  }, [survivors])
+
   // Update survivors when settlement changes or when localStorage changes
   useEffect(() => {
-    if (selectedSettlement?.id) {
-      setSurvivors(getSurvivors(selectedSettlement.id))
-    }
-  }, [selectedSettlement?.id])
+    if (settlement.id) setSurvivors(getSurvivors(settlement.id))
+  }, [settlement.id])
 
   // Listen for storage events to update survivors when they change in other tabs/components
   useEffect(() => {
     const handleStorageChange = () => {
-      if (selectedSettlement?.id) {
-        setSurvivors(getSurvivors(selectedSettlement.id))
-      }
+      if (settlement.id) setSurvivors(getSurvivors(settlement.id))
     }
 
     // Listen for localStorage changes
@@ -65,61 +85,11 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('survivorsUpdated', handleStorageChange)
     }
-  }, [selectedSettlement?.id])
-
-  // Periodically check for survivor changes (fallback for same-tab updates)
-  useEffect(() => {
-    if (!selectedSettlement?.id) return
-
-    const interval = setInterval(() => {
-      const currentSurvivors = getSurvivors(selectedSettlement.id)
-      // Check if survivors have changed
-      if (JSON.stringify(currentSurvivors) !== JSON.stringify(survivors)) {
-        setSurvivors(currentSurvivors)
-      }
-    }, 1000) // Check every second
-
-    return () => clearInterval(interval)
-  }, [selectedSettlement?.id, survivors])
-
-  // Calculate current population from living survivors
-  const currentPopulation = useMemo(() => {
-    return survivors.filter((survivor) => !survivor.dead).length
-  }, [survivors])
-
-  // Calculate death count from dead survivors
-  const currentDeathCount = useMemo(() => {
-    return survivors.filter((survivor) => survivor.dead).length
-  }, [survivors])
-
-  // Update population and death count when they change
-  useEffect(() => {
-    if (!selectedSettlement?.id) return
-
-    const formValues = form.getValues()
-
-    // Update population if it differs from current count
-    if (formValues.population !== currentPopulation) {
-      form.setValue('population', currentPopulation)
-      saveSettlement({ population: currentPopulation })
-    }
-
-    // Update death count if it differs from current count
-    if (formValues.deathCount !== currentDeathCount) {
-      form.setValue('deathCount', currentDeathCount)
-      saveSettlement({ deathCount: currentDeathCount })
-    }
-  }, [
-    currentPopulation,
-    currentDeathCount,
-    selectedSettlement?.id,
-    form,
-    saveSettlement
-  ])
+  }, [settlement.id])
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
-    if (!isArcCampaign || !selectedSettlement) return
+    if (!isArcCampaign || !settlement) return
 
     let totalCc = 0
 
@@ -156,7 +126,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
       form.setValue('ccValue', totalCc)
       saveSettlement({ ccValue: totalCc })
     }
-  }, [isArcCampaign, selectedSettlement, form, saveSettlement])
+  }, [isArcCampaign, settlement, saveSettlement, form])
 
   /**
    * Save to Local Storage
@@ -204,7 +174,6 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     Survival Limit
                   </FormLabel>
                 </div>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -233,7 +202,6 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     Population
                   </FormLabel>
                 </div>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -262,7 +230,6 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     Death Count
                   </FormLabel>
                 </div>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -293,7 +260,6 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                     Lost Settlements
                   </FormLabel>
                 </div>
-                <FormMessage />
               </FormItem>
             )}
           />
@@ -316,7 +282,7 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                         <Input
                           type="number"
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                          value={selectedSettlement?.ccValue ?? '0'}
+                          value={settlement.ccValue ?? '0'}
                           disabled
                         />
                       </FormControl>
@@ -324,7 +290,6 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                         Collective Cognition
                       </FormLabel>
                     </div>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -369,7 +334,6 @@ export function OverviewCard(form: UseFormReturn<Settlement>): ReactElement {
                         Lantern Research
                       </FormLabel>
                     </div>
-                    <FormMessage />
                   </FormItem>
                 )}
               />

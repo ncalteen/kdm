@@ -84,3 +84,7 @@ Other terms and phrases that can be used to describe the game include:
 - Overwhelming odds.
 - Struggle for survival.
 - Victory rarely achieved, and at great cost.
+
+## Performance
+
+- All components should be optimized for performance.

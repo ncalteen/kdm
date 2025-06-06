@@ -1,6 +1,5 @@
 'use client'
 
-import { useSurvivor } from '@/contexts/survivor-context'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
 import { useCallback } from 'react'
@@ -13,9 +12,7 @@ import { toast } from 'sonner'
  * context after saving data to localStorage, ensuring that components that
  * depend on campaign data are refreshed when campaign data changes.
  */
-export function useCampaignSave() {
-  const { updateSelectedSurvivor } = useSurvivor()
-
+export function useCampaignSave(updateSelectedSurvivor: () => void) {
   /**
    * Save campaign data to localStorage and update context
    *

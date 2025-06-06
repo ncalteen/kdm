@@ -20,11 +20,21 @@ import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
 import { SurvivorType } from '@/lib/enums'
+import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Survivor Card Props
+ */
+interface SurvivorCardProps extends Partial<Survivor> {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  settlement: Settlement
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Survivor Form Component
@@ -32,44 +42,95 @@ import { UseFormReturn } from 'react-hook-form'
  * This component is used to display/edit a survivor.
  */
 export function SurvivorCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const settlement = useSettlement().selectedSettlement
-
+  form,
+  settlement,
+  saveSurvivor
+}: SurvivorCardProps): ReactElement {
   return (
     <Card className="w-full py-2 border-0 bg-secondary">
       <CardContent className="px-2">
         <div className="flex flex-col lg:flex-row gap-2 w-full">
           {/* First column - essential stats */}
           <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
-            <StatusCard {...form} />
-            <SurvivalCard {...form} />
-            <AttributeCard {...form} />
-            <SanityCard {...form} />
-            <HeadCard {...form} />
-            <ArmsCard {...form} />
-            <BodyCard {...form} />
-            <WaistCard {...form} />
-            <LegsCard {...form} />
-            <NextDepartureCard {...form} />
+            <StatusCard {...form} form={form} saveSurvivor={saveSurvivor} />
+            <SurvivalCard
+              {...form}
+              form={form}
+              settlement={settlement}
+              saveSurvivor={saveSurvivor}
+            />
+
+            <AttributeCard
+              {...form}
+              form={form}
+              settlement={settlement}
+              saveSurvivor={saveSurvivor}
+            />
+            <SanityCard
+              {...form}
+              form={form}
+              settlement={settlement}
+              saveSurvivor={saveSurvivor}
+            />
+            <HeadCard {...form} form={form} saveSurvivor={saveSurvivor} />
+            <ArmsCard {...form} form={form} saveSurvivor={saveSurvivor} />
+            <BodyCard {...form} form={form} saveSurvivor={saveSurvivor} />
+            <WaistCard {...form} form={form} saveSurvivor={saveSurvivor} />
+            <LegsCard {...form} form={form} saveSurvivor={saveSurvivor} />
+            <NextDepartureCard
+              {...form}
+              form={form}
+              saveSurvivor={saveSurvivor}
+            />
           </div>
 
           {/* Second column - ability cards */}
           <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
-            <HuntXPCard {...form} />
-            <WeaponProficiencyCard {...form} />
-            <CourageUnderstandingCard {...form} />
-            <FightingArtsCard {...form} />
-            <DisordersCard {...form} />
-            <AbilitiesAndImpairmentsCard {...form} />
-            <OncePerLifetimeCard {...form} />
+            <HuntXPCard
+              {...form}
+              form={form}
+              settlement={settlement}
+              saveSurvivor={saveSurvivor}
+            />
+            <WeaponProficiencyCard form={form} saveSurvivor={saveSurvivor} />
+            <CourageUnderstandingCard
+              {...form}
+              form={form}
+              settlement={settlement}
+              saveSurvivor={saveSurvivor}
+            />
+            <FightingArtsCard
+              {...form}
+              form={form}
+              settlement={settlement}
+              saveSurvivor={saveSurvivor}
+            />
+            <DisordersCard {...form} form={form} saveSurvivor={saveSurvivor} />
+            <AbilitiesAndImpairmentsCard
+              {...form}
+              form={form}
+              saveSurvivor={saveSurvivor}
+            />
+            <OncePerLifetimeCard
+              {...form}
+              form={form}
+              saveSurvivor={saveSurvivor}
+            />
           </div>
 
           {/* Third column - ARC cards */}
-          {settlement?.survivorType === SurvivorType.ARC && (
+          {settlement.survivorType === SurvivorType.ARC && (
             <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
-              <PhilosophyCard {...form} />
-              <KnowledgeCard {...form} />
+              <PhilosophyCard
+                {...form}
+                form={form}
+                saveSurvivor={saveSurvivor}
+              />
+              <KnowledgeCard
+                {...form}
+                form={form}
+                saveSurvivor={saveSurvivor}
+              />
             </div>
           )}
         </div>

@@ -6,8 +6,6 @@ import {
 } from '@/components/settlement/monster-volumes/monster-volume-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -30,14 +28,23 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Monster Volumes Card Props
+ */
+interface MonsterVolumesCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Monster Volumes Card Component
  */
 export function MonsterVolumesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: MonsterVolumesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -47,13 +54,13 @@ export function MonsterVolumesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.monsterVolumes.forEach((_, i) => {
+      settlement.monsterVolumes?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.monsterVolumes])
+  }, [settlement.monsterVolumes])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -87,9 +94,7 @@ export function MonsterVolumesCard({
    * @param index Monster Volume Index
    */
   const onRemove = (index: number) => {
-    const currentMonsterVolumes = [
-      ...(selectedSettlement?.monsterVolumes || [])
-    ]
+    const currentMonsterVolumes = [...(settlement.monsterVolumes || [])]
     currentMonsterVolumes.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -120,9 +125,7 @@ export function MonsterVolumesCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless monster volume cannot be recorded.')
 
-    const updatedMonsterVolumes = [
-      ...(selectedSettlement?.monsterVolumes || [])
-    ]
+    const updatedMonsterVolumes = [...(settlement.monsterVolumes || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -169,7 +172,7 @@ export function MonsterVolumesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.monsterVolumes || [],
+        settlement.monsterVolumes || [],
         oldIndex,
         newIndex
       )
@@ -218,30 +221,28 @@ export function MonsterVolumesCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSettlement?.monsterVolumes.length !== 0 && (
+            {settlement.monsterVolumes?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.monsterVolumes || []).map(
-                    (_, index) => index.toString()
+                  items={(settlement.monsterVolumes || []).map((_, index) =>
+                    index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.monsterVolumes || []).map(
-                    (volume, index) => (
-                      <MonsterVolumeItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        form={form}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
-                      />
-                    )
-                  )}
+                  {(settlement.monsterVolumes || []).map((volume, index) => (
+                    <MonsterVolumeItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}

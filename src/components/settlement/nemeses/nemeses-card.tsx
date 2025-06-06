@@ -12,8 +12,6 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Nemesis, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -36,14 +34,23 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Nemeses Card Props
+ */
+interface NemesesCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Nemeses Card Component
  */
 export function NemesesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: NemesesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -53,13 +60,13 @@ export function NemesesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.nemeses.forEach((_, i) => {
+      settlement.nemeses?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.nemeses])
+  }, [settlement.nemeses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -85,7 +92,7 @@ export function NemesesCard({
    * @param index Nemesis Index
    */
   const onRemove = (index: number) => {
-    const currentNemeses = [...(selectedSettlement?.nemeses || [])]
+    const currentNemeses = [...(settlement.nemeses || [])]
     currentNemeses.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -128,7 +135,7 @@ export function NemesesCard({
       ccLevel3: false
     }
 
-    const updatedNemeses = [...(selectedSettlement?.nemeses || [])]
+    const updatedNemeses = [...(settlement.nemeses || [])]
 
     if (index !== undefined) {
       // Updating an existing value - preserve existing properties
@@ -174,12 +181,12 @@ export function NemesesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
+    const updatedNemeses = (settlement.nemeses || []).map((n, i) =>
       i === index ? { ...n, unlocked } : n
     )
     saveToLocalStorage(
       updatedNemeses,
-      `${selectedSettlement!.nemeses[index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
+      `${settlement.nemeses![index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -201,7 +208,7 @@ export function NemesesCard({
       | 'ccLevel3',
     checked: boolean
   ) => {
-    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
+    const updatedNemeses = (settlement.nemeses || []).map((n, i) =>
       i === index ? { ...n, [level]: checked } : n
     )
     saveToLocalStorage(updatedNemeses)
@@ -218,11 +225,7 @@ export function NemesesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(
-        selectedSettlement?.nemeses || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(settlement.nemeses || [], oldIndex, newIndex)
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -273,17 +276,17 @@ export function NemesesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSettlement?.nemeses.length !== 0 && (
+            {settlement.nemeses?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.nemeses || []).map((_, index) =>
+                  items={(settlement.nemeses || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
+                  {(settlement.nemeses || []).map((nemesis, index) => (
                     <NemesisItem
                       key={index}
                       id={index.toString()}

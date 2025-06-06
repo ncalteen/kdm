@@ -11,9 +11,6 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Gender, SurvivorType } from '@/lib/enums'
 import {
   bornWithUnderstanding,
@@ -22,9 +19,9 @@ import {
   canEndure,
   canFistPump,
   canSurge,
-  getNextSurvivorId,
-  getSettlement
+  getNextSurvivorId
 } from '@/lib/utils'
+import { Settlement } from '@/schemas/settlement'
 import {
   BaseSurvivorSchema,
   Survivor,
@@ -34,6 +31,20 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ReactElement, useCallback, useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+
+/**
+ * Create Survivor Form Props
+ */
+interface CreateSurvivorFormProps extends Partial<Survivor> {
+  /** Selected settlement */
+  settlement: Settlement | null
+  /** Function to set selected survivor */
+  setSelectedSurvivor: (survivor: Survivor) => void
+  /** Function to set creating new survivor state */
+  setIsCreatingNewSurvivor: (isCreating: boolean) => void
+  /** Function to save the survivor */
+  saveSurvivor: (survivor: Survivor, successMsg?: string) => void
+}
 
 /**
  * Create Survivor Form Component
@@ -46,10 +57,12 @@ import { toast } from 'sonner'
  *
  * @returns Create Survivor Form
  */
-export function CreateSurvivorForm(): ReactElement {
-  const { selectedSettlement } = useSettlement()
-  const { setSelectedSurvivor, setIsCreatingNewSurvivor } = useSurvivor()
-
+export function CreateSurvivorForm({
+  settlement,
+  setSelectedSurvivor,
+  setIsCreatingNewSurvivor,
+  saveSurvivor
+}: CreateSurvivorFormProps): ReactElement {
   const form = useForm<Survivor>({
     // Need to set the type here directly, because the schema includes a lot of
     // fields with default values that are not resolved in the type.
@@ -57,30 +70,23 @@ export function CreateSurvivorForm(): ReactElement {
     defaultValues: BaseSurvivorSchema.parse({})
   })
 
-  const { saveSurvivor } = useSurvivorSave(form)
-
   // Set the form values when the component mounts
   useEffect(() => {
-    if (!selectedSettlement) return
-
-    // Get campaign data for the campaign type.
-    const settlement = getSettlement(selectedSettlement.id)
-
     if (!settlement) return
 
     const updatedValues = {
-      settlementId: selectedSettlement.id,
-      canDash: canDash(selectedSettlement.id),
-      canFistPump: canFistPump(selectedSettlement.id),
-      canEncourage: canEncourage(selectedSettlement.id),
-      canEndure: canEndure(selectedSettlement.id),
-      canSurge: canSurge(selectedSettlement.id),
+      settlementId: settlement.id,
+      canDash: canDash(settlement.id),
+      canFistPump: canFistPump(settlement.id),
+      canEncourage: canEncourage(settlement.id),
+      canEndure: canEndure(settlement.id),
+      canSurge: canSurge(settlement.id),
       huntXPRankUp:
         settlement.survivorType !== SurvivorType.ARC
           ? [1, 5, 9, 14] // Core
           : [1], // Arc
       id: getNextSurvivorId(),
-      understanding: bornWithUnderstanding(selectedSettlement.id) ? 1 : 0
+      understanding: bornWithUnderstanding(settlement.id) ? 1 : 0
     }
 
     // Reset form with updated values while preserving user-entered fields
@@ -88,7 +94,7 @@ export function CreateSurvivorForm(): ReactElement {
       ...form.getValues(),
       ...updatedValues
     })
-  }, [form, selectedSettlement])
+  }, [form, settlement])
 
   /**
    * Handles form submission

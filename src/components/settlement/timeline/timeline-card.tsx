@@ -3,8 +3,6 @@
 import { TimelineContent } from '@/components/settlement/timeline/timeline-content'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { CampaignType } from '@/lib/enums'
 import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { PlusCircleIcon } from 'lucide-react'
@@ -21,6 +19,16 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Timeline Card Props
+ */
+interface TimelineCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Timeline Card Component
  *
  * Displays the lantern years and events for a given settlement. Depending on
@@ -31,11 +39,10 @@ import { toast } from 'sonner'
  * @returns Timeline Card Component
  */
 export function TimelineCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: TimelineCardProps): ReactElement {
   const [editingEvents, setEditingEvents] = useState<{
     [key: string]: boolean
   }>({})
@@ -52,15 +59,13 @@ export function TimelineCard({
   } = useMemo(
     () => ({
       isSquiresCampaign:
-        selectedSettlement?.campaignType ===
-        CampaignType.SQUIRES_OF_THE_CITADEL,
+        settlement.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL,
       isStarsCampaign:
-        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS,
-      isSunCampaign:
-        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
-      isCustomCampaign: selectedSettlement?.campaignType === CampaignType.CUSTOM
+        settlement.campaignType === CampaignType.PEOPLE_OF_THE_STARS,
+      isSunCampaign: settlement.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
+      isCustomCampaign: settlement.campaignType === CampaignType.CUSTOM
     }),
-    [selectedSettlement?.campaignType]
+    [settlement.campaignType]
   )
 
   // Check if the campaign uses normal numbering (no Prologue). Prologue is
@@ -77,11 +82,10 @@ export function TimelineCard({
   // settlement's timeline.
   const showStoryEventIcon = useMemo(
     () =>
-      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      selectedSettlement?.campaignType ===
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-      selectedSettlement?.campaignType === CampaignType.CUSTOM,
-    [selectedSettlement?.campaignType]
+      settlement.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      settlement.campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
+      settlement.campaignType === CampaignType.CUSTOM,
+    [settlement.campaignType]
   )
 
   /**
@@ -349,14 +353,14 @@ export function TimelineCard({
   )
 
   // Use form state as source of truth for timeline data to ensure immediate updates
-  const cachedTimeline = useMemo(() => form.watch('timeline') || [], [form])
+  const timeline = form.watch('timeline') || []
 
   return (
     <Card className="border-0 w-full h-full pt-0">
       <CardContent className="flex flex-col justify-between h-full">
         {/* Timeline Content */}
         <TimelineContent
-          timeline={cachedTimeline}
+          timeline={timeline}
           usesNormalNumbering={usesNormalNumbering}
           isEventBeingEdited={isEventBeingEdited}
           setInputRef={setInputRef}
@@ -378,15 +382,22 @@ export function TimelineCard({
             className="mt-2 w-full"
             size="lg"
             onClick={() => {
-              startTransition(() =>
+              startTransition(() => {
+                const currentTimeline = form.watch('timeline') || []
+                const newTimeline = [
+                  ...currentTimeline,
+                  { completed: false, entries: [] }
+                ]
+
+                // Update form state first to trigger UI update
+                form.setValue('timeline', newTimeline)
+
+                // Then save to localStorage
                 saveToLocalStorage(
-                  [
-                    ...(form.watch('timeline') || []),
-                    { completed: false, entries: [] }
-                  ],
+                  newTimeline,
                   'A new lantern year is added - the chronicles expand.'
                 )
-              )
+              })
             }}>
             <PlusCircleIcon className="h-4 w-4" /> Add Lantern Year
           </Button>

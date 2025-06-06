@@ -11,16 +11,26 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { SurvivorType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
+import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { LockIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+
+/**
+ * Survival Card Props
+ */
+interface SurvivalCardProps extends Partial<Survivor> {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Current settlement */
+  settlement: Settlement
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
 
 /**
  * Survivor Survival Card Component
@@ -34,11 +44,11 @@ import { toast } from 'sonner'
  * @param form Form
  * @returns Survival Card Component
  */
-export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-  const { selectedSettlement } = useSettlement()
-
+export function SurvivalCard({
+  form,
+  settlement,
+  saveSurvivor
+}: SurvivalCardProps): ReactElement {
   /**
    * Save to Local Storage
    *
@@ -62,9 +72,9 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
     if (value < 0) return toast.error('Survival cannot be negative.')
 
     // Enforce maximum value of survivalLimit
-    if (value > (selectedSettlement?.survivalLimit || 0))
+    if (value > (settlement.survivalLimit || 0))
       return toast.error(
-        `Survival cannot exceed the settlement's limit of ${selectedSettlement?.survivalLimit || 0}.`
+        `Survival cannot exceed the settlement's limit of ${settlement.survivalLimit}.`
       )
 
     saveToLocalStorage('survival', value, 'Survival updated successfully.')
@@ -192,7 +202,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
                           'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl'
                         )}
                         {...field}
-                        value={selectedSurvivor?.survival ?? '1'}
+                        value={field.value ?? '1'}
                         onChange={(e) => updateSurvival(e.target.value)}
                       />
                     </FormControl>
@@ -305,7 +315,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
               />
 
               {/* Conditional rendering for Arc-specific attributes */}
-              {selectedSettlement?.survivorType === SurvivorType.ARC ? (
+              {settlement.survivorType === SurvivorType.ARC ? (
                 <>
                   {/* Fist Pump */}
                   <FormField
@@ -353,7 +363,7 @@ export function SurvivalCard(form: UseFormReturn<Survivor>): ReactElement {
             </div>
 
             {/* Right - (Arc) Systemic pressure */}
-            {selectedSettlement?.survivorType === SurvivorType.ARC && (
+            {settlement.survivorType === SurvivorType.ARC && (
               <>
                 <Separator orientation="vertical" className="mx-2.5" />
 

@@ -12,24 +12,27 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import { EyeIcon } from 'lucide-react'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
+
+/**
+ * Squire Suspicions Card Props
+ */
+interface SquireSuspicionsCardProps extends Partial<Settlement> {
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
 
 /**
  * Squire Suspicions Card Component
  */
 export function SquireSuspicionsCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  saveSettlement,
+  ...settlement
+}: SquireSuspicionsCardProps): ReactElement {
   // Calculate total suspicion level
-  const totalSuspicion = (selectedSettlement?.suspicions || []).reduce(
+  const totalSuspicion = (settlement.suspicions || []).reduce(
     (total, suspicion) => {
       let suspicionLevel = 0
 
@@ -55,37 +58,35 @@ export function SquireSuspicionsCard({
     level: number,
     checked: boolean
   ) => {
-    const updatedSuspicions = (selectedSettlement?.suspicions || []).map(
-      (suspicion) => {
-        if (suspicion.name === squireName) {
-          // Make a copy of the suspicion
-          const updatedSuspicion = { ...suspicion }
+    const updatedSuspicions = (settlement.suspicions || []).map((suspicion) => {
+      if (suspicion.name === squireName) {
+        // Make a copy of the suspicion
+        const updatedSuspicion = { ...suspicion }
 
-          // Update the specified level
-          if (level === 1) updatedSuspicion.level1 = checked
-          if (level === 2) updatedSuspicion.level2 = checked
-          if (level === 3) updatedSuspicion.level3 = checked
-          if (level === 4) updatedSuspicion.level4 = checked
+        // Update the specified level
+        if (level === 1) updatedSuspicion.level1 = checked
+        if (level === 2) updatedSuspicion.level2 = checked
+        if (level === 3) updatedSuspicion.level3 = checked
+        if (level === 4) updatedSuspicion.level4 = checked
 
-          // If checking a higher level, also check all lower levels
-          if (checked) {
-            if (level >= 2) updatedSuspicion.level1 = true
-            if (level >= 3) updatedSuspicion.level2 = true
-            if (level >= 4) updatedSuspicion.level3 = true
-          }
-
-          // If unchecking a lower level, also uncheck all higher levels
-          if (!checked) {
-            if (level <= 1) updatedSuspicion.level2 = false
-            if (level <= 2) updatedSuspicion.level3 = false
-            if (level <= 3) updatedSuspicion.level4 = false
-          }
-
-          return updatedSuspicion
+        // If checking a higher level, also check all lower levels
+        if (checked) {
+          if (level >= 2) updatedSuspicion.level1 = true
+          if (level >= 3) updatedSuspicion.level2 = true
+          if (level >= 4) updatedSuspicion.level3 = true
         }
-        return suspicion
+
+        // If unchecking a lower level, also uncheck all higher levels
+        if (!checked) {
+          if (level <= 1) updatedSuspicion.level2 = false
+          if (level <= 2) updatedSuspicion.level3 = false
+          if (level <= 3) updatedSuspicion.level4 = false
+        }
+
+        return updatedSuspicion
       }
-    )
+      return suspicion
+    })
 
     saveSettlement(
       { suspicions: updatedSuspicions },
@@ -137,47 +138,45 @@ export function SquireSuspicionsCard({
                 <TableCell className="text-center" />
                 <TableCell className="text-center" />
               </TableRow>
-              {(selectedSettlement?.suspicions || []).map(
-                (suspicion, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium text-left pl-5">
-                      {suspicion.name}&apos;s Suspicion
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Checkbox
-                        checked={suspicion.level1 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(suspicion.name, 1, !!checked)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Checkbox
-                        checked={suspicion.level2 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(suspicion.name, 2, !!checked)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Checkbox
-                        checked={suspicion.level3 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(suspicion.name, 3, !!checked)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Checkbox
-                        checked={suspicion.level4 || false}
-                        onCheckedChange={(checked) =>
-                          handleSuspicionChange(suspicion.name, 4, !!checked)
-                        }
-                      />
-                    </TableCell>
-                  </TableRow>
-                )
-              )}
+              {(settlement.suspicions || []).map((suspicion, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium text-left pl-5">
+                    {suspicion.name}&apos;s Suspicion
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Checkbox
+                      checked={suspicion.level1 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(suspicion.name, 1, !!checked)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Checkbox
+                      checked={suspicion.level2 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(suspicion.name, 2, !!checked)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Checkbox
+                      checked={suspicion.level3 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(suspicion.name, 3, !!checked)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Checkbox
+                      checked={suspicion.level4 || false}
+                      onCheckedChange={(checked) =>
+                        handleSuspicionChange(suspicion.name, 4, !!checked)
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>

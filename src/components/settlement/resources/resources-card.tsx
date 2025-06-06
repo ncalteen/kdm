@@ -6,8 +6,6 @@ import {
 } from '@/components/settlement/resources/resource-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -31,14 +29,23 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Resources Card Props
+ */
+interface ResourcesCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Resources Card Component
  */
 export function ResourcesCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: ResourcesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -47,12 +54,12 @@ export function ResourcesCard({
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
-      selectedSettlement?.resources.forEach((_, i) => {
+      settlement.resources?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
       return next
     })
-  }, [selectedSettlement?.resources])
+  }, [settlement.resources])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -86,7 +93,7 @@ export function ResourcesCard({
    * @param amount New Amount
    */
   const onAmountChange = (index: number, amount: number) => {
-    const currentResources = [...(selectedSettlement?.resources || [])]
+    const currentResources = [...(settlement.resources || [])]
     currentResources[index] = { ...currentResources[index], amount }
     saveToLocalStorage(currentResources)
   }
@@ -97,7 +104,7 @@ export function ResourcesCard({
    * @param index Resource Index
    */
   const onRemove = (index: number) => {
-    const currentResources = [...(selectedSettlement?.resources || [])]
+    const currentResources = [...(settlement.resources || [])]
     currentResources.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -134,7 +141,7 @@ export function ResourcesCard({
     if (!name || name.trim() === '')
       return toast.error('A nameless resource cannot be recorded.')
 
-    const updatedResources = [...(selectedSettlement?.resources || [])]
+    const updatedResources = [...(settlement.resources || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -190,11 +197,7 @@ export function ResourcesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(
-        selectedSettlement?.resources || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(settlement.resources || [], oldIndex, newIndex)
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -242,17 +245,17 @@ export function ResourcesCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {selectedSettlement?.resources.length !== 0 && (
+            {settlement.resources?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.resources || []).map((_, index) =>
+                  items={(settlement.resources || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.resources || []).map((_, index) => (
+                  {(settlement.resources || []).map((_, index) => (
                     <ResourceItem
                       key={index}
                       id={index.toString()}

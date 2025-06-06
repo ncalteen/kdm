@@ -6,8 +6,6 @@ import {
 } from '@/components/settlement/patterns/seed-pattern-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -30,17 +28,26 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
+ * Seed Patterns Card Props
+ */
+interface SeedPatternsCardProps extends Partial<Settlement> {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
+  /** Save settlement function */
+  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+}
+
+/**
  * Seed Patterns Card Component
  *
  * @param form Settlement form instance
  * @returns Seed Patterns Card Component
  */
 export function SeedPatternsCard({
-  ...form
-}: UseFormReturn<Settlement>): ReactElement {
-  const { saveSettlement } = useSettlementSave(form)
-  const { selectedSettlement } = useSettlement()
-
+  form,
+  saveSettlement,
+  ...settlement
+}: SeedPatternsCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -50,13 +57,13 @@ export function SeedPatternsCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSettlement?.seedPatterns.forEach((_, i) => {
+      settlement.seedPatterns?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSettlement?.seedPatterns])
+  }, [settlement.seedPatterns])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -84,7 +91,7 @@ export function SeedPatternsCard({
    * @param index Seed Pattern Index
    */
   const onRemove = (index: number) => {
-    const currentSeedPatterns = [...(selectedSettlement?.seedPatterns || [])]
+    const currentSeedPatterns = [...(settlement.seedPatterns || [])]
     currentSeedPatterns.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -115,7 +122,7 @@ export function SeedPatternsCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless seed pattern cannot be preserved.')
 
-    const updatedSeedPatterns = [...(selectedSettlement?.seedPatterns || [])]
+    const updatedSeedPatterns = [...(settlement.seedPatterns || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -162,7 +169,7 @@ export function SeedPatternsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.seedPatterns || [],
+        settlement.seedPatterns || [],
         oldIndex,
         newIndex
       )
@@ -211,30 +218,28 @@ export function SeedPatternsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSettlement?.seedPatterns.length !== 0 && (
+            {settlement.seedPatterns?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.seedPatterns || []).map(
-                    (_, index) => index.toString()
+                  items={(settlement.seedPatterns || []).map((_, index) =>
+                    index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.seedPatterns || []).map(
-                    (seedPattern, index) => (
-                      <SeedPatternItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        form={form}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
-                      />
-                    )
-                  )}
+                  {(settlement.seedPatterns || []).map((seedPattern, index) => (
+                    <SeedPatternItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}

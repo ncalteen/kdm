@@ -6,8 +6,6 @@ import {
 } from '@/components/survivor/disorders/disorder-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -32,30 +30,40 @@ import { toast } from 'sonner'
 const MAX_DISORDERS = 3
 
 /**
+ * Disorders Card Props
+ */
+interface DisordersCardProps {
+  /** Survivor form instance */
+  form: UseFormReturn<Survivor>
+  /** Function to save survivor data */
+  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+}
+
+/**
  * Disorders Card Component
  */
 export function DisordersCard({
-  ...form
-}: UseFormReturn<Survivor>): ReactElement {
-  const { selectedSurvivor } = useSurvivor()
-  const { saveSurvivor } = useSurvivorSave(form)
-
+  form,
+  saveSurvivor
+}: DisordersCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
+  const disorders = form.watch('disorders')
+
   useEffect(() => {
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      selectedSurvivor?.disorders.forEach((_, i) => {
+      disorders?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSurvivor?.disorders])
+  }, [disorders])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -89,10 +97,8 @@ export function DisordersCard({
    * Handles the removal of a disorder.
    *
    * @param index Disorder Index
-   */
-  const onRemove = (index: number) => {
-    const currentDisorders = [...(selectedSurvivor?.disorders || [])]
-
+   */ const onRemove = (index: number) => {
+    const currentDisorders = [...(disorders || [])]
     currentDisorders.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -123,13 +129,10 @@ export function DisordersCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless disorder cannot be recorded.')
 
-    if (
-      i === undefined &&
-      (selectedSurvivor?.disorders.length || 0) >= MAX_DISORDERS
-    )
+    if (i === undefined && (disorders?.length || 0) >= MAX_DISORDERS)
       return toast.error('A survivor can have at most 3 disorders.')
 
-    const updatedDisorders = [...(selectedSurvivor?.disorders || [])]
+    const updatedDisorders = [...(disorders || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -174,11 +177,7 @@ export function DisordersCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(
-        selectedSurvivor?.disorders || [],
-        oldIndex,
-        newIndex
-      )
+      const newOrder = arrayMove(disorders || [], oldIndex, newIndex)
 
       saveToLocalStorage(newOrder)
 
@@ -213,7 +212,7 @@ export function DisordersCard({
               className="border-0 h-8 w-8"
               disabled={
                 isAddingNew ||
-                (selectedSurvivor?.disorders.length || 0) >= MAX_DISORDERS ||
+                (disorders?.length || 0) >= MAX_DISORDERS ||
                 Object.values(disabledInputs).some((v) => v === false)
               }>
               <PlusIcon className="h-4 w-4" />
@@ -226,30 +225,26 @@ export function DisordersCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[125px]">
           <div className="flex-1 overflow-y-auto">
-            {selectedSurvivor?.disorders.length !== 0 && (
+            {disorders?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSurvivor?.disorders || []).map((_, index) =>
-                    index.toString()
-                  )}
+                  items={(disorders || []).map((_, index) => index.toString())}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.disorders || []).map(
-                    (disorder, index) => (
-                      <DisorderItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        form={form}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
-                      />
-                    )
-                  )}
+                  {(disorders || []).map((disorder, index) => (
+                    <DisorderItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}

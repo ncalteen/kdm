@@ -1,6 +1,5 @@
 'use client'
 
-import { useSurvivor } from '@/contexts/survivor-context'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { useCallback } from 'react'
@@ -15,9 +14,10 @@ import { ZodError } from 'zod'
  * context after saving data to localStorage, ensuring that the
  * SettlementSurvivorsCard table is refreshed when survivor data changes.
  */
-export function useSurvivorSave(form: UseFormReturn<Survivor>) {
-  const { updateSelectedSurvivor } = useSurvivor()
-
+export function useSurvivorSave(
+  form: UseFormReturn<Survivor>,
+  updateSelectedSurvivor: () => void
+) {
   /**
    * Save survivor data to localStorage and update context
    *
