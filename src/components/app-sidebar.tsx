@@ -16,6 +16,8 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -32,6 +34,7 @@ import {
   LightbulbIcon,
   NotebookPenIcon,
   SchoolIcon,
+  SettingsIcon,
   SwordsIcon,
   UploadIcon,
   UsersIcon,
@@ -71,6 +74,11 @@ const baseNavPrimary = [
     title: 'Notes',
     tab: 'notes',
     icon: NotebookPenIcon
+  },
+  {
+    title: 'Settings',
+    tab: 'settings',
+    icon: SettingsIcon
   }
 ]
 
@@ -300,7 +308,10 @@ export function AppSidebar({
         />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navItems} />
+        <SidebarGroup>
+          <SidebarGroupLabel>Settlement</SidebarGroupLabel>
+          <NavMain items={navItems} />
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <p className="text-center text-xs text-gray-500 pb-2">

@@ -20,6 +20,7 @@ import { SeedPatternsCard } from '@/components/settlement/patterns/seed-patterns
 import { PrinciplesCard } from '@/components/settlement/principles/principles-card'
 import { QuarriesCard } from '@/components/settlement/quarries/quarries-card'
 import { ResourcesCard } from '@/components/settlement/resources/resources-card'
+import { SettingsCard } from '@/components/settlement/settings/settings-card'
 import { SquireProgressionCards } from '@/components/settlement/squires/squire-progression-cards'
 import { SquireSuspicionsCard } from '@/components/settlement/squires/squire-suspicions-card'
 import { SettlementSurvivorsCard } from '@/components/settlement/survivors/settlement-survivors-card'
@@ -303,6 +304,15 @@ export function SettlementForm({
           {/* Notes */}
           {settlement && selectedTab === 'notes' && (
             <NotesCard {...settlement} saveSettlement={saveSettlement} />
+          )}
+
+          {/* Settlement Settings */}
+          {settlement && selectedTab === 'settings' && (
+            <SettingsCard
+              {...settlement}
+              setSelectedSettlement={setSelectedSettlement}
+              setSelectedSurvivor={setSelectedSurvivor}
+            />
           )}
 
           {/* Hunt */}
