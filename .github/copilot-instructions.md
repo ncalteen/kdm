@@ -88,3 +88,21 @@ Other terms and phrases that can be used to describe the game include:
 ## Performance
 
 - All components should be optimized for performance.
+
+## Gameplay
+
+Kingdom Death: Monster, is a tabletop game focused around a group of survivors
+building and expanding a settlement. The core gameplay loop is broken down into
+three parts:
+
+1. **Hunt Phase**: Survivors track and hunt a monster, facing various challenges
+   and events along the way.
+1. **Showdown Phase**: Survivors confront the monster in a battle, using their
+   skills and equipment to defeat it.
+1. **Settlement Phase**: Survivors return to their settlement, where they can
+   craft items, build structures, and manage their resources.
+
+The purpose of this application is to act as a companion tool where players can
+keep track of their settlement and survivors. Additionally, they can switch
+between the various phases (above), which will surface relevant information and
+functionality.
