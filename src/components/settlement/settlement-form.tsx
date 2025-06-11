@@ -1,5 +1,6 @@
 'use client'
 
+import { HuntCard } from '@/components/hunt/hunt-card'
 import { CollectiveCognitionRewardsCard } from '@/components/settlement/arc/collective-cognition-rewards-card'
 import { CollectiveCognitionVictoriesCard } from '@/components/settlement/arc/collective-cognition-victories-card'
 import { KnowledgesCard } from '@/components/settlement/arc/knowledges-card'
@@ -316,6 +317,13 @@ export function SettlementForm({
           )}
 
           {/* Hunt */}
+          {settlement && selectedTab === 'hunt' && (
+            <HuntCard
+              settlement={settlement}
+              settlementForm={settlementForm}
+              saveSettlement={saveSettlement}
+            />
+          )}
 
           {/* Showdown */}
         </div>

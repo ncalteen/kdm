@@ -34,6 +34,7 @@ import {
   HourglassIcon,
   LightbulbIcon,
   NotebookPenIcon,
+  PawPrintIcon,
   SchoolIcon,
   SettingsIcon,
   SwordsIcon,
@@ -43,7 +44,6 @@ import {
 } from 'lucide-react'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { SettlementSwitcher } from './menu/settlement-switcher'
 
 const baseNavPrimary = [
   {
@@ -114,6 +114,19 @@ const navSquires = [
     tab: 'notes',
     icon: NotebookPenIcon
   }
+]
+
+const navEmbark = [
+  {
+    title: 'Hunt',
+    tab: 'hunt',
+    icon: PawPrintIcon
+  }
+  // {
+  //   title: 'Showdown',
+  //   tab: 'showdown',
+  //   icon: SkullIcon
+  // }
 ]
 
 /**
@@ -312,6 +325,10 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupLabel>Settlement</SidebarGroupLabel>
           <NavMain items={navItems} />
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Embark</SidebarGroupLabel>
+          <NavMain items={navEmbark} />
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
