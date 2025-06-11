@@ -1,33 +1,35 @@
 # Copilot Instructions
 
-Each of the following sections contains a list of instructions for Copilot to
-follow when generating code. The instructions are grouped by category.
-
 ## React Components
 
 - When a parent element contains a one or more `Checkbox` components, they
   should be separated from each other (and preceding/following text) using
   `gap-2`.
-- All React components should follow the same coding standards.
-  - All components should be written in TypeScript.
-  - Inputs should be uncontrolled components.
-  - JSDoc comments should be used to document all components.
-  - Input and return types should be explicitly defined.
-  - If a component is used to display an editable list of items, the items
-    themselves should be created as separate components.
-  - When values are modified and saved, the component should save the values to
-    localStorage following the appropriate schema.
-  - If the user is creating, editing, or deleting a value, the component should
-    provide feedback to the user using toast notifications from the `sonner`
-    library.
-  - If the input field is a numerical input, it should be saved on change, not
-    on blur.
-  - If the input field is a text input, it should be saved on Enter key is
-    pressed.
-  - ShadCN reusable components can be found in the `src/components/ui`
-    directory.
-  - Where applicable, components should include `name` and `id` attributes for
-    accessibility and testing purposes.
+- All components should be written in TypeScript.
+- Inputs should be uncontrolled.
+- JSDoc comments should be used to document all components and functions.
+- Input and return types should be explicitly defined.
+- If a component is used to display an editable list of items, the items
+  themselves should be created as separate components.
+- When values are modified and saved, the component should save the values to
+  localStorage following the appropriate schema.
+- If the user is creating, editing, or deleting a value, the component should
+  provide feedback to the user using toast notifications from the `sonner`
+  library.
+- If the input field is a single-line text input, it should be saved on Enter
+  key is pressed.
+- If the input field is a multi-line text input, it should be saved on blur.
+- Other input fields should be saved on change.
+- ShadCN reusable components can be found in the `src/components/ui` directory.
+- Where applicable, components should include `name` and `id` attributes for
+  accessibility and testing purposes.
+- All components should be optimized for performance.
+- When components need data from localStorage, they should use the relevant
+  context provider to access the data. However, they should not directly call
+  the context provider. Instead, a parent component should pass the data down as
+  props to the child component. **Only the page itself should call context
+  providers.** This is important to reduce unnecessary re-renders and improve
+  performance.
 
 ## Object Schemas
 
@@ -42,8 +44,8 @@ follow when generating code. The instructions are grouped by category.
 
 ## User Messaging
 
-- All user messaging should be done using the `sonner` library.
-- All messages should be displayed using the `toast` function.
+- All user messaging should be done using the `sonner` library's `toast`
+  function.
 - If an error occurs while parsing an input value against the Zod schema, the
   error message from the raised `ZodError` should be used in the toast
   notification. If no error message is provided, the following message should be
@@ -84,10 +86,6 @@ Other terms and phrases that can be used to describe the game include:
 - Overwhelming odds.
 - Struggle for survival.
 - Victory rarely achieved, and at great cost.
-
-## Performance
-
-- All components should be optimized for performance.
 
 ## Gameplay
 
