@@ -64,22 +64,16 @@ function SurvivorSelectionDrawer({
 
   const handleSurvivorToggle = (survivorId: number) => {
     setTempSelection((prev) => {
-      if (prev.includes(survivorId)) {
+      if (prev.includes(survivorId))
         return prev.filter((id) => id !== survivorId)
-      } else if (prev.length < maxSelection) {
-        return [...prev, survivorId]
-      }
+      else if (prev.length < maxSelection) return [...prev, survivorId]
       return prev
     })
   }
 
-  const handleConfirm = () => {
-    onSelectionChange(tempSelection)
-  }
+  const handleConfirm = () => onSelectionChange(tempSelection)
 
-  const handleCancel = () => {
-    setTempSelection(selectedSurvivors)
-  }
+  const handleCancel = () => setTempSelection(selectedSurvivors)
 
   return (
     <Drawer>
@@ -155,13 +149,9 @@ function ScoutSelectionDrawer({
     selectedScout
   )
 
-  const handleConfirm = () => {
-    onSelectionChange(tempSelection)
-  }
+  const handleConfirm = () => onSelectionChange(tempSelection)
 
-  const handleCancel = () => {
-    setTempSelection(selectedScout)
-  }
+  const handleCancel = () => setTempSelection(selectedScout)
 
   return (
     <Drawer>
@@ -170,8 +160,7 @@ function ScoutSelectionDrawer({
         <DrawerHeader>
           <DrawerTitle>Select Scout</DrawerTitle>
           <DrawerDescription>
-            Choose a survivor to act as scout for this hunt. The scout&apos;s
-            keen eyes are essential in the darkness.
+            Choose a survivor to act as scout for this hunt.
           </DrawerDescription>
         </DrawerHeader>
         <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
@@ -235,16 +224,22 @@ export function HuntCard({
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
 
   // Get available survivors for this settlement
-  const availableSurvivors = useMemo(() => {
-    if (!settlement?.id) return []
-    return getSurvivors(settlement.id).filter((survivor) => !survivor.dead)
-  }, [settlement?.id])
+  const availableSurvivors = useMemo(
+    () =>
+      settlement?.id
+        ? getSurvivors(settlement.id).filter((survivor) => !survivor.dead)
+        : [],
+    [settlement?.id]
+  )
 
   // Get available quarries (unlocked ones)
-  const availableQuarries = useMemo(() => {
-    if (!settlement?.quarries) return []
-    return settlement.quarries.filter((quarry) => quarry.unlocked)
-  }, [settlement?.quarries])
+  const availableQuarries = useMemo(
+    () =>
+      settlement?.quarries
+        ? settlement.quarries.filter((quarry) => quarry.unlocked)
+        : [],
+    [settlement?.quarries]
+  )
 
   // Check if settlement has active hunt or showdown
   const hasActiveExpedition =
@@ -252,18 +247,12 @@ export function HuntCard({
 
   // Handle hunt initiation
   const handleInitiateHunt = () => {
-    if (!settlement || !selectedQuarry || selectedSurvivors.length === 0) {
-      toast.error('The darkness swallows your words. Please try again.')
-      return
-    }
+    if (!settlement || !selectedQuarry || selectedSurvivors.length === 0)
+      return toast.error('The darkness swallows your words. Please try again.')
 
     // Validate scout selection if settlement uses scouts
-    if (settlement.usesScouts && !selectedScout) {
-      toast.error(
-        'When a settlement uses scouts, a scout must be selected for the hunt. The scout&apos;s keen eyes are essential in the darkness.'
-      )
-      return
-    }
+    if (settlement.usesScouts && !selectedScout)
+      return toast.error('A scout must be selected for the hunt.')
 
     const activeHunt = {
       quarryName: selectedQuarry,
@@ -274,7 +263,7 @@ export function HuntCard({
 
     saveSettlement(
       { activeHunt },
-      'The hunt begins. Survivors venture into the darkness, guided by the lantern&apos;s light.'
+      'The hunt begins. Survivors venture into the darkness.'
     )
 
     // Reset form
