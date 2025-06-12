@@ -1,17 +1,9 @@
 'use client'
 
+import { ScoutSelectionDrawer } from '@/components/hunt/scout-selection-drawer'
+import { SurvivorSelectionDrawer } from '@/components/hunt/survivor-selection-drawer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger
-} from '@/components/ui/drawer'
 import {
   Select,
   SelectContent,
@@ -21,8 +13,7 @@ import {
 } from '@/components/ui/select'
 import { getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
-import { Survivor } from '@/schemas/survivor'
-import { Crown, UserCheck, Users } from 'lucide-react'
+import { Crown, Users } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -30,183 +21,10 @@ import { toast } from 'sonner'
  * Hunt Card Props
  */
 interface HuntCardProps {
+  /** Settlement */
   settlement: Settlement | null
+  /** Function to Save Settlement Data */
   saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
-}
-
-/**
- * Survivor Selection Drawer Props
- */
-interface SurvivorSelectionDrawerProps {
-  title: string
-  description: string
-  survivors: Survivor[]
-  selectedSurvivors: number[]
-  onSelectionChange: (survivorIds: number[]) => void
-  maxSelection: number
-  children: React.ReactNode
-}
-
-/**
- * Survivor Selection Drawer Component
- */
-function SurvivorSelectionDrawer({
-  title,
-  description,
-  survivors,
-  selectedSurvivors,
-  onSelectionChange,
-  maxSelection,
-  children
-}: SurvivorSelectionDrawerProps): ReactElement {
-  const [tempSelection, setTempSelection] =
-    useState<number[]>(selectedSurvivors)
-
-  const handleSurvivorToggle = (survivorId: number) => {
-    setTempSelection((prev) => {
-      if (prev.includes(survivorId))
-        return prev.filter((id) => id !== survivorId)
-      else if (prev.length < maxSelection) return [...prev, survivorId]
-      return prev
-    })
-  }
-
-  const handleConfirm = () => onSelectionChange(tempSelection)
-
-  const handleCancel = () => setTempSelection(selectedSurvivors)
-
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{title}</DrawerTitle>
-          <DrawerDescription>{description}</DrawerDescription>
-        </DrawerHeader>
-        <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
-          <div className="grid gap-2">
-            {survivors.map((survivor) => (
-              <Button
-                key={survivor.id}
-                variant={
-                  tempSelection.includes(survivor.id) ? 'default' : 'outline'
-                }
-                className="justify-start h-auto p-3"
-                onClick={() => handleSurvivorToggle(survivor.id)}
-                disabled={
-                  !tempSelection.includes(survivor.id) &&
-                  tempSelection.length >= maxSelection
-                }>
-                <div className="flex items-center gap-2">
-                  {tempSelection.includes(survivor.id) && (
-                    <UserCheck className="h-4 w-4" />
-                  )}
-                  <div className="text-left">
-                    <div className="font-medium">{survivor.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {survivor.gender} • Hunt XP: {survivor.huntXP}
-                    </div>
-                  </div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </div>
-        <DrawerFooter>
-          <div className="flex gap-2">
-            <DrawerClose asChild>
-              <Button variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </DrawerClose>
-            <DrawerClose asChild>
-              <Button onClick={handleConfirm}>
-                Confirm Selection ({tempSelection.length}/{maxSelection})
-              </Button>
-            </DrawerClose>
-          </div>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  )
-}
-
-/**
- * Scout Selection Drawer Component
- */
-function ScoutSelectionDrawer({
-  survivors,
-  selectedScout,
-  onSelectionChange,
-  children
-}: {
-  survivors: Survivor[]
-  selectedScout: number | null
-  onSelectionChange: (scoutId: number | null) => void
-  children: React.ReactNode
-}): ReactElement {
-  const [tempSelection, setTempSelection] = useState<number | null>(
-    selectedScout
-  )
-
-  const handleConfirm = () => onSelectionChange(tempSelection)
-
-  const handleCancel = () => setTempSelection(selectedScout)
-
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Select Scout</DrawerTitle>
-          <DrawerDescription>
-            Choose a survivor to act as scout for this hunt.
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
-          <div className="grid gap-2">
-            {survivors.map((survivor) => (
-              <Button
-                key={survivor.id}
-                variant={tempSelection === survivor.id ? 'default' : 'outline'}
-                className="justify-start h-auto p-3"
-                onClick={() =>
-                  setTempSelection(
-                    tempSelection === survivor.id ? null : survivor.id
-                  )
-                }>
-                <div className="flex items-center gap-2">
-                  {tempSelection === survivor.id && (
-                    <Crown className="h-4 w-4" />
-                  )}
-                  <div className="text-left">
-                    <div className="font-medium">{survivor.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {survivor.gender} • Hunt XP: {survivor.huntXP}
-                    </div>
-                  </div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </div>
-        <DrawerFooter>
-          <div className="flex gap-2">
-            <DrawerClose asChild>
-              <Button variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-            </DrawerClose>
-            <DrawerClose asChild>
-              <Button onClick={handleConfirm}>
-                Confirm Scout ({tempSelection ? '1' : '0'}/1)
-              </Button>
-            </DrawerClose>
-          </div>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  )
 }
 
 /**
