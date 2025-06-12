@@ -1,7 +1,7 @@
 'use client'
 
-import { ScoutSelectionDrawer } from '@/components/hunt/scout-selection-drawer'
-import { SurvivorSelectionDrawer } from '@/components/hunt/survivor-selection-drawer'
+import { ScoutSelectionDrawer } from '@/components/hunt/scout-selection/scout-selection-drawer'
+import { SurvivorSelectionDrawer } from '@/components/hunt/survivor-selection/survivor-selection-drawer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {

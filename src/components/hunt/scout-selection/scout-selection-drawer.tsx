@@ -12,8 +12,9 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Survivor } from '@/schemas/survivor'
-import { UserCheckIcon, UserSearchIcon } from 'lucide-react'
+import { UserSearchIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
+import { ScoutSelectionCard } from './scout-selection-card'
 
 /**
  * Scout Selection Drawer Props
@@ -72,40 +73,15 @@ export function ScoutSelectionDrawer({
         </DrawerHeader>
         <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
           <div className="grid gap-2">
-            {survivors.map((survivor) => {
-              const isSelectedAsSurvivor = selectedSurvivors.includes(
-                survivor.id
-              )
-              const isCurrentlySelected = tempSelection === survivor.id
-
-              return (
-                <Button
-                  key={survivor.id}
-                  variant={isCurrentlySelected ? 'default' : 'outline'}
-                  className="justify-start h-auto p-3"
-                  onClick={() => handleSurvivorToggle(survivor.id)}
-                  disabled={isSelectedAsSurvivor}>
-                  <div className="flex items-center gap-2">
-                    {isCurrentlySelected && (
-                      <UserCheckIcon className="h-4 w-4" />
-                    )}
-                    <div className="text-left">
-                      <div className="font-medium">
-                        {survivor.name}
-                        {isSelectedAsSurvivor && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            (In Hunt Party)
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {survivor.gender} • Hunt XP: {survivor.huntXP}
-                      </div>
-                    </div>
-                  </div>
-                </Button>
-              )
-            })}
+            {survivors.map((survivor) => (
+              <ScoutSelectionCard
+                key={survivor.id}
+                {...survivor}
+                handleSurvivorToggle={handleSurvivorToggle}
+                isCurrentlySelected={tempSelection === survivor.id}
+                isSelectedAsSurvivor={selectedSurvivors.includes(survivor.id)}
+              />
+            ))}
           </div>
         </div>
         <DrawerFooter>

@@ -12,8 +12,9 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Survivor } from '@/schemas/survivor'
-import { UserCheckIcon, UsersIcon } from 'lucide-react'
+import { UsersIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
+import { SurvivorSelectionCard } from './survivor-selection-card'
 
 /**
  * Survivor Selection Drawer Props
@@ -80,43 +81,20 @@ export function SurvivorSelectionDrawer({
         </DrawerHeader>
         <div className="px-4 pb-4 max-h-[60vh]">
           <div className="grid gap-2">
-            {survivors.map((survivor) => {
-              const isSelectedAsScout = selectedScout === survivor.id
-              const isDisabled =
-                isSelectedAsScout ||
-                (!tempSelection.includes(survivor.id) &&
-                  tempSelection.length >= maxSelection)
-
-              return (
-                <Button
-                  key={survivor.id}
-                  variant={
-                    tempSelection.includes(survivor.id) ? 'default' : 'outline'
-                  }
-                  className="justify-start h-auto p-3"
-                  onClick={() => handleSurvivorToggle(survivor.id)}
-                  disabled={isDisabled}>
-                  <div className="flex items-center gap-2">
-                    {tempSelection.includes(survivor.id) && (
-                      <UserCheckIcon className="h-4 w-4" />
-                    )}
-                    <div className="text-left">
-                      <div className="font-medium">
-                        {survivor.name}
-                        {isSelectedAsScout && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            (Scout)
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {survivor.gender} • Hunt XP: {survivor.huntXP}
-                      </div>
-                    </div>
-                  </div>
-                </Button>
-              )
-            })}
+            {survivors.map((survivor) => (
+              <SurvivorSelectionCard
+                key={survivor.id}
+                {...survivor}
+                isSelectedAsScout={selectedScout === survivor.id}
+                isDisabled={
+                  selectedScout === survivor.id ||
+                  (!tempSelection.includes(survivor.id) &&
+                    tempSelection.length >= maxSelection)
+                }
+                handleSurvivorToggle={handleSurvivorToggle}
+                tempSelection={tempSelection}
+              />
+            ))}
           </div>
         </div>
         <DrawerFooter>
