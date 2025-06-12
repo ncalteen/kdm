@@ -164,7 +164,7 @@ export function HuntCard({
             <label className="text-sm font-medium">Select Survivors</label>
             <SurvivorSelectionDrawer
               title="Select Hunt Party"
-              description="Choose up to 4 survivors to embark on this hunt. Their courage will be tested in the darkness."
+              description="Choose up to 4 survivors to embark on this hunt."
               survivors={availableSurvivors}
               selectedSurvivors={selectedSurvivors}
               onSelectionChange={setSelectedSurvivors}
@@ -188,6 +188,8 @@ export function HuntCard({
             <div className="space-y-2">
               <label className="text-sm font-medium">Select Scout</label>
               <ScoutSelectionDrawer
+                title="Select Scout"
+                description="Choose a single scout. Their skills will help navigate the dangers ahead."
                 survivors={availableSurvivors}
                 selectedScout={selectedScout}
                 onSelectionChange={setSelectedScout}>

@@ -12,7 +12,7 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Survivor } from '@/schemas/survivor'
-import { UserCheck } from 'lucide-react'
+import { UserCheckIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
 /**
@@ -87,7 +87,7 @@ export function SurvivorSelectionDrawer({
                 }>
                 <div className="flex items-center gap-2">
                   {tempSelection.includes(survivor.id) && (
-                    <UserCheck className="h-4 w-4" />
+                    <UserCheckIcon className="h-4 w-4" />
                   )}
                   <div className="text-left">
                     <div className="font-medium">{survivor.name}</div>

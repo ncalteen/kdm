@@ -12,13 +12,17 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Survivor } from '@/schemas/survivor'
-import { Crown } from 'lucide-react'
+import { UserCheckIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
 /**
  * Scout Selection Drawer Props
  */
 interface ScoutSelectionDrawerProps {
+  /** Drawer Title */
+  title: string
+  /** Drawer Description */
+  description: string
   /** List of Survivors */
   survivors: Survivor[]
   /** Currently Selected Scout */
@@ -33,6 +37,8 @@ interface ScoutSelectionDrawerProps {
  * Scout Selection Drawer Component
  */
 export function ScoutSelectionDrawer({
+  title,
+  description,
   survivors,
   selectedScout,
   onSelectionChange,
@@ -41,6 +47,9 @@ export function ScoutSelectionDrawer({
   const [tempSelection, setTempSelection] = useState<number | null>(
     selectedScout
   )
+
+  const handleSurvivorToggle = (survivorId: number) =>
+    setTempSelection(survivorId)
 
   const handleConfirm = () => onSelectionChange(tempSelection)
 
@@ -51,10 +60,8 @@ export function ScoutSelectionDrawer({
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Select Scout</DrawerTitle>
-          <DrawerDescription>
-            Choose a survivor to act as scout for this hunt.
-          </DrawerDescription>
+          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
         <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
           <div className="grid gap-2">
@@ -63,14 +70,11 @@ export function ScoutSelectionDrawer({
                 key={survivor.id}
                 variant={tempSelection === survivor.id ? 'default' : 'outline'}
                 className="justify-start h-auto p-3"
-                onClick={() =>
-                  setTempSelection(
-                    tempSelection === survivor.id ? null : survivor.id
-                  )
-                }>
+                onClick={() => handleSurvivorToggle(survivor.id)}
+                disabled={tempSelection === survivor.id}>
                 <div className="flex items-center gap-2">
                   {tempSelection === survivor.id && (
-                    <Crown className="h-4 w-4" />
+                    <UserCheckIcon className="h-4 w-4" />
                   )}
                   <div className="text-left">
                     <div className="font-medium">{survivor.name}</div>
@@ -91,9 +95,7 @@ export function ScoutSelectionDrawer({
               </Button>
             </DrawerClose>
             <DrawerClose asChild>
-              <Button onClick={handleConfirm}>
-                Confirm Scout ({tempSelection ? '1' : '0'}/1)
-              </Button>
+              <Button onClick={handleConfirm}>Confirm Scout</Button>
             </DrawerClose>
           </div>
         </DrawerFooter>
