@@ -210,6 +210,56 @@ export const SquireSuspicionSchema = z.object({
 export type SquireSuspicion = z.infer<typeof SquireSuspicionSchema>
 
 /**
+ * Active Hunt Schema
+ */
+export const ActiveHuntSchema = z.object({
+  /** Quarry being hunted */
+  quarryName: z
+    .string()
+    .min(1, 'The quarry name cannot be empty for an active hunt.'),
+  /** Selected survivors for the hunt */
+  selectedSurvivors: z
+    .array(z.number())
+    .min(1, 'At least one survivor must be selected for the hunt.')
+    .max(4, 'No more than four survivors can embark on a hunt.'),
+  /** Selected scout for the hunt (required if settlement uses scouts) */
+  selectedScout: z.number().optional(),
+  /** Hunt started timestamp */
+  startedAt: z.date().default(() => new Date())
+})
+
+/**
+ * Active Hunt
+ */
+export type ActiveHunt = z.infer<typeof ActiveHuntSchema>
+
+/**
+ * Active Showdown Schema
+ */
+export const ActiveShowdownSchema = z.object({
+  /** Monster being faced (quarry or nemesis name) */
+  monsterName: z
+    .string()
+    .min(1, 'The monster name cannot be empty for an active showdown.'),
+  /** Type of showdown */
+  type: z.enum(['quarry', 'nemesis']),
+  /** Selected survivors for the showdown */
+  selectedSurvivors: z
+    .array(z.number())
+    .min(1, 'At least one survivor must be selected for the showdown.')
+    .max(4, 'No more than four survivors can face a monster in showdown.'),
+  /** Selected scout for the showdown (required if settlement uses scouts) */
+  selectedScout: z.number().optional(),
+  /** Showdown started timestamp */
+  startedAt: z.date().default(() => new Date())
+})
+
+/**
+ * Active Showdown
+ */
+export type ActiveShowdown = z.infer<typeof ActiveShowdownSchema>
+
+/**
  * Base Settlement Schema
  *
  * This includes all attributes and properties of a settlement that are known
@@ -268,8 +318,19 @@ export const BaseSettlementSchema = z.object({
   survivalLimit: z.number().min(1).default(1),
   /** Survivor Type */
   survivorType: z.nativeEnum(SurvivorType).default(SurvivorType.CORE),
+  /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
+  usesScouts: z.boolean().default(false),
   /** Settlment Timeline */
   timeline: z.array(TimelineYearSchema).default([]),
+
+  /*
+   * Hunt and Showdown Tracking
+   */
+
+  /** Active Hunt (mutually exclusive with activeShowdown) */
+  activeHunt: ActiveHuntSchema.optional(),
+  /** Active Showdown (mutually exclusive with activeHunt) */
+  activeShowdown: ActiveShowdownSchema.optional(),
 
   /*
    * Arc Survivor Settlements
@@ -326,6 +387,31 @@ export const SettlementSchema = BaseSettlementSchema.extend({
     .describe('Settlement Name')
     .min(1, 'A nameless settlement cannot be recorded.')
 })
+  .refine((data) => !(data.activeHunt && data.activeShowdown), {
+    message:
+      'A settlement cannot have both an active hunt and an active showdown.',
+    path: ['activeHunt', 'activeShowdown']
+  })
+  .refine(
+    (data) => {
+      // Skip validation if scouts are not used by this settlement
+      if (!data.usesScouts) return true
+
+      // Check active hunt requires scout selection
+      if (data.activeHunt && !data.activeHunt.selectedScout) return false
+
+      // Check active showdown requires scout selection
+      if (data.activeShowdown && !data.activeShowdown.selectedScout)
+        return false
+
+      return true
+    },
+    {
+      message:
+        "When a settlement uses scouts, a scout must be selected for any active hunt or showdown. The scout's keen eyes are essential for your survival.",
+      path: ['activeHunt.selectedScout', 'activeShowdown.selectedScout']
+    }
+  )
 
 /**
  * Settlement
