@@ -27,31 +27,58 @@ export function useSurvivorSave(
   const saveSurvivor = useCallback(
     (updateData: Partial<Survivor>, successMsg?: string) => {
       try {
-        const formValues = form.getValues()
         const campaign = getCampaign()
-        const existingSurvivor = campaign.survivors.find(
-          (s) => s.id === formValues.id
-        )
 
-        const updatedSurvivor = existingSurvivor
-          ? {
+        // For new survivors, updateData should contain the complete survivor data including ID
+        // For existing survivors, we merge with form values
+        let survivorToSave: Survivor
+        let isNewSurvivor = false
+
+        if ('id' in updateData && updateData.id) {
+          // Check if this survivor already exists
+          const existingSurvivor = campaign.survivors.find(
+            (s) => s.id === updateData.id
+          )
+
+          if (existingSurvivor) {
+            // Existing survivor - merge the update data
+            survivorToSave = {
               ...existingSurvivor,
               ...updateData
             }
-          : { ...formValues, ...updateData }
+          } else {
+            // New survivor with full data provided
+            survivorToSave = updateData as Survivor
+            isNewSurvivor = true
+          }
+        } else {
+          // Partial update to existing survivor - use form values as base
+          const formValues = form.getValues()
+          const existingSurvivor = campaign.survivors.find(
+            (s) => s.id === formValues.id
+          )
+
+          survivorToSave = existingSurvivor
+            ? {
+                ...existingSurvivor,
+                ...updateData
+              }
+            : { ...formValues, ...updateData }
+        }
 
         // Validate the updated survivor data
-        SurvivorSchema.parse(updatedSurvivor)
+        SurvivorSchema.parse(survivorToSave)
 
-        // If this is a new survivor, add them to the campaign
-        if (!existingSurvivor) campaign.survivors.push(updatedSurvivor)
-
-        saveCampaignToLocalStorage({
-          ...campaign,
-          survivors: campaign.survivors.map((s) =>
-            s.id === formValues.id ? updatedSurvivor : s
+        // Update the campaign survivors array
+        if (isNewSurvivor) {
+          campaign.survivors.push(survivorToSave)
+        } else {
+          campaign.survivors = campaign.survivors.map((s) =>
+            s.id === survivorToSave.id ? survivorToSave : s
           )
-        })
+        }
+
+        saveCampaignToLocalStorage(campaign)
 
         // Update the context to refresh the survivors table
         updateSelectedSurvivor()
