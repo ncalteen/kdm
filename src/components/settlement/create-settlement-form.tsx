@@ -12,6 +12,7 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 import { DefaultSquiresSuspicion } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import {
@@ -191,6 +192,39 @@ export function CreateSettlementForm({
       <Form {...form}>
         <Card className="max-w-[500px] mt-10 mx-auto">
           <CardContent className="flex flex-col gap-2 w-full">
+            {/* Settlement Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Settlement
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Settlement Name"
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          form.setValue(field.name, e.target.value)
+                        }
+                        className="w-[300px]"
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <hr className="my-0" />
+
+            <div className="text-xs text-muted-foreground">
+              When the settlement is named for the first time,{' '}
+              <strong>returning survivors</strong> gain +1 survival.
+            </div>
+
             {/* Campaign Type */}
             <FormField
               control={form.control}
@@ -240,38 +274,26 @@ export function CreateSettlementForm({
               )}
             />
 
-            {/* Settlement Name */}
+            {/* Uses Scouts */}
             <FormField
               control={form.control}
-              name="name"
+              name="usesScouts"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
-                      Settlement
+                      Use Scouts
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Settlement Name"
-                        {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) =>
-                          form.setValue(field.name, e.target.value)
-                        }
-                        className="w-[300px]"
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
                   </div>
                 </FormItem>
               )}
             />
-
-            <hr className="my-0" />
-
-            <div className="text-xs text-muted-foreground">
-              When the settlement is named for the first time,{' '}
-              <strong>returning survivors</strong> gain +1 survival.
-            </div>
           </CardContent>
         </Card>
       </Form>

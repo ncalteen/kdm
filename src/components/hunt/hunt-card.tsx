@@ -296,12 +296,12 @@ export function HuntCard({
               </p>
               <p className="text-muted-foreground">Target: {targetName}</p>
               <p className="text-sm text-muted-foreground">
-                Started: {expedition?.startedAt.toLocaleDateString()}
+                Started: {expedition?.toString()}
               </p>
             </div>
             <div className="text-sm text-muted-foreground text-center">
               Complete the current {expeditionType.toLowerCase()} before
-              starting a new expedition.
+              starting a new one.
             </div>
           </div>
         </CardContent>
