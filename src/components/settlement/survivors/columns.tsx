@@ -91,7 +91,7 @@ export const createColumns = ({
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ row }) => (
-        <div className="text-center text-xs">
+        <div className="text-xs">
           <Badge variant="outline">{row.getValue('gender')}</Badge>
         </div>
       )
@@ -103,7 +103,7 @@ export const createColumns = ({
         const huntXP = parseInt(row.getValue('huntXP'), 10)
 
         return (
-          <div className="text-center text-xs">
+          <div className="text-xs">
             <Badge variant="outline">
               {isNaN(huntXP) ? huntXP : huntXP + 1}
             </Badge>
@@ -115,7 +115,7 @@ export const createColumns = ({
       accessorKey: 'philosophy',
       header: 'Philosophy',
       cell: ({ row }) => (
-        <div className="text-left text-xs">{row.getValue('philosophy')}</div>
+        <div className="text-left text-sm">{row.getValue('philosophy')}</div>
       )
     },
     {
@@ -123,11 +123,9 @@ export const createColumns = ({
       header: 'Retired',
       cell: ({ row }) =>
         row.getValue('retired') && (
-          <div className="text-center">
-            <Badge variant="secondary" className="text-xs h-8 w-8">
-              <ShieldOffIcon />
-            </Badge>
-          </div>
+          <Badge variant="secondary" className="text-xs h-8 w-8">
+            <ShieldOffIcon />
+          </Badge>
         )
     },
     {
@@ -135,11 +133,9 @@ export const createColumns = ({
       header: 'Dead',
       cell: ({ row }) =>
         row.getValue('dead') && (
-          <div className="text-center">
-            <Badge variant="destructive" className="text-xs h-8 w-8">
-              <SkullIcon />
-            </Badge>
-          </div>
+          <Badge variant="destructive" className="text-xs h-8 w-8">
+            <SkullIcon />
+          </Badge>
         )
     },
     {

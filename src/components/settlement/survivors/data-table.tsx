@@ -2,23 +2,19 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Survivor } from '@/schemas/survivor'
 import {
   ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
-  Row,
   SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
 import { PlusIcon } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 /**
  * DataTableProps Interface
@@ -49,15 +45,12 @@ export function SurvivorDataTable<TData, TValue>({
   )
   const [rowSelection, setRowSelection] = useState({})
 
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-
   const table = useReactTable({
     data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -71,18 +64,6 @@ export function SurvivorDataTable<TData, TValue>({
   })
 
   const { rows } = table.getRowModel()
-
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    estimateSize: () => 50,
-    getScrollElement: () => tableContainerRef.current,
-    measureElement:
-      typeof window !== 'undefined' &&
-      navigator.userAgent.indexOf('Firefox') === -1
-        ? (element) => element?.getBoundingClientRect().height
-        : undefined,
-    overscan: 5
-  })
 
   return (
     <div className="flex flex-col gap-2 flex-shrink-0">
@@ -107,18 +88,16 @@ export function SurvivorDataTable<TData, TValue>({
         </Button>
       </div>
 
-      <div
-        className="relative overflow-auto h-[250px] w-full rounded-md border-1"
-        ref={tableContainerRef}>
-        <table className="grid w-full">
-          <thead className="grid sticky top-0 z-1 w-full bg-accent">
+      <div className="overflow-y-auto h-[250px] w-full rounded-md border">
+        <table className="w-full">
+          <thead className="sticky top-0 bg-accent">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                className="flex items-center font-bold text-sm">
+              <tr key={headerGroup.id} className="border-b">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th key={header.id} className="flex w-full">
+                    <th
+                      key={header.id}
+                      className="text-left p-3 font-bold text-sm">
                       <div
                         {...{
                           className: header.column.getCanSort()
@@ -137,36 +116,23 @@ export function SurvivorDataTable<TData, TValue>({
               </tr>
             ))}
           </thead>
-          <tbody
-            className="grid relative w-full"
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`
-            }}>
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index] as Row<Survivor>
-
-              return (
-                <tr
-                  data-index={virtualRow.index}
-                  ref={(node) => rowVirtualizer.measureElement(node)}
-                  key={row.id}
-                  className="flex absolute w-full py-1 items-center hover:bg-muted/50 transition-colors"
-                  style={{
-                    transform: `translateY(${virtualRow.start}px)`
-                  }}>
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td key={cell.id} className="flex w-full">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
+          <tbody>
+            {rows.map((row) => (
+              <tr
+                key={row.id}
+                className="border-b hover:bg-muted/50 transition-colors">
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td key={cell.id} className="p-3 align-top">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
