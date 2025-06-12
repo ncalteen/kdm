@@ -3,7 +3,12 @@
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { HoverCard, HoverCardTrigger } from '@/components/ui/hover-card'
+import { CardContent, CardHeader } from '@/components/ui/card'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '@/components/ui/hover-card'
 import { Survivor } from '@/schemas/survivor'
 import { AvatarFallback } from '@radix-ui/react-avatar'
 import { UserCheckIcon, UserSearchIcon } from 'lucide-react'
@@ -98,6 +103,91 @@ export function SurvivorSelectionCard({
           )}
         </Button>
       </HoverCardTrigger>
+      {/* Card width should always fit the header and content width */}
+      <HoverCardContent className="p-0">
+        <CardHeader className="p-0 px-4 bg-muted text-center text-sm font-semibold w-full">
+          {survivor.name}
+        </CardHeader>
+        <CardContent className="flex flex-row flex-wrap px-0">
+          <div className="flex-1 flex flex-col gap-1 p-2 pb-0">
+            <div className="text-xs flex justify-between border-b">
+              <strong>Hunt XP</strong>
+              {survivor.huntXP}
+            </div>
+            <div className="text-xs flex justify-between border-b">
+              <strong>Gender</strong>
+              {survivor.gender}
+            </div>
+            <div className="text-xs flex justify-between border-b">
+              <strong>Survival</strong>
+              {survivor.survival}
+            </div>
+            <div className="text-xs flex justify-between border-b">
+              <strong>Insanity</strong>
+              {survivor.insanity}
+            </div>
+            {survivor.weaponProficiencyType && (
+              <div className="text-xs flex justify-between border-b">
+                <strong>{survivor.weaponProficiencyType} Proficiency</strong>
+                {survivor.weaponProficiency}
+              </div>
+            )}
+          </div>
+
+          {(survivor.fightingArts.length > 0 ||
+            survivor.secretFightingArts.length > 0) && (
+            <div className="flex-1 border-l p-2">
+              <div className="text-xs font-semibold bg-muted p-2 text-center">
+                Fighting Arts
+              </div>
+              <div className="text-xs">
+                {survivor.fightingArts.map((art, index) => (
+                  <div key={index} className="border-b p-1">
+                    {art}
+                  </div>
+                ))}
+                {survivor.secretFightingArts.map((art, index) => (
+                  <div key={index} className="border-b p-1">
+                    {art}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {survivor.disorders.length > 0 && (
+            <div className="flex-1 border-l p-2">
+              <div className="text-xs font-semibold bg-muted p-2 text-center">
+                Disorders
+              </div>
+              <div className="text-xs">
+                {survivor.disorders.map((disorder, index) => (
+                  <div key={index} className="border-b p-1">
+                    {disorder}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {survivor.abilitiesAndImpairments.length > 0 && (
+            <div className="flex-1 border-l p-2">
+              <div className="text-xs font-semibold bg-muted p-2 text-center">
+                Abilities & Impairments
+              </div>
+              <div className="text-xs">
+                {survivor.abilitiesAndImpairments.map(
+                  (abilitiyOrImpairment, index) => (
+                    <div key={index} className="border-b p-1">
+                      {abilitiyOrImpairment}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </HoverCardContent>
     </HoverCard>
   )
 }
