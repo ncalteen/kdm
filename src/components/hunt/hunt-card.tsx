@@ -13,14 +13,18 @@ import {
 } from '@/components/ui/select'
 import { getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
-import { Crown, Users } from 'lucide-react'
+import { Users } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
+import { FormControl, FormField, FormItem, FormLabel } from '../ui/form'
 
 /**
  * Hunt Card Props
  */
 interface HuntCardProps {
+  /** Settlement form instance */
+  form: UseFormReturn<Settlement>
   /** Settlement */
   settlement: Settlement | null
   /** Function to Save Settlement Data */
@@ -34,6 +38,7 @@ interface HuntCardProps {
  * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
  */
 export function HuntCard({
+  form,
   settlement,
   saveSettlement
 }: HuntCardProps): ReactElement {
@@ -45,7 +50,9 @@ export function HuntCard({
   const availableSurvivors = useMemo(
     () =>
       settlement?.id
-        ? getSurvivors(settlement.id).filter((survivor) => !survivor.dead)
+        ? getSurvivors(settlement.id).filter(
+            (survivor) => !survivor.dead && !survivor.retired
+          )
         : [],
     [settlement?.id]
   )
@@ -128,111 +135,121 @@ export function HuntCard({
   }
 
   return (
-    <Card>
+    <Card className="max-w-[500px] mt-10 mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5" />
           Initiate Hunt
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* Quarry Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Select Quarry</label>
-            <Select value={selectedQuarry} onValueChange={setSelectedQuarry}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a quarry to hunt..." />
-              </SelectTrigger>
-              <SelectContent>
-                {availableQuarries.map((quarry) => (
-                  <SelectItem key={quarry.name} value={quarry.name}>
-                    {quarry.name} ({quarry.node})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {availableQuarries.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No quarries available. Unlock quarries first.
-              </p>
-            )}
-          </div>
+      <CardContent className="flex flex-col gap-2 w-full">
+        {/* Hunt Quarry */}
+        <FormField
+          control={form.control}
+          name="activeHunt.quarryName"
+          render={() => (
+            <FormItem>
+              <div className="flex items-center justify-between">
+                <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                  Quarry
+                </FormLabel>
+                <FormControl>
+                  <Select
+                    value={selectedQuarry}
+                    onValueChange={setSelectedQuarry}>
+                    <SelectTrigger className="w-[165px]">
+                      <SelectValue placeholder="Choose a quarry..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableQuarries.map((quarry) => (
+                        <SelectItem key={quarry.name} value={quarry.name}>
+                          {quarry.name} ({quarry.node})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </div>
+            </FormItem>
+          )}
+        />
+        {availableQuarries.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No quarries available. Unlock quarries first.
+          </p>
+        )}
 
-          {/* Survivor Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Select Survivors</label>
-            <SurvivorSelectionDrawer
-              title="Select Hunt Party"
-              description="Choose up to 4 survivors to embark on this hunt."
-              survivors={availableSurvivors}
-              selectedSurvivors={selectedSurvivors}
-              onSelectionChange={setSelectedSurvivors}
-              maxSelection={4}>
-              <Button variant="outline" className="w-full justify-start">
-                <Users className="h-4 w-4" />
-                {selectedSurvivors.length > 0
-                  ? `${selectedSurvivors.length} survivor(s) selected`
-                  : 'Select survivors...'}
-              </Button>
-            </SurvivorSelectionDrawer>
+        {/* Survivors */}
+        <div className="flex items-center justify-between">
+          <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+            Survivors
+          </FormLabel>
+          <SurvivorSelectionDrawer
+            title="Select Hunt Party"
+            description="Choose up to 4 survivors to embark on this hunt."
+            survivors={availableSurvivors}
+            selectedSurvivors={selectedSurvivors}
+            selectedScout={selectedScout}
+            onSelectionChange={setSelectedSurvivors}
+            maxSelection={4}
+          />
+        </div>
+        {availableSurvivors.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No survivors available. Create survivors first.
+          </p>
+        )}
+
+        {/* Scout */}
+        {settlement?.usesScouts && (
+          <>
+            <div className="flex items-center justify-between">
+              <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                Scout
+              </FormLabel>
+              <ScoutSelectionDrawer
+                title="Select Scout"
+                description="Choose a single scout. Their skills will help navigate the dangers ahead."
+                survivors={availableSurvivors}
+                selectedSurvivors={selectedSurvivors}
+                selectedScout={selectedScout}
+                onSelectionChange={setSelectedScout}
+              />
+            </div>
             {availableSurvivors.length === 0 && (
               <p className="text-sm text-muted-foreground">
                 No survivors available. Create survivors first.
               </p>
             )}
-          </div>
+          </>
+        )}
 
-          {/* Scout Selection (if settlement uses scouts) */}
-          {settlement?.usesScouts && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Select Scout</label>
-              <ScoutSelectionDrawer
-                title="Select Scout"
-                description="Choose a single scout. Their skills will help navigate the dangers ahead."
-                survivors={availableSurvivors}
-                selectedScout={selectedScout}
-                onSelectionChange={setSelectedScout}>
-                <Button variant="outline" className="w-full justify-start">
-                  <Crown className="h-4 w-4" />
-                  {selectedScout
-                    ? `Scout: ${
-                        availableSurvivors.find((s) => s.id === selectedScout)
-                          ?.name
-                      }`
-                    : 'Select scout...'}
-                </Button>
-              </ScoutSelectionDrawer>
-            </div>
-          )}
+        {/* Begin Hunt Button */}
+        <Button
+          onClick={handleInitiateHunt}
+          disabled={
+            !selectedQuarry ||
+            selectedSurvivors.length === 0 ||
+            (settlement?.usesScouts && !selectedScout)
+          }
+          className="w-full">
+          Begin Hunt
+        </Button>
 
-          {/* Initiate Hunt Button */}
-          <Button
-            onClick={handleInitiateHunt}
-            disabled={
-              !selectedQuarry ||
-              selectedSurvivors.length === 0 ||
-              (settlement?.usesScouts && !selectedScout)
-            }
-            className="w-full">
-            Begin Hunt
-          </Button>
-
-          {/* Validation Messages */}
-          {selectedQuarry && selectedSurvivors.length === 0 && (
+        {/* Validation Messages */}
+        {selectedQuarry && selectedSurvivors.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center">
+            Select at least one survivor to begin the hunt.
+          </p>
+        )}
+        {settlement?.usesScouts &&
+          selectedQuarry &&
+          selectedSurvivors.length > 0 &&
+          !selectedScout && (
             <p className="text-sm text-muted-foreground text-center">
-              Select at least one survivor to begin the hunt.
+              This settlement uses scouts. Select a scout to continue.
             </p>
           )}
-          {settlement?.usesScouts &&
-            selectedQuarry &&
-            selectedSurvivors.length > 0 &&
-            !selectedScout && (
-              <p className="text-sm text-muted-foreground text-center">
-                This settlement uses scouts. Select a scout to continue.
-              </p>
-            )}
-        </div>
       </CardContent>
     </Card>
   )

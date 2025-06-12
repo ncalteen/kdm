@@ -319,8 +319,8 @@ export function SettlementForm({
           {/* Hunt */}
           {settlement && selectedTab === 'hunt' && (
             <HuntCard
+              form={settlementForm}
               settlement={settlement}
-              settlementForm={settlementForm}
               saveSettlement={saveSettlement}
             />
           )}

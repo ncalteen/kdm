@@ -412,6 +412,35 @@ export const SettlementSchema = BaseSettlementSchema.extend({
       path: ['activeHunt.selectedScout', 'activeShowdown.selectedScout']
     }
   )
+  .refine(
+    (data) => {
+      // Skip validation if settlement does not use scouts
+      if (!data.usesScouts) return true
+
+      // Confirm the selected scout is not also a selected survivor
+      const selectedScout =
+        data.activeHunt?.selectedScout || data.activeShowdown?.selectedScout
+
+      // No scout selected, skip validation
+      if (!selectedScout) return true
+
+      // Check if the selected scout is in the survivor list
+      const selectedSurvivors =
+        data.activeHunt?.selectedSurvivors ||
+        data.activeShowdown?.selectedSurvivors
+
+      // No survivors selected, skip validation
+      if (!selectedSurvivors || selectedSurvivors.length === 0) return true
+
+      // Validate that the selected scout is not in the survivors list
+      return !selectedSurvivors.includes(selectedScout)
+    },
+    {
+      message:
+        'The selected scout cannot also be one of the selected survivors for the hunt or showdown.',
+      path: ['activeHunt.selectedScout', 'activeShowdown.selectedScout']
+    }
+  )
 
 /**
  * Settlement

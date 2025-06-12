@@ -12,7 +12,7 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Survivor } from '@/schemas/survivor'
-import { UserCheckIcon } from 'lucide-react'
+import { UserCheckIcon, UsersIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
 /**
@@ -31,8 +31,8 @@ interface SurvivorSelectionDrawerProps {
   onSelectionChange: (survivorIds: number[]) => void
   /** Maximum Survivors */
   maxSelection: number
-  /** Children */
-  children: React.ReactNode
+  /** Currently Selected Scout ID (to disable in survivor list) */
+  selectedScout?: number | null
 }
 
 /**
@@ -45,7 +45,7 @@ export function SurvivorSelectionDrawer({
   selectedSurvivors,
   onSelectionChange,
   maxSelection,
-  children
+  selectedScout
 }: SurvivorSelectionDrawerProps): ReactElement {
   const [tempSelection, setTempSelection] =
     useState<number[]>(selectedSurvivors)
@@ -65,39 +65,58 @@ export function SurvivorSelectionDrawer({
 
   return (
     <Drawer>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+      <DrawerTrigger asChild>
+        <Button variant="outline" className="justify-start w-[165px]">
+          <UsersIcon className="h-4 w-4" />
+          {selectedSurvivors.length > 0
+            ? `${selectedSurvivors.length} survivor(s)`
+            : 'Select survivors...'}
+        </Button>
+      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
+        <div className="px-4 pb-4 max-h-[60vh]">
           <div className="grid gap-2">
-            {survivors.map((survivor) => (
-              <Button
-                key={survivor.id}
-                variant={
-                  tempSelection.includes(survivor.id) ? 'default' : 'outline'
-                }
-                className="justify-start h-auto p-3"
-                onClick={() => handleSurvivorToggle(survivor.id)}
-                disabled={
-                  !tempSelection.includes(survivor.id) &&
-                  tempSelection.length >= maxSelection
-                }>
-                <div className="flex items-center gap-2">
-                  {tempSelection.includes(survivor.id) && (
-                    <UserCheckIcon className="h-4 w-4" />
-                  )}
-                  <div className="text-left">
-                    <div className="font-medium">{survivor.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {survivor.gender} • Hunt XP: {survivor.huntXP}
+            {survivors.map((survivor) => {
+              const isSelectedAsScout = selectedScout === survivor.id
+              const isDisabled =
+                isSelectedAsScout ||
+                (!tempSelection.includes(survivor.id) &&
+                  tempSelection.length >= maxSelection)
+
+              return (
+                <Button
+                  key={survivor.id}
+                  variant={
+                    tempSelection.includes(survivor.id) ? 'default' : 'outline'
+                  }
+                  className="justify-start h-auto p-3"
+                  onClick={() => handleSurvivorToggle(survivor.id)}
+                  disabled={isDisabled}>
+                  <div className="flex items-center gap-2">
+                    {tempSelection.includes(survivor.id) && (
+                      <UserCheckIcon className="h-4 w-4" />
+                    )}
+                    <div className="text-left">
+                      <div className="font-medium">
+                        {survivor.name}
+                        {isSelectedAsScout && (
+                          <span className="text-xs text-muted-foreground ml-1">
+                            (Scout)
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {survivor.gender} • Hunt XP: {survivor.huntXP}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Button>
-            ))}
+                </Button>
+              )
+            })}
           </div>
         </div>
         <DrawerFooter>

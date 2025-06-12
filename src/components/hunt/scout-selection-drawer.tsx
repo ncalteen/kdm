@@ -12,7 +12,7 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Survivor } from '@/schemas/survivor'
-import { UserCheckIcon } from 'lucide-react'
+import { UserCheckIcon, UserSearchIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
 /**
@@ -29,8 +29,8 @@ interface ScoutSelectionDrawerProps {
   selectedScout: number | null
   /** Callback for Selection Change */
   onSelectionChange: (scoutId: number | null) => void
-  /** Children */
-  children: React.ReactNode
+  /** Currently Selected Survivors (to disable in scout list) */
+  selectedSurvivors?: number[]
 }
 
 /**
@@ -42,14 +42,16 @@ export function ScoutSelectionDrawer({
   survivors,
   selectedScout,
   onSelectionChange,
-  children
+  selectedSurvivors = []
 }: ScoutSelectionDrawerProps): ReactElement {
   const [tempSelection, setTempSelection] = useState<number | null>(
     selectedScout
   )
 
   const handleSurvivorToggle = (survivorId: number) =>
-    setTempSelection(survivorId)
+    // If clicking the currently selected scout, deselect them
+    // Otherwise, select the clicked survivor as scout
+    setTempSelection(tempSelection === survivorId ? null : survivorId)
 
   const handleConfirm = () => onSelectionChange(tempSelection)
 
@@ -57,7 +59,12 @@ export function ScoutSelectionDrawer({
 
   return (
     <Drawer>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+      <DrawerTrigger className="w-full" asChild>
+        <Button variant="outline" className="justify-start w-[165px]">
+          <UserSearchIcon className="h-4 w-4" />
+          {selectedScout ? '1 scout' : 'Select scout...'}
+        </Button>
+      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
@@ -65,26 +72,40 @@ export function ScoutSelectionDrawer({
         </DrawerHeader>
         <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
           <div className="grid gap-2">
-            {survivors.map((survivor) => (
-              <Button
-                key={survivor.id}
-                variant={tempSelection === survivor.id ? 'default' : 'outline'}
-                className="justify-start h-auto p-3"
-                onClick={() => handleSurvivorToggle(survivor.id)}
-                disabled={tempSelection === survivor.id}>
-                <div className="flex items-center gap-2">
-                  {tempSelection === survivor.id && (
-                    <UserCheckIcon className="h-4 w-4" />
-                  )}
-                  <div className="text-left">
-                    <div className="font-medium">{survivor.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {survivor.gender} • Hunt XP: {survivor.huntXP}
+            {survivors.map((survivor) => {
+              const isSelectedAsSurvivor = selectedSurvivors.includes(
+                survivor.id
+              )
+              const isCurrentlySelected = tempSelection === survivor.id
+
+              return (
+                <Button
+                  key={survivor.id}
+                  variant={isCurrentlySelected ? 'default' : 'outline'}
+                  className="justify-start h-auto p-3"
+                  onClick={() => handleSurvivorToggle(survivor.id)}
+                  disabled={isSelectedAsSurvivor}>
+                  <div className="flex items-center gap-2">
+                    {isCurrentlySelected && (
+                      <UserCheckIcon className="h-4 w-4" />
+                    )}
+                    <div className="text-left">
+                      <div className="font-medium">
+                        {survivor.name}
+                        {isSelectedAsSurvivor && (
+                          <span className="text-xs text-muted-foreground ml-1">
+                            (In Hunt Party)
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {survivor.gender} • Hunt XP: {survivor.huntXP}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Button>
-            ))}
+                </Button>
+              )
+            })}
           </div>
         </div>
         <DrawerFooter>
