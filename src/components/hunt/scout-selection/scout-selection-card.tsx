@@ -1,8 +1,11 @@
 'use client'
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { HoverCard, HoverCardTrigger } from '@/components/ui/hover-card'
 import { Survivor } from '@/schemas/survivor'
-import { UserCheckIcon } from 'lucide-react'
+import { UserCheckIcon, UsersIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
 /**
@@ -29,28 +32,66 @@ export function ScoutSelectionCard({
   ...survivor
 }: ScoutSelectionCardProps): ReactElement {
   return (
-    <Button
-      key={survivor.id}
-      variant={isCurrentlySelected ? 'default' : 'outline'}
-      className="justify-start h-auto p-3"
-      onClick={() => handleSurvivorToggle(survivor.id)}
-      disabled={isSelectedAsSurvivor}>
-      <div className="flex items-center gap-2">
-        {isCurrentlySelected && <UserCheckIcon className="h-4 w-4" />}
-        <div className="text-left">
-          <div className="font-medium">
-            {survivor.name}
-            {isSelectedAsSurvivor && (
-              <span className="text-xs text-muted-foreground ml-1">
-                (In Hunt Party)
-              </span>
-            )}
+    <HoverCard>
+      <HoverCardTrigger className="w-[195px] h-[140px]">
+        <Button
+          key={survivor.id}
+          variant={isCurrentlySelected ? 'default' : 'outline'}
+          className="justify-start flex flex-col h-12 p-3 w-full h-full items-start relative"
+          onClick={() => handleSurvivorToggle(survivor.id)}
+          disabled={isSelectedAsSurvivor}>
+          <div className="flex flex-row items-center gap-2">
+            <Avatar
+              className={
+                'h-8 w-8 items-center justify-center' +
+                (isSelectedAsSurvivor ? ' bg-muted' : ' bg-muted/50')
+              }>
+              <AvatarFallback>{survivor.name[0]}</AvatarFallback>
+            </Avatar>
           </div>
-          <div className="text-xs text-muted-foreground">
-            {survivor.gender} • Hunt XP: {survivor.huntXP}
+
+          <div className="flex flex-row justify-between gap-2 w-full">
+            <Badge
+              className="text-xs w-[80px]"
+              variant={isCurrentlySelected ? 'secondary' : 'default'}>
+              <strong>Hunt XP:</strong> {survivor.huntXP}
+            </Badge>
+
+            <Badge
+              className="text-xs w-[80px]"
+              variant={isCurrentlySelected ? 'secondary' : 'default'}>
+              <strong>Gender:</strong> {survivor.gender}
+            </Badge>
           </div>
-        </div>
-      </div>
-    </Button>
+
+          <div className="flex flex-row justify-between gap-2 w-full">
+            <Badge
+              className="text-xs w-[80px]"
+              variant={isCurrentlySelected ? 'secondary' : 'default'}>
+              <strong>Survival:</strong> {survivor.survival}
+            </Badge>
+
+            <Badge
+              className="text-xs w-[80px]"
+              variant={isCurrentlySelected ? 'secondary' : 'default'}>
+              <strong>Insanity:</strong> {survivor.insanity}
+            </Badge>
+          </div>
+
+          {isSelectedAsSurvivor && (
+            <span className="text-xs text-red-500 ml-1 absolute bottom-2 right-2 flex gap-1 items-center">
+              <UsersIcon className="h-4 w-4 " />
+              Hunting Party
+            </span>
+          )}
+
+          {isCurrentlySelected && (
+            <span className="text-xs ml-1 absolute bottom-2 right-2 flex gap-1 items-center">
+              <UserCheckIcon className="h-4 w-4" />
+            </span>
+          )}
+        </Button>
+      </HoverCardTrigger>
+    </HoverCard>
   )
 }

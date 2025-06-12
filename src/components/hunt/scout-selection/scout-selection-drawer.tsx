@@ -71,8 +71,8 @@ export function ScoutSelectionDrawer({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
-          <div className="grid gap-2">
+        <div className="px-4 pb-4 max-h-[30vh] overflow-y-auto">
+          <div className="flex flex-wrap gap-2">
             {survivors.map((survivor) => (
               <ScoutSelectionCard
                 key={survivor.id}
