@@ -116,7 +116,7 @@ export function ScoutSelectionDrawer({
               </Button>
             </DrawerClose>
             <DrawerClose asChild>
-              <Button onClick={handleConfirm}>Confirm Scout</Button>
+              <Button onClick={handleConfirm}>Confirm Selection</Button>
             </DrawerClose>
           </div>
         </DrawerFooter>
