@@ -1,5 +1,7 @@
 'use client'
 
+import { createColumns } from '@/components/settlement/survivors/columns'
+import { SurvivorDataTable } from '@/components/settlement/survivors/data-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useTab } from '@/contexts/tab-context'
@@ -11,8 +13,6 @@ import { Survivor } from '@/schemas/survivor'
 import { PlusIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { createColumns } from './columns'
-import { SurvivorDataTable } from './data-table'
 
 /**
  * Settlement Survivors Card Props
