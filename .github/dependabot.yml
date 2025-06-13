@@ -7,7 +7,6 @@ updates:
       interval: monthly
     labels:
       - dependabot
-      - actions
     open-pull-requests-limit: 10
     reviewers:
       - ncalteen
@@ -23,7 +22,6 @@ updates:
       interval: monthly
     labels:
       - dependabot
-      - npm
     open-pull-requests-limit: 10
     reviewers:
       - ncalteen
