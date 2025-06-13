@@ -10,7 +10,7 @@ updates:
       - actions
     open-pull-requests-limit: 10
     reviewers:
-      - issue-ops/maintainers
+      - ncalteen
     groups:
       actions-minor:
         update-types:
@@ -26,7 +26,7 @@ updates:
       - npm
     open-pull-requests-limit: 10
     reviewers:
-      - issue-ops/maintainers
+      - ncalteen
     groups:
       npm-development:
         dependency-type: development
