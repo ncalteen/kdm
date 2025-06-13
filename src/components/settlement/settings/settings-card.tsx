@@ -16,14 +16,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
-import { Trash2Icon } from 'lucide-react'
+import { Trash2Icon, XIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
  * Settings Card Props
  */
-interface SettingsCardProps extends Partial<Settlement> {
+interface SettingsCardProps extends Settlement {
   /** Function to set selected settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
   /** Function to set selected survivor */
@@ -45,6 +45,44 @@ export function SettingsCard({
   ...settlement
 }: SettingsCardProps): ReactElement {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+
+  /**
+   * Handles clearing the current active hunt or showdown
+   */
+  const handleClearExpedition = () => {
+    if (!settlement.id) return
+
+    try {
+      const campaign = getCampaign()
+      const expeditionType = settlement.activeHunt ? 'hunt' : 'showdown'
+
+      // Find the settlement and clear the active expedition
+      const updatedSettlements = campaign.settlements.map((s) =>
+        s.id === settlement.id
+          ? { ...s, activeHunt: undefined, activeShowdown: undefined }
+          : s
+      )
+
+      // Save the updated campaign
+      saveCampaignToLocalStorage({
+        ...campaign,
+        settlements: updatedSettlements
+      })
+
+      setSelectedSettlement({
+        ...settlement,
+        activeHunt: undefined,
+        activeShowdown: undefined
+      })
+
+      toast.success(
+        `The ${expeditionType} ends. Survivors return to the relative safety of the settlement.`
+      )
+    } catch (error) {
+      console.error('Expedition Clear Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Handles the deletion of the current settlement
@@ -89,8 +127,41 @@ export function SettingsCard({
     }
   }
 
+  const expeditionType = settlement.activeHunt ? 'Hunt' : 'Showdown'
+
   return (
     <div className="flex flex-col gap-4">
+      {/* Clear Active Expedition */}
+      {(settlement.activeHunt || settlement.activeShowdown) && (
+        <Card className="p-0 border-yellow-500">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg text-yellow-600">
+              Active {expeditionType}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">
+                  Clear current {expeditionType.toLowerCase()}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  End the {expeditionType.toLowerCase()} and return survivors to
+                  the settlement.
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearExpedition}>
+                <XIcon className="h-4 w-4 mr-2" />
+                Clear {expeditionType}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Danger Zone */}
       <Card className="p-0 border-destructive">
         <CardHeader className="px-4 pt-3 pb-0">
