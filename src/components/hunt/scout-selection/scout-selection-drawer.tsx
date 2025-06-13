@@ -1,5 +1,7 @@
 'use client'
 
+import { ScoutSelectionCard } from '@/components/hunt/scout-selection/scout-selection-card'
+import { SurvivorDetailsPanel } from '@/components/hunt/survivor-details-panel'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -14,7 +16,6 @@ import {
 import { Survivor } from '@/schemas/survivor'
 import { UserSearchIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
-import { ScoutSelectionCard } from './scout-selection-card'
 
 /**
  * Scout Selection Drawer Props
@@ -48,11 +49,19 @@ export function ScoutSelectionDrawer({
   const [tempSelection, setTempSelection] = useState<number | null>(
     selectedScout
   )
+  const [hoveredSurvivor, setHoveredSurvivor] = useState<Survivor | null>(null)
+  const [lastHoveredSurvivor, setLastHoveredSurvivor] =
+    useState<Survivor | null>(null)
 
   const handleSurvivorToggle = (survivorId: number) =>
     // If clicking the currently selected scout, deselect them
     // Otherwise, select the clicked survivor as scout
     setTempSelection(tempSelection === survivorId ? null : survivorId)
+
+  const handleSurvivorHover = (survivor: Survivor | null) => {
+    setHoveredSurvivor(survivor)
+    if (survivor) setLastHoveredSurvivor(survivor)
+  }
 
   const handleConfirm = () => onSelectionChange(tempSelection)
 
@@ -60,7 +69,7 @@ export function ScoutSelectionDrawer({
 
   return (
     <Drawer>
-      <DrawerTrigger className="w-full" asChild>
+      <DrawerTrigger asChild>
         <Button variant="outline" className="justify-start w-[165px]">
           <UserSearchIcon className="h-4 w-4" />
           {selectedScout ? '1 scout' : 'Select scout...'}
@@ -71,8 +80,8 @@ export function ScoutSelectionDrawer({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
-          <div className="flex flex-wrap justify-between gap-2">
+        <div className="px-4 pb-4 max-h-[60vh] flex gap-4">
+          <div className="flex flex-wrap gap-2 overflow-y-auto min-w-[200px]">
             {survivors.map((survivor) => (
               <ScoutSelectionCard
                 key={survivor.id}
@@ -80,8 +89,14 @@ export function ScoutSelectionDrawer({
                 handleSurvivorToggle={handleSurvivorToggle}
                 isCurrentlySelected={tempSelection === survivor.id}
                 isSelectedAsSurvivor={selectedSurvivors.includes(survivor.id)}
+                onHover={handleSurvivorHover}
               />
             ))}
+          </div>
+          <div className="w-[450px]">
+            <SurvivorDetailsPanel
+              survivor={hoveredSurvivor || lastHoveredSurvivor}
+            />
           </div>
         </div>
         <DrawerFooter>

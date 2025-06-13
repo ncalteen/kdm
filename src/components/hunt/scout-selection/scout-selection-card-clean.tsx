@@ -34,7 +34,7 @@ export function ScoutSelectionCard({
   ...survivor
 }: ScoutSelectionCardProps): ReactElement {
   return (
-    <div className="w-[200px] h-[280px] flex-grow-2 border-4 rounded-xl border-border/20 hover:border-border/50 transition-all duration-200">
+    <div className="w-[200px] h-[280px]">
       <Button
         key={survivor.id}
         variant={isCurrentlySelected ? 'default' : 'outline'}

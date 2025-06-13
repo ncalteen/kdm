@@ -1,5 +1,7 @@
 'use client'
 
+import { SurvivorDetailsPanel } from '@/components/hunt/survivor-details-panel'
+import { SurvivorSelectionCard } from '@/components/hunt/survivor-selection/survivor-selection-card'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -14,7 +16,6 @@ import {
 import { Survivor } from '@/schemas/survivor'
 import { UsersIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
-import { SurvivorSelectionCard } from './survivor-selection-card'
 
 /**
  * Survivor Selection Drawer Props
@@ -50,6 +51,9 @@ export function SurvivorSelectionDrawer({
 }: SurvivorSelectionDrawerProps): ReactElement {
   const [tempSelection, setTempSelection] =
     useState<number[]>(selectedSurvivors)
+  const [hoveredSurvivor, setHoveredSurvivor] = useState<Survivor | null>(null)
+  const [lastHoveredSurvivor, setLastHoveredSurvivor] =
+    useState<Survivor | null>(null)
 
   const handleSurvivorToggle = (survivorId: number) => {
     setTempSelection((prev) => {
@@ -58,6 +62,11 @@ export function SurvivorSelectionDrawer({
       else if (prev.length < maxSelection) return [...prev, survivorId]
       return prev
     })
+  }
+
+  const handleSurvivorHover = (survivor: Survivor | null) => {
+    setHoveredSurvivor(survivor)
+    if (survivor) setLastHoveredSurvivor(survivor)
   }
 
   const handleConfirm = () => onSelectionChange(tempSelection)
@@ -79,8 +88,8 @@ export function SurvivorSelectionDrawer({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
-          <div className="flex flex-wrap justify-between gap-2">
+        <div className="px-4 pb-4 max-h-[60vh] flex gap-4">
+          <div className="flex flex-wrap gap-2 overflow-y-auto min-w-[200px]">
             {survivors.map((survivor) => (
               <SurvivorSelectionCard
                 key={survivor.id}
@@ -93,8 +102,14 @@ export function SurvivorSelectionDrawer({
                 }
                 handleSurvivorToggle={handleSurvivorToggle}
                 tempSelection={tempSelection}
+                onHover={handleSurvivorHover}
               />
             ))}
+          </div>
+          <div className="w-[450px]">
+            <SurvivorDetailsPanel
+              survivor={hoveredSurvivor || lastHoveredSurvivor}
+            />
           </div>
         </div>
         <DrawerFooter>
