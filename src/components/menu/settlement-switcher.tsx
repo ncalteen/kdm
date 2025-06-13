@@ -18,6 +18,11 @@ import { Check, ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react'
 /**
  * Settlement Switcher Component
  *
+ * Displays a dropdown menu for switching between settlements. When the
+ * currently selected settlement has an active hunt or showdown, the
+ * background is highlighted in to indicate the settlement is in the
+ * corresponding phase.
+ *
  * @param props Settlement Switcher Properties
  * @returns Settlement Switcher Component
  */
@@ -37,7 +42,13 @@ export function SettlementSwitcher({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+              className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${
+                settlement?.activeHunt
+                  ? 'bg-yellow-500/20 hover:bg-yellow-500/30'
+                  : settlement?.activeShowdown
+                    ? 'bg-red-500/20 hover:bg-red-500/30'
+                    : ''
+              }`}>
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <GalleryVerticalEnd className="size-4" />
               </div>
