@@ -224,8 +224,12 @@ export const ActiveHuntSchema = z.object({
     .max(4, 'No more than four survivors can embark on a hunt.'),
   /** Selected scout for the hunt (required if settlement uses scouts) */
   selectedScout: z.number().optional(),
-  /** Hunt started timestamp */
-  startedAt: z.date().default(() => new Date())
+  /** Hunt board survivor position (0-12, where 0 is Start and 12 is Starvation) */
+  survivorPosition: z.number().min(0).max(12).default(0),
+  /** Hunt board quarry position (0-12, where 0 is Start and 12 is Starvation) */
+  quarryPosition: z.number().min(0).max(12).default(6),
+  /** Whether the hunt ended via ambush (quarry moved into survivors) */
+  ambush: z.boolean().default(false)
 })
 
 /**
@@ -249,9 +253,7 @@ export const ActiveShowdownSchema = z.object({
     .min(1, 'At least one survivor must be selected for the showdown.')
     .max(4, 'No more than four survivors can face a monster in showdown.'),
   /** Selected scout for the showdown (required if settlement uses scouts) */
-  selectedScout: z.number().optional(),
-  /** Showdown started timestamp */
-  startedAt: z.date().default(() => new Date())
+  selectedScout: z.number().optional()
 })
 
 /**

@@ -30,11 +30,7 @@ export function HuntCard({
   saveSettlement
 }: HuntCardProps): ReactElement {
   return settlement?.activeHunt ? (
-    <ActiveHuntCard
-      form={form}
-      settlement={settlement}
-      saveSettlement={saveSettlement}
-    />
+    <ActiveHuntCard settlement={settlement} saveSettlement={saveSettlement} />
   ) : (
     <CreateHuntCard
       form={form}

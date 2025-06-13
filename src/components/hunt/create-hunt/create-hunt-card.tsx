@@ -87,7 +87,9 @@ export function CreateHuntCard({
       quarryName: selectedQuarry,
       selectedSurvivors,
       selectedScout: selectedScout || undefined,
-      startedAt: new Date()
+      survivorPosition: 0,
+      quarryPosition: 12,
+      ambush: false
     }
 
     saveSettlement(
