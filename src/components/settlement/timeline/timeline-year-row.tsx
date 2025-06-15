@@ -126,9 +126,9 @@ export const TimelineYearRow = memo(
 
           {/* Events Section */}
           <div className="flex flex-col gap-0.5">
-            {/* Saved Event Badges */}
+            {/* Saved Event Badges and Add Event Button (mobile) */}
             {(yearData.entries || []).length > 0 && (
-              <div className="flex flex-wrap gap-0.5">
+              <div className="flex flex-wrap gap-0.5 items-center">
                 {(yearData.entries || []).map(
                   (entry: string, entryIndex: number) => {
                     if (
@@ -150,6 +150,37 @@ export const TimelineYearRow = memo(
                     return null
                   }
                 )}
+                {/* Add Event Button for mobile - inline with badges */}
+                {!yearData.completed && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      addEventToYear(yearIndex)
+                    }}
+                    className="h-6 px-2 text-xs sm:hidden ml-auto">
+                    <PlusCircleIcon className="h-3 w-3" />
+                    <span className="text-xs hidden">Add Event</span>
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {/* Add Event Button for mobile when no events */}
+            {(yearData.entries || []).length === 0 && !yearData.completed && (
+              <div className="flex justify-end sm:hidden">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    addEventToYear(yearIndex)
+                  }}
+                  className="h-6 px-2 text-xs">
+                  <PlusCircleIcon className="h-3 w-3" />
+                  <span className="text-xs hidden">Add Event</span>
+                </Button>
               </div>
             )}
 
@@ -223,9 +254,9 @@ export const TimelineYearRow = memo(
             )}
           </div>
 
-          {/* Add Event Button */}
+          {/* Add Event Button - Desktop only */}
           {!yearData.completed && (
-            <div className="flex justify-end pr-2">
+            <div className="justify-end pr-2 hidden sm:flex">
               <Button
                 type="button"
                 variant="outline"

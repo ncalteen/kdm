@@ -145,7 +145,8 @@ export function OverviewCard({
   return (
     <Card className="border-0 p-0 py-2">
       <CardContent>
-        <div className="flex flex-row items-start justify-between gap-4">
+        {/* Desktop Layout - Horizontal with separators */}
+        <div className="hidden lg:flex flex-row items-start justify-between gap-4">
           {/* Survival Limit */}
           <FormField
             control={form.control}
@@ -339,6 +340,163 @@ export function OverviewCard({
                 )}
               />
             </>
+          )}
+        </div>
+
+        {/* Mobile/Tablet Layout - Table format */}
+        <div className="lg:hidden space-y-2">
+          {/* Survival Limit */}
+          <FormField
+            control={form.control}
+            name="survivalLimit"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-sm">Survival Limit</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="1"
+                      className="w-16 h-8 text-center no-spinners text-sm"
+                      {...field}
+                      value={field.value ?? '1'}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value)
+                        form.setValue(field.name, value)
+                        saveToLocalStorage(
+                          'survivalLimit',
+                          value,
+                          "The settlement's will to live grows stronger."
+                        )
+                      }}
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          {/* Population */}
+          <FormField
+            control={form.control}
+            name="population"
+            render={() => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-sm">Population</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      className="w-16 h-8 text-center no-spinners text-sm"
+                      value={currentPopulation}
+                      disabled
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          {/* Death Count */}
+          <FormField
+            control={form.control}
+            name="deathCount"
+            render={() => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-sm">Death Count</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      className="w-16 h-8 text-center no-spinners text-sm"
+                      value={currentDeathCount}
+                      disabled
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          {/* Lost Settlement Count */}
+          <FormField
+            control={form.control}
+            name="lostSettlements"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-sm">Lost Settlements</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      className="w-16 h-8 text-center no-spinners text-sm"
+                      {...field}
+                      value={field.value ?? '0'}
+                      disabled
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          {/* Collective Cognition (ARC only) */}
+          {isArcCampaign && (
+            <FormField
+              control={form.control}
+              name="ccValue"
+              render={() => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-sm">Collective Cognition</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        className="w-16 h-8 text-center no-spinners text-sm"
+                        value={settlement.ccValue ?? '0'}
+                        disabled
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
+          )}
+
+          {/* Lantern Research Level (People of the Lantern/Sun only) */}
+          {isLanternCampaign && (
+            <FormField
+              control={form.control}
+              name="lanternResearchLevel"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-sm">Lantern Research</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        className="w-16 h-8 text-center no-spinners text-sm"
+                        {...field}
+                        value={field.value ?? '0'}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value)
+                          const finalValue =
+                            isNaN(value) || value < 0 ? 0 : value
+                          form.setValue(field.name, finalValue)
+                          saveToLocalStorage(
+                            'lanternResearchLevel',
+                            finalValue,
+                            'The lantern burns brighter with newfound knowledge.'
+                          )
+                        }}
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
           )}
         </div>
       </CardContent>
