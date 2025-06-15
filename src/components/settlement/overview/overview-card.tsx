@@ -449,7 +449,9 @@ export function OverviewCard({
               render={() => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel className="text-sm">Collective Cognition</FormLabel>
+                    <FormLabel className="text-sm">
+                      Collective Cognition
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
