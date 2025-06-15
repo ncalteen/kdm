@@ -10,6 +10,7 @@ import {
 } from '@/lib/common'
 import { CampaignType } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
+import { ActiveHunt } from '@/schemas/active-hunt'
 import { Campaign } from '@/schemas/campaign'
 import { Settlement, TimelineYear } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
@@ -257,6 +258,46 @@ export function setSelectedTab(tab: string | null): void {
   campaign.selectedTab = tab || undefined
 
   saveCampaignToLocalStorage(campaign)
+}
+
+/**
+ * Gets the currently active hunt from localStorage.
+ *
+ * @returns Active Hunt or null if no settlement is selected or hunt is not
+ */
+export function getSelectedActiveHunt(): ActiveHunt | null {
+  const campaign = getCampaign()
+
+  // If no settlement is selected, return null
+  if (!campaign.selectedSettlementId) return null
+
+  const settlement = campaign.settlements.find(
+    (s) => s.id === campaign.selectedSettlementId
+  )
+
+  // If the settlement does not have an active hunt, return null
+  if (!settlement || !settlement.hunt) return null
+
+  // Get the full details of the survivors and scout involved in the hunt
+  // based on the selected settlement ID
+  const allSurvivors = getSurvivors(campaign.selectedSettlementId)
+
+  const survivors = allSurvivors.filter((survivor) =>
+    settlement.hunt?.survivors.includes(survivor.id)
+  )
+  const scout = allSurvivors.find(
+    (survivor) => settlement.hunt?.scout === survivor.id
+  )
+
+  return {
+    quarryName: settlement.hunt.quarryName,
+    quarryLevel: settlement.hunt.quarryLevel,
+    survivors: survivors,
+    scout: scout,
+    survivorPosition: settlement.hunt.survivorPosition,
+    quarryPosition: settlement.hunt.quarryPosition,
+    ambush: settlement.hunt.ambush || false
+  }
 }
 
 /**

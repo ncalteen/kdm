@@ -17,9 +17,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { getSurvivors } from '@/lib/utils'
-import { Settlement } from '@/schemas/settlement'
-import { Users } from 'lucide-react'
+import { getSelectedSettlement, getSurvivors } from '@/lib/utils'
+import { ActiveHunt } from '@/schemas/active-hunt'
+import { PawPrintIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -28,12 +28,10 @@ import { toast } from 'sonner'
  * Create Hunt Card Props
  */
 interface CreateHuntCardProps {
-  /** Settlement form instance */
-  form: UseFormReturn<Settlement>
-  /** Settlement */
-  settlement: Settlement | null
-  /** Function to Save Settlement Data */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Active Hunt Form Data */
+  form: UseFormReturn<ActiveHunt>
+  /** Function to Save Active Hunt */
+  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
 }
 
 /**
@@ -44,12 +42,17 @@ interface CreateHuntCardProps {
  */
 export function CreateHuntCard({
   form,
-  settlement,
-  saveSettlement
+  saveActiveHunt
 }: CreateHuntCardProps): ReactElement {
   const [selectedQuarry, setSelectedQuarry] = useState<string>('')
+  const [selectedQuarryLevel, setSelectedQuarryLevel] = useState<
+    '1' | '2' | '3' | '4'
+  >('1')
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
+
+  // Get current settlement to access available quarries and survivors
+  const settlement = getSelectedSettlement()
 
   // Get available survivors for this settlement
   const availableSurvivors = useMemo(
@@ -71,9 +74,6 @@ export function CreateHuntCard({
     [settlement?.quarries]
   )
 
-  // Typing workaround...the settlement is guaranteed to not have an active hunt
-  if (settlement && settlement.activeHunt) return <></>
-
   // Handle hunt initiation
   const handleInitiateHunt = () => {
     if (!settlement || !selectedQuarry || selectedSurvivors.length === 0)
@@ -83,50 +83,62 @@ export function CreateHuntCard({
     if (settlement.usesScouts && !selectedScout)
       return toast.error('A scout must be selected for the hunt.')
 
-    const activeHunt = {
+    // Get full survivor objects for the selected survivors
+    const allSurvivors = getSurvivors(settlement.id)
+    const huntSurvivors = allSurvivors.filter((survivor) =>
+      selectedSurvivors.includes(survivor.id)
+    )
+    const scoutSurvivor = selectedScout
+      ? allSurvivors.find((survivor) => survivor.id === selectedScout)
+      : undefined
+
+    // Save as partial data that will be merged by the hook
+    const huntData: Partial<ActiveHunt> = {
       quarryName: selectedQuarry,
-      selectedSurvivors,
-      selectedScout: selectedScout || undefined,
+      quarryLevel: selectedQuarryLevel,
+      survivors: huntSurvivors,
+      scout: scoutSurvivor,
       survivorPosition: 0,
       quarryPosition: 12,
       ambush: false
     }
 
-    saveSettlement(
-      { activeHunt },
+    saveActiveHunt(
+      huntData,
       `The hunt for ${selectedQuarry} begins. Survivors venture into the darkness.`
     )
 
     // Reset form
     setSelectedQuarry('')
+    setSelectedQuarryLevel('1')
     setSelectedSurvivors([])
     setSelectedScout(null)
   }
 
   return (
-    <Card className="max-w-[500px] mt-10 mx-auto">
+    <Card className="w-[400px] mt-10 mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Initiate Hunt
+          <PawPrintIcon className="h-5 w-5" />
+          Begin Hunt
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 w-full">
         {/* Hunt Quarry */}
         <FormField
           control={form.control}
-          name="activeHunt.quarryName"
+          name="quarryName"
           render={() => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
                   Quarry
                 </FormLabel>
                 <FormControl>
                   <Select
                     value={selectedQuarry}
                     onValueChange={setSelectedQuarry}>
-                    <SelectTrigger className="w-[165px]">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Choose a quarry..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -142,6 +154,39 @@ export function CreateHuntCard({
             </FormItem>
           )}
         />
+
+        {/* Quarry Level */}
+        <FormField
+          control={form.control}
+          name="quarryLevel"
+          render={() => (
+            <FormItem>
+              <div className="flex items-center justify-between">
+                <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
+                  Level
+                </FormLabel>
+                <FormControl>
+                  <Select
+                    value={selectedQuarryLevel}
+                    onValueChange={(value: '1' | '2' | '3' | '4') =>
+                      setSelectedQuarryLevel(value)
+                    }>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose level..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Level 1</SelectItem>
+                      <SelectItem value="2">Level 2</SelectItem>
+                      <SelectItem value="3">Level 3</SelectItem>
+                      <SelectItem value="4">Level 4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </div>
+            </FormItem>
+          )}
+        />
+
         {availableQuarries.length === 0 && (
           <p className="text-sm text-muted-foreground">
             No quarries available. Unlock quarries first.
@@ -150,7 +195,7 @@ export function CreateHuntCard({
 
         {/* Survivors */}
         <div className="flex items-center justify-between">
-          <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+          <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
             Survivors
           </FormLabel>
           <SurvivorSelectionDrawer
@@ -173,7 +218,7 @@ export function CreateHuntCard({
         {settlement?.usesScouts && (
           <>
             <div className="flex items-center justify-between">
-              <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+              <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
                 Scout
               </FormLabel>
               <ScoutSelectionDrawer
@@ -204,21 +249,6 @@ export function CreateHuntCard({
           className="w-full">
           Begin Hunt
         </Button>
-
-        {/* Validation Messages */}
-        {selectedQuarry && selectedSurvivors.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center">
-            Select at least one survivor to begin the hunt.
-          </p>
-        )}
-        {settlement?.usesScouts &&
-          selectedQuarry &&
-          selectedSurvivors.length > 0 &&
-          !selectedScout && (
-            <p className="text-sm text-muted-foreground text-center">
-              This settlement uses scouts. Select a scout to continue.
-            </p>
-          )}
       </CardContent>
     </Card>
   )

@@ -2,7 +2,7 @@
 
 import { ActiveHuntCard } from '@/components/hunt/active-hunt/active-hunt-card'
 import { CreateHuntCard } from '@/components/hunt/create-hunt/create-hunt-card'
-import { Settlement } from '@/schemas/settlement'
+import { ActiveHunt } from '@/schemas/active-hunt'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
@@ -10,12 +10,12 @@ import { UseFormReturn } from 'react-hook-form'
  * Hunt Card Props
  */
 interface HuntCardProps {
-  /** Settlement form instance */
-  form: UseFormReturn<Settlement>
-  /** Settlement */
-  settlement: Settlement | null
-  /** Function to Save Settlement Data */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Active Hunt Form Data */
+  form: UseFormReturn<ActiveHunt>
+  /** Selected Active Hunt */
+  activeHunt: ActiveHunt | null
+  /** Function to Save Active Hunt */
+  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
 }
 
 /**
@@ -26,16 +26,16 @@ interface HuntCardProps {
  */
 export function HuntCard({
   form,
-  settlement,
-  saveSettlement
+  activeHunt,
+  saveActiveHunt
 }: HuntCardProps): ReactElement {
-  return settlement?.activeHunt ? (
-    <ActiveHuntCard settlement={settlement} saveSettlement={saveSettlement} />
-  ) : (
-    <CreateHuntCard
+  return activeHunt ? (
+    <ActiveHuntCard
       form={form}
-      settlement={settlement}
-      saveSettlement={saveSettlement}
+      activeHunt={activeHunt}
+      saveActiveHunt={saveActiveHunt}
     />
+  ) : (
+    <CreateHuntCard form={form} saveActiveHunt={saveActiveHunt} />
   )
 }

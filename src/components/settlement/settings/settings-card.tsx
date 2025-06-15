@@ -54,12 +54,12 @@ export function SettingsCard({
 
     try {
       const campaign = getCampaign()
-      const expeditionType = settlement.activeHunt ? 'hunt' : 'showdown'
+      const expeditionType = settlement.hunt ? 'hunt' : 'showdown'
 
       // Find the settlement and clear the active expedition
       const updatedSettlements = campaign.settlements.map((s) =>
         s.id === settlement.id
-          ? { ...s, activeHunt: undefined, activeShowdown: undefined }
+          ? { ...s, hunt: undefined, showdown: undefined }
           : s
       )
 
@@ -71,8 +71,8 @@ export function SettingsCard({
 
       setSelectedSettlement({
         ...settlement,
-        activeHunt: undefined,
-        activeShowdown: undefined
+        hunt: undefined,
+        showdown: undefined
       })
 
       toast.success(
@@ -127,12 +127,12 @@ export function SettingsCard({
     }
   }
 
-  const expeditionType = settlement.activeHunt ? 'Hunt' : 'Showdown'
+  const expeditionType = settlement.hunt ? 'Hunt' : 'Showdown'
 
   return (
     <div className="flex flex-col gap-4">
       {/* Clear Active Expedition */}
-      {(settlement.activeHunt || settlement.activeShowdown) && (
+      {(settlement.hunt || settlement.showdown) && (
         <Card className="p-0 border-yellow-500">
           <CardHeader className="px-4 pt-3 pb-0">
             <CardTitle className="text-lg text-yellow-600">

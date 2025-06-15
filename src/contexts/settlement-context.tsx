@@ -78,13 +78,8 @@ export function SettlementProvider({
    *
    * Refreshes the selected settlement from localStorage
    */
-  const updateSelectedSettlement = () => {
-    if (selectedSettlement?.id) {
-      const updatedSettlement = getSelectedSettlement()
-
-      if (updatedSettlement) setSelectedSettlementState(updatedSettlement)
-    }
-  }
+  const updateSelectedSettlement = () =>
+    setSelectedSettlementState(getSelectedSettlement())
 
   return (
     <SettlementContext.Provider

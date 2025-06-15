@@ -29,6 +29,7 @@ import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
 import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
 import { SurvivorCard } from '@/components/survivor/survivor-card'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import { ActiveHunt } from '@/schemas/active-hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -38,18 +39,36 @@ import { UseFormReturn } from 'react-hook-form'
  * Settlement Form Props
  */
 interface SettlementFormProps {
+  /** New Survivor Being Created */
   isCreatingNewSurvivor: boolean
+  /** Function to Update Selected Survivor */
   updateSelectedSurvivor: () => void
+  /** Function to Save Survivor */
   saveSurvivor: (updateData: Partial<Survivor>, successMsg?: string) => void
+  /** Function to Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Selected Survivor */
   survivor: Survivor | null
+  /** Survivor Form Data */
   survivorForm: UseFormReturn<Survivor>
+  /** Selected Settlement */
   settlement: Settlement | null
+  /** Settlement Form Data */
   settlementForm: UseFormReturn<Settlement>
+  /** Function to Save Settlement */
   saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Function to Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Selected Tab */
   selectedTab: string
+  /** Function to Set Whether a New Survivor is Being Created */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
+  /** Active Hunt Form Data */
+  activeHuntForm: UseFormReturn<ActiveHunt>
+  /** Selected Active Hunt */
+  activeHunt: ActiveHunt | null
+  /** Function to Save Active Hunt */
+  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
 }
 
 /**
@@ -69,7 +88,10 @@ export function SettlementForm({
   saveSettlement,
   setSelectedSettlement,
   selectedTab,
-  setIsCreatingNewSurvivor
+  setIsCreatingNewSurvivor,
+  activeHuntForm,
+  activeHunt,
+  saveActiveHunt
 }: SettlementFormProps): ReactElement {
   return (
     <>
@@ -319,9 +341,9 @@ export function SettlementForm({
           {/* Hunt */}
           {settlement && selectedTab === 'hunt' && (
             <HuntCard
-              form={settlementForm}
-              settlement={settlement}
-              saveSettlement={saveSettlement}
+              form={activeHuntForm}
+              activeHunt={activeHunt}
+              saveActiveHunt={saveActiveHunt}
             />
           )}
 

@@ -43,9 +43,9 @@ export function SettlementSwitcher({
             <SidebarMenuButton
               size="lg"
               className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${
-                settlement?.activeHunt
+                settlement?.hunt
                   ? 'bg-yellow-500/20 hover:bg-yellow-500/30'
-                  : settlement?.activeShowdown
+                  : settlement?.showdown
                     ? 'bg-red-500/20 hover:bg-red-500/30'
                     : ''
               }`}>

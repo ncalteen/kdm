@@ -210,56 +210,58 @@ export const SquireSuspicionSchema = z.object({
 export type SquireSuspicion = z.infer<typeof SquireSuspicionSchema>
 
 /**
- * Active Hunt Schema
+ * Hunt Schema
  */
-export const ActiveHuntSchema = z.object({
-  /** Quarry being hunted */
-  quarryName: z
-    .string()
-    .min(1, 'The quarry name cannot be empty for an active hunt.'),
-  /** Selected survivors for the hunt */
-  selectedSurvivors: z
+export const HuntSchema = z.object({
+  /** Quarry Name */
+  quarryName: z.string().min(1, 'The quarry name cannot be empty for a hunt.'),
+  /** Quarry Level */
+  quarryLevel: z.enum(['1', '2', '3', '4']),
+  /** Selected Survivors */
+  survivors: z
     .array(z.number())
     .min(1, 'At least one survivor must be selected for the hunt.')
     .max(4, 'No more than four survivors can embark on a hunt.'),
-  /** Selected scout for the hunt (required if settlement uses scouts) */
-  selectedScout: z.number().optional(),
-  /** Hunt board survivor position (0-12, where 0 is Start and 12 is Starvation) */
+  /** Selected Scout (Required if Settlement uses Scouts) */
+  scout: z.number().optional(),
+  /** Survivor Position on Hunt Board */
   survivorPosition: z.number().min(0).max(12).default(0),
-  /** Hunt board quarry position (0-12, where 0 is Start and 12 is Starvation) */
+  /** Quarry Position on Hunt Board */
   quarryPosition: z.number().min(0).max(12).default(6),
-  /** Whether the hunt ended via ambush (quarry moved into survivors) */
+  /** Hunt Ended in Monster Ambushing Survivors */
   ambush: z.boolean().default(false)
 })
 
 /**
- * Active Hunt
+ * Hunt
  */
-export type ActiveHunt = z.infer<typeof ActiveHuntSchema>
+export type Hunt = z.infer<typeof HuntSchema>
 
 /**
- * Active Showdown Schema
+ * Showdown Schema
  */
-export const ActiveShowdownSchema = z.object({
-  /** Monster being faced (quarry or nemesis name) */
+export const ShowdownSchema = z.object({
+  /** Monster Name (Quarry or Nemesis) */
   monsterName: z
     .string()
-    .min(1, 'The monster name cannot be empty for an active showdown.'),
+    .min(1, 'The monster name cannot be empty for a showdown.'),
+  /** Monster Level (Quarry or Nemesis) */
+  monsterLevel: z.enum(['1', '2', '3', '4']),
   /** Type of showdown */
   type: z.enum(['quarry', 'nemesis']),
-  /** Selected survivors for the showdown */
-  selectedSurvivors: z
+  /** Selected Survivors */
+  survivors: z
     .array(z.number())
     .min(1, 'At least one survivor must be selected for the showdown.')
     .max(4, 'No more than four survivors can face a monster in showdown.'),
-  /** Selected scout for the showdown (required if settlement uses scouts) */
-  selectedScout: z.number().optional()
+  /** Selected Scout (Required if Settlement uses Scouts) */
+  scout: z.number().optional()
 })
 
 /**
- * Active Showdown
+ * Showdown
  */
-export type ActiveShowdown = z.infer<typeof ActiveShowdownSchema>
+export type Showdown = z.infer<typeof ShowdownSchema>
 
 /**
  * Base Settlement Schema
@@ -329,10 +331,10 @@ export const BaseSettlementSchema = z.object({
    * Hunt and Showdown Tracking
    */
 
-  /** Active Hunt (mutually exclusive with activeShowdown) */
-  activeHunt: ActiveHuntSchema.optional(),
-  /** Active Showdown (mutually exclusive with activeHunt) */
-  activeShowdown: ActiveShowdownSchema.optional(),
+  /** Hunt (mutually exclusive with showdown) */
+  hunt: HuntSchema.optional(),
+  /** Showdown (mutually exclusive with hunt) */
+  showdown: ShowdownSchema.optional(),
 
   /*
    * Arc Survivor Settlements
@@ -389,29 +391,27 @@ export const SettlementSchema = BaseSettlementSchema.extend({
     .describe('Settlement Name')
     .min(1, 'A nameless settlement cannot be recorded.')
 })
-  .refine((data) => !(data.activeHunt && data.activeShowdown), {
-    message:
-      'A settlement cannot have both an active hunt and an active showdown.',
-    path: ['activeHunt', 'activeShowdown']
+  .refine((data) => !(data.hunt && data.showdown), {
+    message: 'A settlement cannot have both an active hunt and showdown.',
+    path: ['hunt', 'showdown']
   })
   .refine(
     (data) => {
       // Skip validation if scouts are not used by this settlement
       if (!data.usesScouts) return true
 
-      // Check active hunt requires scout selection
-      if (data.activeHunt && !data.activeHunt.selectedScout) return false
+      // Check if the hunt requires scout selection
+      if (data.hunt && !data.hunt.scout) return false
 
-      // Check active showdown requires scout selection
-      if (data.activeShowdown && !data.activeShowdown.selectedScout)
-        return false
+      // Check if the showdown requires scout selection
+      if (data.showdown && !data.showdown.scout) return false
 
       return true
     },
     {
       message:
-        "When a settlement uses scouts, a scout must be selected for any active hunt or showdown. The scout's keen eyes are essential for your survival.",
-      path: ['activeHunt.selectedScout', 'activeShowdown.selectedScout']
+        "When a settlement uses scouts, a scout must be selected for the hunt or showdown. The scout's keen eyes are essential for your survival.",
+      path: ['hunt.scout', 'showdown.scout']
     }
   )
   .refine(
@@ -420,27 +420,24 @@ export const SettlementSchema = BaseSettlementSchema.extend({
       if (!data.usesScouts) return true
 
       // Confirm the selected scout is not also a selected survivor
-      const selectedScout =
-        data.activeHunt?.selectedScout || data.activeShowdown?.selectedScout
+      const scout = data.hunt?.scout || data.showdown?.scout
 
       // No scout selected, skip validation
-      if (!selectedScout) return true
+      if (!scout) return true
 
       // Check if the selected scout is in the survivor list
-      const selectedSurvivors =
-        data.activeHunt?.selectedSurvivors ||
-        data.activeShowdown?.selectedSurvivors
+      const survivors = data.hunt?.survivors || data.showdown?.survivors
 
       // No survivors selected, skip validation
-      if (!selectedSurvivors || selectedSurvivors.length === 0) return true
+      if (!survivors || survivors.length === 0) return true
 
       // Validate that the selected scout is not in the survivors list
-      return !selectedSurvivors.includes(selectedScout)
+      return !survivors.includes(scout)
     },
     {
       message:
         'The selected scout cannot also be one of the selected survivors for the hunt or showdown.',
-      path: ['activeHunt.selectedScout', 'activeShowdown.selectedScout']
+      path: ['huntunt.scout', 'showdown.scout']
     }
   )
 

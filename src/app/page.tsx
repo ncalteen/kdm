@@ -5,11 +5,14 @@ import { SettlementForm } from '@/components/settlement/settlement-form'
 import { SiteHeader } from '@/components/side-header'
 import { Form } from '@/components/ui/form'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { useActiveHunt } from '@/contexts/active-hunt-context'
 import { useSettlement } from '@/contexts/settlement-context'
 import { useSurvivor } from '@/contexts/survivor-context'
 import { useTab } from '@/contexts/tab-context'
+import { useActiveHuntSave } from '@/hooks/use-active-hunt-save'
 import { useSettlementSave } from '@/hooks/use-settlement-save'
 import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { ActiveHunt, ActiveHuntSchema } from '@/schemas/active-hunt'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -108,6 +111,7 @@ function MainPage(): ReactElement {
     updateSelectedSurvivor,
     setIsCreatingNewSurvivor
   } = useSurvivor()
+  const { selectedActiveHunt, updateSelectedActiveHunt } = useActiveHunt()
   const { selectedTab } = useTab()
 
   // Initialize the settlement form data from the context
@@ -120,6 +124,13 @@ function MainPage(): ReactElement {
     updateSelectedSettlement
   )
 
+  // Updates both settlement and active hunt contexts
+  const handleSetSelectedSettlement = (settlement: Settlement | null) => {
+    setSelectedSettlement(settlement)
+    updateSelectedSettlement()
+    updateSelectedActiveHunt()
+  }
+
   // Initialize the survivor form data from the context
   const survivorForm = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
@@ -128,6 +139,17 @@ function MainPage(): ReactElement {
   const { saveSurvivor } = useSurvivorSave(survivorForm, updateSelectedSurvivor)
 
   const selectedSurvivorSettlementId = selectedSurvivor?.settlementId
+
+  // Initialize the active hunt form data from the context
+  const activeHuntForm = useForm({
+    resolver: zodResolver(ActiveHuntSchema) as Resolver<ActiveHunt>,
+    defaultValues: selectedActiveHunt || undefined
+  })
+  const { saveActiveHunt } = useActiveHuntSave(
+    activeHuntForm,
+    updateSelectedActiveHunt,
+    updateSelectedSettlement
+  )
 
   useEffect(() => {
     // If the settlement changes, reset the settlement form with the selected
@@ -139,12 +161,17 @@ function MainPage(): ReactElement {
       // Clear selected survivor if it doesn't belong to current settlement
       if (selectedSurvivorSettlementId !== selectedSettlement.id)
         setSelectedSurvivor(null)
+
+      // Reset active hunt form if it exists
+      if (selectedActiveHunt) activeHuntForm.reset(selectedActiveHunt)
     }
   }, [
     selectedSettlement,
     selectedSurvivorSettlementId,
     setSelectedSurvivor,
-    settlementForm
+    settlementForm,
+    activeHuntForm,
+    selectedActiveHunt
   ])
 
   useEffect(() => {
@@ -161,7 +188,7 @@ function MainPage(): ReactElement {
         <div className="flex flex-1 pt-(--header-height)">
           <AppSidebar
             settlement={selectedSettlement}
-            setSelectedSettlement={setSelectedSettlement}
+            setSelectedSettlement={handleSetSelectedSettlement}
           />
           <SidebarInset>
             <Form {...settlementForm}>
@@ -178,7 +205,10 @@ function MainPage(): ReactElement {
                   selectedTab={selectedTab}
                   survivorForm={survivorForm}
                   settlementForm={settlementForm}
-                  setSelectedSettlement={setSelectedSettlement}
+                  setSelectedSettlement={handleSetSelectedSettlement}
+                  activeHuntForm={activeHuntForm}
+                  activeHunt={selectedActiveHunt}
+                  saveActiveHunt={saveActiveHunt}
                 />
               </Form>
             </Form>

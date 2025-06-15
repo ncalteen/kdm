@@ -1,4 +1,5 @@
 import { Toaster } from '@/components/ui/sonner'
+import { ActiveHuntProvider } from '@/contexts/active-hunt-context'
 import { SettlementProvider } from '@/contexts/settlement-context'
 import { SurvivorProvider } from '@/contexts/survivor-context'
 import { TabProvider } from '@/contexts/tab-context'
@@ -32,7 +33,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SettlementProvider settlement={null}>
           <SurvivorProvider survivor={null}>
-            <TabProvider initialTab="timeline">{children}</TabProvider>
+            <ActiveHuntProvider activeHunt={null}>
+              <TabProvider initialTab="timeline">{children}</TabProvider>
+            </ActiveHuntProvider>
           </SurvivorProvider>
         </SettlementProvider>
         <Toaster />

@@ -1,17 +1,21 @@
 'use client'
 
 import { HuntBoard } from '@/components/hunt/hunt-board/hunt-board'
-import { Settlement } from '@/schemas/settlement'
+import { HuntSurvivorsCard } from '@/components/hunt/hunt-survivors/hunt-survivors-card'
+import { ActiveHunt } from '@/schemas/active-hunt'
 import { ReactElement, useCallback } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Active Hunt Card Props
  */
 interface ActiveHuntCardProps {
-  /** Settlement */
-  settlement: Settlement
-  /** Function to Save Settlement Data */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Active Hunt Form */
+  form: UseFormReturn<ActiveHunt>
+  /** Active Hunt */
+  activeHunt: ActiveHunt
+  /** Function to Save Active Hunt */
+  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
 }
 
 /**
@@ -21,42 +25,39 @@ interface ActiveHuntCardProps {
  * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
  */
 export function ActiveHuntCard({
-  settlement,
-  saveSettlement
+  form,
+  activeHunt,
+  saveActiveHunt
 }: ActiveHuntCardProps): ReactElement {
   /**
    * Handle position updates on the hunt board
    */
   const handlePositionUpdate = useCallback(
     (survivorPosition: number, quarryPosition: number) => {
-      if (!settlement.activeHunt) return
-
       const survivorChanged =
-        survivorPosition !== (settlement.activeHunt.survivorPosition ?? 0)
+        survivorPosition !== (activeHunt.survivorPosition ?? 0)
 
-      const updatedActiveHunt = {
-        ...settlement.activeHunt,
-        survivorPosition,
-        quarryPosition
-      }
-
-      saveSettlement(
-        { activeHunt: updatedActiveHunt },
+      saveActiveHunt(
+        { survivorPosition, quarryPosition },
         survivorChanged ? 'Survivors moved.' : 'Quarry moved.'
       )
     },
-    [settlement.activeHunt, saveSettlement]
+    [activeHunt.survivorPosition, saveActiveHunt]
   )
-
-  // Typing workaround...the settlement is guaranteed to have an active hunt
-  if (!settlement.activeHunt) return <></>
 
   return (
     <div className="space-y-6">
       {/* Hunt Board */}
       <HuntBoard
-        activeHunt={settlement.activeHunt}
+        activeHunt={activeHunt}
         onPositionUpdate={handlePositionUpdate}
+      />
+
+      {/* Hunt Party Survivors */}
+      <HuntSurvivorsCard
+        form={form}
+        activeHunt={activeHunt}
+        saveActiveHunt={saveActiveHunt}
       />
     </div>
   )
