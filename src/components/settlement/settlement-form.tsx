@@ -116,7 +116,26 @@ export function SettlementForm({
           )}
           {/* Timeline */}
           {settlement && selectedTab === 'timeline' && (
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-col lg:flex-row gap-2">
+              {/* Mobile: Departing bonus first */}
+              <div className="lg:hidden">
+                <DepartingBonusesCard
+                  {...settlement}
+                  form={settlementForm}
+                  saveSettlement={saveSettlement}
+                />
+              </div>
+
+              {/* Mobile: Arrival bonus second */}
+              <div className="lg:hidden">
+                <ArrivalBonusesCard
+                  {...settlement}
+                  form={settlementForm}
+                  saveSettlement={saveSettlement}
+                />
+              </div>
+
+              {/* Desktop/Mobile: Timeline (left on desktop, third on mobile) */}
               <div className="flex-1">
                 <TimelineCard
                   {...settlement}
@@ -124,7 +143,9 @@ export function SettlementForm({
                   saveSettlement={saveSettlement}
                 />
               </div>
-              <div className="flex-1 flex flex-col gap-2">
+
+              {/* Desktop: Bonuses on right */}
+              <div className="hidden lg:flex lg:flex-col lg:flex-1 gap-2">
                 <DepartingBonusesCard
                   {...settlement}
                   form={settlementForm}
