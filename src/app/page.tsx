@@ -180,7 +180,7 @@ function MainPage(): ReactElement {
   }, [selectedSurvivor, survivorForm])
 
   return (
-    <div className="[--header-height:calc(--spacing(10))]">
+    <div className="[--header-height:calc(--spacing(10))] min-w-[450px]">
       <SidebarProvider className="flex flex-col">
         {/* Header requires the settlement form to display high-level data */}
         <SiteHeader />

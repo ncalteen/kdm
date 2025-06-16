@@ -49,9 +49,10 @@ export function SurvivorCard({
   return (
     <Card className="w-full py-2 border-0 bg-secondary">
       <CardContent className="px-2">
-        <div className="flex flex-col lg:flex-row gap-2 w-full">
-          {/* First column - essential stats */}
-          <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex lg:flex-row lg:flex-wrap gap-2 w-full">
+          {/* First Column - Essential Stats */}
+          <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <StatusCard {...form} form={form} saveSurvivor={saveSurvivor} />
             <SurvivalCard
               {...form}
@@ -59,7 +60,6 @@ export function SurvivorCard({
               settlement={settlement}
               saveSurvivor={saveSurvivor}
             />
-
             <AttributeCard
               {...form}
               form={form}
@@ -84,8 +84,8 @@ export function SurvivorCard({
             />
           </div>
 
-          {/* Second column - ability cards */}
-          <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
+          {/* Second Column - Abilities */}
+          <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <HuntXPCard
               {...form}
               form={form}
@@ -118,9 +118,9 @@ export function SurvivorCard({
             />
           </div>
 
-          {/* Third column - ARC cards */}
+          {/* Third Column - ARC */}
           {settlement.survivorType === SurvivorType.ARC && (
-            <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
+            <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
               <PhilosophyCard
                 {...form}
                 form={form}
@@ -133,6 +133,96 @@ export function SurvivorCard({
               />
             </div>
           )}
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="lg:hidden flex flex-col gap-2 w-full">
+          {/* Core Identity & Status */}
+          <StatusCard {...form} form={form} saveSurvivor={saveSurvivor} />
+          <HuntXPCard
+            {...form}
+            form={form}
+            settlement={settlement}
+            saveSurvivor={saveSurvivor}
+          />
+
+          {/* Core Stats */}
+          <SurvivalCard
+            {...form}
+            form={form}
+            settlement={settlement}
+            saveSurvivor={saveSurvivor}
+          />
+          <AttributeCard
+            {...form}
+            form={form}
+            settlement={settlement}
+            saveSurvivor={saveSurvivor}
+          />
+          <SanityCard
+            {...form}
+            form={form}
+            settlement={settlement}
+            saveSurvivor={saveSurvivor}
+          />
+
+          {/* Equipment */}
+          <HeadCard {...form} form={form} saveSurvivor={saveSurvivor} />
+          <ArmsCard {...form} form={form} saveSurvivor={saveSurvivor} />
+          <BodyCard {...form} form={form} saveSurvivor={saveSurvivor} />
+          <WaistCard {...form} form={form} saveSurvivor={saveSurvivor} />
+          <LegsCard {...form} form={form} saveSurvivor={saveSurvivor} />
+
+          {/* Development */}
+          <WeaponProficiencyCard form={form} saveSurvivor={saveSurvivor} />
+          <CourageUnderstandingCard
+            {...form}
+            form={form}
+            settlement={settlement}
+            saveSurvivor={saveSurvivor}
+          />
+
+          {/* Abilities & Traits */}
+          <FightingArtsCard
+            {...form}
+            form={form}
+            settlement={settlement}
+            saveSurvivor={saveSurvivor}
+          />
+          <DisordersCard {...form} form={form} saveSurvivor={saveSurvivor} />
+          <AbilitiesAndImpairmentsCard
+            {...form}
+            form={form}
+            saveSurvivor={saveSurvivor}
+          />
+          <OncePerLifetimeCard
+            {...form}
+            form={form}
+            saveSurvivor={saveSurvivor}
+          />
+
+          {/* ARC-specific cards */}
+          {settlement.survivorType === SurvivorType.ARC && (
+            <>
+              <PhilosophyCard
+                {...form}
+                form={form}
+                saveSurvivor={saveSurvivor}
+              />
+              <KnowledgeCard
+                {...form}
+                form={form}
+                saveSurvivor={saveSurvivor}
+              />
+            </>
+          )}
+
+          {/* Administrative */}
+          <NextDepartureCard
+            {...form}
+            form={form}
+            saveSurvivor={saveSurvivor}
+          />
         </div>
       </CardContent>
     </Card>
