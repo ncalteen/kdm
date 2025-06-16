@@ -88,7 +88,7 @@ export function SurvivorDataTable<TData, TValue>({
         </Button>
       </div>
 
-      <div className="overflow-y-auto h-[250px] w-full rounded-md border">
+      <div className="overflow-y-auto h-[300px] w-full rounded-md border">
         <table className="w-full">
           <thead className="sticky top-0 bg-accent">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -97,7 +97,7 @@ export function SurvivorDataTable<TData, TValue>({
                   return (
                     <th
                       key={header.id}
-                      className="text-left p-3 font-bold text-sm">
+                      className="text-left p-2 font-bold text-sm">
                       <div
                         {...{
                           className: header.column.getCanSort()
@@ -123,7 +123,7 @@ export function SurvivorDataTable<TData, TValue>({
                 className="border-b hover:bg-muted/50 transition-colors">
                 {row.getVisibleCells().map((cell) => {
                   return (
-                    <td key={cell.id} className="p-3 align-top">
+                    <td key={cell.id} className="p-2 align-top">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
