@@ -92,12 +92,13 @@ export function CourageUnderstandingCard({
   return (
     <Card className="p-2 border-0">
       <CardContent className="p-0">
-        <div className="flex flex-wrap justify-between mx-2">
+        {/* Desktop Layout */}
+        <div className="hidden lg:flex flex-wrap justify-between mx-2">
           {/* Courage Section */}
           <div className="flex flex-col">
             <div className="font-bold text-sm mb-1">Courage</div>
 
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-1 lg:gap-2">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
@@ -114,7 +115,7 @@ export function CourageUnderstandingCard({
 
             <hr className="my-2" />
 
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between gap-1">
               {Array.from({ length: 2 }, (_, i) => (
                 <div key={i} className="flex items-center gap-1">
                   {Array.from({ length: i + 1 }, (_, j) => (
@@ -146,7 +147,7 @@ export function CourageUnderstandingCard({
           <div className="flex flex-col">
             <div className="font-bold text-sm mb-1">Understanding</div>
 
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-1 lg:gap-2">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
@@ -165,7 +166,104 @@ export function CourageUnderstandingCard({
 
             <hr className="my-2" />
 
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between gap-1">
+              {Array.from({ length: 2 }, (_, i) => (
+                <div key={i} className="flex items-center gap-1">
+                  {Array.from({ length: i + 1 }, (_, j) => (
+                    <Checkbox
+                      key={j}
+                      disabled
+                      className="!bg-white border border-gray-300 h-3 w-3"
+                    />
+                  ))}
+                  {i === 0 ? (
+                    <span className="text-xs flex items-center gap-1">
+                      <BookOpenIcon className="h-4 w-4" />{' '}
+                      {understandingMilestoneText}
+                    </span>
+                  ) : (
+                    <span className="text-xs flex items-center gap-1">
+                      <BookOpenIcon className="h-4 w-4" /> White Secret
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="lg:hidden flex flex-col gap-4 mx-2">
+          {/* Courage Section */}
+          <div className="flex flex-col w-full">
+            <div className="font-bold text-sm mb-1">Courage</div>
+
+            <div className="flex flex-row justify-evenly gap-1">
+              {Array.from({ length: 9 }, (_, i) => (
+                <div key={i} className="w-4 h-4 flex items-center">
+                  <Checkbox
+                    checked={(courage || 0) > i}
+                    onCheckedChange={(checked) => updateCourage(i, !!checked)}
+                    className={
+                      'h-4 w-4 rounded-sm' +
+                      (i === 2 || i === 8 ? ' border-2 border-primary' : '')
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+
+            <hr className="my-2" />
+
+            <div className="flex flex-row justify-between gap-1">
+              {Array.from({ length: 2 }, (_, i) => (
+                <div key={i} className="flex items-center gap-1">
+                  {Array.from({ length: i + 1 }, (_, j) => (
+                    <Checkbox
+                      key={j}
+                      disabled
+                      className="!bg-white border border-gray-300 h-3 w-3"
+                    />
+                  ))}
+                  {i === 0 ? (
+                    <span className="text-xs flex items-center gap-1">
+                      <BookOpenIcon className="h-4 w-4" />{' '}
+                      {courageMilestoneText}
+                    </span>
+                  ) : (
+                    <span className="text-xs flex items-center gap-1">
+                      <BookOpenIcon className="h-4 w-4" /> See the Truth
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Understanding Section */}
+          <div className="flex flex-col w-full">
+            <div className="font-bold text-sm mb-1">Understanding</div>
+
+            <div className="flex flex-row gap-1 justify-evenly">
+              {Array.from({ length: 9 }, (_, i) => (
+                <div key={i} className="w-4 h-4 flex items-center">
+                  <Checkbox
+                    checked={(understanding || 0) > i}
+                    onCheckedChange={(checked) =>
+                      updateUnderstanding(i, !!checked)
+                    }
+                    className={
+                      'h-4 w-4 rounded-sm' +
+                      (i === 2 || i === 8 ? ' border-2 border-primary' : '')
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+
+            <hr className="my-2" />
+
+            <div className="flex flex-row justify-between gap-1">
               {Array.from({ length: 2 }, (_, i) => (
                 <div key={i} className="flex items-center gap-1">
                   {Array.from({ length: i + 1 }, (_, j) => (

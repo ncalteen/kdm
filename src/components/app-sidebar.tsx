@@ -22,7 +22,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail
+  SidebarRail,
+  useSidebar
 } from '@/components/ui/sidebar'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
@@ -128,6 +129,7 @@ export function AppSidebar({
   setSelectedSettlement,
   ...props
 }: AppSidebarProps) {
+  const { state } = useSidebar()
   const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -307,22 +309,24 @@ export function AppSidebar({
           setSelectedSettlement={setSelectedSettlement}
         />
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
+      <SidebarContent className="group-data-[collapsible=icon]:justify-center">
+        <SidebarGroup className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex-1">
           <SidebarGroupLabel>Settlement</SidebarGroupLabel>
           <NavMain items={navItems} />
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <p className="text-center text-xs text-gray-500 pb-2">
-          This project is not affiliated with or endorsed by Kingdom Death:
-          Monster or its creators. It is a fan-made project created for personal
-          use and entertainment purposes only. All rights to Kingdom Death:
-          Monster and its associated materials are owned by their respective
-          copyright holders. This project is intended to be a tool for players
-          to enhance their experience with the game and is not intended for
-          commercial use or distribution.
-        </p>
+        {state === 'expanded' && (
+          <p className="text-center text-xs text-gray-500 pb-2">
+            This project is not affiliated with or endorsed by Kingdom Death:
+            Monster or its creators. It is a fan-made project created for
+            personal use and entertainment purposes only. All rights to Kingdom
+            Death: Monster and its associated materials are owned by their
+            respective copyright holders. This project is intended to be a tool
+            for players to enhance their experience with the game and is not
+            intended for commercial use or distribution.
+          </p>
+        )}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton

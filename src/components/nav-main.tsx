@@ -23,7 +23,7 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarMenu>
+      <SidebarMenu className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:items-center">
         {items.map((item) => (
           <Collapsible
             key={item.title}

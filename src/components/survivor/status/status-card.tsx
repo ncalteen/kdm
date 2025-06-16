@@ -149,7 +149,7 @@ export function StatusCard({
   )
 
   return (
-    <Card className="p-2 border-0 h-[85px]">
+    <Card className="p-2 border-0 lg:h-[85px]">
       <CardContent className="p-0">
         <div className="flex flex-col">
           <div className="flex items-center h-[36px]">

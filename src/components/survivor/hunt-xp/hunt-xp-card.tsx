@@ -124,7 +124,7 @@ export function HuntXPCard({
   const isDisabled = (index: number) => index > (huntXP || 0) + 1
 
   return (
-    <Card className="p-2 border-0 h-[85px]">
+    <Card className="p-2 border-0 lg:h-[85px]">
       <CardContent className="p-0">
         <div className="flex flex-col">
           <div className="flex items-center h-[36px]">
@@ -139,7 +139,7 @@ export function HuntXPCard({
                       Hunt XP
                     </FormLabel>
                     <FormControl>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 lg:gap-2">
                         {Array.from({ length: 16 }, (_, i) => {
                           const boxIndex = i
                           const checked = (huntXP || 0) >= boxIndex
@@ -180,9 +180,9 @@ export function HuntXPCard({
           </div>
         </div>
 
-        <hr className="my-2" />
+        <hr className="hidden lg:flex my-2" />
 
-        <div className="flex items-center justify-between">
+        <div className="hidden lg:flex items-center justify-between">
           {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="flex items-center gap-1">
               {Array.from({ length: i + 1 }, (_, j) => (
