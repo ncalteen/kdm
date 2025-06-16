@@ -1,6 +1,13 @@
 'use client'
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -78,68 +85,135 @@ export function CourageUnderstandingAbilities({
         ? 'tinker'
         : ''
 
+  // Ability descriptions
+  const courageAbilities = {
+    stalwart: "Can't be knocked down by brain trauma or intimidate.",
+    prepared: 'Add Hunt XP to your roll when determining a straggler.',
+    matchmaker: 'Spend 1 endeavour to trigger Intimacy story event.'
+  }
+
+  const understandingAbilities = {
+    analyze: 'Look at the top AI card and return it to the top of the deck.',
+    explore: 'Add +2 to your Investigate roll results.',
+    tinker: '+1 endeavour when a returning survivor.'
+  }
+
   return (
-    <div className="flex flex-row items-start justify-between mx-2">
-      {/* Courage Abilities */}
-      <div className="flex flex-col w-[45%]">
-        <RadioGroup
-          value={courageGroupValue}
-          onValueChange={handleCourageGroupChange}>
-          <div className="flex gap-2 text-xs">
-            <RadioGroupItem value="stalwart" id="stalwart" />
-            <div>
-              <strong>Stalwart:</strong> Can&apos;t be knocked down by brain
-              trauma or intimidate.
+    <div className="mx-2">
+      {/* Desktop Layout - Radio Groups */}
+      <div className="hidden lg:flex flex-row items-start justify-between">
+        {/* Courage Abilities */}
+        <div className="flex flex-col w-[45%]">
+          <RadioGroup
+            value={courageGroupValue}
+            onValueChange={handleCourageGroupChange}>
+            <div className="flex gap-2 text-xs">
+              <RadioGroupItem value="stalwart" id="stalwart" />
+              <div>
+                <strong>Stalwart:</strong> {courageAbilities.stalwart}
+              </div>
             </div>
-          </div>
-          <hr className="mt-0 mb-0" />
-          <div className="flex gap-2 text-xs">
-            <RadioGroupItem value="prepared" id="prepared" />
-            <div>
-              <strong>Prepared:</strong> Add Hunt XP to your roll when
-              determining a straggler.
+            <hr className="mt-0 mb-0" />
+            <div className="flex gap-2 text-xs">
+              <RadioGroupItem value="prepared" id="prepared" />
+              <div>
+                <strong>Prepared:</strong> {courageAbilities.prepared}
+              </div>
             </div>
-          </div>
-          <hr />
-          <div className="flex gap-2 text-xs">
-            <RadioGroupItem value="matchmaker" id="matchmaker" />
-            <div>
-              <strong>Matchmaker:</strong> Spend 1 endeavour to trigger Intimacy
-              story event.
+            <hr />
+            <div className="flex gap-2 text-xs">
+              <RadioGroupItem value="matchmaker" id="matchmaker" />
+              <div>
+                <strong>Matchmaker:</strong> {courageAbilities.matchmaker}
+              </div>
             </div>
-          </div>
-        </RadioGroup>
+          </RadioGroup>
+        </div>
+
+        {/* Vertical Divider */}
+        <div className="h-36 w-px bg-gray-800" />
+
+        <div className="flex flex-col w-[45%]">
+          <RadioGroup
+            value={understandingGroupValue}
+            onValueChange={handleUnderstandingGroupChange}>
+            <div className="flex gap-2 text-xs">
+              <RadioGroupItem value="analyze" id="analyze" />
+              <div>
+                <strong>Analyze:</strong> {understandingAbilities.analyze}
+              </div>
+            </div>
+            <hr />
+            <div className="flex gap-2 text-xs">
+              <RadioGroupItem value="explore" id="explore" />
+              <div>
+                <strong>Explore:</strong> {understandingAbilities.explore}
+              </div>
+            </div>
+            <hr />
+            <div className="flex gap-2 text-xs">
+              <RadioGroupItem value="tinker" id="tinker" />
+              <div>
+                <strong>Tinker:</strong> {understandingAbilities.tinker}
+              </div>
+            </div>
+          </RadioGroup>
+        </div>
       </div>
 
-      {/* Vertical Divider */}
-      <div className="h-36 w-px bg-gray-800" />
+      {/* Mobile Layout - Select Dropdowns */}
+      <div className="lg:hidden flex flex-col gap-4">
+        {/* Courage Abilities */}
+        <div className="flex flex-col gap-2">
+          <label className="font-bold text-sm">Courage Ability</label>
+          <Select
+            value={courageGroupValue}
+            onValueChange={handleCourageGroupChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a courage ability" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="stalwart">Stalwart</SelectItem>
+              <SelectItem value="prepared">Prepared</SelectItem>
+              <SelectItem value="matchmaker">Matchmaker</SelectItem>
+            </SelectContent>
+          </Select>
+          {courageGroupValue && (
+            <div className="text-xs p-2 rounded border">
+              {
+                courageAbilities[
+                  courageGroupValue as keyof typeof courageAbilities
+                ]
+              }
+            </div>
+          )}
+        </div>
 
-      <div className="flex flex-col w-[45%]">
-        <RadioGroup
-          value={understandingGroupValue}
-          onValueChange={handleUnderstandingGroupChange}>
-          <div className="flex gap-2 text-xs">
-            <RadioGroupItem value="analyze" id="analyze" />
-            <div>
-              <strong>Analyze:</strong> Look at the top AI card and return it to
-              the top of the deck.
+        {/* Understanding Abilities */}
+        <div className="flex flex-col gap-2">
+          <label className="font-bold text-sm">Understanding Ability</label>
+          <Select
+            value={understandingGroupValue}
+            onValueChange={handleUnderstandingGroupChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select an understanding ability" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="analyze">Analyze</SelectItem>
+              <SelectItem value="explore">Explore</SelectItem>
+              <SelectItem value="tinker">Tinker</SelectItem>
+            </SelectContent>
+          </Select>
+          {understandingGroupValue && (
+            <div className="text-xs p-2 rounded border">
+              {
+                understandingAbilities[
+                  understandingGroupValue as keyof typeof understandingAbilities
+                ]
+              }
             </div>
-          </div>
-          <hr />
-          <div className="flex gap-2 text-xs">
-            <RadioGroupItem value="explore" id="explore" />
-            <div>
-              <strong>Explore:</strong> Add +2 to your Investigate roll results.
-            </div>
-          </div>
-          <hr />
-          <div className="flex gap-2 text-xs">
-            <RadioGroupItem value="tinker" id="tinker" />
-            <div>
-              <strong>Tinker:</strong> +1 endeavour when a returning survivor.
-            </div>
-          </div>
-        </RadioGroup>
+          )}
+        </div>
       </div>
     </div>
   )

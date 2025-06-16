@@ -229,31 +229,11 @@ export function AbilitiesAndImpairmentsCard({
               </div>
             )}
           </CardTitle>
-
-          {/* Skip Next Hunt */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="skipNextHunt"
-              checked={!!skipNextHunt}
-              onCheckedChange={(checked) =>
-                saveToLocalStorage(
-                  undefined,
-                  !!checked,
-                  !!checked
-                    ? 'The survivor will skip the next hunt.'
-                    : 'The survivor will not skip the next hunt.'
-                )
-              }
-            />
-            <Label htmlFor="skipNextHunt" className="text-xs cursor-pointer">
-              Skip Next Hunt
-            </Label>
-          </div>
         </div>
       </CardHeader>
 
       {/* Abilities/Impairments List */}
-      <CardContent className="p-1 pb-0">
+      <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[120px]">
           <div className="flex-1 overflow-y-auto">
             <div className="space-y-1">
@@ -290,6 +270,28 @@ export function AbilitiesAndImpairmentsCard({
                   onCancel={() => setIsAddingNew(false)}
                 />
               )}
+            </div>
+          </div>
+
+          {/* Skip Next Hunt - Bottom Right */}
+          <div className="flex justify-end mt-2 pr-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="skipNextHunt"
+                checked={!!skipNextHunt}
+                onCheckedChange={(checked) =>
+                  saveToLocalStorage(
+                    undefined,
+                    !!checked,
+                    !!checked
+                      ? 'The survivor will skip the next hunt.'
+                      : 'The survivor will not skip the next hunt.'
+                  )
+                }
+              />
+              <Label htmlFor="skipNextHunt" className="text-xs cursor-pointer">
+                Skip Next Hunt
+              </Label>
             </div>
           </div>
         </div>

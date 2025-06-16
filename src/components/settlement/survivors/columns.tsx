@@ -78,9 +78,58 @@ export const createColumns = ({
           </Button>
         )
       },
-      cell: ({ row }) => (
-        <div className="text-left text-sm pl-2">{row.getValue('name')}</div>
-      ),
+      cell: ({ row }) => {
+        const survivor = row.original
+
+        return (
+          <div className="flex gap-2 justify-start items-center">
+            <Button
+              variant="outline"
+              size="sm"
+              title="View survivor"
+              onClick={() => handleEditSurvivor(survivor)}>
+              <UserRoundSearchIcon className="h-4 w-4" />
+            </Button>
+            <AlertDialog
+              open={isDeleteDialogOpen && deleteId === survivor.id}
+              onOpenChange={(open) => {
+                setIsDeleteDialogOpen(open)
+                if (!open) setDeleteId(undefined)
+              }}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    setDeleteId(survivor.id)
+                    setIsDeleteDialogOpen(true)
+                  }}
+                  title="Delete survivor">
+                  <Trash2Icon className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Survivor</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    The darkness hungers for {survivor.name}.{' '}
+                    <strong>Once consumed, they cannot return.</strong>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => handleDeleteSurvivor(survivor.id)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <div className="text-left text-sm pl-2">{row.getValue('name')}</div>
+          </div>
+        )
+      },
       sortingFn: (rowA, rowB, columnId) => {
         const nameA = rowA.getValue(columnId) as string
         const nameB = rowB.getValue(columnId) as string
@@ -137,61 +186,6 @@ export const createColumns = ({
             <SkullIcon />
           </Badge>
         )
-    },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        const survivor = row.original
-
-        return (
-          <div className="flex gap-2 justify-end align-center w-full pr-2">
-            <Button
-              variant="outline"
-              size="sm"
-              title="View survivor"
-              onClick={() => handleEditSurvivor(survivor)}>
-              <UserRoundSearchIcon className="h-4 w-4" />
-            </Button>
-            <AlertDialog
-              open={isDeleteDialogOpen && deleteId === survivor.id}
-              onOpenChange={(open) => {
-                setIsDeleteDialogOpen(open)
-                if (!open) setDeleteId(undefined)
-              }}>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => {
-                    setDeleteId(survivor.id)
-                    setIsDeleteDialogOpen(true)
-                  }}
-                  title="Delete survivor">
-                  <Trash2Icon className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Survivor</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    The darkness hungers for {survivor.name}.{' '}
-                    <strong>Once consumed, they cannot return.</strong>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleDeleteSurvivor(survivor.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        )
-      }
     }
   ]
 }

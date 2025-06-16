@@ -454,20 +454,6 @@ export function FightingArtsCard({
               </div>
             )}
           </CardTitle>
-
-          {/* Cannot Use Fighting Arts */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="canUseFightingArtsOrKnowledges"
-              checked={!canUseFightingArtsOrKnowledges}
-              onCheckedChange={updateCanUseFightingArtsOrKnowledges}
-            />
-            <Label
-              htmlFor="canUseFightingArtsOrKnowledges"
-              className="text-xs cursor-pointer">
-              Cannot Use Fighting Arts
-            </Label>
-          </div>
         </div>
       </CardHeader>
 
@@ -582,6 +568,22 @@ export function FightingArtsCard({
                 artType={newArtType}
               />
             )}
+          </div>
+
+          {/* Cannot Use Fighting Arts - Bottom Right */}
+          <div className="flex justify-end mt-2 pr-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="canUseFightingArtsOrKnowledges"
+                checked={!canUseFightingArtsOrKnowledges}
+                onCheckedChange={updateCanUseFightingArtsOrKnowledges}
+              />
+              <Label
+                htmlFor="canUseFightingArtsOrKnowledges"
+                className="text-xs cursor-pointer">
+                Cannot Use Fighting Arts
+              </Label>
+            </div>
           </div>
         </div>
       </CardContent>

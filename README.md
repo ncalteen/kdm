@@ -50,6 +50,20 @@ If you like this project and want to support its development, please consider
 
 [![Buy Me A Coffee](./img/bmc_qr.png)](https://www.buymeacoffee.com/ncalteenw)
 
+### Mobile Support
+
+Mobile support is currently limited. The site is designed to be responsive and
+(mostly) mobile-friendly, but some features may not work as expected on smaller
+screens. If you encounter any issues, please
+[open an issue](https://github.com/ncalteen/kdm/issues/new)! To date, the
+project has been tested on the following devices:
+
+- iPhone XR
+- iPhone 14 Pro Max
+- Pixel 7
+- iPad Mini
+- iPad Pro
+
 ## Development
 
 ### Prerequisites

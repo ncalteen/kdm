@@ -237,18 +237,6 @@ export function OncePerLifetimeCard({
               </div>
             )}
           </CardTitle>
-
-          {/* Reroll Used */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="rerollUsed"
-              checked={!!rerollUsed}
-              onCheckedChange={handleRerollUsedToggle}
-            />
-            <Label htmlFor="rerollUsed" className="text-xs cursor-pointer">
-              Reroll Used
-            </Label>
-          </div>
         </div>
       </CardHeader>
 
@@ -287,6 +275,20 @@ export function OncePerLifetimeCard({
                 onCancel={() => setIsAddingNew(false)}
               />
             )}
+          </div>
+
+          {/* Reroll Used - Bottom Right */}
+          <div className="flex justify-end mt-2 pr-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="rerollUsed"
+                checked={!!rerollUsed}
+                onCheckedChange={handleRerollUsedToggle}
+              />
+              <Label htmlFor="rerollUsed" className="text-xs cursor-pointer">
+                Reroll Used
+              </Label>
+            </div>
           </div>
         </div>
       </CardContent>
