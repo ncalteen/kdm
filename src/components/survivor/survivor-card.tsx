@@ -50,9 +50,9 @@ export function SurvivorCard({
     <Card className="w-full py-2 border-0 bg-secondary">
       <CardContent className="px-2">
         {/* Desktop Layout */}
-        <div className="hidden lg:flex lg:flex-row gap-2 w-full">
+        <div className="hidden lg:flex lg:flex-row lg:flex-wrap gap-2 w-full">
           {/* First Column - Essential Stats */}
-          <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
+          <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <StatusCard {...form} form={form} saveSurvivor={saveSurvivor} />
             <SurvivalCard
               {...form}
@@ -85,7 +85,7 @@ export function SurvivorCard({
           </div>
 
           {/* Second Column - Abilities */}
-          <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
+          <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <HuntXPCard
               {...form}
               form={form}
@@ -120,7 +120,7 @@ export function SurvivorCard({
 
           {/* Third Column - ARC */}
           {settlement.survivorType === SurvivorType.ARC && (
-            <div className="flex flex-col flex-1 gap-1 min-w-[500px]">
+            <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
               <PhilosophyCard
                 {...form}
                 form={form}
