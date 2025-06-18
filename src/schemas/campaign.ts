@@ -11,21 +11,21 @@ import { z } from 'zod'
  */
 export const CampaignSchema = z.object({
   /** Hunts */
-  hunts: z.array(HuntSchema),
+  hunts: z.array(HuntSchema).nullable().optional(),
   /** Selected Hunt ID */
-  selectedHuntId: z.number().optional(),
+  selectedHuntId: z.number().nullable().optional(),
   /** Selected Showdown ID */
-  selectedShowdownId: z.number().optional(),
+  selectedShowdownId: z.number().nullable().optional(),
   /** Selected Settlement ID */
-  selectedSettlementId: z.number().optional(),
+  selectedSettlementId: z.number().nullable().optional(),
   /** Selected Survivor ID */
-  selectedSurvivorId: z.number().optional(),
+  selectedSurvivorId: z.number().nullable().optional(),
   /** Selected Tab Name */
-  selectedTab: z.string().optional(),
+  selectedTab: z.string().nullable().optional(),
   /** Settlements */
   settlements: z.array(SettlementSchema),
   /** Showdowns */
-  showdowns: z.array(ShowdownSchema),
+  showdowns: z.array(ShowdownSchema).nullable().optional(),
   /** Survivors */
   survivors: z.array(SurvivorSchema)
 })

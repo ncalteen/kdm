@@ -61,17 +61,31 @@ export function getCampaign(): Campaign {
   )
 
   // Ensure backwards compatibility for existing campaign data
+  const needsReload =
+    !('hunts' in storedCampaign) ||
+    !('selectedHuntId' in storedCampaign) ||
+    !('selectedSettlementId' in storedCampaign) ||
+    !('selectedShowdownId' in storedCampaign) ||
+    !('selectedSurvivorId' in storedCampaign) ||
+    !('selectedTab' in storedCampaign) ||
+    !('settlements' in storedCampaign) ||
+    !('survivors' in storedCampaign) ||
+    !('showdowns' in storedCampaign)
+
   const campaign: Campaign = {
     hunts: storedCampaign.hunts || [],
-    selectedHuntId: storedCampaign.selectedHuntId || undefined,
-    selectedShowdownId: storedCampaign.selectedShowdownId || undefined,
-    selectedSettlementId: storedCampaign.selectedSettlementId || undefined,
-    selectedSurvivorId: storedCampaign.selectedSurvivorId || undefined,
-    selectedTab: storedCampaign.selectedTab || undefined,
+    selectedHuntId: storedCampaign.selectedHuntId || null,
+    selectedShowdownId: storedCampaign.selectedShowdownId || null,
+    selectedSettlementId: storedCampaign.selectedSettlementId || null,
+    selectedSurvivorId: storedCampaign.selectedSurvivorId || null,
+    selectedTab: storedCampaign.selectedTab || null,
     settlements: storedCampaign.settlements || [],
     survivors: storedCampaign.survivors || [],
     showdowns: storedCampaign.showdowns || []
   }
+
+  // Save the campaign back to localStorage
+  if (needsReload) localStorage.setItem('campaign', JSON.stringify(campaign))
 
   cachedCampaign = campaign
   lastCacheUpdate = now
