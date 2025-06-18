@@ -21,21 +21,24 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Philosophy Card Props
+ * Philosophy Card Properties
  */
 interface PhilosophyCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
  * Philosophy Card Component
+ *
+ * @param props Philosophy Card Properties
+ * @returns Philosophy Card Component
  */
 export function PhilosophyCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: PhilosophyCardProps): ReactElement {
   // Watch form state
   const philosophy = form.watch('philosophy')
@@ -50,7 +53,7 @@ export function PhilosophyCard({
    * @param value Value
    */
   const handlePhilosophyChange = (value: string) => {
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         philosophy: value as Philosophy,
         ...(value ? {} : { philosophyRank: 0 })
@@ -73,14 +76,14 @@ export function PhilosophyCard({
 
       const newRankUp = tenetKnowledgeRankUp === index ? undefined : index
 
-      saveSurvivor(
+      saveSelectedSurvivor(
         { tenetKnowledgeRankUp: newRankUp },
         newRankUp !== undefined
           ? 'Tenet knowledge rank up milestone marked.'
           : 'Tenet knowledge rank up milestone removed.'
       )
     },
-    [tenetKnowledgeRankUp, saveSurvivor]
+    [tenetKnowledgeRankUp, saveSelectedSurvivor]
   )
 
   /**
@@ -92,14 +95,17 @@ export function PhilosophyCard({
     // Enforce minimum value of 0
     if (value < 0) return toast.error('Philosophy rank cannot be negative.')
 
-    saveSurvivor({ philosophyRank: value }, 'Philosophy rank has been updated.')
+    saveSelectedSurvivor(
+      { philosophyRank: value },
+      'Philosophy rank has been updated.'
+    )
   }
 
   /**
    * Update Neurosis
    */
   const updateNeurosis = (value: string) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       { neurosis: value },
       value
         ? 'The neurosis manifests in the mind.'
@@ -110,7 +116,7 @@ export function PhilosophyCard({
    * Update Tenet Knowledge
    */
   const updateTenetKnowledge = (value: string) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       { tenetKnowledge: value },
       value
         ? 'Tenet knowledge is inscribed in memory.'
@@ -136,7 +142,7 @@ export function PhilosophyCard({
     const isRankUp = checked && tenetKnowledgeRankUp === index
 
     // Save to localStorage
-    saveSurvivor(
+    saveSelectedSurvivor(
       { tenetKnowledgeObservationRank: newRank },
       isRankUp
         ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
@@ -148,7 +154,7 @@ export function PhilosophyCard({
    * Update Tenet Knowledge Rules
    */
   const updateTenetKnowledgeRules = (value: string) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       { tenetKnowledgeRules: value },
       value
         ? 'The rules of knowledge are etched in stone.'
@@ -159,7 +165,7 @@ export function PhilosophyCard({
    * Update Tenet Knowledge Observation Conditions
    */
   const updateTenetKnowledgeObservationConditions = (value: string) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       { tenetKnowledgeObservationConditions: value },
       value
         ? "Observation conditions are recorded in the survivor's memory."

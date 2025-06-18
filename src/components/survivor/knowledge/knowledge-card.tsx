@@ -18,21 +18,24 @@ import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Knowledge Card Props
+ * Knowledge Card Properties
  */
 interface KnowledgeCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
  * Knowledge Card Component
+ *
+ * @param props Knowledge Card Properties
+ * @returns Knowledge Card Component
  */
 export function KnowledgeCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: KnowledgeCardProps): ReactElement {
   // Watch form state
   const canUseFightingArtsOrKnowledges = form.watch(
@@ -55,13 +58,13 @@ export function KnowledgeCard({
       value: string | number | boolean,
       successMsg?: string
     ) =>
-      saveSurvivor(
+      saveSelectedSurvivor(
         {
           [fieldName]: value
         },
         successMsg
       ),
-    [saveSurvivor]
+    [saveSelectedSurvivor]
   )
 
   /**
@@ -101,7 +104,7 @@ export function KnowledgeCard({
    * Update Knowledge 1
    */
   const updateKnowledge1 = (value: string) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       { knowledge1: value },
       value
         ? 'Knowledge inscribed in the lantern light.'
@@ -170,7 +173,7 @@ export function KnowledgeCard({
    * Update Knowledge 2
    */
   const updateKnowledge2 = (value: string) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       { knowledge2: value },
       value
         ? 'Knowledge inscribed in the lantern light.'

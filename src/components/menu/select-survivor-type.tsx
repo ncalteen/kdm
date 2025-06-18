@@ -37,6 +37,7 @@ export interface SelectSurvivorTypeProps {
  * Select Survivor Type Component
  *
  * @param props Component Properties
+ * @returns Select Survivor Type Component
  */
 export function SelectSurvivorType({
   onChange,

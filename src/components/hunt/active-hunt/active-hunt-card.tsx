@@ -2,62 +2,77 @@
 
 import { HuntBoard } from '@/components/hunt/hunt-board/hunt-board'
 import { HuntSurvivorsCard } from '@/components/hunt/hunt-survivors/hunt-survivors-card'
-import { ActiveHunt } from '@/schemas/active-hunt'
+import { Hunt } from '@/schemas/hunt'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Active Hunt Card Props
+ * Active Hunt Card Properties
  */
 interface ActiveHuntCardProps {
-  /** Active Hunt Form */
-  form: UseFormReturn<ActiveHunt>
-  /** Active Hunt */
-  activeHunt: ActiveHunt
-  /** Function to Save Active Hunt */
-  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
+  /** Hunt Form */
+  form: UseFormReturn<Hunt>
+  /** Save Selected Hunt */
+  saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Selected Hunt */
+  selectedHunt: Partial<Hunt> | null
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
+  /** Set Selected Hunt */
+  setSelectedHunt: (hunt: Hunt | null) => void
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
  * Active Hunt Card Component
  *
- * Displays hunt initiation interface when no active hunt or showdown exists.
- * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
+ * @param props Active Hunt Card Properties
+ * @returns Active Hunt Card Component
  */
 export function ActiveHuntCard({
-  form,
-  activeHunt,
-  saveActiveHunt
+  // form,
+  saveSelectedHunt,
+  selectedHunt,
+  selectedSettlement,
+  // setSelectedHunt,
+  survivors,
+  updateSurvivors
 }: ActiveHuntCardProps): ReactElement {
   /**
-   * Handle position updates on the hunt board
+   * Handle Position Update
    */
   const handlePositionUpdate = useCallback(
     (survivorPosition: number, quarryPosition: number) => {
       const survivorChanged =
-        survivorPosition !== (activeHunt.survivorPosition ?? 0)
+        survivorPosition !== (selectedHunt?.survivorPosition ?? 0)
 
-      saveActiveHunt(
+      saveSelectedHunt(
         { survivorPosition, quarryPosition },
         survivorChanged ? 'Survivors moved.' : 'Quarry moved.'
       )
     },
-    [activeHunt.survivorPosition, saveActiveHunt]
+    [selectedHunt?.survivorPosition, saveSelectedHunt]
   )
 
   return (
     <div className="space-y-6">
       {/* Hunt Board */}
       <HuntBoard
-        activeHunt={activeHunt}
         onPositionUpdate={handlePositionUpdate}
+        selectedHunt={selectedHunt}
       />
 
       {/* Hunt Party Survivors */}
       <HuntSurvivorsCard
-        form={form}
-        activeHunt={activeHunt}
-        saveActiveHunt={saveActiveHunt}
+        selectedHunt={selectedHunt}
+        selectedSettlement={selectedSettlement}
+        survivors={survivors}
+        updateSurvivors={updateSurvivors}
       />
     </div>
   )

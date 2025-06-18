@@ -8,7 +8,14 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { type LucideIcon } from 'lucide-react'
+import { ReactElement } from 'react'
 
+/**
+ * Navigation Footer Component
+ *
+ * @param props Navigation Footer Properties
+ * @returns Navigation Footer Component
+ */
 export function NavFooter({
   projects
 }: {
@@ -17,7 +24,7 @@ export function NavFooter({
     url: string
     icon: LucideIcon
   }[]
-}) {
+}): ReactElement {
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>GitHub</SidebarGroupLabel>

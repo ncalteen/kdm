@@ -8,29 +8,29 @@ import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
 /**
- * Custom hook for saving survivor data with automatic context updates
+ * Selected Survivor Save Custom Hook
  *
- * This hook provides a save function that automatically updates the survivor
- * context after saving data to localStorage, ensuring that the
+ * This hook provides a save function that automatically updates the selected
+ * survivor context after saving data to localStorage, ensuring that the
  * SettlementSurvivorsCard table is refreshed when survivor data changes.
  */
-export function useSurvivorSave(
+export function useSelectedSurvivorSave(
   form: UseFormReturn<Survivor>,
   updateSelectedSurvivor: () => void
 ) {
   /**
-   * Save survivor data to localStorage and update context
+   * Save Selected Survivor
    *
-   * @param updateData Partial survivor data to update
-   * @param successMsg Optional success message to display
+   * @param updateData Partial Survivor Update Data
+   * @param successMsg Optional Success Message
    */
-  const saveSurvivor = useCallback(
+  const saveSelectedSurvivor = useCallback(
     (updateData: Partial<Survivor>, successMsg?: string) => {
       try {
         const campaign = getCampaign()
 
-        // For new survivors, updateData should contain the complete survivor data including ID
-        // For existing survivors, we merge with form values
+        // For new survivors, updateData should contain the complete survivor
+        // data including ID. For existing survivors, we merge with form values.
         let survivorToSave: Survivor
         let isNewSurvivor = false
 
@@ -70,21 +70,16 @@ export function useSurvivorSave(
         SurvivorSchema.parse(survivorToSave)
 
         // Update the campaign survivors array
-        if (isNewSurvivor) {
-          campaign.survivors.push(survivorToSave)
-        } else {
+        if (isNewSurvivor) campaign.survivors.push(survivorToSave)
+        else
           campaign.survivors = campaign.survivors.map((s) =>
             s.id === survivorToSave.id ? survivorToSave : s
           )
-        }
 
         saveCampaignToLocalStorage(campaign)
 
         // Update the context to refresh the survivors table
         updateSelectedSurvivor()
-
-        // Dispatch custom event to notify other components about survivor changes
-        window.dispatchEvent(new CustomEvent('survivorsUpdated'))
 
         if (successMsg) toast.success(successMsg)
       } catch (error) {
@@ -98,5 +93,5 @@ export function useSurvivorSave(
     [form, updateSelectedSurvivor]
   )
 
-  return { saveSurvivor }
+  return { saveSelectedSurvivor }
 }

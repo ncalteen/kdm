@@ -28,13 +28,18 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Knowledges Card Props
+ * Knowledges Card Properties
  */
-interface KnowledgesCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface KnowledgesCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -42,8 +47,8 @@ interface KnowledgesCardProps extends Partial<Settlement> {
  */
 export function KnowledgesCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: KnowledgesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -54,13 +59,13 @@ export function KnowledgesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.knowledges?.forEach((_, i) => {
+      selectedSettlement?.knowledges?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.knowledges])
+  }, [selectedSettlement?.knowledges])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -81,7 +86,7 @@ export function KnowledgesCard({
     updatedKnowledges: Knowledge[],
     successMsg?: string
   ) =>
-    saveSettlement(
+    saveSelectedSettlement(
       {
         knowledges: updatedKnowledges
       },
@@ -94,7 +99,7 @@ export function KnowledgesCard({
    * @param index Knowledge Index
    */
   const onRemove = (index: number) => {
-    const currentKnowledges = [...(settlement.knowledges || [])]
+    const currentKnowledges = [...(selectedSettlement?.knowledges || [])]
     currentKnowledges.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -128,7 +133,7 @@ export function KnowledgesCard({
     const processedPhilosophy =
       philosophy && philosophy.trim() !== '' ? philosophy : undefined
 
-    const updatedKnowledges = [...(settlement.knowledges || [])]
+    const updatedKnowledges = [...(selectedSettlement?.knowledges || [])]
     const knowledgeData: Knowledge = {
       name: name.trim(),
       philosophy: processedPhilosophy as Knowledge['philosophy']
@@ -180,7 +185,7 @@ export function KnowledgesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        settlement.knowledges || [],
+        selectedSettlement?.knowledges || [],
         oldIndex,
         newIndex
       )
@@ -230,31 +235,33 @@ export function KnowledgesCard({
       {/* Knowledges List */}
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto space-y-1">
-          {settlement.knowledges?.length !== 0 && (
+          {selectedSettlement?.knowledges?.length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(settlement.knowledges || []).map((_, index) =>
+                items={(selectedSettlement?.knowledges || []).map((_, index) =>
                   index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(settlement.knowledges || []).map((knowledge, index) => (
-                  <KnowledgeItem
-                    key={index}
-                    id={index.toString()}
-                    index={index}
-                    form={form}
-                    onRemove={onRemove}
-                    isDisabled={!!disabledInputs[index]}
-                    onSave={(name, philosophy, i) =>
-                      onSave(name, philosophy, i)
-                    }
-                    onEdit={onEdit}
-                    philosophies={settlement.philosophies || []}
-                  />
-                ))}
+                {(selectedSettlement?.knowledges || []).map(
+                  (knowledge, index) => (
+                    <KnowledgeItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      form={form}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(name, philosophy, i) =>
+                        onSave(name, philosophy, i)
+                      }
+                      onEdit={onEdit}
+                      philosophies={selectedSettlement?.philosophies || []}
+                    />
+                  )
+                )}
               </SortableContext>
             </DndContext>
           )}
@@ -262,7 +269,7 @@ export function KnowledgesCard({
             <NewKnowledgeItem
               onSave={(name, philosophy) => onSave(name, philosophy)}
               onCancel={() => setIsAddingNew(false)}
-              philosophies={settlement.philosophies || []}
+              philosophies={selectedSettlement?.philosophies || []}
             />
           )}
         </div>

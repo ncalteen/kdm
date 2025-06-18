@@ -21,15 +21,15 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Survival Card Props
+ * Survival Card Properties
  */
-interface SurvivalCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
+interface SurvivalCardProps {
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -41,13 +41,13 @@ interface SurvivalCardProps extends Partial<Survivor> {
  * survivors, it also shows  the Systemic Pressure attribute and Fist Pump
  * instead of Endure.
  *
- * @param form Form
+ * @param props Survival Card Properties
  * @returns Survival Card Component
  */
 export function SurvivalCard({
   form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement
 }: SurvivalCardProps): ReactElement {
   /**
    * Save to Local Storage
@@ -60,7 +60,7 @@ export function SurvivalCard({
     field: keyof Survivor,
     value: number | boolean,
     successMsg?: string
-  ) => saveSurvivor({ [field]: value }, successMsg)
+  ) => saveSelectedSurvivor({ [field]: value }, successMsg)
 
   /**
    * Update Survival Points
@@ -72,9 +72,9 @@ export function SurvivalCard({
     if (value < 0) return toast.error('Survival cannot be negative.')
 
     // Enforce maximum value of survivalLimit
-    if (value > (settlement.survivalLimit || 0))
+    if (value > (selectedSettlement?.survivalLimit || 0))
       return toast.error(
-        `Survival cannot exceed the settlement's limit of ${settlement.survivalLimit}.`
+        `Survival cannot exceed the settlement's limit of ${selectedSettlement?.survivalLimit}.`
       )
 
     saveToLocalStorage('survival', value, 'Survival updated successfully.')
@@ -315,7 +315,7 @@ export function SurvivalCard({
               />
 
               {/* Conditional rendering for Arc-specific attributes */}
-              {settlement.survivorType === SurvivorType.ARC ? (
+              {selectedSettlement?.survivorType === SurvivorType.ARC ? (
                 <>
                   {/* Fist Pump */}
                   <FormField
@@ -363,7 +363,7 @@ export function SurvivalCard({
             </div>
 
             {/* Right - (Arc) Systemic pressure */}
-            {settlement.survivorType === SurvivorType.ARC && (
+            {selectedSettlement?.survivorType === SurvivorType.ARC && (
               <>
                 <Separator orientation="vertical" className="mx-2.5" />
 

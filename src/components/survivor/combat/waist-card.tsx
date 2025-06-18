@@ -17,13 +17,13 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Waist Card Props
+ * Waist Card Properties
  */
 interface WaistCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -32,12 +32,12 @@ interface WaistCardProps extends Partial<Survivor> {
  * This component displays the survivor's waist status. It includes armor
  * points, severe injuries, and light/heavy damage.
  *
- * @param form Form
+ * @param props Waist Card Properties
  * @returns Waist Card Component
  */
 export function WaistCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: WaistCardProps): ReactElement {
   /**
    * Save to Local Storage
@@ -56,7 +56,7 @@ export function WaistCard({
       | 'waistHeavyDamage',
     value: number | boolean
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         [attrName]: value
       },

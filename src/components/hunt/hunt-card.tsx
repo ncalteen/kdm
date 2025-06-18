@@ -2,20 +2,30 @@
 
 import { ActiveHuntCard } from '@/components/hunt/active-hunt/active-hunt-card'
 import { CreateHuntCard } from '@/components/hunt/create-hunt/create-hunt-card'
-import { ActiveHunt } from '@/schemas/active-hunt'
+import { Hunt } from '@/schemas/hunt'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Hunt Card Props
+ * Hunt Card Properties
  */
 interface HuntCardProps {
-  /** Active Hunt Form Data */
-  form: UseFormReturn<ActiveHunt>
-  /** Selected Active Hunt */
-  activeHunt: ActiveHunt | null
-  /** Function to Save Active Hunt */
-  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
+  /** Hunt Form */
+  form: UseFormReturn<Hunt>
+  /** Save Selected Hunt */
+  saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
+  /** Selected Settlement */
+  selectedSettlement: Settlement | null
+  /** Set Selected Hunt */
+  setSelectedHunt: (hunt: Hunt | null) => void
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -26,16 +36,30 @@ interface HuntCardProps {
  */
 export function HuntCard({
   form,
-  activeHunt,
-  saveActiveHunt
+  saveSelectedHunt,
+  selectedHunt,
+  selectedSettlement,
+  setSelectedHunt,
+  survivors,
+  updateSurvivors
 }: HuntCardProps): ReactElement {
-  return activeHunt ? (
+  return selectedHunt ? (
     <ActiveHuntCard
       form={form}
-      activeHunt={activeHunt}
-      saveActiveHunt={saveActiveHunt}
+      saveSelectedHunt={saveSelectedHunt}
+      selectedHunt={selectedHunt}
+      selectedSettlement={selectedSettlement}
+      setSelectedHunt={setSelectedHunt}
+      survivors={survivors}
+      updateSurvivors={updateSurvivors}
     />
   ) : (
-    <CreateHuntCard form={form} saveActiveHunt={saveActiveHunt} />
+    <CreateHuntCard
+      form={form}
+      saveSelectedHunt={saveSelectedHunt}
+      selectedSettlement={selectedSettlement}
+      setSelectedHunt={setSelectedHunt}
+      survivors={survivors}
+    />
   )
 }

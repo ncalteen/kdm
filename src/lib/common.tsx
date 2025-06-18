@@ -1,5 +1,6 @@
 'use client'
 
+import { NodeLevel } from '@/lib/enums'
 import { CampaignData } from '@/lib/types'
 import { Milestone } from '@/schemas/settlement'
 import { GrabIcon, ScrollIcon } from 'lucide-react'
@@ -198,7 +199,7 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
   quarries: [
     {
       name: 'White Lion',
-      node: 'Node 1',
+      node: NodeLevel.NODE_1,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -207,7 +208,7 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
     },
     {
       name: 'Screaming Antelope',
-      node: 'Node 2',
+      node: NodeLevel.NODE_2,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -216,7 +217,7 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
     },
     {
       name: 'Phoenix',
-      node: 'Node 3',
+      node: NodeLevel.NODE_3,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -426,7 +427,7 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
   quarries: [
     {
       name: 'Crimson Crocodile',
-      node: 'Node 1',
+      node: NodeLevel.NODE_1,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -435,7 +436,7 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
     },
     {
       name: 'Smog Singers',
-      node: 'Node 2',
+      node: NodeLevel.NODE_2,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -444,7 +445,7 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
     },
     {
       name: 'Phoenix',
-      node: 'Node 3',
+      node: NodeLevel.NODE_3,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -453,7 +454,7 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
     },
     {
       name: 'The King',
-      node: 'Node 4',
+      node: NodeLevel.NODE_4,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -607,7 +608,7 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
   quarries: [
     {
       name: 'White Lion',
-      node: 'Node 1',
+      node: NodeLevel.NODE_1,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -616,7 +617,7 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
     },
     {
       name: 'Screaming Antelope',
-      node: 'Node 2',
+      node: NodeLevel.NODE_2,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -625,7 +626,7 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
     },
     {
       name: 'Phoenix',
-      node: 'Node 3',
+      node: NodeLevel.NODE_3,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -865,7 +866,7 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
   quarries: [
     {
       name: 'White Lion',
-      node: 'Node 1',
+      node: NodeLevel.NODE_1,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -874,7 +875,7 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
     },
     {
       name: 'Screaming Antelope',
-      node: 'Node 2',
+      node: NodeLevel.NODE_2,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,
@@ -883,7 +884,7 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
     },
     {
       name: 'Phoenix',
-      node: 'Node 3',
+      node: NodeLevel.NODE_3,
       unlocked: false,
       ccPrologue: false,
       ccLevel1: false,

@@ -17,13 +17,13 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Body Card Props
+ * Body Card Properties
  */
-interface BodyCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
+interface BodyCardProps {
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -32,10 +32,13 @@ interface BodyCardProps extends Partial<Survivor> {
  * This component displays the survivor's body status. It includes armor points,
  * severe injuries, and light/heavy damage.
  *
- * @param form Form
+ * @param props Body Card Properties
  * @returns Body Card Component
  */
-export function BodyCard({ form, saveSurvivor }: BodyCardProps): ReactElement {
+export function BodyCard({
+  form,
+  saveSelectedSurvivor
+}: BodyCardProps): ReactElement {
   /**
    * Save to Local Storage
    *
@@ -52,7 +55,7 @@ export function BodyCard({ form, saveSurvivor }: BodyCardProps): ReactElement {
       | 'bodyHeavyDamage',
     value: number | boolean
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         [attrName]: value
       },

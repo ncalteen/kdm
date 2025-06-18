@@ -2,41 +2,47 @@
 
 import { HuntSurvivorCard } from '@/components/hunt/hunt-survivors/hunt-survivor-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ActiveHunt } from '@/schemas/active-hunt'
+import { Hunt } from '@/schemas/hunt'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import { ReactElement, useMemo } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Hunt Survivors Card Props
+ * Hunt Survivors Card Properties
  */
 interface HuntSurvivorsCardProps {
-  /** Active Hunt Form */
-  form: UseFormReturn<ActiveHunt>
-  /** Active Hunt */
-  activeHunt: ActiveHunt
-  /** Function to Save Active Hunt */
-  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
+  /** Selected Hunt */
+  selectedHunt: Partial<Hunt> | null
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
  * Hunt Survivors Card Component
  *
- * Displays updatable information for all survivors in the active hunt
+ * @param props Hunt Survivors Card Properties
+ * @returns Hunt Survivors Card Component
  */
 export function HuntSurvivorsCard({
-  form,
-  activeHunt,
-  saveActiveHunt
+  selectedHunt,
+  selectedSettlement,
+  survivors,
+  updateSurvivors
 }: HuntSurvivorsCardProps): ReactElement {
-  const huntSurvivors = useMemo(
-    () => [
-      ...activeHunt.survivors,
-      ...(activeHunt.scout ? [activeHunt.scout] : [])
-    ],
-    [activeHunt.survivors, activeHunt.scout]
-  )
+  const huntSurvivors = useMemo(() => {
+    let s: number[] = []
 
-  if (huntSurvivors.length === 0) return <></>
+    if (selectedHunt?.survivors) s = [...s, ...selectedHunt.survivors]
+    if (selectedHunt?.scout) s = [...s, selectedHunt.scout]
+
+    return s
+  }, [selectedHunt?.survivors, selectedHunt?.scout])
+
+  if (huntSurvivors.length === 0 || !selectedSettlement) return <></>
 
   return (
     <Card>
@@ -45,13 +51,17 @@ export function HuntSurvivorsCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {huntSurvivors.map((survivor) => (
-            <HuntSurvivorCard
-              key={survivor.id}
-              survivor={survivor}
-              saveActiveHunt={saveActiveHunt}
-            />
-          ))}
+          {survivors
+            ?.filter((s) => huntSurvivors.includes(s.id))
+            .map((survivor) => (
+              <HuntSurvivorCard
+                key={survivor.id}
+                selectedSettlement={selectedSettlement}
+                survivor={survivor}
+                survivors={survivors}
+                updateSurvivors={updateSurvivors}
+              />
+            ))}
         </div>
       </CardContent>
     </Card>

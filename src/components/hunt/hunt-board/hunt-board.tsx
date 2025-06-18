@@ -3,19 +3,19 @@
 import { HuntBoardSpace } from '@/components/hunt/hunt-board/hunt-board-space'
 import { QuarryToken } from '@/components/hunt/hunt-board/quarry-token'
 import { SurvivorToken } from '@/components/hunt/hunt-board/survivor-token'
-import { ActiveHunt } from '@/schemas/settlement'
+import { Hunt } from '@/schemas/hunt'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { Skull, Users } from 'lucide-react'
 import { ReactElement } from 'react'
 
 /**
- * Hunt Board Component Props
+ * Hunt Board Component Properties
  */
 interface HuntBoardProps {
-  /** Active hunt data */
-  activeHunt: ActiveHunt
-  /** Function to update hunt board positions */
+  /** On Position Update */
   onPositionUpdate: (survivorPosition: number, quarryPosition: number) => void
+  /** Selected Hunt */
+  selectedHunt: Partial<Hunt> | null
 }
 
 /**
@@ -26,8 +26,8 @@ interface HuntBoardProps {
  * same space, the hunt ends.
  */
 export function HuntBoard({
-  activeHunt,
-  onPositionUpdate
+  onPositionUpdate,
+  selectedHunt
 }: HuntBoardProps): ReactElement {
   // Define hunt board spaces
   const spaces = [
@@ -47,7 +47,7 @@ export function HuntBoard({
   ]
 
   /**
-   * Handle drag end event
+   * Handle Drag End
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -58,9 +58,9 @@ export function HuntBoard({
 
       if (newPosition >= 0 && newPosition <= 12)
         if (active.id === 'survivor-token')
-          onPositionUpdate(newPosition, activeHunt.quarryPosition ?? 6)
+          onPositionUpdate(newPosition, selectedHunt?.quarryPosition ?? 6)
         else if (active.id === 'quarry-token')
-          onPositionUpdate(activeHunt.survivorPosition ?? 0, newPosition)
+          onPositionUpdate(selectedHunt?.survivorPosition ?? 0, newPosition)
     }
   }
 
@@ -88,17 +88,19 @@ export function HuntBoard({
                 isStarvation={space.isStarvation}
               />
               {/* Show draggable tokens on their current spaces */}
-              {activeHunt.survivorPosition === space.index && (
+              {selectedHunt?.survivorPosition === space.index && (
                 <SurvivorToken
                   overlap={
-                    activeHunt.survivorPosition === activeHunt.quarryPosition
+                    selectedHunt?.survivorPosition ===
+                    selectedHunt?.quarryPosition
                   }
                 />
               )}
-              {activeHunt.quarryPosition === space.index && (
+              {selectedHunt?.quarryPosition === space.index && (
                 <QuarryToken
                   overlap={
-                    activeHunt.survivorPosition === activeHunt.quarryPosition
+                    selectedHunt?.survivorPosition ===
+                    selectedHunt?.quarryPosition
                   }
                 />
               )}
@@ -114,28 +116,29 @@ export function HuntBoard({
                 <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                   <Users className="w-2 h-2 text-white" />
                 </div>
-                <span>Survivors: Space {activeHunt.survivorPosition}</span>
+                <span>Survivors: Space {selectedHunt?.survivorPosition}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
                   <Skull className="w-2 h-2 text-white" />
                 </div>
                 <span>
-                  Quarry ({activeHunt.quarryName}): Space{' '}
-                  {activeHunt.quarryPosition}
+                  Quarry ({selectedHunt?.quarryName}): Space{' '}
+                  {selectedHunt?.quarryPosition}
                 </span>
               </div>
             </div>
 
-            {activeHunt.survivorPosition === activeHunt.quarryPosition && (
+            {selectedHunt?.survivorPosition ===
+              selectedHunt?.quarryPosition && (
               <div className="mt-2 p-2 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-800 dark:text-yellow-200">
                 <strong>Hunt Complete!</strong> Survivors and quarry occupy the
                 same space.
-                {activeHunt.ambush ? ' This was an ambush!' : ''}
+                {selectedHunt?.ambush ? ' This was an ambush!' : ''}
               </div>
             )}
 
-            {activeHunt.survivorPosition === 12 && (
+            {selectedHunt?.survivorPosition === 12 && (
               <div className="mt-2 p-2 bg-red-500/20 border border-red-500/50 rounded text-red-800 dark:text-red-200">
                 <strong>Starvation!</strong> The survivors have reached the
                 starvation space. The hunt is over.

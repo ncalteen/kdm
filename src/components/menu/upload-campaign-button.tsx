@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { UploadIcon } from 'lucide-react'
-import { ChangeEvent, useRef, useState } from 'react'
+import { ChangeEvent, ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -27,7 +27,7 @@ import { toast } from 'sonner'
  *
  * @returns Upload Campaign Button
  */
-export function UploadCampaignButton() {
+export function UploadCampaignButton(): ReactElement {
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
   const [uploadedData, setUploadedData] = useState<Campaign | undefined>(

@@ -30,21 +30,24 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Abilities and Impairments Card Props
+ * Abilities and Impairments Card Properties
  */
 interface AbilitiesAndImpairmentsCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
  * Abilities and Impairments Card Component
+ *
+ * @param props Abilities and Impairments Card Properties
+ * @returns Abilities and Impairments Card Component
  */
 export function AbilitiesAndImpairmentsCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: AbilitiesAndImpairmentsCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -93,7 +96,7 @@ export function AbilitiesAndImpairmentsCard({
     if (updatedSkipNextHunt !== undefined)
       updateData.skipNextHunt = updatedSkipNextHunt
 
-    saveSurvivor(updateData, successMsg)
+    saveSelectedSurvivor(updateData, successMsg)
     setIsAddingNew(false)
   }
 

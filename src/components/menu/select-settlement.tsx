@@ -34,6 +34,7 @@ export interface SelectSettlementProps {
  * Select Settlement Component
  *
  * @param props Component Properties
+ * @returns Select Settlement Component
  */
 export function SelectSettlement({
   disabled,

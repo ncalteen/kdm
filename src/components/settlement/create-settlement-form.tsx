@@ -1,6 +1,6 @@
 'use client'
 
-import { SelectCampaign } from '@/components/menu/select-campaign'
+import { SelectCampaignType } from '@/components/menu/select-campaign-type'
 import { SelectSurvivorType } from '@/components/menu/select-survivor-type'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -33,10 +33,12 @@ import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Create Settlement Form Props
+ * Create Settlement Form Properties
  */
 interface CreateSettlementFormProps {
-  settlement: Settlement | null
+  /** Selected Settlement */
+  selectedSettlement: Settlement | null
+  /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
 }
 
@@ -47,15 +49,14 @@ interface CreateSettlementFormProps {
  * name and create a settlement. It includes fields for selecting the campaign
  * type, survivor type, and the settlement name.
  *
+ * @param props Create Settlement Form Properties
  * @returns Create Settlement Form Component
  */
 export function CreateSettlementForm({
-  settlement,
+  selectedSettlement,
   setSelectedSettlement
 }: CreateSettlementFormProps): ReactElement {
   const form = useForm<Settlement>({
-    // Need to set the type here directly, because the schema includes a lot of
-    // fields with default values that are not resolved in the type.
     resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
     defaultValues: BaseSettlementSchema.parse({})
   })
@@ -64,7 +65,7 @@ export function CreateSettlementForm({
   useEffect(() => {
     // Get campaign data for the campaign type.
     const campaignData = getCampaignData(
-      settlement?.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
+      selectedSettlement?.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
     )
 
     // Calculate the next settlement ID based on the latest in localStorage.
@@ -83,7 +84,7 @@ export function CreateSettlementForm({
     form.setValue('principles', campaignData.principles)
     form.setValue('quarries', campaignData.quarries)
     form.setValue('timeline', campaignData.timeline)
-  }, [form, settlement?.campaignType])
+  }, [form, selectedSettlement?.campaignType])
 
   /**
    * Handles the user changing the campaign type.
@@ -236,9 +237,9 @@ export function CreateSettlementForm({
                       Campaign Type
                     </FormLabel>
                     <FormControl>
-                      <SelectCampaign
+                      <SelectCampaignType
                         {...field}
-                        value={settlement?.campaignType}
+                        value={selectedSettlement?.campaignType}
                         onChange={handleCampaignChange}
                       />
                     </FormControl>
@@ -259,12 +260,12 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectSurvivorType
-                        value={settlement?.survivorType}
+                        value={selectedSettlement?.survivorType}
                         onChange={handleSurvivorTypeChange}
                         disabled={
-                          settlement?.campaignType ===
+                          selectedSettlement?.campaignType ===
                             CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-                          settlement?.campaignType ===
+                          selectedSettlement?.campaignType ===
                             CampaignType.SQUIRES_OF_THE_CITADEL
                         }
                       />

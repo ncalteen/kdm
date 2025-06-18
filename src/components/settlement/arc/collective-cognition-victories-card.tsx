@@ -23,13 +23,18 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Collective Cognition Victories Card Props
+ * Collective Cognition Victories Card Properties
  */
-interface CollectiveCognitionVictoriesCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface CollectiveCognitionVictoriesCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -38,13 +43,13 @@ interface CollectiveCognitionVictoriesCardProps extends Partial<Settlement> {
  * Displays and manages the collective cognition victories tracking table.
  * Allows checking off victories and saves progress to localStorage.
  *
- * @param form Settlement form instance
+ * @param props Collective Cognition Victories Card Properties
  * @returns Collective Cognition Victories Card Component
  */
 export function CollectiveCognitionVictoriesCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: CollectiveCognitionVictoriesCardProps): ReactElement {
   /**
    * Save to Local Storage
@@ -60,7 +65,7 @@ export function CollectiveCognitionVictoriesCard({
       nemeses: formValues.nemeses
     }
 
-    saveSettlement(updateData, successMsg)
+    saveSelectedSettlement(updateData, successMsg)
   }
 
   return (
@@ -99,7 +104,7 @@ export function CollectiveCognitionVictoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(settlement.quarries || []).map((quarry, index) => (
+                {(selectedSettlement?.quarries || []).map((quarry, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-left pl-5">
                       {quarry.name}
@@ -244,7 +249,7 @@ export function CollectiveCognitionVictoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(settlement.nemeses || []).map((nemesis, index) => (
+                {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-left pl-5">
                       {nemesis.name || 'Unnamed Nemesis'}

@@ -13,15 +13,15 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Courage Understanding Card Props
+ * Courage Understanding Card Properties
  */
 interface CourageUnderstandingCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -36,8 +36,8 @@ interface CourageUnderstandingCardProps {
  */
 export function CourageUnderstandingCard({
   form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement
 }: CourageUnderstandingCardProps): ReactElement {
   const courage = form.watch('courage')
   const understanding = form.watch('understanding')
@@ -51,7 +51,7 @@ export function CourageUnderstandingCard({
     attrName: 'courage' | 'understanding',
     value: number
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         [attrName]: value
       },
@@ -81,11 +81,11 @@ export function CourageUnderstandingCard({
   // Determine the label texts based on campaign type. Currently only People of
   // the Stars has different labels.
   const courageMilestoneText =
-    settlement.campaignType === CampaignType.PEOPLE_OF_THE_STARS
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS
       ? 'Awake'
       : 'Bold'
   const understandingMilestoneText =
-    settlement.campaignType === CampaignType.PEOPLE_OF_THE_STARS
+    selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS
       ? 'Awake'
       : 'Insight'
 
@@ -291,13 +291,17 @@ export function CourageUnderstandingCard({
 
         <hr className="my-2 mx-1" />
 
-        {settlement.campaignType !== CampaignType.PEOPLE_OF_THE_STARS ? (
+        {selectedSettlement?.campaignType !==
+        CampaignType.PEOPLE_OF_THE_STARS ? (
           <CourageUnderstandingAbilities
             form={form}
-            saveSurvivor={saveSurvivor}
+            saveSelectedSurvivor={saveSelectedSurvivor}
           />
         ) : (
-          <FacesInTheSky form={form} saveSurvivor={saveSurvivor} />
+          <FacesInTheSky
+            form={form}
+            saveSelectedSurvivor={saveSelectedSurvivor}
+          />
         )}
       </CardContent>
     </Card>

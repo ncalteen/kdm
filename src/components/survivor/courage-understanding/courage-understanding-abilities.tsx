@@ -13,13 +13,13 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Courage Understanding Card Props
+ * Courage Understanding Card Properties
  */
 interface CourageUnderstandingAbilitiesProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -28,12 +28,12 @@ interface CourageUnderstandingAbilitiesProps {
  * Displays the abilities that a survivor has based on their courage and
  * understanding.
  *
- * @param form Form
+ * @param props Courage Understanding Abilities Properties
  * @returns Courage/Understanding Abilities Component
  */
 export function CourageUnderstandingAbilities({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: CourageUnderstandingAbilitiesProps): ReactElement {
   /**
    * Handles the change of the ability in the courage group.
@@ -43,7 +43,7 @@ export function CourageUnderstandingAbilities({
   const handleCourageGroupChange = (
     value: 'stalwart' | 'prepared' | 'matchmaker'
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         hasStalwart: value === 'stalwart',
         hasPrepared: value === 'prepared',
@@ -60,7 +60,7 @@ export function CourageUnderstandingAbilities({
   const handleUnderstandingGroupChange = (
     value: 'analyze' | 'explore' | 'tinker'
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         hasAnalyze: value === 'analyze',
         hasExplore: value === 'explore',

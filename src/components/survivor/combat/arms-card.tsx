@@ -17,13 +17,13 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Arms Card Props
+ * Arms Card Properties
  */
-interface ArmsCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
+interface ArmsCardProps {
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -32,10 +32,13 @@ interface ArmsCardProps extends Partial<Survivor> {
  * This component displays the survivor's arms status. It includes armor points,
  * severe injuries, and light/heavy damage.
  *
- * @param form Form
+ * @param props Arms Card Properties
  * @returns Arms Card Component
  */
-export function ArmsCard({ form, saveSurvivor }: ArmsCardProps): ReactElement {
+export function ArmsCard({
+  form,
+  saveSelectedSurvivor
+}: ArmsCardProps): ReactElement {
   /**
    * Save to Local Storage
    *
@@ -53,7 +56,7 @@ export function ArmsCard({ form, saveSurvivor }: ArmsCardProps): ReactElement {
       | 'armHeavyDamage',
     value: number | boolean
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         [attrName]: value
       },

@@ -19,15 +19,15 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Sanity Card Props
+ * Sanity Card Properties
  */
 interface SanityCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -37,13 +37,13 @@ interface SanityCardProps {
  * includes an insanity counter and a checkbox for light brain damage. For Arc
  * survivors, it also shows the Torment attribute.
  *
- * @param form Form
+ * @param props Sanity Card Properties
  * @returns Sanity Card Component
  */
 export function SanityCard({
   form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement
 }: SanityCardProps): ReactElement {
   /**
    * Save sanity data to localStorage for the current survivor, with Zod
@@ -58,7 +58,7 @@ export function SanityCard({
     value: number | boolean,
     successMsg?: string
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         [field]: value
       },
@@ -173,7 +173,7 @@ export function SanityCard({
           </div>
 
           {/* Torment (Arc) */}
-          {settlement.survivorType === SurvivorType.ARC && (
+          {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <>
               <div className="mx-2 w-px bg-border" />
 

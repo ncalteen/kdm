@@ -14,19 +14,31 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { Trash2Icon, XIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
- * Settings Card Props
+ * Settings Card Properties
  */
-interface SettingsCardProps extends Settlement {
-  /** Function to set selected settlement */
+interface SettingsCardProps {
+  /** Selected Hunt */
+  selectedHunt: Partial<Hunt> | null
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
+  /** Selected Showdown */
+  selectedShowdown?: Partial<Showdown> | null
+  /** Set Selected Hunt */
+  setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
-  /** Function to set selected survivor */
+  /** Set Selected Showdown */
+  setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
 }
 
@@ -35,87 +47,122 @@ interface SettingsCardProps extends Settlement {
  *
  * Displays various settings for a settlement, such as deletion.
  *
- * @param setSelectedSettlement Function to set selected settlement
- * @param setSelectedSurvivor Function to set selected survivor
+ * @param props Settings Card Properties
  * @returns Settings Card Component
  */
 export function SettingsCard({
+  selectedHunt,
+  selectedSettlement,
+  selectedShowdown,
+  setSelectedHunt,
   setSelectedSettlement,
-  setSelectedSurvivor,
-  ...settlement
+  setSelectedShowdown,
+  setSelectedSurvivor
 }: SettingsCardProps): ReactElement {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
   /**
-   * Handles clearing the current active hunt or showdown
+   * Deletes the Selected Hunt
    */
-  const handleClearExpedition = () => {
-    if (!settlement.id) return
+  const handleDeleteHunt = () => {
+    if (!selectedSettlement?.id) return
 
     try {
       const campaign = getCampaign()
-      const expeditionType = settlement.hunt ? 'hunt' : 'showdown'
 
-      // Find the settlement and clear the active expedition
-      const updatedSettlements = campaign.settlements.map((s) =>
-        s.id === settlement.id
-          ? { ...s, hunt: undefined, showdown: undefined }
-          : s
+      const updatedHunts = campaign.hunts.filter(
+        (hunt) => hunt.id !== selectedHunt?.id
       )
 
-      // Save the updated campaign
       saveCampaignToLocalStorage({
         ...campaign,
-        settlements: updatedSettlements
+        hunts: updatedHunts
       })
 
-      setSelectedSettlement({
-        ...settlement,
-        hunt: undefined,
-        showdown: undefined
-      })
+      setSelectedHunt(null)
 
       toast.success(
-        `The ${expeditionType} ends. Survivors return to the relative safety of the settlement.`
+        'The hunt ends. Survivors return to the relative safety of the settlement.'
       )
     } catch (error) {
-      console.error('Expedition Clear Error:', error)
+      console.error('Delete Hunt Error:', error)
       toast.error('The darkness swallows your words. Please try again.')
     }
   }
 
   /**
-   * Handles the deletion of the current settlement
+   * Deletes the Selected Showdown
    */
-  const handleDeleteSettlement = () => {
-    if (!settlement.id) return
+  const handleDeleteShowdown = () => {
+    if (!selectedSettlement?.id) return
 
     try {
       const campaign = getCampaign()
-      const settlementName = settlement.name || 'this settlement'
 
-      // Remove the settlement from the campaign
-      const updatedSettlements = campaign.settlements.filter(
-        (s) => s.id !== settlement.id
+      const updatedShowdowns = campaign.showdowns.filter(
+        (hunt) => hunt.id !== selectedHunt?.id
       )
 
-      // Remove all survivors from this settlement
-      const updatedSurvivors = campaign.survivors.filter(
-        (survivor) => survivor.settlementId !== settlement.id
-      )
-
-      // Save the updated campaign
       saveCampaignToLocalStorage({
         ...campaign,
+        showdowns: updatedShowdowns
+      })
+
+      setSelectedShowdown(null)
+
+      toast.success(
+        'The showdown ends. Survivors return to the relative safety of the settlement.'
+      )
+    } catch (error) {
+      console.error('Delete Showdown Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
+
+  /**
+   * Deletes the Settlement
+   */
+  const handleDeleteSettlement = () => {
+    if (!selectedSettlement?.id) return
+
+    try {
+      const campaign = getCampaign()
+      const settlementName = selectedSettlement?.name || 'this settlement'
+
+      const updatedSettlements = campaign.settlements.filter(
+        (s) => s.id !== selectedSettlement?.id
+      )
+
+      const updatedSurvivors = campaign.survivors.filter(
+        (survivor) => survivor.settlementId !== selectedSettlement?.id
+      )
+
+      const updatedHunts = campaign.hunts.filter(
+        (hunt) => hunt.settlementId !== selectedSettlement?.id
+      )
+
+      const updatedShowdowns = campaign.showdowns.filter(
+        (showdown) => showdown.settlementId !== selectedSettlement?.id
+      )
+
+      saveCampaignToLocalStorage({
+        ...campaign,
+        hunts: updatedHunts,
         settlements: updatedSettlements,
+        showdowns: updatedShowdowns,
         survivors: updatedSurvivors,
+        selectedHuntId: undefined,
         selectedSettlementId: undefined,
+        selectedShowdownId: undefined,
         selectedSurvivorId: undefined
       })
 
       // Clear the selected settlement and survivor
+      setSelectedHunt(null)
       setSelectedSettlement(null)
+      setSelectedShowdown(null)
       setSelectedSurvivor(null)
+
       setIsDeleteDialogOpen(false)
 
       toast.success(
@@ -127,35 +174,57 @@ export function SettingsCard({
     }
   }
 
-  const expeditionType = settlement.hunt ? 'Hunt' : 'Showdown'
-
   return (
     <div className="flex flex-col gap-4">
-      {/* Clear Active Expedition */}
-      {(settlement.hunt || settlement.showdown) && (
+      {/* Delete Selected Hunt */}
+      {selectedHunt && (
         <Card className="p-0 border-yellow-500">
           <CardHeader className="px-4 pt-3 pb-0">
             <CardTitle className="text-lg text-yellow-600">
-              Active {expeditionType}
+              Active Hunt
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Delete Current Hunt</div>
+                <div className="text-sm text-muted-foreground">
+                  End the hunt and return survivors to the settlement.
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleDeleteHunt}>
+                <XIcon className="h-4 w-4 mr-2" />
+                Delete Hunt
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Delete Selected Showdown */}
+      {selectedShowdown && (
+        <Card className="p-0 border-yellow-500">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg text-yellow-600">
+              Active Showdown
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-2">
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium text-sm">
-                  Clear current {expeditionType.toLowerCase()}
+                  Delete Current Showdown
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  End the {expeditionType.toLowerCase()} and return survivors to
-                  the settlement.
+                  End the showdown and return survivors to the settlement.
                 </div>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleClearExpedition}>
+                onClick={handleDeleteShowdown}>
                 <XIcon className="h-4 w-4 mr-2" />
-                Clear {expeditionType}
+                Delete Showdown
               </Button>
             </div>
           </CardContent>
@@ -188,14 +257,14 @@ export function SettingsCard({
                   size="sm"
                   onClick={() => setIsDeleteDialogOpen(true)}>
                   <Trash2Icon className="h-4 w-4 mr-2" />
-                  Delete {settlement.name || 'Settlement'}
+                  Delete {selectedSettlement?.name || 'Settlement'}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Settlement</AlertDialogTitle>
                   <AlertDialogDescription>
-                    The darkness hungers for {settlement.name}.{' '}
+                    The darkness hungers for {selectedSettlement?.name}.{' '}
                     <strong>
                       Once consumed, all who dwelled within will be forgotten.
                     </strong>
@@ -206,7 +275,7 @@ export function SettingsCard({
                   <AlertDialogAction
                     onClick={handleDeleteSettlement}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Delete {settlement.name || 'Settlement'}
+                    Delete {selectedSettlement?.name || 'Settlement'}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

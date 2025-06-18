@@ -17,15 +17,15 @@ import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Hunt XP Card Props
+ * Hunt XP Card Properties
  */
 interface HuntXPCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -40,8 +40,8 @@ interface HuntXPCardProps {
  */
 export function HuntXPCard({
   form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement
 }: HuntXPCardProps): ReactElement {
   const huntXP = form.watch('huntXP')
   const huntXPRankUp = form.watch('huntXPRankUp')
@@ -64,9 +64,9 @@ export function HuntXPCard({
       if (updatedHuntXPRankUp !== undefined)
         updateData.huntXPRankUp = updatedHuntXPRankUp
 
-      saveSurvivor(updateData, successMsg)
+      saveSelectedSurvivor(updateData, successMsg)
     },
-    [saveSurvivor]
+    [saveSelectedSurvivor]
   )
 
   /**
@@ -193,7 +193,7 @@ export function HuntXPCard({
                 />
               ))}
               <span className="text-xs">
-                {settlement.survivorType === SurvivorType.CORE ? (
+                {selectedSettlement?.survivorType === SurvivorType.CORE ? (
                   <div className="flex items-center gap-1">
                     <BookOpenIcon className="h-4 w-4" /> Age
                   </div>

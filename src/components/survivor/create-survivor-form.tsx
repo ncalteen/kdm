@@ -33,17 +33,17 @@ import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Create Survivor Form Props
+ * Create Survivor Form Properties
  */
 interface CreateSurvivorFormProps extends Partial<Survivor> {
-  /** Selected settlement */
-  settlement: Settlement | null
-  /** Function to set selected survivor */
-  setSelectedSurvivor: (survivor: Survivor) => void
-  /** Function to set creating new survivor state */
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (survivor: Survivor, successMsg?: string) => void
+  /** Selected Settlement */
+  selectedSettlement: Settlement | null
+  /** Set Is Creating New Survivor */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
-  /** Function to save the survivor */
-  saveSurvivor: (survivor: Survivor, successMsg?: string) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor) => void
 }
 
 /**
@@ -58,10 +58,10 @@ interface CreateSurvivorFormProps extends Partial<Survivor> {
  * @returns Create Survivor Form
  */
 export function CreateSurvivorForm({
-  settlement,
-  setSelectedSurvivor,
+  saveSelectedSurvivor,
+  selectedSettlement,
   setIsCreatingNewSurvivor,
-  saveSurvivor
+  setSelectedSurvivor
 }: CreateSurvivorFormProps): ReactElement {
   const form = useForm<Survivor>({
     // Need to set the type here directly, because the schema includes a lot of
@@ -72,21 +72,21 @@ export function CreateSurvivorForm({
 
   // Set the form values when the component mounts
   useEffect(() => {
-    if (!settlement) return
+    if (!selectedSettlement) return
 
     const updatedValues = {
-      settlementId: settlement.id,
-      canDash: canDash(settlement.id),
-      canFistPump: canFistPump(settlement.id),
-      canEncourage: canEncourage(settlement.id),
-      canEndure: canEndure(settlement.id),
-      canSurge: canSurge(settlement.id),
+      settlementId: selectedSettlement.id,
+      canDash: canDash(selectedSettlement.id),
+      canFistPump: canFistPump(selectedSettlement.id),
+      canEncourage: canEncourage(selectedSettlement.id),
+      canEndure: canEndure(selectedSettlement.id),
+      canSurge: canSurge(selectedSettlement.id),
       huntXPRankUp:
-        settlement.survivorType !== SurvivorType.ARC
+        selectedSettlement.survivorType !== SurvivorType.ARC
           ? [1, 5, 9, 14] // Core
           : [1], // Arc
       id: getNextSurvivorId(),
-      understanding: bornWithUnderstanding(settlement.id) ? 1 : 0
+      understanding: bornWithUnderstanding(selectedSettlement.id) ? 1 : 0
     }
 
     // Reset form with updated values while preserving user-entered fields
@@ -94,7 +94,7 @@ export function CreateSurvivorForm({
       ...form.getValues(),
       ...updatedValues
     })
-  }, [form, settlement])
+  }, [form, selectedSettlement])
 
   /**
    * Handles form submission
@@ -102,7 +102,7 @@ export function CreateSurvivorForm({
    * @param values Form Values
    */
   function onSubmit(values: Survivor) {
-    saveSurvivor(
+    saveSelectedSurvivor(
       values,
       'A lantern approaches. A new survivor emerges from the darkness.'
     )

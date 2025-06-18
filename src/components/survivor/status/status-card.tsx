@@ -20,11 +20,11 @@ import { UseFormReturn } from 'react-hook-form'
 /**
  * Status Card Props
  */
-interface StatusCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
+interface StatusCardProps {
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -35,12 +35,12 @@ interface StatusCardProps extends Partial<Survivor> {
  * selection, and checkboxes for dead/retired status. When a survivor is named,
  * they gain +1 survival.
  *
- * @param form Form
- * @returns Name, Gender, and Status Card Component
+ * @param props Status Card Properties
+ * @returns Status Card Component
  */
 export function StatusCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: StatusCardProps): ReactElement {
   /**
    * Save Name to LocalStorage
@@ -49,7 +49,7 @@ export function StatusCard({
    * @param successMsg Success Message
    */
   const saveNameToLocalStorage = (name: string, successMsg?: string) =>
-    saveSurvivor({ name }, successMsg)
+    saveSelectedSurvivor({ name }, successMsg)
 
   /**
    * Save Gender to Local Storage
@@ -58,7 +58,7 @@ export function StatusCard({
    * @param successMsg Success Message
    */
   const saveGenderToLocalStorage = (gender: Gender, successMsg?: string) =>
-    saveSurvivor({ gender }, successMsg)
+    saveSelectedSurvivor({ gender }, successMsg)
 
   /**
    * Save Status to Local Storage
@@ -74,9 +74,9 @@ export function StatusCard({
       if (updatedDead !== undefined) updateData.dead = updatedDead
       if (updatedRetired !== undefined) updateData.retired = updatedRetired
 
-      saveSurvivor(updateData, successMsg)
+      saveSelectedSurvivor(updateData, successMsg)
     },
-    [saveSurvivor]
+    [saveSelectedSurvivor]
   )
 
   /**

@@ -132,3 +132,35 @@ export enum ResourceType {
   /** Vermin */
   VERMIN = 'Vermin'
 }
+
+/** Monster Level */
+export enum MonsterLevel {
+  /** Level 1 */
+  LEVEL_1 = '1',
+  /** Level 2 */
+  LEVEL_2 = '2',
+  /** Level 3 */
+  LEVEL_3 = '3',
+  /** Level 4 */
+  LEVEL_4 = '4'
+}
+
+/** Monster Type */
+export enum MonsterType {
+  /** Nemesis */
+  NEMESIS = 'Nemesis',
+  /** Quarry */
+  QUARRY = 'Quarry'
+}
+
+/** Node Level */
+export enum NodeLevel {
+  /** Node 1 */
+  NODE_1 = 'Node 1',
+  /** Node 2 */
+  NODE_2 = 'Node 2',
+  /** Node 3 */
+  NODE_3 = 'Node 3',
+  /** Node 4 */
+  NODE_4 = 'Node 4'
+}

@@ -47,6 +47,7 @@ export interface SelectPhilosophyProps {
  * Select Philosophy Component
  *
  * @param props Component Properties
+ * @returns Select Philosophy Component
  */
 export const SelectPhilosophy = forwardRef<
   HTMLButtonElement,

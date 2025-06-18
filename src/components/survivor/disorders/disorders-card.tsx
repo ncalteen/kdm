@@ -30,13 +30,13 @@ import { toast } from 'sonner'
 const MAX_DISORDERS = 3
 
 /**
- * Disorders Card Props
+ * Disorders Card Properties
  */
 interface DisordersCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -44,7 +44,7 @@ interface DisordersCardProps {
  */
 export function DisordersCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: DisordersCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -84,7 +84,7 @@ export function DisordersCard({
     updatedDisorders: string[],
     successMsg?: string
   ) => {
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         disorders: updatedDisorders
       },

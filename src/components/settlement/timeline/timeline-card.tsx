@@ -19,13 +19,18 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Timeline Card Props
+ * Timeline Card Properties
  */
-interface TimelineCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface TimelineCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -35,13 +40,13 @@ interface TimelineCardProps extends Partial<Settlement> {
  * the campaign type, it may also show a scroll icon to indicate that a story
  * event card should be drawn when updating the settlement's timeline.
  *
- * @param form Settlement form instance
+ * @param props Timeline Card Properties
  * @returns Timeline Card Component
  */
 export function TimelineCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: TimelineCardProps): ReactElement {
   const [editingEvents, setEditingEvents] = useState<{
     [key: string]: boolean
@@ -59,13 +64,15 @@ export function TimelineCard({
   } = useMemo(
     () => ({
       isSquiresCampaign:
-        settlement.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL,
+        selectedSettlement?.campaignType ===
+        CampaignType.SQUIRES_OF_THE_CITADEL,
       isStarsCampaign:
-        settlement.campaignType === CampaignType.PEOPLE_OF_THE_STARS,
-      isSunCampaign: settlement.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
-      isCustomCampaign: settlement.campaignType === CampaignType.CUSTOM
+        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS,
+      isSunCampaign:
+        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
+      isCustomCampaign: selectedSettlement?.campaignType === CampaignType.CUSTOM
     }),
-    [settlement.campaignType]
+    [selectedSettlement?.campaignType]
   )
 
   // Check if the campaign uses normal numbering (no Prologue). Prologue is
@@ -82,10 +89,11 @@ export function TimelineCard({
   // settlement's timeline.
   const showStoryEventIcon = useMemo(
     () =>
-      settlement.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      settlement.campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-      settlement.campaignType === CampaignType.CUSTOM,
-    [settlement.campaignType]
+      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      selectedSettlement?.campaignType ===
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
+      selectedSettlement?.campaignType === CampaignType.CUSTOM,
+    [selectedSettlement?.campaignType]
   )
 
   /**
@@ -111,13 +119,13 @@ export function TimelineCard({
    */
   const saveToLocalStorage = useCallback(
     (updatedTimeline: TimelineYear[], successMsg?: string) =>
-      saveSettlement(
+      saveSelectedSettlement(
         {
           timeline: updatedTimeline
         },
         successMsg
       ),
-    [saveSettlement]
+    [saveSelectedSettlement]
   )
 
   /**

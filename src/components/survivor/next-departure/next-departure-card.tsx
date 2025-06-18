@@ -28,21 +28,24 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Next Departure Card Props
+ * Next Departure Card Properties
  */
 interface NextDepartureCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
  * Next Departure Card Component
+ *
+ * @param props Next Departure Card Properties
+ * @returns Next Departure Card Component
  */
 export function NextDepartureCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: NextDepartureCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -81,7 +84,7 @@ export function NextDepartureCard({
   const saveToLocalStorage = (
     updatedNextDeparture: string[],
     successMsg?: string
-  ) => saveSurvivor({ nextDeparture: updatedNextDeparture }, successMsg)
+  ) => saveSelectedSurvivor({ nextDeparture: updatedNextDeparture }, successMsg)
 
   /**
    * Handles the removal of a next departure.

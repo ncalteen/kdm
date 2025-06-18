@@ -4,28 +4,40 @@ import { createColumns } from '@/components/settlement/survivors/columns'
 import { SurvivorDataTable } from '@/components/settlement/survivors/data-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useTab } from '@/contexts/tab-context'
+import { useSelectedTab } from '@/contexts/selected-tab-context'
 import { useCampaignSave } from '@/hooks/use-campaign-save'
 import { SurvivorType } from '@/lib/enums'
 import { getCampaign, getSurvivors } from '@/lib/utils'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { PlusIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
- * Settlement Survivors Card Props
+ * Settlement Survivors Card Properties
  */
-interface SettlementSurvivorsCardProps extends Partial<Settlement> {
-  /** Save settlement function */
-  updateSelectedSurvivor: () => void
-  /** Function to set selected survivor */
-  setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Function to set creating new survivor state */
-  setIsCreatingNewSurvivor: (isCreating: boolean) => void
-  /** Currently selected survivor */
+interface SettlementSurvivorsCardProps {
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
+  /** Selected Settlement */
+  selectedSettlement: Settlement | null
+  /** Selected Showdown */
+  selectedShowdown: Showdown | null
+  /** Selected Survivor */
   selectedSurvivor: Survivor | null
+  /** Set Is Creating New Survivor */
+  setIsCreatingNewSurvivor: (isCreating: boolean) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Update Selected Hunt */
+  updateSelectedHunt: () => void
+  /** Update Selected Settlement */
+  updateSelectedSettlement: () => void
+  /** Update Selected Survivor */
+  updateSelectedSurvivor: () => void
 }
 
 /**
@@ -35,55 +47,74 @@ interface SettlementSurvivorsCardProps extends Partial<Settlement> {
  * Shows survivor details including name, gender, hunt experience, philosophy
  * (for Arc survivors), status, and edit/delete buttons to navigate to the
  * survivor page or remove them from the settlement.
+ *
+ * @param props Settlement Survivors Card Properties
+ * @returns Settlement Survivors Card Component
  */
 export function SettlementSurvivorsCard({
-  updateSelectedSurvivor,
-  setSelectedSurvivor,
-  setIsCreatingNewSurvivor,
+  selectedHunt,
+  selectedSettlement,
+  selectedShowdown,
   selectedSurvivor,
-  ...settlement
+  setIsCreatingNewSurvivor,
+  setSelectedSurvivor,
+  updateSelectedHunt,
+  updateSelectedSettlement,
+  updateSelectedSurvivor
 }: SettlementSurvivorsCardProps): ReactElement {
-  const { saveCampaign } = useCampaignSave(updateSelectedSurvivor)
+  const { saveCampaign } = useCampaignSave(
+    updateSelectedHunt,
+    updateSelectedSettlement,
+    updateSelectedSurvivor
+  )
 
   const [survivors, setSurvivors] = useState<Survivor[]>([])
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
-  const { setSelectedTab } = useTab()
-
-  // Tracks if Arc survivors are in use for this settlement.
-  const isArcSurvivorType = settlement.survivorType === SurvivorType.ARC
+  const { setSelectedTab } = useSelectedTab()
 
   /**
-   * Handles creating a new survivor
+   * Handle New Survivor Creation
+   *
+   * Clears any selected survivor and sets the state to indicate that a new
+   * survivor is being created.
    */
   const handleNewSurvivor = useCallback(() => {
-    // Clear any selected survivor
     setSelectedSurvivor(null)
-    // Set creating mode to true
     setIsCreatingNewSurvivor(true)
   }, [setSelectedSurvivor, setIsCreatingNewSurvivor])
 
   /**
-   * Save to Local Storage
+   * Save Survivors to Local Storage
    *
    * @param updatedSurvivors Updated Survivors
    * @param successMsg Success Message
    */
-  const saveToLocalStorage = useCallback(
+  const saveSurvivorsToLocalStorage = useCallback(
     (updatedSurvivors: Survivor[], successMsg?: string) =>
       saveCampaign({ survivors: updatedSurvivors }, successMsg),
     [saveCampaign]
   )
 
   /**
-   * Deletes a survivor from the campaign data.
+   * Handles Survivor Deletion
    *
    * @param survivorId Survivor ID
    */
   const handleDeleteSurvivor = useCallback(
     (survivorId: number) => {
+      if (!selectedSettlement) return
+
       try {
+        // Check if survivor is currently on an active hunt or showdown
+        if (selectedShowdown?.survivors?.includes(survivorId))
+          return toast.error(
+            'The survivor cannot be erased while on a showdown.'
+          )
+        if (selectedHunt?.survivors?.includes(survivorId))
+          return toast.error('The survivor cannot be erased while on a hunt.')
+
         const campaign = getCampaign()
         const survivorIndex = campaign.survivors.findIndex(
           (s) => s.id === survivorId
@@ -101,14 +132,11 @@ export function SettlementSurvivorsCard({
         // Clear selected survivor if the deleted survivor is currently selected
         if (selectedSurvivor?.id === survivorId) setSelectedSurvivor(null)
 
-        saveToLocalStorage(
+        saveSurvivorsToLocalStorage(
           updatedSurvivors,
           `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
         )
-        setSurvivors(getSurvivors(settlement.id))
-
-        // Dispatch custom event to notify other components about survivor changes
-        window.dispatchEvent(new CustomEvent('survivorsUpdated'))
+        setSurvivors(getSurvivors(selectedSettlement.id))
 
         setDeleteId(undefined)
         setIsDeleteDialogOpen(false)
@@ -117,16 +145,24 @@ export function SettlementSurvivorsCard({
         toast.error('The darkness swallows your words. Please try again.')
       }
     },
-    [saveToLocalStorage, settlement.id, selectedSurvivor, setSelectedSurvivor]
+    [
+      saveSurvivorsToLocalStorage,
+      selectedSettlement,
+      selectedHunt,
+      selectedSurvivor,
+      selectedShowdown,
+      setSelectedSurvivor
+    ]
   )
 
-  // Create columns with the required props
   const columns = useMemo(
     () =>
       createColumns({
         deleteId,
-        isDeleteDialogOpen,
         handleDeleteSurvivor,
+        isDeleteDialogOpen,
+        selectedHunt,
+        selectedShowdown,
         setDeleteId,
         setIsDeleteDialogOpen,
         setSelectedSurvivor,
@@ -134,25 +170,29 @@ export function SettlementSurvivorsCard({
       }),
     [
       deleteId,
-      isDeleteDialogOpen,
       handleDeleteSurvivor,
+      isDeleteDialogOpen,
+      selectedHunt,
+      selectedShowdown,
+      setDeleteId,
+      setIsDeleteDialogOpen,
       setSelectedSurvivor,
       setSelectedTab
     ]
   )
 
-  // Configure column visibility based on survivor type
+  // Only show the philosophy column if the settlement uses Arc survivors
   const columnVisibility = useMemo(
     () => ({
-      philosophy: isArcSurvivorType
+      philosophy: selectedSettlement?.survivorType === SurvivorType.ARC
     }),
-    [isArcSurvivorType]
+    [selectedSettlement?.survivorType]
   )
 
-  useEffect(() => {
-    const fetchedSurvivors = getSurvivors(settlement.id)
-    setSurvivors(fetchedSurvivors)
-  }, [settlement.id, selectedSurvivor])
+  useEffect(
+    () => setSurvivors(getSurvivors(selectedSettlement?.id)),
+    [selectedSettlement?.id]
+  )
 
   return (
     <Card className="p-0 pb-2 mt-2 border-0">
@@ -178,6 +218,7 @@ export function SettlementSurvivorsCard({
             data={survivors}
             initialColumnVisibility={columnVisibility}
             onNewSurvivor={handleNewSurvivor}
+            selectedSettlement={selectedSettlement}
           />
         )}
       </CardContent>

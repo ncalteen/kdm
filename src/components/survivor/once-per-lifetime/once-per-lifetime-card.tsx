@@ -30,21 +30,24 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Once Per Lifetime Card Props
+ * Once Per Lifetime Card Properties
  */
 interface OncePerLifetimeCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
  * Once Per Lifetime Card Component
+ *
+ * @param props Once Per Lifetime Card Properties
+ * @returns Once Per Lifetime Card Component
  */
 export function OncePerLifetimeCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: OncePerLifetimeCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -94,7 +97,7 @@ export function OncePerLifetimeCard({
     if (updatedRerollUsed !== undefined)
       updateData.rerollUsed = updatedRerollUsed
 
-    saveSurvivor(updateData, successMsg)
+    saveSelectedSurvivor(updateData, successMsg)
     setIsAddingNew(false)
   }
 
@@ -204,7 +207,7 @@ export function OncePerLifetimeCard({
    * Handle toggling the rerollUsed checkbox
    */
   const handleRerollUsedToggle = (checked: boolean) => {
-    saveSurvivor(
+    saveSelectedSurvivor(
       { rerollUsed: checked },
       checked
         ? 'The survivor has used their lifetime reroll.'

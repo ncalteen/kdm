@@ -8,23 +8,23 @@ import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
 /**
- * Custom hook for saving settlement data with automatic context updates
+ * Save Selected Settlement Custom Hook
  *
  * This hook provides a save function that automatically updates the settlement
  * context after saving data to localStorage, ensuring that the UI is
  * refreshed when settlement data changes.
  */
-export function useSettlementSave(
+export function useSelectedSettlementSave(
   form: UseFormReturn<Settlement>,
   updateSelectedSettlement: () => void
 ) {
   /**
-   * Save settlement data to localStorage and update context
+   * Save Selected Settlement Data
    *
-   * @param updateData Partial settlement data to update
-   * @param successMsg Optional success message to display
+   * @param updateData Partial Settlement Data
+   * @param successMsg Optional Success Message
    */
-  const saveSettlement = useCallback(
+  const saveSelectedSettlement = useCallback(
     (updateData: Partial<Settlement>, successMsg?: string) => {
       try {
         const formValues = form.getValues()
@@ -68,5 +68,5 @@ export function useSettlementSave(
     [form, updateSelectedSettlement]
   )
 
-  return { saveSettlement }
+  return { saveSelectedSettlement }
 }

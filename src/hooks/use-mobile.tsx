@@ -4,7 +4,12 @@ import * as React from 'react'
 
 const MOBILE_BREAKPOINT = 1024
 
-export function useIsMobile() {
+/**
+ * Is Mobile Hook
+ *
+ * @returns Current Device is Mobile
+ */
+export function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
 
   React.useEffect(() => {

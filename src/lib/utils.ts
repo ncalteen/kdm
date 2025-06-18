@@ -10,15 +10,13 @@ import {
 } from '@/lib/common'
 import { CampaignType } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
-import { ActiveHunt } from '@/schemas/active-hunt'
 import { Campaign } from '@/schemas/campaign'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement, TimelineYear } from '@/schemas/settlement'
-import { Survivor, SurvivorSchema } from '@/schemas/survivor'
+import { Showdown } from '@/schemas/showdown'
+import { Survivor } from '@/schemas/survivor'
 import { clsx, type ClassValue } from 'clsx'
-import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
-import { ZodError } from 'zod'
 
 /**
  * Duration to cache the loaded campaign in milliseconds.
@@ -36,7 +34,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Gets the user's campaign from localStorage.
+ * Get Cached Campaign from Local Storage
  *
  * @returns Campaign
  */
@@ -50,19 +48,29 @@ export function getCampaign(): Campaign {
   const storedCampaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
+        hunts: [],
+        selectedHuntId: undefined,
+        selectedShowdownId: undefined,
+        selectedSettlementId: undefined,
+        selectedSurvivorId: undefined,
+        selectedTab: undefined,
         settlements: [],
+        showdowns: [],
         survivors: []
       })
   )
 
   // Ensure backwards compatibility for existing campaign data
   const campaign: Campaign = {
-    settlements: storedCampaign.settlements || [],
-    survivors: storedCampaign.survivors || [],
-    // If selectedSettlementId is not present, add it as undefined
+    hunts: storedCampaign.hunts || [],
+    selectedHuntId: storedCampaign.selectedHuntId || undefined,
+    selectedShowdownId: storedCampaign.selectedShowdownId || undefined,
     selectedSettlementId: storedCampaign.selectedSettlementId || undefined,
     selectedSurvivorId: storedCampaign.selectedSurvivorId || undefined,
-    selectedTab: storedCampaign.selectedTab || undefined
+    selectedTab: storedCampaign.selectedTab || undefined,
+    settlements: storedCampaign.settlements || [],
+    survivors: storedCampaign.survivors || [],
+    showdowns: storedCampaign.showdowns || []
   }
 
   cachedCampaign = campaign
@@ -72,7 +80,7 @@ export function getCampaign(): Campaign {
 }
 
 /**
- * Invalidates the campaign cache to force fresh data on next getCampaign call
+ * Invalidate Cached Campaign
  */
 export function invalidateCampaignCache(): void {
   cachedCampaign = null
@@ -80,9 +88,9 @@ export function invalidateCampaignCache(): void {
 }
 
 /**
- * Saves campaign data to localStorage and invalidates cache
+ * Save Campaign to Local Storage
  *
- * @param campaign Campaign data to save
+ * @param campaign Campaign Data
  */
 export function saveCampaignToLocalStorage(campaign: Campaign): void {
   localStorage.setItem('campaign', JSON.stringify(campaign))
@@ -90,7 +98,7 @@ export function saveCampaignToLocalStorage(campaign: Campaign): void {
 }
 
 /**
- * Calculates the next settlement ID.
+ * Calculate Next Settlement ID
  *
  * @returns Next Settlement ID
  */
@@ -105,7 +113,7 @@ export function getNextSettlementId(): number {
 }
 
 /**
- * Calculates the next survivor ID.
+ * Calculate Next Survivor ID
  *
  * @returns Next Survivor ID
  */
@@ -120,83 +128,112 @@ export function getNextSurvivorId(): number {
 }
 
 /**
- * Gets the number of lost settlements from localStorage.
+ * Calculate Next Hunt ID
+ *
+ * @returns Next Hunt ID
+ */
+export function getNextHuntId(): number {
+  const campaign = getCampaign()
+
+  // If this is the first hunt, return 1. Otherwise, return the latest
+  // hunt ID + 1.
+  return campaign.hunts.length === 0
+    ? 1
+    : Math.max(...campaign.hunts.map((hunt) => hunt.id)) + 1
+}
+
+/**
+ * Calculate Next Showdown ID
+ *
+ * @returns Next Showdown ID
+ */
+export function getNextShowdownId(): number {
+  const campaign = getCampaign()
+
+  // If this is the first showdown, return 1. Otherwise, return the latest
+  // showdown ID + 1.
+  return campaign.showdowns.length === 0
+    ? 1
+    : Math.max(...campaign.showdowns.map((showdown) => showdown.id)) + 1
+}
+
+/**
+ * Get Lost Settlement Count
  *
  * @returns Lost Settlement Count
  */
 export function getLostSettlementCount(): number {
-  const campaign = getCampaign()
-
-  // If the user is creating their first settlement, return 0. Otherwise, return
-  // the number of lost settlements. This is determined by counting the number
-  // of settlements that have the "Population reaches 0" milestone completed.
-  return campaign.settlements.length === 0
-    ? 0
-    : campaign.settlements.filter(
-        (settlement) =>
-          settlement.milestones.filter(
-            (m) => m.complete && m.name === 'Population reaches 0'
-          ).length > 0
-      ).length
+  return getCampaign().settlements.filter(
+    (settlement) =>
+      settlement.milestones.filter(
+        (m) => m.complete && m.name === 'Population reaches 0'
+      ).length > 0
+  ).length
 }
 
 /**
- * Gets the current survivors of a settlement from localStorage.
+ * Get Survivors from Local Storage
+ *
+ * If a settlement ID is provided, it filters survivors by that settlement.
  *
  * @param settlementId Settlement ID
  * @returns Survivors
  */
 export function getSurvivors(settlementId?: number): Survivor[] {
-  if (!settlementId) return getCampaign().survivors
-
-  return getCampaign().survivors.filter(
-    (survivor) => survivor.settlementId === settlementId
-  )
+  return settlementId
+    ? getCampaign().survivors.filter(
+        (survivor) => survivor.settlementId === settlementId
+      )
+    : getCampaign().survivors
 }
 
 /**
- * Gets a specific survivor localStorage.
+ * Get a Survivor by ID from Local Storage
  *
  * @param survivorId Survivor ID
  * @returns Survivor
  */
-export function getSurvivor(survivorId: number): Survivor | undefined {
-  return getCampaign().survivors.find((survivor) => survivor.id === survivorId)
-}
-
-/**
- * Gets a settlement from localStorage.
- *
- * @param settlementId Settlement ID
- * @returns Settlement
- */
-export function getSettlement(settlementId: number): Settlement | undefined {
-  return getCampaign().settlements.find(
-    (settlement) => settlement.id === settlementId
+export function getSurvivor(survivorId: number): Survivor | null {
+  return (
+    getCampaign().survivors.find((survivor) => survivor.id === survivorId) ||
+    null
   )
 }
 
 /**
- * Gets the currently selected settlement from localStorage.
+ * Get a Settlement by ID from Local Storage
  *
- * @returns Selected Settlement or null if none is selected or not found
+ * @param settlementId Settlement ID
+ * @returns Settlement
+ */
+export function getSettlement(settlementId: number): Settlement | null {
+  return (
+    getCampaign().settlements.find(
+      (settlement) => settlement.id === settlementId
+    ) || null
+  )
+}
+
+/**
+ * Get Selected Settlement from Local Storage
+ *
+ * @returns Selected Settlement
  */
 export function getSelectedSettlement(): Settlement | null {
   const campaign = getCampaign()
 
   if (!campaign.selectedSettlementId) return null
 
-  const settlement = campaign.settlements.find(
-    (s) => s.id === campaign.selectedSettlementId
+  return (
+    campaign.settlements.find((s) => s.id === campaign.selectedSettlementId) ||
+    null
   )
-
-  return settlement || null
 }
 
 /**
- * Sets the currently selected settlement in localStorage.
+ * Set Selected Settlement in Local Storage
  *
- * @param settlementId Settlement ID to select, or null to clear selection
+ * @param settlementId Settlement ID
  */
 export function setSelectedSettlement(settlementId: number | null): void {
   const campaign = getCampaign()
@@ -207,26 +244,24 @@ export function setSelectedSettlement(settlementId: number | null): void {
 }
 
 /**
- * Gets the currently selected survivor from localStorage.
+ * Get Selected Survivor from Local Storage
  *
- * @returns Selected Survivor or null if none is selected or not found
+ * @returns Selected Survivor
  */
 export function getSelectedSurvivor(): Survivor | null {
   const campaign = getCampaign()
 
   if (!campaign.selectedSurvivorId) return null
 
-  const survivor = campaign.survivors.find(
-    (s) => s.id === campaign.selectedSurvivorId
+  return (
+    campaign.survivors.find((s) => s.id === campaign.selectedSurvivorId) || null
   )
-
-  return survivor || null
 }
 
 /**
- * Sets the currently selected survivor in localStorage.
+ * Set Selected Survivor in Local Storage
  *
- * @param survivorId Survivor ID to select, or null to clear selection
+ * @param survivorId Survivor ID
  */
 export function setSelectedSurvivor(survivorId: number | null): void {
   const campaign = getCampaign()
@@ -237,20 +272,18 @@ export function setSelectedSurvivor(survivorId: number | null): void {
 }
 
 /**
- * Gets the currently selected tab from localStorage.
+ * Get Selected Tab from Local Storage
  *
- * @returns Selected Tab or null if none is selected
+ * @returns Selected Tab
  */
 export function getSelectedTab(): string | null {
-  const campaign = getCampaign()
-
-  return campaign.selectedTab || null
+  return getCampaign().selectedTab || null
 }
 
 /**
- * Sets the currently selected tab in localStorage.
+ * Set Selected Tab in Local Storage
  *
- * @param tab Tab to select, or null to clear selection
+ * @param tab Tab Name
  */
 export function setSelectedTab(tab: string | null): void {
   const campaign = getCampaign()
@@ -261,47 +294,61 @@ export function setSelectedTab(tab: string | null): void {
 }
 
 /**
- * Gets the currently active hunt from localStorage.
+ * Get Selected Hunt from Local Storage
  *
- * @returns Active Hunt or null if no settlement is selected or hunt is not
+ * @returns Selected Hunt
  */
-export function getSelectedActiveHunt(): ActiveHunt | null {
+export function getSelectedHunt(): Hunt | null {
   const campaign = getCampaign()
 
-  // If no settlement is selected, return null
-  if (!campaign.selectedSettlementId) return null
+  if (!campaign.selectedHuntId) return null
 
-  const settlement = campaign.settlements.find(
-    (s) => s.id === campaign.selectedSettlementId
-  )
-
-  // If the settlement does not have an active hunt, return null
-  if (!settlement || !settlement.hunt) return null
-
-  // Get the full details of the survivors and scout involved in the hunt
-  // based on the selected settlement ID
-  const allSurvivors = getSurvivors(campaign.selectedSettlementId)
-
-  const survivors = allSurvivors.filter((survivor) =>
-    settlement.hunt?.survivors.includes(survivor.id)
-  )
-  const scout = allSurvivors.find(
-    (survivor) => settlement.hunt?.scout === survivor.id
-  )
-
-  return {
-    quarryName: settlement.hunt.quarryName,
-    quarryLevel: settlement.hunt.quarryLevel,
-    survivors: survivors,
-    scout: scout,
-    survivorPosition: settlement.hunt.survivorPosition,
-    quarryPosition: settlement.hunt.quarryPosition,
-    ambush: settlement.hunt.ambush || false
-  }
+  return campaign.hunts.find((h) => h.id === campaign.selectedHuntId) || null
 }
 
 /**
- * Calculates the current timeline year for a settlement.
+ * Set Selected Hunt in Local Storage
+ *
+ * @param huntId Hunt ID
+ */
+export function setSelectedHunt(huntId: number | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedHuntId = huntId || undefined
+
+  saveCampaignToLocalStorage(campaign)
+}
+
+/**
+ * Get Selected Showdown from Local Storage
+ *
+ * @returns Selected Showdown
+ */
+export function getSelectedShowdown(): Showdown | null {
+  const campaign = getCampaign()
+
+  if (!campaign.selectedShowdownId) return null
+
+  return (
+    campaign.showdowns.find((h) => h.id === campaign.selectedShowdownId) || null
+  )
+}
+
+/**
+ * Set Selected Showdown in Local Storage
+ *
+ * @param showdownId Showdown ID
+ */
+export function setSelectedShowdown(showdownId: number | null): void {
+  const campaign = getCampaign()
+
+  campaign.selectedShowdownId = showdownId || undefined
+
+  saveCampaignToLocalStorage(campaign)
+}
+
+/**
+ * Calculate Current Timeline Year
  *
  * This is calculated as the last completed timeline entry plus one.
  *
@@ -313,10 +360,12 @@ export function getCurrentYear(timeline: TimelineYear[]): number {
 }
 
 /**
- * Checks if the settlement has innovated the Encourage action.
+ * Check if Settlement Can Encourage
+ *
+ * This is true if the settlement has the Language innovation.
  *
  * @param settlementId Settlement ID
- * @returns True if the settlement has the Language innovation.
+ * @returns Settlement Can Encourage
  */
 export function canEncourage(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
@@ -333,10 +382,12 @@ export function canEncourage(settlementId: number): boolean {
 }
 
 /**
- * Checks if the settlement has innovated the Surge action.
+ * Check if Settlement Can Surge
+ *
+ * This is true if the settlement has the Inner Lantern innovation.
  *
  * @param settlementId Settlement ID
- * @returns True if the settlement has the Inner Lantern innovation.
+ * @returns Settlement Can Surge
  */
 export function canSurge(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
@@ -353,10 +404,12 @@ export function canSurge(settlementId: number): boolean {
 }
 
 /**
- * Checks if the settlement has innovated the Dash action.
+ * Check if Settlement Can Dash
+ *
+ * This is true if the settlement has the Paint innovation.
  *
  * @param settlementId Settlement ID
- * @returns True if the settlement has the Paint innovation.
+ * @returns Settlement Can Dash
  */
 export function canDash(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
@@ -373,10 +426,12 @@ export function canDash(settlementId: number): boolean {
 }
 
 /**
- * Checks if the settlement has innovated the Fist Pump action.
+ * Check if Settlement Can Fist Pump
+ *
+ * This is true if the settlement has the Silent Dialect innovation.
  *
  * @param settlementId Settlement ID
- * @returns True if the settlement has silent dialect innovation.
+ * @returns Settlement Can Fist Pump
  */
 export function canFistPump(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
@@ -393,26 +448,30 @@ export function canFistPump(settlementId: number): boolean {
 }
 
 /**
- * Checks if the settlement has innovated the Endure action.
+ * Check if Settlement Can Endure
+ *
+ * @todo Not implemented yet.
  *
  * @param settlementId Settlement ID
- * @returns True if the settlement has innovated the Endure action.
+ * @returns Settlement Can Endure
  */
 export function canEndure(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
     (settlement) => settlement.id === settlementId
   )
-  // TODO
+
   console.log('canEndure', settlementId, settlement)
 
   return false
 }
 
 /**
- * Checks if new survivors are born with +1 understanding.
+ * Check if Settlement Survivors are Born with Understanding
+ *
+ * This is true if the settlement has the Graves innovation.
  *
  * @param settlementId Settlement ID
- * @returns True if the settlement has the Graves innovation.
+ * @returns Settlement Survivors Born with Understanding
  */
 export function bornWithUnderstanding(settlementId: number): boolean {
   const settlement = getCampaign().settlements.find(
@@ -429,7 +488,7 @@ export function bornWithUnderstanding(settlementId: number): boolean {
 }
 
 /**
- * Returns the campaign data based on the campaign type.
+ * Get Campaign Data by Type
  *
  * @param campaignType Campaign Type
  * @returns Campaign Data
@@ -449,63 +508,4 @@ export function getCampaignData(campaignType: CampaignType) {
               : CustomCampaignData
 
   return campaignData
-}
-
-/**
- * Saves a survivor's data to localStorage, with Zod validation and toast
- * feedback.
- *
- * @param fieldName Field Name
- * @param value Field Value
- * @param successMsg Success Message
- * @param onUpdate Optional callback to execute after successful update
- */
-export function saveSurvivorToLocalStorage(
-  form: UseFormReturn<Survivor>,
-  fieldName: keyof Survivor,
-  value: string | number,
-  successMsg?: string,
-  onUpdate?: () => void
-): string | number | void {
-  try {
-    const formValues = form.getValues()
-    const campaign = getCampaign()
-    const survivorIndex = campaign.survivors.findIndex(
-      (s: { id: number }) => s.id === formValues.id
-    )
-
-    if (survivorIndex !== -1) {
-      try {
-        SurvivorSchema.shape[fieldName].parse(value)
-      } catch (error) {
-        if (error instanceof ZodError && error.errors[0]?.message)
-          return toast.error(error.errors[0].message)
-        else
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
-      }
-
-      // Update campaign with the updated survivor
-      saveCampaignToLocalStorage({
-        ...campaign,
-        survivors: campaign.survivors.map((s) =>
-          s.id === formValues.id
-            ? {
-                ...s,
-                [fieldName]: value
-              }
-            : s
-        )
-      })
-
-      if (successMsg) toast.success(successMsg)
-
-      // Call the update callback if provided
-      if (onUpdate) onUpdate()
-    }
-  } catch (error) {
-    console.error(`[${fieldName}] Save Error:`, error)
-    toast.error('The darkness swallows your words. Please try again.')
-  }
 }

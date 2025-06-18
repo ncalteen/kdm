@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { NodeLevel } from '@/lib/enums'
 import { Quarry, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -34,22 +35,30 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Quarries Card Props
+ * Quarries Card Properties
  */
-interface QuarriesCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface QuarriesCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Quarries Card Component
+ *
+ * @param props Quarries Card Properties
+ * @returns Quarries Card Component
  */
 export function QuarriesCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: QuarriesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -60,13 +69,13 @@ export function QuarriesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.quarries?.forEach((_, i) => {
+      selectedSettlement?.quarries?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.quarries])
+  }, [selectedSettlement?.quarries])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -84,7 +93,7 @@ export function QuarriesCard({
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (updatedQuarries: Quarry[], successMsg?: string) =>
-    saveSettlement({ quarries: updatedQuarries }, successMsg)
+    saveSelectedSettlement({ quarries: updatedQuarries }, successMsg)
 
   /**
    * Handles the removal of a quarry.
@@ -92,7 +101,7 @@ export function QuarriesCard({
    * @param index Quarry Index
    */
   const onRemove = (index: number) => {
-    const currentQuarries = [...(settlement.quarries || [])]
+    const currentQuarries = [...(selectedSettlement?.quarries || [])]
     currentQuarries.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -123,7 +132,7 @@ export function QuarriesCard({
    */
   const onSave = (
     value?: string,
-    node?: string,
+    node?: NodeLevel,
     unlocked?: boolean,
     index?: number
   ) => {
@@ -132,7 +141,7 @@ export function QuarriesCard({
 
     const quarryWithCc: Quarry = {
       name: value,
-      node: (node || 'Node 1') as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4',
+      node: node || NodeLevel.NODE_1,
       unlocked: unlocked || false,
       ccPrologue: false,
       ccLevel1: false,
@@ -140,14 +149,14 @@ export function QuarriesCard({
       ccLevel3: [false, false, false]
     }
 
-    const updatedQuarries = [...(settlement.quarries || [])]
+    const updatedQuarries = [...(selectedSettlement?.quarries || [])]
 
     if (index !== undefined) {
       // Updating an existing value - preserve existing CC properties
       updatedQuarries[index] = {
         ...updatedQuarries[index],
         name: value,
-        node: (node || 'Node 1') as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4',
+        node: node || NodeLevel.NODE_1,
         unlocked: unlocked || false
       }
       setDisabledInputs((prev) => ({
@@ -187,12 +196,12 @@ export function QuarriesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedQuarries = (settlement.quarries || []).map((q, i) =>
+    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
       i === index ? { ...q, unlocked } : q
     )
     saveToLocalStorage(
       updatedQuarries,
-      `${settlement.quarries![index].name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
+      `${selectedSettlement?.quarries![index].name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -202,11 +211,9 @@ export function QuarriesCard({
    * @param index Quarry Index
    * @param node Node Value
    */
-  const onUpdateNode = (index: number, node: string) => {
-    const updatedQuarries = (settlement.quarries || []).map((q, i) =>
-      i === index
-        ? { ...q, node: node as 'Node 1' | 'Node 2' | 'Node 3' | 'Node 4' }
-        : q
+  const onUpdateNode = (index: number, node: NodeLevel) => {
+    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
+      i === index ? { ...q, node } : q
     )
     saveToLocalStorage(updatedQuarries)
   }
@@ -222,7 +229,11 @@ export function QuarriesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(settlement.quarries || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.quarries || [],
+        oldIndex,
+        newIndex
+      )
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -271,17 +282,17 @@ export function QuarriesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {settlement.quarries?.length !== 0 && (
+            {selectedSettlement?.quarries?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.quarries || []).map((_, index) =>
+                  items={(selectedSettlement?.quarries || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.quarries || []).map((quarry, index) => (
+                  {(selectedSettlement?.quarries || []).map((quarry, index) => (
                     <QuarryItem
                       key={index}
                       id={index.toString()}

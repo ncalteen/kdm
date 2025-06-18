@@ -10,13 +10,13 @@ import { ReactElement, useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Weapon Proficiency Card Props
+ * Weapon Proficiency Card Properties
  */
 interface WeaponProficiencyCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -32,7 +32,7 @@ interface WeaponProficiencyCardProps {
  */
 export function WeaponProficiencyCard({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: WeaponProficiencyCardProps): ReactElement {
   const weaponProficiency = form.watch('weaponProficiency')
   const weaponProficiencyType = form.watch('weaponProficiencyType')
@@ -55,9 +55,9 @@ export function WeaponProficiencyCard({
       if (updatedType !== undefined)
         updateData.weaponProficiencyType = updatedType
 
-      saveSurvivor(updateData, successMsg)
+      saveSelectedSurvivor(updateData, successMsg)
     },
-    [saveSurvivor]
+    [saveSelectedSurvivor]
   )
 
   /**

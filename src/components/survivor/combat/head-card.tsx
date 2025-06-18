@@ -17,13 +17,13 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Head Card Props
+ * Head Card Properties
  */
-interface HeadCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
+interface HeadCardProps {
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -32,10 +32,13 @@ interface HeadCardProps extends Partial<Survivor> {
  * This component displays the survivor's head status. It includes armor points,
  * severe injuries, and light/heavy damage.
  *
- * @param form Form
+ * @param props Head Card Properties
  * @returns Head Card Component
  */
-export function HeadCard({ form, saveSurvivor }: HeadCardProps): ReactElement {
+export function HeadCard({
+  form,
+  saveSelectedSurvivor
+}: HeadCardProps): ReactElement {
   /**
    * Save to Local Storage
    *
@@ -52,7 +55,7 @@ export function HeadCard({ form, saveSurvivor }: HeadCardProps): ReactElement {
       | 'headHeavyDamage',
     value: number | boolean
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         [attrName]: value
       },

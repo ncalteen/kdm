@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Settlement } from '@/schemas/settlement'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -17,13 +18,19 @@ import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 
 /**
- * DataTableProps Interface
+ * Data Table Properties
  */
 interface DataTableProps<TData, TValue> {
+  /** Column Definitions */
   columns: ColumnDef<TData, TValue>[]
+  /** Data */
   data: TData[]
+  /** Initial Column Visibility */
   initialColumnVisibility?: VisibilityState
+  /** On New Survivor Callback */
   onNewSurvivor?: () => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**

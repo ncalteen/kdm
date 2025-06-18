@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { getCampaign } from '@/lib/utils'
 import { DownloadIcon } from 'lucide-react'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -14,7 +14,7 @@ import { toast } from 'sonner'
  *
  * @returns Download Campaign Button
  */
-export function DownloadCampaignButton() {
+export function DownloadCampaignButton(): ReactElement {
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
 
   const handleDownload = () => {

@@ -17,38 +17,43 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Overview Card Props
+ * Overview Card Properties
  */
-interface OverviewCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface OverviewCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
- * Population Card Component
+ * Overview Card Component
  *
- * Displays and manages population statistics for the settlement including
+ * Displays and manages high-level information for the settlement including
  * survival limit, population count, death count, and lost settlements.
  *
- * @param props OverviewCard props
- * @returns Population Card Component
+ * @param props Overview Card Properties
+ * @returns Overview Card Component
  */
 export function OverviewCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: OverviewCardProps): ReactElement {
   const isArcCampaign = useMemo(
-    () => settlement.survivorType === SurvivorType.ARC,
-    [settlement.survivorType]
+    () => selectedSettlement?.survivorType === SurvivorType.ARC,
+    [selectedSettlement?.survivorType]
   )
   const isLanternCampaign = useMemo(
     () =>
-      settlement.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      settlement.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
-    [settlement.campaignType]
+      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
+      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
+    [selectedSettlement?.campaignType]
   )
 
   // Track survivors state to trigger re-calculations when survivors change
@@ -66,13 +71,15 @@ export function OverviewCard({
 
   // Update survivors when settlement changes or when localStorage changes
   useEffect(() => {
-    if (settlement.id) setSurvivors(getSurvivors(settlement.id))
-  }, [settlement.id])
+    if (selectedSettlement?.id)
+      setSurvivors(getSurvivors(selectedSettlement.id))
+  }, [selectedSettlement?.id])
 
   // Listen for storage events to update survivors when they change in other tabs/components
   useEffect(() => {
     const handleStorageChange = () => {
-      if (settlement.id) setSurvivors(getSurvivors(settlement.id))
+      if (selectedSettlement?.id)
+        setSurvivors(getSurvivors(selectedSettlement.id))
     }
 
     // Listen for localStorage changes
@@ -85,7 +92,7 @@ export function OverviewCard({
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('survivorsUpdated', handleStorageChange)
     }
-  }, [settlement.id])
+  }, [selectedSettlement?.id])
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
@@ -125,9 +132,9 @@ export function OverviewCard({
     const currentCcValue = form.getValues('ccValue')
     if (currentCcValue !== totalCc) {
       form.setValue('ccValue', totalCc)
-      saveSettlement({ ccValue: totalCc })
+      saveSelectedSettlement({ ccValue: totalCc })
     }
-  }, [isArcCampaign, settlement, saveSettlement, form])
+  }, [isArcCampaign, selectedSettlement, saveSelectedSettlement, form])
 
   /**
    * Save to Local Storage
@@ -140,7 +147,7 @@ export function OverviewCard({
     attrName: 'survivalLimit' | 'lanternResearchLevel',
     value: number,
     successMsg: string
-  ) => saveSettlement({ [attrName]: value }, successMsg)
+  ) => saveSelectedSettlement({ [attrName]: value }, successMsg)
 
   return (
     <Card className="border-0 p-0 py-2">
@@ -284,7 +291,7 @@ export function OverviewCard({
                         <Input
                           type="number"
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                          value={settlement.ccValue ?? '0'}
+                          value={selectedSettlement?.ccValue ?? '0'}
                           disabled
                         />
                       </FormControl>
@@ -456,7 +463,7 @@ export function OverviewCard({
                       <Input
                         type="number"
                         className="w-16 h-8 text-center no-spinners text-sm"
-                        value={settlement.ccValue ?? '0'}
+                        value={selectedSettlement?.ccValue ?? '0'}
                         disabled
                       />
                     </FormControl>

@@ -16,15 +16,15 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Attribute Card Props
+ * Attribute Card Properties
  */
-interface AttributeCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
+interface AttributeCardProps {
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -34,13 +34,13 @@ interface AttributeCardProps extends Partial<Survivor> {
  * strength, etc.) and allows them to be edited. For Arc survivors, it also
  * shows the Lumi attribute.
  *
- * @param form Form
+ * @param props Attribute Card Properties
  * @returns Attribute Card Component
  */
 export function AttributeCard({
   form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement
 }: AttributeCardProps): ReactElement {
   /**
    * Save to Local Storage
@@ -74,7 +74,7 @@ export function AttributeCard({
       [attrName]: value
     }
 
-    saveSurvivor(
+    saveSelectedSurvivor(
       updateData,
       attributeMessages[attrName] || "The survivor's potential grows."
     )
@@ -243,7 +243,7 @@ export function AttributeCard({
           />
 
           {/* Lumi (Arc) */}
-          {settlement.survivorType === SurvivorType.ARC && (
+          {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <>
               <div className="w-px bg-border" />
               <FormField

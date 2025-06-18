@@ -17,102 +17,109 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { getSelectedSettlement, getSurvivors } from '@/lib/utils'
-import { ActiveHunt } from '@/schemas/active-hunt'
+import { MonsterLevel } from '@/lib/enums'
+import { getNextHuntId } from '@/lib/utils'
+import { Hunt } from '@/schemas/hunt'
+import { Settlement } from '@/schemas/settlement'
+import { Survivor } from '@/schemas/survivor'
 import { PawPrintIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Create Hunt Card Props
+ * Create Hunt Card Properties
  */
 interface CreateHuntCardProps {
-  /** Active Hunt Form Data */
-  form: UseFormReturn<ActiveHunt>
-  /** Function to Save Active Hunt */
-  saveActiveHunt: (updateData: Partial<ActiveHunt>, successMsg?: string) => void
+  /** Hunt Form */
+  form: UseFormReturn<Hunt>
+  /** Save Selected Hunt */
+  saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Selected Settlement */
+  selectedSettlement: Settlement | null
+  /** Set Selected Hunt */
+  setSelectedHunt: (hunt: Hunt | null) => void
+  /** Survivors */
+  survivors: Survivor[] | null
 }
 
 /**
  * Create Hunt Card Component
  *
- * Displays hunt initiation interface when no active hunt or showdown exists.
- * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
+ * @param props Create Hunt Card Properties
+ * @returns Create Hunt Card Component
  */
 export function CreateHuntCard({
   form,
-  saveActiveHunt
+  saveSelectedHunt,
+  selectedSettlement,
+  setSelectedHunt,
+  survivors
 }: CreateHuntCardProps): ReactElement {
   const [selectedQuarry, setSelectedQuarry] = useState<string>('')
-  const [selectedQuarryLevel, setSelectedQuarryLevel] = useState<
-    '1' | '2' | '3' | '4'
-  >('1')
+  const [selectedQuarryLevel, setSelectedQuarryLevel] = useState<MonsterLevel>(
+    MonsterLevel.LEVEL_1
+  )
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
-
-  // Get current settlement to access available quarries and survivors
-  const settlement = getSelectedSettlement()
 
   // Get available survivors for this settlement
   const availableSurvivors = useMemo(
     () =>
-      settlement?.id
-        ? getSurvivors(settlement.id).filter(
-            (survivor) => !survivor.dead && !survivor.retired
+      survivors
+        ? survivors.filter(
+            (survivor) => survivor.settlementId === selectedSettlement?.id
           )
         : [],
-    [settlement?.id]
+    [survivors, selectedSettlement?.id]
   )
 
   // Get available quarries (unlocked ones)
   const availableQuarries = useMemo(
     () =>
-      settlement?.quarries
-        ? settlement.quarries.filter((quarry) => quarry.unlocked)
+      selectedSettlement?.quarries
+        ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
         : [],
-    [settlement?.quarries]
+    [selectedSettlement?.quarries]
   )
 
-  // Handle hunt initiation
-  const handleInitiateHunt = () => {
-    if (!settlement || !selectedQuarry || selectedSurvivors.length === 0)
+  // Create Hunt
+  const handleCreateHunt = () => {
+    if (
+      !selectedSettlement ||
+      !selectedQuarry ||
+      selectedSurvivors.length === 0
+    )
       return toast.error('The darkness swallows your words. Please try again.')
 
     // Validate scout selection if settlement uses scouts
-    if (settlement.usesScouts && !selectedScout)
+    if (selectedSettlement.usesScouts && !selectedScout)
       return toast.error('A scout must be selected for the hunt.')
 
-    // Get full survivor objects for the selected survivors
-    const allSurvivors = getSurvivors(settlement.id)
-    const huntSurvivors = allSurvivors.filter((survivor) =>
-      selectedSurvivors.includes(survivor.id)
-    )
-    const scoutSurvivor = selectedScout
-      ? allSurvivors.find((survivor) => survivor.id === selectedScout)
-      : undefined
-
     // Save as partial data that will be merged by the hook
-    const huntData: Partial<ActiveHunt> = {
+    const huntData: Hunt = {
+      ambush: false,
+      id: getNextHuntId(),
       quarryName: selectedQuarry,
       quarryLevel: selectedQuarryLevel,
-      survivors: huntSurvivors,
-      scout: scoutSurvivor,
+      survivors: selectedSurvivors,
+      scout: selectedScout || undefined,
+      settlementId: selectedSettlement.id,
       survivorPosition: 0,
-      quarryPosition: 12,
-      ambush: false
+      quarryPosition: 12
     }
 
-    saveActiveHunt(
+    saveSelectedHunt(
       huntData,
       `The hunt for ${selectedQuarry} begins. Survivors venture into the darkness.`
     )
 
     // Reset form
     setSelectedQuarry('')
-    setSelectedQuarryLevel('1')
+    setSelectedQuarryLevel(MonsterLevel.LEVEL_1)
     setSelectedSurvivors([])
     setSelectedScout(null)
+    setSelectedHunt(huntData)
   }
 
   return (
@@ -168,7 +175,7 @@ export function CreateHuntCard({
                 <FormControl>
                   <Select
                     value={selectedQuarryLevel}
-                    onValueChange={(value: '1' | '2' | '3' | '4') =>
+                    onValueChange={(value: MonsterLevel) =>
                       setSelectedQuarryLevel(value)
                     }>
                     <SelectTrigger className="w-full">
@@ -215,7 +222,7 @@ export function CreateHuntCard({
         )}
 
         {/* Scout */}
-        {settlement?.usesScouts && (
+        {selectedSettlement?.usesScouts && (
           <>
             <div className="flex items-center justify-between">
               <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
@@ -240,11 +247,11 @@ export function CreateHuntCard({
 
         {/* Begin Hunt Button */}
         <Button
-          onClick={handleInitiateHunt}
+          onClick={handleCreateHunt}
           disabled={
             !selectedQuarry ||
             selectedSurvivors.length === 0 ||
-            (settlement?.usesScouts && !selectedScout)
+            (selectedSettlement?.usesScouts && !selectedScout)
           }
           className="w-full">
           Begin Hunt

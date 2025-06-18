@@ -28,13 +28,18 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Patterns Card Props
+ * Patterns Card Properties
  */
-interface PatternsCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface PatternsCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -44,13 +49,13 @@ interface PatternsCardProps extends Partial<Settlement> {
  * Users can add, edit, remove, and reorder pattern items. All changes are
  * automatically saved to localStorage with appropriate validation and user feedback.
  *
- * @param form Settlement form instance
+ * @param props Patterns Card Properties
  * @returns Patterns Card Component
  */
 export function PatternsCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: PatternsCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -61,13 +66,13 @@ export function PatternsCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.patterns?.forEach((_, i) => {
+      selectedSettlement?.patterns?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.patterns])
+  }, [selectedSettlement?.patterns])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -85,7 +90,7 @@ export function PatternsCard({
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (updatedPatterns: string[], successMsg?: string) =>
-    saveSettlement(
+    saveSelectedSettlement(
       {
         patterns: updatedPatterns
       },
@@ -98,7 +103,7 @@ export function PatternsCard({
    * @param index Pattern Index
    */
   const onRemove = (index: number) => {
-    const currentPatterns = [...(settlement.patterns || [])]
+    const currentPatterns = [...(selectedSettlement?.patterns || [])]
     currentPatterns.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -129,7 +134,7 @@ export function PatternsCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless pattern cannot be preserved.')
 
-    const updatedPatterns = [...(settlement.patterns || [])]
+    const updatedPatterns = [...(selectedSettlement?.patterns || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -175,7 +180,11 @@ export function PatternsCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(settlement.patterns || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.patterns || [],
+        oldIndex,
+        newIndex
+      )
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -221,28 +230,30 @@ export function PatternsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {settlement.patterns?.length !== 0 && (
+            {selectedSettlement?.patterns?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.patterns || []).map((_, index) =>
+                  items={(selectedSettlement?.patterns || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.patterns || []).map((pattern, index) => (
-                    <PatternItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSettlement?.patterns || []).map(
+                    (pattern, index) => (
+                      <PatternItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

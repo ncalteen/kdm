@@ -48,15 +48,15 @@ export interface CombinedFightingArt {
 }
 
 /**
- * Fighting Arts Card Props
+ * Fighting Arts Card Properties
  */
 interface FightingArtsCardProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -67,8 +67,8 @@ interface FightingArtsCardProps {
  */
 export function FightingArtsCard({
   form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement
 }: FightingArtsCardProps): ReactElement {
   // Watch form state
   const fightingArts = form.watch('fightingArts')
@@ -78,7 +78,7 @@ export function FightingArtsCard({
   )
 
   // Determine survivor type from settlement data
-  const survivorType = settlement.survivorType || SurvivorType.CORE
+  const survivorType = selectedSettlement?.survivorType || SurvivorType.CORE
 
   // Calculate total arts to check against limits
   const totalArts =
@@ -141,7 +141,7 @@ export function FightingArtsCard({
     updatedSecretFightingArts: string[],
     successMsg?: string
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         fightingArts: updatedFightingArts,
         secretFightingArts: updatedSecretFightingArts
@@ -308,7 +308,7 @@ export function FightingArtsCard({
    * Handle toggling the canUseFightingArtsOrKnowledges checkbox
    */
   const updateCanUseFightingArtsOrKnowledges = (checked: boolean) => {
-    saveSurvivor(
+    saveSelectedSurvivor(
       { canUseFightingArtsOrKnowledges: !checked },
       !checked
         ? 'The survivor recalls the ways of battle.'
@@ -411,7 +411,7 @@ export function FightingArtsCard({
   }
 
   // Don't show this component for Squires of the Citadel campaign
-  if (settlement.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
+  if (selectedSettlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
     return <></>
 
   return (

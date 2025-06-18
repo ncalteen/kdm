@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Hunt } from '@/schemas/hunt'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ColumnDef } from '@tanstack/react-table'
 import {
@@ -41,6 +43,10 @@ export interface ColumnProps {
   setSelectedSurvivor: (survivor: Survivor) => void
   /** Set Selected Tab */
   setSelectedTab: (tab: string) => void
+  /** Hunt Data */
+  selectedHunt: Partial<Hunt> | null
+  /** Showdown Data */
+  selectedShowdown: Partial<Showdown> | null
 }
 
 /**
@@ -56,11 +62,28 @@ export const createColumns = ({
   setDeleteId,
   setIsDeleteDialogOpen,
   setSelectedSurvivor,
-  setSelectedTab
+  setSelectedTab,
+  selectedHunt,
+  selectedShowdown
 }: ColumnProps): ColumnDef<Survivor>[] => {
   const handleEditSurvivor = (survivor: Survivor) => {
     setSelectedSurvivor(survivor)
     setSelectedTab('survivors')
+  }
+
+  /**
+   * Survivor is on Hunt
+   *
+   * @param survivorId Survivor ID
+   * @returns Survivor is on Hunt
+   */
+  const isSurvivorOnHunt = (survivorId: number): boolean => {
+    if (selectedHunt?.scout === survivorId) return true
+    if (selectedHunt?.survivors?.includes(survivorId)) return true
+    if (selectedShowdown?.scout === survivorId) return true
+    if (selectedShowdown?.survivors?.includes(survivorId)) return true
+
+    return false
   }
 
   return [
@@ -80,6 +103,7 @@ export const createColumns = ({
       },
       cell: ({ row }) => {
         const survivor = row.original
+        const isOnHunt = isSurvivorOnHunt(survivor.id)
 
         return (
           <div className="flex gap-2 justify-start items-center">
@@ -100,11 +124,18 @@ export const createColumns = ({
                 <Button
                   variant="destructive"
                   size="sm"
+                  disabled={isOnHunt}
                   onClick={() => {
-                    setDeleteId(survivor.id)
-                    setIsDeleteDialogOpen(true)
+                    if (!isOnHunt) {
+                      setDeleteId(survivor.id)
+                      setIsDeleteDialogOpen(true)
+                    }
                   }}
-                  title="Delete survivor">
+                  title={
+                    isOnHunt
+                      ? 'Cannot delete survivor - they are currently on a hunt'
+                      : 'Delete survivor'
+                  }>
                   <Trash2Icon className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>

@@ -28,22 +28,30 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Innovations Card Props
+ * Innovations Card Properties
  */
-interface InnovationsCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface InnovationsCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Innovations Card Component
+ *
+ * @param props Innovations Card Properties
+ * @returns Innovations Card Component
  */
 export function InnovationsCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: InnovationsCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -54,13 +62,13 @@ export function InnovationsCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.innovations?.forEach((_, i) => {
+      selectedSettlement?.innovations?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.innovations])
+  }, [selectedSettlement?.innovations])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -80,7 +88,7 @@ export function InnovationsCard({
   const saveToLocalStorage = (
     updatedInnovations: string[],
     successMsg?: string
-  ) => saveSettlement({ innovations: updatedInnovations }, successMsg)
+  ) => saveSelectedSettlement({ innovations: updatedInnovations }, successMsg)
 
   /**
    * Handles the removal of an innovation.
@@ -88,7 +96,7 @@ export function InnovationsCard({
    * @param index Innovation Index
    */
   const onRemove = (index: number) => {
-    const currentInnovations = [...(settlement.innovations || [])]
+    const currentInnovations = [...(selectedSettlement?.innovations || [])]
     currentInnovations.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -116,7 +124,7 @@ export function InnovationsCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless innovation cannot be recorded.')
 
-    const updatedInnovations = [...(settlement.innovations || [])]
+    const updatedInnovations = [...(selectedSettlement?.innovations || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -163,7 +171,7 @@ export function InnovationsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        settlement.innovations || [],
+        selectedSettlement?.innovations || [],
         oldIndex,
         newIndex
       )
@@ -212,28 +220,30 @@ export function InnovationsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[400px]">
           <div className="flex-1 overflow-y-auto">
-            {settlement.innovations?.length !== 0 && (
+            {selectedSettlement?.innovations?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.innovations || []).map((_, index) =>
-                    index.toString()
+                  items={(selectedSettlement?.innovations || []).map(
+                    (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.innovations || []).map((innovation, index) => (
-                    <InnovationItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSettlement?.innovations || []).map(
+                    (innovation, index) => (
+                      <InnovationItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

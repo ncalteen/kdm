@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { NodeLevel } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -30,31 +31,31 @@ export interface QuarryItemProps {
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Handler */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Handler */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (
     value?: string,
-    node?: string,
+    node?: NodeLevel,
     unlocked?: boolean,
     index?: number
   ) => void
-  /** OnToggleUnlocked Handler */
+  /** On Toggle Unlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
-  /** OnUpdateNode Handler */
-  onUpdateNode: (index: number, node: string) => void
+  /** On Update Node Handler */
+  onUpdateNode: (index: number, node: NodeLevel) => void
 }
 
 /**
  * New Quarry Item Component Properties
  */
 export interface NewQuarryItemProps {
-  /** OnCancel Handler */
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Handler */
-  onSave: (value?: string, node?: string, unlocked?: boolean) => void
+  /** On Save Handler */
+  onSave: (value?: string, node?: NodeLevel, unlocked?: boolean) => void
 }
 
 /**
@@ -157,7 +158,7 @@ export function QuarryItem({
         ) : (
           <Select
             value={quarry.node}
-            onValueChange={(value) => onUpdateNode(index, value)}
+            onValueChange={(value) => onUpdateNode(index, value as NodeLevel)}
             disabled={isDisabled}>
             <SelectTrigger className="h-8 w-24">
               <SelectValue placeholder={quarry.node} />
@@ -233,7 +234,7 @@ export function NewQuarryItem({
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(inputRef.current.value, nodeRef.current, false)
+      onSave(inputRef.current.value, nodeRef.current as NodeLevel, false)
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()
@@ -282,7 +283,7 @@ export function NewQuarryItem({
           variant="ghost"
           size="icon"
           onClick={() =>
-            onSave(inputRef.current?.value, nodeRef.current, false)
+            onSave(inputRef.current?.value, nodeRef.current as NodeLevel, false)
           }
           title="Save quarry">
           <CheckIcon className="h-4 w-4" />

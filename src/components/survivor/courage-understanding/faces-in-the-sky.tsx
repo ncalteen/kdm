@@ -14,13 +14,13 @@ import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Faces In The Sky Props
+ * Faces In The Sky Properties
  */
 interface FacesInTheSkyProps {
-  /** Survivor form instance */
+  /** Survivor Form */
   form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
 }
 
 /**
@@ -31,12 +31,12 @@ interface FacesInTheSkyProps {
  * Storm, Reaper) and their relationships with different roles (Gambler,
  * Absolute, Sculptor, Goblin).
  *
- * @param form Form
+ * @param props Faces In The Sky Properties
  * @returns Faces in the Sky Component
  */
 export function FacesInTheSky({
   form,
-  saveSurvivor
+  saveSelectedSurvivor
 }: FacesInTheSkyProps): ReactElement {
   /**
    * Save to Local Storage
@@ -45,7 +45,7 @@ export function FacesInTheSky({
    * @param value New value
    */
   const saveToLocalStorage = (attrName: keyof Survivor, value: boolean) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         [attrName]: value
       },

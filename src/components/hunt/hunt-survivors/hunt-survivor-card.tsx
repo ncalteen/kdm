@@ -11,26 +11,25 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { ActiveHunt } from '@/schemas/active-hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Hunt Survivor Card Component
- *
- * Displays updatable information for a single survivor during an active hunt
  */
 interface HuntSurvivorCardProps {
-  /** Settlement Data */
-  settlement: Settlement
-  /** Survivor Data */
-  survivor: Survivor
-  /** Function to Save Active Hunt Data */
-  saveActiveHunt: (data: Partial<ActiveHunt>, successMsg?: string) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
+  /** Survivor */
+  survivor: Partial<Survivor> | null
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -39,98 +38,74 @@ interface HuntSurvivorCardProps {
  * Displays updatable survivor information for hunt
  */
 export function HuntSurvivorCard({
-  settlement,
+  selectedSettlement,
   survivor,
-  saveActiveHunt
+  survivors,
+  updateSurvivors
 }: HuntSurvivorCardProps): ReactElement {
-  // const [selectedSurvivor, setSelectedSurvivor] = useState<Survivor>(survivor)
-
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: survivor
+    defaultValues: SurvivorSchema.parse(survivor || {})
   })
+
+  /**
+   * Save Survivors to Local Storage
+   */
+  const saveToLocalStorage = (
+    survivorId: number,
+    updateData: Partial<Survivor>,
+    successMsg?: string
+  ) => {
+    if (!survivors) return
+
+    const updatedSurvivors = survivors.map((s) =>
+      s.id === survivorId ? { ...s, ...updateData } : s
+    )
+
+    updateSurvivors(updatedSurvivors)
+
+    if (successMsg) toast.success(successMsg)
+  }
 
   /**
    * Update Survival Points
    */
   const updateSurvival = (val: string) => {
+    if (!survivor || !survivor.id || !selectedSettlement) return
+
     const value = parseInt(val) || 0
 
-    // Enforce minimum value of 0
     if (value < 0) return toast.error('Survival cannot be negative.')
-
-    // Enforce maximum value of survivalLimit
-    if (value > (settlement.survivalLimit || 0))
+    if (value > (selectedSettlement?.survivalLimit || 0))
       return toast.error(
-        `Survival cannot exceed the settlement's limit of ${settlement.survivalLimit}.`
+        `Survival cannot exceed the settlement's limit of ${selectedSettlement.survivalLimit || 0}.`
       )
 
-    saveToLocalStorage('survival', value, 'Survival updated successfully.')
+    saveToLocalStorage(
+      survivor.id,
+      { survival: value },
+      'Survival updated successfully.'
+    )
   }
 
   /**
    * Update Insanity Points
    */
   const updateInsanity = (val: string) => {
+    if (!survivor || !survivor.id || !selectedSettlement) return
+
     const value = parseInt(val) || 0
 
-    // Enforce minimum value of 0
     if (value < 0) return toast.error('Insanity cannot be negative.')
 
-    saveToLocalStorage('insanity', value, 'Insanity updated successfully.')
+    saveToLocalStorage(
+      survivor.id,
+      { insanity: value },
+      'Survival updated successfully.'
+    )
   }
 
-  /**
-   * Save to Local Storage
-   *
-   * @param field Field name to update
-   * @param value New value
-   * @param successMsg Optional success message
-   */
-  const saveToLocalStorage = (
-    field: keyof Survivor,
-    value: unknown,
-    successMsg?: string
-  ) => {
-    // setSelectedSurvivor((prev) => ({
-    //   ...prev,
-    //   [field]: value
-    // }))
-    // form.setValue(field, value as string | number)
-    saveActiveHunt({ [field]: value }, successMsg)
-  }
-
-  useEffect(() => {
-    // Reset form when survivor data changes
-    console.log('Resetting form with survivor data:', survivor)
-    form.reset(survivor)
-  }, [form, survivor])
-
-  /**
-   * Update survivor data and save to local storage.
-   */
-  const updateSurvivor = useCallback(
-    (field: keyof Survivor, value: unknown, successMsg?: string) => {
-      console.log(survivor.insanity)
-      try {
-        // saveActiveHunt(
-        //   {
-        //     ...survivor,
-        //     [field]: value
-        //   },
-        //   successMsg
-        // )
-        form.reset({
-          ...survivor,
-          [field]: value
-        })
-      } catch (error) {
-        console.error('Survivor Update Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
-      }
-    },
-    [form, survivor]
-  )
+  if (!survivor) return <></>
 
   return (
     <Card className="border border-border/30">
@@ -171,9 +146,11 @@ export function HuntSurvivorCard({
               id={`retired-${survivor.id}`}
               checked={survivor.retired}
               onCheckedChange={(checked) =>
-                updateSurvivor(
-                  'retired',
-                  !!checked,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    retired: !!checked
+                  },
                   checked
                     ? 'The survivor retires from the hunt.'
                     : 'The survivor returns to active duty.'
@@ -189,9 +166,11 @@ export function HuntSurvivorCard({
               id={`dead-${survivor.id}`}
               checked={survivor.dead}
               onCheckedChange={(checked) =>
-                updateSurvivor(
-                  'dead',
-                  !!checked,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    dead: !!checked
+                  },
                   checked
                     ? 'Darkness claims another soul.'
                     : 'The survivor returns from the brink of death.'
@@ -218,10 +197,12 @@ export function HuntSurvivorCard({
             id={`cannot-spend-survival-${survivor.id}`}
             checked={!survivor.canSpendSurvival}
             onCheckedChange={(checked) =>
-              updateSurvivor(
-                'canSpendSurvival',
-                !checked,
-                !checked
+              saveToLocalStorage(
+                survivor.id!,
+                {
+                  canSpendSurvival: !checked
+                },
+                checked
                   ? 'The survivor freezes - survival cannot be spent.'
                   : 'The survivor can once again spend survival.'
               )
@@ -244,13 +225,7 @@ export function HuntSurvivorCard({
               id={`survival-${survivor.id}`}
               type="number"
               value={survivor.survival}
-              onChange={(e) =>
-                updateSurvivor(
-                  'survival',
-                  parseInt(e.target.value) || 0,
-                  'Survival updated.'
-                )
-              }
+              onChange={(e) => updateSurvival(e.target.value)}
               className="h-8 text-center"
               min="0"
             />
@@ -296,9 +271,11 @@ export function HuntSurvivorCard({
               type="number"
               value={survivor.accuracy}
               onChange={(e) =>
-                updateSurvivor(
-                  'accuracy',
-                  parseInt(e.target.value) || 0,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    accuracy: parseInt(e.target.value) || 0
+                  },
                   'Accuracy updated.'
                 )
               }
@@ -314,9 +291,11 @@ export function HuntSurvivorCard({
               type="number"
               value={survivor.luck}
               onChange={(e) =>
-                updateSurvivor(
-                  'luck',
-                  parseInt(e.target.value) || 0,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    luck: parseInt(e.target.value) || 0
+                  },
                   'Luck updated.'
                 )
               }
@@ -332,9 +311,11 @@ export function HuntSurvivorCard({
               type="number"
               value={survivor.speed}
               onChange={(e) =>
-                updateSurvivor(
-                  'speed',
-                  parseInt(e.target.value) || 0,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    speed: parseInt(e.target.value) || 0
+                  },
                   'Speed updated.'
                 )
               }
@@ -350,9 +331,11 @@ export function HuntSurvivorCard({
               type="number"
               value={survivor.strength}
               onChange={(e) =>
-                updateSurvivor(
-                  'strength',
-                  parseInt(e.target.value) || 0,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    strength: parseInt(e.target.value) || 0
+                  },
                   'Strength updated.'
                 )
               }
@@ -372,6 +355,15 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.lumi}
                   onChange={(e) =>
+                  saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    dead: !!checked
+                  },
+                  checked
+                    ? 'Darkness claims another soul.'
+                    : 'The survivor returns from the brink of death.'
+                )
                     updateSurvivor(
                       'lumi',
                       parseInt(e.target.value) || 0,
@@ -393,6 +385,15 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.systemicPressure}
                   onChange={(e) =>
+                  saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    dead: !!checked
+                  },
+                  checked
+                    ? 'Darkness claims another soul.'
+                    : 'The survivor returns from the brink of death.'
+                )
                     updateSurvivor(
                       'systemicPressure',
                       parseInt(e.target.value) || 0,
@@ -412,6 +413,15 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.torment}
                   onChange={(e) =>
+                  saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    dead: !!checked
+                  },
+                  checked
+                    ? 'Darkness claims another soul.'
+                    : 'The survivor returns from the brink of death.'
+                )
                     updateSurvivor(
                       'torment',
                       parseInt(e.target.value) || 0,
@@ -437,9 +447,11 @@ export function HuntSurvivorCard({
               type="number"
               value={survivor.courage}
               onChange={(e) =>
-                updateSurvivor(
-                  'courage',
-                  parseInt(e.target.value) || 0,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    courage: parseInt(e.target.value) || 0
+                  },
                   'Courage updated.'
                 )
               }
@@ -457,9 +469,11 @@ export function HuntSurvivorCard({
               type="number"
               value={survivor.understanding}
               onChange={(e) =>
-                updateSurvivor(
-                  'understanding',
-                  parseInt(e.target.value) || 0,
+                saveToLocalStorage(
+                  survivor.id!,
+                  {
+                    understanding: parseInt(e.target.value) || 0
+                  },
                   'Understanding updated.'
                 )
               }
@@ -471,25 +485,26 @@ export function HuntSurvivorCard({
         </div>
 
         {/* Abilities and Impairments */}
-        {survivor.abilitiesAndImpairments.length > 0 && (
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">
-              Abilities & Impairments
-            </Label>
-            <div className="space-y-1">
-              {survivor.abilitiesAndImpairments.map((ability, index) => (
-                <div
-                  key={index}
-                  className="text-xs bg-background/60 rounded px-2 py-1 border">
-                  {ability}
-                </div>
-              ))}
+        {survivor?.abilitiesAndImpairments &&
+          survivor?.abilitiesAndImpairments?.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold">
+                Abilities & Impairments
+              </Label>
+              <div className="space-y-1">
+                {survivor.abilitiesAndImpairments.map((ability, index) => (
+                  <div
+                    key={index}
+                    className="text-xs bg-background/60 rounded px-2 py-1 border">
+                    {ability}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Once Per Lifetime */}
-        {survivor.oncePerLifetime.length > 0 && (
+        {survivor?.oncePerLifetime && survivor?.oncePerLifetime?.length > 0 && (
           <div className="space-y-2">
             <Label className="text-xs font-semibold">Once Per Lifetime</Label>
             <div className="space-y-1">
@@ -505,7 +520,7 @@ export function HuntSurvivorCard({
         )}
 
         {/* Disorders */}
-        {survivor.disorders.length > 0 && (
+        {survivor?.disorders && survivor?.disorders.length > 0 && (
           <div className="space-y-2">
             <Label className="text-xs font-semibold">Disorders</Label>
             <div className="space-y-1">
@@ -539,9 +554,11 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.headArmor}
                   onChange={(e) =>
-                    updateSurvivor(
-                      'headArmor',
-                      parseInt(e.target.value) || 0,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        headArmor: parseInt(e.target.value) || 0
+                      },
                       'Head armor updated.'
                     )
                   }
@@ -554,9 +571,11 @@ export function HuntSurvivorCard({
                   id={`head-heavy-${survivor.id}`}
                   checked={survivor.headHeavyDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'headHeavyDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        headHeavyDamage: !!checked
+                      },
                       checked
                         ? 'Head takes heavy damage.'
                         : 'Head heavy damage cleared.'
@@ -585,9 +604,11 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.armArmor}
                   onChange={(e) =>
-                    updateSurvivor(
-                      'armArmor',
-                      parseInt(e.target.value) || 0,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        armArmor: parseInt(e.target.value) || 0
+                      },
                       'Arm armor updated.'
                     )
                   }
@@ -600,9 +621,11 @@ export function HuntSurvivorCard({
                   id={`arm-light-${survivor.id}`}
                   checked={survivor.armLightDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'armLightDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        armLightDamage: !!checked
+                      },
                       checked
                         ? 'Arm takes light damage.'
                         : 'Arm light damage cleared.'
@@ -618,9 +641,11 @@ export function HuntSurvivorCard({
                   id={`arm-heavy-${survivor.id}`}
                   checked={survivor.armHeavyDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'armHeavyDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        armHeavyDamage: !!checked
+                      },
                       checked
                         ? 'Arm takes heavy damage.'
                         : 'Arm heavy damage cleared.'
@@ -649,9 +674,11 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.bodyArmor}
                   onChange={(e) =>
-                    updateSurvivor(
-                      'bodyArmor',
-                      parseInt(e.target.value) || 0,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        bodyArmor: parseInt(e.target.value) || 0
+                      },
                       'Body armor updated.'
                     )
                   }
@@ -664,9 +691,11 @@ export function HuntSurvivorCard({
                   id={`body-light-${survivor.id}`}
                   checked={survivor.bodyLightDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'bodyLightDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        bodyLightDamage: !!checked
+                      },
                       checked
                         ? 'Body takes light damage.'
                         : 'Body light damage cleared.'
@@ -684,9 +713,11 @@ export function HuntSurvivorCard({
                   id={`body-heavy-${survivor.id}`}
                   checked={survivor.bodyHeavyDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'bodyHeavyDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        bodyHeavyDamage: !!checked
+                      },
                       checked
                         ? 'Body takes heavy damage.'
                         : 'Body heavy damage cleared.'
@@ -717,9 +748,11 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.waistArmor}
                   onChange={(e) =>
-                    updateSurvivor(
-                      'waistArmor',
-                      parseInt(e.target.value) || 0,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        waistArmor: parseInt(e.target.value) || 0
+                      },
                       'Waist armor updated.'
                     )
                   }
@@ -732,9 +765,11 @@ export function HuntSurvivorCard({
                   id={`waist-light-${survivor.id}`}
                   checked={survivor.waistLightDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'waistLightDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        waistLightDamage: !!checked
+                      },
                       checked
                         ? 'Waist takes light damage.'
                         : 'Waist light damage cleared.'
@@ -752,9 +787,11 @@ export function HuntSurvivorCard({
                   id={`waist-heavy-${survivor.id}`}
                   checked={survivor.waistHeavyDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'waistHeavyDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        waistHeavyDamage: !!checked
+                      },
                       checked
                         ? 'Waist takes heavy damage.'
                         : 'Waist heavy damage cleared.'
@@ -783,9 +820,11 @@ export function HuntSurvivorCard({
                   type="number"
                   value={survivor.legArmor}
                   onChange={(e) =>
-                    updateSurvivor(
-                      'legArmor',
-                      parseInt(e.target.value) || 0,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        legArmor: parseInt(e.target.value) || 0
+                      },
                       'Leg armor updated.'
                     )
                   }
@@ -798,9 +837,11 @@ export function HuntSurvivorCard({
                   id={`leg-light-${survivor.id}`}
                   checked={survivor.legLightDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'legLightDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        legLightDamage: !!checked
+                      },
                       checked
                         ? 'Leg takes light damage.'
                         : 'Leg light damage cleared.'
@@ -816,9 +857,11 @@ export function HuntSurvivorCard({
                   id={`leg-heavy-${survivor.id}`}
                   checked={survivor.legHeavyDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'legHeavyDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        legHeavyDamage: !!checked
+                      },
                       checked
                         ? 'Leg takes heavy damage.'
                         : 'Leg heavy damage cleared.'
@@ -842,9 +885,11 @@ export function HuntSurvivorCard({
                   id={`brain-light-${survivor.id}`}
                   checked={survivor.brainLightDamage}
                   onCheckedChange={(checked) =>
-                    updateSurvivor(
-                      'brainLightDamage',
-                      !!checked,
+                    saveToLocalStorage(
+                      survivor.id!,
+                      {
+                        brainLightDamage: !!checked
+                      },
                       checked
                         ? 'Brain takes light damage.'
                         : 'Brain light damage cleared.'

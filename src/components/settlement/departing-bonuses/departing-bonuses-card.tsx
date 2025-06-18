@@ -28,22 +28,30 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Departing Bonuses Card Props
+ * Departing Bonuses Card Properties
  */
-interface DepartingBonusesCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+interface DepartingBonusesCardProps {
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Departing Bonuses Card Component
+ *
+ * @param props Departing Bonuses Card Properties
+ * @returns Departing Bonuses Card Component
  */
 export function DepartingBonusesCard({
   form,
-  saveSettlement,
-  ...settlement
+  selectedSettlement,
+  saveSelectedSettlement
 }: DepartingBonusesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -54,13 +62,13 @@ export function DepartingBonusesCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.departingBonuses?.forEach((_, i) => {
+      selectedSettlement?.departingBonuses?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.departingBonuses])
+  }, [selectedSettlement?.departingBonuses])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -81,7 +89,11 @@ export function DepartingBonusesCard({
   const saveToLocalStorage = (
     updatedDepartingBonuses: string[],
     successMsg?: string
-  ) => saveSettlement({ departingBonuses: updatedDepartingBonuses }, successMsg)
+  ) =>
+    saveSelectedSettlement(
+      { departingBonuses: updatedDepartingBonuses },
+      successMsg
+    )
 
   /**
    * Handles the removal of a departing bonus.
@@ -89,7 +101,9 @@ export function DepartingBonusesCard({
    * @param index Departing Bonus Index
    */
   const onRemove = (index: number) => {
-    const currentDepartingBonuses = [...(settlement.departingBonuses || [])]
+    const currentDepartingBonuses = [
+      ...(selectedSettlement?.departingBonuses || [])
+    ]
     currentDepartingBonuses.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -120,7 +134,9 @@ export function DepartingBonusesCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless blessing cannot be recorded.')
 
-    const updatedDepartingBonuses = [...(settlement.departingBonuses || [])]
+    const updatedDepartingBonuses = [
+      ...(selectedSettlement?.departingBonuses || [])
+    ]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -167,7 +183,7 @@ export function DepartingBonusesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        settlement.departingBonuses || [],
+        selectedSettlement?.departingBonuses || [],
         oldIndex,
         newIndex
       )
@@ -218,28 +234,30 @@ export function DepartingBonusesCard({
       <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[240px]">
           <div className="flex-1 overflow-y-auto">
-            {settlement.departingBonuses?.length !== 0 && (
+            {selectedSettlement?.departingBonuses?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.departingBonuses || []).map((_, index) =>
-                    index.toString()
+                  items={(selectedSettlement?.departingBonuses || []).map(
+                    (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.departingBonuses || []).map((bonus, index) => (
-                    <DepartingBonusItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSettlement?.departingBonuses || []).map(
+                    (bonus, index) => (
+                      <DepartingBonusItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        form={form}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

@@ -25,22 +25,30 @@ import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Gear Card Props
+ * Gear Card Properties
  */
 interface GearCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
+  /** Settlement Form */
   form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Gear Card Component
+ *
+ * @param props Gear Card Properties
+ * @returns Gear Card Component
  */
 export function GearCard({
   form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: GearCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -51,13 +59,13 @@ export function GearCard({
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.gear?.forEach((_, i) => {
+      selectedSettlement?.gear?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.gear])
+  }, [selectedSettlement?.gear])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -75,7 +83,7 @@ export function GearCard({
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (updatedGear: string[], successMsg?: string) =>
-    saveSettlement({ gear: updatedGear }, successMsg)
+    saveSelectedSettlement({ gear: updatedGear }, successMsg)
 
   /**
    * Handles the removal of gear.
@@ -83,7 +91,7 @@ export function GearCard({
    * @param index Gear Index
    */
   const onRemove = (index: number) => {
-    const currentGear = [...(settlement.gear || [])]
+    const currentGear = [...(selectedSettlement?.gear || [])]
     currentGear.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -111,7 +119,7 @@ export function GearCard({
     if (!value || value.trim() === '')
       return toast.error('Nameless gear cannot be stored.')
 
-    const updatedGear = [...(settlement.gear || [])]
+    const updatedGear = [...(selectedSettlement?.gear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -157,7 +165,11 @@ export function GearCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(settlement.gear || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.gear || [],
+        oldIndex,
+        newIndex
+      )
 
       saveToLocalStorage(newOrder)
       setDisabledInputs((prev) => {
@@ -205,17 +217,17 @@ export function GearCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {settlement.gear?.length !== 0 && (
+            {selectedSettlement?.gear?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.gear || []).map((_, index) =>
+                  items={(selectedSettlement?.gear || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.gear || []).map((gearItem, index) => (
+                  {(selectedSettlement?.gear || []).map((gearItem, index) => (
                     <GearItem
                       key={index}
                       id={index.toString()}
