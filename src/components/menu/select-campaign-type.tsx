@@ -55,6 +55,7 @@ export function SelectCampaignType({
   }))
 
   useEffect(() => {
+    console.debug('[SelectCampaignType] Value Changed:', propValue)
     if (propValue) setValue(propValue)
   }, [propValue])
 

@@ -60,6 +60,7 @@ export function DepartingBonusItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[DepartingBonusItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`departingBonuses.${index}`) || ''
 

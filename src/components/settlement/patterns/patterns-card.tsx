@@ -63,6 +63,7 @@ export function PatternsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[PatternsCard] Initializing Disabled Inputs')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

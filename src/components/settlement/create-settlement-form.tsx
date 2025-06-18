@@ -63,20 +63,17 @@ export function CreateSettlementForm({
 
   // Set the form values when the component mounts.
   useEffect(() => {
+    console.debug(
+      '[CreateSettlementForm] Setting Initial Values',
+      selectedSettlement?.campaignType
+    )
     // Get campaign data for the campaign type.
     const campaignData = getCampaignData(
       selectedSettlement?.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
     )
 
-    // Calculate the next settlement ID based on the latest in localStorage.
     form.setValue('id', getNextSettlementId())
-
-    // Calculate the lost settlement count based on the number of settlements
-    // present in localStorage.
     form.setValue('lostSettlements', getLostSettlementCount())
-
-    // Set all the required settlement fields with default values that will be
-    // used when the form is submitted.
     form.setValue('innovations', campaignData.innovations)
     form.setValue('locations', campaignData.locations)
     form.setValue('milestones', campaignData.milestones)

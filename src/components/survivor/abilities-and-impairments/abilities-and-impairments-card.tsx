@@ -58,6 +58,7 @@ export function AbilitiesAndImpairmentsCard({
   const skipNextHunt = form.watch('skipNextHunt')
 
   useEffect(() => {
+    console.debug('[AbilitiesAndImpairmentsCard] Initializing Disabled Inputs')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

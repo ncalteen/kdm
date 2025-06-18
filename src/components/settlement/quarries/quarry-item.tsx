@@ -82,6 +82,7 @@ export function QuarryItem({
   const quarry = form.watch(`quarries.${index}`)
 
   useEffect(() => {
+    console.debug('[QuarryItem] Changed', isDisabled, index)
     if (inputRef.current && quarry) {
       inputRef.current.value = quarry.name || ''
     }

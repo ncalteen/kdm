@@ -60,6 +60,7 @@ export function PhilosophiesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[PhilosophiesCard] Selected Settlement Changed')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

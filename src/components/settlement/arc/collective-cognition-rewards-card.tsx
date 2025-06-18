@@ -58,6 +58,9 @@ export function CollectiveCognitionRewardsCard({
   }>({})
 
   useEffect(() => {
+    console.debug(
+      '[CollectiveCognitionRewardsCard] Selected Settlement Changed'
+    )
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

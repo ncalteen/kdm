@@ -60,6 +60,7 @@ export function OncePerLifetimeItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[OncePerLifetimeItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`oncePerLifetime.${index}`) || ''
 

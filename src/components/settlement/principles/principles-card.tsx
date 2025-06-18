@@ -58,6 +58,7 @@ export function PrinciplesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[PrinciplesCard] Initializing Disabled Inputs')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

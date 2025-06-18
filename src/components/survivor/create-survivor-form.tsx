@@ -72,6 +72,7 @@ export function CreateSurvivorForm({
 
   // Set the form values when the component mounts
   useEffect(() => {
+    console.debug('[CreateSurvivorForm] Initializing Form Values')
     if (!selectedSettlement) return
 
     const updatedValues = {

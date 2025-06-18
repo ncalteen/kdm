@@ -61,6 +61,7 @@ export const SelectPhilosophy = forwardRef<
     const [value, setValue] = useState(propValue || '')
 
     useEffect(() => {
+      console.debug('[SelectPhilosophy] Value Changed:', propValue)
       if (propValue !== undefined) setValue(propValue)
     }, [propValue])
 

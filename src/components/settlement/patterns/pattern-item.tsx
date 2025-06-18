@@ -60,6 +60,7 @@ export function PatternItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[PatternItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`patterns.${index}`) || ''
 

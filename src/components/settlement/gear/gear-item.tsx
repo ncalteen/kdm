@@ -60,6 +60,7 @@ export function GearItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[GearItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`gear.${index}`) || ''
 

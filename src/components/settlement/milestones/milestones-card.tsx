@@ -59,6 +59,7 @@ export function MilestonesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[MilestonesCard] Initializing Disabled Inputs')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

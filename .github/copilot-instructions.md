@@ -2,9 +2,10 @@
 
 ## Development
 
-- Before trying to start the local development server, please check if it is
-  already running at `http://localhost:3000`. If it is, you can skip the
-  `npm run dev` command.
+- Do not run `npm run dev`, `npm run lint`, or `npm run format` commands unless
+  you are specifically asked to do so. These commands are used to check and
+  format the code, but they can be time-consuming and may not be necessary for
+  your task.
 
 ## React Components
 

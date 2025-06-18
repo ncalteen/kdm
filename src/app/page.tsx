@@ -63,14 +63,13 @@ function MainPageContent(): ReactElement {
 
   // Effect to handle component mount and loading state
   useEffect(() => {
+    console.debug('[MainPageContent] Mounted')
     // Mark component as mounted
     isMounted.current = true
 
     // Simulate async behavior to show loading state briefly
     setTimeout(() => {
-      if (isMounted.current) {
-        setIsLoading(false)
-      }
+      if (isMounted.current) setIsLoading(false)
     }, 100)
 
     return () => {
@@ -123,7 +122,7 @@ function MainPage(): ReactElement {
     updateSelectedHunt
   } = useSelectedHunt()
   const { selectedTab } = useSelectedTab()
-  const { survivors, updateSurvivors } = useSurvivors()
+  const { setSurvivors, survivors, updateSurvivors } = useSurvivors()
 
   // Initialize the form data from the context
   const huntForm = useForm<Hunt>({
@@ -159,6 +158,8 @@ function MainPage(): ReactElement {
 
   // Handle settlement data changes
   useEffect(() => {
+    console.debug('[Page] Selected Settlement Changed')
+
     // If the settlement changes, reset the settlement form
     if (selectedSettlement) {
       settlementForm.reset(selectedSettlement)
@@ -181,6 +182,7 @@ function MainPage(): ReactElement {
 
   // Reset the survivor form when the selected survivor changes
   useEffect(() => {
+    console.debug('[Page] Selected Survivor Changed')
     if (selectedSurvivor) survivorForm.reset(selectedSurvivor)
   }, [selectedSurvivor, survivorForm])
 
@@ -220,6 +222,7 @@ function MainPage(): ReactElement {
                     setSelectedHunt={setSelectedHunt}
                     setSelectedSettlement={handleSetSelectedSettlement}
                     setSelectedSurvivor={setSelectedSurvivor}
+                    setSurvivors={setSurvivors}
                     settlementForm={settlementForm}
                     survivorForm={survivorForm}
                     survivors={survivors}

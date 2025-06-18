@@ -60,6 +60,7 @@ export function SeedPatternItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[SeedPatternItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`seedPatterns.${index}`) || ''
 

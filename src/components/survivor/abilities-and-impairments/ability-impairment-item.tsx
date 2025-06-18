@@ -60,6 +60,7 @@ export function AbilityImpairmentItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[AbilityImpairmentItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value =
         form.getValues(`abilitiesAndImpairments.${index}`) || ''

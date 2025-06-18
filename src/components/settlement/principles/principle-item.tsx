@@ -76,12 +76,14 @@ export function PrincipleItem({
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[PrincipleItem] Changed', principle.name)
     setNameValue(principle.name || '')
     setOption1Value(principle.option1Name || '')
     setOption2Value(principle.option2Name || '')
   }, [principle.name, principle.option1Name, principle.option2Name])
 
   useEffect(() => {
+    console.debug('[PrincipleItem] Disabled State Changed', isDisabled)
     if (!isDisabled && nameInputRef.current) {
       nameInputRef.current.focus()
 

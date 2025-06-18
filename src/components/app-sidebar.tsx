@@ -171,7 +171,7 @@ export function AppSidebar({
 }: AppSidebarProps): ReactElement {
   const { state } = useSidebar()
 
-  const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
+  const [campaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
@@ -188,6 +188,13 @@ export function AppSidebar({
   // Update navigation items based on settlement context
   useEffect(() => {
     if (!isMounted) return setIsMounted(true)
+
+    console.debug(
+      '[AppSidebar] Updating Navigation Items',
+      selectedSettlement?.campaignType,
+      selectedSettlement?.survivorType,
+      isMounted
+    )
 
     if (
       selectedSettlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
@@ -214,11 +221,6 @@ export function AppSidebar({
     selectedSettlement?.survivorType,
     isMounted
   ])
-
-  // Update campaign data when it changes (e.g., after creating settlements)
-  useEffect(() => {
-    setCampaign(getCampaign())
-  }, [selectedSettlement])
 
   const handleDownload = () => {
     try {

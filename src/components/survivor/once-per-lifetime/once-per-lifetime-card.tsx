@@ -59,6 +59,7 @@ export function OncePerLifetimeCard({
   const rerollUsed = form.watch('rerollUsed')
 
   useEffect(() => {
+    console.debug('[OncePerLifetimeCard] Initializing Disabled Inputs')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

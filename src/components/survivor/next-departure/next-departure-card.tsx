@@ -55,6 +55,7 @@ export function NextDepartureCard({
   const nextDeparture = form.watch('nextDeparture')
 
   useEffect(() => {
+    console.debug('[NextDepartureCard] Initializing Disabled Inputs')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

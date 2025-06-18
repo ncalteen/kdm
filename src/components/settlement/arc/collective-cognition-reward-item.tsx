@@ -63,6 +63,7 @@ export function RewardItem({
   const ccInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[RewardItem] Changed Reward:', reward, isDisabled)
     if (nameInputRef.current) {
       nameInputRef.current.value = reward?.name || ''
     }

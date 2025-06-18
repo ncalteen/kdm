@@ -69,6 +69,7 @@ export function KnowledgeItem({
   const selectRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
+    console.debug('[KnowledgeItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`knowledges.${index}.name`) || ''
 

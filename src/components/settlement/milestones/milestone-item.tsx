@@ -78,6 +78,7 @@ export function MilestoneItem({
   const eventRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[MilestoneItem] Changed', milestone.name, isDisabled)
     if (nameRef.current) {
       nameRef.current.value = milestone.name || ''
     }

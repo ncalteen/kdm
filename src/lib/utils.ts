@@ -149,8 +149,8 @@ export function getNextSurvivorId(): number {
 export function getNextHuntId(): number {
   const campaign = getCampaign()
 
-  // If this is the first hunt, return 1. Otherwise, return the latest
-  // hunt ID + 1.
+  if (!campaign.hunts) return 1
+
   return campaign.hunts.length === 0
     ? 1
     : Math.max(...campaign.hunts.map((hunt) => hunt.id)) + 1
@@ -164,8 +164,8 @@ export function getNextHuntId(): number {
 export function getNextShowdownId(): number {
   const campaign = getCampaign()
 
-  // If this is the first showdown, return 1. Otherwise, return the latest
-  // showdown ID + 1.
+  if (!campaign.showdowns) return 1
+
   return campaign.showdowns.length === 0
     ? 1
     : Math.max(...campaign.showdowns.map((showdown) => showdown.id)) + 1
@@ -317,7 +317,7 @@ export function getSelectedHunt(): Hunt | null {
 
   if (!campaign.selectedHuntId) return null
 
-  return campaign.hunts.find((h) => h.id === campaign.selectedHuntId) || null
+  return campaign.hunts?.find((h) => h.id === campaign.selectedHuntId) || null
 }
 
 /**
@@ -344,7 +344,8 @@ export function getSelectedShowdown(): Showdown | null {
   if (!campaign.selectedShowdownId) return null
 
   return (
-    campaign.showdowns.find((h) => h.id === campaign.selectedShowdownId) || null
+    campaign.showdowns?.find((h) => h.id === campaign.selectedShowdownId) ||
+    null
   )
 }
 

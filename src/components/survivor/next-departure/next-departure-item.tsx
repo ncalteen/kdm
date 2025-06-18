@@ -60,6 +60,7 @@ export function NextDepartureItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[NextDepartureItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`nextDeparture.${index}`) || ''
 

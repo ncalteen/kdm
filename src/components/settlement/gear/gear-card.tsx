@@ -56,6 +56,7 @@ export function GearCard({
   const [isAddingNew, setIsAddingNew] = useState(false)
 
   useEffect(() => {
+    console.debug('[GearCard] Initializing Disabled Inputs')
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 

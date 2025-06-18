@@ -61,6 +61,7 @@ export function PhilosophyItem({
   const selectRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
+    console.debug('[PhilosophyItem] Disabled State Changed:', isDisabled)
     if (!isDisabled && selectRef.current) selectRef.current.focus()
   }, [isDisabled])
 

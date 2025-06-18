@@ -60,6 +60,7 @@ export function ArrivalBonusItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[ArrivalBonusItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`arrivalBonuses.${index}`) || ''
 

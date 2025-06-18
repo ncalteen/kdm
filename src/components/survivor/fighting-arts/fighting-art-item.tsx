@@ -71,6 +71,7 @@ export function FightingArtItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[FightingArtItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`${arrayName}.${index}`) || ''
 

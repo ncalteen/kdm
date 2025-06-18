@@ -60,6 +60,7 @@ export function MonsterVolumeItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[MonsterVolumeItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`monsterVolumes.${index}`) || ''
 

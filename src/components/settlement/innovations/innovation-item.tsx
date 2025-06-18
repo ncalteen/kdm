@@ -60,6 +60,7 @@ export function InnovationItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[InnovationItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`innovations.${index}`) || ''
 

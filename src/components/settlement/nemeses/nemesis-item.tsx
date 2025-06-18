@@ -79,6 +79,7 @@ export function NemesisItem({
   const nemesis = form.watch(`nemeses.${index}`)
 
   useEffect(() => {
+    console.debug('[NemesisItem] Changed', isDisabled, index)
     if (inputRef.current && nemesis) {
       inputRef.current.value = nemesis.name || ''
     }

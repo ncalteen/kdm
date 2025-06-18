@@ -60,6 +60,7 @@ export function DisorderItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[DisorderItem] Changed', isDisabled, index)
     if (inputRef.current)
       inputRef.current.value = form.getValues(`disorders.${index}`) || ''
 

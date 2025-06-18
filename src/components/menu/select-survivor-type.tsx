@@ -57,9 +57,8 @@ export function SelectSurvivorType({
   )
 
   useEffect(() => {
-    if (propValue) {
-      setValue(propValue)
-    }
+    console.debug('[SelectSurvivorType] Value Changed:', propValue)
+    if (propValue) setValue(propValue)
   }, [propValue])
 
   const handleSelect = (currentValue: string) => {

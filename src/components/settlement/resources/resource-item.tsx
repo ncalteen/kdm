@@ -88,6 +88,7 @@ export function ResourceItem({
   )
 
   useEffect(() => {
+    console.debug('[ResourceItem] Changed', isDisabled, index)
     if (nameInputRef.current) nameInputRef.current.value = resource?.name || ''
 
     if (amountInputRef.current)
