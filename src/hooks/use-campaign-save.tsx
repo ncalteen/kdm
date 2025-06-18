@@ -2,6 +2,7 @@
 
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
+import { Survivor } from '@/schemas/survivor'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 
@@ -12,14 +13,18 @@ import { toast } from 'sonner'
  * context after saving data to localStorage, ensuring that components that
  * depend on campaign data are refreshed when campaign data changes.
  *
+ * @param survivors Survivors
  * @param updateSelectedHunt Update Selected Hunt Function
  * @param updateSelectedSettlement Update Selected Settlement Function
  * @param updateSelectedSurvivor Update Selected Survivor Function
+ * @param updateSurvivors Update Survivors Function
  */
 export function useCampaignSave(
+  survivors: Survivor[] | null,
   updateSelectedHunt: () => void,
   updateSelectedSettlement: () => void,
-  updateSelectedSurvivor: () => void
+  updateSelectedSurvivor: () => void,
+  updateSurvivors: (survivors: Survivor[]) => void
 ) {
   /**
    * Save Campaign Data
@@ -42,6 +47,7 @@ export function useCampaignSave(
         updateSelectedHunt()
         updateSelectedSettlement()
         updateSelectedSurvivor()
+        updateSurvivors(survivors || [])
 
         if (successMsg) toast.success(successMsg)
       } catch (error) {
@@ -49,7 +55,13 @@ export function useCampaignSave(
         toast.error('The darkness swallows your words. Please try again.')
       }
     },
-    [updateSelectedHunt, updateSelectedSettlement, updateSelectedSurvivor]
+    [
+      updateSelectedHunt,
+      updateSelectedSettlement,
+      updateSelectedSurvivor,
+      updateSurvivors,
+      survivors
+    ]
   )
 
   return { saveCampaign }

@@ -19,6 +19,8 @@ import {
  * Survivors Context Type
  */
 interface SurvivorsContextType {
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
   /** Update Survivors */
@@ -64,6 +66,11 @@ export function SurvivorsProvider({
   }, [])
 
   /**
+   * Set Survivors
+   */
+  const setSurvivors = (survivors: Survivor[]) => setSurvivorsState(survivors)
+
+  /**
    * Update Survivors
    */
   const updateSurvivors = (survivors: Survivor[]) =>
@@ -72,6 +79,7 @@ export function SurvivorsProvider({
   return (
     <SurvivorsContext.Provider
       value={{
+        setSurvivors,
         survivors: survivorsState,
         updateSurvivors
       }}>

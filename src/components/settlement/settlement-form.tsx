@@ -75,6 +75,8 @@ interface SettlementFormProps {
   setSelectedSettlement: (settlement: Settlement | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
   /** Settlement Form */
   settlementForm: UseFormReturn<Settlement>
   /** Survivor Form */
@@ -112,6 +114,7 @@ export function SettlementForm({
   setSelectedHunt,
   setSelectedSettlement,
   setSelectedSurvivor,
+  setSurvivors,
   settlementForm,
   survivorForm,
   survivors,
@@ -122,13 +125,12 @@ export function SettlementForm({
 }: SettlementFormProps): ReactElement {
   return (
     <>
-      {!['hunt', 'showdown'].includes(selectedTab) && (
-        <OverviewCard
-          form={settlementForm}
-          saveSelectedSettlement={saveSelectedSettlement}
-          selectedSettlement={selectedSettlement}
-        />
-      )}
+      <OverviewCard
+        form={settlementForm}
+        saveSelectedSettlement={saveSelectedSettlement}
+        selectedSettlement={selectedSettlement}
+        survivors={survivors}
+      />
 
       <hr className="pt-2" />
 
@@ -282,9 +284,12 @@ export function SettlementForm({
                   selectedSurvivor={selectedSurvivor}
                   setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                   setSelectedSurvivor={setSelectedSurvivor}
+                  setSurvivors={setSurvivors}
+                  survivors={survivors}
                   updateSelectedHunt={updateSelectedHunt}
                   updateSelectedSettlement={updateSelectedSettlement}
                   updateSelectedSurvivor={updateSelectedSurvivor}
+                  updateSurvivors={updateSurvivors}
                 />
                 {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard

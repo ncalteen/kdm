@@ -10,10 +10,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { CampaignType, SurvivorType } from '@/lib/enums'
-import { getSurvivors } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
 /**
@@ -29,6 +28,8 @@ interface OverviewCardProps {
   ) => void
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
+  /** Survivors */
+  survivors: Survivor[] | null
 }
 
 /**
@@ -43,76 +44,53 @@ interface OverviewCardProps {
 export function OverviewCard({
   form,
   saveSelectedSettlement,
-  selectedSettlement
+  selectedSettlement,
+  survivors
 }: OverviewCardProps): ReactElement {
-  const isArcCampaign = useMemo(
-    () => selectedSettlement?.survivorType === SurvivorType.ARC,
-    [selectedSettlement?.survivorType]
-  )
-  const isLanternCampaign = useMemo(
-    () =>
-      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
-    [selectedSettlement?.campaignType]
-  )
-
-  // Track survivors state to trigger re-calculations when survivors change
-  const [survivors, setSurvivors] = useState<Survivor[]>([])
-
   // Calculate current population from living survivors
   const currentPopulation = useMemo(() => {
-    return survivors.filter((survivor) => !survivor.dead).length
-  }, [survivors])
+    return survivors?.filter(
+      (survivor) =>
+        !survivor.dead && survivor.settlementId === selectedSettlement?.id
+    ).length
+  }, [survivors, selectedSettlement?.id])
 
   // Calculate death count from dead survivors
   const currentDeathCount = useMemo(() => {
-    return survivors.filter((survivor) => survivor.dead).length
-  }, [survivors])
+    return survivors?.filter(
+      (survivor) =>
+        survivor.dead && survivor.settlementId === selectedSettlement?.id
+    ).length
+  }, [survivors, selectedSettlement?.id])
 
-  // Update survivors when settlement changes or when localStorage changes
-  useEffect(() => {
-    if (selectedSettlement?.id)
-      setSurvivors(getSurvivors(selectedSettlement.id))
-  }, [selectedSettlement?.id])
-
-  // Listen for storage events to update survivors when they change in other tabs/components
-  useEffect(() => {
-    const handleStorageChange = () => {
-      if (selectedSettlement?.id)
-        setSurvivors(getSurvivors(selectedSettlement.id))
-    }
-
-    // Listen for localStorage changes
-    window.addEventListener('storage', handleStorageChange)
-
-    // Also listen for custom events when survivors are updated in the same tab
-    window.addEventListener('survivorsUpdated', handleStorageChange)
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('survivorsUpdated', handleStorageChange)
-    }
-  }, [selectedSettlement?.id])
+  const watchedNemeses = form.watch('nemeses')
+  const watchedQuarries = form.watch('quarries')
 
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
-    if (!isArcCampaign) return
+    if (selectedSettlement?.survivorType !== SurvivorType.ARC) return
+    if (!selectedSettlement?.id) return
 
-    // Check if we have a valid settlement with an ID in the form
-    const formValues = form.getValues()
-    if (!formValues.id || typeof formValues.id !== 'number') return
+    console.debug(
+      '[OverviewCard] Calculating Collective Cognition',
+      selectedSettlement?.id,
+      selectedSettlement?.survivorType,
+      selectedSettlement?.ccValue,
+      watchedNemeses,
+      watchedQuarries
+    )
 
     let totalCc = 0
 
     // Calculate CC from nemesis victories. Each nemesis victory gives 3 CC.
-    for (const nemesis of formValues.nemeses || []) {
+    for (const nemesis of watchedNemeses || []) {
       if (nemesis.ccLevel1) totalCc += 3
       if (nemesis.ccLevel2) totalCc += 3
       if (nemesis.ccLevel3) totalCc += 3
     }
 
     // Calculate CC from quarry victories.
-    for (const quarry of formValues.quarries || []) {
+    for (const quarry of watchedQuarries || []) {
       // Prologue Monster (1 CC)
       if (quarry.ccPrologue) totalCc += 1
 
@@ -129,12 +107,16 @@ export function OverviewCard({
     }
 
     // Update form value and save if different
-    const currentCcValue = form.getValues('ccValue')
-    if (currentCcValue !== totalCc) {
-      form.setValue('ccValue', totalCc)
+    if (selectedSettlement.ccValue !== totalCc)
       saveSelectedSettlement({ ccValue: totalCc })
-    }
-  }, [isArcCampaign, selectedSettlement, saveSelectedSettlement, form])
+  }, [
+    selectedSettlement?.id,
+    selectedSettlement?.survivorType,
+    selectedSettlement?.ccValue,
+    saveSelectedSettlement,
+    watchedNemeses,
+    watchedQuarries
+  ])
 
   /**
    * Save to Local Storage
@@ -274,7 +256,7 @@ export function OverviewCard({
           />
 
           {/* Collective Cognition (ARC only) */}
-          {isArcCampaign && (
+          {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <>
               <Separator
                 orientation="vertical"
@@ -306,7 +288,10 @@ export function OverviewCard({
           )}
 
           {/* Lantern Research Level (People of the Lantern/Sun only) */}
-          {isLanternCampaign && (
+          {(selectedSettlement?.campaignType ===
+            CampaignType.PEOPLE_OF_THE_LANTERN ||
+            selectedSettlement?.campaignType ===
+              CampaignType.PEOPLE_OF_THE_SUN) && (
             <>
               <Separator
                 orientation="vertical"
@@ -449,7 +434,7 @@ export function OverviewCard({
           />
 
           {/* Collective Cognition (ARC only) */}
-          {isArcCampaign && (
+          {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <FormField
               control={form.control}
               name="ccValue"
@@ -474,7 +459,10 @@ export function OverviewCard({
           )}
 
           {/* Lantern Research Level (People of the Lantern/Sun only) */}
-          {isLanternCampaign && (
+          {(selectedSettlement?.campaignType ===
+            CampaignType.PEOPLE_OF_THE_LANTERN ||
+            selectedSettlement?.campaignType ===
+              CampaignType.PEOPLE_OF_THE_SUN) && (
             <FormField
               control={form.control}
               name="lanternResearchLevel"

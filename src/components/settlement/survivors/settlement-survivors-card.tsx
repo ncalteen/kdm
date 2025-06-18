@@ -32,12 +32,18 @@ interface SettlementSurvivorsCardProps {
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
+  /** Survivors */
+  survivors: Survivor[] | null
   /** Update Selected Hunt */
   updateSelectedHunt: () => void
   /** Update Selected Settlement */
   updateSelectedSettlement: () => void
   /** Update Selected Survivor */
   updateSelectedSurvivor: () => void
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -58,17 +64,21 @@ export function SettlementSurvivorsCard({
   selectedSurvivor,
   setIsCreatingNewSurvivor,
   setSelectedSurvivor,
+  setSurvivors,
+  survivors,
   updateSelectedHunt,
   updateSelectedSettlement,
-  updateSelectedSurvivor
+  updateSelectedSurvivor,
+  updateSurvivors
 }: SettlementSurvivorsCardProps): ReactElement {
   const { saveCampaign } = useCampaignSave(
+    survivors,
     updateSelectedHunt,
     updateSelectedSettlement,
-    updateSelectedSurvivor
+    updateSelectedSurvivor,
+    updateSurvivors
   )
 
-  const [survivors, setSurvivors] = useState<Survivor[]>([])
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
@@ -151,7 +161,8 @@ export function SettlementSurvivorsCard({
       selectedHunt,
       selectedSurvivor,
       selectedShowdown,
-      setSelectedSurvivor
+      setSelectedSurvivor,
+      setSurvivors
     ]
   )
 
@@ -189,15 +200,15 @@ export function SettlementSurvivorsCard({
     [selectedSettlement?.survivorType]
   )
 
-  useEffect(
-    () => setSurvivors(getSurvivors(selectedSettlement?.id)),
-    [selectedSettlement?.id]
-  )
+  useEffect(() => {
+    console.debug('[SettlementSurvivorsCard] Mounted')
+    // setSurvivors(getSurvivors(selectedSettlement?.id))
+  }, [selectedSettlement?.id])
 
   return (
     <Card className="p-0 pb-2 mt-2 border-0">
       <CardContent className="p-0">
-        {survivors.length === 0 ? (
+        {survivors?.length === 0 ? (
           <div className="flex flex-col gap-2 justify-center items-center p-4">
             <div className="text-center text-muted-foreground py-4">
               Silence echoes through the darkness. No survivors present.
@@ -215,7 +226,7 @@ export function SettlementSurvivorsCard({
         ) : (
           <SurvivorDataTable
             columns={columns}
-            data={survivors}
+            data={survivors || []}
             initialColumnVisibility={columnVisibility}
             onNewSurvivor={handleNewSurvivor}
             selectedSettlement={selectedSettlement}
