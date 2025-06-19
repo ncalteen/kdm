@@ -20,10 +20,14 @@ interface ActiveHuntCardProps {
   selectedHunt: Partial<Hunt> | null
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Survivors */
   survivors: Survivor[] | null
+  /** Update Selected Survivor */
+  updateSelectedSurvivor: (survivor: Survivor) => void
   /** Update Survivors */
   updateSurvivors: (survivors: Survivor[]) => void
 }
@@ -35,12 +39,12 @@ interface ActiveHuntCardProps {
  * @returns Active Hunt Card Component
  */
 export function ActiveHuntCard({
-  // form,
   saveSelectedHunt,
   selectedHunt,
   selectedSettlement,
-  // setSelectedHunt,
+  selectedSurvivor,
   survivors,
+  updateSelectedSurvivor,
   updateSurvivors
 }: ActiveHuntCardProps): ReactElement {
   /**
@@ -71,7 +75,9 @@ export function ActiveHuntCard({
       <HuntSurvivorsCard
         selectedHunt={selectedHunt}
         selectedSettlement={selectedSettlement}
+        selectedSurvivor={selectedSurvivor}
         survivors={survivors}
+        updateSelectedSurvivor={updateSelectedSurvivor}
         updateSurvivors={updateSurvivors}
       />
     </div>

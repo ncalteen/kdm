@@ -24,10 +24,14 @@ import { toast } from 'sonner'
 interface HuntSurvivorCardProps {
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Survivor | null
   /** Survivor */
   survivor: Partial<Survivor> | null
   /** Survivors */
   survivors: Survivor[] | null
+  /** Update Selected Survivor */
+  updateSelectedSurvivor: (survivor: Survivor) => void
   /** Update Survivors */
   updateSurvivors: (survivors: Survivor[]) => void
 }
@@ -39,8 +43,10 @@ interface HuntSurvivorCardProps {
  */
 export function HuntSurvivorCard({
   selectedSettlement,
+  selectedSurvivor,
   survivor,
   survivors,
+  updateSelectedSurvivor,
   updateSurvivors
 }: HuntSurvivorCardProps): ReactElement {
   const form = useForm<Survivor>({
@@ -61,6 +67,12 @@ export function HuntSurvivorCard({
     const updatedSurvivors = survivors.map((s) =>
       s.id === survivorId ? { ...s, ...updateData } : s
     )
+
+    if (survivorId === selectedSurvivor?.id)
+      updateSelectedSurvivor({
+        ...selectedSurvivor,
+        ...updateData
+      })
 
     updateSurvivors(updatedSurvivors)
 

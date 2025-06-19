@@ -15,8 +15,12 @@ interface HuntSurvivorsCardProps {
   selectedHunt: Partial<Hunt> | null
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Survivor | null
   /** Survivors */
   survivors: Survivor[] | null
+  /** Update Selected Survivor */
+  updateSelectedSurvivor: (survivor: Survivor) => void
   /** Update Survivors */
   updateSurvivors: (survivors: Survivor[]) => void
 }
@@ -30,7 +34,9 @@ interface HuntSurvivorsCardProps {
 export function HuntSurvivorsCard({
   selectedHunt,
   selectedSettlement,
+  selectedSurvivor,
   survivors,
+  updateSelectedSurvivor,
   updateSurvivors
 }: HuntSurvivorsCardProps): ReactElement {
   const huntSurvivors = useMemo(() => {
@@ -57,8 +63,10 @@ export function HuntSurvivorsCard({
               <HuntSurvivorCard
                 key={survivor.id}
                 selectedSettlement={selectedSettlement}
+                selectedSurvivor={selectedSurvivor}
                 survivor={survivor}
                 survivors={survivors}
+                updateSelectedSurvivor={updateSelectedSurvivor}
                 updateSurvivors={updateSurvivors}
               />
             ))}

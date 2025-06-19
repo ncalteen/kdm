@@ -20,10 +20,14 @@ interface HuntCardProps {
   selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Survivor */
+  selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Survivors */
   survivors: Survivor[] | null
+  /** Update Selected Survivor */
+  updateSelectedSurvivor: (survivor: Survivor) => void
   /** Update Survivors */
   updateSurvivors: (survivors: Survivor[]) => void
 }
@@ -39,8 +43,10 @@ export function HuntCard({
   saveSelectedHunt,
   selectedHunt,
   selectedSettlement,
+  selectedSurvivor,
   setSelectedHunt,
   survivors,
+  updateSelectedSurvivor,
   updateSurvivors
 }: HuntCardProps): ReactElement {
   return selectedHunt ? (
@@ -49,8 +55,10 @@ export function HuntCard({
       saveSelectedHunt={saveSelectedHunt}
       selectedHunt={selectedHunt}
       selectedSettlement={selectedSettlement}
+      selectedSurvivor={selectedSurvivor}
       setSelectedHunt={setSelectedHunt}
       survivors={survivors}
+      updateSelectedSurvivor={updateSelectedSurvivor}
       updateSurvivors={updateSurvivors}
     />
   ) : (
