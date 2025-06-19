@@ -10,13 +10,14 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
+import { cn, getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { ZodError } from 'zod'
 
 /**
  * Hunt Survivor Card Component
@@ -54,6 +55,15 @@ export function HuntSurvivorCard({
     defaultValues: SurvivorSchema.parse(survivor || {})
   })
 
+  // Update form values when survivor data changes
+  useEffect(() => {
+    if (survivor) {
+      const parsedSurvivor = SurvivorSchema.parse(survivor)
+
+      form.reset(parsedSurvivor)
+    }
+  }, [survivor, form])
+
   /**
    * Save Survivors to Local Storage
    */
@@ -64,19 +74,60 @@ export function HuntSurvivorCard({
   ) => {
     if (!survivors) return
 
-    const updatedSurvivors = survivors.map((s) =>
-      s.id === survivorId ? { ...s, ...updateData } : s
-    )
+    try {
+      // Get the campaign and find the survivor to update
+      const campaign = getCampaign()
+      const survivorIndex = campaign.survivors.findIndex(
+        (s: Survivor) => s.id === survivorId
+      )
 
-    if (survivorId === selectedSurvivor?.id)
-      updateSelectedSurvivor({
-        ...selectedSurvivor,
+      if (survivorIndex === -1) {
+        toast.error('Survivor not found in campaign data.')
+        return
+      }
+
+      // Update the survivor in the campaign
+      const updatedSurvivor = {
+        ...campaign.survivors[survivorIndex],
         ...updateData
-      })
+      }
 
-    updateSurvivors(updatedSurvivors)
+      // Validate the updated survivor data
+      SurvivorSchema.parse(updatedSurvivor)
 
-    if (successMsg) toast.success(successMsg)
+      // Update the campaign
+      campaign.survivors[survivorIndex] = updatedSurvivor
+      saveCampaignToLocalStorage(campaign)
+
+      // Update local state
+      const updatedSurvivors = survivors.map((s) =>
+        s.id === survivorId ? { ...s, ...updateData } : s
+      )
+
+      // Update selected survivor if this is the currently selected survivor
+      if (survivorId === selectedSurvivor?.id) {
+        updateSelectedSurvivor({
+          ...selectedSurvivor,
+          ...updateData
+        })
+      }
+
+      updateSurvivors(updatedSurvivors)
+
+      // Update the form with the new values
+      if (survivorId === survivor?.id) {
+        const updatedFormData = { ...survivor, ...updateData }
+        form.reset(SurvivorSchema.parse(updatedFormData))
+      }
+
+      if (successMsg) toast.success(successMsg)
+    } catch (error) {
+      console.error('Hunt Survivor Save Error:', error)
+
+      if (error instanceof ZodError && error.errors[0]?.message)
+        toast.error(error.errors[0].message)
+      else toast.error('The darkness swallows your words. Please try again.')
+    }
   }
 
   /**
@@ -113,7 +164,7 @@ export function HuntSurvivorCard({
     saveToLocalStorage(
       survivor.id,
       { insanity: value },
-      'Survival updated successfully.'
+      'Insanity updated successfully.'
     )
   }
 
@@ -354,102 +405,6 @@ export function HuntSurvivorCard({
               className="h-8 text-center"
             />
           </div>
-
-          {/* ARC-specific attributes */}
-          {/* {settlement.survivorType === SurvivorType.ARC && (
-            <>
-              <div className="space-y-1">
-                <Label htmlFor={`lumi-${survivor.id}`} className="text-xs">
-                  Lumi
-                </Label>
-                <Input
-                  id={`lumi-${survivor.id}`}
-                  type="number"
-                  value={survivor.lumi}
-                  onChange={(e) =>
-                  saveToLocalStorage(
-                  survivor.id!,
-                  {
-                    dead: !!checked
-                  },
-                  checked
-                    ? 'Darkness claims another soul.'
-                    : 'The survivor returns from the brink of death.'
-                )
-                    updateSurvivor(
-                      'lumi',
-                      parseInt(e.target.value) || 0,
-                      'Lumi updated.'
-                    )
-                  }
-                  className="h-8 text-center"
-                  min="0"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label
-                  htmlFor={`systemic-pressure-${survivor.id}`}
-                  className="text-xs">
-                  Systemic Pressure
-                </Label>
-                <Input
-                  id={`systemic-pressure-${survivor.id}`}
-                  type="number"
-                  value={survivor.systemicPressure}
-                  onChange={(e) =>
-                  saveToLocalStorage(
-                  survivor.id!,
-                  {
-                    dead: !!checked
-                  },
-                  checked
-                    ? 'Darkness claims another soul.'
-                    : 'The survivor returns from the brink of death.'
-                )
-                    updateSurvivor(
-                      'systemicPressure',
-                      parseInt(e.target.value) || 0,
-                      'Systemic pressure updated.'
-                    )
-                  }
-                  className="h-8 text-center"
-                  min="0"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor={`torment-${survivor.id}`} className="text-xs">
-                  Torment
-                </Label>
-                <Input
-                  id={`torment-${survivor.id}`}
-                  type="number"
-                  value={survivor.torment}
-                  onChange={(e) =>
-                  saveToLocalStorage(
-                  survivor.id!,
-                  {
-                    dead: !!checked
-                  },
-                  checked
-                    ? 'Darkness claims another soul.'
-                    : 'The survivor returns from the brink of death.'
-                )
-                    updateSurvivor(
-                      'torment',
-                      parseInt(e.target.value) || 0,
-                      'Torment updated.'
-                    )
-                  }
-                  className="h-8 text-center"
-                  min="0"
-                />
-              </div>
-            </>
-          )} */}
-        </div>
-
-        {/* Courage and Understanding */}
-        <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <Label htmlFor={`courage-${survivor.id}`} className="text-xs">
               Courage

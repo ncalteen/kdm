@@ -34,9 +34,12 @@ export function QuarryToken({ overlap }: QuarryTokenProps): ReactElement {
       {...listeners}
       {...attributes}
       className={cn(
-        `absolute top-1/2 left-1/2 -translate-x-${overlap ? '1/4' : '1/2'} -translate-y-${overlap ? '1/4' : '1/2'} z-10 flex items-center justify-center w-12 h-12`,
+        'absolute z-10 flex items-center justify-center w-12 h-12',
         'bg-red-500 text-white rounded-full cursor-grab active:cursor-grabbing',
         'shadow-md hover:shadow-lg transition-shadow',
+        overlap
+          ? 'bottom-2 right-2' // Bottom-right when overlapping
+          : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2', // Centered when not overlapping
         isDragging && 'opacity-50 scale-110'
       )}
       title="Drag to move quarry on the hunt board">
