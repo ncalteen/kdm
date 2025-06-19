@@ -109,6 +109,9 @@ export function invalidateCampaignCache() {
 export function saveCampaignToLocalStorage(campaign: Campaign) {
   localStorage.setItem('campaign', JSON.stringify(campaign))
   invalidateCampaignCache()
+  
+  // Dispatch custom event to notify components of campaign changes
+  window.dispatchEvent(new CustomEvent('campaignUpdated'))
 }
 
 /**
@@ -465,6 +468,8 @@ export function canFistPump(settlementId: number): boolean {
 /**
  * Check if Settlement Can Endure
  *
+ * This is true if the settlement has the Destiny innovation.
+ *
  * @todo Not implemented yet.
  *
  * @param settlementId Settlement ID
@@ -475,9 +480,13 @@ export function canEndure(settlementId: number): boolean {
     (settlement) => settlement.id === settlementId
   )
 
-  console.log('canEndure', settlementId, settlement)
+  if (!settlement) return false
 
-  return false
+  return (
+    settlement.innovations.find((innovation) =>
+      innovation.toLowerCase().includes('destiny')
+    ) !== undefined
+  )
 }
 
 /**

@@ -40,7 +40,7 @@ export interface SelectPhilosophyProps {
   /** Options */
   options: string[]
   /** Value */
-  value?: Philosophy
+  value?: Philosophy | ''
 }
 
 /**

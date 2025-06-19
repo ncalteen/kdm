@@ -28,6 +28,12 @@ interface PhilosophyCardProps {
   form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -38,7 +44,10 @@ interface PhilosophyCardProps {
  */
 export function PhilosophyCard({
   form,
-  saveSelectedSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor,
+  survivors,
+  updateSurvivors
 }: PhilosophyCardProps): ReactElement {
   // Watch form state
   const philosophy = form.watch('philosophy')
@@ -52,17 +61,33 @@ export function PhilosophyCard({
    *
    * @param value Value
    */
-  const handlePhilosophyChange = (value: string) => {
-    saveSelectedSurvivor(
-      {
-        philosophy: value as Philosophy,
+  const handlePhilosophyChange = useCallback(
+    (value: string) => {
+      const updateData: Partial<Survivor> = {
+        philosophy: value === '' ? null : (value as Philosophy),
         ...(value ? {} : { philosophyRank: 0 })
-      },
-      value
-        ? 'The path of wisdom begins to illuminate the darkness.'
-        : 'The philosophical path returns to shadow.'
-    )
-  }
+      }
+
+      saveSelectedSurvivor(
+        updateData,
+        value
+          ? 'The path of wisdom begins to illuminate the darkness.'
+          : 'The philosophical path returns to shadow.'
+      )
+
+      // Update the survivors context to trigger re-renders in settlement table
+      if (survivors && selectedSurvivor?.id) {
+        const updatedSurvivors = survivors.map((s) =>
+          s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+        )
+
+        // Update both localStorage and context
+        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
+        updateSurvivors(updatedSurvivors)
+      }
+    },
+    [saveSelectedSurvivor, survivors, selectedSurvivor?.id, updateSurvivors]
+  )
 
   /**
    * Handles right-clicking on tenet knowledge observation rank checkboxes to toggle rank up milestone
@@ -89,17 +114,31 @@ export function PhilosophyCard({
   /**
    * Update Philosophy Rank
    */
-  const updatePhilosophyRank = (val: string) => {
-    const value = parseInt(val) || 0
+  const updatePhilosophyRank = useCallback(
+    (val: string) => {
+      const value = parseInt(val) || 0
+      const survivorId = form.getValues('id')
 
-    // Enforce minimum value of 0
-    if (value < 0) return toast.error('Philosophy rank cannot be negative.')
+      // Enforce minimum value of 0
+      if (value < 0) return toast.error('Philosophy rank cannot be negative.')
 
-    saveSelectedSurvivor(
-      { philosophyRank: value },
-      'Philosophy rank has been updated.'
-    )
-  }
+      const updateData: Partial<Survivor> = { philosophyRank: value }
+
+      saveSelectedSurvivor(updateData, 'Philosophy rank has been updated.')
+
+      // Update the survivors context to trigger re-renders in settlement table
+      if (survivors && survivorId) {
+        const updatedSurvivors = survivors.map((s) =>
+          s.id === survivorId ? { ...s, ...updateData } : s
+        )
+
+        // Update both localStorage and context
+        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
+        updateSurvivors(updatedSurvivors)
+      }
+    },
+    [saveSelectedSurvivor, survivors, form, updateSurvivors]
+  )
 
   /**
    * Update Neurosis
@@ -184,7 +223,7 @@ export function PhilosophyCard({
             </CardTitle>
             <SelectPhilosophy
               options={Object.values(Philosophy)}
-              value={philosophy}
+              value={philosophy ?? ''}
               onChange={handlePhilosophyChange}
             />
           </div>

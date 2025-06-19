@@ -25,6 +25,10 @@ interface StatusCardProps {
   form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -40,8 +44,12 @@ interface StatusCardProps {
  */
 export function StatusCard({
   form,
-  saveSelectedSurvivor
+  saveSelectedSurvivor,
+  survivors,
+  updateSurvivors
 }: StatusCardProps): ReactElement {
+  const watchedSurvivorId = form.watch('id')
+
   /**
    * Save Status to Local Storage
    *
@@ -57,8 +65,16 @@ export function StatusCard({
       if (updatedRetired !== undefined) updateData.retired = updatedRetired
 
       saveSelectedSurvivor(updateData, successMsg)
+
+      if (survivors) {
+        const updatedSurvivors = survivors.map((s) =>
+          s.id === watchedSurvivorId ? { ...s, ...updateData } : s
+        )
+        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
+        updateSurvivors(updatedSurvivors)
+      }
     },
-    [saveSelectedSurvivor]
+    [saveSelectedSurvivor, survivors, watchedSurvivorId, updateSurvivors]
   )
 
   /**
@@ -87,11 +103,29 @@ export function StatusCard({
    *
    * @param gender Selected Gender
    */
-  const handleGenderChange = (gender: Gender) =>
-    saveSelectedSurvivor(
-      { gender },
-      "The survivor's essence is recorded in the lantern's glow."
-    )
+  const handleGenderChange = useCallback(
+    (gender: Gender) => {
+      const updateData: Partial<Survivor> = { gender }
+      const survivorId = form.getValues('id')
+
+      saveSelectedSurvivor(
+        updateData,
+        "The survivor's essence is recorded in the lantern's glow."
+      )
+
+      // Update the survivors context to trigger re-renders in settlement table
+      if (survivors && survivorId) {
+        const updatedSurvivors = survivors.map((s) =>
+          s.id === survivorId ? { ...s, ...updateData } : s
+        )
+
+        // Update both localStorage and context
+        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
+        updateSurvivors(updatedSurvivors)
+      }
+    },
+    [saveSelectedSurvivor, survivors, form, updateSurvivors]
+  )
 
   /**
    * Handles toggling the dead status

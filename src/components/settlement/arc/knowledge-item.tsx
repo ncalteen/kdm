@@ -79,7 +79,7 @@ export function KnowledgeItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = watchedKnowledgeItem.name || ''
+      inputRef.current.value = watchedKnowledgeItem?.name || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -102,7 +102,7 @@ export function KnowledgeItem({
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
 
-      onSave(inputRef.current.value, watchedKnowledgeItem.philosophy, index)
+      onSave(inputRef.current.value, watchedKnowledgeItem?.philosophy, index)
     }
   }
 
@@ -128,7 +128,7 @@ export function KnowledgeItem({
 
           {/* Knowledge Name */}
           <div className="flex ml-1">
-            <span className="text-xs">{watchedKnowledgeItem.name}</span>
+            <span className="text-xs">{watchedKnowledgeItem?.name || ''}</span>
           </div>
 
           <div className="flex items-center gap-1 ml-auto">
@@ -136,7 +136,7 @@ export function KnowledgeItem({
             <div className="flex ml-1">
               <span className="text-xs">
                 <Badge variant="outline">
-                  {watchedKnowledgeItem.philosophy || 'None'}
+                  {watchedKnowledgeItem?.philosophy || 'None'}
                 </Badge>
               </span>
             </div>
@@ -176,7 +176,7 @@ export function KnowledgeItem({
             <Input
               ref={inputRef}
               placeholder="Add knowledge..."
-              defaultValue={watchedKnowledgeItem.name}
+              defaultValue={watchedKnowledgeItem?.name || ''}
               onKeyDown={handleKeyDown}
               autoFocus
             />
@@ -185,9 +185,9 @@ export function KnowledgeItem({
             <SelectPhilosophy
               ref={selectRef}
               options={philosophies}
-              value={watchedKnowledgeItem.philosophy}
+              value={watchedKnowledgeItem?.philosophy ?? ''}
               onChange={(value) =>
-                onSave(watchedKnowledgeItem.name, value, index)
+                onSave(watchedKnowledgeItem?.name, value, index)
               }
             />
           </div>
@@ -201,7 +201,7 @@ export function KnowledgeItem({
               onClick={() =>
                 onSave(
                   inputRef.current!.value,
-                  watchedKnowledgeItem.philosophy,
+                  watchedKnowledgeItem?.philosophy,
                   index
                 )
               }

@@ -280,7 +280,7 @@ export const BaseSurvivorSchema = z.object({
   /** Neurosis */
   neurosis: z.string().optional(),
   /** Philosophy */
-  philosophy: z.nativeEnum(Philosophy).optional(),
+  philosophy: z.nativeEnum(Philosophy).nullable().optional(),
   /** Philosophy Rank */
   philosophyRank: z
     .number()

@@ -171,7 +171,7 @@ export function AppSidebar({
 }: AppSidebarProps): ReactElement {
   const { state } = useSidebar()
 
-  const [campaign] = useState<Campaign>(() => getCampaign())
+  const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
@@ -221,6 +221,24 @@ export function AppSidebar({
     selectedSettlement?.survivorType,
     isMounted
   ])
+
+  // Listen for campaign changes and update the local state
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCampaign(getCampaign())
+    }
+
+    // Listen for storage events (when localStorage changes from other tabs)
+    window.addEventListener('storage', handleStorageChange)
+
+    // Listen for custom events when localStorage is updated from the same tab
+    window.addEventListener('campaignUpdated', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('campaignUpdated', handleStorageChange)
+    }
+  }, [])
 
   const handleDownload = () => {
     try {

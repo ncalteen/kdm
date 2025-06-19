@@ -36,6 +36,12 @@ interface SurvivorCardProps extends Partial<Survivor> {
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Survivors */
+  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -46,7 +52,10 @@ interface SurvivorCardProps extends Partial<Survivor> {
 export function SurvivorCard({
   form,
   saveSelectedSurvivor,
-  selectedSettlement
+  selectedSettlement,
+  selectedSurvivor,
+  survivors,
+  updateSurvivors
 }: SurvivorCardProps): ReactElement {
   return (
     <Card className="w-full py-2 border-0 bg-secondary">
@@ -57,7 +66,9 @@ export function SurvivorCard({
           <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <StatusCard
               form={form}
+              survivors={survivors}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              updateSurvivors={updateSurvivors}
             />
             <SurvivalCard
               form={form}
@@ -129,6 +140,9 @@ export function SurvivorCard({
               <PhilosophyCard
                 form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
+                selectedSurvivor={selectedSurvivor}
+                survivors={survivors}
+                updateSurvivors={updateSurvivors}
               />
               <KnowledgeCard
                 form={form}
@@ -141,7 +155,12 @@ export function SurvivorCard({
         {/* Mobile Layout */}
         <div className="lg:hidden flex flex-col gap-2 w-full">
           {/* Core Identity & Status */}
-          <StatusCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
+          <StatusCard
+            form={form}
+            survivors={survivors}
+            saveSelectedSurvivor={saveSelectedSurvivor}
+            updateSurvivors={updateSurvivors}
+          />
           <HuntXPCard
             form={form}
             selectedSettlement={selectedSettlement}
@@ -208,6 +227,9 @@ export function SurvivorCard({
               <PhilosophyCard
                 form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
+                selectedSurvivor={selectedSurvivor}
+                survivors={survivors}
+                updateSurvivors={updateSurvivors}
               />
               <KnowledgeCard
                 form={form}

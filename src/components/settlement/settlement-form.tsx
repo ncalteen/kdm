@@ -295,6 +295,9 @@ export function SettlementForm({
                     form={survivorForm}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedSettlement={selectedSettlement}
+                    selectedSurvivor={selectedSurvivor}
+                    survivors={survivors}
+                    updateSurvivors={updateSurvivors}
                   />
                 )}
                 {isCreatingNewSurvivor && (

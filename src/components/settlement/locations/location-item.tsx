@@ -74,7 +74,7 @@ export function LocationItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = watchedLocationItem.name || ''
+      inputRef.current.value = watchedLocationItem?.name || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -118,7 +118,7 @@ export function LocationItem({
       {/* Unlocked Checkbox */}
       <Checkbox
         id={`location-unlocked-${index}`}
-        checked={watchedLocationItem.unlocked || false}
+        checked={watchedLocationItem?.unlocked || false}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -127,13 +127,13 @@ export function LocationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedLocationItem.name}</span>
+          <span className="text-xs">{watchedLocationItem?.name || ''}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Location Name"
-          defaultValue={watchedLocationItem.name}
+          defaultValue={watchedLocationItem?.name || ''}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -159,7 +159,7 @@ export function LocationItem({
             onClick={() =>
               onSave(
                 inputRef.current!.value,
-                watchedLocationItem.unlocked || false,
+                watchedLocationItem?.unlocked || false,
                 index
               )
             }
