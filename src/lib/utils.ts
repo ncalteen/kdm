@@ -109,7 +109,7 @@ export function invalidateCampaignCache() {
 export function saveCampaignToLocalStorage(campaign: Campaign) {
   localStorage.setItem('campaign', JSON.stringify(campaign))
   invalidateCampaignCache()
-  
+
   // Dispatch custom event to notify components of campaign changes
   window.dispatchEvent(new CustomEvent('campaignUpdated'))
 }
