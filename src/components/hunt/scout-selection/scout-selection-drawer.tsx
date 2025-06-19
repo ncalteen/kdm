@@ -60,6 +60,7 @@ export function ScoutSelectionDrawer({
 
   const handleSurvivorHover = (survivor: Survivor | null) => {
     setHoveredSurvivor(survivor)
+
     if (survivor) setLastHoveredSurvivor(survivor)
   }
 

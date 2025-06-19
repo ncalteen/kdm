@@ -58,9 +58,8 @@ export function CollectiveCognitionRewardsCard({
   }>({})
 
   useEffect(() => {
-    console.debug(
-      '[CollectiveCognitionRewardsCard] Selected Settlement Changed'
-    )
+    console.debug('[CollectiveCognitionRewardsCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -71,23 +70,6 @@ export function CollectiveCognitionRewardsCard({
       return next
     })
   }, [selectedSettlement?.ccRewards])
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedRewards Updated Rewards
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedRewards: { name: string; cc: number; unlocked: boolean }[],
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      {
-        ccRewards: updatedRewards
-      },
-      successMsg
-    )
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -106,7 +88,12 @@ export function CollectiveCognitionRewardsCard({
     const currentRewards = [...(selectedSettlement?.ccRewards || [])]
     currentRewards[index] = { ...currentRewards[index], unlocked }
 
-    saveToLocalStorage(currentRewards, 'Reward transformed by the darkness.')
+    saveSelectedSettlement(
+      {
+        ccRewards: currentRewards
+      },
+      'Reward transformed by the darkness.'
+    )
   }
 
   /**
@@ -130,7 +117,12 @@ export function CollectiveCognitionRewardsCard({
       return next
     })
 
-    saveToLocalStorage(currentRewards, 'The dark gift recedes into shadow.')
+    saveSelectedSettlement(
+      {
+        ccRewards: currentRewards
+      },
+      'The dark gift recedes into shadow.'
+    )
   }
 
   /**
@@ -166,10 +158,13 @@ export function CollectiveCognitionRewardsCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedRewards,
+    saveSelectedSettlement(
+      {
+        ccRewards: updatedRewards
+      },
       "The settlement's culinary knowledge expands."
     )
+
     setIsAddingNew(false)
   }
 
@@ -213,7 +208,9 @@ export function CollectiveCognitionRewardsCard({
         return next
       })
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        ccRewards: newOrder
+      })
     }
   }
 

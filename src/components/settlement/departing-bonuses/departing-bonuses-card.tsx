@@ -59,7 +59,8 @@ export function DepartingBonusesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[DepartingBonusesCard] Initializing Disabled Inputs')
+    console.debug('[DepartingBonusesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -71,30 +72,17 @@ export function DepartingBonusesCard({
     })
   }, [selectedSettlement?.departingBonuses])
 
+  /**
+   * Add Departing Bonus
+   */
+  const addBonus = () => setIsAddingNew(true)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addBonus = () => setIsAddingNew(true)
-
-  /**
-   * Save departing bonuses to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
-   *
-   * @param updatedDepartingBonuses Updated Departing Bonuses
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedDepartingBonuses: string[],
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      { departingBonuses: updatedDepartingBonuses },
-      successMsg
-    )
 
   /**
    * Handles the removal of a departing bonus.
@@ -119,8 +107,8 @@ export function DepartingBonusesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentDepartingBonuses,
+    saveSelectedSettlement(
+      { departingBonuses: currentDepartingBonuses },
       'A blessing fades into the void.'
     )
   }
@@ -155,8 +143,8 @@ export function DepartingBonusesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedDepartingBonuses,
+    saveSelectedSettlement(
+      { departingBonuses: updatedDepartingBonuses },
       i !== undefined
         ? 'The blessing has been inscribed.'
         : 'A new blessing graces your settlement.'
@@ -189,7 +177,8 @@ export function DepartingBonusesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ departingBonuses: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

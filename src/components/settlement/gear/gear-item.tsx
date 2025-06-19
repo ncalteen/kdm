@@ -59,10 +59,12 @@ export function GearItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedGearItem = form.watch(`gear.${index}`)
+
   useEffect(() => {
-    console.debug('[GearItem] Changed', isDisabled, index)
-    if (inputRef.current)
-      inputRef.current.value = form.getValues(`gear.${index}`) || ''
+    console.debug('[GearItem] Changed', watchedGearItem, isDisabled, index)
+
+    if (inputRef.current) inputRef.current.value = watchedGearItem || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -71,7 +73,7 @@ export function GearItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedGearItem, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -81,7 +83,7 @@ export function GearItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,13 +106,13 @@ export function GearItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{form.getValues(`gear.${index}`)}</span>
+          <span className="text-xs">{watchedGearItem}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Add gear..."
-          defaultValue={form.getValues(`gear.${index}`)}
+          defaultValue={watchedGearItem}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -169,7 +171,7 @@ export function NewGearItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

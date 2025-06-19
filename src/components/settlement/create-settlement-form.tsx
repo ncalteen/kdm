@@ -36,8 +36,6 @@ import { toast } from 'sonner'
  * Create Settlement Form Properties
  */
 interface CreateSettlementFormProps {
-  /** Selected Settlement */
-  selectedSettlement: Settlement | null
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
 }
@@ -53,7 +51,6 @@ interface CreateSettlementFormProps {
  * @returns Create Settlement Form Component
  */
 export function CreateSettlementForm({
-  selectedSettlement,
   setSelectedSettlement
 }: CreateSettlementFormProps): ReactElement {
   const form = useForm<Settlement>({
@@ -61,15 +58,16 @@ export function CreateSettlementForm({
     defaultValues: BaseSettlementSchema.parse({})
   })
 
+  const watchedCampaignType = form.watch('campaignType')
+  const watchedSurvivorTyper = form.watch('survivorType')
+
   // Set the form values when the component mounts.
   useEffect(() => {
-    console.debug(
-      '[CreateSettlementForm] Setting Initial Values',
-      selectedSettlement?.campaignType
-    )
+    console.debug('[CreateSettlementForm] Setting Values')
+
     // Get campaign data for the campaign type.
     const campaignData = getCampaignData(
-      selectedSettlement?.campaignType || CampaignType.PEOPLE_OF_THE_LANTERN
+      watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN
     )
 
     form.setValue('id', getNextSettlementId())
@@ -81,44 +79,27 @@ export function CreateSettlementForm({
     form.setValue('principles', campaignData.principles)
     form.setValue('quarries', campaignData.quarries)
     form.setValue('timeline', campaignData.timeline)
-  }, [form, selectedSettlement?.campaignType])
-
-  /**
-   * Handles the user changing the campaign type.
-   *
-   * @param value Campaign Type
-   */
-  const handleCampaignChange = (value: CampaignType) => {
-    // Update the form with the selected campaign type.
-    form.setValue('campaignType', value)
+    form.setValue(
+      'campaignType',
+      watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN
+    )
 
     /** Squires of the Citadel */
-    if (value === CampaignType.SQUIRES_OF_THE_CITADEL)
+    if (watchedCampaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
       // Survivor type must be Core.
       form.setValue('survivorType', SurvivorType.CORE)
 
     /** People of the Dream Keeper */
-    if (value === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER)
+    if (watchedCampaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER)
       // Survivor type must be Arc.
       form.setValue('survivorType', SurvivorType.ARC)
 
-    // Set the initial survival limit.
     // - For Squires of the Citadel, set it to 6.
     // - For all other campaigns, set it to 1.
     form.setValue(
       'survivalLimit',
-      value === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
+      watchedCampaignType === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
     )
-  }
-
-  /**
-   * Handles the user changing the survivor type.
-   *
-   * @param value Survivor Type
-   */
-  const handleSurvivorTypeChange = (value: SurvivorType) => {
-    // Update the survivorType in the form
-    form.setValue('survivorType', value)
 
     // Get current locations
     const currentLocations = form.getValues('locations') || []
@@ -127,7 +108,7 @@ export function CreateSettlementForm({
     )
 
     // Changing to Arc survivors...add "Forum" location
-    if (value === SurvivorType.ARC && forumLocationIndex === -1)
+    if (watchedSurvivorTyper === SurvivorType.ARC && forumLocationIndex === -1)
       form.setValue('locations', [
         ...currentLocations,
         { name: 'Forum', unlocked: false }
@@ -138,7 +119,7 @@ export function CreateSettlementForm({
         'locations',
         currentLocations.filter((loc) => loc.name !== 'Forum')
       )
-  }
+  }, [form, watchedCampaignType, watchedSurvivorTyper])
 
   // Define a submit handler with the correct schema type
   function onSubmit(values: Settlement) {
@@ -236,8 +217,9 @@ export function CreateSettlementForm({
                     <FormControl>
                       <SelectCampaignType
                         {...field}
-                        value={selectedSettlement?.campaignType}
-                        onChange={handleCampaignChange}
+                        value={
+                          field.value || CampaignType.PEOPLE_OF_THE_LANTERN
+                        }
                       />
                     </FormControl>
                   </div>
@@ -257,12 +239,11 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectSurvivorType
-                        value={selectedSettlement?.survivorType}
-                        onChange={handleSurvivorTypeChange}
+                        value={watchedSurvivorTyper}
                         disabled={
-                          selectedSettlement?.campaignType ===
+                          watchedCampaignType ===
                             CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-                          selectedSettlement?.campaignType ===
+                          watchedCampaignType ===
                             CampaignType.SQUIRES_OF_THE_CITADEL
                         }
                       />

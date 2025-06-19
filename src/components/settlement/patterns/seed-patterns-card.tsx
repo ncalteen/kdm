@@ -59,7 +59,8 @@ export function SeedPatternsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[SeedPatternsCard] Initializing Disabled Inputs')
+    console.debug('[SeedPatternsCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -79,17 +80,6 @@ export function SeedPatternsCard({
   )
 
   const addSeedPattern = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedSeedPatterns Updated Seed Patterns
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedSeedPatterns: string[],
-    successMsg?: string
-  ) => saveSelectedSettlement({ seedPatterns: updatedSeedPatterns }, successMsg)
 
   /**
    * Handles the removal of a seed pattern.
@@ -112,8 +102,8 @@ export function SeedPatternsCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentSeedPatterns,
+    saveSelectedSettlement(
+      { seedPatterns: currentSeedPatterns },
       'The seed pattern has been consumed by darkness.'
     )
   }
@@ -146,12 +136,13 @@ export function SeedPatternsCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedSeedPatterns,
+    saveSelectedSettlement(
+      { seedPatterns: updatedSeedPatterns },
       i !== undefined
         ? 'The seed pattern is carved into memory.'
         : "A new seed pattern awakens in the survivors' minds."
     )
+
     setIsAddingNew(false)
   }
 
@@ -180,7 +171,8 @@ export function SeedPatternsCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ seedPatterns: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

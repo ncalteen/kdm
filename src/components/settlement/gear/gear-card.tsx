@@ -56,7 +56,8 @@ export function GearCard({
   const [isAddingNew, setIsAddingNew] = useState(false)
 
   useEffect(() => {
-    console.debug('[GearCard] Initializing Disabled Inputs')
+    console.debug('[GearCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -76,15 +77,6 @@ export function GearCard({
   )
 
   const addGear = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedGear Updated Gear
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (updatedGear: string[], successMsg?: string) =>
-    saveSelectedSettlement({ gear: updatedGear }, successMsg)
 
   /**
    * Handles the removal of gear.
@@ -107,7 +99,7 @@ export function GearCard({
       return next
     })
 
-    saveToLocalStorage(currentGear, 'Gear has been archived.')
+    saveSelectedSettlement({ gear: currentGear }, 'Gear has been archived.')
   }
 
   /**
@@ -138,12 +130,13 @@ export function GearCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedGear,
+    saveSelectedSettlement(
+      { gear: updatedGear },
       i !== undefined
         ? 'Gear has been modified.'
         : 'New gear added to settlement storage.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -172,7 +165,8 @@ export function GearCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ gear: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

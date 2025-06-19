@@ -58,7 +58,8 @@ export function PrinciplesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[PrinciplesCard] Initializing Disabled Inputs')
+    console.debug('[PrinciplesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -70,31 +71,17 @@ export function PrinciplesCard({
     })
   }, [selectedSettlement?.principles])
 
+  /**
+   * Add Principle
+   */
+  const addPrinciple = () => setIsAddingNew(true)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addPrinciple = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedPrinciples Updated Principles
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedPrinciples: Settlement['principles'],
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      {
-        principles: updatedPrinciples
-      },
-      successMsg
-    )
 
   /**
    * Handles the removal of a principle.
@@ -117,8 +104,10 @@ export function PrinciplesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentPrinciples,
+    saveSelectedSettlement(
+      {
+        principles: currentPrinciples
+      },
       'The settlement has cleansed a principle from its memory.'
     )
   }
@@ -150,12 +139,16 @@ export function PrinciplesCard({
         option1Name,
         option2Name
       }
+
       setDisabledInputs((prev) => ({
         ...prev,
         [index]: true
       }))
-      saveToLocalStorage(
-        updatedPrinciples,
+
+      saveSelectedSettlement(
+        {
+          principles: updatedPrinciples
+        },
         "The settlement's principle has been etched in stone."
       )
     }
@@ -186,8 +179,10 @@ export function PrinciplesCard({
       option2Selected: option === 2
     }
 
-    saveToLocalStorage(
-      updatedPrinciples,
+    saveSelectedSettlement(
+      {
+        principles: updatedPrinciples
+      },
       `The settlement has chosen ${
         option === 1
           ? updatedPrinciples[index].option1Name
@@ -226,7 +221,14 @@ export function PrinciplesCard({
       ...prev,
       [updatedPrinciples.length - 1]: true
     }))
-    saveToLocalStorage(updatedPrinciples, 'A new principle emerges.')
+
+    saveSelectedSettlement(
+      {
+        principles: updatedPrinciples
+      },
+      'A new principle emerges.'
+    )
+
     setIsAddingNew(false)
   }
 
@@ -247,7 +249,10 @@ export function PrinciplesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        principles: newOrder
+      })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

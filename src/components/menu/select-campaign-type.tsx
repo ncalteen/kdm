@@ -56,6 +56,7 @@ export function SelectCampaignType({
 
   useEffect(() => {
     console.debug('[SelectCampaignType] Value Changed:', propValue)
+
     if (propValue) setValue(propValue)
   }, [propValue])
 
@@ -67,11 +68,7 @@ export function SelectCampaignType({
   const handleSelect = (currentValue: string) => {
     // Do not allow clearing the selection
     if (!currentValue) return
-
-    if (currentValue === value) {
-      setOpen(false)
-      return
-    }
+    if (currentValue === value) return setOpen(false)
 
     setValue(currentValue)
     setOpen(false)

@@ -60,7 +60,8 @@ export function PhilosophiesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[PhilosophiesCard] Selected Settlement Changed')
+    console.debug('[PhilosophiesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -80,23 +81,6 @@ export function PhilosophiesCard({
   )
 
   const addPhilosophy = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedPhilosophies Updated Philosophies
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedPhilosophies: Philosophy[],
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      {
-        philosophies: updatedPhilosophies
-      },
-      successMsg
-    )
 
   /**
    * Handles the removal of a philosophy.
@@ -119,8 +103,10 @@ export function PhilosophiesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentPhilosophies,
+    saveSelectedSettlement(
+      {
+        philosophies: currentPhilosophies
+      },
       'The philosophy fade into the void.'
     )
   }
@@ -153,12 +139,15 @@ export function PhilosophiesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedPhilosophies,
+    saveSelectedSettlement(
+      {
+        philosophies: updatedPhilosophies
+      },
       i !== undefined
         ? 'Philosophy etched into memory.'
         : 'A new philosophy emerges.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -187,7 +176,10 @@ export function PhilosophiesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        philosophies: newOrder
+      })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

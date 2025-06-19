@@ -58,18 +58,21 @@ export function SelectSurvivorType({
 
   useEffect(() => {
     console.debug('[SelectSurvivorType] Value Changed:', propValue)
+
     if (propValue) setValue(propValue)
   }, [propValue])
 
   const handleSelect = (currentValue: string) => {
     // Don't allow changes if disabled
     if (disabled) return
+
     // Do not allow clearing the selection
     if (!currentValue) return
     if (currentValue === value) {
       setOpen(false)
       return
     }
+
     setValue(currentValue)
     setOpen(false)
 

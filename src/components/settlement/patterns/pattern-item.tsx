@@ -59,10 +59,17 @@ export function PatternItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedPatternItem = form.watch(`patterns.${index}`)
+
   useEffect(() => {
-    console.debug('[PatternItem] Changed', isDisabled, index)
-    if (inputRef.current)
-      inputRef.current.value = form.getValues(`patterns.${index}`) || ''
+    console.debug(
+      '[PatternItem] Changed',
+      watchedPatternItem,
+      isDisabled,
+      index
+    )
+
+    if (inputRef.current) inputRef.current.value = watchedPatternItem || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -71,7 +78,7 @@ export function PatternItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedPatternItem, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -81,7 +88,7 @@ export function PatternItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,13 +111,13 @@ export function PatternItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{form.getValues(`patterns.${index}`)}</span>
+          <span className="text-xs">{watchedPatternItem}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Pattern"
-          defaultValue={form.getValues(`patterns.${index}`)}
+          defaultValue={watchedPatternItem}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -169,7 +176,7 @@ export function NewPatternItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

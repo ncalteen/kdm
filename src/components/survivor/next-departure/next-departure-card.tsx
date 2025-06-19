@@ -55,7 +55,8 @@ export function NextDepartureCard({
   const nextDeparture = form.watch('nextDeparture')
 
   useEffect(() => {
-    console.debug('[NextDepartureCard] Initializing Disabled Inputs')
+    console.debug('[NextDepartureCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -75,17 +76,6 @@ export function NextDepartureCard({
   )
 
   const addInnovation = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedNextDeparture Updated Next Departure
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedNextDeparture: string[],
-    successMsg?: string
-  ) => saveSelectedSurvivor({ nextDeparture: updatedNextDeparture }, successMsg)
 
   /**
    * Handles the removal of a next departure.
@@ -108,8 +98,8 @@ export function NextDepartureCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentNextDeparture,
+    saveSelectedSurvivor(
+      { nextDeparture: currentNextDeparture },
       'The lantern dims. Next departure bonus removed.'
     )
   }
@@ -142,12 +132,13 @@ export function NextDepartureCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedNextDeparture,
+    saveSelectedSurvivor(
+      { nextDeparture: updatedNextDeparture },
       i !== undefined
         ? 'The lantern glows. Next departure bonus updated.'
         : 'The lantern glows. Next departure bonus added.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -172,7 +163,7 @@ export function NextDepartureCard({
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(nextDeparture || [], oldIndex, newIndex)
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSurvivor({ nextDeparture: newOrder })
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}

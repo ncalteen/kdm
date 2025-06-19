@@ -24,15 +24,12 @@ import {
 } from '@dnd-kit/sortable'
 import { BadgeCheckIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Milestones Card Properties
  */
 interface MilestonesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -49,7 +46,6 @@ interface MilestonesCardProps {
  * @returns Milestones Card Component
  */
 export function MilestonesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: MilestonesCardProps): ReactElement {
@@ -59,7 +55,8 @@ export function MilestonesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[MilestonesCard] Initializing Disabled Inputs')
+    console.debug('[MilestonesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -71,25 +68,17 @@ export function MilestonesCard({
     })
   }, [selectedSettlement?.milestones])
 
+  /**
+   * Add Milestone
+   */
+  const addMilestone = () => setIsAddingNew(true)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addMilestone = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedMilestones Updated Milestones
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedMilestones: { name: string; complete: boolean; event: string }[],
-    successMsg?: string
-  ) => saveSelectedSettlement({ milestones: updatedMilestones }, successMsg)
 
   /**
    * Handles the removal of a milestone.
@@ -100,7 +89,6 @@ export function MilestonesCard({
     const currentMilestones = [...(selectedSettlement?.milestones || [])]
 
     currentMilestones.splice(index, 1)
-    form.setValue('milestones', currentMilestones)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -114,8 +102,8 @@ export function MilestonesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentMilestones,
+    saveSelectedSettlement(
+      { milestones: currentMilestones },
       'The milestone fades into the darkness.'
     )
   }
@@ -152,12 +140,13 @@ export function MilestonesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedMilestones,
+    saveSelectedSettlement(
+      { milestones: updatedMilestones },
       i !== undefined
         ? 'Milestones have been updated.'
         : "A new milestone marks the settlement's destiny."
     )
+
     setIsAddingNew(false)
   }
 
@@ -186,7 +175,8 @@ export function MilestonesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ milestones: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -216,8 +206,8 @@ export function MilestonesCard({
       complete: checked
     }
 
-    saveToLocalStorage(
-      updatedMilestones,
+    saveSelectedSettlement(
+      { milestones: updatedMilestones },
       checked
         ? 'Milestone achieved - the settlement persists through the darkness.'
         : 'Milestone status updated.'
@@ -269,7 +259,6 @@ export function MilestonesCard({
                         key={index}
                         id={index.toString()}
                         index={index}
-                        form={form}
                         milestone={milestone}
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}

@@ -59,7 +59,8 @@ export function InnovationsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[InnovationsCard] Initializing Disabled Inputs')
+    console.debug('[InnovationsCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -79,17 +80,6 @@ export function InnovationsCard({
   )
 
   const addInnovation = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedInnovations Updated Innovations
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedInnovations: string[],
-    successMsg?: string
-  ) => saveSelectedSettlement({ innovations: updatedInnovations }, successMsg)
 
   /**
    * Handles the removal of an innovation.
@@ -112,7 +102,10 @@ export function InnovationsCard({
       return next
     })
 
-    saveToLocalStorage(currentInnovations, 'The innovation has been lost.')
+    saveSelectedSettlement(
+      { innovations: currentInnovations },
+      'The innovation has been lost.'
+    )
   }
 
   /**
@@ -143,12 +136,13 @@ export function InnovationsCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedInnovations,
+    saveSelectedSettlement(
+      { innovations: updatedInnovations },
       i !== undefined
         ? 'The innovation has been updated.'
         : 'The settlement has innovated.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -177,7 +171,8 @@ export function InnovationsCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ innovations: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

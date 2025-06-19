@@ -64,6 +64,7 @@ export function SelectSettlement({
 
   useEffect(() => {
     console.debug('[SelectSettlement] Value Changed:', propValue)
+
     if (propValue !== undefined) setValue(propValue)
   }, [propValue])
 

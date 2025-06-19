@@ -14,6 +14,7 @@ import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
+import { toast } from 'sonner'
 
 /**
  * Overview Card Properties
@@ -119,22 +120,47 @@ export function OverviewCard({
   ])
 
   /**
-   * Save to Local Storage
+   * Handle Survival Limit Change
    *
-   * @param attrName Attribute name
-   * @param value New value
-   * @param successMsg Success message to show
+   * @param value Survival Limit
    */
-  const saveToLocalStorage = (
-    attrName: 'survivalLimit' | 'lanternResearchLevel',
-    value: number,
-    successMsg: string
-  ) => saveSelectedSettlement({ [attrName]: value }, successMsg)
+  const handleSurvivalLimitChange = (value: string) => {
+    const numericValue = parseInt(value, 10)
+
+    if (isNaN(numericValue)) return
+
+    if (numericValue < 1)
+      return toast.error('Survival limit cannot be reduced below 1.')
+
+    saveSelectedSettlement(
+      { survivalLimit: numericValue },
+      "The settlement's will to live grows stronger."
+    )
+  }
+
+  /**
+   * Handle Lantern Research Level Change
+   *
+   * @param value Lantern Research Level
+   */
+  const handleLanternResearchLevelChange = (value: string) => {
+    const numericValue = parseInt(value, 10)
+
+    if (isNaN(numericValue)) return
+
+    if (numericValue < 0)
+      return toast.error('Lantern research level cannot be reduced below 0.')
+
+    saveSelectedSettlement(
+      { lanternResearchLevel: numericValue },
+      "The lantern's glow illuminates new knowledge."
+    )
+  }
 
   return (
     <Card className="border-0 p-0 py-2">
       <CardContent>
-        {/* Desktop Layout - Horizontal with separators */}
+        {/* Desktop Layout */}
         <div className="hidden lg:flex flex-row items-start justify-between gap-4">
           {/* Survival Limit */}
           <FormField
@@ -146,18 +172,14 @@ export function OverviewCard({
                   <FormControl>
                     <Input
                       type="number"
+                      min="1"
                       placeholder="1"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
-                        const value = parseInt(e.target.value)
-                        form.setValue(field.name, value)
-                        saveToLocalStorage(
-                          'survivalLimit',
-                          value,
-                          "The settlement's will to live grows stronger."
-                        )
+                        handleSurvivalLimitChange(e.target.value)
+                        form.setValue(field.name, parseInt(e.target.value) || 1)
                       }}
                     />
                   </FormControl>
@@ -307,19 +329,16 @@ export function OverviewCard({
                       <FormControl>
                         <Input
                           type="number"
+                          min="0"
                           placeholder="0"
                           className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {
-                            const value = parseInt(e.target.value)
-                            const finalValue =
-                              isNaN(value) || value < 0 ? 0 : value
-                            form.setValue(field.name, finalValue)
-                            saveToLocalStorage(
-                              'lanternResearchLevel',
-                              finalValue,
-                              'The lantern burns brighter with newfound knowledge.'
+                            handleLanternResearchLevelChange(e.target.value)
+                            form.setValue(
+                              field.name,
+                              parseInt(e.target.value) || 0
                             )
                           }}
                         />
@@ -335,7 +354,7 @@ export function OverviewCard({
           )}
         </div>
 
-        {/* Mobile/Tablet Layout - Table format */}
+        {/* Mobile/Tablet Layout */}
         <div className="lg:hidden space-y-2">
           {/* Survival Limit */}
           <FormField
@@ -348,18 +367,14 @@ export function OverviewCard({
                   <FormControl>
                     <Input
                       type="number"
+                      min="1"
                       placeholder="1"
                       className="w-16 h-8 text-center no-spinners text-sm"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
-                        const value = parseInt(e.target.value)
-                        form.setValue(field.name, value)
-                        saveToLocalStorage(
-                          'survivalLimit',
-                          value,
-                          "The settlement's will to live grows stronger."
-                        )
+                        handleSurvivalLimitChange(e.target.value)
+                        form.setValue(field.name, parseInt(e.target.value) || 1)
                       }}
                     />
                   </FormControl>
@@ -473,19 +488,16 @@ export function OverviewCard({
                     <FormControl>
                       <Input
                         type="number"
+                        min="0"
                         placeholder="0"
                         className="w-16 h-8 text-center no-spinners text-sm"
                         {...field}
                         value={field.value ?? '0'}
                         onChange={(e) => {
-                          const value = parseInt(e.target.value)
-                          const finalValue =
-                            isNaN(value) || value < 0 ? 0 : value
-                          form.setValue(field.name, finalValue)
-                          saveToLocalStorage(
-                            'lanternResearchLevel',
-                            finalValue,
-                            'The lantern burns brighter with newfound knowledge.'
+                          handleLanternResearchLevelChange(e.target.value)
+                          form.setValue(
+                            field.name,
+                            parseInt(e.target.value) || 0
                           )
                         }}
                       />

@@ -60,7 +60,8 @@ export function ResourcesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[ResourcesCard] Initializing Disabled Inputs')
+    console.debug('[ResourcesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
       selectedSettlement?.resources?.forEach((_, i) => {
@@ -80,22 +81,6 @@ export function ResourcesCard({
   const addResource = () => setIsAddingNew(true)
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedResources Updated Resources
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedResources: {
-      name: string
-      category: ResourceCategory
-      types: ResourceType[]
-      amount: number
-    }[],
-    successMsg?: string
-  ) => saveSelectedSettlement({ resources: updatedResources }, successMsg)
-
-  /**
    * Handles the amount change for a resource.
    *
    * @param index Resource Index
@@ -104,7 +89,8 @@ export function ResourcesCard({
   const onAmountChange = (index: number, amount: number) => {
     const currentResources = [...(selectedSettlement?.resources || [])]
     currentResources[index] = { ...currentResources[index], amount }
-    saveToLocalStorage(currentResources)
+
+    saveSelectedSettlement({ resources: currentResources })
   }
 
   /**
@@ -128,7 +114,10 @@ export function ResourcesCard({
       return next
     })
 
-    saveToLocalStorage(currentResources, 'The resource is destroyed.')
+    saveSelectedSettlement(
+      { resources: currentResources },
+      'The resource is destroyed.'
+    )
   }
 
   /**
@@ -178,12 +167,13 @@ export function ResourcesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedResources,
+    saveSelectedSettlement(
+      { resources: updatedResources },
       i !== undefined
         ? 'The resource has been updated.'
         : 'A resource has been added to settlement storage.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -212,7 +202,8 @@ export function ResourcesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ resources: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

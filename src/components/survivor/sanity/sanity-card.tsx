@@ -46,26 +46,6 @@ export function SanityCard({
   selectedSettlement
 }: SanityCardProps): ReactElement {
   /**
-   * Save sanity data to localStorage for the current survivor, with Zod
-   * validation and toast feedback.
-   *
-   * @param field Field name to update
-   * @param value New value
-   * @param successMsg Optional success message
-   */
-  const saveToLocalStorage = (
-    field: keyof Survivor,
-    value: number | boolean,
-    successMsg?: string
-  ) =>
-    saveSelectedSurvivor(
-      {
-        [field]: value
-      },
-      successMsg
-    )
-
-  /**
    * Update Insanity
    */
   const updateInsanity = (val: string) => {
@@ -77,16 +57,22 @@ export function SanityCard({
       return toast.error('Insanity cannot be negative..')
     }
 
-    saveToLocalStorage('insanity', value, 'Insanity level updated.')
+    saveSelectedSurvivor(
+      {
+        insanity: value
+      },
+      'Insanity level updated.'
+    )
   }
 
   /**
    * Update Brain Light Damage
    */
   const updateBrainLightDamage = (checked: boolean) =>
-    saveToLocalStorage(
-      'brainLightDamage',
-      !!checked,
+    saveSelectedSurvivor(
+      {
+        brainLightDamage: !!checked
+      },
       !!checked
         ? 'The survivor suffers brain damage from the horrors witnessed.'
         : 'The survivor recovers from their brain injury.'
@@ -104,7 +90,12 @@ export function SanityCard({
       return toast.error('Torment cannot be negative.')
     }
 
-    saveToLocalStorage('torment', value, 'Torment level updated.')
+    saveSelectedSurvivor(
+      {
+        torment: value
+      },
+      'Torment level updated.'
+    )
   }
 
   return (

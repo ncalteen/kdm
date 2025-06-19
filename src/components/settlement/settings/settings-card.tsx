@@ -70,7 +70,7 @@ export function SettingsCard({
     try {
       const campaign = getCampaign()
 
-      const updatedHunts = campaign.hunts.filter(
+      const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.id !== selectedHunt?.id
       )
 
@@ -99,7 +99,7 @@ export function SettingsCard({
     try {
       const campaign = getCampaign()
 
-      const updatedShowdowns = campaign.showdowns.filter(
+      const updatedShowdowns = campaign.showdowns?.filter(
         (hunt) => hunt.id !== selectedHunt?.id
       )
 
@@ -137,11 +137,11 @@ export function SettingsCard({
         (survivor) => survivor.settlementId !== selectedSettlement?.id
       )
 
-      const updatedHunts = campaign.hunts.filter(
+      const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.settlementId !== selectedSettlement?.id
       )
 
-      const updatedShowdowns = campaign.showdowns.filter(
+      const updatedShowdowns = campaign.showdowns?.filter(
         (showdown) => showdown.settlementId !== selectedSettlement?.id
       )
 

@@ -95,7 +95,8 @@ export function FightingArtsCard({
 
   // Initialize disabled inputs for fighting arts
   useEffect(() => {
-    console.debug('[FightingArtsCard] Initializing Disabled Inputs')
+    console.debug('[FightingArtsCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: string]: boolean } = {}
 

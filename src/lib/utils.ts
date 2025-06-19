@@ -96,7 +96,7 @@ export function getCampaign(): Campaign {
 /**
  * Invalidate Cached Campaign
  */
-export function invalidateCampaignCache(): void {
+export function invalidateCampaignCache() {
   cachedCampaign = null
   lastCacheUpdate = 0
 }
@@ -106,7 +106,7 @@ export function invalidateCampaignCache(): void {
  *
  * @param campaign Campaign Data
  */
-export function saveCampaignToLocalStorage(campaign: Campaign): void {
+export function saveCampaignToLocalStorage(campaign: Campaign) {
   localStorage.setItem('campaign', JSON.stringify(campaign))
   invalidateCampaignCache()
 }
@@ -249,7 +249,7 @@ export function getSelectedSettlement(): Settlement | null {
  *
  * @param settlementId Settlement ID
  */
-export function setSelectedSettlement(settlementId: number | null): void {
+export function setSelectedSettlement(settlementId: number | null) {
   const campaign = getCampaign()
 
   campaign.selectedSettlementId = settlementId || undefined
@@ -277,7 +277,7 @@ export function getSelectedSurvivor(): Survivor | null {
  *
  * @param survivorId Survivor ID
  */
-export function setSelectedSurvivor(survivorId: number | null): void {
+export function setSelectedSurvivor(survivorId: number | null) {
   const campaign = getCampaign()
 
   campaign.selectedSurvivorId = survivorId || undefined
@@ -299,7 +299,7 @@ export function getSelectedTab(): string | null {
  *
  * @param tab Tab Name
  */
-export function setSelectedTab(tab: string | null): void {
+export function setSelectedTab(tab: string | null) {
   const campaign = getCampaign()
 
   campaign.selectedTab = tab || undefined
@@ -325,7 +325,7 @@ export function getSelectedHunt(): Hunt | null {
  *
  * @param huntId Hunt ID
  */
-export function setSelectedHunt(huntId: number | null): void {
+export function setSelectedHunt(huntId: number | null) {
   const campaign = getCampaign()
 
   campaign.selectedHuntId = huntId || undefined
@@ -354,7 +354,7 @@ export function getSelectedShowdown(): Showdown | null {
  *
  * @param showdownId Showdown ID
  */
-export function setSelectedShowdown(showdownId: number | null): void {
+export function setSelectedShowdown(showdownId: number | null) {
   const campaign = getCampaign()
 
   campaign.selectedShowdownId = showdownId || undefined

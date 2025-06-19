@@ -72,30 +72,32 @@ export function ResourceItem({
   onSave,
   onAmountChange
 }: ResourceItemProps): ReactElement {
-  const resource = form.watch(`resources.${index}`)
-
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const nameInputRef = useRef<HTMLInputElement>(null)
   const amountInputRef = useRef<HTMLInputElement>(null)
 
+  const watchedResource = form.watch(`resources.${index}`)
+
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
-    resource?.category || ResourceCategory.BASIC
+    watchedResource.category || ResourceCategory.BASIC
   )
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
-    resource?.types || [ResourceType.BONE]
+    watchedResource.types || [ResourceType.BONE]
   )
 
   useEffect(() => {
-    console.debug('[ResourceItem] Changed', isDisabled, index)
-    if (nameInputRef.current) nameInputRef.current.value = resource?.name || ''
+    console.debug('[ResourceItem] Changed', watchedResource, isDisabled, index)
+
+    if (nameInputRef.current)
+      nameInputRef.current.value = watchedResource.name || ''
 
     if (amountInputRef.current)
-      amountInputRef.current.value = (resource?.amount || 0).toString()
+      amountInputRef.current.value = (watchedResource.amount || 0).toString()
 
-    setSelectedCategory(resource?.category || ResourceCategory.BASIC)
-    setSelectedTypes(resource?.types || [ResourceType.BONE])
+    setSelectedCategory(watchedResource.category || ResourceCategory.BASIC)
+    setSelectedTypes(watchedResource.types || [ResourceType.BONE])
 
     if (!isDisabled && nameInputRef.current) {
       nameInputRef.current.focus()
@@ -104,7 +106,7 @@ export function ResourceItem({
       nameInputRef.current.value = ''
       nameInputRef.current.value = val
     }
-  }, [resource, isDisabled, index])
+  }, [watchedResource, isDisabled, index])
 
   /**
    * Handles the key down event for the name input field.
@@ -114,7 +116,7 @@ export function ResourceItem({
    *
    * @param e Key Down Event
    */
-  const handleNameKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleNameKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && amountInputRef.current) {
       e.preventDefault()
       onSave(
@@ -132,11 +134,11 @@ export function ResourceItem({
    *
    * @param e Change Event
    */
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const amount = Number(e.target.value)
-    if (onAmountChange && !isNaN(amount) && amount >= 0) {
+
+    if (onAmountChange && !isNaN(amount) && amount >= 0)
       onAmountChange(index, amount)
-    }
   }
 
   return (
@@ -158,7 +160,7 @@ export function ResourceItem({
             <div className="grid grid-cols-12 items-center gap-2">
               {/* Form Fields */}
               <div className="col-span-4 text-xs text-left font-bold">
-                {resource?.name}
+                {watchedResource.name}
               </div>
               <div className="col-span-2">
                 <Badge variant="default">{selectedCategory}</Badge>
@@ -176,7 +178,7 @@ export function ResourceItem({
                   type="number"
                   min={0}
                   placeholder="0"
-                  defaultValue={resource?.amount}
+                  defaultValue={watchedResource.amount}
                   onChange={handleAmountChange}
                   className="w-16 text-center no-spinners"
                 />
@@ -208,7 +210,7 @@ export function ResourceItem({
                 <Input
                   ref={nameInputRef}
                   placeholder="Resource Name"
-                  defaultValue={resource?.name}
+                  defaultValue={watchedResource.name}
                   onKeyDown={handleNameKeyDown}
                   autoFocus
                 />
@@ -232,7 +234,7 @@ export function ResourceItem({
                   min={0}
                   placeholder="0"
                   disabled={true}
-                  defaultValue={resource?.amount}
+                  defaultValue={watchedResource.amount}
                   onChange={handleAmountChange}
                   className="w-16 text-center no-spinners"
                 />
@@ -299,7 +301,7 @@ export function NewResourceItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && amountInputRef.current) {
       e.preventDefault()
       onSave(

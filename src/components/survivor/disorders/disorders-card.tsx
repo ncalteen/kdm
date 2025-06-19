@@ -54,7 +54,8 @@ export function DisordersCard({
   const disorders = form.watch('disorders')
 
   useEffect(() => {
-    console.debug('[DisordersCard] Initializing Disabled Inputs')
+    console.debug('[DisordersCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -91,6 +92,7 @@ export function DisordersCard({
       },
       successMsg
     )
+
     setIsAddingNew(false)
   }
 

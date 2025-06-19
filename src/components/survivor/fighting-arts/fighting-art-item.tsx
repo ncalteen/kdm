@@ -70,10 +70,11 @@ export function FightingArtItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedFightingArtItem = form.watch(`${arrayName}.${index}`)
+
   useEffect(() => {
     console.debug('[FightingArtItem] Changed', isDisabled, index)
-    if (inputRef.current)
-      inputRef.current.value = form.getValues(`${arrayName}.${index}`) || ''
+    if (inputRef.current) inputRef.current.value = watchedFightingArtItem || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -82,7 +83,7 @@ export function FightingArtItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index, arrayName])
+  }, [watchedFightingArtItem, isDisabled, index, arrayName])
 
   /**
    * Handles the key down event for the input field.
@@ -92,7 +93,7 @@ export function FightingArtItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -122,15 +123,13 @@ export function FightingArtItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
-            {form.getValues(`${arrayName}.${index}`)}
-          </span>
+          <span className="text-xs">{watchedFightingArtItem}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder={placeholder}
-          defaultValue={form.getValues(`${arrayName}.${index}`)}
+          defaultValue={watchedFightingArtItem}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -192,7 +191,7 @@ export function NewFightingArtItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

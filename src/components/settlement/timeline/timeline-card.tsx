@@ -4,7 +4,7 @@ import { TimelineContent } from '@/components/settlement/timeline/timeline-conte
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { CampaignType } from '@/lib/enums'
-import { Settlement, TimelineYear } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import { PlusCircleIcon } from 'lucide-react'
 import {
   KeyboardEvent,
@@ -97,11 +97,11 @@ export function TimelineCard({
   )
 
   /**
-   * Checks if an event is being edited.
+   * Is Event Being Edited
    *
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
-   * @returns True if the event is being edited, false otherwise
+   * @returns Event is Being Edited
    */
   const isEventBeingEdited = useCallback(
     (yearIndex: number, entryIndex: number) => {
@@ -109,23 +109,6 @@ export function TimelineCard({
       return !!editingEvents[inputKey]
     },
     [editingEvents]
-  )
-
-  /**
-   * Save timeline data to localStorage and update context
-   *
-   * @param updatedTimeline Updated Timeline
-   * @param successMsg Optional success message to display
-   */
-  const saveToLocalStorage = useCallback(
-    (updatedTimeline: TimelineYear[], successMsg?: string) =>
-      saveSelectedSettlement(
-        {
-          timeline: updatedTimeline
-        },
-        successMsg
-      ),
-    [saveSelectedSettlement]
   )
 
   /**
@@ -203,12 +186,14 @@ export function TimelineCard({
       year.entries = newEntries
       updatedTimeline[yearIndex] = year
 
-      saveToLocalStorage(
-        updatedTimeline,
+      saveSelectedSettlement(
+        {
+          timeline: updatedTimeline
+        },
         'The chronicle is altered - a memory fades into darkness.'
       )
     },
-    [form, saveToLocalStorage]
+    [form, saveSelectedSettlement]
   )
 
   /**
@@ -249,12 +234,14 @@ export function TimelineCard({
       year.entries[entryIndex] = newEventValue
       updatedTimeline[yearIndex] = year
 
-      saveToLocalStorage(
-        updatedTimeline,
+      saveSelectedSettlement(
+        {
+          timeline: updatedTimeline
+        },
         'The chronicles remember - a memory is etched in stone.'
       )
     },
-    [form, inputRefs, saveToLocalStorage]
+    [form, inputRefs, saveSelectedSettlement]
   )
 
   /**
@@ -273,14 +260,16 @@ export function TimelineCard({
       year.completed = completed
       updatedTimeline[yearIndex] = year
 
-      saveToLocalStorage(
-        updatedTimeline,
+      saveSelectedSettlement(
+        {
+          timeline: updatedTimeline
+        },
         completed
           ? 'The year concludes in triumph.'
           : 'The year remains unfinished.'
       )
     },
-    [form, saveToLocalStorage]
+    [form, saveSelectedSettlement]
   )
 
   /**
@@ -401,8 +390,10 @@ export function TimelineCard({
                 form.setValue('timeline', newTimeline)
 
                 // Then save to localStorage
-                saveToLocalStorage(
-                  newTimeline,
+                saveSelectedSettlement(
+                  {
+                    timeline: newTimeline
+                  },
                   'A new lantern year is added - the chronicles expand.'
                 )
               })

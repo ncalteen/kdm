@@ -39,27 +39,18 @@ export function FacesInTheSky({
   saveSelectedSurvivor
 }: FacesInTheSkyProps): ReactElement {
   /**
-   * Save to Local Storage
-   *
-   * @param attrName Attribute name
-   * @param value New value
-   */
-  const saveToLocalStorage = (attrName: keyof Survivor, value: boolean) =>
-    saveSelectedSurvivor(
-      {
-        [attrName]: value
-      },
-      'The stars align. Celestial traits recorded.'
-    )
-
-  /**
    * Handles toggling a cell in the table
    *
    * @param property The property to toggle
    * @param currentValue The current value of the property
    */
   const handleToggleCell = (property: keyof Survivor, currentValue: boolean) =>
-    saveToLocalStorage(property, !currentValue)
+    saveSelectedSurvivor(
+      {
+        [property]: !currentValue
+      },
+      'The stars align. Celestial traits recorded.'
+    )
 
   const hasGamblerWitch = form.watch('hasGamblerWitch')
   const hasGamblerRust = form.watch('hasGamblerRust')

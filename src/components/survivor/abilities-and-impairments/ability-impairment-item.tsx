@@ -59,11 +59,14 @@ export function AbilityImpairmentItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedAbilityOrImpairmentItem = form.watch(
+    `abilitiesAndImpairments.${index}`
+  )
+
   useEffect(() => {
     console.debug('[AbilityImpairmentItem] Changed', isDisabled, index)
     if (inputRef.current)
-      inputRef.current.value =
-        form.getValues(`abilitiesAndImpairments.${index}`) || ''
+      inputRef.current.value = watchedAbilityOrImpairmentItem || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -72,7 +75,7 @@ export function AbilityImpairmentItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedAbilityOrImpairmentItem, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -82,7 +85,7 @@ export function AbilityImpairmentItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -105,15 +108,13 @@ export function AbilityImpairmentItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
-            {form.getValues(`abilitiesAndImpairments.${index}`)}
-          </span>
+          <span className="text-xs">{watchedAbilityOrImpairmentItem}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Ability or Impairment"
-          defaultValue={form.getValues(`abilitiesAndImpairments.${index}`)}
+          defaultValue={watchedAbilityOrImpairmentItem}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -172,7 +173,7 @@ export function NewAbilityImpairmentItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

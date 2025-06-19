@@ -59,7 +59,8 @@ export function MonsterVolumesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[MonsterVolumesCard] Initializing Disabled Inputs')
+    console.debug('[MonsterVolumesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -71,31 +72,17 @@ export function MonsterVolumesCard({
     })
   }, [selectedSettlement?.monsterVolumes])
 
+  /**
+   * Add Monster Volume
+   */
+  const addMonsterVolume = () => setIsAddingNew(true)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addMonsterVolume = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedMonsterVolumes Updated Monster Volumes
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedMonsterVolumes: string[],
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      {
-        monsterVolumes: updatedMonsterVolumes
-      },
-      successMsg
-    )
 
   /**
    * Handles the removal of a monster volume.
@@ -120,8 +107,10 @@ export function MonsterVolumesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentMonsterVolumes,
+    saveSelectedSettlement(
+      {
+        monsterVolumes: currentMonsterVolumes
+      },
       'The monster volume has been consigned to darkness.'
     )
   }
@@ -156,12 +145,15 @@ export function MonsterVolumesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedMonsterVolumes,
+    saveSelectedSettlement(
+      {
+        monsterVolumes: updatedMonsterVolumes
+      },
       i !== undefined
         ? 'Monster volume inscribed in blood.'
         : 'New monster volume inscribed in blood.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -190,7 +182,10 @@ export function MonsterVolumesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        monsterVolumes: newOrder
+      })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

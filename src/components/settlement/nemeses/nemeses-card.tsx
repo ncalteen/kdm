@@ -65,7 +65,8 @@ export function NemesesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[NemesesCard] Initializing Disabled Inputs')
+    console.debug('[NemesesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -77,23 +78,17 @@ export function NemesesCard({
     })
   }, [selectedSettlement?.nemeses])
 
+  /**
+   * Add Nemesis
+   */
+  const addNemesis = () => setIsAddingNew(true)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addNemesis = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedNemeses Updated Nemeses
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (updatedNemeses: Nemesis[], successMsg?: string) =>
-    saveSelectedSettlement({ nemeses: updatedNemeses }, successMsg)
 
   /**
    * Handles the removal of a nemesis.
@@ -116,8 +111,8 @@ export function NemesesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentNemeses,
+    saveSelectedSettlement(
+      { nemeses: currentNemeses },
       'The nemesis has returned to the darkness.'
     )
   }
@@ -166,12 +161,13 @@ export function NemesesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedNemeses,
+    saveSelectedSettlement(
+      { nemeses: updatedNemeses },
       index !== undefined
         ? 'The nemesis waits outside your settlement.'
         : 'A new nemesis emerges.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -193,8 +189,9 @@ export function NemesesCard({
     const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
       i === index ? { ...n, unlocked } : n
     )
-    saveToLocalStorage(
-      updatedNemeses,
+
+    saveSelectedSettlement(
+      { nemeses: updatedNemeses },
       `${selectedSettlement?.nemeses![index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
@@ -220,7 +217,8 @@ export function NemesesCard({
     const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
       i === index ? { ...n, [level]: checked } : n
     )
-    saveToLocalStorage(updatedNemeses)
+
+    saveSelectedSettlement({ nemeses: updatedNemeses })
   }
 
   /**
@@ -240,7 +238,8 @@ export function NemesesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ nemeses: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

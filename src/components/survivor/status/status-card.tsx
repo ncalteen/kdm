@@ -43,24 +43,6 @@ export function StatusCard({
   saveSelectedSurvivor
 }: StatusCardProps): ReactElement {
   /**
-   * Save Name to LocalStorage
-   *
-   * @param name Survivor Name
-   * @param successMsg Success Message
-   */
-  const saveNameToLocalStorage = (name: string, successMsg?: string) =>
-    saveSelectedSurvivor({ name }, successMsg)
-
-  /**
-   * Save Gender to Local Storage
-   *
-   * @param gender Survivor Gender
-   * @param successMsg Success Message
-   */
-  const saveGenderToLocalStorage = (gender: Gender, successMsg?: string) =>
-    saveSelectedSurvivor({ gender }, successMsg)
-
-  /**
    * Save Status to Local Storage
    *
    * @param updatedDead Updated dead status
@@ -91,8 +73,8 @@ export function StatusCard({
   ) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      saveNameToLocalStorage(
-        value,
+      saveSelectedSurvivor(
+        { name: value },
         value.trim()
           ? "The survivor's name echoes through the lantern light."
           : undefined
@@ -105,12 +87,11 @@ export function StatusCard({
    *
    * @param gender Selected Gender
    */
-  const handleGenderChange = (gender: Gender) => {
-    saveGenderToLocalStorage(
-      gender,
+  const handleGenderChange = (gender: Gender) =>
+    saveSelectedSurvivor(
+      { gender },
       "The survivor's essence is recorded in the lantern's glow."
     )
-  }
 
   /**
    * Handles toggling the dead status

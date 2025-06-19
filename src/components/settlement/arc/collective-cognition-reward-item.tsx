@@ -64,6 +64,7 @@ export function RewardItem({
 
   useEffect(() => {
     console.debug('[RewardItem] Changed Reward:', reward, isDisabled)
+
     if (nameInputRef.current) {
       nameInputRef.current.value = reward?.name || ''
     }
@@ -88,11 +89,15 @@ export function RewardItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
-      const ccValue = parseInt(ccInputRef.current.value) || 1
-      onSave(nameInputRef.current.value, ccValue, index)
+
+      onSave(
+        nameInputRef.current.value,
+        parseInt(ccInputRef.current.value) || 1,
+        index
+      )
     }
   }
 
@@ -204,11 +209,14 @@ export function NewRewardItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
-      const ccValue = parseInt(ccInputRef.current.value) || 1
-      onSave(nameInputRef.current.value, ccValue)
+
+      onSave(
+        nameInputRef.current.value,
+        parseInt(ccInputRef.current.value) || 1
+      )
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()

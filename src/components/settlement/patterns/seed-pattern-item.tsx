@@ -59,10 +59,17 @@ export function SeedPatternItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedSeedPattern = form.watch(`seedPatterns.${index}`)
+
   useEffect(() => {
-    console.debug('[SeedPatternItem] Changed', isDisabled, index)
-    if (inputRef.current)
-      inputRef.current.value = form.getValues(`seedPatterns.${index}`) || ''
+    console.debug(
+      '[SeedPatternItem] Changed',
+      watchedSeedPattern,
+      isDisabled,
+      index
+    )
+
+    if (inputRef.current) inputRef.current.value = watchedSeedPattern || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -71,7 +78,7 @@ export function SeedPatternItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedSeedPattern, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -81,7 +88,7 @@ export function SeedPatternItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,15 +111,13 @@ export function SeedPatternItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
-            {form.getValues(`seedPatterns.${index}`)}
-          </span>
+          <span className="text-xs">{watchedSeedPattern}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Seed Pattern"
-          defaultValue={form.getValues(`seedPatterns.${index}`)}
+          defaultValue={watchedSeedPattern}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -171,7 +176,7 @@ export function NewSeedPatternItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

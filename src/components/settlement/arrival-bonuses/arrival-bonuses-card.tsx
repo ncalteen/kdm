@@ -56,11 +56,12 @@ export function ArrivalBonusesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[ArrivalBonusesCard] Initializing Disabled Inputs')
+    console.debug('[ArrivalBonusesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      ;(selectedSettlement?.arrivalBonuses || []).forEach((_, i) => {
+      selectedSettlement?.arrivalBonuses?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
@@ -68,32 +69,17 @@ export function ArrivalBonusesCard({
     })
   }, [selectedSettlement?.arrivalBonuses])
 
+  /**
+   * Add Arrival Bonus
+   */
+  const addBonus = () => setIsAddingNew(true)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addBonus = () => setIsAddingNew(true)
-
-  /**
-   * Save arrival bonuses to localStorage for the current settlement, with
-   * Zod validation and toast feedback.
-   *
-   * @param updatedArrivalBonuses Updated Arrival Bonuses
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedArrivalBonuses: string[],
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      {
-        arrivalBonuses: updatedArrivalBonuses
-      },
-      successMsg
-    )
 
   /**
    * Handles the removal of a arrival bonus.
@@ -118,7 +104,12 @@ export function ArrivalBonusesCard({
       return next
     })
 
-    saveToLocalStorage(currentArrivalBonuses, 'A blessing fades into the void.')
+    saveSelectedSettlement(
+      {
+        arrivalBonuses: currentArrivalBonuses
+      },
+      'A blessing fades into the void.'
+    )
   }
 
   /**
@@ -151,8 +142,10 @@ export function ArrivalBonusesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedArrivalBonuses,
+    saveSelectedSettlement(
+      {
+        arrivalBonuses: updatedArrivalBonuses
+      },
       i !== undefined
         ? 'The blessing has been inscribed.'
         : 'A new blessing graces your settlement.'
@@ -185,7 +178,10 @@ export function ArrivalBonusesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        arrivalBonuses: newOrder
+      })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

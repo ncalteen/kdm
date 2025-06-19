@@ -63,7 +63,8 @@ export function PatternsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[PatternsCard] Initializing Disabled Inputs')
+    console.debug('[PatternsCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -83,20 +84,6 @@ export function PatternsCard({
   )
 
   const addPattern = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedPatterns Updated Patterns
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (updatedPatterns: string[], successMsg?: string) =>
-    saveSelectedSettlement(
-      {
-        patterns: updatedPatterns
-      },
-      successMsg
-    )
 
   /**
    * Handles the removal of a pattern.
@@ -119,8 +106,10 @@ export function PatternsCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentPatterns,
+    saveSelectedSettlement(
+      {
+        patterns: currentPatterns
+      },
       'The pattern has been banished from memory.'
     )
   }
@@ -153,12 +142,15 @@ export function PatternsCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedPatterns,
+    saveSelectedSettlement(
+      {
+        patterns: updatedPatterns
+      },
       i !== undefined
         ? 'The pattern has been etched into memory.'
         : 'Insight has granted a new pattern.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -187,7 +179,10 @@ export function PatternsCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        patterns: newOrder
+      })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

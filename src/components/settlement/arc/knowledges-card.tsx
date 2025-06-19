@@ -56,7 +56,8 @@ export function KnowledgesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[KnowledgesCard] Initializing Disabled Inputs')
+    console.debug('[KnowledgesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -76,23 +77,6 @@ export function KnowledgesCard({
   )
 
   const addKnowledge = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedKnowledges Updated Knowledges
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedKnowledges: Knowledge[],
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      {
-        knowledges: updatedKnowledges
-      },
-      successMsg
-    )
 
   /**
    * Handles the removal of a knowledge.
@@ -115,8 +99,12 @@ export function KnowledgesCard({
       return next
     })
 
-    // Use immediate save with feedback for user actions
-    saveToLocalStorage(currentKnowledges, 'Knowledge banished to the void.')
+    saveSelectedSettlement(
+      {
+        knowledges: currentKnowledges
+      },
+      'Knowledge banished to the void.'
+    )
   }
 
   /**
@@ -156,13 +144,15 @@ export function KnowledgesCard({
       }))
     }
 
-    // Use immediate save with feedback for user actions
-    saveToLocalStorage(
-      updatedKnowledges,
+    saveSelectedSettlement(
+      {
+        knowledges: updatedKnowledges
+      },
       i !== undefined
         ? 'Knowledge carved into memory.'
         : 'New knowledge illuminates the settlement.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -191,7 +181,10 @@ export function KnowledgesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        knowledges: newOrder
+      })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

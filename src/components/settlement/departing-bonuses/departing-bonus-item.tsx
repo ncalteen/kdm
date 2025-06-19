@@ -59,10 +59,16 @@ export function DepartingBonusItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedDepartingBonus = form.watch(`departingBonuses.${index}`)
+
   useEffect(() => {
-    console.debug('[DepartingBonusItem] Changed', isDisabled, index)
-    if (inputRef.current)
-      inputRef.current.value = form.getValues(`departingBonuses.${index}`) || ''
+    console.debug(
+      '[DepartingBonusItem] Changed',
+      watchedDepartingBonus,
+      isDisabled
+    )
+
+    if (inputRef.current) inputRef.current.value = watchedDepartingBonus || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -71,17 +77,17 @@ export function DepartingBonusItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedDepartingBonus, isDisabled])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,15 +110,13 @@ export function DepartingBonusItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
-            {form.getValues(`departingBonuses.${index}`)}
-          </span>
+          <span className="text-xs">{watchedDepartingBonus}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Departing bonus"
-          defaultValue={form.getValues(`departingBonuses.${index}`)}
+          defaultValue={watchedDepartingBonus}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -171,7 +175,7 @@ export function NewDepartingBonusItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

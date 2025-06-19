@@ -139,7 +139,6 @@ export function SettlementForm({
           {/* Create Settlement Form */}
           {!selectedSettlement && (
             <CreateSettlementForm
-              selectedSettlement={selectedSettlement}
               setSelectedSettlement={setSelectedSettlement}
             />
           )}
@@ -319,7 +318,6 @@ export function SettlementForm({
                 <div className="hidden lg:flex lg:flex-row gap-2">
                   <div className="flex-1">
                     <MilestonesCard
-                      form={settlementForm}
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
@@ -335,7 +333,6 @@ export function SettlementForm({
                 {/* Mobile Layout */}
                 <div className="lg:hidden flex flex-col gap-2">
                   <MilestonesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />

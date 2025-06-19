@@ -35,27 +35,13 @@ export function NotesCard({
   )
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedNotes Updated Notes
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedNotes: string | undefined,
-    successMsg?: string
-  ) =>
-    saveSelectedSettlement(
-      {
-        notes: updatedNotes
-      },
-      successMsg
-    )
-
   const handleSave = () => {
     setIsDirty(false)
-    saveToLocalStorage(
-      draft,
+
+    saveSelectedSettlement(
+      {
+        notes: draft
+      },
       'As stories are shared amongst survivors, they are etched into the history of your settlement.'
     )
   }

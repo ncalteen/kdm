@@ -79,13 +79,13 @@ export function QuarryItem({
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const quarry = form.watch(`quarries.${index}`)
+  const watchedQuarry = form.watch(`quarries.${index}`)
 
   useEffect(() => {
-    console.debug('[QuarryItem] Changed', isDisabled, index)
-    if (inputRef.current && quarry) {
-      inputRef.current.value = quarry.name || ''
-    }
+    console.debug('[QuarryItem] Changed', watchedQuarry, isDisabled, index)
+
+    if (inputRef.current && watchedQuarry)
+      inputRef.current.value = watchedQuarry.name || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -94,7 +94,7 @@ export function QuarryItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index, quarry])
+  }, [watchedQuarry, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -104,14 +104,19 @@ export function QuarryItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === 'Enter' && inputRef.current && quarry) {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && inputRef.current && watchedQuarry) {
       e.preventDefault()
-      onSave(inputRef.current.value, quarry.node, quarry.unlocked, index)
+      onSave(
+        inputRef.current.value,
+        watchedQuarry.node,
+        watchedQuarry.unlocked,
+        index
+      )
     }
   }
 
-  if (!quarry) return <></>
+  if (!watchedQuarry) return <></>
 
   return (
     <div
@@ -128,7 +133,7 @@ export function QuarryItem({
 
       {/* Unlocked Checkbox */}
       <Checkbox
-        checked={quarry.unlocked}
+        checked={watchedQuarry.unlocked}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -137,13 +142,13 @@ export function QuarryItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{quarry.name}</span>
+          <span className="text-xs">{watchedQuarry.name}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Quarry name"
-          defaultValue={quarry.name}
+          defaultValue={watchedQuarry.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -154,15 +159,15 @@ export function QuarryItem({
       <div className="flex items-center gap-1 ml-auto">
         {isDisabled ? (
           <Badge variant="secondary" className="h-8 w-20">
-            {quarry.node}
+            {watchedQuarry.node}
           </Badge>
         ) : (
           <Select
-            value={quarry.node}
+            value={watchedQuarry.node}
             onValueChange={(value) => onUpdateNode(index, value as NodeLevel)}
             disabled={isDisabled}>
             <SelectTrigger className="h-8 w-24">
-              <SelectValue placeholder={quarry.node} />
+              <SelectValue placeholder={watchedQuarry.node} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Node 1">Node 1</SelectItem>
@@ -191,8 +196,8 @@ export function QuarryItem({
             onClick={() =>
               onSave(
                 inputRef.current?.value,
-                quarry.node,
-                quarry.unlocked,
+                watchedQuarry.node,
+                watchedQuarry.unlocked,
                 index
               )
             }
@@ -232,7 +237,7 @@ export function NewQuarryItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, nodeRef.current as NodeLevel, false)

@@ -73,7 +73,8 @@ export function CreateSurvivorForm({
   // Set the form values when the component mounts
   useEffect(() => {
     console.debug('[CreateSurvivorForm] Initializing Form Values')
-    if (!selectedSettlement) return
+
+    if (!selectedSettlement?.id) return
 
     const updatedValues = {
       settlementId: selectedSettlement.id,
@@ -83,7 +84,7 @@ export function CreateSurvivorForm({
       canEndure: canEndure(selectedSettlement.id),
       canSurge: canSurge(selectedSettlement.id),
       huntXPRankUp:
-        selectedSettlement.survivorType !== SurvivorType.ARC
+        selectedSettlement?.survivorType !== SurvivorType.ARC
           ? [1, 5, 9, 14] // Core
           : [1], // Arc
       id: getNextSurvivorId(),
@@ -95,7 +96,7 @@ export function CreateSurvivorForm({
       ...form.getValues(),
       ...updatedValues
     })
-  }, [form, selectedSettlement])
+  }, [form, selectedSettlement?.id, selectedSettlement?.survivorType])
 
   /**
    * Handles form submission
@@ -114,9 +115,10 @@ export function CreateSurvivorForm({
   /**
    * Handles back navigation to settlement
    */
-  const handleBackToSettlement = useCallback(() => {
-    setIsCreatingNewSurvivor(false)
-  }, [setIsCreatingNewSurvivor])
+  const handleBackToSettlement = useCallback(
+    () => setIsCreatingNewSurvivor(false),
+    [setIsCreatingNewSurvivor]
+  )
 
   return (
     <form

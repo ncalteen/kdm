@@ -63,10 +63,18 @@ export function LocationItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedLocationItem = form.watch(`locations.${index}`)
+
   useEffect(() => {
-    console.debug('[LocationItem] Changed', isDisabled, index)
+    console.debug(
+      '[LocationItem] Changed',
+      watchedLocationItem,
+      isDisabled,
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`locations.${index}.name`) || ''
+      inputRef.current.value = watchedLocationItem.name || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -75,7 +83,7 @@ export function LocationItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedLocationItem, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -85,15 +93,14 @@ export function LocationItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      const locationData = form.getValues(`locations.${index}`)
+      const locationData = watchedLocationItem
+
       onSave(inputRef.current.value, locationData?.unlocked || false, index)
     }
   }
-
-  const locationData = form.getValues(`locations.${index}`)
 
   return (
     <div
@@ -111,7 +118,7 @@ export function LocationItem({
       {/* Unlocked Checkbox */}
       <Checkbox
         id={`location-unlocked-${index}`}
-        checked={locationData?.unlocked || false}
+        checked={watchedLocationItem.unlocked || false}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -120,15 +127,13 @@ export function LocationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
-            {form.getValues(`locations.${index}.name`)}
-          </span>
+          <span className="text-xs">{watchedLocationItem.name}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Location Name"
-          defaultValue={form.getValues(`locations.${index}.name`)}
+          defaultValue={watchedLocationItem.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -151,14 +156,13 @@ export function LocationItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => {
-              const locationData = form.getValues(`locations.${index}`)
+            onClick={() =>
               onSave(
                 inputRef.current!.value,
-                locationData?.unlocked || false,
+                watchedLocationItem.unlocked || false,
                 index
               )
-            }}
+            }
             title="Save location">
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -194,7 +198,7 @@ export function NewLocationItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, false)

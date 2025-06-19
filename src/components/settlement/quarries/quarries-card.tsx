@@ -66,7 +66,8 @@ export function QuarriesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[QuarriesCard]: Initializing Disabled Inputs')
+    console.debug('[QuarriesCard]: Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -78,6 +79,11 @@ export function QuarriesCard({
     })
   }, [selectedSettlement?.quarries])
 
+  /**
+   * Add Quarry
+   */
+  const addQuarry = () => setIsAddingNew(true)
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -85,19 +91,8 @@ export function QuarriesCard({
     })
   )
 
-  const addQuarry = () => setIsAddingNew(true)
-
   /**
-   * Save to Local Storage
-   *
-   * @param updatedQuarries Updated Quarries
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (updatedQuarries: Quarry[], successMsg?: string) =>
-    saveSelectedSettlement({ quarries: updatedQuarries }, successMsg)
-
-  /**
-   * Handles the removal of a quarry.
+   * Remove a Quarry
    *
    * @param index Quarry Index
    */
@@ -117,14 +112,14 @@ export function QuarriesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentQuarries,
+    saveSelectedSettlement(
+      { quarries: currentQuarries },
       'The beast retreats back into the void.'
     )
   }
 
   /**
-   * Handles saving a new quarry.
+   * Save a Quarry
    *
    * @param value Quarry Name
    * @param node Quarry Node
@@ -173,8 +168,8 @@ export function QuarriesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedQuarries,
+    saveSelectedSettlement(
+      { quarries: updatedQuarries },
       index !== undefined
         ? 'The quarry prowls the darkness. Hunt or be hunted.'
         : 'A new quarry emerges.'
@@ -183,7 +178,7 @@ export function QuarriesCard({
   }
 
   /**
-   * Enables editing a quarry.
+   * Edit a Quarry
    *
    * @param index Quarry Index
    */
@@ -191,7 +186,7 @@ export function QuarriesCard({
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
-   * Handles toggling quarry unlocked status.
+   * Toggle Unlocked Status of a Quarry
    *
    * @param index Quarry Index
    * @param unlocked Unlocked Status
@@ -200,14 +195,15 @@ export function QuarriesCard({
     const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
       i === index ? { ...q, unlocked } : q
     )
-    saveToLocalStorage(
-      updatedQuarries,
+
+    saveSelectedSettlement(
+      { quarries: updatedQuarries },
       `${selectedSettlement?.quarries![index].name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
   /**
-   * Handles updating quarry node.
+   * Update the Node of a Quarry
    *
    * @param index Quarry Index
    * @param node Node Value
@@ -216,11 +212,12 @@ export function QuarriesCard({
     const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
       i === index ? { ...q, node } : q
     )
-    saveToLocalStorage(updatedQuarries)
+
+    saveSelectedSettlement({ quarries: updatedQuarries })
   }
 
   /**
-   * Handles the end of a drag event for reordering quarries.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -236,7 +233,8 @@ export function QuarriesCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ quarries: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

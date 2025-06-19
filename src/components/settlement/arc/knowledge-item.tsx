@@ -68,10 +68,18 @@ export function KnowledgeItem({
   const inputRef = useRef<HTMLInputElement>(null)
   const selectRef = useRef<HTMLButtonElement>(null)
 
+  const watchedKnowledgeItem = form.watch(`knowledges.${index}`)
+
   useEffect(() => {
-    console.debug('[KnowledgeItem] Changed', isDisabled, index)
+    console.debug(
+      '[KnowledgeItem] Changed',
+      watchedKnowledgeItem,
+      isDisabled,
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`knowledges.${index}.name`) || ''
+      inputRef.current.value = watchedKnowledgeItem.name || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -80,7 +88,7 @@ export function KnowledgeItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedKnowledgeItem, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -90,11 +98,11 @@ export function KnowledgeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      const currentPhilosophy = form.getValues(`knowledges.${index}.philosophy`)
-      onSave(inputRef.current.value, currentPhilosophy, index)
+
+      onSave(inputRef.current.value, watchedKnowledgeItem.philosophy, index)
     }
   }
 
@@ -120,9 +128,7 @@ export function KnowledgeItem({
 
           {/* Knowledge Name */}
           <div className="flex ml-1">
-            <span className="text-xs">
-              {form.getValues(`knowledges.${index}.name`)}
-            </span>
+            <span className="text-xs">{watchedKnowledgeItem.name}</span>
           </div>
 
           <div className="flex items-center gap-1 ml-auto">
@@ -130,7 +136,7 @@ export function KnowledgeItem({
             <div className="flex ml-1">
               <span className="text-xs">
                 <Badge variant="outline">
-                  {form.getValues(`knowledges.${index}.philosophy`) || 'None'}
+                  {watchedKnowledgeItem.philosophy || 'None'}
                 </Badge>
               </span>
             </div>
@@ -170,7 +176,7 @@ export function KnowledgeItem({
             <Input
               ref={inputRef}
               placeholder="Add knowledge..."
-              defaultValue={form.getValues(`knowledges.${index}.name`)}
+              defaultValue={watchedKnowledgeItem.name}
               onKeyDown={handleKeyDown}
               autoFocus
             />
@@ -179,11 +185,10 @@ export function KnowledgeItem({
             <SelectPhilosophy
               ref={selectRef}
               options={philosophies}
-              value={form.getValues(`knowledges.${index}.philosophy`)}
-              onChange={(value) => {
-                const currentName = form.getValues(`knowledges.${index}.name`)
-                onSave(currentName, value, index)
-              }}
+              value={watchedKnowledgeItem.philosophy}
+              onChange={(value) =>
+                onSave(watchedKnowledgeItem.name, value, index)
+              }
             />
           </div>
 
@@ -193,12 +198,13 @@ export function KnowledgeItem({
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => {
-                const currentPhilosophy = form.getValues(
-                  `knowledges.${index}.philosophy`
+              onClick={() =>
+                onSave(
+                  inputRef.current!.value,
+                  watchedKnowledgeItem.philosophy,
+                  index
                 )
-                onSave(inputRef.current!.value, currentPhilosophy, index)
-              }}
+              }
               title="Save knowledge">
               <CheckIcon className="h-4 w-4" />
             </Button>
@@ -240,7 +246,7 @@ export function NewKnowledgeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, selectedPhilosophy)

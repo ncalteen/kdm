@@ -60,8 +60,11 @@ export function PhilosophyItem({
 
   const selectRef = useRef<HTMLButtonElement>(null)
 
+  const watchedPhilosophyItem = form.watch(`philosophies.${index}`)
+
   useEffect(() => {
     console.debug('[PhilosophyItem] Disabled State Changed:', isDisabled)
+
     if (!isDisabled && selectRef.current) selectRef.current.focus()
   }, [isDisabled])
 
@@ -73,11 +76,11 @@ export function PhilosophyItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent): void => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      const currentValue = form.getValues(`philosophies.${index}`)
-      onSave(currentValue, index)
+
+      onSave(watchedPhilosophyItem, index)
     }
   }
 
@@ -97,15 +100,13 @@ export function PhilosophyItem({
       {/* Select Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
-            {form.getValues(`philosophies.${index}`)}
-          </span>
+          <span className="text-xs">{watchedPhilosophyItem}</span>
         </div>
       ) : (
         <SelectPhilosophy
           ref={selectRef}
           options={Object.values(Philosophy)}
-          value={form.getValues(`philosophies.${index}`)}
+          value={watchedPhilosophyItem}
           onChange={(value) => {
             if (!isDisabled) onSave(value, index)
           }}
@@ -130,9 +131,7 @@ export function PhilosophyItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() =>
-              onSave(form.getValues(`philosophies.${index}`), index)
-            }
+            onClick={() => onSave(watchedPhilosophyItem, index)}
             title="Save philosophy">
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -171,7 +170,7 @@ export function NewPhilosophyItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent): void => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       onSave(selectedValue)

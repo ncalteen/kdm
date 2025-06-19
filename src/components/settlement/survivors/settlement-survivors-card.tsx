@@ -13,7 +13,7 @@ import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { PlusIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -71,6 +71,9 @@ export function SettlementSurvivorsCard({
   updateSelectedSurvivor,
   updateSurvivors
 }: SettlementSurvivorsCardProps): ReactElement {
+  // This component uses the campaign and tab contexts directly. They are not
+  // passed down as props to avoid unnecessary re-renders and to keep the
+  // component focused on survivor management.
   const { saveCampaign } = useCampaignSave(
     survivors,
     updateSelectedHunt,
@@ -78,11 +81,10 @@ export function SettlementSurvivorsCard({
     updateSelectedSurvivor,
     updateSurvivors
   )
+  const { setSelectedTab } = useSelectedTab()
 
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
-
-  const { setSelectedTab } = useSelectedTab()
 
   /**
    * Handle New Survivor Creation
@@ -94,18 +96,6 @@ export function SettlementSurvivorsCard({
     setSelectedSurvivor(null)
     setIsCreatingNewSurvivor(true)
   }, [setSelectedSurvivor, setIsCreatingNewSurvivor])
-
-  /**
-   * Save Survivors to Local Storage
-   *
-   * @param updatedSurvivors Updated Survivors
-   * @param successMsg Success Message
-   */
-  const saveSurvivorsToLocalStorage = useCallback(
-    (updatedSurvivors: Survivor[], successMsg?: string) =>
-      saveCampaign({ survivors: updatedSurvivors }, successMsg),
-    [saveCampaign]
-  )
 
   /**
    * Handles Survivor Deletion
@@ -142,8 +132,8 @@ export function SettlementSurvivorsCard({
         // Clear selected survivor if the deleted survivor is currently selected
         if (selectedSurvivor?.id === survivorId) setSelectedSurvivor(null)
 
-        saveSurvivorsToLocalStorage(
-          updatedSurvivors,
+        saveCampaign(
+          { survivors: updatedSurvivors },
           `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
         )
         setSurvivors(getSurvivors(selectedSettlement.id))
@@ -156,7 +146,7 @@ export function SettlementSurvivorsCard({
       }
     },
     [
-      saveSurvivorsToLocalStorage,
+      saveCampaign,
       selectedSettlement,
       selectedHunt,
       selectedSurvivor,
@@ -200,11 +190,6 @@ export function SettlementSurvivorsCard({
     [selectedSettlement?.survivorType]
   )
 
-  useEffect(() => {
-    console.debug('[SettlementSurvivorsCard] Mounted')
-    // setSurvivors(getSurvivors(selectedSettlement?.id))
-  }, [selectedSettlement?.id])
-
   return (
     <Card className="p-0 pb-2 mt-2 border-0">
       <CardContent className="p-0">
@@ -226,7 +211,11 @@ export function SettlementSurvivorsCard({
         ) : (
           <SurvivorDataTable
             columns={columns}
-            data={survivors || []}
+            data={
+              survivors?.filter(
+                (s) => s.settlementId === selectedSettlement?.id
+              ) || []
+            }
             initialColumnVisibility={columnVisibility}
             onNewSurvivor={handleNewSurvivor}
             selectedSettlement={selectedSettlement}

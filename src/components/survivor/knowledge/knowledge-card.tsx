@@ -45,27 +45,6 @@ export function KnowledgeCard({
   const knowledge1RankUp = form.watch('knowledge1RankUp')
   const knowledge2ObservationRank = form.watch('knowledge2ObservationRank')
   const knowledge2RankUp = form.watch('knowledge2RankUp')
-  /**
-   * Save to Local Storage
-   *
-   * @param fieldName Field Name
-   * @param value Field Value
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = useCallback(
-    (
-      fieldName: keyof Survivor,
-      value: string | number | boolean,
-      successMsg?: string
-    ) =>
-      saveSelectedSurvivor(
-        {
-          [fieldName]: value
-        },
-        successMsg
-      ),
-    [saveSelectedSurvivor]
-  )
 
   /**
    * Handles observation rank changes
@@ -75,13 +54,14 @@ export function KnowledgeCard({
    */
   const handleRankChange = useCallback(
     (fieldName: keyof Survivor, rank: number) => {
-      saveToLocalStorage(
-        fieldName,
-        rank,
+      saveSelectedSurvivor(
+        {
+          [fieldName]: rank
+        },
         'The lantern illuminates newfound wisdom.'
       )
     },
-    [saveToLocalStorage]
+    [saveSelectedSurvivor]
   )
 
   /**
@@ -89,15 +69,16 @@ export function KnowledgeCard({
    */
   const updateCanUseFightingArtsOrKnowledges = useCallback(
     (checked: boolean) => {
-      saveToLocalStorage(
-        'canUseFightingArtsOrKnowledges',
-        !checked,
+      saveSelectedSurvivor(
+        {
+          canUseFightingArtsOrKnowledges: !checked
+        },
         !checked
           ? 'The survivor recalls their knowledge.'
           : 'The survivor has forgotten their learnings.'
       )
     },
-    [saveToLocalStorage]
+    [saveSelectedSurvivor]
   )
 
   /**
@@ -134,24 +115,26 @@ export function KnowledgeCard({
 
       const newRankUp = knowledge1RankUp === index ? undefined : index
 
-      saveToLocalStorage(
-        'knowledge1RankUp',
-        newRankUp ?? 0,
+      saveSelectedSurvivor(
+        {
+          knowledge1RankUp: newRankUp ?? 0
+        },
         newRankUp !== undefined
           ? 'Knowledge rank up milestone marked.'
           : 'Knowledge rank up milestone removed.'
       )
     },
-    [knowledge1RankUp, saveToLocalStorage]
+    [knowledge1RankUp, saveSelectedSurvivor]
   )
 
   /**
    * Update Knowledge 1 Rules
    */
   const updateKnowledge1Rules = (value: string) =>
-    saveToLocalStorage(
-      'knowledge1Rules',
-      value,
+    saveSelectedSurvivor(
+      {
+        knowledge1Rules: value
+      },
       value.trim()
         ? 'The rules of wisdom are inscribed in lantern light.'
         : undefined
@@ -161,9 +144,10 @@ export function KnowledgeCard({
    * Update Knowledge 1 Observation Conditions
    */
   const updateKnowledge1ObservationConditions = (value: string) =>
-    saveToLocalStorage(
-      'knowledge1ObservationConditions',
-      value,
+    saveSelectedSurvivor(
+      {
+        knowledge1ObservationConditions: value
+      },
       value.trim()
         ? 'Observation conditions etched in the darkness.'
         : undefined
@@ -203,24 +187,26 @@ export function KnowledgeCard({
 
       const newRankUp = knowledge2RankUp === index ? undefined : index
 
-      saveToLocalStorage(
-        'knowledge2RankUp',
-        newRankUp ?? 0,
+      saveSelectedSurvivor(
+        {
+          knowledge2RankUp: newRankUp ?? 0
+        },
         newRankUp !== undefined
           ? 'Knowledge rank up milestone marked.'
           : 'Knowledge rank up milestone removed.'
       )
     },
-    [knowledge2RankUp, saveToLocalStorage]
+    [knowledge2RankUp, saveSelectedSurvivor]
   )
 
   /**
    * Update Knowledge 2 Rules
    */
   const updateKnowledge2Rules = (value: string) =>
-    saveToLocalStorage(
-      'knowledge2Rules',
-      value,
+    saveSelectedSurvivor(
+      {
+        knowledge2Rules: value
+      },
       value.trim()
         ? 'The rules of wisdom are inscribed in lantern light.'
         : undefined
@@ -230,9 +216,10 @@ export function KnowledgeCard({
    * Update Knowledge 1 Observation Conditions
    */
   const updateKnowledge2ObservationConditions = (value: string) =>
-    saveToLocalStorage(
-      'knowledge2ObservationConditions',
-      value,
+    saveSelectedSurvivor(
+      {
+        knowledge2ObservationConditions: value
+      },
       value.trim()
         ? 'Observation conditions etched in the darkness.'
         : undefined

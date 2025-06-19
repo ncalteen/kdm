@@ -6,7 +6,7 @@ import {
 } from '@/components/settlement/locations/location-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Location, Settlement } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -59,7 +59,8 @@ export function LocationsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[LocationsCard] Initializing Disabled Inputs')
+    console.debug('[LocationsCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
@@ -79,17 +80,6 @@ export function LocationsCard({
   )
 
   const addLocation = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedLocations Updated Locations
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedLocations: Location[],
-    successMsg?: string
-  ) => saveSelectedSettlement({ locations: updatedLocations }, successMsg)
 
   /**
    * Handles the removal of a location.
@@ -112,7 +102,10 @@ export function LocationsCard({
       return next
     })
 
-    saveToLocalStorage(currentLocations, 'The location has been destroyed.')
+    saveSelectedSettlement(
+      { locations: currentLocations },
+      'The location has been destroyed.'
+    )
   }
 
   /**
@@ -146,12 +139,13 @@ export function LocationsCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedLocations,
+    saveSelectedSettlement(
+      { locations: updatedLocations },
       i !== undefined
         ? 'The location has been updated.'
         : 'A new location illuminates within settlement.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -165,8 +159,8 @@ export function LocationsCard({
     const currentLocations = [...(selectedSettlement?.locations || [])]
     currentLocations[index] = { ...currentLocations[index], unlocked }
 
-    saveToLocalStorage(
-      currentLocations,
+    saveSelectedSettlement(
+      { locations: currentLocations },
       unlocked
         ? 'The location has been illuminated.'
         : 'The location fades into darkness.'
@@ -198,7 +192,8 @@ export function LocationsCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ locations: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

@@ -59,10 +59,18 @@ export function NextDepartureItem({
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const watchedNextDepartureItem = form.watch(`nextDeparture.${index}`)
+
   useEffect(() => {
-    console.debug('[NextDepartureItem] Changed', isDisabled, index)
+    console.debug(
+      '[NextDepartureItem] Changed',
+      watchedNextDepartureItem,
+      isDisabled,
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`nextDeparture.${index}`) || ''
+      inputRef.current.value = watchedNextDepartureItem || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -71,7 +79,7 @@ export function NextDepartureItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [form, isDisabled, index])
+  }, [watchedNextDepartureItem, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -81,7 +89,7 @@ export function NextDepartureItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,15 +112,13 @@ export function NextDepartureItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
-            {form.getValues(`nextDeparture.${index}`)}
-          </span>
+          <span className="text-xs">{watchedNextDepartureItem}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Next Departure"
-          defaultValue={form.getValues(`nextDeparture.${index}`)}
+          defaultValue={watchedNextDepartureItem}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -171,7 +177,7 @@ export function NewNextDepartureItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

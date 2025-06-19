@@ -50,19 +50,6 @@ export function SurvivalCard({
   selectedSettlement
 }: SurvivalCardProps): ReactElement {
   /**
-   * Save to Local Storage
-   *
-   * @param field Field name to update
-   * @param value New value
-   * @param successMsg Optional success message
-   */
-  const saveToLocalStorage = (
-    field: keyof Survivor,
-    value: number | boolean,
-    successMsg?: string
-  ) => saveSelectedSurvivor({ [field]: value }, successMsg)
-
-  /**
    * Update Survival Points
    */
   const updateSurvival = (val: string) => {
@@ -77,16 +64,15 @@ export function SurvivalCard({
         `Survival cannot exceed the settlement's limit of ${selectedSettlement?.survivalLimit}.`
       )
 
-    saveToLocalStorage('survival', value, 'Survival updated successfully.')
+    saveSelectedSurvivor({ survival: value }, 'Survival updated successfully.')
   }
 
   /**
    * Update Can Spend Survival Flag
    */
   const updateCanSpendSurvival = (checked: boolean) =>
-    saveToLocalStorage(
-      'canSpendSurvival',
-      !checked,
+    saveSelectedSurvivor(
+      { canSpendSurvival: !checked },
       !checked
         ? 'The survivor can once again spend survival.'
         : 'The survivor freezes - survival cannot be spent.'
@@ -96,9 +82,8 @@ export function SurvivalCard({
    * Update Can Dodge Flag
    */
   const updateCanDodge = (checked: boolean) =>
-    saveToLocalStorage(
-      'canDodge',
-      !!checked,
+    saveSelectedSurvivor(
+      { canDodge: !!checked },
       !!checked
         ? 'The survivor learns to dodge with grace.'
         : 'The survivor loses the ability to dodge.'
@@ -108,10 +93,9 @@ export function SurvivalCard({
    * Update Can Encourage Flag
    */
   const updateCanEncourage = (checked: boolean) =>
-    saveToLocalStorage(
-      'canEncourage',
-      checked,
-      checked
+    saveSelectedSurvivor(
+      { canEncourage: !!checked },
+      !!checked
         ? 'The survivor finds their voice to inspire others.'
         : 'The survivor falls silent, unable to encourage.'
     )
@@ -120,10 +104,9 @@ export function SurvivalCard({
    * Update Can Surge Flag
    */
   const updateCanSurge = (checked: boolean) =>
-    saveToLocalStorage(
-      'canSurge',
-      checked,
-      checked
+    saveSelectedSurvivor(
+      { canSurge: !!checked },
+      !!checked
         ? 'The survivor feels a surge of power within.'
         : 'The survivor loses their ability to surge.'
     )
@@ -132,10 +115,9 @@ export function SurvivalCard({
    * Update Can Dash Flag
    */
   const updateCanDash = (checked: boolean) =>
-    saveToLocalStorage(
-      'canDash',
-      checked,
-      checked
+    saveSelectedSurvivor(
+      { canDash: !!checked },
+      !!checked
         ? 'The survivor gains swift feet to dash ahead.'
         : 'The survivor loses their speed, unable to dash.'
     )
@@ -144,10 +126,9 @@ export function SurvivalCard({
    * Update Can Fist Pump Flag (Arc-specific)
    */
   const updateCanFistPump = (checked: boolean) =>
-    saveToLocalStorage(
-      'canFistPump',
-      checked,
-      checked
+    saveSelectedSurvivor(
+      { canFistPump: !!checked },
+      !!checked
         ? 'The survivor raises their fist in triumph.'
         : 'The survivor loses their fighting spirit.'
     )
@@ -161,9 +142,8 @@ export function SurvivalCard({
     // Enforce minimum value of 0
     if (value < 0) return toast.error('Systemic pressure cannot be negative.')
 
-    saveToLocalStorage(
-      'systemicPressure',
-      value,
+    saveSelectedSurvivor(
+      { systemicPressure: value },
       'Systemic pressure updated successfully.'
     )
   }
@@ -172,10 +152,9 @@ export function SurvivalCard({
    * Update Can Endure Flag
    */
   const updateCanEndure = (checked: boolean) =>
-    saveToLocalStorage(
-      'canEndure',
-      checked,
-      checked
+    saveSelectedSurvivor(
+      { canEndure: !!checked },
+      !!checked
         ? 'The survivor finds strength to endure the darkness.'
         : 'The survivor loses their resilience to endure.'
     )

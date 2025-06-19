@@ -66,18 +66,23 @@ export const createColumns = ({
   selectedHunt,
   selectedShowdown
 }: ColumnProps): ColumnDef<Survivor>[] => {
+  /**
+   * Handle Edit Survivor
+   *
+   * @param survivor Survivor
+   */
   const handleEditSurvivor = (survivor: Survivor) => {
     setSelectedSurvivor(survivor)
     setSelectedTab('survivors')
   }
 
   /**
-   * Survivor is on Hunt
+   * Survivor is on Hunt or Showdown
    *
    * @param survivorId Survivor ID
    * @returns Survivor is on Hunt
    */
-  const isSurvivorOnHunt = (survivorId: number): boolean => {
+  const isSurvivorOnHuntOrShowdown = (survivorId: number): boolean => {
     if (selectedHunt?.scout === survivorId) return true
     if (selectedHunt?.survivors?.includes(survivorId)) return true
     if (selectedShowdown?.scout === survivorId) return true
@@ -101,66 +106,61 @@ export const createColumns = ({
           </Button>
         )
       },
-      cell: ({ row }) => {
-        const survivor = row.original
-        const isOnHunt = isSurvivorOnHunt(survivor.id)
-
-        return (
-          <div className="flex gap-2 justify-start items-center">
-            <Button
-              variant="outline"
-              size="sm"
-              title="View survivor"
-              onClick={() => handleEditSurvivor(survivor)}>
-              <UserRoundSearchIcon className="h-4 w-4" />
-            </Button>
-            <AlertDialog
-              open={isDeleteDialogOpen && deleteId === survivor.id}
-              onOpenChange={(open) => {
-                setIsDeleteDialogOpen(open)
-                if (!open) setDeleteId(undefined)
-              }}>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  disabled={isOnHunt}
-                  onClick={() => {
-                    if (!isOnHunt) {
-                      setDeleteId(survivor.id)
-                      setIsDeleteDialogOpen(true)
-                    }
-                  }}
-                  title={
-                    isOnHunt
-                      ? 'Cannot delete survivor - they are currently on a hunt'
-                      : 'Delete survivor'
-                  }>
-                  <Trash2Icon className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Survivor</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    The darkness hungers for {survivor.name}.{' '}
-                    <strong>Once consumed, they cannot return.</strong>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleDeleteSurvivor(survivor.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <div className="text-left text-sm pl-2">{row.getValue('name')}</div>
-          </div>
-        )
-      },
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-start items-center">
+          <Button
+            variant="outline"
+            size="sm"
+            title="View survivor"
+            onClick={() => handleEditSurvivor(row.original)}>
+            <UserRoundSearchIcon className="h-4 w-4" />
+          </Button>
+          <AlertDialog
+            open={isDeleteDialogOpen && deleteId === row.original.id}
+            onOpenChange={(open) => {
+              setIsDeleteDialogOpen(open)
+              if (!open) setDeleteId(undefined)
+            }}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={isSurvivorOnHuntOrShowdown(row.original.id)}
+                onClick={() => {
+                  if (!isSurvivorOnHuntOrShowdown(row.original.id)) {
+                    setDeleteId(row.original.id)
+                    setIsDeleteDialogOpen(true)
+                  }
+                }}
+                title={
+                  isSurvivorOnHuntOrShowdown(row.original.id)
+                    ? 'Cannot delete survivor - they are currently on a hunt'
+                    : 'Delete survivor'
+                }>
+                <Trash2Icon className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Survivor</AlertDialogTitle>
+                <AlertDialogDescription>
+                  The darkness hungers for {row.original.name}.{' '}
+                  <strong>Once consumed, they cannot return.</strong>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => handleDeleteSurvivor(row.original.id)}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <div className="text-left text-sm pl-2">{row.getValue('name')}</div>
+        </div>
+      ),
       sortingFn: (rowA, rowB, columnId) => {
         const nameA = rowA.getValue(columnId) as string
         const nameB = rowB.getValue(columnId) as string
