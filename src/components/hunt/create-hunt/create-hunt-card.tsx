@@ -96,6 +96,16 @@ export function CreateHuntCard({
     if (selectedSettlement.usesScouts && !selectedScout)
       return toast.error('A scout must be selected for the hunt.')
 
+    // Validate that scout is not also a selected survivor
+    if (
+      selectedSettlement.usesScouts &&
+      selectedScout &&
+      selectedSurvivors.includes(selectedScout)
+    )
+      return toast.error(
+        'The selected scout cannot also be one of the selected survivors for the hunt.'
+      )
+
     const survivorColors = selectedSurvivors.map((survivorId) => ({
       id: survivorId,
       color: ColorChoice.SLATE
