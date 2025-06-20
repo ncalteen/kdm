@@ -10,8 +10,10 @@ import { ReactElement } from 'react'
  * Survivor Details Panel Props
  */
 interface SurvivorDetailsPanelProps {
-  /** Survivor to display details for */
+  /** Survivor to Display */
   survivor: Survivor | null
+  /** Survivors */
+  survivors: Survivor[] | null
 }
 
 /**
@@ -20,14 +22,23 @@ interface SurvivorDetailsPanelProps {
  * This component displays detailed information about a survivor.
  */
 export function SurvivorDetailsPanel({
-  survivor
+  survivor,
+  survivors
 }: SurvivorDetailsPanelProps): ReactElement {
   if (!survivor)
     return (
       <div className="w-[450px] h-full flex items-center justify-center text-muted-foreground">
         <div className="text-center">
-          <p className="text-lg font-medium">Hover over a survivor</p>
-          <p className="text-sm">to view their details</p>
+          {survivors && survivors.length > 0 ? (
+            <>
+              <p className="text-lg font-medium">Hover over a survivor</p>
+              <p className="text-sm">to view their details</p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-medium">No survivors available</p>
+            </>
+          )}
         </div>
       </div>
     )

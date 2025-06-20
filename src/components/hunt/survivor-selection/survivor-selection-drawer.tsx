@@ -110,6 +110,7 @@ export function SurvivorSelectionDrawer({
           <div className="w-[450px]">
             <SurvivorDetailsPanel
               survivor={hoveredSurvivor || lastHoveredSurvivor}
+              survivors={survivors}
             />
           </div>
         </div>

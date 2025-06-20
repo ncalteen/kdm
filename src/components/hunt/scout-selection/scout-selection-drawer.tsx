@@ -97,6 +97,7 @@ export function ScoutSelectionDrawer({
           <div className="w-[450px]">
             <SurvivorDetailsPanel
               survivor={hoveredSurvivor || lastHoveredSurvivor}
+              survivors={survivors}
             />
           </div>
         </div>
