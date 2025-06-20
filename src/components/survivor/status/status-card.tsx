@@ -25,10 +25,10 @@ interface StatusCardProps {
   form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Survivors */
-  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -45,8 +45,8 @@ interface StatusCardProps {
 export function StatusCard({
   form,
   saveSelectedSurvivor,
-  survivors,
-  updateSurvivors
+  setSurvivors,
+  survivors
 }: StatusCardProps): ReactElement {
   const watchedSurvivorId = form.watch('id')
 
@@ -71,10 +71,10 @@ export function StatusCard({
           s.id === watchedSurvivorId ? { ...s, ...updateData } : s
         )
         localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        updateSurvivors(updatedSurvivors)
+        setSurvivors(updatedSurvivors)
       }
     },
-    [saveSelectedSurvivor, survivors, watchedSurvivorId, updateSurvivors]
+    [saveSelectedSurvivor, survivors, watchedSurvivorId, setSurvivors]
   )
 
   /**
@@ -121,10 +121,10 @@ export function StatusCard({
 
         // Update both localStorage and context
         localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        updateSurvivors(updatedSurvivors)
+        setSurvivors(updatedSurvivors)
       }
     },
-    [saveSelectedSurvivor, survivors, form, updateSurvivors]
+    [saveSelectedSurvivor, survivors, form, setSurvivors]
   )
 
   /**

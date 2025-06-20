@@ -89,8 +89,6 @@ interface SettlementFormProps {
   updateSelectedSettlement: () => void
   /** Update Selected Survivor */
   updateSelectedSurvivor: () => void
-  /** Update Survivors */
-  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -120,8 +118,7 @@ export function SettlementForm({
   survivors,
   updateSelectedHunt,
   updateSelectedSettlement,
-  updateSelectedSurvivor,
-  updateSurvivors
+  updateSelectedSurvivor
 }: SettlementFormProps): ReactElement {
   return (
     <>
@@ -288,7 +285,6 @@ export function SettlementForm({
                   updateSelectedHunt={updateSelectedHunt}
                   updateSelectedSettlement={updateSelectedSettlement}
                   updateSelectedSurvivor={updateSelectedSurvivor}
-                  updateSurvivors={updateSurvivors}
                 />
                 {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard
@@ -296,8 +292,8 @@ export function SettlementForm({
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedSettlement={selectedSettlement}
                     selectedSurvivor={selectedSurvivor}
+                    setSurvivors={setSurvivors}
                     survivors={survivors}
-                    updateSurvivors={updateSurvivors}
                   />
                 )}
                 {isCreatingNewSurvivor && (
@@ -549,9 +545,9 @@ export function SettlementForm({
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
               setSelectedHunt={setSelectedHunt}
+              setSurvivors={setSurvivors}
               survivors={survivors}
               updateSelectedSurvivor={updateSelectedSurvivor}
-              updateSurvivors={updateSurvivors}
             />
           )}
 

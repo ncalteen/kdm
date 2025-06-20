@@ -42,8 +42,6 @@ interface SettlementSurvivorsCardProps {
   updateSelectedSettlement: () => void
   /** Update Selected Survivor */
   updateSelectedSurvivor: () => void
-  /** Update Survivors */
-  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -68,18 +66,17 @@ export function SettlementSurvivorsCard({
   survivors,
   updateSelectedHunt,
   updateSelectedSettlement,
-  updateSelectedSurvivor,
-  updateSurvivors
+  updateSelectedSurvivor
 }: SettlementSurvivorsCardProps): ReactElement {
   // This component uses the campaign and tab contexts directly. They are not
   // passed down as props to avoid unnecessary re-renders and to keep the
   // component focused on survivor management.
   const { saveCampaign } = useCampaignSave(
+    setSurvivors,
     survivors,
     updateSelectedHunt,
     updateSelectedSettlement,
-    updateSelectedSurvivor,
-    updateSurvivors
+    updateSelectedSurvivor
   )
   const { setSelectedTab } = useSelectedTab()
 

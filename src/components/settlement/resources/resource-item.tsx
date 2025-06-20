@@ -180,7 +180,7 @@ export function ResourceItem({
                   placeholder="0"
                   defaultValue={watchedResource.amount}
                   onChange={handleAmountChange}
-                  className="w-16 text-center no-spinners"
+                  className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
 
@@ -236,7 +236,7 @@ export function ResourceItem({
                   disabled={true}
                   defaultValue={watchedResource.amount}
                   onChange={handleAmountChange}
-                  className="w-16 text-center no-spinners"
+                  className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
 
@@ -357,7 +357,7 @@ export function NewResourceItem({
                 disabled={true}
                 defaultValue={''}
                 onKeyDown={handleKeyDown}
-                className="w-16 text-center no-spinners"
+                className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
 

@@ -95,7 +95,7 @@ export function AttributeCard({
                     <Input
                       placeholder="1"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? 1}
                       onChange={(e) =>
@@ -123,7 +123,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? 0}
                       onChange={(e) =>
@@ -149,7 +149,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? 0}
                       onChange={(e) =>
@@ -175,7 +175,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? 0}
                       onChange={(e) =>
@@ -201,7 +201,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? 0}
                       onChange={(e) =>
@@ -227,7 +227,7 @@ export function AttributeCard({
                     <Input
                       placeholder="0"
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? 0}
                       onChange={(e) =>
@@ -256,7 +256,7 @@ export function AttributeCard({
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                           {...field}
                           value={field.value ?? 0}
                           min={0}

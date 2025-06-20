@@ -38,10 +38,10 @@ interface SurvivorCardProps extends Partial<Survivor> {
   selectedSettlement: Partial<Settlement> | null
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Survivors */
-  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -54,8 +54,8 @@ export function SurvivorCard({
   saveSelectedSurvivor,
   selectedSettlement,
   selectedSurvivor,
-  survivors,
-  updateSurvivors
+  setSurvivors,
+  survivors
 }: SurvivorCardProps): ReactElement {
   return (
     <Card className="w-full py-2 border-0 bg-secondary">
@@ -66,9 +66,9 @@ export function SurvivorCard({
           <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <StatusCard
               form={form}
-              survivors={survivors}
               saveSelectedSurvivor={saveSelectedSurvivor}
-              updateSurvivors={updateSurvivors}
+              setSurvivors={setSurvivors}
+              survivors={survivors}
             />
             <SurvivalCard
               form={form}
@@ -141,8 +141,8 @@ export function SurvivorCard({
                 form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
+                setSurvivors={setSurvivors}
                 survivors={survivors}
-                updateSurvivors={updateSurvivors}
               />
               <KnowledgeCard
                 form={form}
@@ -157,9 +157,9 @@ export function SurvivorCard({
           {/* Core Identity & Status */}
           <StatusCard
             form={form}
-            survivors={survivors}
             saveSelectedSurvivor={saveSelectedSurvivor}
-            updateSurvivors={updateSurvivors}
+            setSurvivors={setSurvivors}
+            survivors={survivors}
           />
           <HuntXPCard
             form={form}
@@ -228,8 +228,8 @@ export function SurvivorCard({
                 form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
+                setSurvivors={setSurvivors}
                 survivors={survivors}
-                updateSurvivors={updateSurvivors}
               />
               <KnowledgeCard
                 form={form}

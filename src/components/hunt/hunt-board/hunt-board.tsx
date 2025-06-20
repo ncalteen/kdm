@@ -3,9 +3,9 @@
 import { HuntBoardSpace } from '@/components/hunt/hunt-board/hunt-board-space'
 import { QuarryToken } from '@/components/hunt/hunt-board/quarry-token'
 import { SurvivorToken } from '@/components/hunt/hunt-board/survivor-token'
+import { Card, CardContent } from '@/components/ui/card'
 import { Hunt } from '@/schemas/hunt'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { Skull, Users } from 'lucide-react'
 import { ReactElement } from 'react'
 
 /**
@@ -65,88 +65,45 @@ export function HuntBoard({
   }
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <div className="w-full">
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-2">Hunt Board</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Drag the survivor and quarry tokens to move them across the hunt
-            board.
-          </p>
-        </div>
-
-        {/* Hunt Board Grid */}
-        <div className="flex gap-1 p-4 bg-muted/30 rounded-lg relative overflow-x-auto">
-          {spaces.map((space) => (
-            <div
-              key={space.index}
-              className="relative flex-1 min-w-[100px] h-[100px] items-center justify-center">
-              <HuntBoardSpace
-                index={space.index}
-                label={space.label ?? ''}
-                isStart={space.isStart}
-                isStarvation={space.isStarvation}
-              />
-              {/* Show draggable tokens on their current spaces */}
-              {selectedHunt?.survivorPosition === space.index && (
-                <SurvivorToken
-                  overlap={
-                    selectedHunt?.survivorPosition ===
-                    selectedHunt?.quarryPosition
-                  }
-                />
-              )}
-              {selectedHunt?.quarryPosition === space.index && (
-                <QuarryToken
-                  overlap={
-                    selectedHunt?.survivorPosition ===
-                    selectedHunt?.quarryPosition
-                  }
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Hunt Status */}
-        <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-          <div className="text-sm">
-            <div className="flex justify-between items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-                  <Users className="w-2 h-2 text-white" />
+    <Card className="p-0">
+      <CardContent className="p-0">
+        <DndContext onDragEnd={handleDragEnd}>
+          {/* Hunt Board Grid */}
+          <div className="w-full overflow-x-auto">
+            <div className="gap-0.5 md:gap-1 p-2 md:p-4 bg-muted/30 rounded-lg relative">
+              {spaces.map((space) => (
+                <div
+                  key={space.index}
+                  className="relative w-[60px] sm:w-[80px] md:w-[100px] h-[60px] sm:h-[80px] md:h-[100px] flex-shrink-0 flex items-center justify-center">
+                  <HuntBoardSpace
+                    index={space.index}
+                    label={space.label ?? ''}
+                    isStart={space.isStart}
+                    isStarvation={space.isStarvation}
+                  />
+                  {/* Show draggable tokens on their current spaces */}
+                  {selectedHunt?.survivorPosition === space.index && (
+                    <SurvivorToken
+                      overlap={
+                        selectedHunt?.survivorPosition ===
+                        selectedHunt?.quarryPosition
+                      }
+                    />
+                  )}
+                  {selectedHunt?.quarryPosition === space.index && (
+                    <QuarryToken
+                      overlap={
+                        selectedHunt?.survivorPosition ===
+                        selectedHunt?.quarryPosition
+                      }
+                    />
+                  )}
                 </div>
-                <span>Survivors: Space {selectedHunt?.survivorPosition}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                  <Skull className="w-2 h-2 text-white" />
-                </div>
-                <span>
-                  Quarry ({selectedHunt?.quarryName}): Space{' '}
-                  {selectedHunt?.quarryPosition}
-                </span>
-              </div>
+              ))}
             </div>
-
-            {selectedHunt?.survivorPosition ===
-              selectedHunt?.quarryPosition && (
-              <div className="mt-2 p-2 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-800 dark:text-yellow-200">
-                <strong>Hunt Complete!</strong> Survivors and quarry occupy the
-                same space.
-                {selectedHunt?.ambush ? ' This was an ambush!' : ''}
-              </div>
-            )}
-
-            {selectedHunt?.survivorPosition === 12 && (
-              <div className="mt-2 p-2 bg-red-500/20 border border-red-500/50 rounded text-red-800 dark:text-red-200">
-                <strong>Starvation!</strong> The survivors have reached the
-                starvation space. The hunt is over.
-              </div>
-            )}
           </div>
-        </div>
-      </div>
-    </DndContext>
+        </DndContext>
+      </CardContent>
+    </Card>
   )
 }

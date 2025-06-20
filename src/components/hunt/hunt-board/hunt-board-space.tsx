@@ -43,7 +43,7 @@ export function HuntBoardSpace({
         isStart && 'border-green-500 bg-green-500/10',
         isStarvation && 'border-red-500 bg-red-500/10'
       )}>
-      <div className="text-xs font-medium text-center break-words px-2">
+      <div className="text-[10px] sm:text-xs font-medium text-center break-words px-1 sm:px-2 leading-tight">
         {label || index}
       </div>
     </div>

@@ -118,7 +118,7 @@ export function SanityCard({
                       <Input
                         placeholder="1"
                         type="number"
-                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners"
+                        className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                         {...field}
                         value={field.value ?? '0'}
                         onChange={(e) => updateInsanity(e.target.value)}
@@ -178,7 +178,7 @@ export function SanityCard({
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => updateTorment(e.target.value)}

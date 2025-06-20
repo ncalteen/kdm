@@ -85,8 +85,8 @@ export function CreateSurvivorForm({
       canSurge: canSurge(selectedSettlement.id),
       huntXPRankUp:
         selectedSettlement?.survivorType !== SurvivorType.ARC
-          ? [1, 5, 9, 14] // Core
-          : [1], // Arc
+          ? [2, 6, 10, 15] // Core
+          : [2], // Arc
       id: getNextSurvivorId(),
       understanding: bornWithUnderstanding(selectedSettlement.id) ? 1 : 0
     }

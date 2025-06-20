@@ -174,7 +174,7 @@ export function OverviewCard({
                       type="number"
                       min="1"
                       placeholder="1"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
@@ -206,7 +206,7 @@ export function OverviewCard({
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       value={currentPopulation}
                       disabled
                     />
@@ -234,7 +234,7 @@ export function OverviewCard({
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       value={currentDeathCount}
                       disabled
                     />
@@ -263,7 +263,7 @@ export function OverviewCard({
                     <Input
                       type="number"
                       placeholder="0"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -294,7 +294,7 @@ export function OverviewCard({
                       <FormControl>
                         <Input
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                           value={selectedSettlement?.ccValue ?? '0'}
                           disabled
                         />
@@ -331,7 +331,7 @@ export function OverviewCard({
                           type="number"
                           min="0"
                           placeholder="0"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) => {
@@ -369,7 +369,7 @@ export function OverviewCard({
                       type="number"
                       min="1"
                       placeholder="1"
-                      className="w-16 h-8 text-center no-spinners text-sm"
+                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? '1'}
                       onChange={(e) => {
@@ -394,7 +394,7 @@ export function OverviewCard({
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-16 h-8 text-center no-spinners text-sm"
+                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       value={currentPopulation}
                       disabled
                     />
@@ -415,7 +415,7 @@ export function OverviewCard({
                   <FormControl>
                     <Input
                       type="number"
-                      className="w-16 h-8 text-center no-spinners text-sm"
+                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       value={currentDeathCount}
                       disabled
                     />
@@ -437,7 +437,7 @@ export function OverviewCard({
                     <Input
                       type="number"
                       placeholder="0"
-                      className="w-16 h-8 text-center no-spinners text-sm"
+                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       {...field}
                       value={field.value ?? '0'}
                       disabled
@@ -462,7 +462,7 @@ export function OverviewCard({
                     <FormControl>
                       <Input
                         type="number"
-                        className="w-16 h-8 text-center no-spinners text-sm"
+                        className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                         value={selectedSettlement?.ccValue ?? '0'}
                         disabled
                       />
@@ -490,7 +490,7 @@ export function OverviewCard({
                         type="number"
                         min="0"
                         placeholder="0"
-                        className="w-16 h-8 text-center no-spinners text-sm"
+                        className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                         {...field}
                         value={field.value ?? '0'}
                         onChange={(e) => {

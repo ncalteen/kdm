@@ -184,9 +184,7 @@ export const createColumns = ({
 
         return (
           <div className="text-xs">
-            <Badge variant="outline">
-              {isNaN(huntXP) ? huntXP : huntXP + 1}
-            </Badge>
+            <Badge variant="outline">{huntXP}</Badge>
           </div>
         )
       }

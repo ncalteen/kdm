@@ -127,7 +127,7 @@ export function RewardItem({
       <Input
         ref={ccInputRef}
         type="number"
-        className="w-12 text-center no-spinners"
+        className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
         defaultValue={reward?.cc || 1}
         disabled={isDisabled}
         min={0}
@@ -237,7 +237,7 @@ export function NewRewardItem({
       <Input
         ref={ccInputRef}
         type="number"
-        className="w-12 text-center no-spinners"
+        className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
         defaultValue={1}
         min={0}
         onKeyDown={handleKeyDown}

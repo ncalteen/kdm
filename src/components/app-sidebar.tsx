@@ -224,9 +224,7 @@ export function AppSidebar({
 
   // Listen for campaign changes and update the local state
   useEffect(() => {
-    const handleStorageChange = () => {
-      setCampaign(getCampaign())
-    }
+    const handleStorageChange = () => setCampaign(getCampaign())
 
     // Listen for storage events (when localStorage changes from other tabs)
     window.addEventListener('storage', handleStorageChange)

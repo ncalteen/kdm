@@ -13,18 +13,18 @@ import { toast } from 'sonner'
  * context after saving data to localStorage, ensuring that components that
  * depend on campaign data are refreshed when campaign data changes.
  *
+ * @param setSurvivors Set Survivors Function
  * @param survivors Survivors
  * @param updateSelectedHunt Update Selected Hunt Function
  * @param updateSelectedSettlement Update Selected Settlement Function
  * @param updateSelectedSurvivor Update Selected Survivor Function
- * @param updateSurvivors Update Survivors Function
  */
 export function useCampaignSave(
+  setSurvivors: (survivors: Survivor[]) => void,
   survivors: Survivor[] | null,
   updateSelectedHunt: () => void,
   updateSelectedSettlement: () => void,
-  updateSelectedSurvivor: () => void,
-  updateSurvivors: (survivors: Survivor[]) => void
+  updateSelectedSurvivor: () => void
 ) {
   /**
    * Save Campaign Data
@@ -47,7 +47,7 @@ export function useCampaignSave(
         updateSelectedHunt()
         updateSelectedSettlement()
         updateSelectedSurvivor()
-        updateSurvivors(survivors || [])
+        setSurvivors(survivors || [])
 
         if (successMsg) toast.success(successMsg)
       } catch (error) {
@@ -59,7 +59,7 @@ export function useCampaignSave(
       updateSelectedHunt,
       updateSelectedSettlement,
       updateSelectedSurvivor,
-      updateSurvivors,
+      setSurvivors,
       survivors
     ]
   )

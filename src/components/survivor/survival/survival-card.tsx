@@ -59,9 +59,9 @@ export function SurvivalCard({
     if (value < 0) return toast.error('Survival cannot be negative.')
 
     // Enforce maximum value of survivalLimit
-    if (value > (selectedSettlement?.survivalLimit || 0))
+    if (value > (selectedSettlement?.survivalLimit || 1))
       return toast.error(
-        `Survival cannot exceed the settlement's limit of ${selectedSettlement?.survivalLimit}.`
+        `Survival cannot exceed the settlement's limit of ${selectedSettlement?.survivalLimit || 1}.`
       )
 
     saveSelectedSurvivor({ survival: value }, 'Survival updated successfully.')
@@ -178,7 +178,7 @@ export function SurvivalCard({
                         placeholder="1"
                         type="number"
                         className={cn(
-                          'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl'
+                          'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
                         )}
                         {...field}
                         value={field.value ?? '1'}
@@ -356,7 +356,7 @@ export function SurvivalCard({
                         <Input
                           placeholder="0"
                           type="number"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
+                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                           {...field}
                           value={field.value ?? '0'}
                           onChange={(e) =>

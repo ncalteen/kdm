@@ -76,10 +76,8 @@ export function HuntXPCard({
    * @param checked Whether the checkbox is checked
    */
   const updateHuntXP = (index: number, checked: boolean) => {
-    const newXP = checked ? index : index - 1
-
     saveToLocalStorage(
-      newXP,
+      checked ? index + 1 : index,
       undefined,
       checked && huntXPRankUp?.includes(index)
         ? 'The survivor rises through struggle and triumph. Rank up achieved!'
@@ -121,7 +119,7 @@ export function HuntXPCard({
    * @param index The index of the checkbox (0-based)
    * @returns True if the checkbox should be disabled
    */
-  const isDisabled = (index: number) => index > (huntXP || 0) + 1
+  const isDisabled = (index: number) => index > (huntXP || 0)
 
   return (
     <Card className="p-2 border-0 lg:h-[85px]">
@@ -142,7 +140,7 @@ export function HuntXPCard({
                       <div className="flex items-center gap-1 lg:gap-2">
                         {Array.from({ length: 16 }, (_, i) => {
                           const boxIndex = i
-                          const checked = (huntXP || 0) >= boxIndex
+                          const checked = (huntXP || 0) > boxIndex
                           const milestone = huntXPRankUp?.includes(boxIndex)
                           const isLast = boxIndex === 15
 

@@ -121,7 +121,7 @@ export function SquireSuspicionsCard({
           <div className="flex flex-col items-center gap-1">
             <Input
               type="number"
-              className={`w-12 h-12 text-center no-spinners ${
+              className={`w-12 h-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
                 totalSuspicion >= 8
                   ? 'text-red-500 font-bold border-red-500'
                   : ''

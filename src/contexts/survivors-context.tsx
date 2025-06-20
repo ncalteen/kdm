@@ -23,8 +23,6 @@ interface SurvivorsContextType {
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Survivors */
-  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -70,18 +68,11 @@ export function SurvivorsProvider({
    */
   const setSurvivors = (survivors: Survivor[]) => setSurvivorsState(survivors)
 
-  /**
-   * Update Survivors
-   */
-  const updateSurvivors = (survivors: Survivor[]) =>
-    setSurvivorsState(survivors)
-
   return (
     <SurvivorsContext.Provider
       value={{
         setSurvivors,
-        survivors: survivorsState,
-        updateSurvivors
+        survivors: survivorsState
       }}>
       {children}
     </SurvivorsContext.Provider>

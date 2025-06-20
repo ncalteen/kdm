@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { useDraggable } from '@dnd-kit/core'
-import { Skull } from 'lucide-react'
+import { SkullIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
 interface QuarryTokenProps {
@@ -34,16 +34,17 @@ export function QuarryToken({ overlap }: QuarryTokenProps): ReactElement {
       {...listeners}
       {...attributes}
       className={cn(
-        'absolute z-10 flex items-center justify-center w-12 h-12',
+        'absolute z-10 flex items-center justify-center',
+        'w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12',
         'bg-red-500 text-white rounded-full cursor-grab active:cursor-grabbing',
         'shadow-md hover:shadow-lg transition-shadow',
         overlap
-          ? 'bottom-2 right-2' // Bottom-right when overlapping
+          ? 'bottom-1 right-1 sm:bottom-1.5 sm:right-1.5 md:bottom-2 md:right-2' // Bottom-right when overlapping
           : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2', // Centered when not overlapping
         isDragging && 'opacity-50 scale-110'
       )}
       title="Drag to move quarry on the hunt board">
-      <Skull className="w-4 h-4" />
+      <SkullIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
     </div>
   )
 }

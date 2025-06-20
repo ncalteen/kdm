@@ -30,10 +30,10 @@ interface PhilosophyCardProps {
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Survivors */
-  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -46,8 +46,8 @@ export function PhilosophyCard({
   form,
   saveSelectedSurvivor,
   selectedSurvivor,
-  survivors,
-  updateSurvivors
+  setSurvivors,
+  survivors
 }: PhilosophyCardProps): ReactElement {
   // Watch form state
   const philosophy = form.watch('philosophy')
@@ -83,10 +83,10 @@ export function PhilosophyCard({
 
         // Update both localStorage and context
         localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        updateSurvivors(updatedSurvivors)
+        setSurvivors(updatedSurvivors)
       }
     },
-    [saveSelectedSurvivor, survivors, selectedSurvivor?.id, updateSurvivors]
+    [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
   )
 
   /**
@@ -134,10 +134,10 @@ export function PhilosophyCard({
 
         // Update both localStorage and context
         localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        updateSurvivors(updatedSurvivors)
+        setSurvivors(updatedSurvivors)
       }
     },
-    [saveSelectedSurvivor, survivors, form, updateSurvivors]
+    [saveSelectedSurvivor, survivors, form, setSurvivors]
   )
 
   /**
@@ -239,7 +239,7 @@ export function PhilosophyCard({
                     placeholder="0"
                     type="number"
                     className={cn(
-                      'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl'
+                      'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
                     )}
                     {...field}
                     value={field.value ?? '0'}

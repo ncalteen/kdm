@@ -122,7 +122,7 @@ function MainPage(): ReactElement {
     updateSelectedHunt
   } = useSelectedHunt()
   const { selectedTab } = useSelectedTab()
-  const { setSurvivors, survivors, updateSurvivors } = useSurvivors()
+  const { setSurvivors, survivors } = useSurvivors()
 
   // Initialize the form data from the context
   const huntForm = useForm<Hunt>({
@@ -229,7 +229,6 @@ function MainPage(): ReactElement {
                     updateSelectedHunt={updateSelectedHunt}
                     updateSelectedSettlement={updateSelectedSettlement}
                     updateSelectedSurvivor={updateSelectedSurvivor}
-                    updateSurvivors={updateSurvivors}
                   />
                 </Form>
               </Form>

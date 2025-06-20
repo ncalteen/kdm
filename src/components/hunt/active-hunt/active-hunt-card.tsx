@@ -24,12 +24,12 @@ interface ActiveHuntCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
   /** Update Selected Survivor */
   updateSelectedSurvivor: (survivor: Survivor) => void
-  /** Update Survivors */
-  updateSurvivors: (survivors: Survivor[]) => void
 }
 
 /**
@@ -43,9 +43,9 @@ export function ActiveHuntCard({
   selectedHunt,
   selectedSettlement,
   selectedSurvivor,
+  setSurvivors,
   survivors,
-  updateSelectedSurvivor,
-  updateSurvivors
+  updateSelectedSurvivor
 }: ActiveHuntCardProps): ReactElement {
   /**
    * Handle Position Update
@@ -64,22 +64,26 @@ export function ActiveHuntCard({
   )
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-row gap-2">
       {/* Hunt Board */}
-      <HuntBoard
-        onPositionUpdate={handlePositionUpdate}
-        selectedHunt={selectedHunt}
-      />
+      <div className="flex-shrink-0">
+        <HuntBoard
+          onPositionUpdate={handlePositionUpdate}
+          selectedHunt={selectedHunt}
+        />
+      </div>
 
       {/* Hunt Party Survivors */}
-      <HuntSurvivorsCard
-        selectedHunt={selectedHunt}
-        selectedSettlement={selectedSettlement}
-        selectedSurvivor={selectedSurvivor}
-        survivors={survivors}
-        updateSelectedSurvivor={updateSelectedSurvivor}
-        updateSurvivors={updateSurvivors}
-      />
+      <div className="min-w-0">
+        <HuntSurvivorsCard
+          selectedHunt={selectedHunt}
+          selectedSettlement={selectedSettlement}
+          selectedSurvivor={selectedSurvivor}
+          setSurvivors={setSurvivors}
+          survivors={survivors}
+          updateSelectedSurvivor={updateSelectedSurvivor}
+        />
+      </div>
     </div>
   )
 }
