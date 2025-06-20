@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
+import { getCampaign } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -111,9 +112,19 @@ export function SettlementSwitcher({
               <DropdownMenuItem
                 key={s.id}
                 onSelect={() => {
+                  const campaign = getCampaign()
+                  const settlementHunt =
+                    campaign.hunts?.find(
+                      (hunt) => hunt.settlementId === s.id
+                    ) || null
+                  const settlmentShowdown =
+                    campaign.showdowns?.find(
+                      (showdown) => showdown.settlementId === s.id
+                    ) || null
+
                   setSelectedSettlement(s)
-                  setSelectedHunt(null)
-                  setSelectedShowdown(null)
+                  setSelectedHunt(settlementHunt)
+                  setSelectedShowdown(settlmentShowdown)
                   setSelectedSurvivor(null)
                 }}>
                 <div className="flex flex-col">
