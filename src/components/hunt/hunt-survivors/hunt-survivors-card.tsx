@@ -7,6 +7,13 @@ import {
   usePrevNextButtons
 } from '@/components/hunt/hunt-survivors/nav-buttons'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger
+} from '@/components/ui/menubar'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -17,6 +24,10 @@ import { ReactElement, useMemo } from 'react'
  * Hunt Survivors Card Properties
  */
 interface HuntSurvivorsCardProps {
+  /** On Cancel Hunt */
+  onCancelHunt: () => void
+  /** On Showdown */
+  onShowdown: () => void
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Hunt */
@@ -40,6 +51,8 @@ interface HuntSurvivorsCardProps {
  * @returns Hunt Survivors Card Component
  */
 export function HuntSurvivorsCard({
+  onCancelHunt,
+  onShowdown,
   saveSelectedHunt,
   selectedHunt,
   selectedSettlement,
@@ -74,6 +87,20 @@ export function HuntSurvivorsCard({
     <Card className="embla pt-0 gap-0">
       <CardHeader className="embla__controls">
         <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
+        {/* Menu Bar */}
+        <Menubar>
+          <MenubarMenu>
+            <MenubarTrigger>Actions</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={onShowdown}>
+                (Combing Soon) Proceed to Showdown
+              </MenubarItem>
+              <MenubarItem variant="destructive" onClick={onCancelHunt}>
+                Cancel Hunt
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
         <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
       </CardHeader>
 
