@@ -1,10 +1,16 @@
 'use client'
 
 import { HuntSurvivorCard } from '@/components/hunt/hunt-survivors/hunt-survivor-card'
-import { Card, CardContent } from '@/components/ui/card'
+import {
+  NextButton,
+  PrevButton,
+  usePrevNextButtons
+} from '@/components/hunt/hunt-survivors/nav-buttons'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
+import useEmblaCarousel from 'embla-carousel-react'
 import { ReactElement, useMemo } from 'react'
 
 /**
@@ -42,6 +48,17 @@ export function HuntSurvivorsCard({
   survivors,
   updateSelectedSurvivor
 }: HuntSurvivorsCardProps): ReactElement {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true
+  })
+
+  const {
+    prevBtnDisabled,
+    nextBtnDisabled,
+    onPrevButtonClick,
+    onNextButtonClick
+  } = usePrevNextButtons(emblaApi)
+
   const huntSurvivors = useMemo(() => {
     let s: number[] = []
 
@@ -54,23 +71,31 @@ export function HuntSurvivorsCard({
   if (huntSurvivors.length === 0 || !selectedSettlement) return <></>
 
   return (
-    <Card>
-      <CardContent className="flex flex-wrap gap-2 justify-start">
-        {survivors
-          ?.filter((s) => huntSurvivors.includes(s.id))
-          .map((survivor) => (
-            <HuntSurvivorCard
-              key={survivor.id}
-              saveSelectedHunt={saveSelectedHunt}
-              selectedHunt={selectedHunt}
-              selectedSettlement={selectedSettlement}
-              selectedSurvivor={selectedSurvivor}
-              setSurvivors={setSurvivors}
-              survivor={survivor}
-              survivors={survivors}
-              updateSelectedSurvivor={updateSelectedSurvivor}
-            />
-          ))}
+    <Card className="embla pt-0 gap-0">
+      <CardHeader className="embla__controls">
+        <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
+        <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+      </CardHeader>
+
+      <CardContent className="overflow-hidden" ref={emblaRef}>
+        <div className="embla__container">
+          {survivors
+            ?.filter((s) => huntSurvivors.includes(s.id))
+            .map((survivor) => (
+              <div className="embla__slide" key={survivor.id}>
+                <HuntSurvivorCard
+                  saveSelectedHunt={saveSelectedHunt}
+                  selectedHunt={selectedHunt}
+                  selectedSettlement={selectedSettlement}
+                  selectedSurvivor={selectedSurvivor}
+                  setSurvivors={setSurvivors}
+                  survivor={survivor}
+                  survivors={survivors}
+                  updateSelectedSurvivor={updateSelectedSurvivor}
+                />
+              </div>
+            ))}
+        </div>
       </CardContent>
     </Card>
   )

@@ -219,7 +219,7 @@ export function HuntSurvivorCard({
   if (!survivor) return <></>
 
   return (
-    <Card className="w-[300px] flex-grow-2 border-2 rounded-xl border-border/20 hover:border-border/50 py-0 pb-2 gap-2">
+    <Card className="min-w-[300px] flex-grow-2 border-2 rounded-xl border-border/20 hover:border-border/50 py-0 pb-2 gap-2">
       <CardHeader className="flex items-center gap-3 bg-muted/20 p-3 border-border/20 rounded-t-lg">
         <ContextMenu>
           <ContextMenuTrigger>
