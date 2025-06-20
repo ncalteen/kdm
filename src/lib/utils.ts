@@ -8,7 +8,7 @@ import {
   PeopleOfTheSunCampaignData,
   SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
-import { CampaignType } from '@/lib/enums'
+import { CampaignType, ColorChoice } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -532,4 +532,36 @@ export function getCampaignData(campaignType: CampaignType) {
               : CustomCampaignData
 
   return campaignData
+}
+
+/**
+ * Get Color Style for Display
+ */
+export function getColorStyle(color: ColorChoice): string {
+  const colorMap: Record<ColorChoice, string> = {
+    [ColorChoice.NEUTRAL]: 'bg-neutral-500',
+    [ColorChoice.STONE]: 'bg-stone-500',
+    [ColorChoice.ZINC]: 'bg-zinc-500',
+    [ColorChoice.SLATE]: 'bg-slate-500',
+    [ColorChoice.GRAY]: 'bg-gray-500',
+    [ColorChoice.RED]: 'bg-red-500',
+    [ColorChoice.ORANGE]: 'bg-orange-500',
+    [ColorChoice.AMBER]: 'bg-amber-500',
+    [ColorChoice.YELLOW]: 'bg-yellow-500',
+    [ColorChoice.LIME]: 'bg-lime-500',
+    [ColorChoice.GREEN]: 'bg-green-500',
+    [ColorChoice.EMERALD]: 'bg-emerald-500',
+    [ColorChoice.TEAL]: 'bg-teal-500',
+    [ColorChoice.CYAN]: 'bg-cyan-500',
+    [ColorChoice.SKY]: 'bg-sky-500',
+    [ColorChoice.BLUE]: 'bg-blue-500',
+    [ColorChoice.INDIGO]: 'bg-indigo-500',
+    [ColorChoice.VIOLET]: 'bg-violet-500',
+    [ColorChoice.PURPLE]: 'bg-purple-500',
+    [ColorChoice.FUCHSIA]: 'bg-fuchsia-500',
+    [ColorChoice.PINK]: 'bg-pink-500',
+    [ColorChoice.ROSE]: 'bg-rose-500'
+  }
+
+  return colorMap[color] || 'bg-slate-500'
 }

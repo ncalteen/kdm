@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { MonsterLevel } from '@/lib/enums'
+import { ColorChoice, MonsterLevel } from '@/lib/enums'
 import { getNextHuntId } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -96,17 +96,29 @@ export function CreateHuntCard({
     if (selectedSettlement.usesScouts && !selectedScout)
       return toast.error('A scout must be selected for the hunt.')
 
+    const survivorColors = selectedSurvivors.map((survivorId) => ({
+      id: survivorId,
+      color: ColorChoice.SLATE
+    }))
+
+    if (selectedScout)
+      survivorColors.push({
+        id: selectedScout,
+        color: ColorChoice.SLATE
+      })
+
     // Save as partial data that will be merged by the hook
     const huntData: Hunt = {
       ambush: false,
       id: getNextHuntId(),
       quarryName: selectedQuarry,
       quarryLevel: selectedQuarryLevel,
-      survivors: selectedSurvivors,
+      quarryPosition: 12,
       scout: selectedScout || undefined,
       settlementId: selectedSettlement.id,
+      survivorColors,
       survivorPosition: 0,
-      quarryPosition: 12
+      survivors: selectedSurvivors
     }
 
     saveSelectedHunt(

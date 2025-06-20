@@ -37,7 +37,7 @@ interface SettlementSurvivorsCardProps {
   /** Survivors */
   survivors: Survivor[] | null
   /** Update Selected Hunt */
-  updateSelectedHunt: () => void
+  updateSelectedHunt: (hunt: Hunt | null) => void
   /** Update Selected Settlement */
   updateSelectedSettlement: () => void
   /** Update Selected Survivor */

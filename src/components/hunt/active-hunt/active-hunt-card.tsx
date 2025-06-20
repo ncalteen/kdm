@@ -76,6 +76,7 @@ export function ActiveHuntCard({
       {/* Hunt Party Survivors */}
       <div className="min-w-0">
         <HuntSurvivorsCard
+          saveSelectedHunt={saveSelectedHunt}
           selectedHunt={selectedHunt}
           selectedSettlement={selectedSettlement}
           selectedSurvivor={selectedSurvivor}

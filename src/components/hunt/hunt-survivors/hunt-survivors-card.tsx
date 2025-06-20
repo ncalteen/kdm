@@ -11,6 +11,8 @@ import { ReactElement, useMemo } from 'react'
  * Hunt Survivors Card Properties
  */
 interface HuntSurvivorsCardProps {
+  /** Save Selected Hunt */
+  saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Hunt */
   selectedHunt: Partial<Hunt> | null
   /** Selected Settlement */
@@ -32,6 +34,7 @@ interface HuntSurvivorsCardProps {
  * @returns Hunt Survivors Card Component
  */
 export function HuntSurvivorsCard({
+  saveSelectedHunt,
   selectedHunt,
   selectedSettlement,
   selectedSurvivor,
@@ -58,6 +61,8 @@ export function HuntSurvivorsCard({
           .map((survivor) => (
             <HuntSurvivorCard
               key={survivor.id}
+              saveSelectedHunt={saveSelectedHunt}
+              selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
               setSurvivors={setSurvivors}

@@ -3,12 +3,23 @@
 import { Avatar } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger
+} from '@/components/ui/context-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
-import { SurvivorType } from '@/lib/enums'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { ColorChoice, SurvivorType } from '@/lib/enums'
+import {
+  getCampaign,
+  getColorStyle,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -31,6 +42,10 @@ import { ZodError } from 'zod'
  * Hunt Survivor Card Component
  */
 interface HuntSurvivorCardProps {
+  /** Save Selected Hunt */
+  saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Selected Hunt */
+  selectedHunt: Partial<Hunt> | null
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
   /** Selected Survivor */
@@ -51,6 +66,8 @@ interface HuntSurvivorCardProps {
  * Displays updatable survivor information for hunt
  */
 export function HuntSurvivorCard({
+  saveSelectedHunt,
+  selectedHunt,
   selectedSettlement,
   selectedSurvivor,
   setSurvivors,
@@ -133,6 +150,35 @@ export function HuntSurvivorCard({
   }
 
   /**
+   * Update Survivor Color
+   */
+  const updateSurvivorColor = (color: ColorChoice) => {
+    if (!survivor?.id || !selectedHunt) return
+
+    const currentColors = selectedHunt.survivorColors || []
+    const updatedColors = currentColors.filter((sc) => sc.id !== survivor.id)
+    updatedColors.push({ id: survivor.id, color })
+
+    saveSelectedHunt(
+      { survivorColors: updatedColors },
+      `Survivor color changed to ${color}.`
+    )
+  }
+
+  /**
+   * Get Current Survivor Color
+   */
+  const getCurrentColor = (): ColorChoice => {
+    if (!survivor?.id || !selectedHunt?.survivorColors) return ColorChoice.SLATE
+
+    const survivorColor = selectedHunt.survivorColors.find(
+      (sc) => sc.id === survivor.id
+    )
+
+    return survivorColor?.color || ColorChoice.SLATE
+  }
+
+  /**
    * Update Survival Points
    */
   const updateSurvival = (val: string) => {
@@ -175,18 +221,49 @@ export function HuntSurvivorCard({
   return (
     <Card className="w-[300px] flex-grow-2 border-2 rounded-xl border-border/20 hover:border-border/50 py-0 pb-2 gap-2">
       <CardHeader className="flex items-center gap-3 bg-muted/20 p-3 border-border/20 rounded-t-lg">
-        {/* Header with Avatar and Name */}
-        <Avatar className="h-12 w-12 border-2 bg-primary/10 items-center justify-center">
-          <AvatarFallback className="font-bold text-lg">
-            {survivor.name
-              ? survivor.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .slice(0, 2)
-              : '??'}
-          </AvatarFallback>
-        </Avatar>
+        <ContextMenu>
+          <ContextMenuTrigger>
+            {/* Header with Avatar and Name */}
+            <Avatar
+              className={`h-12 w-12 border-2 ${getColorStyle(getCurrentColor())} items-center justify-center`}>
+              <AvatarFallback className="font-bold text-lg text-white">
+                {survivor.name
+                  ? survivor.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .slice(0, 2)
+                  : '??'}
+              </AvatarFallback>
+            </Avatar>
+          </ContextMenuTrigger>
+          <ContextMenuContent className="w-64">
+            <div className="p-2">
+              <div className="text-sm font-medium mb-2">Survivor Color</div>
+              <div className="grid grid-cols-6 gap-1">
+                {Object.values(ColorChoice).map((color) => {
+                  const isSelected = getCurrentColor() === color
+                  return (
+                    <ContextMenuItem
+                      key={color}
+                      className="p-0 h-8 w-8"
+                      asChild>
+                      <button
+                        className={`h-8 w-8 rounded-full border-2 ${getColorStyle(color)} ${
+                          isSelected
+                            ? 'border-white ring-2 ring-black'
+                            : 'border-gray-300 hover:border-white'
+                        } transition-all duration-200`}
+                        onClick={() => updateSurvivorColor(color)}
+                        title={color.charAt(0).toUpperCase() + color.slice(1)}
+                      />
+                    </ContextMenuItem>
+                  )
+                })}
+              </div>
+            </div>
+          </ContextMenuContent>
+        </ContextMenu>
 
         <div className="text-left flex-1 min-w-0">
           <div className="font-semibold text-sm truncate">{survivor.name}</div>

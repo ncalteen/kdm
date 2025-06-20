@@ -2,6 +2,7 @@
 
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
+import { Hunt } from '@/schemas/hunt'
 import { Survivor } from '@/schemas/survivor'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
@@ -22,7 +23,7 @@ import { toast } from 'sonner'
 export function useCampaignSave(
   setSurvivors: (survivors: Survivor[]) => void,
   survivors: Survivor[] | null,
-  updateSelectedHunt: () => void,
+  updateSelectedHunt: (hunt: Hunt | null) => void,
   updateSelectedSettlement: () => void,
   updateSelectedSurvivor: () => void
 ) {
@@ -44,7 +45,7 @@ export function useCampaignSave(
         saveCampaignToLocalStorage(updatedCampaign)
 
         // Update the context to refresh dependent components
-        updateSelectedHunt()
+        updateSelectedHunt(null)
         updateSelectedSettlement()
         updateSelectedSurvivor()
         setSurvivors(survivors || [])
