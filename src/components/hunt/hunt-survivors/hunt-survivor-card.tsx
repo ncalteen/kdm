@@ -239,7 +239,6 @@ export function HuntSurvivorCard({
           </ContextMenuTrigger>
           <ContextMenuContent className="w-64">
             <div className="p-2">
-              <div className="text-sm font-medium mb-2">Survivor Color</div>
               <div className="grid grid-cols-6 gap-1">
                 {Object.values(ColorChoice).map((color) => {
                   const isSelected = getCurrentColor() === color

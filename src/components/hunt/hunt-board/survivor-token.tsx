@@ -37,7 +37,7 @@ export function SurvivorToken({ overlap }: SurvivorTokenProps): ReactElement {
         'absolute z-10 flex items-center justify-center',
         'w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12',
         'bg-blue-500 text-white rounded-full cursor-grab active:cursor-grabbing',
-        'shadow-md hover:shadow-lg transition-shadow',
+        'shadow-md hover:shadow-lg transition-shadow z-1',
         overlap
           ? 'top-1 left-1 sm:top-1.5 sm:left-1.5 md:top-2 md:left-2' // Top-left when overlapping
           : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2', // Centered when not overlapping
