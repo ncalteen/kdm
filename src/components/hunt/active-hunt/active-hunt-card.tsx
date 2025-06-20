@@ -64,9 +64,9 @@ export function ActiveHuntCard({
   )
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row gap-2 h-full">
       {/* Hunt Board */}
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 h-full">
         <HuntBoard
           onPositionUpdate={handlePositionUpdate}
           selectedHunt={selectedHunt}
