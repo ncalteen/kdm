@@ -29,7 +29,7 @@ export function useSelectedHuntSave(
       try {
         const formValues = form.getValues()
         const campaign = getCampaign()
-        const existingHunt = campaign.hunts.find(
+        const existingHunt = campaign.hunts?.find(
           (h) => h.id === campaign.selectedHuntId
         )
 
@@ -44,11 +44,11 @@ export function useSelectedHuntSave(
         HuntSchema.parse(updatedHunt)
 
         // If this is a new hunt, add them to the campaign
-        if (!existingHunt) campaign.hunts.push(updatedHunt)
+        if (!existingHunt) campaign.hunts?.push(updatedHunt)
 
         saveCampaignToLocalStorage({
           ...campaign,
-          hunts: campaign.hunts.map((h) =>
+          hunts: campaign.hunts?.map((h) =>
             h.id === formValues.id ? updatedHunt : h
           )
         })
