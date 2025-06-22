@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 interface SurvivalCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
-  /** Selected Settlemenet */
+  /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
