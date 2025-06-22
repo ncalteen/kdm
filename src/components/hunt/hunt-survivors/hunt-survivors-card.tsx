@@ -96,7 +96,7 @@ export function HuntSurvivorsCard({
                 (Combing Soon) Proceed to Showdown
               </MenubarItem>
               <MenubarItem variant="destructive" onClick={onCancelHunt}>
-                Cancel Hunt
+                End Hunt
               </MenubarItem>
             </MenubarContent>
           </MenubarMenu>
