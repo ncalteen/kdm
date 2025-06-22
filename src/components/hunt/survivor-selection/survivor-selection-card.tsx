@@ -10,7 +10,7 @@ import { ReactElement } from 'react'
 /**
  * Survivor Selection Card Props
  */
-interface SurvivorSelectionCardProps extends Survivor {
+interface SurvivorSelectionCardProps {
   /** Survivor Selected as Scout */
   isSelectedAsScout: boolean
   /** Survivor is Disabled */
@@ -21,6 +21,8 @@ interface SurvivorSelectionCardProps extends Survivor {
   tempSelection: number[]
   /** Handle Hover Function */
   onHover?: (survivor: Survivor | null) => void
+  /** Survivor */
+  survivor: Survivor
 }
 
 /**
@@ -34,7 +36,7 @@ export function SurvivorSelectionCard({
   isDisabled,
   tempSelection,
   onHover,
-  ...survivor
+  survivor
 }: SurvivorSelectionCardProps): ReactElement {
   const isSelected = tempSelection.includes(survivor.id)
 

@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Disorder Item Component Properties
  */
 export interface DisorderItemProps {
-  /** Form */
-  form: UseFormReturn<Survivor>
   /** Disorder ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface DisorderItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -49,26 +48,25 @@ export function DisorderItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSurvivor
 }: DisorderItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedDisorderItem = form.watch(`disorders.${index}`)
-
   useEffect(() => {
     console.debug(
       '[DisorderItem] Changed',
-      watchedDisorderItem,
+      selectedSurvivor?.disorders?.[index],
       isDisabled,
       index
     )
-    if (inputRef.current) inputRef.current.value = watchedDisorderItem || ''
+    if (inputRef.current)
+      inputRef.current.value = selectedSurvivor?.disorders?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -77,7 +75,7 @@ export function DisorderItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedDisorderItem, isDisabled, index])
+  }, [selectedSurvivor?.disorders, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -110,13 +108,15 @@ export function DisorderItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedDisorderItem}</span>
+          <span className="text-xs">
+            {selectedSurvivor?.disorders?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Disorder"
-          defaultValue={watchedDisorderItem}
+          defaultValue={selectedSurvivor?.disorders?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

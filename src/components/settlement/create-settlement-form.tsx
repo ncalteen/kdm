@@ -59,12 +59,10 @@ export function CreateSettlementForm({
   })
 
   const watchedCampaignType = form.watch('campaignType')
-  const watchedSurvivorTyper = form.watch('survivorType')
+  const watchedSurvivorType = form.watch('survivorType')
 
   // Set the form values when the component mounts.
   useEffect(() => {
-    console.debug('[CreateSettlementForm] Setting Values')
-
     // Get campaign data for the campaign type.
     const campaignData = getCampaignData(
       watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN
@@ -108,7 +106,7 @@ export function CreateSettlementForm({
     )
 
     // Changing to Arc survivors...add "Forum" location
-    if (watchedSurvivorTyper === SurvivorType.ARC && forumLocationIndex === -1)
+    if (watchedSurvivorType === SurvivorType.ARC && forumLocationIndex === -1)
       form.setValue('locations', [
         ...currentLocations,
         { name: 'Forum', unlocked: false }
@@ -119,7 +117,7 @@ export function CreateSettlementForm({
         'locations',
         currentLocations.filter((loc) => loc.name !== 'Forum')
       )
-  }, [form, watchedCampaignType, watchedSurvivorTyper])
+  }, [form, watchedCampaignType, watchedSurvivorType])
 
   // Define a submit handler with the correct schema type
   function onSubmit(values: Settlement) {
@@ -231,7 +229,7 @@ export function CreateSettlementForm({
             <FormField
               control={form.control}
               name="survivorType"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
                     <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
@@ -239,7 +237,16 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectSurvivorType
-                        value={watchedSurvivorTyper}
+                        value={
+                          watchedCampaignType ===
+                          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+                            ? SurvivorType.ARC
+                            : watchedCampaignType ===
+                                CampaignType.SQUIRES_OF_THE_CITADEL
+                              ? SurvivorType.CORE
+                              : watchedSurvivorType
+                        }
+                        onChange={field.onChange}
                         disabled={
                           watchedCampaignType ===
                             CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||

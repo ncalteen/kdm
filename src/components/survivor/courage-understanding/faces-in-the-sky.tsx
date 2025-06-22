@@ -11,16 +11,15 @@ import {
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Faces In The Sky Properties
  */
 interface FacesInTheSkyProps {
-  /** Survivor Form */
-  form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -35,8 +34,8 @@ interface FacesInTheSkyProps {
  * @returns Faces in the Sky Component
  */
 export function FacesInTheSky({
-  form,
-  saveSelectedSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor
 }: FacesInTheSkyProps): ReactElement {
   /**
    * Handles toggling a cell in the table
@@ -51,23 +50,6 @@ export function FacesInTheSky({
       },
       'The stars align. Celestial traits recorded.'
     )
-
-  const hasGamblerWitch = form.watch('hasGamblerWitch')
-  const hasGamblerRust = form.watch('hasGamblerRust')
-  const hasGamblerStorm = form.watch('hasGamblerStorm')
-  const hasGamblerReaper = form.watch('hasGamblerReaper')
-  const hasAbsoluteWitch = form.watch('hasAbsoluteWitch')
-  const hasAbsoluteRust = form.watch('hasAbsoluteRust')
-  const hasAbsoluteStorm = form.watch('hasAbsoluteStorm')
-  const hasAbsoluteReaper = form.watch('hasAbsoluteReaper')
-  const hasSculptorWitch = form.watch('hasSculptorWitch')
-  const hasSculptorRust = form.watch('hasSculptorRust')
-  const hasSculptorStorm = form.watch('hasSculptorStorm')
-  const hasSculptorReaper = form.watch('hasSculptorReaper')
-  const hasGoblinWitch = form.watch('hasGoblinWitch')
-  const hasGoblinRust = form.watch('hasGoblinRust')
-  const hasGoblinStorm = form.watch('hasGoblinStorm')
-  const hasGoblinReaper = form.watch('hasGoblinReaper')
 
   return (
     <div>
@@ -102,30 +84,42 @@ export function FacesInTheSky({
               Gambler
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerWitch', hasGamblerWitch || false)
+                handleToggleCell(
+                  'hasGamblerWitch',
+                  selectedSurvivor?.hasGamblerWitch || false
+                )
               }>
               9+ UND
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerRust', hasGamblerRust || false)
+                handleToggleCell(
+                  'hasGamblerRust',
+                  selectedSurvivor?.hasGamblerRust || false
+                )
               }>
               Destined Disorder
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerStorm', hasGamblerStorm || false)
+                handleToggleCell(
+                  'hasGamblerStorm',
+                  selectedSurvivor?.hasGamblerStorm || false
+                )
               }>
               Fated Blow FA
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGamblerReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGamblerReaper', hasGamblerReaper || false)
+                handleToggleCell(
+                  'hasGamblerReaper',
+                  selectedSurvivor?.hasGamblerReaper || false
+                )
               }>
               Pristine Ability
             </TableCell>
@@ -137,32 +131,41 @@ export function FacesInTheSky({
               Absolute
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasAbsoluteWitch', hasAbsoluteWitch || false)
+                handleToggleCell(
+                  'hasAbsoluteWitch',
+                  selectedSurvivor?.hasAbsoluteWitch || false
+                )
               }>
               Reincarnated
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasAbsoluteRust', hasAbsoluteRust || false)
+                handleToggleCell(
+                  'hasAbsoluteRust',
+                  selectedSurvivor?.hasAbsoluteRust || false
+                )
               }>
               Frozen Star FA
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasAbsoluteStorm', hasAbsoluteStorm || false)
+                handleToggleCell(
+                  'hasAbsoluteStorm',
+                  selectedSurvivor?.hasAbsoluteStorm || false
+                )
               }>
               Irid. Hide Abil.
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasAbsoluteReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
                 handleToggleCell(
                   'hasAbsoluteReaper',
-                  hasAbsoluteReaper || false
+                  selectedSurvivor?.hasAbsoluteReaper || false
                 )
               }>
               Champion&apos;s Rite FA
@@ -175,32 +178,41 @@ export function FacesInTheSky({
               Sculptor
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasSculptorWitch', hasSculptorWitch || false)
+                handleToggleCell(
+                  'hasSculptorWitch',
+                  selectedSurvivor?.hasSculptorWitch || false
+                )
               }>
               Scar
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasSculptorRust', hasSculptorRust || false)
+                handleToggleCell(
+                  'hasSculptorRust',
+                  selectedSurvivor?.hasSculptorRust || false
+                )
               }>
               Noble
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasSculptorStorm', hasSculptorStorm || false)
+                handleToggleCell(
+                  'hasSculptorStorm',
+                  selectedSurvivor?.hasSculptorStorm || false
+                )
               }>
               Weapon Master
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasSculptorReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
                 handleToggleCell(
                   'hasSculptorReaper',
-                  hasSculptorReaper || false
+                  selectedSurvivor?.hasSculptorReaper || false
                 )
               }>
               1+ Base ACC
@@ -213,30 +225,42 @@ export function FacesInTheSky({
               Goblin
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinWitch ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGoblinWitch', hasGoblinWitch || false)
+                handleToggleCell(
+                  'hasGoblinWitch',
+                  selectedSurvivor?.hasGoblinWitch || false
+                )
               }>
               Oracle&apos;s Eye
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinRust ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGoblinRust', hasGoblinRust || false)
+                handleToggleCell(
+                  'hasGoblinRust',
+                  selectedSurvivor?.hasGoblinRust || false
+                )
               }>
               Unbreakable FA
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinStorm ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGoblinStorm', hasGoblinStorm || false)
+                handleToggleCell(
+                  'hasGoblinStorm',
+                  selectedSurvivor?.hasGoblinStorm || false
+                )
               }>
               3+ Base STR
             </TableCell>
             <TableCell
-              className={`py-1 text-xs text-left cursor-pointer ${hasGoblinReaper ? 'bg-gray-200 text-gray-700' : ''}`}
+              className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell('hasGoblinReaper', hasGoblinReaper || false)
+                handleToggleCell(
+                  'hasGoblinReaper',
+                  selectedSurvivor?.hasGoblinReaper || false
+                )
               }>
               9+ COU
             </TableCell>

@@ -24,14 +24,11 @@ import { SurvivorType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Survivor Card Props
  */
 interface SurvivorCardProps extends Partial<Survivor> {
-  /** Survivor Form */
-  form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Settlement */
@@ -50,7 +47,6 @@ interface SurvivorCardProps extends Partial<Survivor> {
  * This component is used to display/edit a survivor.
  */
 export function SurvivorCard({
-  form,
   saveSelectedSurvivor,
   selectedSettlement,
   selectedSurvivor,
@@ -61,76 +57,88 @@ export function SurvivorCard({
     <Card className="w-full py-2 border-0 bg-secondary">
       <CardContent className="px-2">
         {/* Desktop Layout */}
-        <div className="hidden lg:flex lg:flex-row lg:flex-wrap gap-2 w-full">
+        <div className="hidden xl:flex xl:flex-row xl:flex-wrap gap-2 w-full">
           {/* First Column - Essential Stats */}
           <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <StatusCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
               setSurvivors={setSurvivors}
               survivors={survivors}
             />
             <SurvivalCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
             />
             <AttributeCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
             />
             <SanityCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
             />
-            <HeadCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
-            <ArmsCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
-            <BodyCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
+            <HeadCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <ArmsCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <BodyCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
             <WaistCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
             />
-            <LegsCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
-            <NextDepartureCard
-              form={form}
+            <LegsCard
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <NextDepartureCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
             />
           </div>
 
           {/* Second Column - Abilities */}
           <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
             <HuntXPCard
-              form={form}
-              selectedSettlement={selectedSettlement}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
             />
             <WeaponProficiencyCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
             />
             <CourageUnderstandingCard
-              form={form}
-              selectedSettlement={selectedSettlement}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
             />
             <FightingArtsCard
-              form={form}
-              selectedSettlement={selectedSettlement}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
             />
             <DisordersCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
             />
             <AbilitiesAndImpairmentsCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
             />
             <OncePerLifetimeCard
-              form={form}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
             />
           </div>
 
@@ -138,110 +146,125 @@ export function SurvivorCard({
           {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
               <PhilosophyCard
-                form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
                 setSurvivors={setSurvivors}
                 survivors={survivors}
               />
               <KnowledgeCard
-                form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
+                selectedSurvivor={selectedSurvivor}
               />
             </div>
           )}
         </div>
 
         {/* Mobile Layout */}
-        <div className="lg:hidden flex flex-col gap-2 w-full">
+        <div className="xl:hidden flex flex-col gap-2 w-full">
           {/* Core Identity & Status */}
           <StatusCard
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
             setSurvivors={setSurvivors}
             survivors={survivors}
           />
           <HuntXPCard
-            form={form}
-            selectedSettlement={selectedSettlement}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSettlement={selectedSettlement}
+            selectedSurvivor={selectedSurvivor}
           />
 
           {/* Core Stats */}
           <SurvivalCard
-            form={form}
-            selectedSettlement={selectedSettlement}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSettlement={selectedSettlement}
+            selectedSurvivor={selectedSurvivor}
           />
           <AttributeCard
-            form={form}
-            selectedSettlement={selectedSettlement}
             saveSelectedSurvivor={saveSelectedSurvivor}
-          />
-          <SanityCard
-            form={form}
             selectedSettlement={selectedSettlement}
-            saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
-
-          {/* Equipment */}
-          <HeadCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
-          <ArmsCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
-          <BodyCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
-          <WaistCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
-          <LegsCard form={form} saveSelectedSurvivor={saveSelectedSurvivor} />
 
           {/* Development */}
           <WeaponProficiencyCard
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
           <CourageUnderstandingCard
-            form={form}
-            selectedSettlement={selectedSettlement}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSettlement={selectedSettlement}
+            selectedSurvivor={selectedSurvivor}
+          />
+
+          {/* Sanity */}
+          <SanityCard
+            saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
+            selectedSettlement={selectedSettlement}
+          />
+
+          {/* Equipment */}
+          <HeadCard
+            saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
+          />
+          <ArmsCard
+            saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
+          />
+          <BodyCard
+            saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
+          />
+          <WaistCard
+            saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
+          />
+          <LegsCard
+            saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
 
           {/* Abilities & Traits */}
           <FightingArtsCard
-            form={form}
-            selectedSettlement={selectedSettlement}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSettlement={selectedSettlement}
+            selectedSurvivor={selectedSurvivor}
           />
           <DisordersCard
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
           <AbilitiesAndImpairmentsCard
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
           <OncePerLifetimeCard
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
 
           {/* ARC-specific cards */}
           {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <>
               <PhilosophyCard
-                form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
                 setSurvivors={setSurvivors}
                 survivors={survivors}
               />
               <KnowledgeCard
-                form={form}
                 saveSelectedSurvivor={saveSelectedSurvivor}
+                selectedSurvivor={selectedSurvivor}
               />
             </>
           )}
 
           {/* Administrative */}
           <NextDepartureCard
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
         </div>
       </CardContent>

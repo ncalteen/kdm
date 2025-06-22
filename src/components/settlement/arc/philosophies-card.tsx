@@ -25,15 +25,12 @@ import {
 } from '@dnd-kit/sortable'
 import { BrainCogIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Philosophies Card Properties
  */
 interface PhilosophiesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -50,7 +47,6 @@ interface PhilosophiesCardProps {
  * @returns Philosophies Card Component
  */
 export function PhilosophiesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: PhilosophiesCardProps): ReactElement {
@@ -241,11 +237,11 @@ export function PhilosophiesCard({
                         key={index}
                         id={index.toString()}
                         index={index}
-                        form={form}
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
                         onEdit={onEdit}
+                        selectedSettlement={selectedSettlement}
                       />
                     )
                   )}

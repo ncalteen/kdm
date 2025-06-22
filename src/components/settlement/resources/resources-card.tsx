@@ -25,15 +25,12 @@ import {
 } from '@dnd-kit/sortable'
 import { BeefIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Resources Card Properties
  */
 interface ResourcesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -50,7 +47,6 @@ interface ResourcesCardProps {
  * @returns Resources Card Component
  */
 export function ResourcesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: ResourcesCardProps): ReactElement {
@@ -264,7 +260,6 @@ export function ResourcesCard({
                       key={index}
                       id={index.toString()}
                       index={index}
-                      form={form}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(i, name, category, types, amount) =>
@@ -272,6 +267,7 @@ export function ResourcesCard({
                       }
                       onEdit={onEdit}
                       onAmountChange={onAmountChange}
+                      selectedSettlement={selectedSettlement}
                     />
                   ))}
                 </SortableContext>

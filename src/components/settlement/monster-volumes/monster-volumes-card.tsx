@@ -24,15 +24,12 @@ import {
 } from '@dnd-kit/sortable'
 import { BookOpenIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Monster Volumes Card Properties
  */
 interface MonsterVolumesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -49,7 +46,6 @@ interface MonsterVolumesCardProps {
  * @returns Monster Volumes Card Component
  */
 export function MonsterVolumesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: MonsterVolumesCardProps): ReactElement {
@@ -245,11 +241,11 @@ export function MonsterVolumesCard({
                         key={index}
                         id={index.toString()}
                         index={index}
-                        form={form}
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
                         onEdit={onEdit}
+                        selectedSettlement={selectedSettlement}
                       />
                     )
                   )}

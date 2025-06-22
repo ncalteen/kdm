@@ -39,8 +39,6 @@ import { UseFormReturn } from 'react-hook-form'
  * Settlement Form Props
  */
 interface SettlementFormProps {
-  /** Hunt Form */
-  huntForm: UseFormReturn<Hunt>
   /** New Hunt Being Created */
   isCreatingNewHunt: boolean
   /** New Survivor Being Created */
@@ -79,8 +77,6 @@ interface SettlementFormProps {
   setSurvivors: (survivors: Survivor[]) => void
   /** Settlement Form */
   settlementForm: UseFormReturn<Settlement>
-  /** Survivor Form */
-  survivorForm: UseFormReturn<Survivor>
   /** Survivors */
   survivors: Survivor[] | null
   /** Update Selected Hunt */
@@ -97,8 +93,6 @@ interface SettlementFormProps {
  * @returns Main Page Component
  */
 export function SettlementForm({
-  huntForm,
-  // isCreatingNewHunt,
   isCreatingNewSurvivor,
   saveSelectedHunt,
   saveSelectedSettlement,
@@ -107,14 +101,11 @@ export function SettlementForm({
   selectedSettlement,
   selectedSurvivor,
   selectedTab,
-  // setIsCreatingNewHunt,
   setIsCreatingNewSurvivor,
   setSelectedHunt,
   setSelectedSettlement,
   setSelectedSurvivor,
   setSurvivors,
-  settlementForm,
-  survivorForm,
   survivors,
   updateSelectedHunt,
   updateSelectedSettlement,
@@ -123,7 +114,6 @@ export function SettlementForm({
   return (
     <>
       <OverviewCard
-        form={settlementForm}
         saveSelectedSettlement={saveSelectedSettlement}
         selectedSettlement={selectedSettlement}
         survivors={survivors}
@@ -148,12 +138,10 @@ export function SettlementForm({
                 {/* Mobile: Stacked */}
                 <div className="md:hidden flex flex-col gap-2">
                   <DepartingBonusesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                   <ArrivalBonusesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -163,14 +151,12 @@ export function SettlementForm({
                 <div className="hidden md:flex md:flex-row gap-2">
                   <div className="flex-1">
                     <DepartingBonusesCard
-                      form={settlementForm}
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
                   </div>
                   <div className="flex-1">
                     <ArrivalBonusesCard
-                      form={settlementForm}
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
@@ -181,7 +167,6 @@ export function SettlementForm({
               {/* Desktop/Mobile/Tablet: Timeline */}
               <div className="flex-1">
                 <TimelineCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
@@ -190,12 +175,10 @@ export function SettlementForm({
               {/* Desktop: Bonuses on right */}
               <div className="hidden lg:flex lg:flex-col lg:flex-1 gap-2">
                 <DepartingBonusesCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
                 <ArrivalBonusesCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
@@ -210,14 +193,12 @@ export function SettlementForm({
               <div className="hidden lg:flex lg:flex-row gap-2">
                 <div className="flex-1">
                   <QuarriesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                 </div>
                 <div className="flex-1">
                   <NemesesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -227,12 +208,10 @@ export function SettlementForm({
               {/* Mobile Layout */}
               <div className="lg:hidden flex flex-col gap-2">
                 <QuarriesCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
                 <NemesesCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
@@ -244,7 +223,6 @@ export function SettlementForm({
                 selectedSettlement?.campaignType ===
                   CampaignType.PEOPLE_OF_THE_SUN) && (
                 <MonsterVolumesCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
@@ -288,7 +266,6 @@ export function SettlementForm({
                 />
                 {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard
-                    form={survivorForm}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedSettlement={selectedSettlement}
                     selectedSurvivor={selectedSurvivor}
@@ -344,12 +321,10 @@ export function SettlementForm({
                 {/* Mobile: Stacked */}
                 <div className="md:hidden flex flex-col gap-2">
                   <InnovationsCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                   <LocationsCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -359,14 +334,12 @@ export function SettlementForm({
                 <div className="hidden md:flex md:flex-row gap-2">
                   <div className="flex-1">
                     <InnovationsCard
-                      form={settlementForm}
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
                   </div>
                   <div className="flex-1">
                     <LocationsCard
-                      form={settlementForm}
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
@@ -381,7 +354,6 @@ export function SettlementForm({
             selectedSettlement.campaignType ===
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <LocationsCard
-                form={settlementForm}
                 saveSelectedSettlement={saveSelectedSettlement}
                 selectedSettlement={selectedSettlement}
               />
@@ -393,12 +365,10 @@ export function SettlementForm({
               {/* Desktop Layout */}
               <div className="hidden lg:flex lg:flex-col gap-2">
                 <ResourcesCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
                 <GearCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
@@ -407,12 +377,10 @@ export function SettlementForm({
               {/* Mobile Layout */}
               <div className="lg:hidden flex flex-col gap-2">
                 <ResourcesCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
                 <GearCard
-                  form={settlementForm}
                   saveSelectedSettlement={saveSelectedSettlement}
                   selectedSettlement={selectedSettlement}
                 />
@@ -425,12 +393,10 @@ export function SettlementForm({
                   {/* Mobile: Stacked */}
                   <div className="md:hidden flex flex-col gap-2">
                     <SeedPatternsCard
-                      form={settlementForm}
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
                     <PatternsCard
-                      form={settlementForm}
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
@@ -440,14 +406,12 @@ export function SettlementForm({
                   <div className="hidden md:flex md:flex-row gap-2">
                     <div className="flex-1">
                       <SeedPatternsCard
-                        form={settlementForm}
                         saveSelectedSettlement={saveSelectedSettlement}
                         selectedSettlement={selectedSettlement}
                       />
                     </div>
                     <div className="flex-1">
                       <PatternsCard
-                        form={settlementForm}
                         saveSelectedSettlement={saveSelectedSettlement}
                         selectedSettlement={selectedSettlement}
                       />
@@ -466,7 +430,6 @@ export function SettlementForm({
                 {/* Desktop Layout */}
                 <div className="hidden lg:grid lg:grid-cols-1 md:lg:grid-cols-2 gap-2">
                   <CollectiveCognitionVictoriesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -479,12 +442,10 @@ export function SettlementForm({
                 {/* Desktop Layout */}
                 <div className="hidden lg:grid lg:grid-cols-1 md:lg:grid-cols-2 gap-2">
                   <PhilosophiesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                   <KnowledgesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -493,7 +454,6 @@ export function SettlementForm({
                 {/* Mobile Layout */}
                 <div className="lg:hidden flex flex-col gap-2">
                   <CollectiveCognitionVictoriesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -502,12 +462,10 @@ export function SettlementForm({
                     selectedSettlement={selectedSettlement}
                   />
                   <PhilosophiesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                   <KnowledgesCard
-                    form={settlementForm}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -526,6 +484,7 @@ export function SettlementForm({
           {/* Settlement Settings */}
           {selectedSettlement && selectedTab === 'settings' && (
             <SettingsCard
+              saveSelectedSettlement={saveSelectedSettlement}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
               selectedShowdown={null}
@@ -539,7 +498,6 @@ export function SettlementForm({
           {/* Hunt */}
           {selectedSettlement && selectedTab === 'hunt' && (
             <HuntCard
-              form={huntForm}
               saveSelectedHunt={saveSelectedHunt}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}

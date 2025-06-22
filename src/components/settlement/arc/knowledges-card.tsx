@@ -24,15 +24,12 @@ import {
 } from '@dnd-kit/sortable'
 import { GraduationCapIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Knowledges Card Properties
  */
 interface KnowledgesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -46,7 +43,6 @@ interface KnowledgesCardProps {
  * Knowledges Card Component
  */
 export function KnowledgesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: KnowledgesCardProps): ReactElement {
@@ -245,7 +241,6 @@ export function KnowledgesCard({
                       key={index}
                       id={index.toString()}
                       index={index}
-                      form={form}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(name, philosophy, i) =>
@@ -253,6 +248,7 @@ export function KnowledgesCard({
                       }
                       onEdit={onEdit}
                       philosophies={selectedSettlement?.philosophies || []}
+                      selectedSettlement={selectedSettlement}
                     />
                   )
                 )}

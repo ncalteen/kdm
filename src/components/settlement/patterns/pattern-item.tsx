@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Pattern Item Component Properties
  */
 export interface PatternItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Pattern ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface PatternItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,27 +48,26 @@ export function PatternItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: PatternItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedPatternItem = form.watch(`patterns.${index}`)
-
   useEffect(() => {
     console.debug(
       '[PatternItem] Changed',
-      watchedPatternItem,
+      selectedSettlement?.patterns?.[index],
       isDisabled,
       index
     )
 
-    if (inputRef.current) inputRef.current.value = watchedPatternItem || ''
+    if (inputRef.current)
+      inputRef.current.value = selectedSettlement?.patterns?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -78,7 +76,7 @@ export function PatternItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedPatternItem, isDisabled, index])
+  }, [selectedSettlement?.patterns, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -111,13 +109,15 @@ export function PatternItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedPatternItem}</span>
+          <span className="text-xs">
+            {selectedSettlement?.patterns?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Pattern"
-          defaultValue={watchedPatternItem}
+          defaultValue={selectedSettlement?.patterns?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

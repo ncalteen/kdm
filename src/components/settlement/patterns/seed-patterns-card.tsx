@@ -24,15 +24,12 @@ import {
 } from '@dnd-kit/sortable'
 import { BeanIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Seed Patterns Card Properties
  */
 interface SeedPatternsCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -49,7 +46,6 @@ interface SeedPatternsCardProps {
  * @returns Seed Patterns Card Component
  */
 export function SeedPatternsCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: SeedPatternsCardProps): ReactElement {
@@ -232,11 +228,11 @@ export function SeedPatternsCard({
                         key={index}
                         id={index.toString()}
                         index={index}
-                        form={form}
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
                         onEdit={onEdit}
+                        selectedSettlement={selectedSettlement}
                       />
                     )
                   )}

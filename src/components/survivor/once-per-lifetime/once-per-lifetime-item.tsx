@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Once Per Lifetime Item Component Properties
  */
 export interface OncePerLifetimeItemProps {
-  /** Form */
-  form: UseFormReturn<Survivor>
   /** Once Per Lifetime ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface OncePerLifetimeItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -49,28 +48,26 @@ export function OncePerLifetimeItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSurvivor
 }: OncePerLifetimeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedOncePerLifetimeItem = form.watch(`oncePerLifetime.${index}`)
-
   useEffect(() => {
     console.debug(
       '[OncePerLifetimeItem] Changed',
-      watchedOncePerLifetimeItem,
+      selectedSurvivor?.oncePerLifetime?.[index],
       isDisabled,
       index
     )
 
     if (inputRef.current)
-      inputRef.current.value = watchedOncePerLifetimeItem || ''
+      inputRef.current.value = selectedSurvivor?.oncePerLifetime?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -79,7 +76,7 @@ export function OncePerLifetimeItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedOncePerLifetimeItem, isDisabled, index])
+  }, [selectedSurvivor?.oncePerLifetime, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -112,13 +109,15 @@ export function OncePerLifetimeItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedOncePerLifetimeItem}</span>
+          <span className="text-xs">
+            {selectedSurvivor?.oncePerLifetime?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Once Per Lifetime Event"
-          defaultValue={watchedOncePerLifetimeItem}
+          defaultValue={selectedSurvivor?.oncePerLifetime?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

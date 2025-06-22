@@ -8,7 +8,6 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import {
   Table,
   TableBody,
@@ -17,17 +16,14 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { Settlement } from '@/schemas/settlement'
+import { Nemesis, Quarry, Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Collective Cognition Victories Card Properties
  */
 interface CollectiveCognitionVictoriesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -47,7 +43,6 @@ interface CollectiveCognitionVictoriesCardProps {
  * @returns Collective Cognition Victories Card Component
  */
 export function CollectiveCognitionVictoriesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: CollectiveCognitionVictoriesCardProps): ReactElement {
@@ -56,17 +51,18 @@ export function CollectiveCognitionVictoriesCard({
    *
    * @param successMsg Success Message
    */
-  const saveToLocalStorage = (successMsg?: string) => {
-    // Get the current form values which include all updates
-    const formValues = form.getValues()
-
-    const updateData: Partial<Settlement> = {
-      quarries: formValues.quarries,
-      nemeses: formValues.nemeses
-    }
-
-    saveSelectedSettlement(updateData, successMsg)
-  }
+  const saveToLocalStorage = (
+    quarries: Quarry[] | null,
+    nemeses: Nemesis[] | null,
+    successMsg?: string
+  ) =>
+    saveSelectedSettlement(
+      {
+        quarries: quarries || selectedSettlement?.quarries || [],
+        nemeses: nemeses || selectedSettlement?.nemeses || []
+      },
+      successMsg
+    )
 
   return (
     <Card className="p-0 border-1 gap-2">
@@ -111,84 +107,101 @@ export function CollectiveCognitionVictoriesCard({
                     </TableCell>
                     <TableCell className="text-center">
                       {index === 0 && (
-                        <FormField
-                          control={form.control}
-                          name={`quarries.${index}.ccPrologue`}
-                          render={({ field }) => (
-                            <FormItem className="flex justify-center">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={(checked) => {
-                                    if (checked !== 'indeterminate') {
-                                      field.onChange(checked)
-                                      saveToLocalStorage(
-                                        "The settlement's legacy grows stronger."
-                                      )
-                                    }
-                                  }}
-                                  id={`quarries-${index}-ccPrologue`}
-                                  name={`quarries.${index}.ccPrologue`}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
+                        <div className="flex justify-center">
+                          <Checkbox
+                            checked={
+                              selectedSettlement?.quarries?.[index]
+                                ?.ccPrologue || false
+                            }
+                            onCheckedChange={(checked) => {
+                              if (checked !== 'indeterminate') {
+                                const updatedQuarries = [
+                                  ...(selectedSettlement?.quarries || [])
+                                ]
+                                updatedQuarries[index] = {
+                                  ...updatedQuarries[index],
+                                  ccPrologue: checked
+                                }
+                                saveToLocalStorage(
+                                  updatedQuarries,
+                                  null,
+                                  "The settlement's legacy grows stronger."
+                                )
+                              }
+                            }}
+                            id={`quarries-${index}-ccPrologue`}
+                            name={`quarries.${index}.ccPrologue`}
+                          />
+                        </div>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
-                      <FormField
-                        control={form.control}
-                        name={`quarries.${index}.ccLevel1`}
-                        render={({ field }) => (
-                          <FormItem className="flex justify-center">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={(checked) => {
-                                  if (checked !== 'indeterminate') {
-                                    field.onChange(checked)
-                                    saveToLocalStorage(
-                                      "The settlement's legacy grows stronger."
-                                    )
-                                  }
-                                }}
-                                id={`quarries-${index}-ccLevel1`}
-                                name={`quarries.${index}.ccLevel1`}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={
+                            selectedSettlement?.quarries?.[index]?.ccLevel1 ||
+                            false
+                          }
+                          onCheckedChange={(checked) => {
+                            if (checked !== 'indeterminate') {
+                              const updatedQuarries = [
+                                ...(selectedSettlement?.quarries || [])
+                              ]
+                              updatedQuarries[index] = {
+                                ...updatedQuarries[index],
+                                ccLevel1: checked
+                              }
+                              saveToLocalStorage(
+                                updatedQuarries,
+                                null,
+                                "The settlement's legacy grows stronger."
+                              )
+                            }
+                          }}
+                          id={`quarries-${index}-ccLevel1`}
+                          name={`quarries.${index}.ccLevel1`}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell className="text-center" colSpan={2}>
                       <div className="flex flex-row justify-center gap-2">
                         {(quarry.ccLevel2 || [false, false]).map(
                           (checked, lvl2Index) => (
-                            <FormField
-                              key={`ccLevel2-${lvl2Index}`}
-                              control={form.control}
-                              name={`quarries.${index}.ccLevel2.${lvl2Index}`}
-                              render={({ field }) => (
-                                <FormItem className="flex justify-center">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value}
-                                      onCheckedChange={(checked) => {
-                                        if (checked !== 'indeterminate') {
-                                          field.onChange(checked)
-                                          saveToLocalStorage(
-                                            "The settlement's legacy grows stronger."
-                                          )
-                                        }
-                                      }}
-                                      id={`quarries-${index}-ccLevel2-${lvl2Index}`}
-                                      name={`quarries.${index}.ccLevel2.${lvl2Index}`}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
+                            <div
+                              className="flex justify-center"
+                              key={`ccLevel2-${lvl2Index}`}>
+                              <Checkbox
+                                checked={
+                                  selectedSettlement?.quarries?.[index]
+                                    ?.ccLevel2?.[lvl2Index] || false
+                                }
+                                onCheckedChange={(checked) => {
+                                  if (checked !== 'indeterminate') {
+                                    const updatedQuarries = [
+                                      ...(selectedSettlement?.quarries || [])
+                                    ]
+                                    const updatedCcLevel2 = [
+                                      ...(updatedQuarries[index]?.ccLevel2 || [
+                                        false,
+                                        false
+                                      ])
+                                    ]
+                                    updatedCcLevel2[lvl2Index] = checked
+                                    updatedQuarries[index] = {
+                                      ...updatedQuarries[index],
+                                      ccLevel2: updatedCcLevel2
+                                    }
+                                    saveToLocalStorage(
+                                      updatedQuarries,
+                                      null,
+                                      "The settlement's legacy grows stronger."
+                                    )
+                                  }
+                                }}
+                                id={`quarries-${index}-ccLevel2-${lvl2Index}`}
+                                name={`quarries.${index}.ccLevel2.${lvl2Index}`}
+                              />
+                            </div>
                           )
                         )}
                       </div>
@@ -197,30 +210,42 @@ export function CollectiveCognitionVictoriesCard({
                       <div className="flex flex-row justify-center gap-2">
                         {(quarry.ccLevel3 || [false, false, false]).map(
                           (checked, lvl3Index) => (
-                            <FormField
+                            <div
                               key={`ccLevel3-${lvl3Index}`}
-                              control={form.control}
-                              name={`quarries.${index}.ccLevel3.${lvl3Index}`}
-                              render={({ field }) => (
-                                <FormItem className="flex justify-center">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value}
-                                      onCheckedChange={(checked) => {
-                                        if (checked !== 'indeterminate') {
-                                          field.onChange(checked)
-                                          saveToLocalStorage(
-                                            "The settlement's legacy grows stronger."
-                                          )
-                                        }
-                                      }}
-                                      id={`quarries-${index}-ccLevel3-${lvl3Index}`}
-                                      name={`quarries.${index}.ccLevel3.${lvl3Index}`}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
+                              className="flex justify-center">
+                              <Checkbox
+                                checked={
+                                  selectedSettlement?.quarries?.[index]
+                                    ?.ccLevel3?.[lvl3Index] || false
+                                }
+                                onCheckedChange={(checked) => {
+                                  if (checked !== 'indeterminate') {
+                                    const updatedQuarries = [
+                                      ...(selectedSettlement?.quarries || [])
+                                    ]
+                                    const updatedCcLevel3 = [
+                                      ...(updatedQuarries[index]?.ccLevel3 || [
+                                        false,
+                                        false,
+                                        false
+                                      ])
+                                    ]
+                                    updatedCcLevel3[lvl3Index] = checked
+                                    updatedQuarries[index] = {
+                                      ...updatedQuarries[index],
+                                      ccLevel3: updatedCcLevel3
+                                    }
+                                    saveToLocalStorage(
+                                      updatedQuarries,
+                                      null,
+                                      "The settlement's legacy grows stronger."
+                                    )
+                                  }
+                                }}
+                                id={`quarries-${index}-ccLevel3-${lvl3Index}`}
+                                name={`quarries.${index}.ccLevel3.${lvl3Index}`}
+                              />
+                            </div>
                           )
                         )}
                       </div>
@@ -255,79 +280,88 @@ export function CollectiveCognitionVictoriesCard({
                       {nemesis.name || 'Unnamed Nemesis'}
                     </TableCell>
                     <TableCell className="text-center">
-                      <FormField
-                        control={form.control}
-                        name={`nemeses.${index}.ccLevel1`}
-                        render={({ field }) => (
-                          <FormItem className="flex justify-center">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={(checked) => {
-                                  if (checked !== 'indeterminate') {
-                                    field.onChange(checked)
-                                    saveToLocalStorage(
-                                      "The settlement's legacy grows stronger."
-                                    )
-                                  }
-                                }}
-                                id={`nemesis-${index}-ccLevel1`}
-                                name={`nemeses.${index}.ccLevel1`}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={
+                            selectedSettlement?.nemeses?.[index]?.ccLevel1 ||
+                            false
+                          }
+                          onCheckedChange={(checked) => {
+                            if (checked !== 'indeterminate') {
+                              const updatedNemeses = [
+                                ...(selectedSettlement?.nemeses || [])
+                              ]
+                              updatedNemeses[index] = {
+                                ...updatedNemeses[index],
+                                ccLevel1: checked
+                              }
+                              saveToLocalStorage(
+                                null,
+                                updatedNemeses,
+                                "The settlement's legacy grows stronger."
+                              )
+                            }
+                          }}
+                          id={`nemesis-${index}-ccLevel1`}
+                          name={`nemeses.${index}.ccLevel1`}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <FormField
-                        control={form.control}
-                        name={`nemeses.${index}.ccLevel2`}
-                        render={({ field }) => (
-                          <FormItem className="flex justify-center">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={(checked) => {
-                                  if (checked !== 'indeterminate') {
-                                    field.onChange(checked)
-                                    saveToLocalStorage(
-                                      "The settlement's legacy grows stronger."
-                                    )
-                                  }
-                                }}
-                                id={`nemesis-${index}-ccLevel2`}
-                                name={`nemeses.${index}.ccLevel2`}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={
+                            selectedSettlement?.nemeses?.[index]?.ccLevel2 ||
+                            false
+                          }
+                          onCheckedChange={(checked) => {
+                            if (checked !== 'indeterminate') {
+                              const updatedNemeses = [
+                                ...(selectedSettlement?.nemeses || [])
+                              ]
+                              updatedNemeses[index] = {
+                                ...updatedNemeses[index],
+                                ccLevel2: checked
+                              }
+                              saveToLocalStorage(
+                                null,
+                                updatedNemeses,
+                                "The settlement's legacy grows stronger."
+                              )
+                            }
+                          }}
+                          id={`nemesis-${index}-ccLevel2`}
+                          name={`nemeses.${index}.ccLevel2`}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <FormField
-                        control={form.control}
-                        name={`nemeses.${index}.ccLevel3`}
-                        render={({ field }) => (
-                          <FormItem className="flex justify-center">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={(checked) => {
-                                  if (checked !== 'indeterminate') {
-                                    field.onChange(checked)
-                                    saveToLocalStorage(
-                                      "The settlement's legacy grows stronger."
-                                    )
-                                  }
-                                }}
-                                id={`nemesis-${index}-ccLevel3`}
-                                name={`nemeses.${index}.ccLevel3`}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={
+                            selectedSettlement?.nemeses?.[index]?.ccLevel3 ||
+                            false
+                          }
+                          onCheckedChange={(checked) => {
+                            if (checked !== 'indeterminate') {
+                              const updatedNemeses = [
+                                ...(selectedSettlement?.nemeses || [])
+                              ]
+                              updatedNemeses[index] = {
+                                ...updatedNemeses[index],
+                                ccLevel3: checked
+                              }
+                              saveToLocalStorage(
+                                null,
+                                updatedNemeses,
+                                "The settlement's legacy grows stronger."
+                              )
+                            }
+                          }}
+                          id={`nemesis-${index}-ccLevel3`}
+                          name={`nemeses.${index}.ccLevel3`}
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

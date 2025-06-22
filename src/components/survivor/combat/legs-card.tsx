@@ -2,28 +2,20 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Legs Card Properties
  */
 interface LegsCardProps {
-  /** Survivor Form */
-  form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -36,8 +28,8 @@ interface LegsCardProps {
  * @returns Legs Card Component
  */
 export function LegsCard({
-  form,
-  saveSelectedSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor
 }: LegsCardProps): ReactElement {
   /**
    * Save to Local Storage
@@ -66,33 +58,22 @@ export function LegsCard({
     <Card className="p-2 border-0">
       <CardContent className="p-0 h-[80px]">
         <div className="flex flex-row">
-          <FormField
-            control={form.control}
-            name="legArmor"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="relative flex items-center">
-                    <Shield
-                      className="h-14 w-14 text-muted-foreground"
-                      strokeWidth={1}
-                    />
-                    <Input
-                      placeholder="1"
-                      type="number"
-                      className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      defaultValue={field.value ?? '0'}
-                      min={0}
-                      onChange={(e) =>
-                        saveToLocalStorage('legArmor', parseInt(e.target.value))
-                      }
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="relative flex items-center">
+            <Shield
+              className="h-14 w-14 text-muted-foreground"
+              strokeWidth={1}
+            />
+            <Input
+              placeholder="1"
+              type="number"
+              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.legArmor ?? '0'}
+              min={0}
+              onChange={(e) =>
+                saveToLocalStorage('legArmor', parseInt(e.target.value))
+              }
+            />
+          </div>
 
           <div className="mx-2 w-px bg-border h-[80px]" />
 
@@ -102,76 +83,60 @@ export function LegsCard({
             </div>
             <div className="flex flex-col items-start gap-1 ml-2">
               {/* Severe Injuries */}
-              <FormField
-                control={form.control}
-                name="legHamstrung"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                    <FormControl>
-                      <Checkbox
-                        className="h-4 w-4 rounded-sm"
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage('legHamstrung', !!checked)
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">Hamstrung</FormLabel>
-                  </FormItem>
-                )}
-              />
-              <div className="flex flex-row gap-2">
-                <FormField
-                  control={form.control}
-                  name="legBroken"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex gap-1 items-center">
-                        {[...Array(2)].map((_, index) => (
-                          <Checkbox
-                            key={index}
-                            checked={(field.value || 0) > index}
-                            onCheckedChange={(checked) => {
-                              let newValue = field.value || 0
-                              if (checked) newValue = index + 1
-                              else if ((field.value || 0) === index + 1)
-                                newValue = index
-
-                              saveToLocalStorage('legBroken', newValue)
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </FormItem>
-                  )}
+              <div className="space-y-0 flex flex-row items-center gap-2">
+                <Checkbox
+                  className="h-4 w-4 rounded-sm"
+                  checked={selectedSurvivor?.legHamstrung}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('legHamstrung', !!checked)
+                  }
                 />
+                <label className="text-xs">Hamstrung</label>
+              </div>
+
+              <div className="flex flex-row gap-2">
+                <div className="flex gap-1 items-center">
+                  {[...Array(2)].map((_, index) => (
+                    <Checkbox
+                      key={index}
+                      checked={(selectedSurvivor?.legBroken || 0) > index}
+                      onCheckedChange={(checked) => {
+                        let newValue = selectedSurvivor?.legBroken || 0
+                        if (checked) newValue = index + 1
+                        else if (
+                          (selectedSurvivor?.legBroken || 0) ===
+                          index + 1
+                        )
+                          newValue = index
+
+                        saveToLocalStorage('legBroken', newValue)
+                      }}
+                    />
+                  ))}
+                </div>
                 <span className="text-xs">Broken Leg</span>
               </div>
-              <div className="flex flex-row gap-2">
-                <FormField
-                  control={form.control}
-                  name="legDismembered"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex gap-1 items-center">
-                        {[...Array(2)].map((_, index) => (
-                          <Checkbox
-                            key={index}
-                            checked={(field.value || 0) > index}
-                            onCheckedChange={(checked) => {
-                              let newValue = field.value || 0
-                              if (checked) newValue = index + 1
-                              else if ((field.value || 0) === index + 1)
-                                newValue = index
 
-                              saveToLocalStorage('legDismembered', newValue)
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </FormItem>
-                  )}
-                />
+              <div className="flex flex-row gap-2">
+                <div className="flex gap-1 items-center">
+                  {[...Array(2)].map((_, index) => (
+                    <Checkbox
+                      key={index}
+                      checked={(selectedSurvivor?.legDismembered || 0) > index}
+                      onCheckedChange={(checked) => {
+                        let newValue = selectedSurvivor?.legDismembered || 0
+                        if (checked) newValue = index + 1
+                        else if (
+                          (selectedSurvivor?.legDismembered || 0) ===
+                          index + 1
+                        )
+                          newValue = index
+
+                        saveToLocalStorage('legDismembered', newValue)
+                      }}
+                    />
+                  ))}
+                </div>
                 <span className="text-xs">Dismembered Leg</span>
               </div>
             </div>
@@ -179,51 +144,40 @@ export function LegsCard({
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <FormField
-                control={form.control}
-                name="legLightDamage"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-col items-center">
-                    <FormControl>
-                      <Checkbox
-                        className={cn(
-                          'h-4 w-4 rounded-sm',
-                          !field.value && 'border-2 border-primary',
-                          !field.value && 'border-2 border-primary'
-                        )}
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage('legLightDamage', !!checked)
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs mt-1">L</FormLabel>
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-0 flex flex-col items-center">
+                <Checkbox
+                  className={cn(
+                    'h-4 w-4 rounded-sm',
+                    !selectedSurvivor?.legLightDamage &&
+                      'border-2 border-primary',
+                    !selectedSurvivor?.legLightDamage &&
+                      'border-2 border-primary'
+                  )}
+                  checked={selectedSurvivor?.legLightDamage}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('legLightDamage', !!checked)
+                  }
+                />
+                <label className="text-xs mt-1">L</label>
+              </div>
+
               {/* Heavy Damage */}
-              <FormField
-                control={form.control}
-                name="legHeavyDamage"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-col items-center">
-                    <FormControl>
-                      <Checkbox
-                        className={cn(
-                          'h-4 w-4 rounded-sm',
-                          !field.value && 'border-2 border-primary',
-                          !field.value && 'border-4 border-primary'
-                        )}
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage('legHeavyDamage', !!checked)
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs mt-1">H</FormLabel>
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-0 flex flex-col items-center">
+                <Checkbox
+                  className={cn(
+                    'h-4 w-4 rounded-sm',
+                    !selectedSurvivor?.legHeavyDamage &&
+                      'border-2 border-primary',
+                    !selectedSurvivor?.legHeavyDamage &&
+                      'border-4 border-primary'
+                  )}
+                  checked={selectedSurvivor?.legHeavyDamage}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('legHeavyDamage', !!checked)
+                  }
+                />
+                <label className="text-xs mt-1">H</label>
+              </div>
             </div>
           </div>
         </div>

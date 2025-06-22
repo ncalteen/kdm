@@ -35,7 +35,7 @@ import { toast } from 'sonner'
 /**
  * Create Survivor Form Properties
  */
-interface CreateSurvivorFormProps extends Partial<Survivor> {
+interface CreateSurvivorFormProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (survivor: Survivor, successMsg?: string) => void
   /** Selected Settlement */

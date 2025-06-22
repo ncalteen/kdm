@@ -45,7 +45,7 @@ interface CollectiveCognitionRewardsCardProps {
  * Displays and manages the collective cognition rewards for the settlement.
  * Allows adding, editing, removing, and reordering rewards with drag-and-drop functionality.
  *
- * @param form Settlement form instance
+ * @param props Collective Cognition Rewards Card Properties
  * @returns Collective Cognition Rewards Card Component
  */
 export function CollectiveCognitionRewardsCard({

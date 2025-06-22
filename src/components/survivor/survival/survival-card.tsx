@@ -2,13 +2,6 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { SurvivorType } from '@/lib/enums'
@@ -17,19 +10,18 @@ import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { LockIcon } from 'lucide-react'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Survival Card Properties
  */
 interface SurvivalCardProps {
-  /** Survivor Form */
-  form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Settlemenet */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -45,9 +37,9 @@ interface SurvivalCardProps {
  * @returns Survival Card Component
  */
 export function SurvivalCard({
-  form,
   saveSelectedSurvivor,
-  selectedSettlement
+  selectedSettlement,
+  selectedSurvivor
 }: SurvivalCardProps): ReactElement {
   /**
    * Update Survival Points
@@ -137,10 +129,13 @@ export function SurvivalCard({
    * Update Systemic Pressure (Arc-specific)
    */
   const updateSystemicPressure = (val: string) => {
-    const value = parseInt(val) || 0
+    let value = parseInt(val) || 0
 
     // Enforce minimum value of 0
-    if (value < 0) return toast.error('Systemic pressure cannot be negative.')
+    if (value < 0) {
+      value = 0
+      return toast.error('Systemic pressure cannot be negative.')
+    }
 
     saveSelectedSurvivor(
       { systemicPressure: value },
@@ -165,179 +160,90 @@ export function SurvivalCard({
         <div className="flex">
           {/* Left - Survival and cannot spend survival inputs */}
           <div className="flex-1 flex flex-col justify-between">
-            {/* Survival Points */}
-            <FormField
-              control={form.control}
-              name="survival"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center gap-2">
-                    {/* Survival Input */}
-                    <FormControl>
-                      <Input
-                        placeholder="1"
-                        type="number"
-                        className={cn(
-                          'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-                        )}
-                        {...field}
-                        value={field.value ?? '1'}
-                        onChange={(e) => updateSurvival(e.target.value)}
-                      />
-                    </FormControl>
-                    <FormLabel className="font-bold text-left">
-                      Survival
-                    </FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
+            {/* Survival Input */}
+            <div className="flex items-center gap-2">
+              <Input
+                key={`survival-${selectedSurvivor?.id || 'new'}`}
+                placeholder="1"
+                type="number"
+                className={cn(
+                  'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+                )}
+                value={selectedSurvivor?.survival ?? '1'}
+                onChange={(e) => updateSurvival(e.target.value)}
+              />
+              <label className="font-bold text-left">Survival</label>
+            </div>
 
-            <FormField
-              control={form.control}
-              name="canSpendSurvival"
-              render={({ field: canSpendField }) => (
-                <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={!canSpendField.value}
-                      onCheckedChange={(checked) =>
-                        updateCanSpendSurvival(!!checked)
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="text-xs font-medium leading-none flex items-center">
-                    <LockIcon className="inline h-3 w-3 mr-1" /> Cannot spend
-                    survival
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Cannot Spend Survival Checkbox */}
+            <div className="flex gap-2">
+              <Checkbox
+                checked={!selectedSurvivor?.canSpendSurvival}
+                onCheckedChange={(checked) => updateCanSpendSurvival(!!checked)}
+              />
+              <div className="text-xs font-medium leading-none flex items-center">
+                <LockIcon className="inline h-3 w-3 mr-1" /> Cannot spend
+                survival
+              </div>
+            </div>
           </div>
 
           {/* Middle - Survival Actions */}
           <div className="flex">
             <div className="flex flex-col gap-1">
               {/* Dodge */}
-              <FormField
-                control={form.control}
-                name="canDodge"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => updateCanDodge(!!checked)}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">Dodge</FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex gap-2">
+                <Checkbox
+                  checked={selectedSurvivor?.canDodge}
+                  onCheckedChange={(checked) => updateCanDodge(!!checked)}
+                />
+                <label className="text-xs">Dodge</label>
+              </div>
 
               {/* Encourage */}
-              <FormField
-                control={form.control}
-                name="canEncourage"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          updateCanEncourage(!!checked)
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">Encourage</FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex gap-2">
+                <Checkbox
+                  checked={selectedSurvivor?.canEncourage}
+                  onCheckedChange={(checked) => updateCanEncourage(!!checked)}
+                />
+                <label className="text-xs">Encourage</label>
+              </div>
 
               {/* Surge */}
-              <FormField
-                control={form.control}
-                name="canSurge"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => updateCanSurge(!!checked)}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">Surge</FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex gap-2">
+                <Checkbox
+                  checked={selectedSurvivor?.canSurge}
+                  onCheckedChange={(checked) => updateCanSurge(!!checked)}
+                />
+                <label className="text-xs">Surge</label>
+              </div>
 
               {/* Dash */}
-              <FormField
-                control={form.control}
-                name="canDash"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => updateCanDash(!!checked)}
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">Dash</FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex gap-2">
+                <Checkbox
+                  checked={selectedSurvivor?.canDash}
+                  onCheckedChange={(checked) => updateCanDash(!!checked)}
+                />
+                <label className="text-xs">Dash</label>
+              </div>
 
               {/* Conditional rendering for Arc-specific attributes */}
               {selectedSettlement?.survivorType === SurvivorType.ARC ? (
-                <>
-                  {/* Fist Pump */}
-                  <FormField
-                    control={form.control}
-                    name="canFistPump"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={(checked) =>
-                              updateCanFistPump(!!checked)
-                            }
-                          />
-                        </FormControl>
-                        <FormLabel className="text-xs">Fist Pump</FormLabel>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                <div className="flex gap-2">
+                  <Checkbox
+                    checked={selectedSurvivor?.canFistPump}
+                    onCheckedChange={(checked) => updateCanFistPump(!!checked)}
                   />
-                </>
+                  <label className="text-xs">Fist Pump</label>
+                </div>
               ) : (
-                <>
-                  {/* Endure */}
-                  <FormField
-                    control={form.control}
-                    name="canEndure"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={(checked) =>
-                              updateCanEndure(!!checked)
-                            }
-                          />
-                        </FormControl>
-                        <FormLabel className="text-xs">Endure</FormLabel>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                <div className="flex gap-2">
+                  <Checkbox
+                    checked={selectedSurvivor?.canEndure}
+                    onCheckedChange={(checked) => updateCanEndure(!!checked)}
                   />
-                </>
+                  <label className="text-xs">Endure</label>
+                </div>
               )}
             </div>
 
@@ -347,32 +253,22 @@ export function SurvivalCard({
                 <Separator orientation="vertical" className="mx-2.5" />
 
                 {/* Systemic Pressure */}
-                <FormField
-                  control={form.control}
-                  name="systemicPressure"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col items-center">
-                      <FormControl>
-                        <Input
-                          placeholder="0"
-                          type="number"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                          {...field}
-                          value={field.value ?? '0'}
-                          onChange={(e) =>
-                            updateSystemicPressure(e.target.value)
-                          }
-                        />
-                      </FormControl>
-                      <FormLabel className="text-xs">
-                        Systemic
-                        <br />
-                        Pressure
-                      </FormLabel>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex flex-col items-center">
+                  <Input
+                    key={`systemicPressure-${selectedSurvivor?.id || 'new'}`}
+                    placeholder="0"
+                    type="number"
+                    className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={selectedSurvivor?.systemicPressure ?? '0'}
+                    min={0}
+                    onChange={(e) => updateSystemicPressure(e.target.value)}
+                  />
+                  <label className="text-xs">
+                    Systemic
+                    <br />
+                    Pressure
+                  </label>
+                </div>
               </>
             )}
           </div>

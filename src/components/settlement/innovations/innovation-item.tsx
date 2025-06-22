@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Innovation Item Component Properties
  */
 export interface InnovationItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Innovation ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface InnovationItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,27 +48,26 @@ export function InnovationItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: InnovationItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedInnovationItem = form.watch(`innovations.${index}`)
-
   useEffect(() => {
     console.debug(
       '[InnovationItem] Changed',
-      watchedInnovationItem,
+      selectedSettlement?.innovations?.[index],
       isDisabled,
       index
     )
 
-    if (inputRef.current) inputRef.current.value = watchedInnovationItem || ''
+    if (inputRef.current)
+      inputRef.current.value = selectedSettlement?.innovations?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -78,7 +76,7 @@ export function InnovationItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedInnovationItem, isDisabled, index])
+  }, [selectedSettlement?.innovations, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -111,13 +109,15 @@ export function InnovationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedInnovationItem}</span>
+          <span className="text-xs">
+            {selectedSettlement?.innovations?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Innovation"
-          defaultValue={watchedInnovationItem}
+          defaultValue={selectedSettlement?.innovations?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

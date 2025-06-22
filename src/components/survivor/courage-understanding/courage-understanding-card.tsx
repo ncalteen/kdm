@@ -10,18 +10,17 @@ import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Courage Understanding Card Properties
  */
 interface CourageUnderstandingCardProps {
-  /** Survivor Form */
-  form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Settlemenet */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -35,12 +34,10 @@ interface CourageUnderstandingCardProps {
  * @returns Courage and Understanding Card Component
  */
 export function CourageUnderstandingCard({
-  form,
   saveSelectedSurvivor,
-  selectedSettlement
+  selectedSettlement,
+  selectedSurvivor
 }: CourageUnderstandingCardProps): ReactElement {
-  const courage = form.watch('courage')
-  const understanding = form.watch('understanding')
   /**
    * Save to Local Storage
    *
@@ -102,7 +99,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(courage || 0) > i}
+                    checked={(selectedSurvivor?.courage || 0) > i}
                     onCheckedChange={(checked) => updateCourage(i, !!checked)}
                     className={
                       'h-4 w-4 rounded-sm' +
@@ -151,7 +148,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(understanding || 0) > i}
+                    checked={(selectedSurvivor?.understanding || 0) > i}
                     onCheckedChange={(checked) =>
                       updateUnderstanding(i, !!checked)
                     }
@@ -202,7 +199,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(courage || 0) > i}
+                    checked={(selectedSurvivor?.courage || 0) > i}
                     onCheckedChange={(checked) => updateCourage(i, !!checked)}
                     className={
                       'h-4 w-4 rounded-sm' +
@@ -248,7 +245,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(understanding || 0) > i}
+                    checked={(selectedSurvivor?.understanding || 0) > i}
                     onCheckedChange={(checked) =>
                       updateUnderstanding(i, !!checked)
                     }
@@ -294,13 +291,13 @@ export function CourageUnderstandingCard({
         {selectedSettlement?.campaignType !==
         CampaignType.PEOPLE_OF_THE_STARS ? (
           <CourageUnderstandingAbilities
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
         ) : (
           <FacesInTheSky
-            form={form}
             saveSelectedSurvivor={saveSelectedSurvivor}
+            selectedSurvivor={selectedSurvivor}
           />
         )}
       </CardContent>

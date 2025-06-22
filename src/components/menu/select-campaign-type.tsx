@@ -77,7 +77,7 @@ export function SelectCampaignType({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"

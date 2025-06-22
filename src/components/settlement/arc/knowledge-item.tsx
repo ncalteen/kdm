@@ -10,14 +10,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Knowledge Item Component Properties
  */
 export interface KnowledgeItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Knowledge ID */
   id: string
   /** Index */
@@ -32,6 +29,8 @@ export interface KnowledgeItemProps {
   onSave: (name?: string, philosophy?: string, index?: number) => void
   /** Available Philosophies */
   philosophies: Philosophy[]
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -56,11 +55,11 @@ export function KnowledgeItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
   onSave,
-  philosophies
+  philosophies,
+  selectedSettlement
 }: KnowledgeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -68,18 +67,17 @@ export function KnowledgeItem({
   const inputRef = useRef<HTMLInputElement>(null)
   const selectRef = useRef<HTMLButtonElement>(null)
 
-  const watchedKnowledgeItem = form.watch(`knowledges.${index}`)
-
   useEffect(() => {
     console.debug(
       '[KnowledgeItem] Changed',
-      watchedKnowledgeItem,
+      selectedSettlement?.knowledges?.[index],
       isDisabled,
       index
     )
 
     if (inputRef.current)
-      inputRef.current.value = watchedKnowledgeItem?.name || ''
+      inputRef.current.value =
+        selectedSettlement?.knowledges?.[index].name || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -88,7 +86,7 @@ export function KnowledgeItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedKnowledgeItem, isDisabled, index])
+  }, [selectedSettlement?.knowledges, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -102,7 +100,11 @@ export function KnowledgeItem({
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
 
-      onSave(inputRef.current.value, watchedKnowledgeItem?.philosophy, index)
+      onSave(
+        inputRef.current.value,
+        selectedSettlement?.knowledges?.[index].philosophy,
+        index
+      )
     }
   }
 
@@ -128,7 +130,9 @@ export function KnowledgeItem({
 
           {/* Knowledge Name */}
           <div className="flex ml-1">
-            <span className="text-xs">{watchedKnowledgeItem?.name || ''}</span>
+            <span className="text-xs">
+              {selectedSettlement?.knowledges?.[index].name || ''}
+            </span>
           </div>
 
           <div className="flex items-center gap-1 ml-auto">
@@ -136,7 +140,7 @@ export function KnowledgeItem({
             <div className="flex ml-1">
               <span className="text-xs">
                 <Badge variant="outline">
-                  {watchedKnowledgeItem?.philosophy || 'None'}
+                  {selectedSettlement?.knowledges?.[index].philosophy || 'None'}
                 </Badge>
               </span>
             </div>
@@ -176,7 +180,7 @@ export function KnowledgeItem({
             <Input
               ref={inputRef}
               placeholder="Add knowledge..."
-              defaultValue={watchedKnowledgeItem?.name || ''}
+              defaultValue={selectedSettlement?.knowledges?.[index].name || ''}
               onKeyDown={handleKeyDown}
               autoFocus
             />
@@ -185,9 +189,13 @@ export function KnowledgeItem({
             <SelectPhilosophy
               ref={selectRef}
               options={philosophies}
-              value={watchedKnowledgeItem?.philosophy ?? ''}
+              value={selectedSettlement?.knowledges?.[index].philosophy ?? ''}
               onChange={(value) =>
-                onSave(watchedKnowledgeItem?.name, value, index)
+                onSave(
+                  selectedSettlement?.knowledges?.[index].name,
+                  value,
+                  index
+                )
               }
             />
           </div>
@@ -201,7 +209,7 @@ export function KnowledgeItem({
               onClick={() =>
                 onSave(
                   inputRef.current!.value,
-                  watchedKnowledgeItem?.philosophy,
+                  selectedSettlement?.knowledges?.[index].philosophy,
                   index
                 )
               }

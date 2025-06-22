@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Monster Volume Item Component Properties
  */
 export interface MonsterVolumeItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Volume ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface MonsterVolumeItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,28 +48,26 @@ export function MonsterVolumeItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: MonsterVolumeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedMonsterVolumeItem = form.watch(`monsterVolumes.${index}`)
-
   useEffect(() => {
     console.debug(
       '[MonsterVolumeItem] Changed',
-      watchedMonsterVolumeItem,
+      selectedSettlement?.monsterVolumes?.[index],
       isDisabled,
       index
     )
 
     if (inputRef.current)
-      inputRef.current.value = watchedMonsterVolumeItem || ''
+      inputRef.current.value = selectedSettlement?.monsterVolumes?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -79,7 +76,7 @@ export function MonsterVolumeItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedMonsterVolumeItem, isDisabled, index])
+  }, [selectedSettlement?.monsterVolumes, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -112,13 +109,15 @@ export function MonsterVolumeItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedMonsterVolumeItem}</span>
+          <span className="text-xs">
+            {selectedSettlement?.monsterVolumes?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Monster Volume"
-          defaultValue={watchedMonsterVolumeItem}
+          defaultValue={selectedSettlement?.monsterVolumes?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

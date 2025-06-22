@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Arrival Bonus Item Component Properties
  */
 export interface ArrivalBonusItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Arrival Bonus ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface ArrivalBonusItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,22 +48,25 @@ export function ArrivalBonusItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: ArrivalBonusItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedArrivalBonus = form.watch(`arrivalBonuses.${index}`)
-
   useEffect(() => {
-    console.debug('[ArrivalBonusItem] Changed', watchedArrivalBonus, isDisabled)
+    console.debug(
+      '[ArrivalBonusItem] Changed',
+      selectedSettlement?.arrivalBonuses?.[index],
+      isDisabled
+    )
 
-    if (inputRef.current) inputRef.current.value = watchedArrivalBonus || ''
+    if (inputRef.current)
+      inputRef.current.value = selectedSettlement?.arrivalBonuses?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -73,7 +75,7 @@ export function ArrivalBonusItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedArrivalBonus, isDisabled])
+  }, [selectedSettlement?.arrivalBonuses, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -106,13 +108,15 @@ export function ArrivalBonusItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedArrivalBonus}</span>
+          <span className="text-xs">
+            {selectedSettlement?.arrivalBonuses?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Arrival bonus"
-          defaultValue={watchedArrivalBonus}
+          defaultValue={selectedSettlement?.arrivalBonuses?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

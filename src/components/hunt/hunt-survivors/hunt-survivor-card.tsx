@@ -1,6 +1,7 @@
 'use client'
 
 import { Avatar } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -139,6 +140,9 @@ export function HuntSurvivorCard({
         form.reset(SurvivorSchema.parse(updatedFormData))
       }
 
+      // Dispatch custom event to notify other components about survivor changes
+      window.dispatchEvent(new CustomEvent('campaignUpdated'))
+
       if (successMsg) toast.success(successMsg)
     } catch (error) {
       console.error('Hunt Survivor Save Error:', error)
@@ -267,6 +271,12 @@ export function HuntSurvivorCard({
         <div className="text-left flex-1 min-w-0">
           <div className="font-semibold text-sm truncate">{survivor.name}</div>
           <div className="text-xs text-muted-foreground">{survivor.gender}</div>
+          {/* Scout Badge */}
+          {selectedHunt?.scout === survivor.id && (
+            <Badge variant="secondary" className="mt-1 text-xs">
+              Scout
+            </Badge>
+          )}
         </div>
 
         {/* Status Checkboxes */}
@@ -566,7 +576,7 @@ export function HuntSurvivorCard({
                   placeholder="1"
                   type="number"
                   className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  defaultValue={survivor.headArmor ?? '0'}
+                  value={survivor.headArmor ?? '0'}
                   min={0}
                   onChange={(e) =>
                     saveToLocalStorage(
@@ -618,7 +628,7 @@ export function HuntSurvivorCard({
                   placeholder="1"
                   type="number"
                   className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  defaultValue={survivor.armArmor ?? '0'}
+                  value={survivor.armArmor ?? '0'}
                   min={0}
                   onChange={(e) =>
                     saveToLocalStorage(
@@ -695,7 +705,7 @@ export function HuntSurvivorCard({
                   placeholder="1"
                   type="number"
                   className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  defaultValue={survivor.bodyArmor ?? '0'}
+                  value={survivor.bodyArmor ?? '0'}
                   min={0}
                   onChange={(e) =>
                     saveToLocalStorage(
@@ -772,7 +782,7 @@ export function HuntSurvivorCard({
                   placeholder="1"
                   type="number"
                   className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  defaultValue={survivor.waistArmor ?? '0'}
+                  value={survivor.waistArmor ?? '0'}
                   min={0}
                   onChange={(e) =>
                     saveToLocalStorage(
@@ -849,7 +859,7 @@ export function HuntSurvivorCard({
                   placeholder="1"
                   type="number"
                   className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  defaultValue={survivor.legArmor ?? '0'}
+                  value={survivor.legArmor ?? '0'}
                   min={0}
                   onChange={(e) =>
                     saveToLocalStorage(

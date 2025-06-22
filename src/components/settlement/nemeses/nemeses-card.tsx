@@ -30,15 +30,12 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, SkullIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Nemeses Card Props
  */
 interface NemesesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -55,7 +52,6 @@ interface NemesesCardProps {
  * @returns Nemeses Card Component
  */
 export function NemesesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: NemesesCardProps): ReactElement {
@@ -303,13 +299,13 @@ export function NemesesCard({
                       key={index}
                       id={index.toString()}
                       index={index}
-                      form={form}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
                       onEdit={onEdit}
                       onToggleUnlocked={onToggleUnlocked}
                       onToggleLevel={onToggleLevel}
+                      selectedSettlement={selectedSettlement}
                     />
                   ))}
                 </SortableContext>

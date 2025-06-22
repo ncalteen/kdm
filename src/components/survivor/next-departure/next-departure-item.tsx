@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Next Departure Item Component Properties
  */
 export interface NextDepartureItemProps {
-  /** Form */
-  form: UseFormReturn<Survivor>
   /** Next Departure ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface NextDepartureItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -49,28 +48,26 @@ export function NextDepartureItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSurvivor
 }: NextDepartureItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedNextDepartureItem = form.watch(`nextDeparture.${index}`)
-
   useEffect(() => {
     console.debug(
       '[NextDepartureItem] Changed',
-      watchedNextDepartureItem,
+      selectedSurvivor?.nextDeparture?.[index],
       isDisabled,
       index
     )
 
     if (inputRef.current)
-      inputRef.current.value = watchedNextDepartureItem || ''
+      inputRef.current.value = selectedSurvivor?.nextDeparture?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -79,7 +76,7 @@ export function NextDepartureItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedNextDepartureItem, isDisabled, index])
+  }, [selectedSurvivor?.nextDeparture, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -112,13 +109,15 @@ export function NextDepartureItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedNextDepartureItem}</span>
+          <span className="text-xs">
+            {selectedSurvivor?.nextDeparture?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Next Departure"
-          defaultValue={watchedNextDepartureItem}
+          defaultValue={selectedSurvivor?.nextDeparture?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

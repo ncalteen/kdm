@@ -17,15 +17,12 @@ import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement, useCallback, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Active Hunt Card Properties
  */
 interface ActiveHuntCardProps {
-  /** Hunt Form */
-  form: UseFormReturn<Hunt>
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Hunt */
@@ -153,7 +150,7 @@ export function ActiveHuntCard({
         onOpenChange={setIsCancelDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Hunt</AlertDialogTitle>
+            <AlertDialogTitle>End Hunt</AlertDialogTitle>
             <AlertDialogDescription>
               The hunt will end and survivors will return to the settlement.{' '}
               <strong>

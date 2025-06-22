@@ -1,27 +1,19 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel
-} from '@/components/ui/form'
+import { FormControl } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement, useEffect, useMemo } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Overview Card Properties
  */
 interface OverviewCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -43,7 +35,6 @@ interface OverviewCardProps {
  * @returns Overview Card Component
  */
 export function OverviewCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement,
   survivors
@@ -64,9 +55,6 @@ export function OverviewCard({
     ).length
   }, [survivors, selectedSettlement?.id])
 
-  const watchedNemeses = form.watch('nemeses')
-  const watchedQuarries = form.watch('quarries')
-
   // Calculate collective cognition for ARC campaigns
   useEffect(() => {
     if (selectedSettlement?.survivorType !== SurvivorType.ARC) return
@@ -77,21 +65,21 @@ export function OverviewCard({
       selectedSettlement?.id,
       selectedSettlement?.survivorType,
       selectedSettlement?.ccValue,
-      watchedNemeses,
-      watchedQuarries
+      selectedSettlement?.nemeses,
+      selectedSettlement?.quarries
     )
 
     let totalCc = 0
 
     // Calculate CC from nemesis victories. Each nemesis victory gives 3 CC.
-    for (const nemesis of watchedNemeses || []) {
+    for (const nemesis of selectedSettlement?.nemeses || []) {
       if (nemesis.ccLevel1) totalCc += 3
       if (nemesis.ccLevel2) totalCc += 3
       if (nemesis.ccLevel3) totalCc += 3
     }
 
     // Calculate CC from quarry victories.
-    for (const quarry of watchedQuarries || []) {
+    for (const quarry of selectedSettlement?.quarries || []) {
       // Prologue Monster (1 CC)
       if (quarry.ccPrologue) totalCc += 1
 
@@ -111,12 +99,12 @@ export function OverviewCard({
     if (selectedSettlement.ccValue !== totalCc)
       saveSelectedSettlement({ ccValue: totalCc })
   }, [
+    saveSelectedSettlement,
     selectedSettlement?.id,
     selectedSettlement?.survivorType,
     selectedSettlement?.ccValue,
-    saveSelectedSettlement,
-    watchedNemeses,
-    watchedQuarries
+    selectedSettlement?.nemeses,
+    selectedSettlement?.quarries
   ])
 
   /**
@@ -163,33 +151,17 @@ export function OverviewCard({
         {/* Desktop Layout */}
         <div className="hidden lg:flex flex-row items-start justify-between gap-4">
           {/* Survival Limit */}
-          <FormField
-            control={form.control}
-            name="survivalLimit"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="1"
-                      placeholder="1"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      {...field}
-                      value={field.value ?? '1'}
-                      onChange={(e) => {
-                        handleSurvivalLimitChange(e.target.value)
-                        form.setValue(field.name, parseInt(e.target.value) || 1)
-                      }}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-center text-xs">
-                    Survival Limit
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              type="number"
+              min="1"
+              placeholder="1"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSettlement?.survivalLimit ?? '1'}
+              onChange={(e) => handleSurvivalLimitChange(e.target.value)}
+            />
+            <label className="text-center text-xs">Survival Limit</label>
+          </div>
 
           <Separator
             orientation="vertical"
@@ -197,27 +169,15 @@ export function OverviewCard({
           />
 
           {/* Population */}
-          <FormField
-            control={form.control}
-            name="population"
-            render={() => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      value={currentPopulation}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormLabel className="text-center text-xs">
-                    Population
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={currentPopulation}
+              disabled
+            />
+            <label className="text-center text-xs">Population</label>
+          </div>
 
           <Separator
             orientation="vertical"
@@ -225,27 +185,15 @@ export function OverviewCard({
           />
 
           {/* Death Count */}
-          <FormField
-            control={form.control}
-            name="deathCount"
-            render={() => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      value={currentDeathCount}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormLabel className="text-center text-xs">
-                    Death Count
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={currentDeathCount}
+              disabled
+            />
+            <label className="text-center text-xs">Death Count</label>
+          </div>
 
           <Separator
             orientation="vertical"
@@ -253,29 +201,16 @@ export function OverviewCard({
           />
 
           {/* Lost Settlement Count */}
-          <FormField
-            control={form.control}
-            name="lostSettlements"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      {...field}
-                      value={field.value ?? '0'}
-                      disabled
-                    />
-                  </FormControl>
-                  <FormLabel className="text-center text-xs">
-                    Lost Settlements
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              type="number"
+              placeholder="0"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSettlement?.lostSettlements ?? '0'}
+              disabled
+            />
+            <label className="text-center text-xs">Lost Settlements</label>
+          </div>
 
           {/* Collective Cognition (ARC only) */}
           {selectedSettlement?.survivorType === SurvivorType.ARC && (
@@ -285,27 +220,17 @@ export function OverviewCard({
                 className="mx-2 data-[orientation=vertical]:h-12"
               />
 
-              <FormField
-                control={form.control}
-                name="ccValue"
-                render={() => (
-                  <FormItem>
-                    <div className="flex flex-col items-center gap-1">
-                      <FormControl>
-                        <Input
-                          type="number"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                          value={selectedSettlement?.ccValue ?? '0'}
-                          disabled
-                        />
-                      </FormControl>
-                      <FormLabel className="text-center text-xs">
-                        Collective Cognition
-                      </FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
+              <div className="flex flex-col items-center gap-1">
+                <Input
+                  type="number"
+                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  value={selectedSettlement?.ccValue ?? '0'}
+                  disabled
+                />
+                <label className="text-center text-xs">
+                  Collective Cognition
+                </label>
+              </div>
             </>
           )}
 
@@ -320,36 +245,19 @@ export function OverviewCard({
                 className="mx-2 data-[orientation=vertical]:h-12"
               />
 
-              <FormField
-                control={form.control}
-                name="lanternResearchLevel"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex flex-col items-center gap-1">
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="0"
-                          placeholder="0"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                          {...field}
-                          value={field.value ?? '0'}
-                          onChange={(e) => {
-                            handleLanternResearchLevelChange(e.target.value)
-                            form.setValue(
-                              field.name,
-                              parseInt(e.target.value) || 0
-                            )
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="text-center text-xs">
-                        Lantern Research
-                      </FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
+              <div className="flex flex-col items-center gap-1">
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  value={selectedSettlement?.lanternResearchLevel ?? '0'}
+                  onChange={(e) => {
+                    handleLanternResearchLevelChange(e.target.value)
+                  }}
+                />
+                <label className="text-center text-xs">Lantern Research</label>
+              </div>
             </>
           )}
         </div>
@@ -357,120 +265,67 @@ export function OverviewCard({
         {/* Mobile/Tablet Layout */}
         <div className="lg:hidden space-y-2">
           {/* Survival Limit */}
-          <FormField
-            control={form.control}
-            name="survivalLimit"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel className="text-sm">Survival Limit</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="1"
-                      placeholder="1"
-                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      {...field}
-                      value={field.value ?? '1'}
-                      onChange={(e) => {
-                        handleSurvivalLimitChange(e.target.value)
-                        form.setValue(field.name, parseInt(e.target.value) || 1)
-                      }}
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex items-center justify-between">
+            <label className="text-sm">Survival Limit</label>
+            <Input
+              type="number"
+              min="1"
+              placeholder="1"
+              className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSettlement?.survivalLimit ?? '1'}
+              onChange={(e) => {
+                handleSurvivalLimitChange(e.target.value)
+              }}
+            />
+          </div>
 
           {/* Population */}
-          <FormField
-            control={form.control}
-            name="population"
-            render={() => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel className="text-sm">Population</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      value={currentPopulation}
-                      disabled
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex items-center justify-between">
+            <label className="text-sm">Population</label>
+            <Input
+              type="number"
+              className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={currentPopulation}
+              disabled
+            />
+          </div>
 
           {/* Death Count */}
-          <FormField
-            control={form.control}
-            name="deathCount"
-            render={() => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel className="text-sm">Death Count</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      value={currentDeathCount}
-                      disabled
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex items-center justify-between">
+            <label className="text-sm">Death Count</label>
+            <Input
+              type="number"
+              className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={currentDeathCount}
+              disabled
+            />
+          </div>
 
           {/* Lost Settlement Count */}
-          <FormField
-            control={form.control}
-            name="lostSettlements"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel className="text-sm">Lost Settlements</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      {...field}
-                      value={field.value ?? '0'}
-                      disabled
-                    />
-                  </FormControl>
-                </div>
-              </FormItem>
-            )}
-          />
+          <div className="flex items-center justify-between">
+            <label className="text-sm">Lost Settlements</label>
+            <FormControl>
+              <Input
+                type="number"
+                placeholder="0"
+                className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSettlement?.lostSettlements ?? '0'}
+                disabled
+              />
+            </FormControl>
+          </div>
 
           {/* Collective Cognition (ARC only) */}
           {selectedSettlement?.survivorType === SurvivorType.ARC && (
-            <FormField
-              control={form.control}
-              name="ccValue"
-              render={() => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-sm">
-                      Collective Cognition
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                        value={selectedSettlement?.ccValue ?? '0'}
-                        disabled
-                      />
-                    </FormControl>
-                  </div>
-                </FormItem>
-              )}
-            />
+            <div className="flex items-center justify-between">
+              <label className="text-sm">Collective Cognition</label>
+              <Input
+                type="number"
+                className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSettlement?.ccValue ?? '0'}
+                disabled
+              />
+            </div>
           )}
 
           {/* Lantern Research Level (People of the Lantern/Sun only) */}
@@ -478,34 +333,19 @@ export function OverviewCard({
             CampaignType.PEOPLE_OF_THE_LANTERN ||
             selectedSettlement?.campaignType ===
               CampaignType.PEOPLE_OF_THE_SUN) && (
-            <FormField
-              control={form.control}
-              name="lanternResearchLevel"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel className="text-sm">Lantern Research</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                        {...field}
-                        value={field.value ?? '0'}
-                        onChange={(e) => {
-                          handleLanternResearchLevelChange(e.target.value)
-                          form.setValue(
-                            field.name,
-                            parseInt(e.target.value) || 0
-                          )
-                        }}
-                      />
-                    </FormControl>
-                  </div>
-                </FormItem>
-              )}
-            />
+            <div className="flex items-center justify-between">
+              <label className="text-sm">Lantern Research</label>
+              <Input
+                type="number"
+                min="0"
+                placeholder="0"
+                className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSettlement?.lanternResearchLevel ?? '0'}
+                onChange={(e) =>
+                  handleLanternResearchLevelChange(e.target.value)
+                }
+              />
+            </div>
           )}
         </div>
       </CardContent>

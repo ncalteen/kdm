@@ -8,14 +8,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Philosophy Item Component Properties
  */
 export interface PhilosophyItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Philosophy ID */
   id: string
   /** Index */
@@ -28,6 +25,8 @@ export interface PhilosophyItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -50,17 +49,15 @@ export function PhilosophyItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: PhilosophyItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const selectRef = useRef<HTMLButtonElement>(null)
-
-  const watchedPhilosophyItem = form.watch(`philosophies.${index}`)
 
   useEffect(() => {
     console.debug('[PhilosophyItem] Disabled State Changed:', isDisabled)
@@ -80,7 +77,7 @@ export function PhilosophyItem({
     if (e.key === 'Enter') {
       e.preventDefault()
 
-      onSave(watchedPhilosophyItem, index)
+      onSave(selectedSettlement?.philosophies?.[index], index)
     }
   }
 
@@ -100,13 +97,15 @@ export function PhilosophyItem({
       {/* Select Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedPhilosophyItem}</span>
+          <span className="text-xs">
+            {selectedSettlement?.philosophies?.[index]}
+          </span>
         </div>
       ) : (
         <SelectPhilosophy
           ref={selectRef}
           options={Object.values(Philosophy)}
-          value={watchedPhilosophyItem}
+          value={selectedSettlement?.philosophies?.[index]}
           onChange={(value) => {
             if (!isDisabled) onSave(value, index)
           }}
@@ -131,7 +130,9 @@ export function PhilosophyItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => onSave(watchedPhilosophyItem, index)}
+            onClick={() =>
+              onSave(selectedSettlement?.philosophies?.[index], index)
+            }
             title="Save philosophy">
             <CheckIcon className="h-4 w-4" />
           </Button>

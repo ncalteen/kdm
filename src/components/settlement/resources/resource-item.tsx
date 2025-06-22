@@ -11,20 +11,19 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Resource Item Component Properties
  */
 export interface ResourceItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Resource Item ID */
   id: string
   /** Resource Item Index */
   index: number
   /** Is Disabled */
   isDisabled: boolean
+  /** OnAmountChange Handler */
+  onAmountChange?: (index: number, amount: number) => void
   /** OnEdit Handler */
   onEdit: (index: number) => void
   /** OnRemove Handler */
@@ -37,8 +36,8 @@ export interface ResourceItemProps {
     types: ResourceType[],
     amount: number
   ) => void
-  /** OnAmountChange Handler */
-  onAmountChange?: (index: number, amount: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -66,11 +65,11 @@ export function ResourceItem({
   id,
   index,
   isDisabled,
-  form,
+  onAmountChange,
   onEdit,
   onRemove,
   onSave,
-  onAmountChange
+  selectedSettlement
 }: ResourceItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -78,26 +77,36 @@ export function ResourceItem({
   const nameInputRef = useRef<HTMLInputElement>(null)
   const amountInputRef = useRef<HTMLInputElement>(null)
 
-  const watchedResource = form.watch(`resources.${index}`)
-
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
-    watchedResource.category || ResourceCategory.BASIC
+    selectedSettlement?.resources?.[index].category || ResourceCategory.BASIC
   )
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
-    watchedResource.types || [ResourceType.BONE]
+    selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
   )
 
   useEffect(() => {
-    console.debug('[ResourceItem] Changed', watchedResource, isDisabled, index)
+    console.debug(
+      '[ResourceItem] Changed',
+      selectedSettlement?.resources?.[index],
+      isDisabled,
+      index
+    )
 
     if (nameInputRef.current)
-      nameInputRef.current.value = watchedResource.name || ''
+      nameInputRef.current.value =
+        selectedSettlement?.resources?.[index].name || ''
 
     if (amountInputRef.current)
-      amountInputRef.current.value = (watchedResource.amount || 0).toString()
+      amountInputRef.current.value = (
+        selectedSettlement?.resources?.[index].amount || 0
+      ).toString()
 
-    setSelectedCategory(watchedResource.category || ResourceCategory.BASIC)
-    setSelectedTypes(watchedResource.types || [ResourceType.BONE])
+    setSelectedCategory(
+      selectedSettlement?.resources?.[index].category || ResourceCategory.BASIC
+    )
+    setSelectedTypes(
+      selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
+    )
 
     if (!isDisabled && nameInputRef.current) {
       nameInputRef.current.focus()
@@ -106,7 +115,7 @@ export function ResourceItem({
       nameInputRef.current.value = ''
       nameInputRef.current.value = val
     }
-  }, [watchedResource, isDisabled, index])
+  }, [selectedSettlement?.resources, isDisabled, index])
 
   /**
    * Handles the key down event for the name input field.
@@ -160,7 +169,7 @@ export function ResourceItem({
             <div className="grid grid-cols-12 items-center gap-2">
               {/* Form Fields */}
               <div className="col-span-4 text-xs text-left font-bold">
-                {watchedResource.name}
+                {selectedSettlement?.resources?.[index].name}
               </div>
               <div className="col-span-2">
                 <Badge variant="default">{selectedCategory}</Badge>
@@ -178,7 +187,7 @@ export function ResourceItem({
                   type="number"
                   min={0}
                   placeholder="0"
-                  defaultValue={watchedResource.amount}
+                  defaultValue={selectedSettlement?.resources?.[index].amount}
                   onChange={handleAmountChange}
                   className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
@@ -210,7 +219,7 @@ export function ResourceItem({
                 <Input
                   ref={nameInputRef}
                   placeholder="Resource Name"
-                  defaultValue={watchedResource.name}
+                  defaultValue={selectedSettlement?.resources?.[index].name}
                   onKeyDown={handleNameKeyDown}
                   autoFocus
                 />
@@ -234,7 +243,7 @@ export function ResourceItem({
                   min={0}
                   placeholder="0"
                   disabled={true}
-                  defaultValue={watchedResource.amount}
+                  defaultValue={selectedSettlement?.resources?.[index].amount}
                   onChange={handleAmountChange}
                   className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />

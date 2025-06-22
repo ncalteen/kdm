@@ -24,15 +24,12 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, ScissorsLineDashedIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Patterns Card Properties
  */
 interface PatternsCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -53,7 +50,6 @@ interface PatternsCardProps {
  * @returns Patterns Card Component
  */
 export function PatternsCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: PatternsCardProps): ReactElement {
@@ -242,11 +238,11 @@ export function PatternsCard({
                         key={index}
                         id={index.toString()}
                         index={index}
-                        form={form}
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
                         onEdit={onEdit}
+                        selectedSettlement={selectedSettlement}
                       />
                     )
                   )}

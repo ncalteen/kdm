@@ -7,16 +7,15 @@ import { WeaponType } from '@/lib/enums'
 import { Survivor } from '@/schemas/survivor'
 import { SwordsIcon } from 'lucide-react'
 import { ReactElement, useCallback } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Weapon Proficiency Card Properties
  */
 interface WeaponProficiencyCardProps {
-  /** Survivor Form */
-  form: UseFormReturn<Survivor>
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -31,11 +30,9 @@ interface WeaponProficiencyCardProps {
  * @returns Weapon Proficiency Card Component
  */
 export function WeaponProficiencyCard({
-  form,
-  saveSelectedSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor
 }: WeaponProficiencyCardProps): ReactElement {
-  const weaponProficiency = form.watch('weaponProficiency')
-  const weaponProficiencyType = form.watch('weaponProficiencyType')
   /**
    * Save to Local Storage
    *
@@ -102,7 +99,7 @@ export function WeaponProficiencyCard({
               Weapon Proficiency
             </CardTitle>
             <SelectWeaponType
-              value={weaponProficiencyType}
+              value={selectedSurvivor?.weaponProficiencyType}
               onChange={handleWeaponTypeChange}
             />
           </div>
@@ -113,7 +110,7 @@ export function WeaponProficiencyCard({
                   key={i}
                   className="w-4 h-4 flex items-center justify-center">
                   <Checkbox
-                    checked={(weaponProficiency || 0) > i}
+                    checked={(selectedSurvivor?.weaponProficiency || 0) > i}
                     onCheckedChange={(checked) =>
                       handleProficiencyChange(i, !!checked)
                     }

@@ -13,6 +13,13 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -26,6 +33,11 @@ import { toast } from 'sonner'
  * Settings Card Properties
  */
 interface SettingsCardProps {
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
   /** Selected Hunt */
   selectedHunt: Partial<Hunt> | null
   /** Selected Settlement */
@@ -51,6 +63,7 @@ interface SettingsCardProps {
  * @returns Settings Card Component
  */
 export function SettingsCard({
+  saveSelectedSettlement,
   selectedHunt,
   selectedSettlement,
   selectedShowdown,
@@ -60,6 +73,24 @@ export function SettingsCard({
   setSelectedSurvivor
 }: SettingsCardProps): ReactElement {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+
+  /**
+   * Handles updating the uses scouts setting
+   */
+  const handleUsesScoutsChange = (value: string) => {
+    const usesScouts = value === 'true'
+    try {
+      saveSelectedSettlement(
+        { usesScouts },
+        usesScouts
+          ? 'The settlement now employs scouts to aid in hunts.'
+          : 'The settlement no longer relies on scouts for hunts.'
+      )
+    } catch (error) {
+      console.error('Uses Scouts Update Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }
 
   /**
    * Deletes the Selected Hunt
@@ -230,6 +261,38 @@ export function SettingsCard({
           </CardContent>
         </Card>
       )}
+
+      {/* Scout Settings */}
+      <Card className="p-0">
+        <CardHeader className="px-4 pt-3 pb-0">
+          <CardTitle className="text-lg">Scout Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-sm">Uses Scouts</div>
+              <div className="text-sm text-muted-foreground">
+                Determines if scouts are required for hunts and showdowns.
+              </div>
+            </div>
+            <Select
+              value={
+                selectedSettlement?.usesScouts !== undefined
+                  ? selectedSettlement.usesScouts.toString()
+                  : 'false'
+              }
+              onValueChange={handleUsesScoutsChange}>
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="true">Yes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Danger Zone */}
       <Card className="p-0 border-destructive">

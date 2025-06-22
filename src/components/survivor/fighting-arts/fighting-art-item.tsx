@@ -8,14 +8,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Fighting Art Item Component Properties
  */
 export interface FightingArtItemProps {
-  /** Form */
-  form: UseFormReturn<Survivor>
   /** Array Name */
   arrayName: 'fightingArts' | 'secretFightingArts'
   /** Fighting Art ID */
@@ -32,6 +29,8 @@ export interface FightingArtItemProps {
   onSave: (value?: string, index?: number) => void
   /** Placeholder Text */
   placeholder: string
+  /** Selected Survivor  */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -59,22 +58,21 @@ export function FightingArtItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
   onSave,
-  placeholder
+  placeholder,
+  selectedSurvivor
 }: FightingArtItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedFightingArtItem = form.watch(`${arrayName}.${index}`)
-
   useEffect(() => {
     console.debug('[FightingArtItem] Changed', isDisabled, index)
-    if (inputRef.current) inputRef.current.value = watchedFightingArtItem || ''
+    if (inputRef.current)
+      inputRef.current.value = selectedSurvivor?.[arrayName]?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -83,7 +81,7 @@ export function FightingArtItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedFightingArtItem, isDisabled, index, arrayName])
+  }, [selectedSurvivor, isDisabled, index, arrayName])
 
   /**
    * Handles the key down event for the input field.
@@ -123,13 +121,15 @@ export function FightingArtItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedFightingArtItem}</span>
+          <span className="text-xs">
+            {selectedSurvivor?.[arrayName]?.[index]}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder={placeholder}
-          defaultValue={watchedFightingArtItem}
+          defaultValue={selectedSurvivor?.[arrayName]?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

@@ -2,28 +2,20 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { RibbonIcon, Shield } from 'lucide-react'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Waist Card Properties
  */
-interface WaistCardProps extends Partial<Survivor> {
-  /** Survivor Form */
-  form: UseFormReturn<Survivor>
+interface WaistCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -36,8 +28,8 @@ interface WaistCardProps extends Partial<Survivor> {
  * @returns Waist Card Component
  */
 export function WaistCard({
-  form,
-  saveSelectedSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor
 }: WaistCardProps): ReactElement {
   /**
    * Save to Local Storage
@@ -67,36 +59,23 @@ export function WaistCard({
     <Card className="p-2 border-0">
       <CardContent className="p-0 h-[80px]">
         <div className="flex flex-row">
-          <FormField
-            control={form.control}
-            name="waistArmor"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="relative flex items-center">
-                    <Shield
-                      className="h-14 w-14 text-muted-foreground"
-                      strokeWidth={1}
-                    />
-                    <Input
-                      placeholder="1"
-                      type="number"
-                      className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      defaultValue={field.value ?? '0'}
-                      min={0}
-                      onChange={(e) =>
-                        saveToLocalStorage(
-                          'waistArmor',
-                          parseInt(e.target.value)
-                        )
-                      }
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="relative flex items-center">
+            <Shield
+              className="h-14 w-14 text-muted-foreground"
+              strokeWidth={1}
+            />
+            <Input
+              key={`waistArmor-${selectedSurvivor?.id || 'new'}`}
+              placeholder="1"
+              type="number"
+              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.waistArmor ?? 0}
+              min={0}
+              onChange={(e) =>
+                saveToLocalStorage('waistArmor', parseInt(e.target.value))
+              }
+            />
+          </div>
 
           <div className="mx-2 w-px bg-border h-[80px]" />
 
@@ -106,148 +85,98 @@ export function WaistCard({
             </div>
             <div className="flex flex-col items-start gap-1 ml-2">
               {/* Severe Injuries */}
-              <FormField
-                control={form.control}
-                name="waistBrokenHip"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                    <FormControl>
-                      <Checkbox
-                        className="h-4 w-4 rounded-sm"
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage('waistBrokenHip', !!checked)
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">Broken Hip</FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="waistIntestinalProlapse"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                    <FormControl>
-                      <Checkbox
-                        className="h-4 w-4 rounded-sm"
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'waistIntestinalProlapse',
-                            !!checked
-                          )
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">
-                      Intestinal Prolapse
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="waistDestroyedGenitals"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                    <FormControl>
-                      <Checkbox
-                        className="h-4 w-4 rounded-sm"
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage(
-                            'waistDestroyedGenitals',
-                            !!checked
-                          )
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs">
-                      Destroyed Genitals
-                    </FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="waistWarpedPelvis"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-row items-center gap-2">
-                    <FormControl>
-                      <div className="flex flex-row gap-1">
-                        {[1, 2, 3, 4, 5].map((value) => (
-                          <Checkbox
-                            key={value}
-                            className="h-4 w-4 rounded-sm"
-                            checked={field.value >= value}
-                            onCheckedChange={(checked) => {
-                              const newValue = checked ? value : value - 1
-                              const safeValue = Math.max(
-                                0,
-                                Math.min(5, newValue)
-                              )
+              <div className="space-y-0 flex flex-row items-center gap-2">
+                <Checkbox
+                  className="h-4 w-4 rounded-sm"
+                  checked={selectedSurvivor?.waistBrokenHip}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('waistBrokenHip', !!checked)
+                  }
+                />
+                <label className="text-xs">Broken Hip</label>
+              </div>
 
-                              saveToLocalStorage('waistWarpedPelvis', safeValue)
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </FormControl>
-                    <FormLabel className="text-xs">Warped Pelvis</FormLabel>
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-0 flex flex-row items-center gap-2">
+                <Checkbox
+                  className="h-4 w-4 rounded-sm"
+                  checked={selectedSurvivor?.waistIntestinalProlapse}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('waistIntestinalProlapse', !!checked)
+                  }
+                />
+                <label className="text-xs">Intestinal Prolapse</label>
+              </div>
+
+              <div className="space-y-0 flex flex-row items-center gap-2">
+                <Checkbox
+                  className="h-4 w-4 rounded-sm"
+                  checked={selectedSurvivor?.waistDestroyedGenitals}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('waistDestroyedGenitals', !!checked)
+                  }
+                />
+                <label className="text-xs">Destroyed Genitals</label>
+              </div>
+
+              <div className="space-y-0 flex flex-row items-center gap-2">
+                <div className="flex flex-row gap-1">
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <Checkbox
+                      key={value}
+                      className="h-4 w-4 rounded-sm"
+                      checked={
+                        (selectedSurvivor?.waistWarpedPelvis || 0) >= value
+                      }
+                      onCheckedChange={(checked) => {
+                        const newValue = checked ? value : value - 1
+                        const safeValue = Math.max(0, Math.min(5, newValue))
+
+                        saveToLocalStorage('waistWarpedPelvis', safeValue)
+                      }}
+                    />
+                  ))}
+                </div>
+                <label className="text-xs">Warped Pelvis</label>
+              </div>
             </div>
+
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <FormField
-                control={form.control}
-                name="waistLightDamage"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-col items-center">
-                    <FormControl>
-                      <Checkbox
-                        className={cn(
-                          'h-4 w-4 rounded-sm',
-                          !field.value && 'border-2 border-primary',
-                          !field.value && 'border-2 border-primary'
-                        )}
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage('waistLightDamage', !!checked)
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs mt-1">L</FormLabel>
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-0 flex flex-col items-center">
+                <Checkbox
+                  className={cn(
+                    'h-4 w-4 rounded-sm',
+                    !selectedSurvivor?.waistLightDamage &&
+                      'border-2 border-primary',
+                    !selectedSurvivor?.waistLightDamage &&
+                      'border-2 border-primary'
+                  )}
+                  checked={selectedSurvivor?.waistLightDamage}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('waistLightDamage', !!checked)
+                  }
+                />
+                <label className="text-xs mt-1">L</label>
+              </div>
+
               {/* Heavy Damage */}
-              <FormField
-                control={form.control}
-                name="waistHeavyDamage"
-                render={({ field }) => (
-                  <FormItem className="space-y-0 flex flex-col items-center">
-                    <FormControl>
-                      <Checkbox
-                        className={cn(
-                          'h-4 w-4 rounded-sm',
-                          !field.value && 'border-2 border-primary',
-                          !field.value && 'border-4 border-primary'
-                        )}
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          saveToLocalStorage('waistHeavyDamage', !!checked)
-                        }
-                      />
-                    </FormControl>
-                    <FormLabel className="text-xs mt-1">H</FormLabel>
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-0 flex flex-col items-center">
+                <Checkbox
+                  className={cn(
+                    'h-4 w-4 rounded-sm',
+                    !selectedSurvivor?.waistHeavyDamage &&
+                      'border-2 border-primary',
+                    !selectedSurvivor?.waistHeavyDamage &&
+                      'border-4 border-primary'
+                  )}
+                  checked={selectedSurvivor?.waistHeavyDamage}
+                  onCheckedChange={(checked) =>
+                    saveToLocalStorage('waistHeavyDamage', !!checked)
+                  }
+                />
+                <label className="text-xs mt-1">H</label>
+              </div>
             </div>
           </div>
         </div>

@@ -24,15 +24,12 @@ import {
 } from '@dnd-kit/sortable'
 import { MapPinPlusIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Arrival Bonuses Card Card Properties
  */
 interface ArrivalBonusesCardProps {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -46,7 +43,6 @@ interface ArrivalBonusesCardProps {
  * Arrival Bonuses Card Component
  */
 export function ArrivalBonusesCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: ArrivalBonusesCardProps): ReactElement {
@@ -243,11 +239,11 @@ export function ArrivalBonusesCard({
                         key={index}
                         id={index.toString()}
                         index={index}
-                        form={form}
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
                         onEdit={onEdit}
+                        selectedSettlement={selectedSettlement}
                       />
                     )
                   )}

@@ -86,11 +86,11 @@ export function ScoutSelectionDrawer({
             {survivors.map((survivor) => (
               <ScoutSelectionCard
                 key={survivor.id}
-                {...survivor}
                 handleSurvivorToggle={handleSurvivorToggle}
                 isCurrentlySelected={tempSelection === survivor.id}
                 isSelectedAsSurvivor={selectedSurvivors.includes(survivor.id)}
                 onHover={handleSurvivorHover}
+                survivor={survivor}
               />
             ))}
           </div>

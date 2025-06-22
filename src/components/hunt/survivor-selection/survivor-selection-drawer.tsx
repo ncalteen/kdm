@@ -94,7 +94,6 @@ export function SurvivorSelectionDrawer({
             {survivors.map((survivor) => (
               <SurvivorSelectionCard
                 key={survivor.id}
-                {...survivor}
                 isSelectedAsScout={selectedScout === survivor.id}
                 isDisabled={
                   selectedScout === survivor.id ||
@@ -104,6 +103,7 @@ export function SurvivorSelectionDrawer({
                 handleSurvivorToggle={handleSurvivorToggle}
                 tempSelection={tempSelection}
                 onHover={handleSurvivorHover}
+                survivor={survivor}
               />
             ))}
           </div>

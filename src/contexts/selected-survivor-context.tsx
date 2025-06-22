@@ -69,6 +69,27 @@ export function SelectedSurvivorProvider({
     if (savedSelectedSurvivor) setSelectedSurvivorState(savedSelectedSurvivor)
   }, [])
 
+  // Listen for campaign updates to keep selected survivor in sync
+  useEffect(() => {
+    const handleCampaignUpdate = () => {
+      if (selectedSurvivor?.id) {
+        const updatedSurvivor = getSelectedSurvivor()
+        if (updatedSurvivor && updatedSurvivor.id === selectedSurvivor.id) {
+          setSelectedSurvivorState(updatedSurvivor)
+        }
+      }
+    }
+
+    // Listen for both storage events and custom campaign update events
+    window.addEventListener('storage', handleCampaignUpdate)
+    window.addEventListener('campaignUpdated', handleCampaignUpdate)
+
+    return () => {
+      window.removeEventListener('storage', handleCampaignUpdate)
+      window.removeEventListener('campaignUpdated', handleCampaignUpdate)
+    }
+  }, [selectedSurvivor?.id])
+
   /**
    * Set Selected Survivor
    */

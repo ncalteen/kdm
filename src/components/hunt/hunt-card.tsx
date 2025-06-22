@@ -6,14 +6,11 @@ import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Hunt Card Properties
  */
 interface HuntCardProps {
-  /** Hunt Form */
-  form: UseFormReturn<Hunt>
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Hunt */
@@ -39,7 +36,6 @@ interface HuntCardProps {
  * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
  */
 export function HuntCard({
-  form,
   saveSelectedHunt,
   selectedHunt,
   selectedSettlement,
@@ -51,7 +47,6 @@ export function HuntCard({
 }: HuntCardProps): ReactElement {
   return selectedHunt ? (
     <ActiveHuntCard
-      form={form}
       saveSelectedHunt={saveSelectedHunt}
       selectedHunt={selectedHunt}
       selectedSettlement={selectedSettlement}
@@ -63,7 +58,6 @@ export function HuntCard({
     />
   ) : (
     <CreateHuntCard
-      form={form}
       saveSelectedHunt={saveSelectedHunt}
       selectedSettlement={selectedSettlement}
       setSelectedHunt={setSelectedHunt}

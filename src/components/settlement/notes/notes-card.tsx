@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 /**
  * Notes Card Properties
@@ -34,6 +34,12 @@ export function NotesCard({
     selectedSettlement?.notes || ''
   )
   const [isDirty, setIsDirty] = useState<boolean>(false)
+
+  // Update draft when selected settlement changes
+  useEffect(() => {
+    setDraft(selectedSettlement?.notes || '')
+    setIsDirty(false)
+  }, [selectedSettlement?.notes])
 
   const handleSave = () => {
     setIsDirty(false)

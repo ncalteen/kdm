@@ -207,7 +207,6 @@ function MainPage(): ReactElement {
               <Form {...survivorForm}>
                 <Form {...huntForm}>
                   <SettlementForm
-                    huntForm={huntForm}
                     isCreatingNewHunt={isCreatingNewHunt}
                     isCreatingNewSurvivor={isCreatingNewSurvivor}
                     saveSelectedHunt={saveSelectedHunt}
@@ -224,7 +223,6 @@ function MainPage(): ReactElement {
                     setSelectedSurvivor={setSelectedSurvivor}
                     setSurvivors={setSurvivors}
                     settlementForm={settlementForm}
-                    survivorForm={survivorForm}
                     survivors={survivors}
                     updateSelectedHunt={updateSelectedHunt}
                     updateSelectedSettlement={updateSelectedSettlement}

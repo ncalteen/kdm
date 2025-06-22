@@ -21,15 +21,12 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, WrenchIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Gear Card Properties
  */
-interface GearCardProps extends Partial<Settlement> {
-  /** Settlement Form */
-  form: UseFormReturn<Settlement>
+interface GearCardProps {
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -46,7 +43,6 @@ interface GearCardProps extends Partial<Settlement> {
  * @returns Gear Card Component
  */
 export function GearCard({
-  form,
   saveSelectedSettlement,
   selectedSettlement
 }: GearCardProps): ReactElement {
@@ -227,11 +223,11 @@ export function GearCard({
                       key={index}
                       id={index.toString()}
                       index={index}
-                      form={form}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(value, i) => onSave(value, i)}
                       onEdit={onEdit}
+                      selectedSettlement={selectedSettlement}
                     />
                   ))}
                 </SortableContext>

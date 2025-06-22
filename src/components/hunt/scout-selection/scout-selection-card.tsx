@@ -10,7 +10,7 @@ import { ReactElement } from 'react'
 /**
  * Scout Selection Card Props
  */
-interface ScoutSelectionCardProps extends Survivor {
+interface ScoutSelectionCardProps {
   /** Handle Toggle Function */
   handleSurvivorToggle: (survivorId: number) => void
   /** Survivor Selected as Scout */
@@ -19,6 +19,8 @@ interface ScoutSelectionCardProps extends Survivor {
   isSelectedAsSurvivor: boolean
   /** Handle Hover Function */
   onHover?: (survivor: Survivor | null) => void
+  /** Survivor */
+  survivor: Survivor
 }
 
 /**
@@ -31,7 +33,7 @@ export function ScoutSelectionCard({
   isCurrentlySelected,
   isSelectedAsSurvivor,
   onHover,
-  ...survivor
+  survivor
 }: ScoutSelectionCardProps): ReactElement {
   return (
     <div className="w-[200px] h-[280px] flex-grow-2 border-4 rounded-xl border-border/20 hover:border-border/50 transition-all duration-200">

@@ -5,12 +5,6 @@ import { SurvivorSelectionDrawer } from '@/components/hunt/survivor-selection/su
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel
-} from '@/components/ui/form'
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -24,15 +18,12 @@ import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { PawPrintIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Create Hunt Card Properties
  */
 interface CreateHuntCardProps {
-  /** Hunt Form */
-  form: UseFormReturn<Hunt>
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Settlement */
@@ -50,12 +41,12 @@ interface CreateHuntCardProps {
  * @returns Create Hunt Card Component
  */
 export function CreateHuntCard({
-  form,
   saveSelectedHunt,
   selectedSettlement,
   setSelectedHunt,
   survivors
 }: CreateHuntCardProps): ReactElement {
+  console.log(selectedSettlement)
   const [selectedQuarry, setSelectedQuarry] = useState<string>('')
   const [selectedQuarryLevel, setSelectedQuarryLevel] = useState<MonsterLevel>(
     MonsterLevel.LEVEL_1
@@ -63,8 +54,22 @@ export function CreateHuntCard({
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
 
-  // Get available survivors for this settlement
+  // Get available survivors for this settlement (exclude dead/retired)
   const availableSurvivors = useMemo(
+    () =>
+      survivors
+        ? survivors.filter(
+            (survivor) =>
+              survivor.settlementId === selectedSettlement?.id &&
+              !survivor.dead &&
+              !survivor.retired
+          )
+        : [],
+    [survivors, selectedSettlement?.id]
+  )
+
+  // Get all survivors for this settlement (including dead ones) for messaging
+  const allSettlementSurvivors = useMemo(
     () =>
       survivors
         ? survivors.filter(
@@ -154,67 +159,45 @@ export function CreateHuntCard({
       </CardHeader>
       <CardContent className="flex flex-col gap-2 w-full">
         {/* Hunt Quarry */}
-        <FormField
-          control={form.control}
-          name="quarryName"
-          render={() => (
-            <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
-                  Quarry
-                </FormLabel>
-                <FormControl>
-                  <Select
-                    value={selectedQuarry}
-                    onValueChange={setSelectedQuarry}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose a quarry..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableQuarries.map((quarry) => (
-                        <SelectItem key={quarry.name} value={quarry.name}>
-                          {quarry.name} ({quarry.node})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-              </div>
-            </FormItem>
-          )}
-        />
+        <div className="flex items-center justify-between">
+          <label className="text-left whitespace-nowrap min-w-[80px]">
+            Quarry
+          </label>
+          <Select value={selectedQuarry} onValueChange={setSelectedQuarry}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Choose a quarry..." />
+            </SelectTrigger>
+            <SelectContent>
+              {availableQuarries.map((quarry) => (
+                <SelectItem key={quarry.name} value={quarry.name}>
+                  {quarry.name} ({quarry.node})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Quarry Level */}
-        <FormField
-          control={form.control}
-          name="quarryLevel"
-          render={() => (
-            <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
-                  Level
-                </FormLabel>
-                <FormControl>
-                  <Select
-                    value={selectedQuarryLevel}
-                    onValueChange={(value: MonsterLevel) =>
-                      setSelectedQuarryLevel(value)
-                    }>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose level..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Level 1</SelectItem>
-                      <SelectItem value="2">Level 2</SelectItem>
-                      <SelectItem value="3">Level 3</SelectItem>
-                      <SelectItem value="4">Level 4</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-              </div>
-            </FormItem>
-          )}
-        />
+        <div className="flex items-center justify-between">
+          <label className="text-left whitespace-nowrap min-w-[80px]">
+            Level
+          </label>
+          <Select
+            value={selectedQuarryLevel}
+            onValueChange={(value: MonsterLevel) =>
+              setSelectedQuarryLevel(value)
+            }>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Choose level..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">Level 1</SelectItem>
+              <SelectItem value="2">Level 2</SelectItem>
+              <SelectItem value="3">Level 3</SelectItem>
+              <SelectItem value="4">Level 4</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         {availableQuarries.length === 0 && (
           <p className="text-sm text-muted-foreground">
@@ -224,9 +207,9 @@ export function CreateHuntCard({
 
         {/* Survivors */}
         <div className="flex items-center justify-between">
-          <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
+          <label className="text-left whitespace-nowrap min-w-[80px]">
             Survivors
-          </FormLabel>
+          </label>
           <SurvivorSelectionDrawer
             title="Select Hunt Party"
             description="Choose up to 4 survivors to embark on this hunt."
@@ -237,34 +220,30 @@ export function CreateHuntCard({
             maxSelection={4}
           />
         </div>
-        {availableSurvivors.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No survivors available. Create survivors first.
-          </p>
-        )}
 
         {/* Scout */}
         {selectedSettlement?.usesScouts && (
-          <>
-            <div className="flex items-center justify-between">
-              <FormLabel className="text-left whitespace-nowrap min-w-[80px]">
-                Scout
-              </FormLabel>
-              <ScoutSelectionDrawer
-                title="Select Scout"
-                description="Choose a single scout. Their skills will help navigate the dangers ahead."
-                survivors={availableSurvivors}
-                selectedSurvivors={selectedSurvivors}
-                selectedScout={selectedScout}
-                onSelectionChange={setSelectedScout}
-              />
-            </div>
-            {availableSurvivors.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No survivors available. Create survivors first.
-              </p>
-            )}
-          </>
+          <div className="flex items-center justify-between">
+            <label className="text-left whitespace-nowrap min-w-[80px]">
+              Scout
+            </label>
+            <ScoutSelectionDrawer
+              title="Select Scout"
+              description="Choose a single scout. Their skills will help navigate the dangers ahead."
+              survivors={availableSurvivors}
+              selectedSurvivors={selectedSurvivors}
+              selectedScout={selectedScout}
+              onSelectionChange={setSelectedScout}
+            />
+          </div>
+        )}
+
+        {availableSurvivors.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            {allSettlementSurvivors.length === 0
+              ? 'No survivors available. Create survivors first.'
+              : 'All survivors are dead or retired.'}
+          </p>
         )}
 
         {/* Begin Hunt Button */}
@@ -272,6 +251,7 @@ export function CreateHuntCard({
           onClick={handleCreateHunt}
           disabled={
             !selectedQuarry ||
+            availableSurvivors.length === 0 ||
             selectedSurvivors.length === 0 ||
             (selectedSettlement?.usesScouts && !selectedScout)
           }

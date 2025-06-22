@@ -63,6 +63,23 @@ export function SurvivorsProvider({
     if (savedSurvivors) setSurvivorsState(savedSurvivors)
   }, [])
 
+  // Listen for campaign updates to keep survivors in sync
+  useEffect(() => {
+    const handleCampaignUpdate = () => {
+      const updatedSurvivors = getSurvivors()
+      setSurvivorsState(updatedSurvivors)
+    }
+
+    // Listen for both storage events and custom campaign update events
+    window.addEventListener('storage', handleCampaignUpdate)
+    window.addEventListener('campaignUpdated', handleCampaignUpdate)
+
+    return () => {
+      window.removeEventListener('storage', handleCampaignUpdate)
+      window.removeEventListener('campaignUpdated', handleCampaignUpdate)
+    }
+  }, [])
+
   /**
    * Set Survivors
    */

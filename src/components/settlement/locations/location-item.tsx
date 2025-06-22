@@ -8,14 +8,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Location Item Component Properties
  */
 export interface LocationItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Location ID */
   id: string
   /** Index */
@@ -30,6 +27,8 @@ export interface LocationItemProps {
   onSave: (name?: string, unlocked?: boolean, index?: number) => void
   /** OnToggleUnlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -52,29 +51,27 @@ export function LocationItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
   onSave,
-  onToggleUnlocked
+  onToggleUnlocked,
+  selectedSettlement
 }: LocationItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedLocationItem = form.watch(`locations.${index}`)
-
   useEffect(() => {
     console.debug(
       '[LocationItem] Changed',
-      watchedLocationItem,
+      selectedSettlement?.locations?.[index],
       isDisabled,
       index
     )
 
     if (inputRef.current)
-      inputRef.current.value = watchedLocationItem?.name || ''
+      inputRef.current.value = selectedSettlement?.locations?.[index].name || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -83,7 +80,7 @@ export function LocationItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedLocationItem, isDisabled, index])
+  }, [selectedSettlement?.locations, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -96,9 +93,11 @@ export function LocationItem({
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      const locationData = watchedLocationItem
-
-      onSave(inputRef.current.value, locationData?.unlocked || false, index)
+      onSave(
+        inputRef.current.value,
+        selectedSettlement?.locations?.[index].unlocked || false,
+        index
+      )
     }
   }
 
@@ -118,7 +117,7 @@ export function LocationItem({
       {/* Unlocked Checkbox */}
       <Checkbox
         id={`location-unlocked-${index}`}
-        checked={watchedLocationItem?.unlocked || false}
+        checked={selectedSettlement?.locations?.[index].unlocked || false}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -127,13 +126,15 @@ export function LocationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedLocationItem?.name || ''}</span>
+          <span className="text-xs">
+            {selectedSettlement?.locations?.[index].name || ''}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Location Name"
-          defaultValue={watchedLocationItem?.name || ''}
+          defaultValue={selectedSettlement?.locations?.[index].name || ''}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -159,7 +160,7 @@ export function LocationItem({
             onClick={() =>
               onSave(
                 inputRef.current!.value,
-                watchedLocationItem?.unlocked || false,
+                selectedSettlement?.locations?.[index].unlocked || false,
                 index
               )
             }

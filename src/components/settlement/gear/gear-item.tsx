@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Gear Item Component Properties
  */
 export interface GearItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Gear ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface GearItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,22 +48,26 @@ export function GearItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: GearItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const watchedGearItem = form.watch(`gear.${index}`)
-
   useEffect(() => {
-    console.debug('[GearItem] Changed', watchedGearItem, isDisabled, index)
+    console.debug(
+      '[GearItem] Changed',
+      selectedSettlement?.gear?.[index],
+      isDisabled,
+      index
+    )
 
-    if (inputRef.current) inputRef.current.value = watchedGearItem || ''
+    if (inputRef.current)
+      inputRef.current.value = selectedSettlement?.gear?.[index] || ''
 
     if (!isDisabled && inputRef.current) {
       inputRef.current.focus()
@@ -73,7 +76,7 @@ export function GearItem({
       inputRef.current.value = ''
       inputRef.current.value = val
     }
-  }, [watchedGearItem, isDisabled, index])
+  }, [selectedSettlement?.gear, isDisabled, index])
 
   /**
    * Handles the key down event for the input field.
@@ -106,13 +109,13 @@ export function GearItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{watchedGearItem}</span>
+          <span className="text-xs">{selectedSettlement?.gear?.[index]}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Add gear..."
-          defaultValue={watchedGearItem}
+          defaultValue={selectedSettlement?.gear?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus

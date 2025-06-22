@@ -21,13 +21,13 @@ import { toast } from 'sonner'
  */
 interface SettlementSurvivorsCardProps {
   /** Selected Hunt */
-  selectedHunt: Hunt | null
+  selectedHunt: Partial<Hunt> | null
   /** Selected Settlement */
-  selectedSettlement: Settlement | null
+  selectedSettlement: Partial<Settlement> | null
   /** Selected Showdown */
-  selectedShowdown: Showdown | null
+  selectedShowdown: Partial<Showdown> | null
   /** Selected Survivor */
-  selectedSurvivor: Survivor | null
+  selectedSurvivor: Partial<Survivor> | null
   /** Set Is Creating New Survivor */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Survivor */
