@@ -74,20 +74,12 @@ export function MilestoneItem({
   const eventRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug('[MilestoneItem] Changed', milestone, isDisabled)
+    console.debug('[MilestoneItem] Changed', milestone)
 
     if (nameRef.current) nameRef.current.value = milestone.name || ''
 
     if (eventRef.current) eventRef.current.value = milestone.event || ''
-
-    if (!isDisabled && nameRef.current) {
-      nameRef.current.focus()
-
-      const val = nameRef.current.value
-      nameRef.current.value = ''
-      nameRef.current.value = val
-    }
-  }, [milestone, isDisabled])
+  }, [milestone])
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameRef.current && eventRef.current) {

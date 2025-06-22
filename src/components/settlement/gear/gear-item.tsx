@@ -62,21 +62,12 @@ export function GearItem({
     console.debug(
       '[GearItem] Changed',
       selectedSettlement?.gear?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current)
       inputRef.current.value = selectedSettlement?.gear?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.gear, isDisabled, index])
+  }, [selectedSettlement?.gear, index])
 
   /**
    * Handles the key down event for the input field.

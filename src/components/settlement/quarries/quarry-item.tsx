@@ -83,21 +83,12 @@ export function QuarryItem({
     console.debug(
       '[QuarryItem] Changed',
       selectedSettlement?.quarries?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current && selectedSettlement?.quarries?.[index])
       inputRef.current.value = selectedSettlement?.quarries?.[index].name || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.quarries, isDisabled, index])
+  }, [selectedSettlement?.quarries, index])
 
   /**
    * Handles the key down event for the input field.

@@ -59,19 +59,12 @@ export function AbilityImpairmentItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug('[AbilityImpairmentItem] Changed', isDisabled, index)
+    console.debug('[AbilityImpairmentItem] Changed', index)
+
     if (inputRef.current)
       inputRef.current.value =
         selectedSurvivor?.abilitiesAndImpairments?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSurvivor?.abilitiesAndImpairments, isDisabled, index])
+  }, [selectedSurvivor?.abilitiesAndImpairments, index])
 
   /**
    * Handles the key down event for the input field.

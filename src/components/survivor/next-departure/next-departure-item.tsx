@@ -62,21 +62,12 @@ export function NextDepartureItem({
     console.debug(
       '[NextDepartureItem] Changed',
       selectedSurvivor?.nextDeparture?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current)
       inputRef.current.value = selectedSurvivor?.nextDeparture?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSurvivor?.nextDeparture, isDisabled, index])
+  }, [selectedSurvivor?.nextDeparture, index])
 
   /**
    * Handles the key down event for the input field.

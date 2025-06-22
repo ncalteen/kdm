@@ -61,21 +61,12 @@ export function ArrivalBonusItem({
   useEffect(() => {
     console.debug(
       '[ArrivalBonusItem] Changed',
-      selectedSettlement?.arrivalBonuses?.[index],
-      isDisabled
+      selectedSettlement?.arrivalBonuses?.[index]
     )
 
     if (inputRef.current)
       inputRef.current.value = selectedSettlement?.arrivalBonuses?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.arrivalBonuses, isDisabled, index])
+  }, [selectedSettlement?.arrivalBonuses, index])
 
   /**
    * Handles the key down event for the input field.

@@ -61,22 +61,13 @@ export function DepartingBonusItem({
   useEffect(() => {
     console.debug(
       '[DepartingBonusItem] Changed',
-      selectedSettlement?.departingBonuses?.[index],
-      isDisabled
+      selectedSettlement?.departingBonuses
     )
 
     if (inputRef.current)
       inputRef.current.value =
         selectedSettlement?.departingBonuses?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.departingBonuses, isDisabled, index])
+  }, [selectedSettlement?.departingBonuses, index])
 
   /**
    * Handle Key Down

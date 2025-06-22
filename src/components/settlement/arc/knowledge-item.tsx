@@ -71,22 +71,13 @@ export function KnowledgeItem({
     console.debug(
       '[KnowledgeItem] Changed',
       selectedSettlement?.knowledges?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current)
       inputRef.current.value =
         selectedSettlement?.knowledges?.[index].name || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.knowledges, isDisabled, index])
+  }, [selectedSettlement?.knowledges, index])
 
   /**
    * Handles the key down event for the input field.

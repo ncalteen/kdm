@@ -88,7 +88,6 @@ export function ResourceItem({
     console.debug(
       '[ResourceItem] Changed',
       selectedSettlement?.resources?.[index],
-      isDisabled,
       index
     )
 
@@ -107,15 +106,7 @@ export function ResourceItem({
     setSelectedTypes(
       selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
     )
-
-    if (!isDisabled && nameInputRef.current) {
-      nameInputRef.current.focus()
-
-      const val = nameInputRef.current.value
-      nameInputRef.current.value = ''
-      nameInputRef.current.value = val
-    }
-  }, [selectedSettlement?.resources, isDisabled, index])
+  }, [selectedSettlement?.resources, index])
 
   /**
    * Handles the key down event for the name input field.

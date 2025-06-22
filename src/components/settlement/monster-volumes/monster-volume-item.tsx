@@ -62,21 +62,12 @@ export function MonsterVolumeItem({
     console.debug(
       '[MonsterVolumeItem] Changed',
       selectedSettlement?.monsterVolumes?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current)
       inputRef.current.value = selectedSettlement?.monsterVolumes?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.monsterVolumes, isDisabled, index])
+  }, [selectedSettlement?.monsterVolumes, index])
 
   /**
    * Handles the key down event for the input field.

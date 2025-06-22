@@ -62,21 +62,12 @@ export function InnovationItem({
     console.debug(
       '[InnovationItem] Changed',
       selectedSettlement?.innovations?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current)
       inputRef.current.value = selectedSettlement?.innovations?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.innovations, isDisabled, index])
+  }, [selectedSettlement?.innovations, index])
 
   /**
    * Handles the key down event for the input field.

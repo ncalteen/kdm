@@ -62,21 +62,12 @@ export function PatternItem({
     console.debug(
       '[PatternItem] Changed',
       selectedSettlement?.patterns?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current)
       inputRef.current.value = selectedSettlement?.patterns?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSettlement?.patterns, isDisabled, index])
+  }, [selectedSettlement?.patterns, index])
 
   /**
    * Handles the key down event for the input field.

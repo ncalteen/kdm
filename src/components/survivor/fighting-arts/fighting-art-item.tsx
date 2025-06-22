@@ -70,18 +70,11 @@ export function FightingArtItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug('[FightingArtItem] Changed', isDisabled, index)
+    console.debug('[FightingArtItem] Changed', index)
+
     if (inputRef.current)
       inputRef.current.value = selectedSurvivor?.[arrayName]?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSurvivor, isDisabled, index, arrayName])
+  }, [selectedSurvivor, index, arrayName])
 
   /**
    * Handles the key down event for the input field.

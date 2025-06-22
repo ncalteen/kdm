@@ -61,7 +61,6 @@ export function KnowledgeCard({
       selectedSurvivor?.knowledge2ObservationConditions ?? ''
     )
   }, [
-    selectedSurvivor?.id,
     selectedSurvivor?.knowledge1,
     selectedSurvivor?.knowledge1Rules,
     selectedSurvivor?.knowledge1ObservationConditions,

@@ -7,7 +7,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, ReactElement, useRef, useState } from 'react'
 
 /**
  * Philosophy Item Component Properties
@@ -58,12 +58,6 @@ export function PhilosophyItem({
     useSortable({ id })
 
   const selectRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    console.debug('[PhilosophyItem] Disabled State Changed:', isDisabled)
-
-    if (!isDisabled && selectRef.current) selectRef.current.focus()
-  }, [isDisabled])
 
   /**
    * Handles the key down event for the select field.

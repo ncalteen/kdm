@@ -62,21 +62,12 @@ export function OncePerLifetimeItem({
     console.debug(
       '[OncePerLifetimeItem] Changed',
       selectedSurvivor?.oncePerLifetime?.[index],
-      isDisabled,
       index
     )
 
     if (inputRef.current)
       inputRef.current.value = selectedSurvivor?.oncePerLifetime?.[index] || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [selectedSurvivor?.oncePerLifetime, isDisabled, index])
+  }, [selectedSurvivor?.oncePerLifetime, index])
 
   /**
    * Handles the key down event for the input field.

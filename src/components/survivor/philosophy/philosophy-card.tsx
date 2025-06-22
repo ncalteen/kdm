@@ -60,7 +60,6 @@ export function PhilosophyCard({
       selectedSurvivor?.tenetKnowledgeObservationConditions ?? ''
     )
   }, [
-    selectedSurvivor?.id,
     selectedSurvivor?.neurosis,
     selectedSurvivor?.tenetKnowledge,
     selectedSurvivor?.tenetKnowledgeRules,

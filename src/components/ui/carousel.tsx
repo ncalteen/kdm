@@ -108,17 +108,13 @@ const Carousel = forwardRef<
     )
 
     useEffect(() => {
-      if (!api || !setApi) {
-        return
-      }
+      if (!api || !setApi) return
 
       setApi(api)
     }, [api, setApi])
 
     useEffect(() => {
-      if (!api) {
-        return
-      }
+      if (!api) return
 
       onSelect(api)
       api.on('reInit', onSelect)

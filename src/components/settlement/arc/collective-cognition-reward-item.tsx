@@ -63,23 +63,12 @@ export function RewardItem({
   const ccInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug('[RewardItem] Changed Reward:', reward, isDisabled)
+    console.debug('[RewardItem] Changed Reward:', reward)
 
-    if (nameInputRef.current) {
-      nameInputRef.current.value = reward?.name || ''
-    }
-    if (ccInputRef.current) {
+    if (nameInputRef.current) nameInputRef.current.value = reward?.name || ''
+    if (ccInputRef.current)
       ccInputRef.current.value = reward?.cc?.toString() || '1'
-    }
-
-    if (!isDisabled && nameInputRef.current) {
-      nameInputRef.current.focus()
-
-      const val = nameInputRef.current.value
-      nameInputRef.current.value = ''
-      nameInputRef.current.value = val
-    }
-  }, [reward, isDisabled])
+  }, [reward])
 
   /**
    * Handles the key down event for the input fields.

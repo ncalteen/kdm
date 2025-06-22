@@ -83,18 +83,6 @@ export function PrincipleItem({
     setOption2Value(principle.option2Name || '')
   }, [principle])
 
-  useEffect(() => {
-    console.debug('[PrincipleItem] Disabled State Changed', isDisabled)
-
-    if (!isDisabled && nameInputRef.current) {
-      nameInputRef.current.focus()
-
-      const val = nameInputRef.current.value
-      nameInputRef.current.value = ''
-      nameInputRef.current.value = val
-    }
-  }, [isDisabled])
-
   /**
    * Handles the key down event for the input fields.
    *
