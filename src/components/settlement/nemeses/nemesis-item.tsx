@@ -8,15 +8,12 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Nemesis Item Properties
  */
 export interface NemesisItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Nemesis ID */
   id: string
   /** Index */
@@ -43,6 +40,8 @@ export interface NemesisItemProps {
   ) => void
   /** OnToggleUnlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -65,32 +64,28 @@ export function NemesisItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
   onSave,
   onToggleLevel,
-  onToggleUnlocked
+  onToggleUnlocked,
+  selectedSettlement
 }: NemesisItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const nemesis = form.watch(`nemeses.${index}`)
 
   useEffect(() => {
-    if (inputRef.current && nemesis) {
-      inputRef.current.value = nemesis.name || ''
-    }
+    console.debug(
+      '[NemesisItem] Changed',
+      selectedSettlement?.nemeses?.[index],
+      index
+    )
 
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index, nemesis])
+    if (inputRef.current)
+      inputRef.current.value = selectedSettlement?.nemeses?.[index].name || ''
+  }, [selectedSettlement?.nemeses, index])
 
   /**
    * Handles the key down event for the input field.
@@ -100,14 +95,16 @@ export function NemesisItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(inputRef.current.value, nemesis?.unlocked, index)
+      onSave(
+        inputRef.current.value,
+        selectedSettlement?.nemeses?.[index].unlocked,
+        index
+      )
     }
   }
-
-  if (!nemesis) return <></>
 
   return (
     <div
@@ -124,7 +121,7 @@ export function NemesisItem({
 
       {/* Unlocked Checkbox */}
       <Checkbox
-        checked={nemesis.unlocked}
+        checked={selectedSettlement?.nemeses?.[index].unlocked}
         onCheckedChange={(checked) => {
           if (checked !== 'indeterminate') onToggleUnlocked(index, !!checked)
         }}
@@ -134,13 +131,15 @@ export function NemesisItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex flex-1 ml-1">
-          <span className="text-xs">{nemesis.name}</span>
+          <span className="text-xs">
+            {selectedSettlement?.nemeses?.[index].name}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Add a nemesis..."
-          defaultValue={nemesis.name}
+          defaultValue={selectedSettlement?.nemeses?.[index].name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -153,7 +152,7 @@ export function NemesisItem({
           <div className="flex items-center gap-2 ml-auto">
             <div className="flex items-center space-x-1">
               <Checkbox
-                checked={nemesis.level1}
+                checked={selectedSettlement?.nemeses?.[index].level1}
                 onCheckedChange={(checked) => {
                   if (checked !== 'indeterminate')
                     onToggleLevel(index, 'level1', !!checked)
@@ -167,7 +166,7 @@ export function NemesisItem({
 
             <div className="flex items-center space-x-1">
               <Checkbox
-                checked={nemesis.level2}
+                checked={selectedSettlement?.nemeses?.[index].level2}
                 onCheckedChange={(checked) => {
                   if (checked !== 'indeterminate')
                     onToggleLevel(index, 'level2', !!checked)
@@ -181,7 +180,7 @@ export function NemesisItem({
 
             <div className="flex items-center space-x-1">
               <Checkbox
-                checked={nemesis.level3}
+                checked={selectedSettlement?.nemeses?.[index].level3}
                 onCheckedChange={(checked) => {
                   if (checked !== 'indeterminate')
                     onToggleLevel(index, 'level3', !!checked)
@@ -211,7 +210,11 @@ export function NemesisItem({
             variant="ghost"
             size="icon"
             onClick={() =>
-              onSave(inputRef.current!.value, nemesis.unlocked, index)
+              onSave(
+                inputRef.current!.value,
+                selectedSettlement?.nemeses?.[index].unlocked,
+                index
+              )
             }
             title="Save nemesis">
             <CheckIcon className="h-4 w-4" />
@@ -248,13 +251,12 @@ export function NewNemesisItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      if (!inputRef.current.value || inputRef.current.value.trim() === '') {
-        toast.error('A nameless horror cannot be summoned.')
-        return
-      }
+      if (!inputRef.current.value || inputRef.current.value.trim() === '')
+        return toast.error('A nameless horror cannot be summoned.')
+
       onSave(inputRef.current.value, false)
     } else if (e.key === 'Escape') {
       e.preventDefault()

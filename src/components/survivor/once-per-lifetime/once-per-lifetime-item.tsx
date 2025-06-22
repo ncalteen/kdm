@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Once Per Lifetime Item Component Properties
  */
 export interface OncePerLifetimeItemProps {
-  /** Form */
-  form: UseFormReturn<Survivor>
   /** Once Per Lifetime ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface OncePerLifetimeItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -49,10 +48,10 @@ export function OncePerLifetimeItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSurvivor
 }: OncePerLifetimeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -60,17 +59,15 @@ export function OncePerLifetimeItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug(
+      '[OncePerLifetimeItem] Changed',
+      selectedSurvivor?.oncePerLifetime?.[index],
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`oncePerLifetime.${index}`) || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index])
+      inputRef.current.value = selectedSurvivor?.oncePerLifetime?.[index] || ''
+  }, [selectedSurvivor?.oncePerLifetime, index])
 
   /**
    * Handles the key down event for the input field.
@@ -80,7 +77,7 @@ export function OncePerLifetimeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,14 +101,14 @@ export function OncePerLifetimeItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-xs">
-            {form.getValues(`oncePerLifetime.${index}`)}
+            {selectedSurvivor?.oncePerLifetime?.[index]}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Once Per Lifetime Event"
-          defaultValue={form.getValues(`oncePerLifetime.${index}`)}
+          defaultValue={selectedSurvivor?.oncePerLifetime?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -170,7 +167,7 @@ export function NewOncePerLifetimeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

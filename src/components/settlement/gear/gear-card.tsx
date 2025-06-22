@@ -21,26 +21,30 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, WrenchIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Gear Card Props
+ * Gear Card Properties
  */
-interface GearCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
-  form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+interface GearCardProps {
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Gear Card Component
+ *
+ * @param props Gear Card Properties
+ * @returns Gear Card Component
  */
 export function GearCard({
-  form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: GearCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -48,16 +52,18 @@ export function GearCard({
   const [isAddingNew, setIsAddingNew] = useState(false)
 
   useEffect(() => {
+    console.debug('[GearCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.gear?.forEach((_, i) => {
+      selectedSettlement?.gear?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.gear])
+  }, [selectedSettlement?.gear])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -69,21 +75,12 @@ export function GearCard({
   const addGear = () => setIsAddingNew(true)
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedGear Updated Gear
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (updatedGear: string[], successMsg?: string) =>
-    saveSettlement({ gear: updatedGear }, successMsg)
-
-  /**
    * Handles the removal of gear.
    *
    * @param index Gear Index
    */
   const onRemove = (index: number) => {
-    const currentGear = [...(settlement.gear || [])]
+    const currentGear = [...(selectedSettlement?.gear || [])]
     currentGear.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -98,7 +95,7 @@ export function GearCard({
       return next
     })
 
-    saveToLocalStorage(currentGear, 'Gear has been archived.')
+    saveSelectedSettlement({ gear: currentGear }, 'Gear has been archived.')
   }
 
   /**
@@ -111,7 +108,7 @@ export function GearCard({
     if (!value || value.trim() === '')
       return toast.error('Nameless gear cannot be stored.')
 
-    const updatedGear = [...(settlement.gear || [])]
+    const updatedGear = [...(selectedSettlement?.gear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -129,12 +126,13 @@ export function GearCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedGear,
+    saveSelectedSettlement(
+      { gear: updatedGear },
       i !== undefined
         ? 'Gear has been modified.'
         : 'New gear added to settlement storage.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -157,9 +155,14 @@ export function GearCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(settlement.gear || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.gear || [],
+        oldIndex,
+        newIndex
+      )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ gear: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -205,26 +208,26 @@ export function GearCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {settlement.gear?.length !== 0 && (
+            {selectedSettlement?.gear?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.gear || []).map((_, index) =>
+                  items={(selectedSettlement?.gear || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.gear || []).map((gearItem, index) => (
+                  {(selectedSettlement?.gear || []).map((gearItem, index) => (
                     <GearItem
                       key={index}
                       id={index.toString()}
                       index={index}
-                      form={form}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(value, i) => onSave(value, i)}
                       onEdit={onEdit}
+                      selectedSettlement={selectedSettlement}
                     />
                   ))}
                 </SortableContext>

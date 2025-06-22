@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Settlement } from '@/schemas/settlement'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -17,13 +18,19 @@ import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 
 /**
- * DataTableProps Interface
+ * Data Table Properties
  */
 interface DataTableProps<TData, TValue> {
+  /** Column Definitions */
   columns: ColumnDef<TData, TValue>[]
+  /** Data */
   data: TData[]
+  /** Initial Column Visibility */
   initialColumnVisibility?: VisibilityState
+  /** On New Survivor Callback */
   onNewSurvivor?: () => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -93,26 +100,24 @@ export function SurvivorDataTable<TData, TValue>({
           <thead className="sticky top-0 bg-accent">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th
-                      key={header.id}
-                      className="text-left p-2 font-bold text-sm">
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? 'cursor-pointer select-none'
-                            : '',
-                          onClick: header.column.getToggleSortingHandler()
-                        }}>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </div>
-                    </th>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className="text-left p-2 font-bold text-sm">
+                    <div
+                      {...{
+                        className: header.column.getCanSort()
+                          ? 'cursor-pointer select-none'
+                          : '',
+                        onClick: header.column.getToggleSortingHandler()
+                      }}>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </div>
+                  </th>
+                ))}
               </tr>
             ))}
           </thead>
@@ -121,16 +126,11 @@ export function SurvivorDataTable<TData, TValue>({
               <tr
                 key={row.id}
                 className="border-b hover:bg-muted/50 transition-colors">
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <td key={cell.id} className="p-2 align-top">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  )
-                })}
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="p-2 align-top">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>

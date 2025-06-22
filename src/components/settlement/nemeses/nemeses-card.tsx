@@ -30,26 +30,30 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, SkullIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
  * Nemeses Card Props
  */
-interface NemesesCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
-  form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+interface NemesesCardProps {
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Nemeses Card Component
+ *
+ * @param props Nemeses Card Properties
+ * @returns Nemeses Card Component
  */
 export function NemesesCard({
-  form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: NemesesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -57,16 +61,23 @@ export function NemesesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[NemesesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.nemeses?.forEach((_, i) => {
+      selectedSettlement?.nemeses?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.nemeses])
+  }, [selectedSettlement?.nemeses])
+
+  /**
+   * Add Nemesis
+   */
+  const addNemesis = () => setIsAddingNew(true)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -75,24 +86,13 @@ export function NemesesCard({
     })
   )
 
-  const addNemesis = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedNemeses Updated Nemeses
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (updatedNemeses: Nemesis[], successMsg?: string) =>
-    saveSettlement({ nemeses: updatedNemeses }, successMsg)
-
   /**
    * Handles the removal of a nemesis.
    *
    * @param index Nemesis Index
    */
   const onRemove = (index: number) => {
-    const currentNemeses = [...(settlement.nemeses || [])]
+    const currentNemeses = [...(selectedSettlement?.nemeses || [])]
     currentNemeses.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -107,8 +107,8 @@ export function NemesesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentNemeses,
+    saveSelectedSettlement(
+      { nemeses: currentNemeses },
       'The nemesis has returned to the darkness.'
     )
   }
@@ -135,7 +135,7 @@ export function NemesesCard({
       ccLevel3: false
     }
 
-    const updatedNemeses = [...(settlement.nemeses || [])]
+    const updatedNemeses = [...(selectedSettlement?.nemeses || [])]
 
     if (index !== undefined) {
       // Updating an existing value - preserve existing properties
@@ -157,12 +157,13 @@ export function NemesesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedNemeses,
+    saveSelectedSettlement(
+      { nemeses: updatedNemeses },
       index !== undefined
         ? 'The nemesis waits outside your settlement.'
         : 'A new nemesis emerges.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -181,12 +182,13 @@ export function NemesesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedNemeses = (settlement.nemeses || []).map((n, i) =>
+    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
       i === index ? { ...n, unlocked } : n
     )
-    saveToLocalStorage(
-      updatedNemeses,
-      `${settlement.nemeses![index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
+
+    saveSelectedSettlement(
+      { nemeses: updatedNemeses },
+      `${selectedSettlement?.nemeses![index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
     )
   }
 
@@ -208,10 +210,11 @@ export function NemesesCard({
       | 'ccLevel3',
     checked: boolean
   ) => {
-    const updatedNemeses = (settlement.nemeses || []).map((n, i) =>
+    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
       i === index ? { ...n, [level]: checked } : n
     )
-    saveToLocalStorage(updatedNemeses)
+
+    saveSelectedSettlement({ nemeses: updatedNemeses })
   }
 
   /**
@@ -225,9 +228,14 @@ export function NemesesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(settlement.nemeses || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.nemeses || [],
+        oldIndex,
+        newIndex
+      )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ nemeses: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -276,28 +284,28 @@ export function NemesesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {settlement.nemeses?.length !== 0 && (
+            {selectedSettlement?.nemeses?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.nemeses || []).map((_, index) =>
+                  items={(selectedSettlement?.nemeses || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.nemeses || []).map((nemesis, index) => (
+                  {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
                     <NemesisItem
                       key={index}
                       id={index.toString()}
                       index={index}
-                      form={form}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(name, unlocked, i) => onSave(name, unlocked, i)}
                       onEdit={onEdit}
                       onToggleUnlocked={onToggleUnlocked}
                       onToggleLevel={onToggleLevel}
+                      selectedSettlement={selectedSettlement}
                     />
                   ))}
                 </SortableContext>

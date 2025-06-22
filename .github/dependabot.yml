@@ -7,10 +7,9 @@ updates:
       interval: monthly
     labels:
       - dependabot
-      - actions
     open-pull-requests-limit: 10
     reviewers:
-      - issue-ops/maintainers
+      - ncalteen
     groups:
       actions-minor:
         update-types:
@@ -23,10 +22,9 @@ updates:
       interval: monthly
     labels:
       - dependabot
-      - npm
     open-pull-requests-limit: 10
     reviewers:
-      - issue-ops/maintainers
+      - ncalteen
     groups:
       npm-development:
         dependency-type: development

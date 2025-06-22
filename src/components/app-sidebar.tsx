@@ -1,5 +1,6 @@
 'use client'
 
+import { SettlementSwitcher } from '@/components/menu/settlement-switcher'
 import { NavMain } from '@/components/nav-main'
 import {
   AlertDialog,
@@ -28,12 +29,16 @@ import {
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
+import { Survivor } from '@/schemas/survivor'
 import {
   DownloadIcon,
   HourglassIcon,
   LightbulbIcon,
   NotebookPenIcon,
+  PawPrintIcon,
   SchoolIcon,
   SettingsIcon,
   SwordsIcon,
@@ -41,9 +46,8 @@ import {
   UsersIcon,
   WrenchIcon
 } from 'lucide-react'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { SettlementSwitcher } from './menu/settlement-switcher'
 
 const baseNavPrimary = [
   {
@@ -116,20 +120,57 @@ const navSquires = [
   }
 ]
 
+const navEmbark = [
+  {
+    title: 'Hunt',
+    tab: 'hunt',
+    icon: PawPrintIcon
+  }
+  // {
+  //   title: 'Showdown',
+  //   tab: 'showdown',
+  //   icon: SkullIcon
+  // }
+]
+
 /**
- * Application Sidebar Props
+ * Application Sidebar Properties
  */
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  settlement: Settlement | null
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
+  /** Selected Settlement */
+  selectedSettlement: Settlement | null
+  /** Selected Showdown */
+  selectedShowdown: Showdown | null
+  /** Set Selected Hunt */
+  setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Showdown */
+  setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
 }
 
+/**
+ * Application Sidebar Component
+ *
+ * @param props Application Sidebar Properties
+ * @returns Application Sidebar Component
+ */
 export function AppSidebar({
-  settlement,
+  selectedHunt,
+  selectedSettlement,
+  selectedShowdown,
+  setSelectedHunt,
   setSelectedSettlement,
+  setSelectedShowdown,
+  setSelectedSurvivor,
   ...props
-}: AppSidebarProps) {
+}: AppSidebarProps): ReactElement {
   const { state } = useSidebar()
+
   const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -148,13 +189,22 @@ export function AppSidebar({
   useEffect(() => {
     if (!isMounted) return setIsMounted(true)
 
-    if (settlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
+    console.debug(
+      '[AppSidebar] Updating Navigation Items',
+      selectedSettlement?.campaignType,
+      selectedSettlement?.survivorType,
+      isMounted
+    )
+
+    if (
+      selectedSettlement?.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
+    )
       return setNavItems([...navSquires])
 
     // Start with base navigation
     const newNavItems = [...baseNavPrimary]
 
-    if (settlement?.survivorType === SurvivorType.ARC) {
+    if (selectedSettlement?.survivorType === SurvivorType.ARC) {
       const notesIndex = newNavItems.findIndex((item) => item.tab === 'notes')
 
       if (notesIndex !== -1)
@@ -166,12 +216,27 @@ export function AppSidebar({
     }
 
     setNavItems(newNavItems)
-  }, [settlement?.campaignType, settlement?.survivorType, isMounted])
+  }, [
+    selectedSettlement?.campaignType,
+    selectedSettlement?.survivorType,
+    isMounted
+  ])
 
-  // Update campaign data when it changes (e.g., after creating settlements)
+  // Listen for campaign changes and update the local state
   useEffect(() => {
-    setCampaign(getCampaign())
-  }, [settlement])
+    const handleStorageChange = () => setCampaign(getCampaign())
+
+    // Listen for storage events (when localStorage changes from other tabs)
+    window.addEventListener('storage', handleStorageChange)
+
+    // Listen for custom events when localStorage is updated from the same tab
+    window.addEventListener('campaignUpdated', handleStorageChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('campaignUpdated', handleStorageChange)
+    }
+  }, [])
 
   const handleDownload = () => {
     try {
@@ -304,15 +369,24 @@ export function AppSidebar({
       {...props}>
       <SidebarHeader>
         <SettlementSwitcher
-          settlement={settlement}
+          selectedHunt={selectedHunt}
+          selectedSettlement={selectedSettlement}
+          selectedShowdown={selectedShowdown}
           settlements={campaign.settlements || []}
+          setSelectedHunt={setSelectedHunt}
           setSelectedSettlement={setSelectedSettlement}
+          setSelectedShowdown={setSelectedShowdown}
+          setSelectedSurvivor={setSelectedSurvivor}
         />
       </SidebarHeader>
       <SidebarContent className="group-data-[collapsible=icon]:justify-center">
         <SidebarGroup className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex-1">
           <SidebarGroupLabel>Settlement</SidebarGroupLabel>
           <NavMain items={navItems} />
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Embark</SidebarGroupLabel>
+          <NavMain items={navEmbark} />
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { Milestone, Settlement } from '@/schemas/settlement'
+import { Milestone } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
@@ -15,14 +15,11 @@ import {
   TrashIcon
 } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Milestone Item Component Properties
  */
 export interface MilestoneItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Milestone ID */
   id: string
   /** Index */
@@ -63,7 +60,6 @@ export interface NewMilestoneItemProps {
 export function MilestoneItem({
   milestone,
   index,
-  form,
   isDisabled,
   onSave,
   onEdit,
@@ -78,22 +74,14 @@ export function MilestoneItem({
   const eventRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (nameRef.current) {
-      nameRef.current.value = milestone.name || ''
-    }
-    if (eventRef.current) {
-      eventRef.current.value = milestone.event || ''
-    }
+    console.debug('[MilestoneItem] Changed', milestone)
 
-    if (!isDisabled && nameRef.current) {
-      nameRef.current.focus()
-      const val = nameRef.current.value
-      nameRef.current.value = ''
-      nameRef.current.value = val
-    }
-  }, [milestone.name, milestone.event, isDisabled])
+    if (nameRef.current) nameRef.current.value = milestone.name || ''
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+    if (eventRef.current) eventRef.current.value = milestone.event || ''
+  }, [milestone])
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
       onSave(index, nameRef.current.value, eventRef.current.value)
@@ -118,10 +106,7 @@ export function MilestoneItem({
         checked={milestone.complete}
         disabled={!isDisabled}
         onCheckedChange={(checked) => {
-          if (typeof checked === 'boolean') {
-            form.setValue(`milestones.${index}.complete`, checked)
-            onToggleComplete(index, checked)
-          }
+          if (typeof checked === 'boolean') onToggleComplete(index, checked)
         }}
       />
 
@@ -211,7 +196,7 @@ export function NewMilestoneItem({
   const nameRef = useRef<HTMLInputElement>(null)
   const eventRef = useRef<HTMLInputElement>(null)
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
       onSave(nameRef.current.value, eventRef.current.value)

@@ -11,20 +11,19 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Resource Item Component Properties
  */
 export interface ResourceItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Resource Item ID */
   id: string
   /** Resource Item Index */
   index: number
   /** Is Disabled */
   isDisabled: boolean
+  /** OnAmountChange Handler */
+  onAmountChange?: (index: number, amount: number) => void
   /** OnEdit Handler */
   onEdit: (index: number) => void
   /** OnRemove Handler */
@@ -37,8 +36,8 @@ export interface ResourceItemProps {
     types: ResourceType[],
     amount: number
   ) => void
-  /** OnAmountChange Handler */
-  onAmountChange?: (index: number, amount: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -66,14 +65,12 @@ export function ResourceItem({
   id,
   index,
   isDisabled,
-  form,
+  onAmountChange,
   onEdit,
   onRemove,
   onSave,
-  onAmountChange
+  selectedSettlement
 }: ResourceItemProps): ReactElement {
-  const resource = form.watch(`resources.${index}`)
-
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -81,29 +78,35 @@ export function ResourceItem({
   const amountInputRef = useRef<HTMLInputElement>(null)
 
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
-    resource?.category || ResourceCategory.BASIC
+    selectedSettlement?.resources?.[index].category || ResourceCategory.BASIC
   )
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
-    resource?.types || [ResourceType.BONE]
+    selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
   )
 
   useEffect(() => {
-    if (nameInputRef.current) nameInputRef.current.value = resource?.name || ''
+    console.debug(
+      '[ResourceItem] Changed',
+      selectedSettlement?.resources?.[index],
+      index
+    )
+
+    if (nameInputRef.current)
+      nameInputRef.current.value =
+        selectedSettlement?.resources?.[index].name || ''
 
     if (amountInputRef.current)
-      amountInputRef.current.value = (resource?.amount || 0).toString()
+      amountInputRef.current.value = (
+        selectedSettlement?.resources?.[index].amount || 0
+      ).toString()
 
-    setSelectedCategory(resource?.category || ResourceCategory.BASIC)
-    setSelectedTypes(resource?.types || [ResourceType.BONE])
-
-    if (!isDisabled && nameInputRef.current) {
-      nameInputRef.current.focus()
-
-      const val = nameInputRef.current.value
-      nameInputRef.current.value = ''
-      nameInputRef.current.value = val
-    }
-  }, [resource, isDisabled, index])
+    setSelectedCategory(
+      selectedSettlement?.resources?.[index].category || ResourceCategory.BASIC
+    )
+    setSelectedTypes(
+      selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
+    )
+  }, [selectedSettlement?.resources, index])
 
   /**
    * Handles the key down event for the name input field.
@@ -113,7 +116,7 @@ export function ResourceItem({
    *
    * @param e Key Down Event
    */
-  const handleNameKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleNameKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && amountInputRef.current) {
       e.preventDefault()
       onSave(
@@ -131,11 +134,11 @@ export function ResourceItem({
    *
    * @param e Change Event
    */
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const amount = Number(e.target.value)
-    if (onAmountChange && !isNaN(amount) && amount >= 0) {
+
+    if (onAmountChange && !isNaN(amount) && amount >= 0)
       onAmountChange(index, amount)
-    }
   }
 
   return (
@@ -157,7 +160,7 @@ export function ResourceItem({
             <div className="grid grid-cols-12 items-center gap-2">
               {/* Form Fields */}
               <div className="col-span-4 text-xs text-left font-bold">
-                {resource?.name}
+                {selectedSettlement?.resources?.[index].name}
               </div>
               <div className="col-span-2">
                 <Badge variant="default">{selectedCategory}</Badge>
@@ -175,9 +178,9 @@ export function ResourceItem({
                   type="number"
                   min={0}
                   placeholder="0"
-                  defaultValue={resource?.amount}
+                  defaultValue={selectedSettlement?.resources?.[index].amount}
                   onChange={handleAmountChange}
-                  className="w-16 text-center no-spinners"
+                  className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
 
@@ -207,7 +210,7 @@ export function ResourceItem({
                 <Input
                   ref={nameInputRef}
                   placeholder="Resource Name"
-                  defaultValue={resource?.name}
+                  defaultValue={selectedSettlement?.resources?.[index].name}
                   onKeyDown={handleNameKeyDown}
                   autoFocus
                 />
@@ -231,9 +234,9 @@ export function ResourceItem({
                   min={0}
                   placeholder="0"
                   disabled={true}
-                  defaultValue={resource?.amount}
+                  defaultValue={selectedSettlement?.resources?.[index].amount}
                   onChange={handleAmountChange}
-                  className="w-16 text-center no-spinners"
+                  className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
 
@@ -298,7 +301,7 @@ export function NewResourceItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && amountInputRef.current) {
       e.preventDefault()
       onSave(
@@ -354,7 +357,7 @@ export function NewResourceItem({
                 disabled={true}
                 defaultValue={''}
                 onKeyDown={handleKeyDown}
-                className="w-16 text-center no-spinners"
+                className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
 

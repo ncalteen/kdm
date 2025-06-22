@@ -1,7 +1,9 @@
 import { Toaster } from '@/components/ui/sonner'
-import { SettlementProvider } from '@/contexts/settlement-context'
-import { SurvivorProvider } from '@/contexts/survivor-context'
-import { TabProvider } from '@/contexts/tab-context'
+import { SelectedHuntProvider } from '@/contexts/selected-hunt-context'
+import { SelectedSettlementProvider } from '@/contexts/selected-settlement-context'
+import { SelectedSurvivorProvider } from '@/contexts/selected-survivor-context'
+import { SelectedTabProvider } from '@/contexts/selected-tab-context'
+import { SurvivorsProvider } from '@/contexts/survivors-context'
 import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { ReactElement, ReactNode } from 'react'
@@ -18,9 +20,15 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Kingdom Death: Monster - Tracker'
+  title: 'Kingdom Death: Monster - Record Keeper'
 }
 
+/**
+ * Root Layout Component
+ *
+ * @param props Component Properties
+ * @returns Root Layout Component
+ */
 export default function RootLayout({
   children
 }: Readonly<{
@@ -30,11 +38,17 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SettlementProvider settlement={null}>
-          <SurvivorProvider survivor={null}>
-            <TabProvider initialTab="timeline">{children}</TabProvider>
-          </SurvivorProvider>
-        </SettlementProvider>
+        <SurvivorsProvider survivors={[]}>
+          <SelectedSettlementProvider settlement={null}>
+            <SelectedSurvivorProvider survivor={null}>
+              <SelectedHuntProvider hunt={null}>
+                <SelectedTabProvider tab="timeline">
+                  {children}
+                </SelectedTabProvider>
+              </SelectedHuntProvider>
+            </SelectedSurvivorProvider>
+          </SelectedSettlementProvider>
+        </SurvivorsProvider>
         <Toaster />
       </body>
     </html>

@@ -37,6 +37,7 @@ export interface SelectSurvivorTypeProps {
  * Select Survivor Type Component
  *
  * @param props Component Properties
+ * @returns Select Survivor Type Component
  */
 export function SelectSurvivorType({
   onChange,
@@ -47,7 +48,6 @@ export function SelectSurvivorType({
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(propValue || '')
 
-  // Create survivor type options from the SurvivorType enum
   const survivorTypeOptions = Object.values(SurvivorType).map(
     (survivorType) => ({
       value: survivorType,
@@ -56,20 +56,22 @@ export function SelectSurvivorType({
   )
 
   useEffect(() => {
-    if (propValue) {
-      setValue(propValue)
-    }
+    if (propValue) setValue(propValue)
   }, [propValue])
 
+  /**
+   * Selects a survivor option and updates the state.
+   *
+   * @param currentValue Selected Survivor Value
+   */
   const handleSelect = (currentValue: string) => {
     // Don't allow changes if disabled
     if (disabled) return
+
     // Do not allow clearing the selection
     if (!currentValue) return
-    if (currentValue === value) {
-      setOpen(false)
-      return
-    }
+    if (currentValue === value) return setOpen(false)
+
     setValue(currentValue)
     setOpen(false)
 

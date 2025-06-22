@@ -8,14 +8,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Location Item Component Properties
  */
 export interface LocationItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Location ID */
   id: string
   /** Index */
@@ -30,6 +27,8 @@ export interface LocationItemProps {
   onSave: (name?: string, unlocked?: boolean, index?: number) => void
   /** OnToggleUnlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -52,11 +51,11 @@ export function LocationItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
   onSave,
-  onToggleUnlocked
+  onToggleUnlocked,
+  selectedSettlement
 }: LocationItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -64,17 +63,15 @@ export function LocationItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug(
+      '[LocationItem] Changed',
+      selectedSettlement?.locations?.[index],
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`locations.${index}.name`) || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index])
+      inputRef.current.value = selectedSettlement?.locations?.[index].name || ''
+  }, [selectedSettlement?.locations, index])
 
   /**
    * Handles the key down event for the input field.
@@ -84,15 +81,16 @@ export function LocationItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      const locationData = form.getValues(`locations.${index}`)
-      onSave(inputRef.current.value, locationData?.unlocked || false, index)
+      onSave(
+        inputRef.current.value,
+        selectedSettlement?.locations?.[index].unlocked || false,
+        index
+      )
     }
   }
-
-  const locationData = form.getValues(`locations.${index}`)
 
   return (
     <div
@@ -110,7 +108,7 @@ export function LocationItem({
       {/* Unlocked Checkbox */}
       <Checkbox
         id={`location-unlocked-${index}`}
-        checked={locationData?.unlocked || false}
+        checked={selectedSettlement?.locations?.[index].unlocked || false}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -120,14 +118,14 @@ export function LocationItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-xs">
-            {form.getValues(`locations.${index}.name`)}
+            {selectedSettlement?.locations?.[index].name || ''}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Location Name"
-          defaultValue={form.getValues(`locations.${index}.name`)}
+          defaultValue={selectedSettlement?.locations?.[index].name || ''}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -150,14 +148,13 @@ export function LocationItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => {
-              const locationData = form.getValues(`locations.${index}`)
+            onClick={() =>
               onSave(
                 inputRef.current!.value,
-                locationData?.unlocked || false,
+                selectedSettlement?.locations?.[index].unlocked || false,
                 index
               )
-            }}
+            }
             title="Save location">
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -193,7 +190,7 @@ export function NewLocationItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, false)

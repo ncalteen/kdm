@@ -1,13 +1,14 @@
 # Copilot Instructions
 
-Each of the following sections contains a list of instructions for Copilot to
-follow when generating code. The instructions are grouped by category.
+## Development
+
+- Do not run `npm run dev`, `npm run lint`, or `npm run format` commands unless
+  you are specifically asked to do so. These commands are used to check and
+  format the code, but they can be time-consuming and may not be necessary for
+  your task.
 
 ## React Components
 
-- When a parent element contains a one or more `Checkbox` components, they
-  should be separated from each other (and preceding/following text) using
-  `gap-2`.
 - All React components should follow the same coding standards.
   - All components should be written in TypeScript.
   - Inputs should be uncontrolled components.
@@ -42,8 +43,8 @@ follow when generating code. The instructions are grouped by category.
 
 ## User Messaging
 
-- All user messaging should be done using the `sonner` library.
-- All messages should be displayed using the `toast` function.
+- All user messaging should be done using the `sonner` library's `toast`
+  function.
 - If an error occurs while parsing an input value against the Zod schema, the
   error message from the raised `ZodError` should be used in the toast
   notification. If no error message is provided, the following message should be
@@ -84,10 +85,6 @@ Other terms and phrases that can be used to describe the game include:
 - Overwhelming odds.
 - Struggle for survival.
 - Victory rarely achieved, and at great cost.
-
-## Performance
-
-- All components should be optimized for performance.
 
 ## Gameplay
 

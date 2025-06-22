@@ -6,11 +6,14 @@ import { useSidebar } from '@/components/ui/sidebar'
 import { MarkGithubIcon } from '@primer/octicons-react'
 import { SidebarIcon } from 'lucide-react'
 import Link from 'next/link'
+import { ReactElement } from 'react'
 
 /**
  * Site Header Component
+ *
+ * @returns Site Header Component
  */
-export function SiteHeader() {
+export function SiteHeader(): ReactElement {
   const { toggleSidebar } = useSidebar()
 
   return (

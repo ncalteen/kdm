@@ -2,30 +2,24 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel
-} from '@/components/ui/form'
+import { FormItem } from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement, useCallback } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Hunt XP Card Props
+ * Hunt XP Card Properties
  */
 interface HuntXPCardProps {
-  /** Survivor form instance */
-  form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -39,12 +33,10 @@ interface HuntXPCardProps {
  * @returns Hunt XP Card Component
  */
 export function HuntXPCard({
-  form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement,
+  selectedSurvivor
 }: HuntXPCardProps): ReactElement {
-  const huntXP = form.watch('huntXP')
-  const huntXPRankUp = form.watch('huntXPRankUp')
   /**
    * Save to Local Storage
    *
@@ -64,9 +56,9 @@ export function HuntXPCard({
       if (updatedHuntXPRankUp !== undefined)
         updateData.huntXPRankUp = updatedHuntXPRankUp
 
-      saveSurvivor(updateData, successMsg)
+      saveSelectedSurvivor(updateData, successMsg)
     },
-    [saveSurvivor]
+    [saveSelectedSurvivor]
   )
 
   /**
@@ -76,12 +68,10 @@ export function HuntXPCard({
    * @param checked Whether the checkbox is checked
    */
   const updateHuntXP = (index: number, checked: boolean) => {
-    const newXP = checked ? index : index - 1
-
     saveToLocalStorage(
-      newXP,
+      checked ? index + 1 : index,
       undefined,
-      checked && huntXPRankUp?.includes(index)
+      checked && selectedSurvivor?.huntXPRankUp?.includes(index)
         ? 'The survivor rises through struggle and triumph. Rank up achieved!'
         : 'The lantern grows brighter. Hunt XP updated.'
     )
@@ -96,7 +86,7 @@ export function HuntXPCard({
   const updateHuntXPRankUp = (index: number, event: React.MouseEvent) => {
     event.preventDefault()
 
-    const currentRankUps = [...(huntXPRankUp || [])]
+    const currentRankUps = [...(selectedSurvivor?.huntXPRankUp || [])]
     const rankUpIndex = currentRankUps.indexOf(index)
 
     if (rankUpIndex >= 0) {
@@ -121,7 +111,7 @@ export function HuntXPCard({
    * @param index The index of the checkbox (0-based)
    * @returns True if the checkbox should be disabled
    */
-  const isDisabled = (index: number) => index > (huntXP || 0) + 1
+  const isDisabled = (index: number) => index > (selectedSurvivor?.huntXP || 0)
 
   return (
     <Card className="p-2 border-0 lg:h-[85px]">
@@ -129,54 +119,39 @@ export function HuntXPCard({
         <div className="flex flex-col">
           <div className="flex items-center h-[36px]">
             {/* Hunt XP */}
-            <FormField
-              control={form.control}
-              name="huntXP"
-              render={() => (
-                <FormItem className="flex-1">
-                  <div className="flex justify-between items-center">
-                    <FormLabel className="font-bold text-left">
-                      Hunt XP
-                    </FormLabel>
-                    <FormControl>
-                      <div className="flex items-center gap-1 lg:gap-2">
-                        {Array.from({ length: 16 }, (_, i) => {
-                          const boxIndex = i
-                          const checked = (huntXP || 0) >= boxIndex
-                          const milestone = huntXPRankUp?.includes(boxIndex)
-                          const isLast = boxIndex === 15
+            <FormItem className="flex-1">
+              <div className="flex justify-between items-center">
+                <label className="font-bold text-left">Hunt XP</label>
+                <div className="flex items-center gap-1 lg:gap-2">
+                  {Array.from({ length: 16 }, (_, i) => {
+                    const checked = (selectedSurvivor?.huntXP || 0) > i
 
-                          return (
-                            <div key={boxIndex} className="flex">
-                              <Checkbox
-                                id={`hunt-xp-${boxIndex}`}
-                                checked={checked}
-                                disabled={isDisabled(boxIndex)}
-                                onCheckedChange={(checked) =>
-                                  updateHuntXP(boxIndex, !!checked)
-                                }
-                                onContextMenu={(event) =>
-                                  updateHuntXPRankUp(boxIndex, event)
-                                }
-                                className={cn(
-                                  'h-4 w-4 rounded-sm',
-                                  !checked &&
-                                    milestone &&
-                                    'border-2 border-primary',
-                                  !checked &&
-                                    isLast &&
-                                    'border-4 border-primary'
-                                )}
-                              />
-                            </div>
-                          )
-                        })}
+                    return (
+                      <div key={i} className="flex">
+                        <Checkbox
+                          id={`hunt-xp-${i}`}
+                          checked={checked}
+                          disabled={isDisabled(i)}
+                          onCheckedChange={(checked) =>
+                            updateHuntXP(i, !!checked)
+                          }
+                          onContextMenu={(event) =>
+                            updateHuntXPRankUp(i, event)
+                          }
+                          className={cn(
+                            'h-4 w-4 rounded-sm',
+                            !checked &&
+                              selectedSurvivor?.huntXPRankUp?.includes(i) &&
+                              'border-2 border-primary',
+                            !checked && i === 15 && 'border-4 border-primary'
+                          )}
+                        />
                       </div>
-                    </FormControl>
-                  </div>
-                </FormItem>
-              )}
-            />
+                    )
+                  })}
+                </div>
+              </div>
+            </FormItem>
           </div>
         </div>
 
@@ -193,7 +168,7 @@ export function HuntXPCard({
                 />
               ))}
               <span className="text-xs">
-                {settlement.survivorType === SurvivorType.CORE ? (
+                {selectedSettlement?.survivorType === SurvivorType.CORE ? (
                   <div className="flex items-center gap-1">
                     <BookOpenIcon className="h-4 w-4" /> Age
                   </div>

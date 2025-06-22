@@ -2,6 +2,7 @@
 
 import {
   CampaignType,
+  NodeLevel,
   Philosophy,
   ResourceCategory,
   ResourceType,
@@ -39,7 +40,7 @@ export const QuarrySchema = z.object({
   /** Quarry Name */
   name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
   /** Node Level */
-  node: z.enum(['Node 1', 'Node 2', 'Node 3', 'Node 4']),
+  node: z.nativeEnum(NodeLevel),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -268,6 +269,8 @@ export const BaseSettlementSchema = z.object({
   survivalLimit: z.number().min(1).default(1),
   /** Survivor Type */
   survivorType: z.nativeEnum(SurvivorType).default(SurvivorType.CORE),
+  /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
+  usesScouts: z.boolean().default(false),
   /** Settlment Timeline */
   timeline: z.array(TimelineYearSchema).default([]),
 

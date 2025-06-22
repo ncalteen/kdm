@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Gear Item Component Properties
  */
 export interface GearItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Gear ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface GearItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,10 +48,10 @@ export function GearItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: GearItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -60,17 +59,15 @@ export function GearItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug(
+      '[GearItem] Changed',
+      selectedSettlement?.gear?.[index],
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`gear.${index}`) || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index])
+      inputRef.current.value = selectedSettlement?.gear?.[index] || ''
+  }, [selectedSettlement?.gear, index])
 
   /**
    * Handles the key down event for the input field.
@@ -80,7 +77,7 @@ export function GearItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -103,13 +100,13 @@ export function GearItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{form.getValues(`gear.${index}`)}</span>
+          <span className="text-xs">{selectedSettlement?.gear?.[index]}</span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Add gear..."
-          defaultValue={form.getValues(`gear.${index}`)}
+          defaultValue={selectedSettlement?.gear?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -168,7 +165,7 @@ export function NewGearItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

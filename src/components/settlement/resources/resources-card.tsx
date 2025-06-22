@@ -25,26 +25,30 @@ import {
 } from '@dnd-kit/sortable'
 import { BeefIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Resources Card Props
+ * Resources Card Properties
  */
-interface ResourcesCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
-  form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+interface ResourcesCardProps {
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Resources Card Component
+ *
+ * @param props Resources Card Properties
+ * @returns Resources Card Component
  */
 export function ResourcesCard({
-  form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: ResourcesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -52,14 +56,16 @@ export function ResourcesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[ResourcesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
-      settlement.resources?.forEach((_, i) => {
+      selectedSettlement?.resources?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
       return next
     })
-  }, [settlement.resources])
+  }, [selectedSettlement?.resources])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -71,31 +77,16 @@ export function ResourcesCard({
   const addResource = () => setIsAddingNew(true)
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedResources Updated Resources
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedResources: {
-      name: string
-      category: ResourceCategory
-      types: ResourceType[]
-      amount: number
-    }[],
-    successMsg?: string
-  ) => saveSettlement({ resources: updatedResources }, successMsg)
-
-  /**
    * Handles the amount change for a resource.
    *
    * @param index Resource Index
    * @param amount New Amount
    */
   const onAmountChange = (index: number, amount: number) => {
-    const currentResources = [...(settlement.resources || [])]
+    const currentResources = [...(selectedSettlement?.resources || [])]
     currentResources[index] = { ...currentResources[index], amount }
-    saveToLocalStorage(currentResources)
+
+    saveSelectedSettlement({ resources: currentResources })
   }
 
   /**
@@ -104,7 +95,7 @@ export function ResourcesCard({
    * @param index Resource Index
    */
   const onRemove = (index: number) => {
-    const currentResources = [...(settlement.resources || [])]
+    const currentResources = [...(selectedSettlement?.resources || [])]
     currentResources.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -119,7 +110,10 @@ export function ResourcesCard({
       return next
     })
 
-    saveToLocalStorage(currentResources, 'The resource is destroyed.')
+    saveSelectedSettlement(
+      { resources: currentResources },
+      'The resource is destroyed.'
+    )
   }
 
   /**
@@ -141,7 +135,7 @@ export function ResourcesCard({
     if (!name || name.trim() === '')
       return toast.error('A nameless resource cannot be recorded.')
 
-    const updatedResources = [...(settlement.resources || [])]
+    const updatedResources = [...(selectedSettlement?.resources || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -169,12 +163,13 @@ export function ResourcesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedResources,
+    saveSelectedSettlement(
+      { resources: updatedResources },
       i !== undefined
         ? 'The resource has been updated.'
         : 'A resource has been added to settlement storage.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -197,9 +192,14 @@ export function ResourcesCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(settlement.resources || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.resources || [],
+        oldIndex,
+        newIndex
+      )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ resources: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -245,22 +245,21 @@ export function ResourcesCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-[200px] overflow-y-auto">
           <div className="space-y-1">
-            {settlement.resources?.length !== 0 && (
+            {selectedSettlement?.resources?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.resources || []).map((_, index) =>
+                  items={(selectedSettlement?.resources || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.resources || []).map((_, index) => (
+                  {(selectedSettlement?.resources || []).map((_, index) => (
                     <ResourceItem
                       key={index}
                       id={index.toString()}
                       index={index}
-                      form={form}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(i, name, category, types, amount) =>
@@ -268,6 +267,7 @@ export function ResourcesCard({
                       }
                       onEdit={onEdit}
                       onAmountChange={onAmountChange}
+                      selectedSettlement={selectedSettlement}
                     />
                   ))}
                 </SortableContext>

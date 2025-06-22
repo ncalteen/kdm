@@ -7,9 +7,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { useTab } from '@/contexts/tab-context'
+import { useSelectedTab } from '@/contexts/selected-tab-context'
 import { LucideIcon } from 'lucide-react'
+import { ReactElement } from 'react'
 
+/**
+ * Main Navigation Component
+ *
+ * @param props Main Navigation Properties
+ * @returns Main Navigation Component
+ */
 export function NavMain({
   items
 }: {
@@ -18,8 +25,8 @@ export function NavMain({
     tab: string
     icon?: LucideIcon
   }[]
-}) {
-  const { selectedTab, setSelectedTab } = useTab()
+}): ReactElement {
+  const { selectedTab, setSelectedTab } = useSelectedTab()
 
   return (
     <SidebarGroup>

@@ -11,50 +11,50 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { NodeLevel } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Quarry Item Properties
  */
 export interface QuarryItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Quarry ID */
   id: string
   /** Index */
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Handler */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Handler */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (
     value?: string,
-    node?: string,
+    node?: NodeLevel,
     unlocked?: boolean,
     index?: number
   ) => void
-  /** OnToggleUnlocked Handler */
+  /** On Toggle Unlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
-  /** OnUpdateNode Handler */
-  onUpdateNode: (index: number, node: string) => void
+  /** On Update Node Handler */
+  onUpdateNode: (index: number, node: NodeLevel) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * New Quarry Item Component Properties
  */
 export interface NewQuarryItemProps {
-  /** OnCancel Handler */
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Handler */
-  onSave: (value?: string, node?: string, unlocked?: boolean) => void
+  /** On Save Handler */
+  onSave: (value?: string, node?: NodeLevel, unlocked?: boolean) => void
 }
 
 /**
@@ -67,32 +67,28 @@ export function QuarryItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
   onSave,
   onToggleUnlocked,
-  onUpdateNode
+  onUpdateNode,
+  selectedSettlement
 }: QuarryItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const quarry = form.watch(`quarries.${index}`)
 
   useEffect(() => {
-    if (inputRef.current && quarry) {
-      inputRef.current.value = quarry.name || ''
-    }
+    console.debug(
+      '[QuarryItem] Changed',
+      selectedSettlement?.quarries?.[index],
+      index
+    )
 
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index, quarry])
+    if (inputRef.current && selectedSettlement?.quarries?.[index])
+      inputRef.current.value = selectedSettlement?.quarries?.[index].name || ''
+  }, [selectedSettlement?.quarries, index])
 
   /**
    * Handles the key down event for the input field.
@@ -102,14 +98,21 @@ export function QuarryItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === 'Enter' && inputRef.current && quarry) {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (
+      e.key === 'Enter' &&
+      inputRef.current &&
+      selectedSettlement?.quarries?.[index]
+    ) {
       e.preventDefault()
-      onSave(inputRef.current.value, quarry.node, quarry.unlocked, index)
+      onSave(
+        inputRef.current.value,
+        selectedSettlement?.quarries?.[index].node,
+        selectedSettlement?.quarries?.[index].unlocked,
+        index
+      )
     }
   }
-
-  if (!quarry) return <></>
 
   return (
     <div
@@ -126,7 +129,7 @@ export function QuarryItem({
 
       {/* Unlocked Checkbox */}
       <Checkbox
-        checked={quarry.unlocked}
+        checked={selectedSettlement?.quarries?.[index].unlocked}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -135,13 +138,15 @@ export function QuarryItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{quarry.name}</span>
+          <span className="text-xs">
+            {selectedSettlement?.quarries?.[index].name}
+          </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Quarry name"
-          defaultValue={quarry.name}
+          defaultValue={selectedSettlement?.quarries?.[index].name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -152,15 +157,17 @@ export function QuarryItem({
       <div className="flex items-center gap-1 ml-auto">
         {isDisabled ? (
           <Badge variant="secondary" className="h-8 w-20">
-            {quarry.node}
+            {selectedSettlement?.quarries?.[index].node}
           </Badge>
         ) : (
           <Select
-            value={quarry.node}
-            onValueChange={(value) => onUpdateNode(index, value)}
+            value={selectedSettlement?.quarries?.[index].node}
+            onValueChange={(value) => onUpdateNode(index, value as NodeLevel)}
             disabled={isDisabled}>
             <SelectTrigger className="h-8 w-24">
-              <SelectValue placeholder={quarry.node} />
+              <SelectValue
+                placeholder={selectedSettlement?.quarries?.[index].node}
+              />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Node 1">Node 1</SelectItem>
@@ -189,8 +196,8 @@ export function QuarryItem({
             onClick={() =>
               onSave(
                 inputRef.current?.value,
-                quarry.node,
-                quarry.unlocked,
+                selectedSettlement?.quarries?.[index].node,
+                selectedSettlement?.quarries?.[index].unlocked,
                 index
               )
             }
@@ -230,10 +237,10 @@ export function NewQuarryItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(inputRef.current.value, nodeRef.current, false)
+      onSave(inputRef.current.value, nodeRef.current as NodeLevel, false)
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()
@@ -282,7 +289,7 @@ export function NewQuarryItem({
           variant="ghost"
           size="icon"
           onClick={() =>
-            onSave(inputRef.current?.value, nodeRef.current, false)
+            onSave(inputRef.current?.value, nodeRef.current as NodeLevel, false)
           }
           title="Save quarry">
           <CheckIcon className="h-4 w-4" />

@@ -20,9 +20,9 @@ import { Check, ChevronsUpDown } from 'lucide-react'
 import { type ReactElement, useEffect, useState } from 'react'
 
 /**
- * Select Campaign Component Properties
+ * Select Campaign Type Component Properties
  */
-export interface SelectCampaignProps {
+export interface SelectCampaignTypeProps {
   /** Component ID */
   id?: string
   /** OnChange Callback */
@@ -32,19 +32,20 @@ export interface SelectCampaignProps {
 }
 
 /**
- * Select Campaign Component
+ * Select Campaign Type Component
  *
  * This component allows the user to select a campaign type from a dropdown
  * list. It uses a popover to display the options and allows for searching
  * through them.
  *
  * @param props Component Properties
+ * @returns Select Campaign Type Component
  */
-export function SelectCampaign({
+export function SelectCampaignType({
   id,
   onChange,
   value: propValue
-}: SelectCampaignProps): ReactElement {
+}: SelectCampaignTypeProps): ReactElement {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(propValue || '')
 
@@ -54,6 +55,8 @@ export function SelectCampaign({
   }))
 
   useEffect(() => {
+    console.debug('[SelectCampaignType] Value Changed:', propValue)
+
     if (propValue) setValue(propValue)
   }, [propValue])
 
@@ -65,11 +68,7 @@ export function SelectCampaign({
   const handleSelect = (currentValue: string) => {
     // Do not allow clearing the selection
     if (!currentValue) return
-
-    if (currentValue === value) {
-      setOpen(false)
-      return
-    }
+    if (currentValue === value) return setOpen(false)
 
     setValue(currentValue)
     setOpen(false)
@@ -78,7 +77,7 @@ export function SelectCampaign({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"

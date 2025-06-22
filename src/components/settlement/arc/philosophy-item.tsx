@@ -7,15 +7,12 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
+import { KeyboardEvent, ReactElement, useRef, useState } from 'react'
 
 /**
  * Philosophy Item Component Properties
  */
 export interface PhilosophyItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Philosophy ID */
   id: string
   /** Index */
@@ -28,6 +25,8 @@ export interface PhilosophyItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -50,19 +49,15 @@ export function PhilosophyItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: PhilosophyItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const selectRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    if (!isDisabled && selectRef.current) selectRef.current.focus()
-  }, [isDisabled])
 
   /**
    * Handles the key down event for the select field.
@@ -72,11 +67,11 @@ export function PhilosophyItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent): void => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      const currentValue = form.getValues(`philosophies.${index}`)
-      onSave(currentValue, index)
+
+      onSave(selectedSettlement?.philosophies?.[index], index)
     }
   }
 
@@ -97,14 +92,14 @@ export function PhilosophyItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-xs">
-            {form.getValues(`philosophies.${index}`)}
+            {selectedSettlement?.philosophies?.[index]}
           </span>
         </div>
       ) : (
         <SelectPhilosophy
           ref={selectRef}
           options={Object.values(Philosophy)}
-          value={form.getValues(`philosophies.${index}`)}
+          value={selectedSettlement?.philosophies?.[index]}
           onChange={(value) => {
             if (!isDisabled) onSave(value, index)
           }}
@@ -130,7 +125,7 @@ export function PhilosophyItem({
             variant="ghost"
             size="icon"
             onClick={() =>
-              onSave(form.getValues(`philosophies.${index}`), index)
+              onSave(selectedSettlement?.philosophies?.[index], index)
             }
             title="Save philosophy">
             <CheckIcon className="h-4 w-4" />
@@ -170,7 +165,7 @@ export function NewPhilosophyItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent): void => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       onSave(selectedValue)

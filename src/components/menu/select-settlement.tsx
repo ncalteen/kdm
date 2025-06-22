@@ -34,6 +34,7 @@ export interface SelectSettlementProps {
  * Select Settlement Component
  *
  * @param props Component Properties
+ * @returns Select Settlement Component
  */
 export function SelectSettlement({
   disabled,
@@ -48,7 +49,8 @@ export function SelectSettlement({
 
   // Get settlements from the campaign
   useEffect(() => {
-    // Only run on the client side
+    console.debug('[SelectSettlement] Fetching Settlements')
+
     const campaign = getCampaign()
     const settlements = campaign.settlements || []
 
@@ -61,6 +63,8 @@ export function SelectSettlement({
   }, [])
 
   useEffect(() => {
+    console.debug('[SelectSettlement] Value Changed:', propValue)
+
     if (propValue !== undefined) setValue(propValue)
   }, [propValue])
 

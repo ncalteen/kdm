@@ -15,9 +15,9 @@ import {
 } from 'react'
 
 /**
- * Survivor Context Shape
+ * Selected Survivor Context Type
  */
-interface SurvivorContextType {
+interface SelectedSurvivorContextType {
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Selected Survivor */
@@ -31,23 +31,32 @@ interface SurvivorContextType {
 }
 
 /**
- * Survivor Context
+ * Selected Survivor Context Provider Properties
  */
-const SurvivorContext = createContext<SurvivorContextType | undefined>(
-  undefined
-)
+interface SelectedSurvivorProviderProps {
+  /** Survivor */
+  survivor: Survivor | null
+  /** Children */
+  children: ReactNode
+}
 
 /**
- * Survivor Provider
+ * Selected Survivor Context
  */
-export function SurvivorProvider({
+const SelectedSurvivorContext = createContext<
+  SelectedSurvivorContextType | undefined
+>(undefined)
+
+/**
+ * Selected Survivor Context Provider
+ *
+ * @param props Selected Survivor Provider Properties
+ * @returns Selected Survivor Context Provider Component
+ */
+export function SelectedSurvivorProvider({
   survivor,
   children
-}: {
-  survivor: Survivor | null
-  children: ReactNode
-}): ReactElement {
-  // State to hold the selected survivor and creation mode
+}: SelectedSurvivorProviderProps): ReactElement {
   const [selectedSurvivor, setSelectedSurvivorState] =
     useState<Survivor | null>(survivor)
   const [isCreatingNewSurvivor, setIsCreatingNewSurvivor] =
@@ -60,13 +69,34 @@ export function SurvivorProvider({
     if (savedSelectedSurvivor) setSelectedSurvivorState(savedSelectedSurvivor)
   }, [])
 
+  // Listen for campaign updates to keep selected survivor in sync
+  useEffect(() => {
+    const handleCampaignUpdate = () => {
+      if (selectedSurvivor?.id) {
+        const updatedSurvivor = getSelectedSurvivor()
+        if (updatedSurvivor && updatedSurvivor.id === selectedSurvivor.id) {
+          setSelectedSurvivorState(updatedSurvivor)
+        }
+      }
+    }
+
+    // Listen for both storage events and custom campaign update events
+    window.addEventListener('storage', handleCampaignUpdate)
+    window.addEventListener('campaignUpdated', handleCampaignUpdate)
+
+    return () => {
+      window.removeEventListener('storage', handleCampaignUpdate)
+      window.removeEventListener('campaignUpdated', handleCampaignUpdate)
+    }
+  }, [selectedSurvivor?.id])
+
   /**
    * Set Selected Survivor
-   *
-   * Updates selected survivor and persists to localStorage
    */
   const setSelectedSurvivor = (survivor: Survivor | null) => {
+    // Update state
     setSelectedSurvivorState(survivor)
+    // Save to localStorage
     setSelectedSurvivorInStorage(survivor?.id || null)
 
     // When selecting a survivor, stop creation mode
@@ -75,8 +105,6 @@ export function SurvivorProvider({
 
   /**
    * Update Selected Survivor
-   *
-   * Refreshes the selected survivor from localStorage
    */
   const updateSelectedSurvivor = () => {
     if (selectedSurvivor?.id) {
@@ -87,28 +115,28 @@ export function SurvivorProvider({
   }
 
   return (
-    <SurvivorContext.Provider
+    <SelectedSurvivorContext.Provider
       value={{
-        selectedSurvivor,
-        setSelectedSurvivor,
-        updateSelectedSurvivor,
         isCreatingNewSurvivor,
-        setIsCreatingNewSurvivor
+        selectedSurvivor,
+        setIsCreatingNewSurvivor,
+        setSelectedSurvivor,
+        updateSelectedSurvivor
       }}>
       {children}
-    </SurvivorContext.Provider>
+    </SelectedSurvivorContext.Provider>
   )
 }
 
 /**
  * Survivor Context Hook
  */
-export function useSurvivor(): SurvivorContextType {
-  const context = useContext(SurvivorContext)
+export function useSelectedSurvivor(): SelectedSurvivorContextType {
+  const context = useContext(SelectedSurvivorContext)
 
   if (!context)
     throw new Error(
-      'Context hook useSurvivor must be used within a SurvivorProvider'
+      'Context hook useSelectedSurvivor must be used within a SelectedSurvivorProvider'
     )
 
   return context

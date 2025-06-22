@@ -24,26 +24,30 @@ import {
 } from '@dnd-kit/sortable'
 import { BadgeCheckIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Milestones Card Props
+ * Milestones Card Properties
  */
-interface MilestonesCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
-  form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+interface MilestonesCardProps {
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Milestones Card Component
+ *
+ * @param props Milestones Card Properties
+ * @returns Milestones Card Component
  */
 export function MilestonesCard({
-  form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: MilestonesCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -51,16 +55,23 @@ export function MilestonesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[MilestonesCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.milestones?.forEach((_, i) => {
+      selectedSettlement?.milestones?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.milestones])
+  }, [selectedSettlement?.milestones])
+
+  /**
+   * Add Milestone
+   */
+  const addMilestone = () => setIsAddingNew(true)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -69,29 +80,15 @@ export function MilestonesCard({
     })
   )
 
-  const addMilestone = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedMilestones Updated Milestones
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedMilestones: { name: string; complete: boolean; event: string }[],
-    successMsg?: string
-  ) => saveSettlement({ milestones: updatedMilestones }, successMsg)
-
   /**
    * Handles the removal of a milestone.
    *
    * @param index Milestone Index
    */
   const onRemove = (index: number) => {
-    const currentMilestones = [...(settlement.milestones || [])]
+    const currentMilestones = [...(selectedSettlement?.milestones || [])]
 
     currentMilestones.splice(index, 1)
-    form.setValue('milestones', currentMilestones)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -105,8 +102,8 @@ export function MilestonesCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentMilestones,
+    saveSelectedSettlement(
+      { milestones: currentMilestones },
       'The milestone fades into the darkness.'
     )
   }
@@ -125,7 +122,7 @@ export function MilestonesCard({
     if (!event || event.trim() === '')
       return toast.error('A milestone must include a story event.')
 
-    const updatedMilestones = [...(settlement.milestones || [])]
+    const updatedMilestones = [...(selectedSettlement?.milestones || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -143,12 +140,13 @@ export function MilestonesCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedMilestones,
+    saveSelectedSettlement(
+      { milestones: updatedMilestones },
       i !== undefined
         ? 'Milestones have been updated.'
         : "A new milestone marks the settlement's destiny."
     )
+
     setIsAddingNew(false)
   }
 
@@ -172,12 +170,13 @@ export function MilestonesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        settlement.milestones || [],
+        selectedSettlement?.milestones || [],
         oldIndex,
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({ milestones: newOrder })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -201,14 +200,14 @@ export function MilestonesCard({
    * @param checked Completion Status
    */
   const onToggleComplete = (index: number, checked: boolean) => {
-    const updatedMilestones = [...(settlement.milestones || [])]
+    const updatedMilestones = [...(selectedSettlement?.milestones || [])]
     updatedMilestones[index] = {
       ...updatedMilestones[index],
       complete: checked
     }
 
-    saveToLocalStorage(
-      updatedMilestones,
+    saveSelectedSettlement(
+      { milestones: updatedMilestones },
       checked
         ? 'Milestone achieved - the settlement persists through the darkness.'
         : 'Milestone status updated.'
@@ -244,30 +243,31 @@ export function MilestonesCard({
       <CardContent className="p-1 pb-2">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {settlement.milestones?.length !== 0 && (
+            {selectedSettlement?.milestones?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.milestones || []).map((_, index) =>
-                    index.toString()
+                  items={(selectedSettlement?.milestones || []).map(
+                    (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.milestones || []).map((milestone, index) => (
-                    <MilestoneItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      milestone={milestone}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(i, name, event) => onSave(name, event, i)}
-                      onEdit={onEdit}
-                      onToggleComplete={onToggleComplete}
-                    />
-                  ))}
+                  {(selectedSettlement?.milestones || []).map(
+                    (milestone, index) => (
+                      <MilestoneItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        milestone={milestone}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(i, name, event) => onSave(name, event, i)}
+                        onEdit={onEdit}
+                        onToggleComplete={onToggleComplete}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

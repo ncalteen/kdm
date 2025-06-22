@@ -132,3 +132,83 @@ export enum ResourceType {
   /** Vermin */
   VERMIN = 'Vermin'
 }
+
+/** Monster Level */
+export enum MonsterLevel {
+  /** Level 1 */
+  LEVEL_1 = '1',
+  /** Level 2 */
+  LEVEL_2 = '2',
+  /** Level 3 */
+  LEVEL_3 = '3',
+  /** Level 4 */
+  LEVEL_4 = '4'
+}
+
+/** Monster Type */
+export enum MonsterType {
+  /** Nemesis */
+  NEMESIS = 'Nemesis',
+  /** Quarry */
+  QUARRY = 'Quarry'
+}
+
+/** Node Level */
+export enum NodeLevel {
+  /** Node 1 */
+  NODE_1 = 'Node 1',
+  /** Node 2 */
+  NODE_2 = 'Node 2',
+  /** Node 3 */
+  NODE_3 = 'Node 3',
+  /** Node 4 */
+  NODE_4 = 'Node 4'
+}
+
+/** Color Choices */
+export enum ColorChoice {
+  /** Neutral */
+  NEUTRAL = 'neutral',
+  /** Stone */
+  STONE = 'stone',
+  /** Zinc */
+  ZINC = 'zinc',
+  /** Slate */
+  SLATE = 'slate',
+  /** Gray */
+  GRAY = 'gray',
+  /** Red */
+  RED = 'red',
+  /** Orange */
+  ORANGE = 'orange',
+  /** Amber */
+  AMBER = 'amber',
+  /** Yellow */
+  YELLOW = 'yellow',
+  /** Lime */
+  LIME = 'lime',
+  /** Green */
+  GREEN = 'green',
+  /** Emerald */
+  EMERALD = 'emerald',
+  /** Teal */
+  TEAL = 'teal',
+  /** Cyan */
+  CYAN = 'cyan',
+  /** Sky */
+  SKY = 'sky',
+  /** Blue */
+  BLUE = 'blue',
+  /** Indigo */
+  INDIGO = 'indigo',
+  /** Violet */
+  VIOLET = 'violet',
+  /** Purple */
+  PURPLE = 'purple',
+  /** Fuchsia */
+  FUCHSIA = 'fuchsia',
+  /** Pink */
+  PINK = 'pink',
+  /** Rose */
+  ROSE = 'rose'
+}

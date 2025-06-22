@@ -10,16 +10,15 @@ import {
 } from '@/components/ui/select'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Courage Understanding Card Props
+ * Courage Understanding Card Properties
  */
 interface CourageUnderstandingAbilitiesProps {
-  /** Survivor form instance */
-  form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -28,12 +27,12 @@ interface CourageUnderstandingAbilitiesProps {
  * Displays the abilities that a survivor has based on their courage and
  * understanding.
  *
- * @param form Form
+ * @param props Courage Understanding Abilities Properties
  * @returns Courage/Understanding Abilities Component
  */
 export function CourageUnderstandingAbilities({
-  form,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor
 }: CourageUnderstandingAbilitiesProps): ReactElement {
   /**
    * Handles the change of the ability in the courage group.
@@ -43,7 +42,7 @@ export function CourageUnderstandingAbilities({
   const handleCourageGroupChange = (
     value: 'stalwart' | 'prepared' | 'matchmaker'
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         hasStalwart: value === 'stalwart',
         hasPrepared: value === 'prepared',
@@ -60,7 +59,7 @@ export function CourageUnderstandingAbilities({
   const handleUnderstandingGroupChange = (
     value: 'analyze' | 'explore' | 'tinker'
   ) =>
-    saveSurvivor(
+    saveSelectedSurvivor(
       {
         hasAnalyze: value === 'analyze',
         hasExplore: value === 'explore',
@@ -68,22 +67,6 @@ export function CourageUnderstandingAbilities({
       },
       "The survivor's inner strength grows brighter."
     )
-
-  const courageGroupValue = form.watch('hasStalwart')
-    ? 'stalwart'
-    : form.watch('hasPrepared')
-      ? 'prepared'
-      : form.watch('hasMatchmaker')
-        ? 'matchmaker'
-        : ''
-
-  const understandingGroupValue = form.watch('hasAnalyze')
-    ? 'analyze'
-    : form.watch('hasExplore')
-      ? 'explore'
-      : form.watch('hasTinker')
-        ? 'tinker'
-        : ''
 
   // Ability descriptions
   const courageAbilities = {
@@ -105,7 +88,15 @@ export function CourageUnderstandingAbilities({
         {/* Courage Abilities */}
         <div className="flex flex-col w-[45%]">
           <RadioGroup
-            value={courageGroupValue}
+            value={
+              selectedSurvivor?.hasStalwart
+                ? 'stalwart'
+                : selectedSurvivor?.hasPrepared
+                  ? 'prepared'
+                  : selectedSurvivor?.hasMatchmaker
+                    ? 'matchmaker'
+                    : ''
+            }
             onValueChange={handleCourageGroupChange}>
             <div className="flex gap-2 text-xs">
               <RadioGroupItem value="stalwart" id="stalwart" />
@@ -135,7 +126,15 @@ export function CourageUnderstandingAbilities({
 
         <div className="flex flex-col w-[45%]">
           <RadioGroup
-            value={understandingGroupValue}
+            value={
+              selectedSurvivor?.hasAnalyze
+                ? 'analyze'
+                : selectedSurvivor?.hasExplore
+                  ? 'explore'
+                  : selectedSurvivor?.hasTinker
+                    ? 'tinker'
+                    : ''
+            }
             onValueChange={handleUnderstandingGroupChange}>
             <div className="flex gap-2 text-xs">
               <RadioGroupItem value="analyze" id="analyze" />
@@ -167,7 +166,15 @@ export function CourageUnderstandingAbilities({
         <div className="flex flex-col gap-2">
           <label className="font-bold text-sm">Courage Ability</label>
           <Select
-            value={courageGroupValue}
+            value={
+              selectedSurvivor?.hasStalwart
+                ? 'stalwart'
+                : selectedSurvivor?.hasPrepared
+                  ? 'prepared'
+                  : selectedSurvivor?.hasMatchmaker
+                    ? 'matchmaker'
+                    : ''
+            }
             onValueChange={handleCourageGroupChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a courage ability" />
@@ -178,11 +185,23 @@ export function CourageUnderstandingAbilities({
               <SelectItem value="matchmaker">Matchmaker</SelectItem>
             </SelectContent>
           </Select>
-          {courageGroupValue && (
+          {(selectedSurvivor?.hasStalwart
+            ? 'stalwart'
+            : selectedSurvivor?.hasPrepared
+              ? 'prepared'
+              : selectedSurvivor?.hasMatchmaker
+                ? 'matchmaker'
+                : '') && (
             <div className="text-xs p-2 rounded border">
               {
                 courageAbilities[
-                  courageGroupValue as keyof typeof courageAbilities
+                  selectedSurvivor?.hasStalwart
+                    ? 'stalwart'
+                    : selectedSurvivor?.hasPrepared
+                      ? 'prepared'
+                      : selectedSurvivor?.hasMatchmaker
+                        ? 'matchmaker'
+                        : ('' as keyof typeof courageAbilities)
                 ]
               }
             </div>
@@ -193,7 +212,15 @@ export function CourageUnderstandingAbilities({
         <div className="flex flex-col gap-2">
           <label className="font-bold text-sm">Understanding Ability</label>
           <Select
-            value={understandingGroupValue}
+            value={
+              selectedSurvivor?.hasAnalyze
+                ? 'analyze'
+                : selectedSurvivor?.hasExplore
+                  ? 'explore'
+                  : selectedSurvivor?.hasTinker
+                    ? 'tinker'
+                    : ''
+            }
             onValueChange={handleUnderstandingGroupChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select an understanding ability" />
@@ -204,11 +231,23 @@ export function CourageUnderstandingAbilities({
               <SelectItem value="tinker">Tinker</SelectItem>
             </SelectContent>
           </Select>
-          {understandingGroupValue && (
+          {(selectedSurvivor?.hasAnalyze
+            ? 'analyze'
+            : selectedSurvivor?.hasExplore
+              ? 'explore'
+              : selectedSurvivor?.hasTinker
+                ? 'tinker'
+                : '') && (
             <div className="text-xs p-2 rounded border">
               {
                 understandingAbilities[
-                  understandingGroupValue as keyof typeof understandingAbilities
+                  selectedSurvivor?.hasAnalyze
+                    ? 'analyze'
+                    : selectedSurvivor?.hasExplore
+                      ? 'explore'
+                      : selectedSurvivor?.hasTinker
+                        ? 'tinker'
+                        : ('' as keyof typeof understandingAbilities)
                 ]
               }
             </div>

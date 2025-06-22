@@ -35,6 +35,7 @@ export interface SelectWeaponTypeProps {
  * Select Weapon Type Component
  *
  * @param props Component Properties
+ * @returns Select Weapon Type Component
  */
 export function SelectWeaponType({
   disabled,

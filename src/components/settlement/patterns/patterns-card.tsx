@@ -24,17 +24,19 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, ScissorsLineDashedIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Patterns Card Props
+ * Patterns Card Properties
  */
-interface PatternsCardProps extends Partial<Settlement> {
-  /** Settlement form instance */
-  form: UseFormReturn<Settlement>
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+interface PatternsCardProps {
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -44,13 +46,12 @@ interface PatternsCardProps extends Partial<Settlement> {
  * Users can add, edit, remove, and reorder pattern items. All changes are
  * automatically saved to localStorage with appropriate validation and user feedback.
  *
- * @param form Settlement form instance
+ * @param props Patterns Card Properties
  * @returns Patterns Card Component
  */
 export function PatternsCard({
-  form,
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: PatternsCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
@@ -58,16 +59,18 @@ export function PatternsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
+    console.debug('[PatternsCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      settlement.patterns?.forEach((_, i) => {
+      selectedSettlement?.patterns?.forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [settlement.patterns])
+  }, [selectedSettlement?.patterns])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -79,26 +82,12 @@ export function PatternsCard({
   const addPattern = () => setIsAddingNew(true)
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedPatterns Updated Patterns
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (updatedPatterns: string[], successMsg?: string) =>
-    saveSettlement(
-      {
-        patterns: updatedPatterns
-      },
-      successMsg
-    )
-
-  /**
    * Handles the removal of a pattern.
    *
    * @param index Pattern Index
    */
   const onRemove = (index: number) => {
-    const currentPatterns = [...(settlement.patterns || [])]
+    const currentPatterns = [...(selectedSettlement?.patterns || [])]
     currentPatterns.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -113,8 +102,10 @@ export function PatternsCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentPatterns,
+    saveSelectedSettlement(
+      {
+        patterns: currentPatterns
+      },
       'The pattern has been banished from memory.'
     )
   }
@@ -129,7 +120,7 @@ export function PatternsCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless pattern cannot be preserved.')
 
-    const updatedPatterns = [...(settlement.patterns || [])]
+    const updatedPatterns = [...(selectedSettlement?.patterns || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -147,12 +138,15 @@ export function PatternsCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedPatterns,
+    saveSelectedSettlement(
+      {
+        patterns: updatedPatterns
+      },
       i !== undefined
         ? 'The pattern has been etched into memory.'
         : 'Insight has granted a new pattern.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -175,9 +169,16 @@ export function PatternsCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(settlement.patterns || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSettlement?.patterns || [],
+        oldIndex,
+        newIndex
+      )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSettlement({
+        patterns: newOrder
+      })
+
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -221,28 +222,30 @@ export function PatternsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
-            {settlement.patterns?.length !== 0 && (
+            {selectedSettlement?.patterns?.length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(settlement.patterns || []).map((_, index) =>
+                  items={(selectedSettlement?.patterns || []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(settlement.patterns || []).map((pattern, index) => (
-                    <PatternItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSettlement?.patterns || []).map(
+                    (pattern, index) => (
+                      <PatternItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                        selectedSettlement={selectedSettlement}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

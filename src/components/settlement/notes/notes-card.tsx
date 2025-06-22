@@ -5,50 +5,49 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 /**
- * Notes Card Props
+ * Notes Card Properties
  */
-interface NotesCardProps extends Partial<Settlement> {
-  /** Save settlement function */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
+interface NotesCardProps {
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
  * Notes Card Component
  *
- * @param form Settlement form instance
+ * @param props Notes Card Properties
  * @returns Notes Card Component
  */
 export function NotesCard({
-  saveSettlement,
-  ...settlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: NotesCardProps): ReactElement {
-  const [draft, setDraft] = useState<string | undefined>(settlement.notes || '')
+  const [draft, setDraft] = useState<string | undefined>(
+    selectedSettlement?.notes || ''
+  )
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedNotes Updated Notes
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedNotes: string | undefined,
-    successMsg?: string
-  ) =>
-    saveSettlement(
-      {
-        notes: updatedNotes
-      },
-      successMsg
-    )
+  // Update draft when selected settlement changes
+  useEffect(() => {
+    setDraft(selectedSettlement?.notes || '')
+    setIsDirty(false)
+  }, [selectedSettlement?.notes])
 
   const handleSave = () => {
     setIsDirty(false)
-    saveToLocalStorage(
-      draft,
+
+    saveSelectedSettlement(
+      {
+        notes: draft
+      },
       'As stories are shared amongst survivors, they are etched into the history of your settlement.'
     )
   }
@@ -70,7 +69,7 @@ export function NotesCard({
             id="settlement-notes"
             onChange={(e) => {
               setDraft(e.target.value)
-              setIsDirty(e.target.value !== settlement.notes)
+              setIsDirty(e.target.value !== selectedSettlement?.notes)
             }}
             placeholder="Add notes about your settlement..."
             className="w-full flex-1 resize-none"

@@ -40,13 +40,14 @@ export interface SelectPhilosophyProps {
   /** Options */
   options: string[]
   /** Value */
-  value?: Philosophy
+  value?: Philosophy | ''
 }
 
 /**
  * Select Philosophy Component
  *
  * @param props Component Properties
+ * @returns Select Philosophy Component
  */
 export const SelectPhilosophy = forwardRef<
   HTMLButtonElement,
@@ -60,6 +61,8 @@ export const SelectPhilosophy = forwardRef<
     const [value, setValue] = useState(propValue || '')
 
     useEffect(() => {
+      console.debug('[SelectPhilosophy] Value Changed:', propValue)
+
       if (propValue !== undefined) setValue(propValue)
     }, [propValue])
 

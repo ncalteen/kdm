@@ -2,22 +2,36 @@
 
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
+import { Hunt } from '@/schemas/hunt'
+import { Survivor } from '@/schemas/survivor'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 
 /**
- * Custom hook for saving campaign data with automatic context updates
+ * Save Campaign Data Custom Hook
  *
- * This hook provides a save function that automatically updates the survivor
+ * This hook provides a save function that automatically updates the campaign
  * context after saving data to localStorage, ensuring that components that
  * depend on campaign data are refreshed when campaign data changes.
+ *
+ * @param setSurvivors Set Survivors Function
+ * @param survivors Survivors
+ * @param updateSelectedHunt Update Selected Hunt Function
+ * @param updateSelectedSettlement Update Selected Settlement Function
+ * @param updateSelectedSurvivor Update Selected Survivor Function
  */
-export function useCampaignSave(updateSelectedSurvivor: () => void) {
+export function useCampaignSave(
+  setSurvivors: (survivors: Survivor[]) => void,
+  survivors: Survivor[] | null,
+  updateSelectedHunt: (hunt: Hunt | null) => void,
+  updateSelectedSettlement: () => void,
+  updateSelectedSurvivor: () => void
+) {
   /**
-   * Save campaign data to localStorage and update context
+   * Save Campaign Data
    *
-   * @param updateData Partial campaign data to update
-   * @param successMsg Optional success message to display
+   * @param updateData Partial Campaign Data
+   * @param successMsg Optional Success Message
    */
   const saveCampaign = useCallback(
     (updateData: Partial<Campaign>, successMsg?: string) => {
@@ -31,7 +45,10 @@ export function useCampaignSave(updateSelectedSurvivor: () => void) {
         saveCampaignToLocalStorage(updatedCampaign)
 
         // Update the context to refresh dependent components
+        updateSelectedHunt(null)
+        updateSelectedSettlement()
         updateSelectedSurvivor()
+        setSurvivors(survivors || [])
 
         if (successMsg) toast.success(successMsg)
       } catch (error) {
@@ -39,7 +56,13 @@ export function useCampaignSave(updateSelectedSurvivor: () => void) {
         toast.error('The darkness swallows your words. Please try again.')
       }
     },
-    [updateSelectedSurvivor]
+    [
+      updateSelectedHunt,
+      updateSelectedSettlement,
+      updateSelectedSurvivor,
+      setSurvivors,
+      survivors
+    ]
   )
 
   return { saveCampaign }

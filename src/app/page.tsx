@@ -5,11 +5,15 @@ import { SettlementForm } from '@/components/settlement/settlement-form'
 import { SiteHeader } from '@/components/side-header'
 import { Form } from '@/components/ui/form'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { useSettlement } from '@/contexts/settlement-context'
-import { useSurvivor } from '@/contexts/survivor-context'
-import { useTab } from '@/contexts/tab-context'
-import { useSettlementSave } from '@/hooks/use-settlement-save'
-import { useSurvivorSave } from '@/hooks/use-survivor-save'
+import { useSelectedHunt } from '@/contexts/selected-hunt-context'
+import { useSelectedSettlement } from '@/contexts/selected-settlement-context'
+import { useSelectedSurvivor } from '@/contexts/selected-survivor-context'
+import { useSelectedTab } from '@/contexts/selected-tab-context'
+import { useSurvivors } from '@/contexts/survivors-context'
+import { useSelectedHuntSave } from '@/hooks/use-selected-hunt-save'
+import { useSelectedSettlementSave } from '@/hooks/use-selected-settlement-save'
+import { useSelectedSurvivorSave } from '@/hooks/use-selected-survivor-save'
+import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -57,16 +61,16 @@ function MainPageContent(): ReactElement {
   const isMounted = useRef(false)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Effect to handle component mount and loading state
   useEffect(() => {
+    console.debug('[MainPageContent] Mounted')
     // Mark component as mounted
     isMounted.current = true
 
     // Simulate async behavior to show loading state briefly
     setTimeout(() => {
-      if (isMounted.current) {
-        setIsLoading(false)
-      }
-    }, 100) // Brief delay to ensure contexts are initialized
+      if (isMounted.current) setIsLoading(false)
+    }, 100)
 
     return () => {
       isMounted.current = false
@@ -97,58 +101,88 @@ function MainPageContent(): ReactElement {
  */
 function MainPage(): ReactElement {
   const {
+    // isCreatingNewSettlement,
     selectedSettlement,
-    updateSelectedSettlement,
-    setSelectedSettlement
-  } = useSettlement()
+    // setIsCreatingNewSettlement,
+    setSelectedSettlement,
+    updateSelectedSettlement
+  } = useSelectedSettlement()
   const {
-    selectedSurvivor,
-    setSelectedSurvivor,
     isCreatingNewSurvivor,
-    updateSelectedSurvivor,
-    setIsCreatingNewSurvivor
-  } = useSurvivor()
-  const { selectedTab } = useTab()
+    selectedSurvivor,
+    setIsCreatingNewSurvivor,
+    setSelectedSurvivor,
+    updateSelectedSurvivor
+  } = useSelectedSurvivor()
+  const {
+    isCreatingNewHunt,
+    selectedHunt,
+    setIsCreatingNewHunt,
+    setSelectedHunt,
+    updateSelectedHunt
+  } = useSelectedHunt()
+  const { selectedTab } = useSelectedTab()
+  const { setSurvivors, survivors } = useSurvivors()
 
-  // Initialize the settlement form data from the context
+  // Initialize the form data from the context
+  const huntForm = useForm<Hunt>({
+    resolver: zodResolver(HuntSchema) as Resolver<Hunt>,
+    defaultValues: selectedHunt || undefined
+  })
   const settlementForm = useForm<Settlement>({
     resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
     defaultValues: selectedSettlement || undefined
   })
-  const { saveSettlement } = useSettlementSave(
-    settlementForm,
-    updateSelectedSettlement
-  )
-
-  // Initialize the survivor form data from the context
   const survivorForm = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
     defaultValues: selectedSurvivor || undefined
   })
-  const { saveSurvivor } = useSurvivorSave(survivorForm, updateSelectedSurvivor)
 
-  const selectedSurvivorSettlementId = selectedSurvivor?.settlementId
+  // Initialize save hooks with the forms and update functions
+  const { saveSelectedHunt } = useSelectedHuntSave(huntForm, updateSelectedHunt)
+  const { saveSelectedSettlement } = useSelectedSettlementSave(
+    settlementForm,
+    updateSelectedSettlement
+  )
+  const { saveSelectedSurvivor } = useSelectedSurvivorSave(
+    survivorForm,
+    updateSelectedSurvivor
+  )
 
+  // Updates both settlement and active hunt contexts
+  const handleSetSelectedSettlement = (settlement: Settlement | null) => {
+    setSelectedSettlement(settlement)
+    updateSelectedSettlement()
+    updateSelectedHunt()
+  }
+
+  // Handle settlement data changes
   useEffect(() => {
-    // If the settlement changes, reset the settlement form with the selected
-    // settlement data. Clear the selected survivor only if it doesn't belong
-    // to the current settlement.
+    console.debug('[Page] Selected Settlement Changed')
+
+    // If the settlement changes, reset the settlement form
     if (selectedSettlement) {
       settlementForm.reset(selectedSettlement)
 
       // Clear selected survivor if it doesn't belong to current settlement
-      if (selectedSurvivorSettlementId !== selectedSettlement.id)
+      if (selectedSurvivor?.settlementId !== selectedSettlement.id)
         setSelectedSurvivor(null)
+
+      // Reset the hunt form
+      if (selectedHunt) huntForm.reset(selectedHunt)
     }
   }, [
     selectedSettlement,
-    selectedSurvivorSettlementId,
+    selectedSurvivor?.settlementId,
     setSelectedSurvivor,
-    settlementForm
+    settlementForm,
+    huntForm,
+    selectedHunt
   ])
 
+  // Reset the survivor form when the selected survivor changes
   useEffect(() => {
-    // Reset the survivor form when the selected survivor changes
+    console.debug('[Page] Selected Survivor Changed')
     if (selectedSurvivor) survivorForm.reset(selectedSurvivor)
   }, [selectedSurvivor, survivorForm])
 
@@ -160,26 +194,41 @@ function MainPage(): ReactElement {
 
         <div className="flex flex-1 pt-(--header-height)">
           <AppSidebar
-            settlement={selectedSettlement}
-            setSelectedSettlement={setSelectedSettlement}
+            selectedHunt={selectedHunt}
+            selectedSettlement={selectedSettlement}
+            selectedShowdown={null} // Showdown not implemented yet
+            setSelectedHunt={setSelectedHunt}
+            setSelectedSettlement={handleSetSelectedSettlement}
+            setSelectedShowdown={() => {}} // No showdown context yet
+            setSelectedSurvivor={setSelectedSurvivor}
           />
           <SidebarInset>
             <Form {...settlementForm}>
               <Form {...survivorForm}>
-                <SettlementForm
-                  settlement={selectedSettlement}
-                  saveSettlement={saveSettlement}
-                  isCreatingNewSurvivor={isCreatingNewSurvivor}
-                  setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
-                  updateSelectedSurvivor={updateSelectedSurvivor}
-                  saveSurvivor={saveSurvivor}
-                  setSelectedSurvivor={setSelectedSurvivor}
-                  survivor={selectedSurvivor}
-                  selectedTab={selectedTab}
-                  survivorForm={survivorForm}
-                  settlementForm={settlementForm}
-                  setSelectedSettlement={setSelectedSettlement}
-                />
+                <Form {...huntForm}>
+                  <SettlementForm
+                    isCreatingNewHunt={isCreatingNewHunt}
+                    isCreatingNewSurvivor={isCreatingNewSurvivor}
+                    saveSelectedHunt={saveSelectedHunt}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    saveSelectedSurvivor={saveSelectedSurvivor}
+                    selectedHunt={selectedHunt}
+                    selectedSettlement={selectedSettlement}
+                    selectedSurvivor={selectedSurvivor}
+                    selectedTab={selectedTab}
+                    setIsCreatingNewHunt={setIsCreatingNewHunt}
+                    setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
+                    setSelectedHunt={setSelectedHunt}
+                    setSelectedSettlement={handleSetSelectedSettlement}
+                    setSelectedSurvivor={setSelectedSurvivor}
+                    setSurvivors={setSurvivors}
+                    settlementForm={settlementForm}
+                    survivors={survivors}
+                    updateSelectedHunt={updateSelectedHunt}
+                    updateSelectedSettlement={updateSelectedSettlement}
+                    updateSelectedSurvivor={updateSelectedSurvivor}
+                  />
+                </Form>
               </Form>
             </Form>
           </SidebarInset>

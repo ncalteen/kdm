@@ -76,20 +76,12 @@ export function PrincipleItem({
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[PrincipleItem] Changed', principle)
+
     setNameValue(principle.name || '')
     setOption1Value(principle.option1Name || '')
     setOption2Value(principle.option2Name || '')
-  }, [principle.name, principle.option1Name, principle.option2Name])
-
-  useEffect(() => {
-    if (!isDisabled && nameInputRef.current) {
-      nameInputRef.current.focus()
-
-      const val = nameInputRef.current.value
-      nameInputRef.current.value = ''
-      nameInputRef.current.value = val
-    }
-  }, [isDisabled])
+  }, [principle])
 
   /**
    * Handles the key down event for the input fields.
@@ -99,7 +91,7 @@ export function PrincipleItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameValue && option1Value && option2Value) {
       e.preventDefault()
       onSave(index, nameValue, option1Value, option2Value)
@@ -250,7 +242,7 @@ export function NewPrincipleItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && name && option1 && option2) {
       e.preventDefault()
       onSave(name, option1, option2)
@@ -261,9 +253,7 @@ export function NewPrincipleItem({
   }
 
   const handleSave = () => {
-    if (name && option1 && option2) {
-      onSave(name, option1, option2)
-    }
+    if (name && option1 && option2) onSave(name, option1, option2)
   }
 
   return (

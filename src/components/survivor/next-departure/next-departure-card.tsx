@@ -24,44 +24,46 @@ import {
 } from '@dnd-kit/sortable'
 import { GiftIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
- * Next Departure Card Props
+ * Next Departure Card Properties
  */
 interface NextDepartureCardProps {
-  /** Survivor form instance */
-  form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
  * Next Departure Card Component
+ *
+ * @param props Next Departure Card Properties
+ * @returns Next Departure Card Component
  */
 export function NextDepartureCard({
-  form,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor
 }: NextDepartureCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  const nextDeparture = form.watch('nextDeparture')
-
   useEffect(() => {
+    console.debug('[NextDepartureCard] Initialize Disabled Inputs')
+
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      ;(nextDeparture || []).forEach((_, i) => {
+      ;(selectedSurvivor?.nextDeparture || []).forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [nextDeparture])
+  }, [selectedSurvivor?.nextDeparture])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -73,23 +75,12 @@ export function NextDepartureCard({
   const addInnovation = () => setIsAddingNew(true)
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedNextDeparture Updated Next Departure
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedNextDeparture: string[],
-    successMsg?: string
-  ) => saveSurvivor({ nextDeparture: updatedNextDeparture }, successMsg)
-
-  /**
    * Handles the removal of a next departure.
    *
    * @param index Next Departure Index
    */
   const onRemove = (index: number) => {
-    const currentNextDeparture = [...(nextDeparture || [])]
+    const currentNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
     currentNextDeparture.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -104,8 +95,8 @@ export function NextDepartureCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentNextDeparture,
+    saveSelectedSurvivor(
+      { nextDeparture: currentNextDeparture },
       'The lantern dims. Next departure bonus removed.'
     )
   }
@@ -120,7 +111,7 @@ export function NextDepartureCard({
     if (!value || value.trim() === '')
       return toast.error('A nameless departure bonus cannot be recorded.')
 
-    const updatedNextDeparture = [...(nextDeparture || [])]
+    const updatedNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -138,12 +129,13 @@ export function NextDepartureCard({
       }))
     }
 
-    saveToLocalStorage(
-      updatedNextDeparture,
+    saveSelectedSurvivor(
+      { nextDeparture: updatedNextDeparture },
       i !== undefined
         ? 'The lantern glows. Next departure bonus updated.'
         : 'The lantern glows. Next departure bonus added.'
     )
+
     setIsAddingNew(false)
   }
 
@@ -166,9 +158,13 @@ export function NextDepartureCard({
     if (over && active.id !== over.id) {
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
-      const newOrder = arrayMove(nextDeparture || [], oldIndex, newIndex)
+      const newOrder = arrayMove(
+        selectedSurvivor?.nextDeparture || [],
+        oldIndex,
+        newIndex
+      )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSurvivor({ nextDeparture: newOrder })
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -211,30 +207,32 @@ export function NextDepartureCard({
 
       {/* Next Departure List */}
       <CardContent className="p-1 pb-2 pt-0">
-        <div className="flex flex-col h-[150px]">
+        <div className="flex flex-col h-[167px]">
           <div className="flex-1 overflow-y-auto">
-            {(nextDeparture || []).length !== 0 && (
+            {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(nextDeparture || []).map((_, index) =>
-                    index.toString()
+                  items={(selectedSurvivor?.nextDeparture || []).map(
+                    (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(nextDeparture || []).map((innovation, index) => (
-                    <NextDepartureItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      form={form}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
-                    />
-                  ))}
+                  {(selectedSurvivor?.nextDeparture || []).map(
+                    (innovation, index) => (
+                      <NextDepartureItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={onEdit}
+                        selectedSurvivor={selectedSurvivor}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             )}

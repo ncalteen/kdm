@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Ability/Impairment Item Component Properties
  */
 export interface AbilityImpairmentItemProps {
-  /** Form */
-  form: UseFormReturn<Survivor>
   /** Ability ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface AbilityImpairmentItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -49,10 +48,10 @@ export function AbilityImpairmentItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSurvivor
 }: AbilityImpairmentItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -60,18 +59,12 @@ export function AbilityImpairmentItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[AbilityImpairmentItem] Changed', index)
+
     if (inputRef.current)
       inputRef.current.value =
-        form.getValues(`abilitiesAndImpairments.${index}`) || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index])
+        selectedSurvivor?.abilitiesAndImpairments?.[index] || ''
+  }, [selectedSurvivor?.abilitiesAndImpairments, index])
 
   /**
    * Handles the key down event for the input field.
@@ -81,7 +74,7 @@ export function AbilityImpairmentItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -105,14 +98,14 @@ export function AbilityImpairmentItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-xs">
-            {form.getValues(`abilitiesAndImpairments.${index}`)}
+            {selectedSurvivor?.abilitiesAndImpairments?.[index]}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Ability or Impairment"
-          defaultValue={form.getValues(`abilitiesAndImpairments.${index}`)}
+          defaultValue={selectedSurvivor?.abilitiesAndImpairments?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -171,7 +164,7 @@ export function NewAbilityImpairmentItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

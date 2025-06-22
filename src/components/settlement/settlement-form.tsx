@@ -1,5 +1,6 @@
 'use client'
 
+import { HuntCard } from '@/components/hunt/hunt-card'
 import { CollectiveCognitionRewardsCard } from '@/components/settlement/arc/collective-cognition-rewards-card'
 import { CollectiveCognitionVictoriesCard } from '@/components/settlement/arc/collective-cognition-victories-card'
 import { KnowledgesCard } from '@/components/settlement/arc/knowledges-card'
@@ -28,6 +29,7 @@ import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
 import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
 import { SurvivorCard } from '@/components/survivor/survivor-card'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -37,30 +39,52 @@ import { UseFormReturn } from 'react-hook-form'
  * Settlement Form Props
  */
 interface SettlementFormProps {
+  /** New Hunt Being Created */
+  isCreatingNewHunt: boolean
   /** New Survivor Being Created */
   isCreatingNewSurvivor: boolean
-  /** Function to Update Selected Survivor */
-  updateSelectedSurvivor: () => void
-  /** Function to Save Survivor */
-  saveSurvivor: (updateData: Partial<Survivor>, successMsg?: string) => void
-  /** Function to Set Selected Survivor */
-  setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Selected Survivor */
-  survivor: Survivor | null
-  /** Survivor Form Data */
-  survivorForm: UseFormReturn<Survivor>
+  /** Save Selected Hunt */
+  saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (
+    updateData: Partial<Survivor>,
+    successMsg?: string
+  ) => void
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
   /** Selected Settlement */
-  settlement: Settlement | null
-  /** Settlement Form Data */
-  settlementForm: UseFormReturn<Settlement>
-  /** Function to Save Settlement */
-  saveSettlement: (updateData: Partial<Settlement>, successMsg?: string) => void
-  /** Function to Set Selected Settlement */
-  setSelectedSettlement: (settlement: Settlement | null) => void
+  selectedSettlement: Settlement | null
+  /** Selected Survivor */
+  selectedSurvivor: Survivor | null
   /** Selected Tab */
   selectedTab: string
-  /** Function to Set Whether a New Survivor is Being Created */
+  /** Set New Hunt Being Created */
+  setIsCreatingNewHunt: (isCreating: boolean) => void
+  /** Set New Survivor Being Created */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
+  /** Set Selected Hunt */
+  setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Settlement */
+  setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
+  /** Settlement Form */
+  settlementForm: UseFormReturn<Settlement>
+  /** Survivors */
+  survivors: Survivor[] | null
+  /** Update Selected Hunt */
+  updateSelectedHunt: (hunt: Hunt | null) => void
+  /** Update Selected Settlement */
+  updateSelectedSettlement: () => void
+  /** Update Selected Survivor */
+  updateSelectedSurvivor: () => void
 }
 
 /**
@@ -70,55 +94,56 @@ interface SettlementFormProps {
  */
 export function SettlementForm({
   isCreatingNewSurvivor,
-  updateSelectedSurvivor,
-  saveSurvivor,
-  setSelectedSurvivor,
-  survivor,
-  survivorForm,
-  settlement,
-  settlementForm,
-  saveSettlement,
-  setSelectedSettlement,
+  saveSelectedHunt,
+  saveSelectedSettlement,
+  saveSelectedSurvivor,
+  selectedHunt,
+  selectedSettlement,
+  selectedSurvivor,
   selectedTab,
-  setIsCreatingNewSurvivor
+  setIsCreatingNewSurvivor,
+  setSelectedHunt,
+  setSelectedSettlement,
+  setSelectedSurvivor,
+  setSurvivors,
+  survivors,
+  updateSelectedHunt,
+  updateSelectedSettlement,
+  updateSelectedSurvivor
 }: SettlementFormProps): ReactElement {
   return (
     <>
-      {!['hunt', 'showdown'].includes(selectedTab) && (
-        <OverviewCard
-          {...settlement}
-          form={settlementForm}
-          saveSettlement={saveSettlement}
-        />
-      )}
+      <OverviewCard
+        saveSelectedSettlement={saveSelectedSettlement}
+        selectedSettlement={selectedSettlement}
+        survivors={survivors}
+      />
 
       <hr className="pt-2" />
 
       <div className="flex flex-1 flex-col h-full">
         <div className="flex flex-col gap-2 py-2 px-2 flex-1">
           {/* Create Settlement Form */}
-          {!settlement && (
+          {!selectedSettlement && (
             <CreateSettlementForm
-              settlement={settlement}
               setSelectedSettlement={setSelectedSettlement}
             />
           )}
+
           {/* Timeline */}
-          {settlement && selectedTab === 'timeline' && (
+          {selectedSettlement && selectedTab === 'timeline' && (
             <div className="flex flex-col lg:flex-row gap-2">
               {/* Mobile + Tablet: Bonuses Above Timeline */}
               <div className="lg:hidden flex flex-col gap-2">
                 {/* Mobile: Stacked */}
                 <div className="md:hidden flex flex-col gap-2">
                   <DepartingBonusesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <ArrivalBonusesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
 
@@ -126,16 +151,14 @@ export function SettlementForm({
                 <div className="hidden md:flex md:flex-row gap-2">
                   <div className="flex-1">
                     <DepartingBonusesCard
-                      {...settlement}
-                      form={settlementForm}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                   </div>
                   <div className="flex-1">
                     <ArrivalBonusesCard
-                      {...settlement}
-                      form={settlementForm}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                   </div>
                 </div>
@@ -144,45 +167,40 @@ export function SettlementForm({
               {/* Desktop/Mobile/Tablet: Timeline */}
               <div className="flex-1">
                 <TimelineCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
               </div>
 
               {/* Desktop: Bonuses on right */}
               <div className="hidden lg:flex lg:flex-col lg:flex-1 gap-2">
                 <DepartingBonusesCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
                 <ArrivalBonusesCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
               </div>
             </div>
           )}
 
           {/* Monsters (Nemeses and Quarries) */}
-          {settlement && selectedTab === 'monsters' && (
+          {selectedSettlement && selectedTab === 'monsters' && (
             <div className="flex flex-col pl-2 gap-2">
               {/* Desktop Layout */}
               <div className="hidden lg:flex lg:flex-row gap-2">
                 <div className="flex-1">
                   <QuarriesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
                 <div className="flex-1">
                   <NemesesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
               </div>
@@ -190,92 +208,100 @@ export function SettlementForm({
               {/* Mobile Layout */}
               <div className="lg:hidden flex flex-col gap-2">
                 <QuarriesCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
                 <NemesesCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
               </div>
 
               {/* Monster Volumes (PotL and PotSun) */}
-              {(settlement.campaignType ===
+              {(selectedSettlement?.campaignType ===
                 CampaignType.PEOPLE_OF_THE_LANTERN ||
-                settlement.campaignType === CampaignType.PEOPLE_OF_THE_SUN) && (
+                selectedSettlement?.campaignType ===
+                  CampaignType.PEOPLE_OF_THE_SUN) && (
                 <MonsterVolumesCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
               )}
             </div>
           )}
 
           {/* Squires of the Citadel (Suspicions and Progression) */}
-          {settlement &&
+          {selectedSettlement &&
             selectedTab === 'squires' &&
-            settlement.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL && (
+            selectedSettlement.campaignType ===
+              CampaignType.SQUIRES_OF_THE_CITADEL && (
               <>
                 <SquireSuspicionsCard
-                  {...settlement}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
                 <SquireProgressionCards />
               </>
             )}
 
           {/* Survivors */}
-          {settlement &&
+          {selectedSettlement &&
             selectedTab === 'survivors' &&
-            settlement.campaignType !== CampaignType.SQUIRES_OF_THE_CITADEL && (
+            selectedSettlement.campaignType !==
+              CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="pl-2">
                 {/* Survivors */}
                 <SettlementSurvivorsCard
-                  {...settlement}
-                  updateSelectedSurvivor={updateSelectedSurvivor}
-                  setSelectedSurvivor={setSelectedSurvivor}
+                  selectedHunt={selectedHunt}
+                  selectedSettlement={selectedSettlement}
+                  selectedShowdown={null}
+                  selectedSurvivor={selectedSurvivor}
                   setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
-                  selectedSurvivor={survivor}
+                  setSelectedSurvivor={setSelectedSurvivor}
+                  setSurvivors={setSurvivors}
+                  survivors={survivors}
+                  updateSelectedHunt={updateSelectedHunt}
+                  updateSelectedSettlement={updateSelectedSettlement}
+                  updateSelectedSurvivor={updateSelectedSurvivor}
                 />
-                {survivor && !isCreatingNewSurvivor && (
+                {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard
-                    form={survivorForm}
-                    settlement={settlement}
-                    saveSurvivor={saveSurvivor}
+                    saveSelectedSurvivor={saveSelectedSurvivor}
+                    selectedSettlement={selectedSettlement}
+                    selectedSurvivor={selectedSurvivor}
+                    setSurvivors={setSurvivors}
+                    survivors={survivors}
                   />
                 )}
                 {isCreatingNewSurvivor && (
                   <CreateSurvivorForm
-                    settlement={settlement}
-                    setSelectedSurvivor={setSelectedSurvivor}
+                    saveSelectedSurvivor={saveSelectedSurvivor}
+                    selectedSettlement={selectedSettlement}
                     setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
-                    saveSurvivor={saveSurvivor}
+                    setSelectedSurvivor={setSelectedSurvivor}
                   />
                 )}
               </div>
             )}
 
           {/* Society */}
-          {settlement &&
+          {selectedSettlement &&
             selectedTab === 'society' &&
-            settlement.campaignType !== CampaignType.SQUIRES_OF_THE_CITADEL && (
+            selectedSettlement.campaignType !==
+              CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="flex flex-col gap-2 pl-2">
                 {/* Desktop Layout */}
                 <div className="hidden lg:flex lg:flex-row gap-2">
                   <div className="flex-1">
                     <MilestonesCard
-                      {...settlement}
-                      form={settlementForm}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                   </div>
                   <div className="flex-1">
                     <PrinciplesCard
-                      {...settlement}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                   </div>
                 </div>
@@ -283,27 +309,24 @@ export function SettlementForm({
                 {/* Mobile Layout */}
                 <div className="lg:hidden flex flex-col gap-2">
                   <MilestonesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <PrinciplesCard
-                    {...settlement}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
 
                 {/* Mobile: Stacked */}
                 <div className="md:hidden flex flex-col gap-2">
                   <InnovationsCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <LocationsCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
 
@@ -311,16 +334,14 @@ export function SettlementForm({
                 <div className="hidden md:flex md:flex-row gap-2">
                   <div className="flex-1">
                     <InnovationsCard
-                      {...settlement}
-                      form={settlementForm}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                   </div>
                   <div className="flex-1">
                     <LocationsCard
-                      {...settlement}
-                      form={settlementForm}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                   </div>
                 </div>
@@ -328,62 +349,56 @@ export function SettlementForm({
             )}
 
           {/* Society - Squires of the Citadel */}
-          {settlement &&
+          {selectedSettlement &&
             selectedTab === 'society' &&
-            settlement.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL && (
+            selectedSettlement.campaignType ===
+              CampaignType.SQUIRES_OF_THE_CITADEL && (
               <LocationsCard
-                {...settlement}
-                form={settlementForm}
-                saveSettlement={saveSettlement}
+                saveSelectedSettlement={saveSelectedSettlement}
+                selectedSettlement={selectedSettlement}
               />
             )}
 
           {/* Crafting */}
-          {settlement && selectedTab === 'crafting' && (
+          {selectedSettlement && selectedTab === 'crafting' && (
             <div className="flex flex-col gap-2 pl-2">
               {/* Desktop Layout */}
               <div className="hidden lg:flex lg:flex-col gap-2">
                 <ResourcesCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
                 <GearCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
               </div>
 
               {/* Mobile Layout */}
               <div className="lg:hidden flex flex-col gap-2">
                 <ResourcesCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
                 <GearCard
-                  {...settlement}
-                  form={settlementForm}
-                  saveSettlement={saveSettlement}
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
                 />
               </div>
 
               {/* Pattern Cards for non-Squires campaigns */}
-              {settlement.campaignType !==
+              {selectedSettlement?.campaignType !==
                 CampaignType.SQUIRES_OF_THE_CITADEL && (
                 <>
                   {/* Mobile: Stacked */}
                   <div className="md:hidden flex flex-col gap-2">
                     <SeedPatternsCard
-                      {...settlement}
-                      form={settlementForm}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                     <PatternsCard
-                      {...settlement}
-                      form={settlementForm}
-                      saveSettlement={saveSettlement}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      selectedSettlement={selectedSettlement}
                     />
                   </div>
 
@@ -391,16 +406,14 @@ export function SettlementForm({
                   <div className="hidden md:flex md:flex-row gap-2">
                     <div className="flex-1">
                       <SeedPatternsCard
-                        {...settlement}
-                        form={settlementForm}
-                        saveSettlement={saveSettlement}
+                        saveSelectedSettlement={saveSelectedSettlement}
+                        selectedSettlement={selectedSettlement}
                       />
                     </div>
                     <div className="flex-1">
                       <PatternsCard
-                        {...settlement}
-                        form={settlementForm}
-                        saveSettlement={saveSettlement}
+                        saveSelectedSettlement={saveSelectedSettlement}
+                        selectedSettlement={selectedSettlement}
                       />
                     </div>
                   </div>
@@ -410,77 +423,91 @@ export function SettlementForm({
           )}
 
           {/* Arc */}
-          {settlement &&
+          {selectedSettlement &&
             selectedTab === 'arc' &&
-            settlement.survivorType === SurvivorType.ARC && (
+            selectedSettlement.survivorType === SurvivorType.ARC && (
               <div className="flex flex-col gap-2 pl-2">
                 {/* Desktop Layout */}
                 <div className="hidden lg:grid lg:grid-cols-1 md:lg:grid-cols-2 gap-2">
                   <CollectiveCognitionVictoriesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <CollectiveCognitionRewardsCard
-                    {...settlement}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
 
                 {/* Desktop Layout */}
                 <div className="hidden lg:grid lg:grid-cols-1 md:lg:grid-cols-2 gap-2">
                   <PhilosophiesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <KnowledgesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
 
                 {/* Mobile Layout */}
                 <div className="lg:hidden flex flex-col gap-2">
                   <CollectiveCognitionVictoriesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <CollectiveCognitionRewardsCard
-                    {...settlement}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <PhilosophiesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                   <KnowledgesCard
-                    {...settlement}
-                    form={settlementForm}
-                    saveSettlement={saveSettlement}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
                   />
                 </div>
               </div>
             )}
 
           {/* Notes */}
-          {settlement && selectedTab === 'notes' && (
-            <NotesCard {...settlement} saveSettlement={saveSettlement} />
+          {selectedSettlement && selectedTab === 'notes' && (
+            <NotesCard
+              saveSelectedSettlement={saveSelectedSettlement}
+              selectedSettlement={selectedSettlement}
+            />
           )}
 
           {/* Settlement Settings */}
-          {settlement && selectedTab === 'settings' && (
+          {selectedSettlement && selectedTab === 'settings' && (
             <SettingsCard
-              {...settlement}
+              saveSelectedSettlement={saveSelectedSettlement}
+              selectedHunt={selectedHunt}
+              selectedSettlement={selectedSettlement}
+              selectedShowdown={null}
+              setSelectedHunt={setSelectedHunt}
               setSelectedSettlement={setSelectedSettlement}
+              setSelectedShowdown={() => {}}
               setSelectedSurvivor={setSelectedSurvivor}
             />
           )}
 
           {/* Hunt */}
+          {selectedSettlement && selectedTab === 'hunt' && (
+            <HuntCard
+              saveSelectedHunt={saveSelectedHunt}
+              selectedHunt={selectedHunt}
+              selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
+              setSelectedHunt={setSelectedHunt}
+              setSurvivors={setSurvivors}
+              survivors={survivors}
+              updateSelectedSurvivor={updateSelectedSurvivor}
+            />
+          )}
 
           {/* Showdown */}
         </div>

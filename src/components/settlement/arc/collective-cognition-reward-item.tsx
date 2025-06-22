@@ -63,21 +63,12 @@ export function RewardItem({
   const ccInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (nameInputRef.current) {
-      nameInputRef.current.value = reward?.name || ''
-    }
-    if (ccInputRef.current) {
+    console.debug('[RewardItem] Changed Reward:', reward)
+
+    if (nameInputRef.current) nameInputRef.current.value = reward?.name || ''
+    if (ccInputRef.current)
       ccInputRef.current.value = reward?.cc?.toString() || '1'
-    }
-
-    if (!isDisabled && nameInputRef.current) {
-      nameInputRef.current.focus()
-
-      const val = nameInputRef.current.value
-      nameInputRef.current.value = ''
-      nameInputRef.current.value = val
-    }
-  }, [reward, isDisabled])
+  }, [reward])
 
   /**
    * Handles the key down event for the input fields.
@@ -87,11 +78,15 @@ export function RewardItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
-      const ccValue = parseInt(ccInputRef.current.value) || 1
-      onSave(nameInputRef.current.value, ccValue, index)
+
+      onSave(
+        nameInputRef.current.value,
+        parseInt(ccInputRef.current.value) || 1,
+        index
+      )
     }
   }
 
@@ -121,7 +116,7 @@ export function RewardItem({
       <Input
         ref={ccInputRef}
         type="number"
-        className="w-12 text-center no-spinners"
+        className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
         defaultValue={reward?.cc || 1}
         disabled={isDisabled}
         min={0}
@@ -203,11 +198,14 @@ export function NewRewardItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
-      const ccValue = parseInt(ccInputRef.current.value) || 1
-      onSave(nameInputRef.current.value, ccValue)
+
+      onSave(
+        nameInputRef.current.value,
+        parseInt(ccInputRef.current.value) || 1
+      )
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()
@@ -228,7 +226,7 @@ export function NewRewardItem({
       <Input
         ref={ccInputRef}
         type="number"
-        className="w-12 text-center no-spinners"
+        className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
         defaultValue={1}
         min={0}
         onKeyDown={handleKeyDown}

@@ -2,29 +2,24 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Gender } from '@/lib/enums'
 import { Survivor } from '@/schemas/survivor'
 import { SkullIcon, UserXIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useCallback } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Status Card Props
  */
-interface StatusCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
-  form: UseFormReturn<Survivor>
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+interface StatusCardProps {
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
+  /** Set Survivors */
+  setSurvivors: (survivors: Survivor[]) => void
+  /** Survivors */
+  survivors: Survivor[] | null
 }
 
 /**
@@ -35,31 +30,15 @@ interface StatusCardProps extends Partial<Survivor> {
  * selection, and checkboxes for dead/retired status. When a survivor is named,
  * they gain +1 survival.
  *
- * @param form Form
- * @returns Name, Gender, and Status Card Component
+ * @param props Status Card Properties
+ * @returns Status Card Component
  */
 export function StatusCard({
-  form,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSurvivor,
+  setSurvivors,
+  survivors
 }: StatusCardProps): ReactElement {
-  /**
-   * Save Name to LocalStorage
-   *
-   * @param name Survivor Name
-   * @param successMsg Success Message
-   */
-  const saveNameToLocalStorage = (name: string, successMsg?: string) =>
-    saveSurvivor({ name }, successMsg)
-
-  /**
-   * Save Gender to Local Storage
-   *
-   * @param gender Survivor Gender
-   * @param successMsg Success Message
-   */
-  const saveGenderToLocalStorage = (gender: Gender, successMsg?: string) =>
-    saveSurvivor({ gender }, successMsg)
-
   /**
    * Save Status to Local Storage
    *
@@ -74,9 +53,18 @@ export function StatusCard({
       if (updatedDead !== undefined) updateData.dead = updatedDead
       if (updatedRetired !== undefined) updateData.retired = updatedRetired
 
-      saveSurvivor(updateData, successMsg)
+      saveSelectedSurvivor(updateData, successMsg)
+
+      if (survivors) {
+        const updatedSurvivors = survivors.map((s) =>
+          s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+        )
+
+        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
+        setSurvivors(updatedSurvivors)
+      }
     },
-    [saveSurvivor]
+    [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
   )
 
   /**
@@ -91,12 +79,22 @@ export function StatusCard({
   ) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      saveNameToLocalStorage(
-        value,
+
+      saveSelectedSurvivor(
+        { name: value },
         value.trim()
           ? "The survivor's name echoes through the lantern light."
           : undefined
       )
+
+      if (survivors) {
+        const updatedSurvivors = survivors.map((s) =>
+          s.id === selectedSurvivor?.id ? { ...s, ...{ name: value } } : s
+        )
+
+        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
+        setSurvivors(updatedSurvivors)
+      }
     }
   }
 
@@ -105,12 +103,24 @@ export function StatusCard({
    *
    * @param gender Selected Gender
    */
-  const handleGenderChange = (gender: Gender) => {
-    saveGenderToLocalStorage(
-      gender,
-      "The survivor's essence is recorded in the lantern's glow."
-    )
-  }
+  const handleGenderChange = useCallback(
+    (gender: Gender) => {
+      saveSelectedSurvivor(
+        { gender },
+        "The survivor's essence is recorded in the lantern's glow."
+      )
+
+      if (survivors && selectedSurvivor?.id) {
+        const updatedSurvivors = survivors.map((s) =>
+          s.id === selectedSurvivor?.id ? { ...s, ...{ gender } } : s
+        )
+
+        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
+        setSurvivors(updatedSurvivors)
+      }
+    },
+    [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
+  )
 
   /**
    * Handles toggling the dead status
@@ -154,65 +164,43 @@ export function StatusCard({
         <div className="flex flex-col">
           <div className="flex items-center h-[36px]">
             {/* Survivor Name */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <FormLabel className="font-bold text-left">Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Survivor name..."
-                        {...field}
-                        value={field.value ?? ''}
-                        onKeyDown={(e) =>
-                          handleNameKeyDown(e, field.value ?? '')
-                        }
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex-1 flex items-center gap-2">
+              <label className="font-bold text-left">Name</label>
+              <Input
+                key={`name-${selectedSurvivor?.id || 'new'}`}
+                placeholder="Survivor name..."
+                defaultValue={selectedSurvivor?.name ?? ''}
+                onKeyDown={(e) => handleNameKeyDown(e, e.currentTarget.value)}
+              />
+            </div>
 
             {/* Gender */}
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem className="ml-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center space-x-1">
-                      <label htmlFor="male-checkbox" className="text-xs">
-                        M
-                      </label>
-                      <Checkbox
-                        id="male-checkbox"
-                        checked={field.value === Gender.MALE}
-                        onCheckedChange={(checked) => {
-                          if (checked) handleGenderChange(Gender.MALE)
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <label htmlFor="female-checkbox" className="text-xs">
-                        F
-                      </label>
-                      <Checkbox
-                        id="female-checkbox"
-                        checked={field.value === Gender.FEMALE}
-                        onCheckedChange={(checked) => {
-                          if (checked) handleGenderChange(Gender.FEMALE)
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="ml-4 flex items-center gap-2">
+              <div className="flex items-center space-x-1">
+                <label htmlFor="male-checkbox" className="text-xs">
+                  M
+                </label>
+                <Checkbox
+                  id="male-checkbox"
+                  checked={selectedSurvivor?.gender === Gender.MALE}
+                  onCheckedChange={(checked) => {
+                    if (checked) handleGenderChange(Gender.MALE)
+                  }}
+                />
+              </div>
+              <div className="flex items-center space-x-1">
+                <label htmlFor="female-checkbox" className="text-xs">
+                  F
+                </label>
+                <Checkbox
+                  id="female-checkbox"
+                  checked={selectedSurvivor?.gender === Gender.FEMALE}
+                  onCheckedChange={(checked) => {
+                    if (checked) handleGenderChange(Gender.FEMALE)
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -220,52 +208,36 @@ export function StatusCard({
 
         {/* Status Section */}
         <div className="flex justify-between items-center">
-          <FormDescription className="text-xs">
+          <p className="text-xs">
             When you name your survivor, gain +1 <strong>survival</strong>.
-          </FormDescription>
+          </p>
 
           <div className="flex items-center gap-2">
             {/* Dead Status */}
-            <FormField
-              control={form.control}
-              name="dead"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-1 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={handleDeadToggle}
-                      className="h-4 w-4 rounded-sm"
-                    />
-                  </FormControl>
-                  <SkullIcon className="h-3 w-3 text-muted-foreground" />
-                  <FormLabel className="text-xs text-muted-foreground cursor-pointer">
-                    Dead
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-row items-center gap-1 space-y-0">
+              <Checkbox
+                checked={selectedSurvivor?.dead}
+                onCheckedChange={handleDeadToggle}
+                className="h-4 w-4 rounded-sm"
+              />
+              <SkullIcon className="h-3 w-3 text-muted-foreground" />
+              <label className="text-xs text-muted-foreground cursor-pointer">
+                Dead
+              </label>
+            </div>
 
             {/* Retired Status */}
-            <FormField
-              control={form.control}
-              name="retired"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center gap-1 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={handleRetiredToggle}
-                      className="h-4 w-4 rounded-sm"
-                    />
-                  </FormControl>
-                  <UserXIcon className="h-3 w-3 text-muted-foreground" />
-                  <FormLabel className="text-xs text-muted-foreground cursor-pointer">
-                    Retired
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-row items-center gap-1 space-y-0">
+              <Checkbox
+                checked={selectedSurvivor?.retired}
+                onCheckedChange={handleRetiredToggle}
+                className="h-4 w-4 rounded-sm"
+              />
+              <UserXIcon className="h-3 w-3 text-muted-foreground" />
+              <label className="text-xs text-muted-foreground cursor-pointer">
+                Retired
+              </label>
+            </div>
           </div>
         </div>
       </CardContent>

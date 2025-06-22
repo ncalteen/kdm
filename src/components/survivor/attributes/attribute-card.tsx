@@ -1,30 +1,22 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
- * Attribute Card Props
+ * Attribute Card Properties
  */
-interface AttributeCardProps extends Partial<Survivor> {
-  /** Survivor form instance */
-  form: UseFormReturn<Survivor>
-  /** Current settlement */
-  settlement: Settlement
-  /** Function to save survivor data */
-  saveSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+interface AttributeCardProps {
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Settlemenet */
+  selectedSettlement: Partial<Settlement> | null
+  /** Selected Survivor */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -34,13 +26,13 @@ interface AttributeCardProps extends Partial<Survivor> {
  * strength, etc.) and allows them to be edited. For Arc survivors, it also
  * shows the Lumi attribute.
  *
- * @param form Form
+ * @param props Attribute Card Properties
  * @returns Attribute Card Component
  */
 export function AttributeCard({
-  form,
-  settlement,
-  saveSurvivor
+  saveSelectedSurvivor,
+  selectedSettlement,
+  selectedSurvivor
 }: AttributeCardProps): ReactElement {
   /**
    * Save to Local Storage
@@ -74,7 +66,7 @@ export function AttributeCard({
       [attrName]: value
     }
 
-    saveSurvivor(
+    saveSelectedSurvivor(
       updateData,
       attributeMessages[attrName] || "The survivor's potential grows."
     )
@@ -85,192 +77,116 @@ export function AttributeCard({
       <CardContent className="p-0">
         <div className="flex flex-row justify-between">
           {/* Movement */}
-          <FormField
-            control={form.control}
-            name="movement"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      placeholder="1"
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? 1}
-                      onChange={(e) =>
-                        saveToLocalStorage('movement', parseInt(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="text-xs">Movement</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              key={`movement-${selectedSurvivor?.id || 'new'}`}
+              placeholder="1"
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.movement ?? 1}
+              onChange={(e) =>
+                saveToLocalStorage('movement', parseInt(e.target.value))
+              }
+            />
+            <label className="text-xs">Movement</label>
+          </div>
 
           <div className="w-px bg-border" />
 
           {/* Accuracy */}
-          <FormField
-            control={form.control}
-            name="accuracy"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      placeholder="0"
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? 0}
-                      onChange={(e) =>
-                        saveToLocalStorage('accuracy', parseInt(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="text-xs">Accuracy</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              key={`accuracy-${selectedSurvivor?.id || 'new'}`}
+              placeholder="0"
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.accuracy ?? 0}
+              onChange={(e) =>
+                saveToLocalStorage('accuracy', parseInt(e.target.value))
+              }
+            />
+            <label className="text-xs">Accuracy</label>
+          </div>
 
           {/* Strength */}
-          <FormField
-            control={form.control}
-            name="strength"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      placeholder="0"
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? 0}
-                      onChange={(e) =>
-                        saveToLocalStorage('strength', parseInt(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="text-xs">Strength</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              key={`strength-${selectedSurvivor?.id || 'new'}`}
+              placeholder="0"
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.strength ?? 0}
+              onChange={(e) =>
+                saveToLocalStorage('strength', parseInt(e.target.value))
+              }
+            />
+            <label className="text-xs">Strength</label>
+          </div>
 
           {/* Evasion */}
-          <FormField
-            control={form.control}
-            name="evasion"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      placeholder="0"
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? 0}
-                      onChange={(e) =>
-                        saveToLocalStorage('evasion', parseInt(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="text-xs">Evasion</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              key={`evasion-${selectedSurvivor?.id || 'new'}`}
+              placeholder="0"
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.evasion ?? 0}
+              onChange={(e) =>
+                saveToLocalStorage('evasion', parseInt(e.target.value))
+              }
+            />
+            <label className="text-xs">Evasion</label>
+          </div>
 
           {/* Luck */}
-          <FormField
-            control={form.control}
-            name="luck"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      placeholder="0"
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? 0}
-                      onChange={(e) =>
-                        saveToLocalStorage('luck', parseInt(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="text-xs">Luck</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              key={`luck-${selectedSurvivor?.id || 'new'}`}
+              placeholder="0"
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.luck ?? 0}
+              onChange={(e) =>
+                saveToLocalStorage('luck', parseInt(e.target.value))
+              }
+            />
+            <label className="text-xs">Luck</label>
+          </div>
 
           {/* Speed */}
-          <FormField
-            control={form.control}
-            name="speed"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex flex-col items-center gap-1">
-                  <FormControl>
-                    <Input
-                      placeholder="0"
-                      type="number"
-                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                      {...field}
-                      value={field.value ?? 0}
-                      onChange={(e) =>
-                        saveToLocalStorage('speed', parseInt(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormLabel className="text-xs">Speed</FormLabel>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <Input
+              key={`speed-${selectedSurvivor?.id || 'new'}`}
+              placeholder="0"
+              type="number"
+              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={selectedSurvivor?.speed ?? 0}
+              onChange={(e) =>
+                saveToLocalStorage('speed', parseInt(e.target.value))
+              }
+            />
+            <label className="text-xs">Speed</label>
+          </div>
 
           {/* Lumi (Arc) */}
-          {settlement.survivorType === SurvivorType.ARC && (
+          {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <>
               <div className="w-px bg-border" />
-              <FormField
-                control={form.control}
-                name="lumi"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex flex-col items-center gap-1">
-                      <FormControl>
-                        <Input
-                          placeholder="0"
-                          type="number"
-                          className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl"
-                          {...field}
-                          value={field.value ?? 0}
-                          min={0}
-                          onChange={(e) =>
-                            saveToLocalStorage('lumi', parseInt(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormLabel className="text-xs">Lumi</FormLabel>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+              <div className="flex flex-col items-center gap-1">
+                <Input
+                  key={`lumi-${selectedSurvivor?.id || 'new'}`}
+                  placeholder="0"
+                  type="number"
+                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  value={selectedSurvivor?.lumi ?? 0}
+                  min={0}
+                  onChange={(e) =>
+                    saveToLocalStorage('lumi', parseInt(e.target.value))
+                  }
+                />
+                <label className="text-xs">Lumi</label>
+              </div>
             </>
           )}
         </div>

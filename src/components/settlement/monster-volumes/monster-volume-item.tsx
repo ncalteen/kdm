@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Monster Volume Item Component Properties
  */
 export interface MonsterVolumeItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Volume ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface MonsterVolumeItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,10 +48,10 @@ export function MonsterVolumeItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: MonsterVolumeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -60,17 +59,15 @@ export function MonsterVolumeItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug(
+      '[MonsterVolumeItem] Changed',
+      selectedSettlement?.monsterVolumes?.[index],
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`monsterVolumes.${index}`) || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index])
+      inputRef.current.value = selectedSettlement?.monsterVolumes?.[index] || ''
+  }, [selectedSettlement?.monsterVolumes, index])
 
   /**
    * Handles the key down event for the input field.
@@ -80,7 +77,7 @@ export function MonsterVolumeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,14 +101,14 @@ export function MonsterVolumeItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-xs">
-            {form.getValues(`monsterVolumes.${index}`)}
+            {selectedSettlement?.monsterVolumes?.[index]}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Monster Volume"
-          defaultValue={form.getValues(`monsterVolumes.${index}`)}
+          defaultValue={selectedSettlement?.monsterVolumes?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -170,7 +167,7 @@ export function NewMonsterVolumeItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

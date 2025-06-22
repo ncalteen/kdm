@@ -8,14 +8,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Fighting Art Item Component Properties
  */
 export interface FightingArtItemProps {
-  /** Form */
-  form: UseFormReturn<Survivor>
   /** Array Name */
   arrayName: 'fightingArts' | 'secretFightingArts'
   /** Fighting Art ID */
@@ -32,6 +29,8 @@ export interface FightingArtItemProps {
   onSave: (value?: string, index?: number) => void
   /** Placeholder Text */
   placeholder: string
+  /** Selected Survivor  */
+  selectedSurvivor: Partial<Survivor> | null
 }
 
 /**
@@ -59,11 +58,11 @@ export function FightingArtItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
   onSave,
-  placeholder
+  placeholder,
+  selectedSurvivor
 }: FightingArtItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -71,17 +70,11 @@ export function FightingArtItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug('[FightingArtItem] Changed', index)
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`${arrayName}.${index}`) || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index, arrayName])
+      inputRef.current.value = selectedSurvivor?.[arrayName]?.[index] || ''
+  }, [selectedSurvivor, index, arrayName])
 
   /**
    * Handles the key down event for the input field.
@@ -91,7 +84,7 @@ export function FightingArtItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -122,14 +115,14 @@ export function FightingArtItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-xs">
-            {form.getValues(`${arrayName}.${index}`)}
+            {selectedSurvivor?.[arrayName]?.[index]}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder={placeholder}
-          defaultValue={form.getValues(`${arrayName}.${index}`)}
+          defaultValue={selectedSurvivor?.[arrayName]?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -191,7 +184,7 @@ export function NewFightingArtItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)

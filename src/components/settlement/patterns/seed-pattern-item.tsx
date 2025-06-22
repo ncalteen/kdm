@@ -7,14 +7,11 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Seed Pattern Item Component Properties
  */
 export interface SeedPatternItemProps {
-  /** Form */
-  form: UseFormReturn<Settlement>
   /** Seed Pattern ID */
   id: string
   /** Index */
@@ -27,6 +24,8 @@ export interface SeedPatternItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
+  /** Selected Settlement */
+  selectedSettlement: Partial<Settlement> | null
 }
 
 /**
@@ -49,10 +48,10 @@ export function SeedPatternItem({
   id,
   index,
   isDisabled,
-  form,
   onEdit,
   onRemove,
-  onSave
+  onSave,
+  selectedSettlement
 }: SeedPatternItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
@@ -60,17 +59,15 @@ export function SeedPatternItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    console.debug(
+      '[SeedPatternItem] Changed',
+      selectedSettlement?.seedPatterns?.[index],
+      index
+    )
+
     if (inputRef.current)
-      inputRef.current.value = form.getValues(`seedPatterns.${index}`) || ''
-
-    if (!isDisabled && inputRef.current) {
-      inputRef.current.focus()
-
-      const val = inputRef.current.value
-      inputRef.current.value = ''
-      inputRef.current.value = val
-    }
-  }, [form, isDisabled, index])
+      inputRef.current.value = selectedSettlement?.seedPatterns?.[index] || ''
+  }, [selectedSettlement?.seedPatterns, index])
 
   /**
    * Handles the key down event for the input field.
@@ -80,7 +77,7 @@ export function SeedPatternItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value, index)
@@ -104,14 +101,14 @@ export function SeedPatternItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-xs">
-            {form.getValues(`seedPatterns.${index}`)}
+            {selectedSettlement?.seedPatterns?.[index]}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Seed Pattern"
-          defaultValue={form.getValues(`seedPatterns.${index}`)}
+          defaultValue={selectedSettlement?.seedPatterns?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -170,7 +167,7 @@ export function NewSeedPatternItem({
    *
    * @param e Key Down Event
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       onSave(inputRef.current.value)
