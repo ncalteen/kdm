@@ -8,13 +8,13 @@ import { ReactElement } from 'react'
  * Hunt Board Space Component Props
  */
 interface HuntBoardSpaceProps {
-  /** Space index (0-12) */
+  /** Space Index (0-12) */
   index: number
-  /** Space label */
-  label: string
-  /** Whether this is the start space */
+  /** Space Label */
+  label: string | ReactElement | null
+  /** Is Start Space */
   isStart?: boolean
-  /** Whether this is the starvation space */
+  /** Is Starvation Space */
   isStarvation?: boolean
 }
 

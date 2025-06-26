@@ -146,7 +146,7 @@ export function ActiveHuntCard({
       </div>
 
       {/* Hunt Board */}
-      <div className="flex-shrink-0 h-full">
+      <div className="w-full">
         <HuntBoard
           onPositionUpdate={handlePositionUpdate}
           selectedHunt={selectedHunt}
