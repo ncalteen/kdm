@@ -22,7 +22,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { MapPinPlusIcon, PlusIcon } from 'lucide-react'
+import { HousePlusIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -198,8 +198,8 @@ export function ArrivalBonusesCard({
     <Card className="p-0 pb-1 border-1 w-full gap-0">
       <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
-          <MapPinPlusIcon className="h-4 w-4" />
-          Arriving Survivor Bonuses
+          <HousePlusIcon className="h-4 w-4" />
+          Arrival Bonuses
           {!isAddingNew && (
             <div className="flex justify-center">
               <Button

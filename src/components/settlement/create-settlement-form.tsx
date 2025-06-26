@@ -63,6 +63,8 @@ export function CreateSettlementForm({
 
   // Set the form values when the component mounts.
   useEffect(() => {
+    console.debug('[CreateSettlementForm] Initializing Form Values')
+
     // Get campaign data for the campaign type.
     const campaignData = getCampaignData(
       watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN

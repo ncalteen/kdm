@@ -7,13 +7,7 @@ import {
   usePrevNextButtons
 } from '@/components/hunt/hunt-survivors/nav-buttons'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarTrigger
-} from '@/components/ui/menubar'
+import { useSidebar } from '@/components/ui/sidebar'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -24,10 +18,6 @@ import { ReactElement, useMemo } from 'react'
  * Hunt Survivors Card Properties
  */
 interface HuntSurvivorsCardProps {
-  /** On Cancel Hunt */
-  onCancelHunt: () => void
-  /** On Showdown */
-  onShowdown: () => void
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Hunt */
@@ -51,8 +41,6 @@ interface HuntSurvivorsCardProps {
  * @returns Hunt Survivors Card Component
  */
 export function HuntSurvivorsCard({
-  onCancelHunt,
-  onShowdown,
   saveSelectedHunt,
   selectedHunt,
   selectedSettlement,
@@ -61,6 +49,8 @@ export function HuntSurvivorsCard({
   survivors,
   updateSelectedSurvivor
 }: HuntSurvivorsCardProps): ReactElement {
+  const { isMobile, state } = useSidebar()
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true
   })
@@ -81,26 +71,30 @@ export function HuntSurvivorsCard({
     return s
   }, [selectedHunt?.survivors, selectedHunt?.scout])
 
+  // Calculate width based on sidebar state
+  const getCardWidth = () => {
+    // Full width on mobile (sidebar is overlay) minus gap
+    if (isMobile) return '98vw'
+
+    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
+    if (state === 'expanded') return 'calc(100vw - 17rem)'
+
+    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
+    if (state === 'collapsed') return 'calc(100vw - 4rem)'
+
+    return '98.5vw' // Fallback to full width
+  }
+
   if (huntSurvivors.length === 0 || !selectedSettlement) return <></>
 
   return (
-    <Card className="embla pt-0 gap-0">
+    <Card
+      className="embla pt-0 gap-0 min-w-[430px]"
+      style={{
+        width: getCardWidth()
+      }}>
       <CardHeader className="embla__controls">
         <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-        {/* Menu Bar */}
-        <Menubar>
-          <MenubarMenu>
-            <MenubarTrigger>Actions</MenubarTrigger>
-            <MenubarContent>
-              <MenubarItem onClick={onShowdown}>
-                (Combing Soon) Proceed to Showdown
-              </MenubarItem>
-              <MenubarItem variant="destructive" onClick={onCancelHunt}>
-                End Hunt
-              </MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-        </Menubar>
         <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
       </CardHeader>
 

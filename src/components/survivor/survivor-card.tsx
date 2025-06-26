@@ -56,21 +56,50 @@ export function SurvivorCard({
   return (
     <Card className="w-full py-2 border-0 bg-secondary">
       <CardContent className="px-2">
-        {/* Desktop Layout */}
-        <div className="hidden xl:flex xl:flex-row xl:flex-wrap gap-2 w-full">
+        <div className="flex flex-col xl:flex-row xl:flex-wrap gap-2 w-full">
           {/* First Column - Essential Stats */}
-          <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
+          <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px]">
             <StatusCard
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSurvivor={selectedSurvivor}
               setSurvivors={setSurvivors}
               survivors={survivors}
             />
+            <HuntXPCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
+            />
             <SurvivalCard
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
             />
+            <WeaponProficiencyCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <CourageUnderstandingCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <DisordersCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <AbilitiesAndImpairmentsCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <OncePerLifetimeCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
+          </div>
+
+          {/* Second Column - Combat */}
+          <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px]">
             <AttributeCard
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
@@ -101,42 +130,12 @@ export function SurvivorCard({
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSurvivor={selectedSurvivor}
             />
-            <NextDepartureCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSurvivor={selectedSurvivor}
-            />
-          </div>
-
-          {/* Second Column - Abilities */}
-          <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
-            <HuntXPCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSettlement={selectedSettlement}
-              selectedSurvivor={selectedSurvivor}
-            />
-            <WeaponProficiencyCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSurvivor={selectedSurvivor}
-            />
-            <CourageUnderstandingCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSettlement={selectedSettlement}
-              selectedSurvivor={selectedSurvivor}
-            />
             <FightingArtsCard
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
             />
-            <DisordersCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSurvivor={selectedSurvivor}
-            />
-            <AbilitiesAndImpairmentsCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSurvivor={selectedSurvivor}
-            />
-            <OncePerLifetimeCard
+            <NextDepartureCard
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSurvivor={selectedSurvivor}
             />
@@ -144,7 +143,7 @@ export function SurvivorCard({
 
           {/* Third Column - ARC */}
           {selectedSettlement?.survivorType === SurvivorType.ARC && (
-            <div className="flex flex-col flex-1 gap-1 min-w-[450px]">
+            <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px] order-3">
               <PhilosophyCard
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
@@ -157,115 +156,6 @@ export function SurvivorCard({
               />
             </div>
           )}
-        </div>
-
-        {/* Mobile Layout */}
-        <div className="xl:hidden flex flex-col gap-2 w-full">
-          {/* Core Identity & Status */}
-          <StatusCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-            setSurvivors={setSurvivors}
-            survivors={survivors}
-          />
-          <HuntXPCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSettlement={selectedSettlement}
-            selectedSurvivor={selectedSurvivor}
-          />
-
-          {/* Core Stats */}
-          <SurvivalCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSettlement={selectedSettlement}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <AttributeCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSettlement={selectedSettlement}
-            selectedSurvivor={selectedSurvivor}
-          />
-
-          {/* Development */}
-          <WeaponProficiencyCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <CourageUnderstandingCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSettlement={selectedSettlement}
-            selectedSurvivor={selectedSurvivor}
-          />
-
-          {/* Sanity */}
-          <SanityCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-            selectedSettlement={selectedSettlement}
-          />
-
-          {/* Equipment */}
-          <HeadCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <ArmsCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <BodyCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <WaistCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <LegsCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-
-          {/* Abilities & Traits */}
-          <FightingArtsCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSettlement={selectedSettlement}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <DisordersCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <AbilitiesAndImpairmentsCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-          <OncePerLifetimeCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
-
-          {/* ARC-specific cards */}
-          {selectedSettlement?.survivorType === SurvivorType.ARC && (
-            <>
-              <PhilosophyCard
-                saveSelectedSurvivor={saveSelectedSurvivor}
-                selectedSurvivor={selectedSurvivor}
-                setSurvivors={setSurvivors}
-                survivors={survivors}
-              />
-              <KnowledgeCard
-                saveSelectedSurvivor={saveSelectedSurvivor}
-                selectedSurvivor={selectedSurvivor}
-              />
-            </>
-          )}
-
-          {/* Administrative */}
-          <NextDepartureCard
-            saveSelectedSurvivor={saveSelectedSurvivor}
-            selectedSurvivor={selectedSurvivor}
-          />
         </div>
       </CardContent>
     </Card>

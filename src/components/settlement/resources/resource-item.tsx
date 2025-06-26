@@ -5,6 +5,7 @@ import { ResourceTypesCombobox } from '@/components/settlement/resources/resourc
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
@@ -73,6 +74,7 @@ export function ResourceItem({
 }: ResourceItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+  const isMobile = useIsMobile()
 
   const nameInputRef = useRef<HTMLInputElement>(null)
   const amountInputRef = useRef<HTMLInputElement>(null)
@@ -146,67 +148,119 @@ export function ResourceItem({
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
+      <div
+        className={`flex gap-2 ${isMobile ? 'items-start' : 'items-center'}`}>
         {/* Drag Handle */}
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1">
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
+          className={`cursor-grab active:cursor-grabbing p-1 ${isMobile ? 'mt-1' : ''}`}>
+          <GripVertical
+            className={`h-4 w-4 text-muted-foreground ${isMobile && 'mt-0.5'}`}
+          />
         </div>
 
         <div className="flex-1">
           {isDisabled ? (
-            <div className="grid grid-cols-12 items-center gap-2">
-              {/* Form Fields */}
-              <div className="col-span-4 text-xs text-left font-bold">
-                {selectedSettlement?.resources?.[index].name}
+            !isMobile ? (
+              // Desktop Layout
+              <div className="grid grid-cols-12 items-center gap-2">
+                <div className="col-span-4 text-sm text-left flex items-center">
+                  {selectedSettlement?.resources?.[index].name}
+                </div>
+                <div className="col-span-2">
+                  <Badge variant="default">{selectedCategory}</Badge>
+                </div>
+                <div className="flex flex-wrap gap-1 col-span-4">
+                  {selectedTypes.map((type) => (
+                    <Badge key={type} variant="secondary" className="text-xs">
+                      {type}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="col-span-1">
+                  <Input
+                    ref={amountInputRef}
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    defaultValue={selectedSettlement?.resources?.[index].amount}
+                    onChange={handleAmountChange}
+                    className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                </div>
+                <div className="col-span-1 flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(index)}
+                    title="Edit resource">
+                    <PencilIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    onClick={() => onRemove(index)}>
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="col-span-2">
-                <Badge variant="default">{selectedCategory}</Badge>
-              </div>
-              <div className="flex flex-wrap gap-1 col-span-3">
-                {selectedTypes.map((type) => (
-                  <Badge key={type} variant="secondary" className="text-xs">
-                    {type}
+            ) : (
+              // Mobile Layout
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm flex-1 min-w-0">
+                    {selectedSettlement?.resources?.[index].name}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Input
+                      ref={amountInputRef}
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      defaultValue={
+                        selectedSettlement?.resources?.[index].amount
+                      }
+                      onChange={handleAmountChange}
+                      className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit(index)}
+                      title="Edit resource">
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      onClick={() => onRemove(index)}>
+                      <TrashIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center gap-2">
+                  <Badge variant="default" className="text-xs">
+                    {selectedCategory}
                   </Badge>
-                ))}
+                  <div className="flex flex-wrap gap-1 pr-22">
+                    {selectedTypes.map((type) => (
+                      <Badge key={type} variant="secondary" className="text-xs">
+                        {type}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="col-span-1">
-                <Input
-                  ref={amountInputRef}
-                  type="number"
-                  min={0}
-                  placeholder="0"
-                  defaultValue={selectedSettlement?.resources?.[index].amount}
-                  onChange={handleAmountChange}
-                  className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="col-span-2 flex justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(index)}
-                  title="Edit resource">
-                  <PencilIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                  onClick={() => onRemove(index)}>
-                  <TrashIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ) : (
+            )
+          ) : !isMobile ? (
+            // Desktop Edit Mode Layout
             <div className="grid grid-cols-12 items-center gap-2">
-              {/* Form Fields */}
-              <div className="col-span-4 text-sm text-left font-bold">
+              <div className="col-span-4">
                 <Input
                   ref={nameInputRef}
                   placeholder="Resource Name"
@@ -221,7 +275,7 @@ export function ResourceItem({
                   onChange={setSelectedCategory}
                 />
               </div>
-              <div className="flex flex-wrap gap-1 col-span-3">
+              <div className="col-span-4">
                 <ResourceTypesCombobox
                   selectedTypes={selectedTypes}
                   onChange={setSelectedTypes}
@@ -239,9 +293,7 @@ export function ResourceItem({
                   className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
-
-              {/* Action Buttons */}
-              <div className="col-span-2 flex justify-end">
+              <div className="col-span-1 flex justify-end">
                 <Button
                   type="button"
                   variant="ghost"
@@ -269,6 +321,73 @@ export function ResourceItem({
                 </Button>
               </div>
             </div>
+          ) : (
+            // Mobile Edit Mode Layout
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <Input
+                    ref={nameInputRef}
+                    placeholder="Resource Name"
+                    defaultValue={selectedSettlement?.resources?.[index].name}
+                    onKeyDown={handleNameKeyDown}
+                    autoFocus
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={amountInputRef}
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    disabled={true}
+                    defaultValue={selectedSettlement?.resources?.[index].amount}
+                    onChange={handleAmountChange}
+                    className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (nameInputRef.current && amountInputRef.current)
+                        onSave(
+                          index,
+                          nameInputRef.current.value,
+                          selectedCategory,
+                          selectedTypes,
+                          Number(amountInputRef.current.value)
+                        )
+                    }}
+                    title="Save resource">
+                    <CheckIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    onClick={() => onRemove(index)}
+                    title="Delete resource">
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-1 flex flex-row gap-1">
+                <div className="flex-1">
+                  <ResourceCategoriesCombobox
+                    selectedCategory={selectedCategory}
+                    onChange={setSelectedCategory}
+                  />
+                </div>
+                <div className="flex-1">
+                  <ResourceTypesCombobox
+                    selectedTypes={selectedTypes}
+                    onChange={setSelectedTypes}
+                  />
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -285,6 +404,7 @@ export function NewResourceItem({
   onCancel,
   onSave
 }: NewResourceItemProps): ReactElement {
+  const isMobile = useIsMobile()
   const nameInputRef = useRef<HTMLInputElement>(null)
   const amountInputRef = useRef<HTMLInputElement>(null)
 
@@ -318,77 +438,146 @@ export function NewResourceItem({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
+      <div
+        className={`flex gap-2 ${isMobile ? 'items-start' : 'items-center'}`}>
         {/* Drag Handle */}
-        <div className="p-1">
-          <GripVertical className="h-4 w-4 text-muted-foreground opacity-50" />
+        <div className={`p-1 ${isMobile ? 'mt-1' : ''}`}>
+          <GripVertical
+            className={`h-4 w-4 text-muted-foreground opacity-50 ${isMobile && 'mt-0.5'}`}
+          />
         </div>
 
         <div className="flex-1">
-          <div className="grid grid-cols-12 items-center gap-2">
-            {/* Form Fields */}
-            <div className="col-span-4 text-sm text-left font-bold">
-              <Input
-                ref={nameInputRef}
-                placeholder="Add a resource..."
-                defaultValue={''}
-                onKeyDown={handleKeyDown}
-                autoFocus
-              />
+          {!isMobile ? (
+            // Desktop Layout
+            <div className="grid grid-cols-12 items-center gap-2">
+              <div className="col-span-4 text-sm text-left flex items-center">
+                <Input
+                  ref={nameInputRef}
+                  placeholder="Add a resource..."
+                  defaultValue={''}
+                  onKeyDown={handleKeyDown}
+                  autoFocus
+                />
+              </div>
+              <div className="col-span-2">
+                <ResourceCategoriesCombobox
+                  selectedCategory={category}
+                  onChange={setCategory}
+                />
+              </div>
+              <div className="flex flex-wrap gap-1 col-span-4">
+                <ResourceTypesCombobox
+                  selectedTypes={types}
+                  onChange={setTypes}
+                />
+              </div>
+              <div className="col-span-1">
+                <Input
+                  ref={amountInputRef}
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  disabled={true}
+                  defaultValue={''}
+                  onKeyDown={handleKeyDown}
+                  className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </div>
+              <div className="col-span-1 flex justify-end">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (nameInputRef.current && amountInputRef.current)
+                      onSave(
+                        nameInputRef.current.value,
+                        category,
+                        types,
+                        Number(amountInputRef.current.value)
+                      )
+                  }}
+                  title="Save resource">
+                  <CheckIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={onCancel}
+                  title="Cancel">
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="col-span-2">
-              <ResourceCategoriesCombobox
-                selectedCategory={category}
-                onChange={setCategory}
-              />
+          ) : (
+            // Mobile Layout
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <Input
+                    ref={nameInputRef}
+                    placeholder="Add a resource..."
+                    defaultValue={''}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={amountInputRef}
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    disabled={true}
+                    defaultValue={''}
+                    onKeyDown={handleKeyDown}
+                    className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (nameInputRef.current && amountInputRef.current)
+                        onSave(
+                          nameInputRef.current.value,
+                          category,
+                          types,
+                          Number(amountInputRef.current.value)
+                        )
+                    }}
+                    title="Save resource">
+                    <CheckIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={onCancel}
+                    title="Cancel">
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-1 flex flex-row gap-1">
+                <div className="flex-1">
+                  <ResourceCategoriesCombobox
+                    selectedCategory={category}
+                    onChange={setCategory}
+                  />
+                </div>
+                <div className="flex-1">
+                  <ResourceTypesCombobox
+                    selectedTypes={types}
+                    onChange={setTypes}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1 col-span-3">
-              <ResourceTypesCombobox
-                selectedTypes={types}
-                onChange={setTypes}
-              />
-            </div>
-            <div className="col-span-1">
-              <Input
-                ref={amountInputRef}
-                type="number"
-                min={0}
-                placeholder="0"
-                disabled={true}
-                defaultValue={''}
-                onKeyDown={handleKeyDown}
-                className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="col-span-2 flex justify-end">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  if (nameInputRef.current && amountInputRef.current)
-                    onSave(
-                      nameInputRef.current.value,
-                      category,
-                      types,
-                      Number(amountInputRef.current.value)
-                    )
-                }}
-                title="Save resource">
-                <CheckIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={onCancel}
-                title="Cancel">
-                <TrashIcon className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

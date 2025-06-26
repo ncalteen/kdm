@@ -4,19 +4,19 @@ import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger
-} from '@/components/ui/context-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
 import {
   getCampaign,
+  getCardColorStyles,
   getColorStyle,
   saveCampaignToLocalStorage
 } from '@/lib/utils'
@@ -34,7 +34,7 @@ import {
   ShieldIcon,
   ShirtIcon
 } from 'lucide-react'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -76,6 +76,8 @@ export function HuntSurvivorCard({
   survivors,
   updateSelectedSurvivor
 }: HuntSurvivorCardProps): ReactElement {
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
+
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
     defaultValues: SurvivorSchema.parse(survivor || {})
@@ -223,13 +225,31 @@ export function HuntSurvivorCard({
   if (!survivor) return <></>
 
   return (
-    <Card className="min-w-[300px] flex-grow-2 border-2 rounded-xl border-border/20 hover:border-border/50 py-0 pb-2 gap-2">
-      <CardHeader className="flex items-center gap-3 bg-muted/20 p-3 border-border/20 rounded-t-lg">
-        <ContextMenu>
-          <ContextMenuTrigger>
+    <Card
+      className="min-w-[300px] flex-grow-2 border-2 rounded-xl py-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
+      style={{
+        ...getCardColorStyles(getCurrentColor()),
+        borderColor: 'var(--card-border-color)'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--card-border-color)'
+      }}>
+      <CardHeader
+        className="flex items-center gap-3 p-3 rounded-t-lg border-b"
+        style={{ backgroundColor: 'var(--card-header-bg)' }}>
+        <Popover open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
+          <PopoverTrigger asChild>
             {/* Header with Avatar and Name */}
             <Avatar
-              className={`h-12 w-12 border-2 ${getColorStyle(getCurrentColor())} items-center justify-center`}>
+              className={`h-12 w-12 border-2 ${getColorStyle(getCurrentColor(), 'bg')} items-center justify-center cursor-pointer`}
+              onClick={() => setIsColorPickerOpen(true)}
+              onContextMenu={(e) => {
+                e.preventDefault() // Prevent default right-click menu
+                setIsColorPickerOpen(true)
+              }}>
               <AvatarFallback className="font-bold text-lg text-white">
                 {survivor.name
                   ? survivor.name
@@ -240,33 +260,30 @@ export function HuntSurvivorCard({
                   : '??'}
               </AvatarFallback>
             </Avatar>
-          </ContextMenuTrigger>
-          <ContextMenuContent className="w-64">
-            <div className="p-2">
-              <div className="grid grid-cols-6 gap-1">
-                {Object.values(ColorChoice).map((color) => {
-                  const isSelected = getCurrentColor() === color
-                  return (
-                    <ContextMenuItem
-                      key={color}
-                      className="p-0 h-8 w-8"
-                      asChild>
-                      <button
-                        className={`h-8 w-8 rounded-full border-2 ${getColorStyle(color)} ${
-                          isSelected
-                            ? 'border-white ring-2 ring-black'
-                            : 'border-gray-300 hover:border-white'
-                        } transition-all duration-200`}
-                        onClick={() => updateSurvivorColor(color)}
-                        title={color.charAt(0).toUpperCase() + color.slice(1)}
-                      />
-                    </ContextMenuItem>
-                  )
-                })}
-              </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-2">
+            <div className="grid grid-cols-6 gap-1">
+              {Object.values(ColorChoice).map((color) => {
+                const isSelected = getCurrentColor() === color
+                return (
+                  <button
+                    key={color}
+                    className={`h-8 w-8 rounded-full border-2 ${getColorStyle(color, 'bg')} ${
+                      isSelected
+                        ? 'border-white ring-2 ring-black'
+                        : 'border-gray-300 hover:border-white'
+                    } transition-all duration-200`}
+                    onClick={() => {
+                      updateSurvivorColor(color)
+                      setIsColorPickerOpen(false)
+                    }}
+                    title={color.charAt(0).toUpperCase() + color.slice(1)}
+                  />
+                )
+              })}
             </div>
-          </ContextMenuContent>
-        </ContextMenu>
+          </PopoverContent>
+        </Popover>
 
         <div className="text-left flex-1 min-w-0">
           <div className="font-semibold text-sm truncate">{survivor.name}</div>

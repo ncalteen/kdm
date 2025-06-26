@@ -207,67 +207,12 @@ export function SettingsCard({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Delete Selected Hunt */}
-      {selectedHunt && (
-        <Card className="p-0 border-yellow-500">
-          <CardHeader className="px-4 pt-3 pb-0">
-            <CardTitle className="text-lg text-yellow-600">
-              Active Hunt
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-sm">Delete Current Hunt</div>
-                <div className="text-sm text-muted-foreground">
-                  End the hunt and return survivors to the settlement.
-                </div>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleDeleteHunt}>
-                <XIcon className="h-4 w-4 mr-2" />
-                Delete Hunt
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Delete Selected Showdown */}
-      {selectedShowdown && (
-        <Card className="p-0 border-yellow-500">
-          <CardHeader className="px-4 pt-3 pb-0">
-            <CardTitle className="text-lg text-yellow-600">
-              Active Showdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-sm">
-                  Delete Current Showdown
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  End the showdown and return survivors to the settlement.
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDeleteShowdown}>
-                <XIcon className="h-4 w-4 mr-2" />
-                Delete Showdown
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Scout Settings */}
+      {/* Settings */}
       <Card className="p-0">
         <CardHeader className="px-4 pt-3 pb-0">
-          <CardTitle className="text-lg">Scout Settings</CardTitle>
+          <CardTitle className="text-lg">Settings</CardTitle>
         </CardHeader>
-        <CardContent className="p-4 pt-2">
+        <CardContent className="p-4 pt-0">
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium text-sm">Uses Scouts</div>
@@ -294,6 +239,61 @@ export function SettingsCard({
         </CardContent>
       </Card>
 
+      {/* Delete Selected Hunt */}
+      {selectedHunt && (
+        <Card className="p-0 border-yellow-500">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg text-yellow-600">
+              Active Hunt
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Delete Current Hunt</div>
+                <div className="text-sm text-muted-foreground">
+                  End the hunt and return survivors to the settlement.
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleDeleteHunt}>
+                <XIcon className="h-4 w-4 mr-2" />
+                Delete Hunt
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Delete Selected Showdown */}
+      {selectedShowdown && (
+        <Card className="p-0 border-yellow-500">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg text-yellow-600">
+              Active Showdown
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">
+                  Delete Current Showdown
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  End the showdown and return survivors to the settlement.
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDeleteShowdown}>
+                <XIcon className="h-4 w-4 mr-2" />
+                Delete Showdown
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Danger Zone */}
       <Card className="p-0 border-destructive">
         <CardHeader className="px-4 pt-3 pb-0">
@@ -301,7 +301,7 @@ export function SettingsCard({
             Danger Zone
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 pt-2">
+        <CardContent className="p-4 pt-0">
           <div className="flex items-center justify-between">
             <div>
               <div className="font-medium text-sm">

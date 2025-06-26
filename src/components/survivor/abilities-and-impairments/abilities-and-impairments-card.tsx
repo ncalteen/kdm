@@ -239,7 +239,7 @@ export function AbilitiesAndImpairmentsCard({
 
       {/* Abilities/Impairments List */}
       <CardContent className="p-1 pb-2">
-        <div className="flex flex-col h-[120px]">
+        <div className="flex flex-col h-[140px]">
           <div className="flex-1 overflow-y-auto">
             <div className="space-y-1">
               {selectedSurvivor?.abilitiesAndImpairments?.length !== 0 && (

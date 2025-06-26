@@ -171,10 +171,13 @@ export const createColumns = ({
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ row }) => (
-        <div className="text-xs">
+        <div className="text-xs hidden md:block">
           <Badge variant="outline">{row.getValue('gender')}</Badge>
         </div>
-      )
+      ),
+      meta: {
+        className: 'hidden md:table-cell'
+      }
     },
     {
       accessorKey: 'huntXP',
@@ -193,8 +196,13 @@ export const createColumns = ({
       accessorKey: 'philosophy',
       header: 'Philosophy',
       cell: ({ row }) => (
-        <div className="text-left text-sm">{row.getValue('philosophy')}</div>
-      )
+        <div className="text-left text-sm hidden md:block">
+          {row.getValue('philosophy')}
+        </div>
+      ),
+      meta: {
+        className: 'hidden md:table-cell'
+      }
     },
     {
       accessorKey: 'retired',

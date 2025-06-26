@@ -263,7 +263,7 @@ export function KnowledgeCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2 h-[615px]">
+    <Card className="p-0 border-1 gap-0">
       <CardHeader className="px-2 pt-1 pb-0">
         <div className="flex flex-row justify-between">
           {/* Title */}
@@ -288,9 +288,9 @@ export function KnowledgeCard({
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 flex flex-col">
+      <CardContent className="p-2 py-0 flex flex-col">
         {/* Knowledge 1 */}
-        <div className="flex items-start">
+        <div className="flex items-start gap-2">
           <div className="flex-grow flex flex-col gap-1">
             <div className="flex flex-col gap-1">
               <Input
@@ -364,11 +364,11 @@ export function KnowledgeCard({
           </div>
         </div>
 
-        <hr className="mt-2 mb-2 border-2" />
+        <hr className="mt-2 mb-2 border-1" />
 
         {/* Knowledge 2 */}
         <div className="flex items-start gap-2">
-          <div className="flex-grow">
+          <div className="flex-grow flex flex-col gap-1">
             <div className="flex flex-col gap-1">
               <Input
                 placeholder="Enter knowledge..."

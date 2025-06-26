@@ -207,7 +207,7 @@ export function NextDepartureCard({
 
       {/* Next Departure List */}
       <CardContent className="p-1 pb-2 pt-0">
-        <div className="flex flex-col h-[167px]">
+        <div className="flex flex-col h-[125px]">
           <div className="flex-1 overflow-y-auto">
             {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
               <DndContext

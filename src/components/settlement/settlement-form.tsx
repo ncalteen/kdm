@@ -130,25 +130,20 @@ export function SettlementForm({
             />
           )}
 
-          {/* Timeline */}
+          {/* Timeline Tab */}
           {selectedSettlement && selectedTab === 'timeline' && (
             <div className="flex flex-col lg:flex-row gap-2">
-              {/* Mobile + Tablet: Bonuses Above Timeline */}
-              <div className="lg:hidden flex flex-col gap-2">
-                {/* Mobile: Stacked */}
-                <div className="md:hidden flex flex-col gap-2">
-                  <DepartingBonusesCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                  <ArrivalBonusesCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                </div>
+              {/* Timeline */}
+              <div className="flex-1 order-2 lg:order-1">
+                <TimelineCard
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
+                />
+              </div>
 
-                {/* Tablet (md): Side by Side */}
-                <div className="hidden md:flex md:flex-row gap-2">
+              {/* Departure/Arrival Bonuses */}
+              <div className="flex flex-col gap-2 order-1 lg:order-2 lg:flex-1">
+                <div className="flex flex-col md:flex-row lg:flex-col gap-2">
                   <div className="flex-1">
                     <DepartingBonusesCard
                       saveSelectedSettlement={saveSelectedSettlement}
@@ -163,58 +158,27 @@ export function SettlementForm({
                   </div>
                 </div>
               </div>
-
-              {/* Desktop/Mobile/Tablet: Timeline */}
-              <div className="flex-1">
-                <TimelineCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-              </div>
-
-              {/* Desktop: Bonuses on right */}
-              <div className="hidden lg:flex lg:flex-col lg:flex-1 gap-2">
-                <DepartingBonusesCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-                <ArrivalBonusesCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-              </div>
             </div>
           )}
 
-          {/* Monsters (Nemeses and Quarries) */}
+          {/* Monsters Tab */}
           {selectedSettlement && selectedTab === 'monsters' && (
             <div className="flex flex-col pl-2 gap-2">
-              {/* Desktop Layout */}
-              <div className="hidden lg:flex lg:flex-row gap-2">
+              <div className="flex flex-col lg:flex-row gap-2">
+                {/* Quarries */}
                 <div className="flex-1">
                   <QuarriesCard
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                 </div>
+                {/* Nemeses */}
                 <div className="flex-1">
                   <NemesesCard
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                 </div>
-              </div>
-
-              {/* Mobile Layout */}
-              <div className="lg:hidden flex flex-col gap-2">
-                <QuarriesCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-                <NemesesCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
               </div>
 
               {/* Monster Volumes (PotL and PotSun) */}
@@ -230,7 +194,7 @@ export function SettlementForm({
             </div>
           )}
 
-          {/* Squires of the Citadel (Suspicions and Progression) */}
+          {/* Squires of the Citadel Tab */}
           {selectedSettlement &&
             selectedTab === 'squires' &&
             selectedSettlement.campaignType ===
@@ -244,13 +208,13 @@ export function SettlementForm({
               </>
             )}
 
-          {/* Survivors */}
+          {/* Survivors Tab */}
           {selectedSettlement &&
             selectedTab === 'survivors' &&
             selectedSettlement.campaignType !==
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="pl-2">
-                {/* Survivors */}
+                {/* Survivors Table */}
                 <SettlementSurvivorsCard
                   selectedHunt={selectedHunt}
                   selectedSettlement={selectedSettlement}
@@ -264,6 +228,7 @@ export function SettlementForm({
                   updateSelectedSettlement={updateSelectedSettlement}
                   updateSelectedSurvivor={updateSelectedSurvivor}
                 />
+                {/* Selected Survivor */}
                 {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard
                     saveSelectedSurvivor={saveSelectedSurvivor}
@@ -273,6 +238,7 @@ export function SettlementForm({
                     survivors={survivors}
                   />
                 )}
+                {/* Create Survivor */}
                 {isCreatingNewSurvivor && (
                   <CreateSurvivorForm
                     saveSelectedSurvivor={saveSelectedSurvivor}
@@ -284,20 +250,21 @@ export function SettlementForm({
               </div>
             )}
 
-          {/* Society */}
+          {/* Society Tab */}
           {selectedSettlement &&
             selectedTab === 'society' &&
             selectedSettlement.campaignType !==
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="flex flex-col gap-2 pl-2">
-                {/* Desktop Layout */}
-                <div className="hidden lg:flex lg:flex-row gap-2">
+                <div className="flex flex-col lg:flex-row gap-2">
+                  {/* Milestones */}
                   <div className="flex-1">
                     <MilestonesCard
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
                   </div>
+                  {/* Principles */}
                   <div className="flex-1">
                     <PrinciplesCard
                       saveSelectedSettlement={saveSelectedSettlement}
@@ -306,38 +273,15 @@ export function SettlementForm({
                   </div>
                 </div>
 
-                {/* Mobile Layout */}
-                <div className="lg:hidden flex flex-col gap-2">
-                  <MilestonesCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                  <PrinciplesCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                </div>
-
-                {/* Mobile: Stacked */}
-                <div className="md:hidden flex flex-col gap-2">
-                  <InnovationsCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                  <LocationsCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                </div>
-
-                {/* Tablet and Desktop: Side by side */}
-                <div className="hidden md:flex md:flex-row gap-2">
+                <div className="flex flex-col md:flex-row gap-2">
+                  {/* Innovations */}
                   <div className="flex-1">
                     <InnovationsCard
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
                   </div>
+                  {/* Locations */}
                   <div className="flex-1">
                     <LocationsCard
                       saveSelectedSettlement={saveSelectedSettlement}
@@ -348,7 +292,7 @@ export function SettlementForm({
               </div>
             )}
 
-          {/* Society - Squires of the Citadel */}
+          {/* Society Tab - Squires of the Citadel */}
           {selectedSettlement &&
             selectedTab === 'society' &&
             selectedSettlement.campaignType ===
@@ -359,112 +303,66 @@ export function SettlementForm({
               />
             )}
 
-          {/* Crafting */}
+          {/* Crafting Tab */}
           {selectedSettlement && selectedTab === 'crafting' && (
             <div className="flex flex-col gap-2 pl-2">
-              {/* Desktop Layout */}
-              <div className="hidden lg:flex lg:flex-col gap-2">
-                <ResourcesCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-                <GearCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-              </div>
+              {/* Resources */}
+              <ResourcesCard
+                saveSelectedSettlement={saveSelectedSettlement}
+                selectedSettlement={selectedSettlement}
+              />
+              {/* Gear */}
+              <GearCard
+                saveSelectedSettlement={saveSelectedSettlement}
+                selectedSettlement={selectedSettlement}
+              />
 
-              {/* Mobile Layout */}
-              <div className="lg:hidden flex flex-col gap-2">
-                <ResourcesCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-                <GearCard
-                  saveSelectedSettlement={saveSelectedSettlement}
-                  selectedSettlement={selectedSettlement}
-                />
-              </div>
-
-              {/* Pattern Cards for non-Squires campaigns */}
+              {/* Patterns/Seed Patterns */}
               {selectedSettlement?.campaignType !==
                 CampaignType.SQUIRES_OF_THE_CITADEL && (
-                <>
-                  {/* Mobile: Stacked */}
-                  <div className="md:hidden flex flex-col gap-2">
+                <div className="flex flex-col md:flex-row gap-2">
+                  <div className="flex-1">
                     <SeedPatternsCard
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
+                  </div>
+                  <div className="flex-1">
                     <PatternsCard
                       saveSelectedSettlement={saveSelectedSettlement}
                       selectedSettlement={selectedSettlement}
                     />
                   </div>
-
-                  {/* Tablet and Desktop: Side by side */}
-                  <div className="hidden md:flex md:flex-row gap-2">
-                    <div className="flex-1">
-                      <SeedPatternsCard
-                        saveSelectedSettlement={saveSelectedSettlement}
-                        selectedSettlement={selectedSettlement}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <PatternsCard
-                        saveSelectedSettlement={saveSelectedSettlement}
-                        selectedSettlement={selectedSettlement}
-                      />
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
             </div>
           )}
 
-          {/* Arc */}
+          {/* Arc Tab */}
           {selectedSettlement &&
             selectedTab === 'arc' &&
             selectedSettlement.survivorType === SurvivorType.ARC && (
               <div className="flex flex-col gap-2 pl-2">
-                {/* Desktop Layout */}
-                <div className="hidden lg:grid lg:grid-cols-1 md:lg:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  {/* Collective Cognition Victories */}
                   <CollectiveCognitionVictoriesCard
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
+                  {/* Collective Cognition Rewards */}
                   <CollectiveCognitionRewardsCard
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
                 </div>
 
-                {/* Desktop Layout */}
-                <div className="hidden lg:grid lg:grid-cols-1 md:lg:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  {/* Philosophies */}
                   <PhilosophiesCard
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
-                  <KnowledgesCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                </div>
-
-                {/* Mobile Layout */}
-                <div className="lg:hidden flex flex-col gap-2">
-                  <CollectiveCognitionVictoriesCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                  <CollectiveCognitionRewardsCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
-                  <PhilosophiesCard
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    selectedSettlement={selectedSettlement}
-                  />
+                  {/* Knowledges */}
                   <KnowledgesCard
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
@@ -473,7 +371,7 @@ export function SettlementForm({
               </div>
             )}
 
-          {/* Notes */}
+          {/* Notes Tab */}
           {selectedSettlement && selectedTab === 'notes' && (
             <NotesCard
               saveSelectedSettlement={saveSelectedSettlement}
@@ -481,7 +379,7 @@ export function SettlementForm({
             />
           )}
 
-          {/* Settlement Settings */}
+          {/* Settings Tab */}
           {selectedSettlement && selectedTab === 'settings' && (
             <SettingsCard
               saveSelectedSettlement={saveSelectedSettlement}
@@ -495,7 +393,7 @@ export function SettlementForm({
             />
           )}
 
-          {/* Hunt */}
+          {/* Hunt Tab */}
           {selectedSettlement && selectedTab === 'hunt' && (
             <HuntCard
               saveSelectedHunt={saveSelectedHunt}

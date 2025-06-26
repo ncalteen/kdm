@@ -4,6 +4,7 @@ import { HuntBoardSpace } from '@/components/hunt/hunt-board/hunt-board-space'
 import { QuarryToken } from '@/components/hunt/hunt-board/quarry-token'
 import { SurvivorToken } from '@/components/hunt/hunt-board/survivor-token'
 import { Card, CardContent } from '@/components/ui/card'
+import { useSidebar } from '@/components/ui/sidebar'
 import { Hunt } from '@/schemas/hunt'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { ReactElement } from 'react'
@@ -29,6 +30,22 @@ export function HuntBoard({
   onPositionUpdate,
   selectedHunt
 }: HuntBoardProps): ReactElement {
+  const { isMobile, state } = useSidebar()
+
+  // Calculate width based on sidebar state
+  const getCardWidth = () => {
+    // Full width on mobile (sidebar is overlay) minus gap
+    if (isMobile) return '98vw'
+
+    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
+    if (state === 'expanded') return 'calc(100vw - 17rem)'
+
+    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
+    if (state === 'collapsed') return 'calc(100vw - 4rem)'
+
+    return '98.5vw' // Fallback to full width
+  }
+
   // Define hunt board spaces
   const spaces = [
     { index: 0, label: 'Start', isStart: true },
@@ -37,7 +54,16 @@ export function HuntBoard({
     { index: 3 },
     { index: 4 },
     { index: 5 },
-    { index: 6, label: 'Overwhelming Darkness' },
+    {
+      index: 6,
+      label: (
+        <span>
+          Overwhelming
+          <br />
+          Darkness
+        </span>
+      )
+    },
     { index: 7 },
     { index: 8 },
     { index: 9 },
@@ -65,42 +91,44 @@ export function HuntBoard({
   }
 
   return (
-    <Card className="p-0 h-full">
-      <CardContent className="p-0 h-full">
+    <Card
+      className="p-0 min-w-[430px]"
+      style={{
+        width: getCardWidth()
+      }}>
+      <CardContent className="p-0 w-full overflow-x-auto">
         <DndContext onDragEnd={handleDragEnd}>
           {/* Hunt Board Grid */}
-          <div className="w-full h-full overflow-x-auto">
-            <div className="gap-0.5 md:gap-1 p-2 md:p-4 bg-muted/30 rounded-lg relative h-full flex flex-col justify-between">
-              {spaces.map((space) => (
-                <div
-                  key={space.index}
-                  className="relative w-[60px] sm:w-[80px] md:w-[100px] flex-1 min-h-[40px] flex items-center justify-center">
-                  <HuntBoardSpace
-                    index={space.index}
-                    label={space.label ?? ''}
-                    isStart={space.isStart}
-                    isStarvation={space.isStarvation}
+          <div className="w-full overflow-x-auto gap-1 p-2 bg-muted/30 rounded-lg relative flex flex-row items-center">
+            {spaces.map((space) => (
+              <div
+                key={space.index}
+                className="relative w-[80px] sm:w-[100px] md:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] flex-shrink-0 flex-grow-2 flex items-center justify-center">
+                <HuntBoardSpace
+                  index={space.index}
+                  label={space.label ?? ''}
+                  isStart={space.isStart}
+                  isStarvation={space.isStarvation}
+                />
+                {/* Show draggable tokens on their current spaces */}
+                {selectedHunt?.survivorPosition === space.index && (
+                  <SurvivorToken
+                    overlap={
+                      selectedHunt?.survivorPosition ===
+                      selectedHunt?.quarryPosition
+                    }
                   />
-                  {/* Show draggable tokens on their current spaces */}
-                  {selectedHunt?.survivorPosition === space.index && (
-                    <SurvivorToken
-                      overlap={
-                        selectedHunt?.survivorPosition ===
-                        selectedHunt?.quarryPosition
-                      }
-                    />
-                  )}
-                  {selectedHunt?.quarryPosition === space.index && (
-                    <QuarryToken
-                      overlap={
-                        selectedHunt?.survivorPosition ===
-                        selectedHunt?.quarryPosition
-                      }
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
+                )}
+                {selectedHunt?.quarryPosition === space.index && (
+                  <QuarryToken
+                    overlap={
+                      selectedHunt?.survivorPosition ===
+                      selectedHunt?.quarryPosition
+                    }
+                  />
+                )}
+              </div>
+            ))}
           </div>
         </DndContext>
       </CardContent>
