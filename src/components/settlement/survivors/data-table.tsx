@@ -103,7 +103,10 @@ export function SurvivorDataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="text-left p-2 font-bold text-sm">
+                    className={`text-left p-2 font-bold text-sm ${
+                      (header.column.columnDef.meta as { className?: string })
+                        ?.className || ''
+                    }`}>
                     <div
                       {...{
                         className: header.column.getCanSort()
@@ -127,7 +130,12 @@ export function SurvivorDataTable<TData, TValue>({
                 key={row.id}
                 className="border-b hover:bg-muted/50 transition-colors">
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-2 align-top">
+                  <td
+                    key={cell.id}
+                    className={`p-2 align-top ${
+                      (cell.column.columnDef.meta as { className?: string })
+                        ?.className || ''
+                    }`}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
