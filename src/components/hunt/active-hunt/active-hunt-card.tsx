@@ -12,10 +12,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
+import { ChevronRightIcon, XIcon } from 'lucide-react'
 import { ReactElement, useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -120,7 +122,29 @@ export function ActiveHuntCard({
   }, [])
 
   return (
-    <div className="flex flex-row gap-2 h-full">
+    <div className="flex flex-col gap-2 h-full relative">
+      {/* Action Buttons */}
+      <div className="flex justify-between pointer-events-none">
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleCancelHunt}
+          className="pointer-events-auto"
+          title="End Hunt">
+          <XIcon className="size-4" />
+          End Hunt
+        </Button>
+        <Button
+          variant="default"
+          size="sm"
+          onClick={handleShowdown}
+          disabled={true}
+          className="pointer-events-auto"
+          title="Proceed to Showdown">
+          Showdown <ChevronRightIcon className="size-4" />
+        </Button>
+      </div>
+
       {/* Hunt Board */}
       <div className="flex-shrink-0 h-full">
         <HuntBoard
