@@ -13,6 +13,7 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from '@/components/ui/drawer'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Survivor } from '@/schemas/survivor'
 import { UserSearchIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
@@ -46,6 +47,7 @@ export function ScoutSelectionDrawer({
   onSelectionChange,
   selectedSurvivors = []
 }: ScoutSelectionDrawerProps): ReactElement {
+  const isMobile = useIsMobile()
   const [tempSelection, setTempSelection] = useState<number | null>(
     selectedScout
   )
@@ -81,7 +83,7 @@ export function ScoutSelectionDrawer({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="px-4 pb-4 max-h-[60vh] flex gap-4">
+        <div className="px-4 pb-4 h-[60vh] flex gap-4">
           <div className="flex flex-wrap gap-2 overflow-y-auto min-w-[200px]">
             {survivors.map((survivor) => (
               <ScoutSelectionCard
@@ -94,12 +96,14 @@ export function ScoutSelectionDrawer({
               />
             ))}
           </div>
-          <div className="w-[450px]">
-            <SurvivorDetailsPanel
-              survivor={hoveredSurvivor || lastHoveredSurvivor}
-              survivors={survivors}
-            />
-          </div>
+          {!isMobile && (
+            <div className="w-[450px]">
+              <SurvivorDetailsPanel
+                survivor={hoveredSurvivor || lastHoveredSurvivor}
+                survivors={survivors}
+              />
+            </div>
+          )}
         </div>
         <DrawerFooter>
           <div className="flex gap-2">
