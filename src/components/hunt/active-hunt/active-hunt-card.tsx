@@ -154,18 +154,23 @@ export function ActiveHuntCard({
       </div>
 
       {/* Hunt Party Survivors */}
-      <div className="min-w-0 flex flex-col gap-2 flex-1">
-        <HuntSurvivorsCard
-          onCancelHunt={handleCancelHunt}
-          onShowdown={handleShowdown}
-          saveSelectedHunt={saveSelectedHunt}
-          selectedHunt={selectedHunt}
-          selectedSettlement={selectedSettlement}
-          selectedSurvivor={selectedSurvivor}
-          setSurvivors={setSurvivors}
-          survivors={survivors}
-          updateSelectedSurvivor={updateSelectedSurvivor}
-        />
+      <div className="w-full flex flex-row flex-wrap">
+        <div className="flex-1">
+          <HuntSurvivorsCard
+            saveSelectedHunt={saveSelectedHunt}
+            selectedHunt={selectedHunt}
+            selectedSettlement={selectedSettlement}
+            selectedSurvivor={selectedSurvivor}
+            setSurvivors={setSurvivors}
+            survivors={survivors}
+            updateSelectedSurvivor={updateSelectedSurvivor}
+          />
+        </div>
+        <div className="flex-1">
+          {/*
+            TODO: Survivor Gear Card?
+           */}
+        </div>
       </div>
 
       {/* Cancel Hunt Confirmation Dialog */}
