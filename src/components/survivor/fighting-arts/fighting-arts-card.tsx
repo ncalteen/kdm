@@ -419,7 +419,7 @@ export function FightingArtsCard({
       <CardHeader className="px-2 pt-1 pb-0">
         <div className="flex justify-between items-center">
           {/* Title */}
-          <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
+          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
             <ZapIcon className="h-4 w-4" />
             Fighting Arts &amp; Secret Fighting Arts
             {!isAddingNew && (

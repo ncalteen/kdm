@@ -294,8 +294,8 @@ export function KnowledgeCard({
           <div className="flex-grow flex flex-col gap-1">
             <div className="flex flex-col gap-1">
               <Input
-                placeholder="Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
+                placeholder=" Enter knowledge..."
+                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
                 value={knowledge1}
                 onChange={(e) => setKnowledge1(e.target.value)}
                 onBlur={(e) => updateKnowledge1(e.target.value)}
@@ -335,8 +335,8 @@ export function KnowledgeCard({
         {/* Knowledge 1 Rules */}
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
-            placeholder="Enter knowledge rules..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
+            placeholder=" Enter knowledge rules..."
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
             value={knowledge1Rules}
             onChange={(e) => setKnowledge1Rules(e.target.value)}
             onBlur={(e) => updateKnowledge1Rules(e.target.value)}
@@ -348,8 +348,8 @@ export function KnowledgeCard({
         <div className="mt-1">
           <div className="flex flex-col gap-1">
             <Textarea
-              placeholder="Enter observation conditions..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
+              placeholder=" Enter observation conditions..."
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
               value={knowledge1ObservationConditions}
               onChange={(e) =>
                 setKnowledge1ObservationConditions(e.target.value)
@@ -371,8 +371,8 @@ export function KnowledgeCard({
           <div className="flex-grow flex flex-col gap-1">
             <div className="flex flex-col gap-1">
               <Input
-                placeholder="Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
+                placeholder=" Enter knowledge..."
+                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
                 value={knowledge2}
                 onChange={(e) => setKnowledge2(e.target.value)}
                 onBlur={(e) => updateKnowledge2(e.target.value)}
@@ -412,8 +412,8 @@ export function KnowledgeCard({
         {/* Knowledge 2 Rules */}
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
-            placeholder="Enter knowledge rules..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
+            placeholder=" Enter knowledge rules..."
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
             value={knowledge2Rules}
             onChange={(e) => setKnowledge2Rules(e.target.value)}
             onBlur={(e) => updateKnowledge2Rules(e.target.value)}
@@ -424,8 +424,8 @@ export function KnowledgeCard({
         {/* Knowledge 2 Observation Conditions */}
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
-            placeholder="Enter observation conditions..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
+            placeholder=" Enter observation conditions..."
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
             value={knowledge2ObservationConditions}
             onChange={(e) => setKnowledge2ObservationConditions(e.target.value)}
             onBlur={(e) =>

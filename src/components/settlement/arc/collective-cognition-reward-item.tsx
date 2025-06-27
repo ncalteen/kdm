@@ -126,7 +126,7 @@ export function RewardItem({
       {/* Reward Name Input */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{reward.name}</span>
+          <span className="text-sm">{reward.name}</span>
         </div>
       ) : (
         <Input

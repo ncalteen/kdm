@@ -138,7 +138,7 @@ export function QuarryItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
+          <span className="text-sm">
             {selectedSettlement?.quarries?.[index].name}
           </span>
         </div>

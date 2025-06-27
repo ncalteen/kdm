@@ -79,7 +79,7 @@ export function HeadCard({
 
           {/* Body part label and severe injuries in a single row */}
           <div className="flex flex-row items-start w-full">
-            <div className="font-bold flex flex-row gap-1 w-[70px]">
+            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
               <HardHatIcon /> Head
             </div>
             <div className="flex flex-col items-start gap-1 ml-2">

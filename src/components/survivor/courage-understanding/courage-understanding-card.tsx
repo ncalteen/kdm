@@ -93,7 +93,7 @@ export function CourageUnderstandingCard({
         <div className="hidden lg:flex flex-wrap justify-between mx-2">
           {/* Courage Section */}
           <div className="flex flex-col">
-            <div className="font-bold text-sm mb-1">Courage</div>
+            <div className="font-bold text-md mb-1">Courage</div>
 
             <div className="flex flex-row gap-1 lg:gap-2">
               {Array.from({ length: 9 }, (_, i) => (
@@ -142,7 +142,7 @@ export function CourageUnderstandingCard({
 
           {/* Understanding Section */}
           <div className="flex flex-col">
-            <div className="font-bold text-sm mb-1">Understanding</div>
+            <div className="font-bold text-md mb-1">Understanding</div>
 
             <div className="flex flex-row gap-1 lg:gap-2">
               {Array.from({ length: 9 }, (_, i) => (
@@ -193,7 +193,7 @@ export function CourageUnderstandingCard({
         <div className="lg:hidden flex flex-col gap-4 mx-2">
           {/* Courage Section */}
           <div className="flex flex-col w-full">
-            <div className="font-bold text-sm mb-1">Courage</div>
+            <div className="font-bold text-md mb-1">Courage</div>
 
             <div className="flex flex-row justify-evenly gap-1">
               {Array.from({ length: 9 }, (_, i) => (
@@ -239,7 +239,7 @@ export function CourageUnderstandingCard({
 
           {/* Understanding Section */}
           <div className="flex flex-col w-full">
-            <div className="font-bold text-sm mb-1">Understanding</div>
+            <div className="font-bold text-md mb-1">Understanding</div>
 
             <div className="flex flex-row gap-1 justify-evenly">
               {Array.from({ length: 9 }, (_, i) => (

@@ -131,7 +131,7 @@ export function NemesisItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex flex-1 ml-1">
-          <span className="text-xs">
+          <span className="text-sm">
             {selectedSettlement?.nemeses?.[index].name}
           </span>
         </div>

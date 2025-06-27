@@ -97,7 +97,7 @@ export function AbilityImpairmentItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">
+          <span className="text-md">
             {selectedSurvivor?.abilitiesAndImpairments?.[index]}
           </span>
         </div>
