@@ -67,7 +67,7 @@ export function CollectiveCognitionVictoriesCard({
   return (
     <Card className="p-0 border-1 gap-2">
       <CardHeader className="px-2 pt-1 pb-0">
-        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <TrophyIcon className="h-4 w-4" /> Settlement Victories
         </CardTitle>
         <CardDescription className="text-left text-xs">
@@ -82,18 +82,18 @@ export function CollectiveCognitionVictoriesCard({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold">Quarry</TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-sm font-bold">Quarry</TableHead>
+                  <TableHead className="text-center text-xs">
                     Prologue
                     <br />1 CC
                   </TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-center text-xs">
                     Lvl 1<br />1 CC
                   </TableHead>
-                  <TableHead className="text-center" colSpan={2}>
+                  <TableHead className="text-center text-xs" colSpan={2}>
                     Lvl 2<br />2 CC
                   </TableHead>
-                  <TableHead className="text-center" colSpan={3}>
+                  <TableHead className="text-center text-xs" colSpan={3}>
                     Lvl 3+
                     <br />3 CC
                   </TableHead>
@@ -102,7 +102,7 @@ export function CollectiveCognitionVictoriesCard({
               <TableBody>
                 {(selectedSettlement?.quarries || []).map((quarry, index) => (
                   <TableRow key={index}>
-                    <TableCell className="text-left pl-5">
+                    <TableCell className="text-sm text-left pl-5">
                       {quarry.name}
                     </TableCell>
                     <TableCell className="text-center">
@@ -260,14 +260,14 @@ export function CollectiveCognitionVictoriesCard({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold">Nemesis</TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-sm font-bold">Nemesis</TableHead>
+                  <TableHead className="text-center text-xs">
                     Lvl 1<br />3 CC
                   </TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-center text-xs">
                     Lvl 2<br />3 CC
                   </TableHead>
-                  <TableHead className="text-center">
+                  <TableHead className="text-center text-xs">
                     Lvl 3+
                     <br />3 CC
                   </TableHead>
@@ -276,7 +276,7 @@ export function CollectiveCognitionVictoriesCard({
               <TableBody>
                 {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
                   <TableRow key={index}>
-                    <TableCell className="text-left pl-5">
+                    <TableCell className="text-sm text-left pl-5">
                       {nemesis.name || 'Unnamed Nemesis'}
                     </TableCell>
                     <TableCell className="text-center">

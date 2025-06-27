@@ -185,7 +185,7 @@ export function NextDepartureCard({
   return (
     <Card className="p-0 border-1 gap-2">
       <CardHeader className="px-2 pt-1 pb-0">
-        <CardTitle className="text-sm flex flex-row items-center gap-1 h-8">
+        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <GiftIcon className="h-4 w-4" />
           Next Departure
           {!isAddingNew && (

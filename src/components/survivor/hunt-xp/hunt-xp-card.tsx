@@ -121,7 +121,7 @@ export function HuntXPCard({
             {/* Hunt XP */}
             <FormItem className="flex-1">
               <div className="flex justify-between items-center">
-                <label className="font-bold text-left">Hunt XP</label>
+                <label className="font-bold text-left text-md">Hunt XP</label>
                 <div className="flex items-center gap-1 lg:gap-2">
                   {Array.from({ length: 16 }, (_, i) => {
                     const checked = (selectedSurvivor?.huntXP || 0) > i

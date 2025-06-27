@@ -121,7 +121,7 @@ export function KnowledgeItem({
 
           {/* Knowledge Name */}
           <div className="flex ml-1">
-            <span className="text-xs">
+            <span className="text-sm">
               {selectedSettlement?.knowledges?.[index].name || ''}
             </span>
           </div>

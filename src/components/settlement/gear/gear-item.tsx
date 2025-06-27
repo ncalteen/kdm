@@ -100,7 +100,7 @@ export function GearItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-xs">{selectedSettlement?.gear?.[index]}</span>
+          <span className="text-md">{selectedSettlement?.gear?.[index]}</span>
         </div>
       ) : (
         <Input

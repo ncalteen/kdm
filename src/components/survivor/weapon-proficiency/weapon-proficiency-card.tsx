@@ -136,9 +136,9 @@ export function WeaponProficiencyCard({
                     />
                   ))}
                   {i === 0 ? (
-                    <span className="text-sm">Specialist</span>
+                    <span className="text-xs">Specialist</span>
                   ) : (
-                    <span className="text-sm">Master</span>
+                    <span className="text-xs">Master</span>
                   )}
                 </div>
               ))}

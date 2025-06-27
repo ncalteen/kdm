@@ -176,7 +176,7 @@ export function StatusCard({
 
             {/* Gender */}
             <div className="ml-4 flex items-center gap-2">
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
                 <label htmlFor="male-checkbox" className="text-xs">
                   M
                 </label>
@@ -188,7 +188,7 @@ export function StatusCard({
                   }}
                 />
               </div>
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
                 <label htmlFor="female-checkbox" className="text-xs">
                   F
                 </label>
@@ -208,7 +208,7 @@ export function StatusCard({
 
         {/* Status Section */}
         <div className="flex justify-between items-center">
-          <p className="text-xs">
+          <p className="text-xs text-muted-foreground">
             When you name your survivor, gain +1 <strong>survival</strong>.
           </p>
 

@@ -171,7 +171,7 @@ export const createColumns = ({
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ row }) => (
-        <div className="text-xs hidden md:block">
+        <div className="text-sm hidden md:block">
           <Badge variant="outline">{row.getValue('gender')}</Badge>
         </div>
       ),
@@ -186,7 +186,7 @@ export const createColumns = ({
         const huntXP = parseInt(row.getValue('huntXP'), 10)
 
         return (
-          <div className="text-xs">
+          <div className="text-sm">
             <Badge variant="outline">{huntXP}</Badge>
           </div>
         )
@@ -209,7 +209,7 @@ export const createColumns = ({
       header: 'Retired',
       cell: ({ row }) =>
         row.getValue('retired') && (
-          <Badge variant="secondary" className="text-xs h-8 w-8">
+          <Badge variant="secondary" className="text-sm h-8 w-8">
             <ShieldOffIcon />
           </Badge>
         )
@@ -219,7 +219,7 @@ export const createColumns = ({
       header: 'Dead',
       cell: ({ row }) =>
         row.getValue('dead') && (
-          <Badge variant="destructive" className="text-xs h-8 w-8">
+          <Badge variant="destructive" className="text-sm h-8 w-8">
             <SkullIcon />
           </Badge>
         )

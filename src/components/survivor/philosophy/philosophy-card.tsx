@@ -272,8 +272,8 @@ export function PhilosophyCard({
         {/* Neurosis */}
         <div className="flex flex-col gap-1">
           <Input
-            placeholder="Neurosis..."
-            className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
+            placeholder=" Neurosis..."
+            className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
             value={neurosis}
             onChange={(e) => setNeurosis(e.target.value)}
             onBlur={(e) => {
@@ -287,8 +287,8 @@ export function PhilosophyCard({
         <div className="flex items-start gap-2 mt-1">
           <div className="flex-grow flex flex-col gap-1">
             <Input
-              placeholder="Tenet knowledge..."
-              className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 md:text-md"
+              placeholder=" Tenet knowledge..."
+              className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
               value={tenetKnowledge}
               onChange={(e) => setTenetKnowledge(e.target.value)}
               onBlur={(e) => {
@@ -327,8 +327,8 @@ export function PhilosophyCard({
         {/* Tenet Knowledge Rules */}
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
-            placeholder="Tenet knowledge rules..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
+            placeholder=" Tenet knowledge rules..."
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
             value={tenetKnowledgeRules}
             onChange={(e) => setTenetKnowledgeRules(e.target.value)}
             onBlur={(e) => updateTenetKnowledgeRules(e.target.value)}
@@ -339,8 +339,8 @@ export function PhilosophyCard({
         {/* Tenet Knowledge Observation Conditions */}
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
-            placeholder="Observation conditions..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm sm:text-sm md:text-sm"
+            placeholder=" Observation conditions..."
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
             value={tenetKnowledgeObservationConditions}
             onChange={(e) =>
               setTenetKnowledgeObservationConditions(e.target.value)

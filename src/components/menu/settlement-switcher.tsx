@@ -85,7 +85,7 @@ export function SettlementSwitcher({
                 <span className="font-medium">
                   {selectedSettlement?.name ?? 'Create a Settlement'}
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-sm text-muted-foreground">
                   {selectedSettlement?.campaignType ?? 'Choose your destiny'}
                 </span>
               </div>
@@ -129,7 +129,7 @@ export function SettlementSwitcher({
                 }}>
                 <div className="flex flex-col">
                   <span>{s.name}</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-sm text-muted-foreground">
                     {s.campaignType}
                   </span>
                 </div>

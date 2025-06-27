@@ -117,7 +117,7 @@ export function PrincipleItem({
           {isDisabled ? (
             // Display mode - principle name left, options in columns
             <div className="grid grid-cols-12 items-center gap-2">
-              <div className="col-span-4 text-xs text-left font-bold">
+              <div className="col-span-4 text-sm text-left font-bold">
                 {principle.name}
               </div>
               <div className="col-span-4 flex items-center gap-2">

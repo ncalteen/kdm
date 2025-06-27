@@ -79,7 +79,7 @@ export function BodyCard({
           <div className="mx-2 w-px bg-border h-[80px]" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="font-bold flex flex-row gap-1 w-[70px]">
+            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
               <ShirtIcon /> Body
             </div>
             <div className="flex flex-col items-start gap-1 ml-2">

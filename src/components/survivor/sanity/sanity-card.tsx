@@ -117,7 +117,7 @@ export function SanityCard({
 
           {/* Brain */}
           <div className="relative flex-1 flex flex-col justify-between">
-            <div className="font-bold flex gap-1 items-center">
+            <div className="text-md font-bold flex gap-1 items-center">
               <BrainIcon />
               Brain
             </div>
