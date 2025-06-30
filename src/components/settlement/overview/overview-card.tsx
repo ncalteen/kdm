@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormControl } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -159,6 +160,8 @@ export function OverviewCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSettlement?.survivalLimit ?? '1'}
               onChange={(e) => handleSurvivalLimitChange(e.target.value)}
+              name="survival-limit-desktop"
+              id="survival-limit-desktop"
             />
             <label className="text-center text-xs">Survival Limit</label>
           </div>
@@ -175,6 +178,8 @@ export function OverviewCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={currentPopulation}
               disabled
+              name="population-desktop"
+              id="population-desktop"
             />
             <label className="text-center text-xs">Population</label>
           </div>
@@ -191,6 +196,8 @@ export function OverviewCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={currentDeathCount}
               disabled
+              name="death-count-desktop"
+              id="death-count-desktop"
             />
             <label className="text-center text-xs">Death Count</label>
           </div>
@@ -208,6 +215,8 @@ export function OverviewCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSettlement?.lostSettlements ?? '0'}
               disabled
+              name="lost-settlements-desktop"
+              id="lost-settlements-desktop"
             />
             <label className="text-center text-xs">Lost Settlements</label>
           </div>
@@ -226,6 +235,8 @@ export function OverviewCard({
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   value={selectedSettlement?.ccValue ?? '0'}
                   disabled
+                  name="collective-cognition-desktop"
+                  id="collective-cognition-desktop"
                 />
                 <label className="text-center text-xs">
                   Collective Cognition
@@ -255,6 +266,8 @@ export function OverviewCard({
                   onChange={(e) => {
                     handleLanternResearchLevelChange(e.target.value)
                   }}
+                  name="lantern-research-desktop"
+                  id="lantern-research-desktop"
                 />
                 <label className="text-center text-xs">Lantern Research</label>
               </div>
@@ -267,16 +280,22 @@ export function OverviewCard({
           {/* Survival Limit */}
           <div className="flex items-center justify-between">
             <label className="text-sm">Survival Limit</label>
-            <Input
-              type="number"
-              min="1"
-              placeholder="1"
-              className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSettlement?.survivalLimit ?? '1'}
-              onChange={(e) => {
-                handleSurvivalLimitChange(e.target.value)
-              }}
-            />
+            <NumericInput
+              value={selectedSettlement?.survivalLimit ?? 1}
+              min={1}
+              label="Survival Limit"
+              onChange={(value) => handleSurvivalLimitChange(value.toString())}>
+              <Input
+                type="number"
+                min="1"
+                placeholder="1"
+                className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSettlement?.survivalLimit ?? '1'}
+                readOnly
+                name="survival-limit-mobile"
+                id="survival-limit-mobile"
+              />
+            </NumericInput>
           </div>
 
           {/* Population */}
@@ -287,6 +306,8 @@ export function OverviewCard({
               className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={currentPopulation}
               disabled
+              name="population-mobile"
+              id="population-mobile"
             />
           </div>
 
@@ -298,6 +319,8 @@ export function OverviewCard({
               className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={currentDeathCount}
               disabled
+              name="death-count-mobile"
+              id="death-count-mobile"
             />
           </div>
 
@@ -311,6 +334,8 @@ export function OverviewCard({
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSettlement?.lostSettlements ?? '0'}
                 disabled
+                name="lost-settlements-mobile"
+                id="lost-settlements-mobile"
               />
             </FormControl>
           </div>
@@ -324,6 +349,8 @@ export function OverviewCard({
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSettlement?.ccValue ?? '0'}
                 disabled
+                name="collective-cognition-mobile"
+                id="collective-cognition-mobile"
               />
             </div>
           )}
@@ -335,16 +362,24 @@ export function OverviewCard({
               CampaignType.PEOPLE_OF_THE_SUN) && (
             <div className="flex items-center justify-between">
               <label className="text-sm">Lantern Research</label>
-              <Input
-                type="number"
-                min="0"
-                placeholder="0"
-                className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSettlement?.lanternResearchLevel ?? '0'}
-                onChange={(e) =>
-                  handleLanternResearchLevelChange(e.target.value)
-                }
-              />
+              <NumericInput
+                value={selectedSettlement?.lanternResearchLevel ?? 0}
+                min={0}
+                label="Lantern Research"
+                onChange={(value) =>
+                  handleLanternResearchLevelChange(value.toString())
+                }>
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  value={selectedSettlement?.lanternResearchLevel ?? '0'}
+                  readOnly
+                  name="lantern-research-mobile"
+                  id="lantern-research-mobile"
+                />
+              </NumericInput>
             </div>
           )}
         </div>

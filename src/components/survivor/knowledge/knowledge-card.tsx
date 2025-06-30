@@ -422,7 +422,7 @@ export function KnowledgeCard({
         </div>
 
         {/* Knowledge 2 Observation Conditions */}
-        <div className="mt-1 flex flex-col gap-1">
+        <div className="mt-1 flex flex-col gap-1 pb-2">
           <Textarea
             placeholder=" Enter observation conditions..."
             className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"

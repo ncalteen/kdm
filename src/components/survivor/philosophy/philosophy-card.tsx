@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { SelectPhilosophy } from '@/components/menu/select-philosophy'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -247,15 +248,24 @@ export function PhilosophyCard({
           </div>
 
           {/* Rank */}
-          <Input
-            placeholder="0"
-            type="number"
-            className={cn(
-              'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-            )}
-            value={selectedSurvivor?.philosophyRank ?? '0'}
-            onChange={(e) => updatePhilosophyRank(e.target.value)}
-          />
+          <NumericInput
+            label="Philosophy Rank"
+            value={selectedSurvivor?.philosophyRank ?? 0}
+            onChange={(value) => updatePhilosophyRank(value.toString())}
+            min={0}>
+            <Input
+              placeholder="0"
+              type="number"
+              className={cn(
+                'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+              )}
+              value={selectedSurvivor?.philosophyRank ?? '0'}
+              onChange={(e) => updatePhilosophyRank(e.target.value)}
+              name="philosophy-rank"
+              id="philosophy-rank"
+              min={0}
+            />
+          </NumericInput>
         </div>
 
         {/* Rules Text */}

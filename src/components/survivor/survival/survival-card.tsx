@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -162,16 +163,25 @@ export function SurvivalCard({
           <div className="flex-1 flex flex-col justify-between">
             {/* Survival Input */}
             <div className="flex items-center gap-2">
-              <Input
-                key={`survival-${selectedSurvivor?.id || 'new'}`}
-                placeholder="1"
-                type="number"
-                className={cn(
-                  'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-                )}
-                value={selectedSurvivor?.survival ?? '1'}
-                onChange={(e) => updateSurvival(e.target.value)}
-              />
+              <NumericInput
+                value={selectedSurvivor?.survival ?? 1}
+                min={0}
+                max={selectedSettlement?.survivalLimit || 1}
+                label="Survival"
+                onChange={(value) => updateSurvival(value.toString())}>
+                <Input
+                  key={`survival-${selectedSurvivor?.id || 'new'}`}
+                  placeholder="1"
+                  type="number"
+                  className={cn(
+                    'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+                  )}
+                  value={selectedSurvivor?.survival ?? '1'}
+                  readOnly
+                  name="survival-mobile"
+                  id="survival-mobile"
+                />
+              </NumericInput>
               <label className="font-bold text-left">Survival</label>
             </div>
 
@@ -180,6 +190,8 @@ export function SurvivalCard({
               <Checkbox
                 checked={!selectedSurvivor?.canSpendSurvival}
                 onCheckedChange={(checked) => updateCanSpendSurvival(!!checked)}
+                name="cannot-spend-survival"
+                id="cannot-spend-survival"
               />
               <div className="text-xs font-medium leading-none flex items-center">
                 <LockIcon className="inline h-3 w-3 mr-1" /> Cannot spend
@@ -196,6 +208,8 @@ export function SurvivalCard({
                 <Checkbox
                   checked={selectedSurvivor?.canDodge}
                   onCheckedChange={(checked) => updateCanDodge(!!checked)}
+                  name="can-dodge"
+                  id="can-dodge"
                 />
                 <label className="text-xs">Dodge</label>
               </div>
@@ -205,6 +219,8 @@ export function SurvivalCard({
                 <Checkbox
                   checked={selectedSurvivor?.canEncourage}
                   onCheckedChange={(checked) => updateCanEncourage(!!checked)}
+                  name="can-encourage"
+                  id="can-encourage"
                 />
                 <label className="text-xs">Encourage</label>
               </div>
@@ -214,6 +230,8 @@ export function SurvivalCard({
                 <Checkbox
                   checked={selectedSurvivor?.canSurge}
                   onCheckedChange={(checked) => updateCanSurge(!!checked)}
+                  name="can-surge"
+                  id="can-surge"
                 />
                 <label className="text-xs">Surge</label>
               </div>
@@ -223,6 +241,8 @@ export function SurvivalCard({
                 <Checkbox
                   checked={selectedSurvivor?.canDash}
                   onCheckedChange={(checked) => updateCanDash(!!checked)}
+                  name="can-dash"
+                  id="can-dash"
                 />
                 <label className="text-xs">Dash</label>
               </div>
@@ -233,6 +253,8 @@ export function SurvivalCard({
                   <Checkbox
                     checked={selectedSurvivor?.canFistPump}
                     onCheckedChange={(checked) => updateCanFistPump(!!checked)}
+                    name="can-fist-pump"
+                    id="can-fist-pump"
                   />
                   <label className="text-xs">Fist Pump</label>
                 </div>
@@ -241,6 +263,8 @@ export function SurvivalCard({
                   <Checkbox
                     checked={selectedSurvivor?.canEndure}
                     onCheckedChange={(checked) => updateCanEndure(!!checked)}
+                    name="can-endure"
+                    id="can-endure"
                   />
                   <label className="text-xs">Endure</label>
                 </div>
@@ -254,15 +278,24 @@ export function SurvivalCard({
 
                 {/* Systemic Pressure */}
                 <div className="flex flex-col items-center">
-                  <Input
-                    key={`systemicPressure-${selectedSurvivor?.id || 'new'}`}
-                    placeholder="0"
-                    type="number"
-                    className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={selectedSurvivor?.systemicPressure ?? '0'}
+                  <NumericInput
+                    value={selectedSurvivor?.systemicPressure ?? 0}
                     min={0}
-                    onChange={(e) => updateSystemicPressure(e.target.value)}
-                  />
+                    label="Systemic Pressure"
+                    onChange={(value) =>
+                      updateSystemicPressure(value.toString())
+                    }>
+                    <Input
+                      key={`systemicPressure-${selectedSurvivor?.id || 'new'}`}
+                      placeholder="0"
+                      type="number"
+                      className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      value={selectedSurvivor?.systemicPressure ?? '0'}
+                      readOnly
+                      name="systemic-pressure-mobile"
+                      id="systemic-pressure-mobile"
+                    />
+                  </NumericInput>
                   <label className="text-xs">
                     Systemic
                     <br />

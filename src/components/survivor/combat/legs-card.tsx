@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -63,16 +64,21 @@ export function LegsCard({
               className="h-14 w-14 text-muted-foreground"
               strokeWidth={1}
             />
-            <Input
-              placeholder="1"
-              type="number"
-              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.legArmor ?? '0'}
+            <NumericInput
+              value={selectedSurvivor?.legArmor ?? 0}
               min={0}
-              onChange={(e) =>
-                saveToLocalStorage('legArmor', parseInt(e.target.value))
-              }
-            />
+              label="Leg Armor"
+              onChange={(value) => saveToLocalStorage('legArmor', value)}>
+              <Input
+                placeholder="1"
+                type="number"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.legArmor ?? '0'}
+                readOnly
+                name="leg-armor-mobile"
+                id="leg-armor-mobile"
+              />
+            </NumericInput>
           </div>
 
           <div className="mx-2 w-px bg-border h-[80px]" />
@@ -90,6 +96,8 @@ export function LegsCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('legHamstrung', !!checked)
                   }
+                  name="leg-hamstrung"
+                  id="leg-hamstrung"
                 />
                 <label className="text-xs">Hamstrung</label>
               </div>
@@ -111,6 +119,8 @@ export function LegsCard({
 
                         saveToLocalStorage('legBroken', newValue)
                       }}
+                      name={`leg-broken-${index + 1}`}
+                      id={`leg-broken-${index + 1}`}
                     />
                   ))}
                 </div>
@@ -134,6 +144,8 @@ export function LegsCard({
 
                         saveToLocalStorage('legDismembered', newValue)
                       }}
+                      name={`leg-dismembered-${index + 1}`}
+                      id={`leg-dismembered-${index + 1}`}
                     />
                   ))}
                 </div>
@@ -157,6 +169,8 @@ export function LegsCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('legLightDamage', !!checked)
                   }
+                  name="leg-light-damage"
+                  id="leg-light-damage"
                 />
                 <label className="text-xs mt-1">L</label>
               </div>
@@ -175,6 +189,8 @@ export function LegsCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('legHeavyDamage', !!checked)
                   }
+                  name="leg-heavy-damage"
+                  id="leg-heavy-damage"
                 />
                 <label className="text-xs mt-1">H</label>
               </div>

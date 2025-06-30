@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -113,15 +114,27 @@ export function RewardItem({
       />
 
       {/* CC Value Input */}
-      <Input
-        ref={ccInputRef}
-        type="number"
-        className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-        defaultValue={reward?.cc || 1}
-        disabled={isDisabled}
-        min={0}
-        onKeyDown={handleKeyDown}
-      />
+      <NumericInput
+        label="Collective Cognition"
+        value={reward?.cc ?? 1}
+        onChange={(value) => {
+          if (ccInputRef.current) {
+            ccInputRef.current.value = value.toString()
+          }
+        }}
+        min={0}>
+        <Input
+          ref={ccInputRef}
+          type="number"
+          className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          defaultValue={reward?.cc || 1}
+          disabled={isDisabled}
+          min={0}
+          onKeyDown={handleKeyDown}
+          name={`cc-value-${index}`}
+          id={`cc-value-${index}`}
+        />
+      </NumericInput>
 
       {/* Reward Name Input */}
       {isDisabled ? (
@@ -223,14 +236,26 @@ export function NewRewardItem({
       <Checkbox disabled />
 
       {/* CC Value Input */}
-      <Input
-        ref={ccInputRef}
-        type="number"
-        className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-        defaultValue={1}
-        min={0}
-        onKeyDown={handleKeyDown}
-      />
+      <NumericInput
+        label="Collective Cognition"
+        value={1}
+        onChange={(value) => {
+          if (ccInputRef.current) {
+            ccInputRef.current.value = value.toString()
+          }
+        }}
+        min={0}>
+        <Input
+          ref={ccInputRef}
+          type="number"
+          className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          defaultValue={1}
+          min={0}
+          onKeyDown={handleKeyDown}
+          name="new-cc-value"
+          id="new-cc-value"
+        />
+      </NumericInput>
 
       {/* Reward Name Input */}
       <Input
