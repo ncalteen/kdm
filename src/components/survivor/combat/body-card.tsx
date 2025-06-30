@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -64,16 +65,21 @@ export function BodyCard({
               className="h-14 w-14 text-muted-foreground"
               strokeWidth={1}
             />
-            <Input
-              placeholder="1"
-              type="number"
-              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.bodyArmor ?? '0'}
+            <NumericInput
+              value={selectedSurvivor?.bodyArmor ?? 0}
               min={0}
-              onChange={(e) =>
-                saveToLocalStorage('bodyArmor', parseInt(e.target.value))
-              }
-            />
+              label="Body Armor"
+              onChange={(value) => saveToLocalStorage('bodyArmor', value)}>
+              <Input
+                placeholder="1"
+                type="number"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.bodyArmor ?? '0'}
+                readOnly
+                name="body-armor-mobile"
+                id="body-armor-mobile"
+              />
+            </NumericInput>
           </div>
 
           <div className="mx-2 w-px bg-border h-[80px]" />

@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -64,17 +65,22 @@ export function WaistCard({
               className="h-14 w-14 text-muted-foreground"
               strokeWidth={1}
             />
-            <Input
-              key={`waistArmor-${selectedSurvivor?.id || 'new'}`}
-              placeholder="1"
-              type="number"
-              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            <NumericInput
               value={selectedSurvivor?.waistArmor ?? 0}
               min={0}
-              onChange={(e) =>
-                saveToLocalStorage('waistArmor', parseInt(e.target.value))
-              }
-            />
+              label="Waist Armor"
+              onChange={(value) => saveToLocalStorage('waistArmor', value)}>
+              <Input
+                key={`waistArmor-${selectedSurvivor?.id || 'new'}`}
+                placeholder="1"
+                type="number"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.waistArmor ?? 0}
+                readOnly
+                name="waist-armor-mobile"
+                id="waist-armor-mobile"
+              />
+            </NumericInput>
           </div>
 
           <div className="mx-2 w-px bg-border h-[80px]" />
@@ -92,6 +98,8 @@ export function WaistCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('waistBrokenHip', !!checked)
                   }
+                  name="waist-broken-hip"
+                  id="waist-broken-hip"
                 />
                 <label className="text-xs">Broken Hip</label>
               </div>
@@ -103,6 +111,8 @@ export function WaistCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('waistIntestinalProlapse', !!checked)
                   }
+                  name="waist-intestinal-prolapse"
+                  id="waist-intestinal-prolapse"
                 />
                 <label className="text-xs">Intestinal Prolapse</label>
               </div>
@@ -114,6 +124,8 @@ export function WaistCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('waistDestroyedGenitals', !!checked)
                   }
+                  name="waist-destroyed-genitals"
+                  id="waist-destroyed-genitals"
                 />
                 <label className="text-xs">Destroyed Genitals</label>
               </div>
@@ -133,6 +145,8 @@ export function WaistCard({
 
                         saveToLocalStorage('waistWarpedPelvis', safeValue)
                       }}
+                      name={`waist-warped-pelvis-${value}`}
+                      id={`waist-warped-pelvis-${value}`}
                     />
                   ))}
                 </div>
@@ -156,6 +170,8 @@ export function WaistCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('waistLightDamage', !!checked)
                   }
+                  name="waist-light-damage"
+                  id="waist-light-damage"
                 />
                 <label className="text-xs mt-1">L</label>
               </div>
@@ -174,6 +190,8 @@ export function WaistCard({
                   onCheckedChange={(checked) =>
                     saveToLocalStorage('waistHeavyDamage', !!checked)
                   }
+                  name="waist-heavy-damage"
+                  id="waist-heavy-damage"
                 />
                 <label className="text-xs mt-1">H</label>
               </div>

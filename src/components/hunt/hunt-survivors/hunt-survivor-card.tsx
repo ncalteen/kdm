@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -367,66 +368,110 @@ export function HuntSurvivorCard({
         {/* Hunt XP */}
         <div className="bg-background/60 rounded text-center text-sm">
           <div className="font-bold pb-1 text-muted-foreground">Hunt XP</div>
-          <Input
-            id={`hunt-xp-${survivor.id}`}
-            type="number"
-            value={survivor.huntXP}
-            onChange={(e) =>
+          <NumericInput
+            label="Hunt XP"
+            value={survivor.huntXP ?? 0}
+            onChange={(value) =>
               saveToLocalStorage(
                 survivor.id!,
-                { huntXP: parseInt(e.target.value) || 0 },
+                { huntXP: value },
                 'Hunt XP updated successfully.'
               )
             }
-            className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            min="0"
-          />
+            min={0}
+            max={16}>
+            <Input
+              id={`hunt-xp-${survivor.id}`}
+              type="number"
+              value={survivor.huntXP}
+              onChange={(e) =>
+                saveToLocalStorage(
+                  survivor.id!,
+                  { huntXP: parseInt(e.target.value) || 0 },
+                  'Hunt XP updated successfully.'
+                )
+              }
+              className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              min="0"
+              max="16"
+              name={`hunt-xp-${survivor.id}`}
+            />
+          </NumericInput>
         </div>
 
         {/* Movement, Survival, and Insanity */}
         <div className="grid grid-cols-3 gap-0">
           <div className="bg-background/40 rounded-lg p-1 text-center">
             <div className="text-xs text-muted-foreground pb-1">Movement</div>
-            <Input
-              id={`movement-${survivor.id}`}
-              type="number"
-              value={survivor.movement}
-              onChange={(e) =>
+            <NumericInput
+              label="Movement"
+              value={survivor.movement ?? 0}
+              onChange={(value) =>
                 saveToLocalStorage(
                   survivor.id!,
-                  { movement: parseInt(e.target.value) || 0 },
+                  { movement: value },
                   'Movement updated.'
                 )
               }
-              className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              min="0"
-            />
+              min={0}>
+              <Input
+                id={`movement-${survivor.id}`}
+                type="number"
+                value={survivor.movement}
+                onChange={(e) =>
+                  saveToLocalStorage(
+                    survivor.id!,
+                    { movement: parseInt(e.target.value) || 0 },
+                    'Movement updated.'
+                  )
+                }
+                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                min="0"
+                name={`movement-${survivor.id}`}
+              />
+            </NumericInput>
           </div>
           <div className="bg-background/40 rounded-lg p-1 text-center">
             <div className="text-xs text-muted-foreground pb-1">Survival</div>
-            <Input
-              id={`survival-${survivor.id}`}
-              type="number"
-              value={survivor.survival}
-              onChange={(e) => updateSurvival(e.target.value)}
-              className={`text-center border-0 p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
-                !survivor.canSpendSurvival
-                  ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                  : 'bg-transparent'
-              }`}
-              min="0"
-            />
+            <NumericInput
+              label="Survival"
+              value={survivor.survival ?? 0}
+              onChange={(value) => updateSurvival(value.toString())}
+              min={0}
+              max={selectedSettlement?.survivalLimit || 1}>
+              <Input
+                id={`survival-${survivor.id}`}
+                type="number"
+                value={survivor.survival}
+                onChange={(e) => updateSurvival(e.target.value)}
+                className={`text-center border-0 p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
+                  !survivor.canSpendSurvival
+                    ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                    : 'bg-transparent'
+                }`}
+                min="0"
+                max={selectedSettlement?.survivalLimit || 1}
+                name={`survival-${survivor.id}`}
+              />
+            </NumericInput>
           </div>
           <div className="bg-background/40 rounded-lg p-1 text-center">
             <div className="text-xs text-muted-foreground pb-1">Insanity</div>
-            <Input
-              id={`insanity-${survivor.id}`}
-              type="number"
-              value={survivor.insanity}
-              onChange={(e) => updateInsanity(e.target.value)}
-              className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              min="0"
-            />
+            <NumericInput
+              label="Insanity"
+              value={survivor.insanity ?? 0}
+              onChange={(value) => updateInsanity(value.toString())}
+              min={0}>
+              <Input
+                id={`insanity-${survivor.id}`}
+                type="number"
+                value={survivor.insanity}
+                onChange={(e) => updateInsanity(e.target.value)}
+                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                min="0"
+                name={`insanity-${survivor.id}`}
+              />
+            </NumericInput>
           </div>
         </div>
 
@@ -456,41 +501,67 @@ export function HuntSurvivorCard({
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-background/40 rounded-lg p-0 text-center">
             <div className="text-xs text-muted-foreground pb-1">Courage</div>
-            <Input
-              id={`courage-${survivor.id}`}
-              type="number"
-              value={survivor.courage}
-              onChange={(e) =>
+            <NumericInput
+              label="Courage"
+              value={survivor.courage ?? 0}
+              onChange={(value) =>
                 saveToLocalStorage(
                   survivor.id!,
-                  { courage: parseInt(e.target.value) || 0 },
+                  { courage: value },
                   'Courage updated.'
                 )
               }
-              className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              min="0"
-              max="9"
-            />
+              min={0}
+              max={9}>
+              <Input
+                id={`courage-${survivor.id}`}
+                type="number"
+                value={survivor.courage}
+                onChange={(e) =>
+                  saveToLocalStorage(
+                    survivor.id!,
+                    { courage: parseInt(e.target.value) || 0 },
+                    'Courage updated.'
+                  )
+                }
+                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                min="0"
+                name={`courage-${survivor.id}`}
+              />
+            </NumericInput>
           </div>
           <div className="bg-background/40 rounded-lg p-0 text-center">
             <div className="text-xs text-muted-foreground pb-1">
               Understanding
             </div>
-            <Input
-              id={`understanding-${survivor.id}`}
-              type="number"
-              value={survivor.understanding}
-              onChange={(e) =>
+            <NumericInput
+              label="Understanding"
+              value={survivor.understanding ?? 0}
+              onChange={(value) =>
                 saveToLocalStorage(
                   survivor.id!,
-                  { understanding: parseInt(e.target.value) || 0 },
+                  { understanding: value },
                   'Understanding updated.'
                 )
               }
-              className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              min="0"
-              max="9"
-            />
+              min={0}
+              max={9}>
+              <Input
+                id={`understanding-${survivor.id}`}
+                type="number"
+                value={survivor.understanding}
+                onChange={(e) =>
+                  saveToLocalStorage(
+                    survivor.id!,
+                    { understanding: parseInt(e.target.value) || 0 },
+                    'Understanding updated.'
+                  )
+                }
+                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                min="0"
+                name={`understanding-${survivor.id}`}
+              />
+            </NumericInput>
           </div>
         </div>
 
@@ -501,37 +572,63 @@ export function HuntSurvivorCard({
               <div className="text-xs text-muted-foreground pb-1">
                 Systemic Pressure
               </div>
-              <Input
-                id={`systemicPressure-${survivor.id}`}
-                type="number"
-                value={survivor.systemicPressure}
-                onChange={(e) =>
+              <NumericInput
+                label="Systemic Pressure"
+                value={survivor.systemicPressure ?? 0}
+                onChange={(value) =>
                   saveToLocalStorage(
                     survivor.id!,
-                    { systemicPressure: parseInt(e.target.value) || 0 },
+                    { systemicPressure: value },
                     'Systemic pressure updated.'
                   )
                 }
-                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                min="0"
-              />
+                min={0}>
+                <Input
+                  id={`systemicPressure-${survivor.id}`}
+                  type="number"
+                  value={survivor.systemicPressure}
+                  onChange={(e) =>
+                    saveToLocalStorage(
+                      survivor.id!,
+                      { systemicPressure: parseInt(e.target.value) || 0 },
+                      'Systemic pressure updated.'
+                    )
+                  }
+                  className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  min="0"
+                  name={`systemicPressure-${survivor.id}`}
+                />
+              </NumericInput>
             </div>
             <div className="bg-background/40 rounded-lg p-0 text-center">
               <div className="text-xs text-muted-foreground pb-1">Torment</div>
-              <Input
-                id={`torment-${survivor.id}`}
-                type="number"
-                value={survivor.torment}
-                onChange={(e) =>
+              <NumericInput
+                label="Torment"
+                value={survivor.torment ?? 0}
+                onChange={(value) =>
                   saveToLocalStorage(
                     survivor.id!,
-                    { torment: parseInt(e.target.value) || 0 },
+                    { torment: value },
                     'Torment updated.'
                   )
                 }
-                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                min="0"
-              />
+                min={0}>
+                <Input
+                  id={`torment-${survivor.id}`}
+                  type="number"
+                  value={survivor.torment}
+                  onChange={(e) =>
+                    saveToLocalStorage(
+                      survivor.id!,
+                      { torment: parseInt(e.target.value) || 0 },
+                      'Torment updated.'
+                    )
+                  }
+                  className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  min="0"
+                  name={`torment-${survivor.id}`}
+                />
+              </NumericInput>
             </div>
           </div>
         )}
@@ -589,20 +686,34 @@ export function HuntSurvivorCard({
                   className="h-12 w-12 text-muted-foreground"
                   strokeWidth={1}
                 />
-                <Input
-                  placeholder="1"
-                  type="number"
-                  className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={survivor.headArmor ?? '0'}
-                  min={0}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Head Armor"
+                  value={survivor.headArmor ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { headArmor: parseInt(e.target.value) || 0 },
+                      { headArmor: value },
                       'Head armor updated.'
                     )
                   }
-                />
+                  min={0}>
+                  <Input
+                    id={`head-armor-${survivor.id}`}
+                    placeholder="1"
+                    type="number"
+                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={survivor.headArmor ?? '0'}
+                    min={0}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { headArmor: parseInt(e.target.value) || 0 },
+                        'Head armor updated.'
+                      )
+                    }
+                    name={`head-armor-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <HardHatIcon className="h-5 w-5" />
@@ -641,20 +752,34 @@ export function HuntSurvivorCard({
                   className="h-12 w-12 text-muted-foreground"
                   strokeWidth={1}
                 />
-                <Input
-                  placeholder="1"
-                  type="number"
-                  className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={survivor.armArmor ?? '0'}
-                  min={0}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Arm Armor"
+                  value={survivor.armArmor ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { armArmor: parseInt(e.target.value) || 0 },
+                      { armArmor: value },
                       'Arm armor updated.'
                     )
                   }
-                />
+                  min={0}>
+                  <Input
+                    id={`arm-armor-${survivor.id}`}
+                    placeholder="1"
+                    type="number"
+                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={survivor.armArmor ?? '0'}
+                    min={0}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { armArmor: parseInt(e.target.value) || 0 },
+                        'Arm armor updated.'
+                      )
+                    }
+                    name={`arm-armor-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <HandMetalIcon className="h-5 w-5" />
@@ -718,20 +843,34 @@ export function HuntSurvivorCard({
                   className="h-12 w-12 text-muted-foreground"
                   strokeWidth={1}
                 />
-                <Input
-                  placeholder="1"
-                  type="number"
-                  className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={survivor.bodyArmor ?? '0'}
-                  min={0}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Body Armor"
+                  value={survivor.bodyArmor ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { bodyArmor: parseInt(e.target.value) || 0 },
+                      { bodyArmor: value },
                       'Body armor updated.'
                     )
                   }
-                />
+                  min={0}>
+                  <Input
+                    id={`body-armor-${survivor.id}`}
+                    placeholder="1"
+                    type="number"
+                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={survivor.bodyArmor ?? '0'}
+                    min={0}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { bodyArmor: parseInt(e.target.value) || 0 },
+                        'Body armor updated.'
+                      )
+                    }
+                    name={`body-armor-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <ShirtIcon className="h-5 w-5" />
@@ -795,20 +934,34 @@ export function HuntSurvivorCard({
                   className="h-12 w-12 text-muted-foreground"
                   strokeWidth={1}
                 />
-                <Input
-                  placeholder="1"
-                  type="number"
-                  className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={survivor.waistArmor ?? '0'}
-                  min={0}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Waist Armor"
+                  value={survivor.waistArmor ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { waistArmor: parseInt(e.target.value) || 0 },
+                      { waistArmor: value },
                       'Waist armor updated.'
                     )
                   }
-                />
+                  min={0}>
+                  <Input
+                    id={`waist-armor-${survivor.id}`}
+                    placeholder="1"
+                    type="number"
+                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={survivor.waistArmor ?? '0'}
+                    min={0}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { waistArmor: parseInt(e.target.value) || 0 },
+                        'Waist armor updated.'
+                      )
+                    }
+                    name={`waist-armor-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <RibbonIcon className="h-5 w-5" />
@@ -872,20 +1025,34 @@ export function HuntSurvivorCard({
                   className="h-12 w-12 text-muted-foreground"
                   strokeWidth={1}
                 />
-                <Input
-                  placeholder="1"
-                  type="number"
-                  className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={survivor.legArmor ?? '0'}
-                  min={0}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Leg Armor"
+                  value={survivor.legArmor ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { legArmor: parseInt(e.target.value) || 0 },
+                      { legArmor: value },
                       'Leg armor updated.'
                     )
                   }
-                />
+                  min={0}>
+                  <Input
+                    id={`leg-armor-${survivor.id}`}
+                    placeholder="1"
+                    type="number"
+                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={survivor.legArmor ?? '0'}
+                    min={0}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { legArmor: parseInt(e.target.value) || 0 },
+                        'Leg armor updated.'
+                      )
+                    }
+                    name={`leg-armor-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <FootprintsIcon className="h-5 w-5" />
@@ -958,19 +1125,31 @@ export function HuntSurvivorCard({
                   className="text-xs text-muted-foreground min-w-[50px]">
                   Accuracy
                 </Label>
-                <Input
-                  id={`accuracy-${survivor.id}`}
-                  type="number"
-                  value={survivor.accuracy}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Accuracy"
+                  value={survivor.accuracy ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { accuracy: parseInt(e.target.value) || 0 },
+                      { accuracy: value },
                       'Accuracy updated.'
                     )
-                  }
-                  className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
+                  }>
+                  <Input
+                    id={`accuracy-${survivor.id}`}
+                    type="number"
+                    value={survivor.accuracy}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { accuracy: parseInt(e.target.value) || 0 },
+                        'Accuracy updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    name={`accuracy-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <div className="bg-background/30 rounded p-2 flex items-center gap-3">
@@ -979,19 +1158,31 @@ export function HuntSurvivorCard({
                   className="text-xs text-muted-foreground min-w-[50px]">
                   Strength
                 </Label>
-                <Input
-                  id={`strength-${survivor.id}`}
-                  type="number"
-                  value={survivor.strength}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Strength"
+                  value={survivor.strength ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { strength: parseInt(e.target.value) || 0 },
+                      { strength: value },
                       'Strength updated.'
                     )
-                  }
-                  className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
+                  }>
+                  <Input
+                    id={`strength-${survivor.id}`}
+                    type="number"
+                    value={survivor.strength}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { strength: parseInt(e.target.value) || 0 },
+                        'Strength updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    name={`strength-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <div className="bg-background/30 rounded p-2 flex items-center gap-3">
@@ -1000,19 +1191,31 @@ export function HuntSurvivorCard({
                   className="text-xs text-muted-foreground min-w-[50px]">
                   Evasion
                 </Label>
-                <Input
-                  id={`evasion-${survivor.id}`}
-                  type="number"
-                  value={survivor.evasion}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Evasion"
+                  value={survivor.evasion ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { evasion: parseInt(e.target.value) || 0 },
+                      { evasion: value },
                       'Evasion updated.'
                     )
-                  }
-                  className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
+                  }>
+                  <Input
+                    id={`evasion-${survivor.id}`}
+                    type="number"
+                    value={survivor.evasion}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { evasion: parseInt(e.target.value) || 0 },
+                        'Evasion updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    name={`evasion-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <div className="bg-background/30 rounded p-2 flex items-center gap-3">
@@ -1021,19 +1224,31 @@ export function HuntSurvivorCard({
                   className="text-xs text-muted-foreground min-w-[50px]">
                   Luck
                 </Label>
-                <Input
-                  id={`luck-${survivor.id}`}
-                  type="number"
-                  value={survivor.luck}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Luck"
+                  value={survivor.luck ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { luck: parseInt(e.target.value) || 0 },
+                      { luck: value },
                       'Luck updated.'
                     )
-                  }
-                  className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
+                  }>
+                  <Input
+                    id={`luck-${survivor.id}`}
+                    type="number"
+                    value={survivor.luck}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { luck: parseInt(e.target.value) || 0 },
+                        'Luck updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    name={`luck-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               <div className="bg-background/30 rounded p-2 flex items-center gap-3">
@@ -1042,19 +1257,31 @@ export function HuntSurvivorCard({
                   className="text-xs text-muted-foreground min-w-[50px]">
                   Speed
                 </Label>
-                <Input
-                  id={`speed-${survivor.id}`}
-                  type="number"
-                  value={survivor.speed}
-                  onChange={(e) =>
+                <NumericInput
+                  label="Speed"
+                  value={survivor.speed ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { speed: parseInt(e.target.value) || 0 },
+                      { speed: value },
                       'Speed updated.'
                     )
-                  }
-                  className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
+                  }>
+                  <Input
+                    id={`speed-${survivor.id}`}
+                    type="number"
+                    value={survivor.speed}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { speed: parseInt(e.target.value) || 0 },
+                        'Speed updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    name={`speed-${survivor.id}`}
+                  />
+                </NumericInput>
               </div>
 
               {selectedSettlement?.survivorType === SurvivorType.ARC && (
@@ -1064,19 +1291,32 @@ export function HuntSurvivorCard({
                     className="text-xs text-muted-foreground min-w-[50px]">
                     Lumi
                   </Label>
-                  <Input
-                    id={`lumi-${survivor.id}`}
-                    type="number"
-                    value={survivor.lumi}
-                    onChange={(e) =>
+                  <NumericInput
+                    label="Lumi"
+                    value={survivor.lumi ?? 0}
+                    onChange={(value) =>
                       saveToLocalStorage(
                         survivor.id!,
-                        { lumi: parseInt(e.target.value) || 0 },
+                        { lumi: value },
                         'Lumi updated.'
                       )
                     }
-                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
+                    min={0}>
+                    <Input
+                      id={`lumi-${survivor.id}`}
+                      type="number"
+                      value={survivor.lumi}
+                      onChange={(e) =>
+                        saveToLocalStorage(
+                          survivor.id!,
+                          { lumi: parseInt(e.target.value) || 0 },
+                          'Lumi updated.'
+                        )
+                      }
+                      className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      name={`lumi-${survivor.id}`}
+                    />
+                  </NumericInput>
                 </div>
               )}
             </div>

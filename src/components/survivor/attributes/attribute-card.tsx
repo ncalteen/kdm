@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { SurvivorType } from '@/lib/enums'
@@ -78,16 +79,22 @@ export function AttributeCard({
         <div className="flex flex-row justify-between">
           {/* Movement */}
           <div className="flex flex-col items-center gap-1">
-            <Input
-              key={`movement-${selectedSurvivor?.id || 'new'}`}
-              placeholder="1"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            <NumericInput
               value={selectedSurvivor?.movement ?? 1}
-              onChange={(e) =>
-                saveToLocalStorage('movement', parseInt(e.target.value))
-              }
-            />
+              min={0}
+              label="Movement"
+              onChange={(value) => saveToLocalStorage('movement', value)}>
+              <Input
+                key={`movement-${selectedSurvivor?.id || 'new'}`}
+                placeholder="1"
+                type="number"
+                className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.movement ?? 1}
+                readOnly
+                name="movement-mobile"
+                id="movement-mobile"
+              />
+            </NumericInput>
             <label className="text-xs">Movement</label>
           </div>
 
@@ -95,76 +102,101 @@ export function AttributeCard({
 
           {/* Accuracy */}
           <div className="flex flex-col items-center gap-1">
-            <Input
-              key={`accuracy-${selectedSurvivor?.id || 'new'}`}
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            <NumericInput
               value={selectedSurvivor?.accuracy ?? 0}
-              onChange={(e) =>
-                saveToLocalStorage('accuracy', parseInt(e.target.value))
-              }
-            />
+              label="Accuracy"
+              onChange={(value) => saveToLocalStorage('accuracy', value)}>
+              <Input
+                key={`accuracy-${selectedSurvivor?.id || 'new'}`}
+                placeholder="0"
+                type="number"
+                className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.accuracy ?? 0}
+                readOnly
+                name="accuracy-mobile"
+                id="accuracy-mobile"
+              />
+            </NumericInput>
             <label className="text-xs">Accuracy</label>
           </div>
 
           {/* Strength */}
           <div className="flex flex-col items-center gap-1">
-            <Input
-              key={`strength-${selectedSurvivor?.id || 'new'}`}
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            <NumericInput
               value={selectedSurvivor?.strength ?? 0}
-              onChange={(e) =>
-                saveToLocalStorage('strength', parseInt(e.target.value))
-              }
-            />
+              label="Strength"
+              onChange={(value) => saveToLocalStorage('strength', value)}>
+              <Input
+                key={`strength-${selectedSurvivor?.id || 'new'}`}
+                placeholder="0"
+                type="number"
+                className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.strength ?? 0}
+                readOnly
+                name="strength-mobile"
+                id="strength-mobile"
+              />
+            </NumericInput>
             <label className="text-xs">Strength</label>
           </div>
 
           {/* Evasion */}
           <div className="flex flex-col items-center gap-1">
-            <Input
-              key={`evasion-${selectedSurvivor?.id || 'new'}`}
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            <NumericInput
               value={selectedSurvivor?.evasion ?? 0}
-              onChange={(e) =>
-                saveToLocalStorage('evasion', parseInt(e.target.value))
-              }
-            />
+              label="Evasion"
+              onChange={(value) => saveToLocalStorage('evasion', value)}>
+              <Input
+                key={`evasion-${selectedSurvivor?.id || 'new'}`}
+                placeholder="0"
+                type="number"
+                className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.evasion ?? 0}
+                readOnly
+                name="evasion-mobile"
+                id="evasion-mobile"
+              />
+            </NumericInput>
             <label className="text-xs">Evasion</label>
           </div>
 
           {/* Luck */}
           <div className="flex flex-col items-center gap-1">
-            <Input
-              key={`luck-${selectedSurvivor?.id || 'new'}`}
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            <NumericInput
               value={selectedSurvivor?.luck ?? 0}
-              onChange={(e) =>
-                saveToLocalStorage('luck', parseInt(e.target.value))
-              }
-            />
+              label="Luck"
+              onChange={(value) => saveToLocalStorage('luck', value)}>
+              <Input
+                key={`luck-${selectedSurvivor?.id || 'new'}`}
+                placeholder="0"
+                type="number"
+                className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.luck ?? 0}
+                readOnly
+                name="luck-mobile"
+                id="luck-mobile"
+              />
+            </NumericInput>
             <label className="text-xs">Luck</label>
           </div>
 
           {/* Speed */}
           <div className="flex flex-col items-center gap-1">
-            <Input
-              key={`speed-${selectedSurvivor?.id || 'new'}`}
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            <NumericInput
               value={selectedSurvivor?.speed ?? 0}
-              onChange={(e) =>
-                saveToLocalStorage('speed', parseInt(e.target.value))
-              }
-            />
+              label="Speed"
+              onChange={(value) => saveToLocalStorage('speed', value)}>
+              <Input
+                key={`speed-${selectedSurvivor?.id || 'new'}`}
+                placeholder="0"
+                type="number"
+                className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={selectedSurvivor?.speed ?? 0}
+                readOnly
+                name="speed-mobile"
+                id="speed-mobile"
+              />
+            </NumericInput>
             <label className="text-xs">Speed</label>
           </div>
 
@@ -174,17 +206,22 @@ export function AttributeCard({
               <div className="w-px bg-border" />
 
               <div className="flex flex-col items-center gap-1">
-                <Input
-                  key={`lumi-${selectedSurvivor?.id || 'new'}`}
-                  placeholder="0"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                <NumericInput
                   value={selectedSurvivor?.lumi ?? 0}
                   min={0}
-                  onChange={(e) =>
-                    saveToLocalStorage('lumi', parseInt(e.target.value))
-                  }
-                />
+                  label="Lumi"
+                  onChange={(value) => saveToLocalStorage('lumi', value)}>
+                  <Input
+                    key={`lumi-${selectedSurvivor?.id || 'new'}`}
+                    placeholder="0"
+                    type="number"
+                    className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={selectedSurvivor?.lumi ?? 0}
+                    readOnly
+                    name="lumi-mobile"
+                    id="lumi-mobile"
+                  />
+                </NumericInput>
                 <label className="text-xs">Lumi</label>
               </div>
             </>
