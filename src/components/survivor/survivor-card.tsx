@@ -8,6 +8,7 @@ import { HeadCard } from '@/components/survivor/combat/head-card'
 import { LegsCard } from '@/components/survivor/combat/legs-card'
 import { WaistCard } from '@/components/survivor/combat/waist-card'
 import { CourageUnderstandingCard } from '@/components/survivor/courage-understanding/courage-understanding-card'
+import { CursedGearCard } from '@/components/survivor/cursed-gear/cursed-gear-card'
 import { DisordersCard } from '@/components/survivor/disorders/disorders-card'
 import { FightingArtsCard } from '@/components/survivor/fighting-arts/fighting-arts-card'
 import { HuntXPCard } from '@/components/survivor/hunt-xp/hunt-xp-card'
@@ -133,6 +134,10 @@ export function SurvivorCard({
             <FightingArtsCard
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
+            />
+            <CursedGearCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSurvivor={selectedSurvivor}
             />
             <NextDepartureCard

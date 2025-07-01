@@ -1378,6 +1378,29 @@ export function HuntSurvivorCard({
             </>
           )}
 
+        {/* Cursed Gear */}
+        {survivor?.cursedGear && survivor?.cursedGear?.length > 0 && (
+          <>
+            <Separator className="my-2" />
+
+            <div className="space-y-1 flex flex-col">
+              <Label className="text-xs font-semibold justify-center text-muted-foreground">
+                Cursed Gear
+              </Label>
+
+              <div className="space-y-1">
+                {survivor.cursedGear.map((item, index) => (
+                  <div
+                    key={index}
+                    className="text-xs bg-green-50 dark:bg-green-950/30 border border-green-200/50 dark:border-green-800/30 rounded px-2 py-1">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
         {/* Once Per Lifetime */}
         {survivor?.oncePerLifetime && survivor?.oncePerLifetime?.length > 0 && (
           <>
