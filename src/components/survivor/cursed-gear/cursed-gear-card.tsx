@@ -1,9 +1,9 @@
 'use client'
 
 import {
-  NewNextDepartureItem,
-  NextDepartureItem
-} from '@/components/survivor/next-departure/next-departure-item'
+  CursedGearItem,
+  NewCursedGearItem
+} from '@/components/survivor/cursed-gear/cursed-gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Survivor } from '@/schemas/survivor'
@@ -22,14 +22,14 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { GiftIcon, PlusIcon } from 'lucide-react'
+import { BadgeMinusIcon, PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
- * Next Departure Card Properties
+ * Cursed Gear Card Properties
  */
-interface NextDepartureCardProps {
+interface CursedGearCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
@@ -37,33 +37,33 @@ interface NextDepartureCardProps {
 }
 
 /**
- * Next Departure Card Component
+ * Cursed Gear Card Component
  *
- * @param props Next Departure Card Properties
- * @returns Next Departure Card Component
+ * @param props Cursed Gear Card Properties
+ * @returns Cursed Gear Card Component
  */
-export function NextDepartureCard({
+export function CursedGearCard({
   saveSelectedSurvivor,
   selectedSurvivor
-}: NextDepartureCardProps): ReactElement {
+}: CursedGearCardProps): ReactElement {
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   useEffect(() => {
-    console.debug('[NextDepartureCard] Initialize Disabled Inputs')
+    console.debug('[CursedGearCard] Initialize Disabled Inputs')
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
 
-      ;(selectedSurvivor?.nextDeparture || []).forEach((_, i) => {
+      ;(selectedSurvivor?.cursedGear || []).forEach((_, i) => {
         next[i] = prev[i] !== undefined ? prev[i] : true
       })
 
       return next
     })
-  }, [selectedSurvivor?.nextDeparture])
+  }, [selectedSurvivor?.cursedGear])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -75,13 +75,13 @@ export function NextDepartureCard({
   const addItem = () => setIsAddingNew(true)
 
   /**
-   * Handles the removal of a next departure.
+   * Handles the removal of a cursed gear.
    *
-   * @param index Next Departure Index
+   * @param index Cursed Gear Index
    */
   const onRemove = (index: number) => {
-    const currentNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
-    currentNextDeparture.splice(index, 1)
+    const currentCursedGear = [...(selectedSurvivor?.cursedGear || [])]
+    currentCursedGear.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -96,44 +96,44 @@ export function NextDepartureCard({
     })
 
     saveSelectedSurvivor(
-      { nextDeparture: currentNextDeparture },
-      'The lantern dims. Next departure bonus removed.'
+      { cursedGear: currentCursedGear },
+      `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been removed.`
     )
   }
 
   /**
-   * Handles saving a new next departure.
+   * Handles saving a new cursed gear.
    *
-   * @param value Next Departure Value
-   * @param i Next Departure Index (When Updating Only)
+   * @param value Cursed Gear Value
+   * @param i Cursed Gear Index (When Updating Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless departure bonus cannot be recorded.')
+      return toast.error('A nameless cursed gear item cannot be recorded.')
 
-    const updatedNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
+    const updatedCursedGear = [...(selectedSurvivor?.cursedGear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedNextDeparture[i] = value
+      updatedCursedGear[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedNextDeparture.push(value)
+      updatedCursedGear.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedNextDeparture.length - 1]: true
+        [updatedCursedGear.length - 1]: true
       }))
     }
 
     saveSelectedSurvivor(
-      { nextDeparture: updatedNextDeparture },
+      { cursedGear: updatedCursedGear },
       i !== undefined
-        ? 'The lantern glows. Next departure bonus updated.'
-        : 'The lantern glows. Next departure bonus added.'
+        ? `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been updated.`
+        : `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been added.`
     )
 
     setIsAddingNew(false)
@@ -142,7 +142,7 @@ export function NextDepartureCard({
   /**
    * Enables editing a value.
    *
-   * @param index Next Departure Index
+   * @param index Cursed Gear Index
    */
   const onEdit = (index: number) =>
     setDisabledInputs((prev) => ({ ...prev, [index]: false }))
@@ -159,12 +159,12 @@ export function NextDepartureCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.nextDeparture || [],
+        selectedSurvivor?.cursedGear || [],
         oldIndex,
         newIndex
       )
 
-      saveSelectedSurvivor({ nextDeparture: newOrder })
+      saveSelectedSurvivor({ cursedGear: newOrder })
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -186,8 +186,8 @@ export function NextDepartureCard({
     <Card className="p-0 border-1 gap-2">
       <CardHeader className="px-2 pt-1 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          <GiftIcon className="h-4 w-4" />
-          Next Departure
+          <BadgeMinusIcon className="h-4 w-4" />
+          Cursed Gear
           {!isAddingNew && (
             <Button
               type="button"
@@ -205,39 +205,37 @@ export function NextDepartureCard({
         </CardTitle>
       </CardHeader>
 
-      {/* Next Departure List */}
+      {/* Cursed Gear List */}
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col h-[125px]">
           <div className="flex-1 overflow-y-auto">
-            {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
+            {(selectedSurvivor?.cursedGear || []).length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSurvivor?.nextDeparture || []).map(
-                    (_, index) => index.toString()
+                  items={(selectedSurvivor?.cursedGear || []).map((_, index) =>
+                    index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.nextDeparture || []).map(
-                    (item, index) => (
-                      <NextDepartureItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
-                        selectedSurvivor={selectedSurvivor}
-                      />
-                    )
-                  )}
+                  {(selectedSurvivor?.cursedGear || []).map((item, index) => (
+                    <CursedGearItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={onEdit}
+                      selectedSurvivor={selectedSurvivor}
+                    />
+                  ))}
                 </SortableContext>
               </DndContext>
             )}
             {isAddingNew && (
-              <NewNextDepartureItem
+              <NewCursedGearItem
                 onSave={onSave}
                 onCancel={() => setIsAddingNew(false)}
               />

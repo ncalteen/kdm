@@ -38,12 +38,16 @@ export const BaseSurvivorSchema = z.object({
     .min(0, 'Courage cannot be negative.')
     .max(9, 'Courage may not exceed 9.')
     .default(0),
+  /** Cursed Gear */
+  cursedGear: z
+    .array(z.string().min(1, 'A nameless cursed gear item cannot be recorded.'))
+    .default([]),
   /** Survivor is Dead */
   dead: z.boolean().default(false),
   /** Disorders */
   disorders: z
     .array(z.string().min(1, 'A nameless disorder cannot be recorded.'))
-    .max(3)
+    .max(3, 'A survivor may not have more than three disorders.')
     .default([]),
   /** Evasion */
   evasion: z.number().default(0),
