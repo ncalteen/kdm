@@ -41,6 +41,7 @@ import {
   PawPrintIcon,
   SchoolIcon,
   SettingsIcon,
+  SkullIcon,
   SwordsIcon,
   UploadIcon,
   UsersIcon,
@@ -125,12 +126,12 @@ const navEmbark = [
     title: 'Hunt',
     tab: 'hunt',
     icon: PawPrintIcon
+  },
+  {
+    title: 'Showdown',
+    tab: 'showdown',
+    icon: SkullIcon
   }
-  // {
-  //   title: 'Showdown',
-  //   tab: 'showdown',
-  //   icon: SkullIcon
-  // }
 ]
 
 /**

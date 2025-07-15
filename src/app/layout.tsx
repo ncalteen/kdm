@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/sonner'
 import { SelectedHuntProvider } from '@/contexts/selected-hunt-context'
 import { SelectedSettlementProvider } from '@/contexts/selected-settlement-context'
+import { SelectedShowdownProvider } from '@/contexts/selected-showdown-context'
 import { SelectedSurvivorProvider } from '@/contexts/selected-survivor-context'
 import { SelectedTabProvider } from '@/contexts/selected-tab-context'
 import { SurvivorsProvider } from '@/contexts/survivors-context'
@@ -42,9 +43,11 @@ export default function RootLayout({
           <SelectedSettlementProvider settlement={null}>
             <SelectedSurvivorProvider survivor={null}>
               <SelectedHuntProvider hunt={null}>
-                <SelectedTabProvider tab="timeline">
-                  {children}
-                </SelectedTabProvider>
+                <SelectedShowdownProvider showdown={null}>
+                  <SelectedTabProvider tab="timeline">
+                    {children}
+                  </SelectedTabProvider>
+                </SelectedShowdownProvider>
               </SelectedHuntProvider>
             </SelectedSurvivorProvider>
           </SelectedSettlementProvider>

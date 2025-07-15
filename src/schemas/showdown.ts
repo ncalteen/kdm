@@ -1,7 +1,19 @@
 'use client'
 
-import { AmbushType, MonsterLevel, MonsterType } from '@/lib/enums'
+import { AmbushType, ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
 import { z } from 'zod'
+
+/**
+ * Survivor Color Schema
+ *
+ * Used to assign colors to survivors in a hunt.
+ */
+export const SurvivorColorSchema = z.object({
+  /** Survivor ID */
+  id: z.number().int().min(0),
+  /** Survivor Color Code */
+  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE)
+})
 
 /**
  * Showdown Schema
@@ -23,6 +35,8 @@ export const ShowdownSchema = z.object({
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),
+  /** Survivor Color Selection */
+  survivorColors: z.array(SurvivorColorSchema).default([]),
   /** Selected Survivors */
   survivors: z
     .array(z.number())

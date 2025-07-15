@@ -40,6 +40,8 @@ interface SettlementSurvivorsCardProps {
   updateSelectedHunt: (hunt: Hunt | null) => void
   /** Update Selected Settlement */
   updateSelectedSettlement: () => void
+  /** Update Selected Showdown */
+  updateSelectedShowdown: () => void
   /** Update Selected Survivor */
   updateSelectedSurvivor: () => void
 }
@@ -66,6 +68,7 @@ export function SettlementSurvivorsCard({
   survivors,
   updateSelectedHunt,
   updateSelectedSettlement,
+  updateSelectedShowdown,
   updateSelectedSurvivor
 }: SettlementSurvivorsCardProps): ReactElement {
   // This component uses the campaign and tab contexts directly. They are not
@@ -76,6 +79,7 @@ export function SettlementSurvivorsCard({
     survivors,
     updateSelectedHunt,
     updateSelectedSettlement,
+    updateSelectedShowdown,
     updateSelectedSurvivor
   )
   const { setSelectedTab } = useSelectedTab()
