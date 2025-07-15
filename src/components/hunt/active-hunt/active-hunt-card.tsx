@@ -19,10 +19,12 @@ import {
   getCampaign,
   getNextShowdownId,
   saveCampaignToLocalStorage,
+  setSelectedShowdown,
   setSelectedTab
 } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ChevronRightIcon, XIcon } from 'lucide-react'
 import { ReactElement, useCallback, useState } from 'react'
@@ -152,7 +154,7 @@ export function ActiveHuntCard({
       }
 
       // Create showdown from current hunt
-      const showdown = {
+      const showdown: Showdown = {
         id: getNextShowdownId(),
         ambush: ambushTypeMap[ambushType as keyof typeof ambushTypeMap],
         monsterName: selectedHunt.quarryName || '',
@@ -160,7 +162,8 @@ export function ActiveHuntCard({
         monsterType: MonsterType.QUARRY,
         scout: selectedHunt.scout,
         settlementId: selectedHunt.settlementId || 0,
-        survivors: selectedHunt.survivors || []
+        survivors: selectedHunt.survivors || [],
+        survivorColors: selectedHunt.survivorColors || []
       }
 
       // Remove the hunt and add the showdown
@@ -176,6 +179,7 @@ export function ActiveHuntCard({
       })
 
       setSelectedHunt(null)
+      setSelectedShowdown(showdown.id)
       setIsShowdownDialogOpen(false)
       setSelectedTab('showdown')
 
