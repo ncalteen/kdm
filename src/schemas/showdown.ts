@@ -1,12 +1,14 @@
 'use client'
 
-import { MonsterLevel, MonsterType } from '@/lib/enums'
+import { AmbushType, MonsterLevel, MonsterType } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
  * Showdown Schema
  */
 export const ShowdownSchema = z.object({
+  /** Hunt Ended in Ambush */
+  ambush: z.nativeEnum(AmbushType),
   /** Showdown ID */
   id: z.number(),
   /** Monster Name (Quarry or Nemesis) */

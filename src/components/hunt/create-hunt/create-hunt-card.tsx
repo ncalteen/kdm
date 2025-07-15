@@ -46,7 +46,6 @@ export function CreateHuntCard({
   setSelectedHunt,
   survivors
 }: CreateHuntCardProps): ReactElement {
-  console.log(selectedSettlement)
   const [selectedQuarry, setSelectedQuarry] = useState<string>('')
   const [selectedQuarryLevel, setSelectedQuarryLevel] = useState<MonsterLevel>(
     MonsterLevel.LEVEL_1
@@ -124,7 +123,6 @@ export function CreateHuntCard({
 
     // Save as partial data that will be merged by the hook
     const huntData: Hunt = {
-      ambush: false,
       id: getNextHuntId(),
       quarryName: selectedQuarry,
       quarryLevel: selectedQuarryLevel,

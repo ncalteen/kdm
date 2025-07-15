@@ -212,3 +212,12 @@ export enum ColorChoice {
   /** Rose */
   ROSE = 'rose'
 }
+
+export enum AmbushType {
+  /** Survivors Ambush Monster */
+  SURVIVORS = 'survivors',
+  /** Monster Ambush Survivors */
+  MONSTER = 'monster',
+  /** No Ambush */
+  NONE = 'none'
+}

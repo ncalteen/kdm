@@ -21,8 +21,6 @@ export const SurvivorColorSchema = z.object({
  * This includes any information needed to track a selected hunt.
  */
 export const HuntSchema = z.object({
-  /** Hunt Ended in Monster Ambushing Survivors */
-  ambush: z.boolean().default(false),
   /** Hunt ID */
   id: z.number().int().min(0),
   /** Quarry Name */

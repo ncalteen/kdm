@@ -13,7 +13,14 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { Slider } from '@/components/ui/slider'
+import { AmbushType, MonsterType } from '@/lib/enums'
+import {
+  getCampaign,
+  getNextShowdownId,
+  saveCampaignToLocalStorage,
+  setSelectedTab
+} from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -60,6 +67,9 @@ export function ActiveHuntCard({
   updateSelectedSurvivor
 }: ActiveHuntCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
+  const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
+    useState<boolean>(false)
+  const [ambushType, setAmbushType] = useState<number>(1)
 
   /**
    * Handle Position Update
@@ -117,9 +127,72 @@ export function ActiveHuntCard({
    * Handle Showdown
    */
   const handleShowdown = useCallback(() => {
-    // TODO: Implement showdown logic
-    console.log('Showdown clicked')
+    setIsShowdownDialogOpen(true)
   }, [])
+
+  /**
+   * Handle Proceed to Showdown
+   */
+  const handleProceedToShowdown = useCallback(() => {
+    if (
+      !selectedSettlement?.id ||
+      !selectedHunt?.id ||
+      !selectedHunt?.quarryLevel
+    )
+      return
+
+    try {
+      const campaign = getCampaign()
+
+      // Convert ambush type number to enum
+      const ambushTypeMap = {
+        0: AmbushType.SURVIVORS,
+        1: AmbushType.NONE,
+        2: AmbushType.MONSTER
+      }
+
+      // Create showdown from current hunt
+      const showdown = {
+        id: getNextShowdownId(),
+        ambush: ambushTypeMap[ambushType as keyof typeof ambushTypeMap],
+        monsterName: selectedHunt.quarryName || '',
+        monsterLevel: selectedHunt.quarryLevel,
+        monsterType: MonsterType.QUARRY,
+        scout: selectedHunt.scout,
+        settlementId: selectedHunt.settlementId || 0,
+        survivors: selectedHunt.survivors || []
+      }
+
+      // Remove the hunt and add the showdown
+      const updatedHunts = campaign.hunts?.filter(
+        (hunt) => hunt.id !== selectedHunt.id
+      )
+      const updatedShowdowns = [...(campaign.showdowns || []), showdown]
+
+      saveCampaignToLocalStorage({
+        ...campaign,
+        hunts: updatedHunts,
+        showdowns: updatedShowdowns
+      })
+
+      setSelectedHunt(null)
+      setIsShowdownDialogOpen(false)
+      setSelectedTab('showdown')
+
+      const ambushMessage = {
+        [AmbushType.SURVIVORS]: 'The survivors ambush their quarry!',
+        [AmbushType.MONSTER]: 'The monster ambushes the survivors!',
+        [AmbushType.NONE]: 'The hunt reaches its epic climax.'
+      }
+
+      toast.success(
+        `${ambushMessage[ambushTypeMap[ambushType as keyof typeof ambushTypeMap]]} The showdown begins.`
+      )
+    } catch (error) {
+      console.error('Showdown Creation Error:', error)
+      toast.error('The darkness swallows your words. Please try again.')
+    }
+  }, [selectedSettlement?.id, selectedHunt, ambushType, setSelectedHunt])
 
   return (
     <div className="flex flex-col gap-2 h-full relative">
@@ -138,7 +211,6 @@ export function ActiveHuntCard({
           variant="default"
           size="sm"
           onClick={handleShowdown}
-          disabled={true}
           className="pointer-events-auto"
           title="Proceed to Showdown">
           Showdown <ChevronRightIcon className="size-4" />
@@ -194,6 +266,47 @@ export function ActiveHuntCard({
               onClick={handleDeleteHunt}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               End Hunt
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Showdown Confirmation Dialog */}
+      <AlertDialog
+        open={isShowdownDialogOpen}
+        onOpenChange={setIsShowdownDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Proceed to Showdown</AlertDialogTitle>
+            <AlertDialogDescription>
+              The hunt will end and the showdown will begin. This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {/* Ambush Selection */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Survivors ambush</span>
+                <span>No ambush</span>
+                <span>Monster ambushes</span>
+              </div>
+              <Slider
+                value={[ambushType]}
+                onValueChange={(value) => setAmbushType(value[0])}
+                max={2}
+                min={0}
+                step={1}
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go Back</AlertDialogCancel>
+            <AlertDialogAction onClick={handleProceedToShowdown}>
+              Proceed
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
