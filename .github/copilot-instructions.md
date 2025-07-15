@@ -2,33 +2,60 @@
 
 ## Development
 
-- Do not run `npm run dev`, `npm run lint`, or `npm run format` commands unless
-  you are specifically asked to do so. These commands are used to check and
-  format the code, but they can be time-consuming and may not be necessary for
-  your task.
+- Do not run `npm run build`, `npm run dev`, `npm run format` , `npm run lint`,
+  or `npm run start` commands unless you are specifically asked to do so. These
+  commands are used to check and format the code, but they can be time-consuming
+  and may not be necessary for your task.
 
-## React Components
+## Environment Setup
+
+Install dependencies by running:
+
+```bash
+npm install
+```
+
+## General Coding Guidelines
+
+- Follow standard TypeScript and JavaScript coding conventions and best
+  practices
+- Changes should maintain consistency with existing patterns and style
+- Document changes clearly and thoroughly, including updates to existing
+  comments when appropriate
+- Do not include basic, unnecessary comments that simply restate what the code
+  is doing (focus on explaining _why_, not _what_)
+- Use consistent error handling patterns throughout the codebase
+- Use TypeScript's type system to ensure type safety and clarity
+- Keep functions focused and manageable
+- Use descriptive variable and function names that clearly convey their purpose
+- Use JSDoc comments to document functions, classes, and complex logic
+- When suggesting code changes, always opt for the most maintainable approach.
+  Try your best to keep the code clean and follow "Don't Repeat Yourself" (DRY)
+  principles
+- Avoid unnecessary complexity and always consider the long-term maintainability
+  of the code
+
+### React Components
 
 - All React components should follow the same coding standards.
-  - All components should be written in TypeScript.
-  - Inputs should be uncontrolled components.
-  - JSDoc comments should be used to document all components.
-  - Input and return types should be explicitly defined.
-  - If a component is used to display an editable list of items, the items
-    themselves should be created as separate components.
-  - When values are modified and saved, the component should save the values to
-    localStorage following the appropriate schema.
-  - If the user is creating, editing, or deleting a value, the component should
-    provide feedback to the user using toast notifications from the `sonner`
-    library.
-  - If the input field is a numerical input, it should be saved on change, not
-    on blur.
-  - If the input field is a text input, it should be saved on Enter key is
-    pressed.
-  - ShadCN reusable components can be found in the `src/components/ui`
-    directory.
-  - Where applicable, components should include `name` and `id` attributes for
-    accessibility and testing purposes.
+- All components should be written in TypeScript.
+- Inputs should be uncontrolled components.
+- JSDoc comments should be used to document all components.
+- Input and return types should be explicitly defined.
+- If a component is used to display an editable list of items, the items
+  themselves should be created as separate components.
+- When values are modified and saved, the component should save the values to
+  localStorage following the appropriate schema.
+- If the user is creating, editing, or deleting a value, the component should
+  provide feedback to the user using toast notifications from the `sonner`
+  library.
+- If the input field is a numerical input, it should be saved on change, not on
+  blur.
+- If the input field is a text input, it should be saved on Enter key is
+  pressed.
+- ShadCN reusable components can be found in the `src/components/ui` directory.
+- Where applicable, components should include `name` and `id` attributes for
+  accessibility and testing purposes.
 
 ## Object Schemas
 
@@ -103,3 +130,24 @@ The purpose of this application is to act as a companion tool where players can
 keep track of their settlement and survivors. Additionally, they can switch
 between the various phases (above), which will surface relevant information and
 functionality.
+
+## Pull Request Guidelines
+
+When creating a pull request (PR), please ensure that:
+
+- Keep changes focused and minimal (avoid large changes, or consider breaking
+  them into separate, smaller PRs)
+- Formatting checks pass
+- Linting checks pass
+- Unit tests pass and coverage requirements are met
+- The action has been transpiled to JavaScript and the `dist` directory is
+  up-to-date with the latest changes in the `src` directory
+- If necessary, the `README.md` file is updated to reflect any changes in
+  functionality or usage
+
+The body of the PR should include:
+
+- A summary of the changes
+- A special note of any changes to dependencies
+- A link to any relevant issues or discussions
+- Any additional context that may be helpful for reviewers
