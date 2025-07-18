@@ -17,7 +17,14 @@ import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement, Suspense, useEffect, useRef, useState } from 'react'
+import {
+  ReactElement,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 
 /**
@@ -124,19 +131,35 @@ function MainPage(): ReactElement {
   const { selectedTab } = useSelectedTab()
   const { setSurvivors, survivors } = useSurvivors()
 
+  // Memoize form configurations to prevent unnecessary re-initializations
+  const huntFormConfig = useMemo(
+    () => ({
+      resolver: zodResolver(HuntSchema) as Resolver<Hunt>,
+      defaultValues: selectedHunt || undefined
+    }),
+    [selectedHunt]
+  )
+
+  const settlementFormConfig = useMemo(
+    () => ({
+      resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
+      defaultValues: selectedSettlement || undefined
+    }),
+    [selectedSettlement]
+  )
+
+  const survivorFormConfig = useMemo(
+    () => ({
+      resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
+      defaultValues: selectedSurvivor || undefined
+    }),
+    [selectedSurvivor]
+  )
+
   // Initialize the form data from the context
-  const huntForm = useForm<Hunt>({
-    resolver: zodResolver(HuntSchema) as Resolver<Hunt>,
-    defaultValues: selectedHunt || undefined
-  })
-  const settlementForm = useForm<Settlement>({
-    resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
-    defaultValues: selectedSettlement || undefined
-  })
-  const survivorForm = useForm<Survivor>({
-    resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: selectedSurvivor || undefined
-  })
+  const huntForm = useForm<Hunt>(huntFormConfig)
+  const settlementForm = useForm<Settlement>(settlementFormConfig)
+  const survivorForm = useForm<Survivor>(survivorFormConfig)
 
   // Initialize save hooks with the forms and update functions
   const { saveSelectedHunt } = useSelectedHuntSave(huntForm, updateSelectedHunt)
@@ -150,11 +173,14 @@ function MainPage(): ReactElement {
   )
 
   // Updates both settlement and active hunt contexts
-  const handleSetSelectedSettlement = (settlement: Settlement | null) => {
-    setSelectedSettlement(settlement)
-    updateSelectedSettlement()
-    updateSelectedHunt()
-  }
+  const handleSetSelectedSettlement = useMemo(
+    () => (settlement: Settlement | null) => {
+      setSelectedSettlement(settlement)
+      updateSelectedSettlement()
+      updateSelectedHunt()
+    },
+    [setSelectedSettlement, updateSelectedSettlement, updateSelectedHunt]
+  )
 
   // Handle settlement data changes
   useEffect(() => {
