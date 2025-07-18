@@ -93,7 +93,7 @@ export function RewardItem({
 
       onSave(
         nameInputRef.current.value,
-        parseInt(ccInputRef.current.value) || 1,
+        parseInt(ccInputRef.current.value, 10) || 1,
         index
       )
     }
@@ -140,7 +140,7 @@ export function RewardItem({
           onKeyDown={handleKeyDown}
           onChange={
             !isMobile
-              ? (e) => setCurrentCcValue(parseInt(e.target.value))
+              ? (e) => setCurrentCcValue(parseInt(e.target.value, 10))
               : undefined
           }
           readOnly={isMobile}
@@ -183,7 +183,7 @@ export function RewardItem({
             size="icon"
             onClick={() => {
               if (nameInputRef.current && ccInputRef.current) {
-                const ccValue = parseInt(ccInputRef.current.value) || 1
+                const ccValue = parseInt(ccInputRef.current.value, 10) || 1
                 onSave(nameInputRef.current.value, ccValue, index)
               }
             }}
@@ -235,7 +235,7 @@ export function NewRewardItem({
 
       onSave(
         nameInputRef.current.value,
-        parseInt(ccInputRef.current.value) || 1
+        parseInt(ccInputRef.current.value, 10) || 1
       )
     } else if (e.key === 'Escape') {
       e.preventDefault()
@@ -271,7 +271,7 @@ export function NewRewardItem({
           onKeyDown={handleKeyDown}
           onChange={
             !isMobile
-              ? (e) => setCurrentCcValue(parseInt(e.target.value))
+              ? (e) => setCurrentCcValue(parseInt(e.target.value, 10))
               : undefined
           }
           readOnly={isMobile}
@@ -297,7 +297,7 @@ export function NewRewardItem({
           size="icon"
           onClick={() => {
             if (nameInputRef.current && ccInputRef.current) {
-              const ccValue = parseInt(ccInputRef.current.value) || 1
+              const ccValue = parseInt(ccInputRef.current.value, 10) || 1
               onSave(nameInputRef.current.value, ccValue)
             }
           }}
