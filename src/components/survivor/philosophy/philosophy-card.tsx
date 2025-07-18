@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Philosophy } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
@@ -39,6 +40,8 @@ export function PhilosophyCard({
   setSurvivors,
   survivors
 }: PhilosophyCardProps): ReactElement {
+  const isMobile = useIsMobile()
+
   // Local state for text fields to enable controlled components that update when survivor changes
   const [neurosis, setNeurosis] = useState(selectedSurvivor?.neurosis ?? '')
   const [tenetKnowledge, setTenetKnowledge] = useState(
@@ -260,10 +263,15 @@ export function PhilosophyCard({
                 'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
               )}
               value={selectedSurvivor?.philosophyRank ?? '0'}
-              onChange={(e) => updatePhilosophyRank(e.target.value)}
+              min={0}
+              readOnly={isMobile}
+              onChange={
+                !isMobile
+                  ? (e) => updatePhilosophyRank(e.target.value)
+                  : undefined
+              }
               name="philosophy-rank"
               id="philosophy-rank"
-              min={0}
             />
           </NumericInput>
         </div>
