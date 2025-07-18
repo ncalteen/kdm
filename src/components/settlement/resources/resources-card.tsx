@@ -34,7 +34,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BeefIcon, ChevronDownIcon, PlusIcon, XIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -104,10 +104,32 @@ export function ResourcesCard({
   }, [selectedSettlement?.resources, filterCategories, filterTypes])
 
   // Clear all filters
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilterCategories([])
     setFilterTypes([])
-  }
+  }, [])
+
+  const handleCategoryFilterChange = useCallback(
+    (category: ResourceCategory, checked: boolean) => {
+      if (checked) {
+        setFilterCategories((prev) => [...prev, category])
+      } else {
+        setFilterCategories((prev) => prev.filter((c) => c !== category))
+      }
+    },
+    []
+  )
+
+  const handleTypeFilterChange = useCallback(
+    (type: ResourceType, checked: boolean) => {
+      if (checked) {
+        setFilterTypes((prev) => [...prev, type])
+      } else {
+        setFilterTypes((prev) => prev.filter((t) => t !== type))
+      }
+    },
+    []
+  )
 
   // Check if any filters are active
   const hasActiveFilters = filterCategories.length > 0 || filterTypes.length > 0
@@ -312,22 +334,16 @@ export function ResourcesCard({
                   <ChevronDownIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent className="w-56" align="start">
                 <DropdownMenuLabel>Resource Categories</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {Object.values(ResourceCategory).map((category) => (
                   <DropdownMenuCheckboxItem
                     key={category}
                     checked={filterCategories.includes(category)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setFilterCategories((prev) => [...prev, category])
-                      } else {
-                        setFilterCategories((prev) =>
-                          prev.filter((c) => c !== category)
-                        )
-                      }
-                    }}>
+                    onCheckedChange={(checked) =>
+                      handleCategoryFilterChange(category, !!checked)
+                    }>
                     {category}
                   </DropdownMenuCheckboxItem>
                 ))}
@@ -346,20 +362,16 @@ export function ResourcesCard({
                   <ChevronDownIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent className="w-56" align="start">
                 <DropdownMenuLabel>Resource Types</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {Object.values(ResourceType).map((type) => (
                   <DropdownMenuCheckboxItem
                     key={type}
                     checked={filterTypes.includes(type)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setFilterTypes((prev) => [...prev, type])
-                      } else {
-                        setFilterTypes((prev) => prev.filter((t) => t !== type))
-                      }
-                    }}>
+                    onCheckedChange={(checked) =>
+                      handleTypeFilterChange(type, !!checked)
+                    }>
                     {type}
                   </DropdownMenuCheckboxItem>
                 ))}

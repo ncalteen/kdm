@@ -3,6 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { SurvivorType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -35,6 +36,8 @@ export function AttributeCard({
   selectedSettlement,
   selectedSurvivor
 }: AttributeCardProps): ReactElement {
+  const isMobile = useIsMobile()
+
   /**
    * Save to Local Storage
    *
@@ -90,9 +93,18 @@ export function AttributeCard({
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.movement ?? 1}
-                readOnly
-                name="movement-mobile"
-                id="movement-mobile"
+                readOnly={isMobile}
+                onChange={
+                  !isMobile
+                    ? (e) =>
+                        saveToLocalStorage(
+                          'movement',
+                          parseInt(e.target.value, 10)
+                        )
+                    : undefined
+                }
+                name="movement"
+                id="movement"
               />
             </NumericInput>
             <label className="text-xs">Movement</label>
@@ -112,9 +124,18 @@ export function AttributeCard({
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.accuracy ?? 0}
-                readOnly
-                name="accuracy-mobile"
-                id="accuracy-mobile"
+                readOnly={isMobile}
+                onChange={
+                  !isMobile
+                    ? (e) =>
+                        saveToLocalStorage(
+                          'accuracy',
+                          parseInt(e.target.value, 10)
+                        )
+                    : undefined
+                }
+                name="accuracy"
+                id="accuracy"
               />
             </NumericInput>
             <label className="text-xs">Accuracy</label>
@@ -132,9 +153,18 @@ export function AttributeCard({
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.strength ?? 0}
-                readOnly
-                name="strength-mobile"
-                id="strength-mobile"
+                readOnly={isMobile}
+                onChange={
+                  !isMobile
+                    ? (e) =>
+                        saveToLocalStorage(
+                          'strength',
+                          parseInt(e.target.value, 10)
+                        )
+                    : undefined
+                }
+                name="strength"
+                id="strength"
               />
             </NumericInput>
             <label className="text-xs">Strength</label>
@@ -152,9 +182,18 @@ export function AttributeCard({
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.evasion ?? 0}
-                readOnly
-                name="evasion-mobile"
-                id="evasion-mobile"
+                readOnly={isMobile}
+                onChange={
+                  !isMobile
+                    ? (e) =>
+                        saveToLocalStorage(
+                          'evasion',
+                          parseInt(e.target.value, 10)
+                        )
+                    : undefined
+                }
+                name="evasion"
+                id="evasion"
               />
             </NumericInput>
             <label className="text-xs">Evasion</label>
@@ -172,9 +211,15 @@ export function AttributeCard({
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.luck ?? 0}
-                readOnly
-                name="luck-mobile"
-                id="luck-mobile"
+                readOnly={isMobile}
+                onChange={
+                  !isMobile
+                    ? (e) =>
+                        saveToLocalStorage('luck', parseInt(e.target.value, 10))
+                    : undefined
+                }
+                name="luck"
+                id="luck"
               />
             </NumericInput>
             <label className="text-xs">Luck</label>
@@ -192,9 +237,18 @@ export function AttributeCard({
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.speed ?? 0}
-                readOnly
-                name="speed-mobile"
-                id="speed-mobile"
+                readOnly={isMobile}
+                onChange={
+                  !isMobile
+                    ? (e) =>
+                        saveToLocalStorage(
+                          'speed',
+                          parseInt(e.target.value, 10)
+                        )
+                    : undefined
+                }
+                name="speed"
+                id="speed"
               />
             </NumericInput>
             <label className="text-xs">Speed</label>
@@ -217,9 +271,18 @@ export function AttributeCard({
                     type="number"
                     className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={selectedSurvivor?.lumi ?? 0}
-                    readOnly
-                    name="lumi-mobile"
-                    id="lumi-mobile"
+                    readOnly={isMobile}
+                    onChange={
+                      !isMobile
+                        ? (e) =>
+                            saveToLocalStorage(
+                              'lumi',
+                              parseInt(e.target.value, 10)
+                            )
+                        : undefined
+                    }
+                    name="lumi"
+                    id="lumi"
                   />
                 </NumericInput>
                 <label className="text-xs">Lumi</label>

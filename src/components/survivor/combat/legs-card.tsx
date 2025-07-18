@@ -4,6 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
@@ -32,6 +33,8 @@ export function LegsCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: LegsCardProps): ReactElement {
+  const isMobile = useIsMobile()
+
   /**
    * Save to Local Storage
    *
@@ -74,9 +77,18 @@ export function LegsCard({
                 type="number"
                 className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.legArmor ?? '0'}
-                readOnly
-                name="leg-armor-mobile"
-                id="leg-armor-mobile"
+                readOnly={isMobile}
+                onChange={
+                  !isMobile
+                    ? (e) =>
+                        saveToLocalStorage(
+                          'legArmor',
+                          parseInt(e.target.value, 10)
+                        )
+                    : undefined
+                }
+                name="leg-armor"
+                id="leg-armor"
               />
             </NumericInput>
           </div>
