@@ -46,7 +46,6 @@ export function CreateHuntCard({
   setSelectedHunt,
   survivors
 }: CreateHuntCardProps): ReactElement {
-  console.log(selectedSettlement)
   const [selectedQuarry, setSelectedQuarry] = useState<string>('')
   const [selectedQuarryLevel, setSelectedQuarryLevel] = useState<MonsterLevel>(
     MonsterLevel.LEVEL_1

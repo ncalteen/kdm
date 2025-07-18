@@ -49,7 +49,6 @@ export function SurvivalCard({
    * Update Survival Points
    */
   const updateSurvival = (val: string) => {
-    console.log('Updating survival:', val)
     const value = parseInt(val) || 0
 
     // Enforce minimum value of 0
