@@ -8,8 +8,6 @@ updates:
     labels:
       - dependabot
     open-pull-requests-limit: 10
-    reviewers:
-      - ncalteen
     groups:
       actions-minor:
         update-types:
@@ -23,8 +21,6 @@ updates:
     labels:
       - dependabot
     open-pull-requests-limit: 10
-    reviewers:
-      - ncalteen
     groups:
       npm-development:
         dependency-type: development
