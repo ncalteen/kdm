@@ -84,7 +84,7 @@ export function HuntBoard({
 
       if (newPosition >= 0 && newPosition <= 12)
         if (active.id === 'survivor-token')
-          onPositionUpdate(newPosition, selectedHunt?.quarryPosition ?? 6)
+          onPositionUpdate(newPosition, selectedHunt?.monsterPosition ?? 6)
         else if (active.id === 'quarry-token')
           onPositionUpdate(selectedHunt?.survivorPosition ?? 0, newPosition)
     }
@@ -115,15 +115,15 @@ export function HuntBoard({
                   <SurvivorToken
                     overlap={
                       selectedHunt?.survivorPosition ===
-                      selectedHunt?.quarryPosition
+                      selectedHunt?.monsterPosition
                     }
                   />
                 )}
-                {selectedHunt?.quarryPosition === space.index && (
+                {selectedHunt?.monsterPosition === space.index && (
                   <QuarryToken
                     overlap={
                       selectedHunt?.survivorPosition ===
-                      selectedHunt?.quarryPosition
+                      selectedHunt?.monsterPosition
                     }
                   />
                 )}

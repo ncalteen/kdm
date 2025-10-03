@@ -28,6 +28,7 @@ import { Survivor } from '@/schemas/survivor'
 import { ChevronRightIcon, XIcon } from 'lucide-react'
 import { ReactElement, useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import { HuntMonsterCard } from '../monster/hunt-monster-card'
 
 /**
  * Active Hunt Card Properties
@@ -80,13 +81,13 @@ export function ActiveHuntCard({
    * Handle Position Update
    */
   const handlePositionUpdate = useCallback(
-    (survivorPosition: number, quarryPosition: number) => {
+    (survivorPosition: number, monsterPosition: number) => {
       const survivorChanged =
         survivorPosition !== (selectedHunt?.survivorPosition ?? 0)
 
       saveSelectedHunt(
-        { survivorPosition, quarryPosition },
-        survivorChanged ? 'Survivors moved.' : 'Quarry moved.'
+        { survivorPosition, monsterPosition },
+        survivorChanged ? 'Survivors moved.' : 'Monster moved.'
       )
     },
     [selectedHunt?.survivorPosition, saveSelectedHunt]
@@ -142,7 +143,7 @@ export function ActiveHuntCard({
     if (
       !selectedSettlement?.id ||
       !selectedHunt?.id ||
-      !selectedHunt?.quarryLevel
+      !selectedHunt?.monster?.level
     )
       return
 
@@ -262,6 +263,12 @@ export function ActiveHuntCard({
           selectedHunt={selectedHunt}
         />
       </div>
+
+      {/* Monster Card */}
+      <HuntMonsterCard
+        saveSelectedHunt={saveSelectedHunt}
+        selectedHunt={selectedHunt}
+      />
 
       {/* Hunt Party Survivors */}
       <div className="w-full flex flex-row flex-wrap">

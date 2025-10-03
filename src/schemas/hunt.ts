@@ -67,7 +67,7 @@ export const HuntSchema = z.object({
   /** Hunt Monster */
   monster: HuntMonsterSchema,
   /** Monster Position on Hunt Board */
-  monsterPosition: z.number().min(0).max(12).default(6),
+  monsterPosition: z.number().min(0).max(12),
   /** Selected Scout (Required if Settlement uses Scouts) */
   scout: z.number().optional(),
   /** Settlement ID */
