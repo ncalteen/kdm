@@ -213,7 +213,7 @@ export function SurvivorDetailsPanel({
           )}
 
           {/* Cursed Gear */}
-          {survivor.cursedGear.length > 0 && (
+          {survivor.cursedGear && survivor.cursedGear.length > 0 && (
             <div className="bg-muted/20 rounded-lg border border-border/30 overflow-hidden">
               <div className="bg-muted/40 px-3 py-2 border-b border-border/30">
                 <h4 className="text-sm font-semibold">Cursed Gear</h4>
@@ -231,7 +231,7 @@ export function SurvivorDetailsPanel({
           )}
 
           {/* Next Departure */}
-          {survivor.nextDeparture.length > 0 && (
+          {survivor.nextDeparture && survivor.nextDeparture.length > 0 && (
             <div className="bg-muted/20 rounded-lg border border-border/30 overflow-hidden">
               <div className="bg-muted/40 px-3 py-2 border-b border-border/30">
                 <h4 className="text-sm font-semibold">Next Departure</h4>
