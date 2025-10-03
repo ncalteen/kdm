@@ -89,10 +89,10 @@ export type SurvivorTurnState = z.infer<typeof SurvivorTurnStateSchema>
 export const TurnSchema = z.object({
   /** Current Turn: 'monster' or 'survivors' */
   currentTurn: z.nativeEnum(TurnType).default(TurnType.MONSTER),
+  /** Round Number (0 === ambush) */
+  round: z.number().int().min(0).default(1),
   /** Survivor Turn States */
-  survivorStates: z.array(SurvivorTurnStateSchema).default([]),
-  /** Turn Number (0 === ambush) */
-  turnNumber: z.number().int().min(0).default(1)
+  survivorStates: z.array(SurvivorTurnStateSchema).default([])
 })
 
 /**

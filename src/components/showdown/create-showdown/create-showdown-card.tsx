@@ -201,8 +201,8 @@ export function CreateShowdownCard({
       survivorColors,
       survivors: selectedSurvivors,
       turn: {
-        turnNumber: 1,
         currentTurn: TurnType.MONSTER,
+        round: 1,
         survivorStates: []
       }
     }

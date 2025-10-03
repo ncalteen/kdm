@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { useSelectedTab } from '@/contexts/selected-tab-context'
-import { AmbushType, MonsterType, TurnType } from '@/lib/enums'
+import { AmbushType, TurnType } from '@/lib/enums'
 import {
   getCampaign,
   getNextShowdownId,
@@ -162,23 +162,7 @@ export function ActiveHuntCard({
       const showdown: Showdown = {
         ambush,
         id: getNextShowdownId(),
-        monster: {
-          accuracy: 0,
-          aiDeckSize: 10,
-          evasion: 0,
-          knockedDown: false,
-          level: selectedHunt.quarryLevel,
-          luck: 0,
-          moods: [],
-          movement: 6,
-          name: selectedHunt.quarryName!,
-          speed: 0,
-          strength: 0,
-          toughness: 12,
-          traits: [],
-          type: MonsterType.QUARRY,
-          wounds: 0
-        },
+        monster: selectedHunt.monster,
         scout: selectedHunt.scout,
         settlementId: selectedHunt.settlementId || 0,
         survivorColors: selectedHunt.survivorColors || [],
@@ -190,7 +174,7 @@ export function ActiveHuntCard({
               ? TurnType.SURVIVORS
               : TurnType.MONSTER,
           survivorStates: [],
-          turnNumber: ambush === AmbushType.NONE ? 1 : 0
+          round: ambush === AmbushType.NONE ? 1 : 0
         }
       }
 
