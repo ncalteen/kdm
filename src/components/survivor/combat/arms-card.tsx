@@ -74,7 +74,8 @@ export function ArmsCard({
               value={selectedSurvivor?.armArmor ?? 0}
               min={0}
               label="Arm Armor"
-              onChange={(value) => saveToLocalStorage('armArmor', value)}>
+              onChange={(value) => saveToLocalStorage('armArmor', value)}
+              readOnly={false}>
               <Input
                 placeholder="1"
                 type="number"

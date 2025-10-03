@@ -109,7 +109,8 @@ export function SanityCard({
                 value={selectedSurvivor?.insanity ?? 0}
                 min={0}
                 label="Insanity"
-                onChange={(value) => updateInsanity(value.toString())}>
+                onChange={(value) => updateInsanity(value.toString())}
+                readOnly={false}>
                 <Input
                   placeholder="1"
                   type="number"
@@ -162,7 +163,8 @@ export function SanityCard({
                 value={selectedSurvivor?.torment ?? 0}
                 min={0}
                 label="Torment"
-                onChange={(value) => updateTorment(value.toString())}>
+                onChange={(value) => updateTorment(value.toString())}
+                readOnly={false}>
                 <Input
                   placeholder="0"
                   type="number"

@@ -284,7 +284,8 @@ export function OverviewCard({
               value={selectedSettlement?.survivalLimit ?? 1}
               min={1}
               label="Survival Limit"
-              onChange={(value) => handleSurvivalLimitChange(value.toString())}>
+              onChange={(value) => handleSurvivalLimitChange(value.toString())}
+              readOnly={false}>
               <Input
                 type="number"
                 min="1"
@@ -368,7 +369,8 @@ export function OverviewCard({
                 label="Lantern Research"
                 onChange={(value) =>
                   handleLanternResearchLevelChange(value.toString())
-                }>
+                }
+                readOnly={false}>
                 <Input
                   type="number"
                   min="0"

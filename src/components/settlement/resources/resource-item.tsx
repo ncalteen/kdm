@@ -185,7 +185,8 @@ export function ResourceItem({
                     label="Resource Amount"
                     value={selectedSettlement?.resources?.[index].amount ?? 0}
                     onChange={(value) => onAmountChange?.(index, value)}
-                    min={0}>
+                    min={0}
+                    readOnly={false}>
                     <Input
                       ref={amountInputRef}
                       type="number"
@@ -232,7 +233,8 @@ export function ResourceItem({
                       label="Resource Amount"
                       value={selectedSettlement?.resources?.[index].amount ?? 0}
                       onChange={(value) => onAmountChange?.(index, value)}
-                      min={0}>
+                      min={0}
+                      readOnly={false}>
                       <Input
                         ref={amountInputRef}
                         type="number"
@@ -312,7 +314,8 @@ export function ResourceItem({
                       amountInputRef.current.value = value.toString()
                     }
                   }}
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     ref={amountInputRef}
                     type="number"
@@ -378,7 +381,8 @@ export function ResourceItem({
                         amountInputRef.current.value = value.toString()
                       }
                     }}
-                    min={0}>
+                    min={0}
+                    readOnly={false}>
                     <Input
                       ref={amountInputRef}
                       type="number"

@@ -129,7 +129,8 @@ export function RewardItem({
           setCurrentCcValue(value)
           if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
-        min={0}>
+        min={0}
+        readOnly={false}>
         <Input
           ref={ccInputRef}
           type="number"
@@ -261,7 +262,8 @@ export function NewRewardItem({
           setCurrentCcValue(value)
           if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
-        min={0}>
+        min={0}
+        readOnly={false}>
         <Input
           ref={ccInputRef}
           type="number"

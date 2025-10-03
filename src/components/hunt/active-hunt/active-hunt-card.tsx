@@ -14,13 +14,12 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
-import { AmbushType, MonsterType } from '@/lib/enums'
+import { useSelectedTab } from '@/contexts/selected-tab-context'
+import { AmbushType, MonsterType, TurnType } from '@/lib/enums'
 import {
   getCampaign,
   getNextShowdownId,
-  saveCampaignToLocalStorage,
-  setSelectedShowdown,
-  setSelectedTab
+  saveCampaignToLocalStorage
 } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -44,6 +43,8 @@ interface ActiveHuntCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Showdown */
+  setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -64,10 +65,12 @@ export function ActiveHuntCard({
   selectedSettlement,
   selectedSurvivor,
   setSelectedHunt,
+  setSelectedShowdown,
   setSurvivors,
   survivors,
   updateSelectedSurvivor
 }: ActiveHuntCardProps): ReactElement {
+  const { setSelectedTab } = useSelectedTab()
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
   const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
     useState<boolean>(false)
@@ -152,18 +155,42 @@ export function ActiveHuntCard({
         1: AmbushType.NONE,
         2: AmbushType.MONSTER
       }
+      const ambush = ambushTypeMap[ambushType as keyof typeof ambushTypeMap]
 
       // Create showdown from current hunt
       const showdown: Showdown = {
+        ambush,
         id: getNextShowdownId(),
-        ambush: ambushTypeMap[ambushType as keyof typeof ambushTypeMap],
-        monsterName: selectedHunt.quarryName || '',
-        monsterLevel: selectedHunt.quarryLevel,
-        monsterType: MonsterType.QUARRY,
+        monster: {
+          accuracy: 0,
+          aiDeckSize: 10,
+          evasion: 0,
+          knockedDown: false,
+          level: selectedHunt.quarryLevel,
+          luck: 0,
+          moods: [],
+          movement: 6,
+          name: selectedHunt.quarryName!,
+          speed: 0,
+          strength: 0,
+          toughness: 12,
+          traits: [],
+          type: MonsterType.QUARRY,
+          wounds: 0
+        },
         scout: selectedHunt.scout,
         settlementId: selectedHunt.settlementId || 0,
+        survivorColors: selectedHunt.survivorColors || [],
         survivors: selectedHunt.survivors || [],
-        survivorColors: selectedHunt.survivorColors || []
+        // If survivors ambush, they go first. Otherwise, the monster does.
+        turn: {
+          currentTurn:
+            ambush === AmbushType.SURVIVORS
+              ? TurnType.SURVIVORS
+              : TurnType.MONSTER,
+          survivorStates: [],
+          turnNumber: ambush === AmbushType.NONE ? 1 : 0
+        }
       }
 
       // Remove the hunt and add the showdown
@@ -179,7 +206,7 @@ export function ActiveHuntCard({
       })
 
       setSelectedHunt(null)
-      setSelectedShowdown(showdown.id)
+      setSelectedShowdown(showdown)
       setIsShowdownDialogOpen(false)
       setSelectedTab('showdown')
 
@@ -196,14 +223,21 @@ export function ActiveHuntCard({
       console.error('Showdown Creation Error:', error)
       toast.error('The darkness swallows your words. Please try again.')
     }
-  }, [selectedSettlement?.id, selectedHunt, ambushType, setSelectedHunt])
+  }, [
+    selectedSettlement?.id,
+    selectedHunt,
+    ambushType,
+    setSelectedHunt,
+    setSelectedShowdown,
+    setSelectedTab
+  ])
 
   return (
     <div className="flex flex-col gap-2 h-full relative">
       {/* Action Buttons */}
       <div className="flex justify-between pointer-events-none">
         <Button
-          variant="destructive"
+          variant="ghost"
           size="sm"
           onClick={handleCancelHunt}
           className="pointer-events-auto"
@@ -212,12 +246,12 @@ export function ActiveHuntCard({
           End Hunt
         </Button>
         <Button
-          variant="default"
+          variant="destructive"
           size="sm"
           onClick={handleShowdown}
           className="pointer-events-auto"
-          title="Proceed to Showdown">
-          Showdown <ChevronRightIcon className="size-4" />
+          title="Begin Showdown">
+          Begin Showdown <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 

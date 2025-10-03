@@ -362,7 +362,8 @@ export function ShowdownSurvivorCard({
               )
             }
             min={0}
-            max={16}>
+            max={16}
+            readOnly={false}>
             <Input
               id={`showdown-xp-${survivor.id}`}
               type="number"
@@ -396,7 +397,8 @@ export function ShowdownSurvivorCard({
                   'Movement updated.'
                 )
               }
-              min={0}>
+              min={0}
+              readOnly={false}>
               <Input
                 id={`movement-${survivor.id}`}
                 type="number"
@@ -421,7 +423,8 @@ export function ShowdownSurvivorCard({
               value={survivor.survival ?? 0}
               onChange={(value) => updateSurvival(value.toString())}
               min={0}
-              max={selectedSettlement?.survivalLimit || 1}>
+              max={selectedSettlement?.survivalLimit || 1}
+              readOnly={false}>
               <Input
                 id={`survival-${survivor.id}`}
                 type="number"
@@ -444,7 +447,8 @@ export function ShowdownSurvivorCard({
               label="Insanity"
               value={survivor.insanity ?? 0}
               onChange={(value) => updateInsanity(value.toString())}
-              min={0}>
+              min={0}
+              readOnly={false}>
               <Input
                 id={`insanity-${survivor.id}`}
                 type="number"
@@ -495,7 +499,8 @@ export function ShowdownSurvivorCard({
                 )
               }
               min={0}
-              max={9}>
+              max={9}
+              readOnly={false}>
               <Input
                 id={`courage-${survivor.id}`}
                 type="number"
@@ -528,7 +533,8 @@ export function ShowdownSurvivorCard({
                 )
               }
               min={0}
-              max={9}>
+              max={9}
+              readOnly={false}>
               <Input
                 id={`understanding-${survivor.id}`}
                 type="number"
@@ -565,7 +571,8 @@ export function ShowdownSurvivorCard({
                     'Systemic pressure updated.'
                   )
                 }
-                min={0}>
+                min={0}
+                readOnly={false}>
                 <Input
                   id={`systemicPressure-${survivor.id}`}
                   type="number"
@@ -595,7 +602,8 @@ export function ShowdownSurvivorCard({
                     'Torment updated.'
                   )
                 }
-                min={0}>
+                min={0}
+                readOnly={false}>
                 <Input
                   id={`torment-${survivor.id}`}
                   type="number"
@@ -679,7 +687,8 @@ export function ShowdownSurvivorCard({
                       'Head armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`head-armor-${survivor.id}`}
                     placeholder="1"
@@ -745,7 +754,8 @@ export function ShowdownSurvivorCard({
                       'Arm armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`arm-armor-${survivor.id}`}
                     placeholder="1"
@@ -836,7 +846,8 @@ export function ShowdownSurvivorCard({
                       'Body armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`body-armor-${survivor.id}`}
                     placeholder="1"
@@ -927,7 +938,8 @@ export function ShowdownSurvivorCard({
                       'Waist armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`waist-armor-${survivor.id}`}
                     placeholder="1"
@@ -1018,7 +1030,8 @@ export function ShowdownSurvivorCard({
                       'Leg armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`leg-armor-${survivor.id}`}
                     placeholder="1"
@@ -1117,7 +1130,8 @@ export function ShowdownSurvivorCard({
                       { accuracy: value },
                       'Accuracy updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`accuracy-${survivor.id}`}
                     type="number"
@@ -1150,7 +1164,8 @@ export function ShowdownSurvivorCard({
                       { strength: value },
                       'Strength updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`strength-${survivor.id}`}
                     type="number"
@@ -1183,7 +1198,8 @@ export function ShowdownSurvivorCard({
                       { evasion: value },
                       'Evasion updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`evasion-${survivor.id}`}
                     type="number"
@@ -1216,7 +1232,8 @@ export function ShowdownSurvivorCard({
                       { luck: value },
                       'Luck updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`luck-${survivor.id}`}
                     type="number"
@@ -1249,7 +1266,8 @@ export function ShowdownSurvivorCard({
                       { speed: value },
                       'Speed updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`speed-${survivor.id}`}
                     type="number"
@@ -1284,7 +1302,8 @@ export function ShowdownSurvivorCard({
                         'Lumi updated.'
                       )
                     }
-                    min={0}>
+                    min={0}
+                    readOnly={false}>
                     <Input
                       id={`lumi-${survivor.id}`}
                       type="number"

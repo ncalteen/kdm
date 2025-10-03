@@ -382,7 +382,8 @@ export function HuntSurvivorCard({
               )
             }
             min={0}
-            max={16}>
+            max={16}
+            readOnly={false}>
             <Input
               id={`hunt-xp-${survivor.id}`}
               type="number"
@@ -417,7 +418,8 @@ export function HuntSurvivorCard({
                   'Movement updated.'
                 )
               }
-              min={0}>
+              min={0}
+              readOnly={false}>
               <Input
                 id={`movement-${survivor.id}`}
                 type="number"
@@ -443,7 +445,8 @@ export function HuntSurvivorCard({
               value={survivor.survival ?? 0}
               onChange={(value) => updateSurvival(value.toString())}
               min={0}
-              max={selectedSettlement?.survivalLimit || 1}>
+              max={selectedSettlement?.survivalLimit || 1}
+              readOnly={false}>
               <Input
                 id={`survival-${survivor.id}`}
                 type="number"
@@ -467,7 +470,8 @@ export function HuntSurvivorCard({
               label="Insanity"
               value={survivor.insanity ?? 0}
               onChange={(value) => updateInsanity(value.toString())}
-              min={0}>
+              min={0}
+              readOnly={false}>
               <Input
                 id={`insanity-${survivor.id}`}
                 type="number"
@@ -519,7 +523,8 @@ export function HuntSurvivorCard({
                 )
               }
               min={0}
-              max={9}>
+              max={9}
+              readOnly={false}>
               <Input
                 id={`courage-${survivor.id}`}
                 type="number"
@@ -553,7 +558,8 @@ export function HuntSurvivorCard({
                 )
               }
               min={0}
-              max={9}>
+              max={9}
+              readOnly={false}>
               <Input
                 id={`understanding-${survivor.id}`}
                 type="number"
@@ -591,7 +597,8 @@ export function HuntSurvivorCard({
                     'Systemic pressure updated.'
                   )
                 }
-                min={0}>
+                min={0}
+                readOnly={false}>
                 <Input
                   id={`systemicPressure-${survivor.id}`}
                   type="number"
@@ -622,7 +629,8 @@ export function HuntSurvivorCard({
                     'Torment updated.'
                   )
                 }
-                min={0}>
+                min={0}
+                readOnly={false}>
                 <Input
                   id={`torment-${survivor.id}`}
                   type="number"
@@ -707,7 +715,8 @@ export function HuntSurvivorCard({
                       'Head armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`head-armor-${survivor.id}`}
                     placeholder="1"
@@ -774,7 +783,8 @@ export function HuntSurvivorCard({
                       'Arm armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`arm-armor-${survivor.id}`}
                     placeholder="1"
@@ -866,7 +876,8 @@ export function HuntSurvivorCard({
                       'Body armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`body-armor-${survivor.id}`}
                     placeholder="1"
@@ -958,7 +969,8 @@ export function HuntSurvivorCard({
                       'Waist armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`waist-armor-${survivor.id}`}
                     placeholder="1"
@@ -1050,7 +1062,8 @@ export function HuntSurvivorCard({
                       'Leg armor updated.'
                     )
                   }
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     id={`leg-armor-${survivor.id}`}
                     placeholder="1"
@@ -1150,7 +1163,8 @@ export function HuntSurvivorCard({
                       { accuracy: value },
                       'Accuracy updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`accuracy-${survivor.id}`}
                     type="number"
@@ -1184,7 +1198,8 @@ export function HuntSurvivorCard({
                       { strength: value },
                       'Strength updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`strength-${survivor.id}`}
                     type="number"
@@ -1218,7 +1233,8 @@ export function HuntSurvivorCard({
                       { evasion: value },
                       'Evasion updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`evasion-${survivor.id}`}
                     type="number"
@@ -1252,7 +1268,8 @@ export function HuntSurvivorCard({
                       { luck: value },
                       'Luck updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`luck-${survivor.id}`}
                     type="number"
@@ -1286,7 +1303,8 @@ export function HuntSurvivorCard({
                       { speed: value },
                       'Speed updated.'
                     )
-                  }>
+                  }
+                  readOnly={false}>
                   <Input
                     id={`speed-${survivor.id}`}
                     type="number"
@@ -1322,7 +1340,8 @@ export function HuntSurvivorCard({
                         'Lumi updated.'
                       )
                     }
-                    min={0}>
+                    min={0}
+                    readOnly={false}>
                     <Input
                       id={`lumi-${survivor.id}`}
                       type="number"

@@ -14,11 +14,15 @@ import { ReactElement } from 'react'
  */
 interface AttributeCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor:
+    | ((data: Partial<Survivor>, successMsg?: string) => void)
+    | null
   /** Selected Settlemenet */
   selectedSettlement: Partial<Settlement> | null
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
+  /** Read Only Mode */
+  readOnly: boolean
 }
 
 /**
@@ -34,7 +38,8 @@ interface AttributeCardProps {
 export function AttributeCard({
   saveSelectedSurvivor,
   selectedSettlement,
-  selectedSurvivor
+  selectedSurvivor,
+  readOnly
 }: AttributeCardProps): ReactElement {
   const isMobile = useIsMobile()
 
@@ -55,6 +60,8 @@ export function AttributeCard({
       | 'lumi',
     value: number
   ) => {
+    if (!saveSelectedSurvivor) return
+
     // Thematic success messages for each attribute
     const attributeMessages: Record<string, string> = {
       movement: 'Strides through darkness grow more confident.',
@@ -86,16 +93,17 @@ export function AttributeCard({
               value={selectedSurvivor?.movement ?? 1}
               min={0}
               label="Movement"
-              onChange={(value) => saveToLocalStorage('movement', value)}>
+              onChange={(value) => saveToLocalStorage('movement', value)}
+              readOnly={readOnly}>
               <Input
                 key={`movement-${selectedSurvivor?.id || 'new'}`}
                 placeholder="1"
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.movement ?? 1}
-                readOnly={isMobile}
+                readOnly={isMobile || readOnly}
                 onChange={
-                  !isMobile
+                  !isMobile && !readOnly
                     ? (e) =>
                         saveToLocalStorage(
                           'movement',
@@ -117,16 +125,17 @@ export function AttributeCard({
             <NumericInput
               value={selectedSurvivor?.accuracy ?? 0}
               label="Accuracy"
-              onChange={(value) => saveToLocalStorage('accuracy', value)}>
+              onChange={(value) => saveToLocalStorage('accuracy', value)}
+              readOnly={readOnly}>
               <Input
                 key={`accuracy-${selectedSurvivor?.id || 'new'}`}
                 placeholder="0"
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.accuracy ?? 0}
-                readOnly={isMobile}
+                readOnly={isMobile || readOnly}
                 onChange={
-                  !isMobile
+                  !isMobile && !readOnly
                     ? (e) =>
                         saveToLocalStorage(
                           'accuracy',
@@ -146,16 +155,17 @@ export function AttributeCard({
             <NumericInput
               value={selectedSurvivor?.strength ?? 0}
               label="Strength"
-              onChange={(value) => saveToLocalStorage('strength', value)}>
+              onChange={(value) => saveToLocalStorage('strength', value)}
+              readOnly={readOnly}>
               <Input
                 key={`strength-${selectedSurvivor?.id || 'new'}`}
                 placeholder="0"
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.strength ?? 0}
-                readOnly={isMobile}
+                readOnly={isMobile || readOnly}
                 onChange={
-                  !isMobile
+                  !isMobile && !readOnly
                     ? (e) =>
                         saveToLocalStorage(
                           'strength',
@@ -175,16 +185,17 @@ export function AttributeCard({
             <NumericInput
               value={selectedSurvivor?.evasion ?? 0}
               label="Evasion"
-              onChange={(value) => saveToLocalStorage('evasion', value)}>
+              onChange={(value) => saveToLocalStorage('evasion', value)}
+              readOnly={readOnly}>
               <Input
                 key={`evasion-${selectedSurvivor?.id || 'new'}`}
                 placeholder="0"
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.evasion ?? 0}
-                readOnly={isMobile}
+                readOnly={isMobile || readOnly}
                 onChange={
-                  !isMobile
+                  !isMobile && !readOnly
                     ? (e) =>
                         saveToLocalStorage(
                           'evasion',
@@ -204,16 +215,17 @@ export function AttributeCard({
             <NumericInput
               value={selectedSurvivor?.luck ?? 0}
               label="Luck"
-              onChange={(value) => saveToLocalStorage('luck', value)}>
+              onChange={(value) => saveToLocalStorage('luck', value)}
+              readOnly={readOnly}>
               <Input
                 key={`luck-${selectedSurvivor?.id || 'new'}`}
                 placeholder="0"
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.luck ?? 0}
-                readOnly={isMobile}
+                readOnly={isMobile || readOnly}
                 onChange={
-                  !isMobile
+                  !isMobile && !readOnly
                     ? (e) =>
                         saveToLocalStorage('luck', parseInt(e.target.value, 10))
                     : undefined
@@ -230,16 +242,17 @@ export function AttributeCard({
             <NumericInput
               value={selectedSurvivor?.speed ?? 0}
               label="Speed"
-              onChange={(value) => saveToLocalStorage('speed', value)}>
+              onChange={(value) => saveToLocalStorage('speed', value)}
+              readOnly={readOnly}>
               <Input
                 key={`speed-${selectedSurvivor?.id || 'new'}`}
                 placeholder="0"
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.speed ?? 0}
-                readOnly={isMobile}
+                readOnly={isMobile || readOnly}
                 onChange={
-                  !isMobile
+                  !isMobile && !readOnly
                     ? (e) =>
                         saveToLocalStorage(
                           'speed',
@@ -264,16 +277,17 @@ export function AttributeCard({
                   value={selectedSurvivor?.lumi ?? 0}
                   min={0}
                   label="Lumi"
-                  onChange={(value) => saveToLocalStorage('lumi', value)}>
+                  onChange={(value) => saveToLocalStorage('lumi', value)}
+                  readOnly={readOnly}>
                   <Input
                     key={`lumi-${selectedSurvivor?.id || 'new'}`}
                     placeholder="0"
                     type="number"
                     className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={selectedSurvivor?.lumi ?? 0}
-                    readOnly={isMobile}
+                    readOnly={isMobile || readOnly}
                     onChange={
-                      !isMobile
+                      !isMobile && !readOnly
                         ? (e) =>
                             saveToLocalStorage(
                               'lumi',

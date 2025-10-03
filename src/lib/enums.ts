@@ -221,3 +221,10 @@ export enum AmbushType {
   /** No Ambush */
   NONE = 'none'
 }
+
+export enum TurnType {
+  /** Survivors Turn */
+  SURVIVORS = 'survivors',
+  /** Monsters Turn */
+  MONSTER = 'monster'
+}

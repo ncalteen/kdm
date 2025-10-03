@@ -72,7 +72,8 @@ export function WaistCard({
               value={selectedSurvivor?.waistArmor ?? 0}
               min={0}
               label="Waist Armor"
-              onChange={(value) => saveToLocalStorage('waistArmor', value)}>
+              onChange={(value) => saveToLocalStorage('waistArmor', value)}
+              readOnly={false}>
               <Input
                 key={`waistArmor-${selectedSurvivor?.id || 'new'}`}
                 placeholder="1"

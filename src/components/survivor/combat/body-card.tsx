@@ -72,7 +72,8 @@ export function BodyCard({
               value={selectedSurvivor?.bodyArmor ?? 0}
               min={0}
               label="Body Armor"
-              onChange={(value) => saveToLocalStorage('bodyArmor', value)}>
+              onChange={(value) => saveToLocalStorage('bodyArmor', value)}
+              readOnly={false}>
               <Input
                 placeholder="1"
                 type="number"

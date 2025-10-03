@@ -255,7 +255,8 @@ export function PhilosophyCard({
             label="Philosophy Rank"
             value={selectedSurvivor?.philosophyRank ?? 0}
             onChange={(value) => updatePhilosophyRank(value.toString())}
-            min={0}>
+            min={0}
+            readOnly={false}>
             <Input
               placeholder="0"
               type="number"

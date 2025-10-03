@@ -428,6 +428,7 @@ export function SettlementForm({
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
               setSelectedHunt={setSelectedHunt}
+              setSelectedShowdown={setSelectedShowdown}
               setSurvivors={setSurvivors}
               survivors={survivors}
               updateSelectedSurvivor={updateSelectedSurvivor}

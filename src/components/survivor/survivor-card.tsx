@@ -105,6 +105,7 @@ export function SurvivorCard({
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
+              readOnly={false}
             />
             <SanityCard
               saveSelectedSurvivor={saveSelectedSurvivor}

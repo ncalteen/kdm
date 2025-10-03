@@ -1,6 +1,8 @@
 'use client'
 
+import { ShowdownMonsterCard } from '@/components/showdown/monster/showdown-monster-card'
 import { ShowdownSurvivorsCard } from '@/components/showdown/showdown-survivors/showdown-survivors-card'
+import { TurnCard } from '@/components/showdown/turn/turn-card'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,9 +64,6 @@ export function ActiveShowdownCard({
   updateSelectedSurvivor
 }: ActiveShowdownCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
-  const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
-    useState<boolean>(false)
-  const [ambushType, setAmbushType] = useState<number>(1)
 
   /**
    * Handle Cancel Showdown
@@ -106,10 +105,10 @@ export function ActiveShowdownCard({
   }, [selectedSettlement?.id, selectedShowdown?.id, setSelectedShowdown])
 
   /**
-   * Handle Showdown
+   * Handle Settlement Phase Transition
    */
-  const handleShowdown = useCallback(() => {
-    setIsShowdownDialogOpen(true)
+  const handleSettlementPhase = useCallback(() => {
+    console.log('TODO: Settlement Phase Transition')
   }, [])
 
   return (
@@ -128,16 +127,33 @@ export function ActiveShowdownCard({
         <Button
           variant="default"
           size="sm"
-          onClick={handleShowdown}
+          onClick={handleSettlementPhase}
+          disabled={true}
           className="pointer-events-auto"
-          title="Proceed to Showdown">
-          Showdown <ChevronRightIcon className="size-4" />
+          title="Proceed to Settlement Phase">
+          Settlement Phase <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 
-      {/* Showdown Party Survivors */}
-      <div className="w-full flex flex-row flex-wrap">
-        <div className="flex-1">
+      <div className="flex flex-col lg:flex-row gap-2 flex-1">
+        {/* Left Column - Monster and Survivors */}
+        <div className="flex flex-col gap-2 flex-1">
+          {/* Turn Card - Mobile: above monster card */}
+          <div className="lg:hidden">
+            <TurnCard
+              saveSelectedShowdown={saveSelectedShowdown}
+              selectedShowdown={selectedShowdown}
+              survivors={survivors}
+            />
+          </div>
+
+          {/* Monster Card */}
+          <ShowdownMonsterCard
+            saveSelectedShowdown={saveSelectedShowdown}
+            selectedShowdown={selectedShowdown}
+          />
+
+          {/* Showdown Party Survivors */}
           <ShowdownSurvivorsCard
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
@@ -148,10 +164,14 @@ export function ActiveShowdownCard({
             updateSelectedSurvivor={updateSelectedSurvivor}
           />
         </div>
-        <div className="flex-1">
-          {/*
-            TODO: Survivor Gear Card?
-           */}
+
+        {/* Right Column - Turn Card for larger screens */}
+        <div className="hidden lg:block lg:w-80">
+          <TurnCard
+            saveSelectedShowdown={saveSelectedShowdown}
+            selectedShowdown={selectedShowdown}
+            survivors={survivors}
+          />
         </div>
       </div>
 

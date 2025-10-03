@@ -4,6 +4,7 @@ import { ActiveHuntCard } from '@/components/hunt/active-hunt/active-hunt-card'
 import { CreateHuntCard } from '@/components/hunt/create-hunt/create-hunt-card'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 
@@ -21,6 +22,8 @@ interface HuntCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Showdown */
+  setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -41,6 +44,7 @@ export function HuntCard({
   selectedSettlement,
   selectedSurvivor,
   setSelectedHunt,
+  setSelectedShowdown,
   setSurvivors,
   survivors,
   updateSelectedSurvivor
@@ -52,6 +56,7 @@ export function HuntCard({
       selectedSettlement={selectedSettlement}
       selectedSurvivor={selectedSurvivor}
       setSelectedHunt={setSelectedHunt}
+      setSelectedShowdown={setSelectedShowdown}
       setSurvivors={setSurvivors}
       survivors={survivors}
       updateSelectedSurvivor={updateSelectedSurvivor}

@@ -171,7 +171,8 @@ export function SurvivalCard({
                 min={0}
                 max={selectedSettlement?.survivalLimit || 1}
                 label="Survival"
-                onChange={(value) => updateSurvival(value.toString())}>
+                onChange={(value) => updateSurvival(value.toString())}
+                readOnly={false}>
                 <Input
                   key={`survival-${selectedSurvivor?.id || 'new'}`}
                   placeholder="1"
@@ -292,7 +293,8 @@ export function SurvivalCard({
                     label="Systemic Pressure"
                     onChange={(value) =>
                       updateSystemicPressure(value.toString())
-                    }>
+                    }
+                    readOnly={false}>
                     <Input
                       key={`systemicPressure-${selectedSurvivor?.id || 'new'}`}
                       placeholder="0"

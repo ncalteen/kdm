@@ -71,7 +71,8 @@ export function HeadCard({
               value={selectedSurvivor?.headArmor ?? 0}
               min={0}
               label="Head Armor"
-              onChange={(value) => saveToLocalStorage('headArmor', value)}>
+              onChange={(value) => saveToLocalStorage('headArmor', value)}
+              readOnly={false}>
               <Input
                 placeholder="1"
                 type="number"

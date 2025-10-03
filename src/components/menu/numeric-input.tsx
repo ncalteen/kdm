@@ -33,6 +33,8 @@ interface NumericInputProps {
   onChange: (value: number) => void
   /** Child Element */
   children: React.ReactNode
+  /** Read Only Mode */
+  readOnly: boolean
 }
 
 /**
@@ -52,7 +54,8 @@ export function NumericInput({
   step = 1,
   label,
   onChange,
-  children
+  children,
+  readOnly
 }: NumericInputProps): ReactElement {
   const isMobile = useIsMobile()
 
@@ -89,7 +92,7 @@ export function NumericInput({
               variant="outline"
               size="icon"
               onClick={handleDecrement}
-              disabled={min !== undefined && value <= min}
+              disabled={readOnly || (min !== undefined && value <= min)}
               className="h-12 w-12 rounded-full"
               name="decrement"
               id="decrement-button">
@@ -113,7 +116,7 @@ export function NumericInput({
               variant="outline"
               size="icon"
               onClick={handleIncrement}
-              disabled={max !== undefined && value >= max}
+              disabled={readOnly || (max !== undefined && value >= max)}
               className="h-12 w-12 rounded-full"
               name="increment"
               id="increment-button">
