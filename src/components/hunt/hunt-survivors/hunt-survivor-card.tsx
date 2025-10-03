@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
 import {
   getCampaign,
@@ -77,6 +78,8 @@ export function HuntSurvivorCard({
   survivors,
   updateSelectedSurvivor
 }: HuntSurvivorCardProps): ReactElement {
+  const isMobile = useIsMobile()
+
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
   const form = useForm<Survivor>({
@@ -384,6 +387,7 @@ export function HuntSurvivorCard({
               id={`hunt-xp-${survivor.id}`}
               type="number"
               value={survivor.huntXP}
+              readOnly={isMobile}
               onChange={(e) =>
                 saveToLocalStorage(
                   survivor.id!,
@@ -418,6 +422,7 @@ export function HuntSurvivorCard({
                 id={`movement-${survivor.id}`}
                 type="number"
                 value={survivor.movement}
+                readOnly={isMobile}
                 onChange={(e) =>
                   saveToLocalStorage(
                     survivor.id!,
@@ -443,6 +448,7 @@ export function HuntSurvivorCard({
                 id={`survival-${survivor.id}`}
                 type="number"
                 value={survivor.survival}
+                readOnly={isMobile}
                 onChange={(e) => updateSurvival(e.target.value)}
                 className={`text-center border-0 p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
                   !survivor.canSpendSurvival
@@ -466,6 +472,7 @@ export function HuntSurvivorCard({
                 id={`insanity-${survivor.id}`}
                 type="number"
                 value={survivor.insanity}
+                readOnly={isMobile}
                 onChange={(e) => updateInsanity(e.target.value)}
                 className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 min="0"
@@ -517,6 +524,7 @@ export function HuntSurvivorCard({
                 id={`courage-${survivor.id}`}
                 type="number"
                 value={survivor.courage}
+                readOnly={isMobile}
                 onChange={(e) =>
                   saveToLocalStorage(
                     survivor.id!,
@@ -550,6 +558,7 @@ export function HuntSurvivorCard({
                 id={`understanding-${survivor.id}`}
                 type="number"
                 value={survivor.understanding}
+                readOnly={isMobile}
                 onChange={(e) =>
                   saveToLocalStorage(
                     survivor.id!,
@@ -587,6 +596,7 @@ export function HuntSurvivorCard({
                   id={`systemicPressure-${survivor.id}`}
                   type="number"
                   value={survivor.systemicPressure}
+                  readOnly={isMobile}
                   onChange={(e) =>
                     saveToLocalStorage(
                       survivor.id!,
@@ -617,6 +627,7 @@ export function HuntSurvivorCard({
                   id={`torment-${survivor.id}`}
                   type="number"
                   value={survivor.torment}
+                  readOnly={isMobile}
                   onChange={(e) =>
                     saveToLocalStorage(
                       survivor.id!,
@@ -704,6 +715,7 @@ export function HuntSurvivorCard({
                     className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={survivor.headArmor ?? '0'}
                     min={0}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -770,6 +782,7 @@ export function HuntSurvivorCard({
                     className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={survivor.armArmor ?? '0'}
                     min={0}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -861,6 +874,7 @@ export function HuntSurvivorCard({
                     className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={survivor.bodyArmor ?? '0'}
                     min={0}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -952,6 +966,7 @@ export function HuntSurvivorCard({
                     className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={survivor.waistArmor ?? '0'}
                     min={0}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -1043,6 +1058,7 @@ export function HuntSurvivorCard({
                     className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={survivor.legArmor ?? '0'}
                     min={0}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -1139,6 +1155,7 @@ export function HuntSurvivorCard({
                     id={`accuracy-${survivor.id}`}
                     type="number"
                     value={survivor.accuracy}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -1172,6 +1189,7 @@ export function HuntSurvivorCard({
                     id={`strength-${survivor.id}`}
                     type="number"
                     value={survivor.strength}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -1205,6 +1223,7 @@ export function HuntSurvivorCard({
                     id={`evasion-${survivor.id}`}
                     type="number"
                     value={survivor.evasion}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -1238,6 +1257,7 @@ export function HuntSurvivorCard({
                     id={`luck-${survivor.id}`}
                     type="number"
                     value={survivor.luck}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -1271,6 +1291,7 @@ export function HuntSurvivorCard({
                     id={`speed-${survivor.id}`}
                     type="number"
                     value={survivor.speed}
+                    readOnly={isMobile}
                     onChange={(e) =>
                       saveToLocalStorage(
                         survivor.id!,
@@ -1306,6 +1327,7 @@ export function HuntSurvivorCard({
                       id={`lumi-${survivor.id}`}
                       type="number"
                       value={survivor.lumi}
+                      readOnly={isMobile}
                       onChange={(e) =>
                         saveToLocalStorage(
                           survivor.id!,

@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { SurvivorType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
@@ -42,6 +43,8 @@ export function SurvivalCard({
   selectedSettlement,
   selectedSurvivor
 }: SurvivalCardProps): ReactElement {
+  const isMobile = useIsMobile()
+
   /**
    * Update Survival Points
    */
@@ -177,9 +180,14 @@ export function SurvivalCard({
                     'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
                   )}
                   value={selectedSurvivor?.survival ?? '1'}
-                  readOnly
-                  name="survival-mobile"
-                  id="survival-mobile"
+                  readOnly={isMobile}
+                  onChange={
+                    !isMobile
+                      ? (e) => updateSurvival(e.target.value)
+                      : undefined
+                  }
+                  name="survival"
+                  id="survival"
                 />
               </NumericInput>
               <label className="font-bold text-left">Survival</label>
@@ -291,9 +299,14 @@ export function SurvivalCard({
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                       value={selectedSurvivor?.systemicPressure ?? '0'}
-                      readOnly
-                      name="systemic-pressure-mobile"
-                      id="systemic-pressure-mobile"
+                      readOnly={isMobile}
+                      onChange={
+                        !isMobile
+                          ? (e) => updateSystemicPressure(e.target.value)
+                          : undefined
+                      }
+                      name="systemic-pressure"
+                      id="systemic-pressure"
                     />
                   </NumericInput>
                   <label className="text-xs">

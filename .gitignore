@@ -10,3 +10,4 @@ out/
 *.tsbuildinfo
 campaign.json
 next-env.d.ts
+.env

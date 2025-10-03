@@ -15,7 +15,7 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import { PlusIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 /**
  * Data Table Properties
@@ -52,25 +52,37 @@ export function SurvivorDataTable<TData, TValue>({
   )
   const [rowSelection, setRowSelection] = useState({})
 
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection
-    }
-  })
+  const tableConfig = useMemo(
+    () => ({
+      data,
+      columns,
+      onSortingChange: setSorting,
+      onColumnFiltersChange: setColumnFilters,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      onColumnVisibilityChange: setColumnVisibility,
+      onRowSelectionChange: setRowSelection,
+      state: {
+        sorting,
+        columnFilters,
+        columnVisibility,
+        rowSelection
+      }
+    }),
+    [data, columns, sorting, columnFilters, columnVisibility, rowSelection]
+  )
+
+  const table = useReactTable(tableConfig)
 
   const { rows } = table.getRowModel()
+
+  const handleFilterChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      table.getColumn('name')?.setFilterValue(event.target.value)
+    },
+    [table]
+  )
 
   return (
     <div className="flex flex-col gap-2 flex-shrink-0">
@@ -78,9 +90,7 @@ export function SurvivorDataTable<TData, TValue>({
         <Input
           placeholder="Filter survivors..."
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
+          onChange={handleFilterChange}
           className="max-w-sm"
         />
 

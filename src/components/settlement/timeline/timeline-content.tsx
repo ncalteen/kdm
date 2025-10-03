@@ -1,8 +1,8 @@
 'use client'
 
 import { TimelineYearRow } from '@/components/settlement/timeline/timeline-year-row'
-import { Settlement } from '@/schemas/settlement'
-import { KeyboardEvent, memo, useMemo } from 'react'
+import { Settlement, TimelineYear } from '@/schemas/settlement'
+import { KeyboardEvent, memo, useCallback, useMemo } from 'react'
 
 /**
  * Timeline Content Component Properties
@@ -57,8 +57,7 @@ export const TimelineContent = memo(
     showStoryEventIcon,
     usesNormalNumbering
   }: TimelineContentProps) => {
-    // Memoize item data to prevent unnecessary re-renders
-    const itemData = useMemo(
+    const memoizedCallbacks = useMemo(
       () => ({
         addEventToYear,
         editEvent,
@@ -67,7 +66,6 @@ export const TimelineContent = memo(
         isEventBeingEdited,
         removeEventFromYear,
         saveEvent,
-        selectedSettlement,
         setInputRef,
         showStoryEventIcon,
         usesNormalNumbering
@@ -80,11 +78,31 @@ export const TimelineContent = memo(
         isEventBeingEdited,
         removeEventFromYear,
         saveEvent,
-        selectedSettlement,
         setInputRef,
         showStoryEventIcon,
         usesNormalNumbering
       ]
+    )
+
+    const timelineData = useMemo(
+      () => selectedSettlement?.timeline || [],
+      [selectedSettlement?.timeline]
+    )
+
+    // Create a render function for timeline rows to avoid inline object creation
+    const renderTimelineRow = useCallback(
+      (yearData: TimelineYear, index: number) => (
+        <TimelineYearRow
+          key={index}
+          index={index}
+          style={{}}
+          data={{
+            ...memoizedCallbacks,
+            selectedSettlement
+          }}
+        />
+      ),
+      [memoizedCallbacks, selectedSettlement]
     )
 
     return (
@@ -97,14 +115,7 @@ export const TimelineContent = memo(
           <div />
         </div>
         <div className="flex-1 overflow-y-auto">
-          {selectedSettlement?.timeline?.map((yearData, index) => (
-            <TimelineYearRow
-              key={index}
-              index={index}
-              style={{}}
-              data={itemData}
-            />
-          ))}
+          {timelineData.map(renderTimelineRow)}
         </div>
       </div>
     )

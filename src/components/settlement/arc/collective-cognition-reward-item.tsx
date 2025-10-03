@@ -4,10 +4,11 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 /**
  * Reward Item Component Properties
@@ -57,18 +58,25 @@ export function RewardItem({
   onSave,
   onToggleUnlocked
 }: RewardItemProps): ReactElement {
+  const isMobile = useIsMobile()
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
   const nameInputRef = useRef<HTMLInputElement>(null)
   const ccInputRef = useRef<HTMLInputElement>(null)
 
+  // Track the current CC value for the NumericInput
+  const [currentCcValue, setCurrentCcValue] = useState(reward?.cc || 1)
+
   useEffect(() => {
     console.debug('[RewardItem] Changed Reward:', reward)
 
     if (nameInputRef.current) nameInputRef.current.value = reward?.name || ''
-    if (ccInputRef.current)
+    if (ccInputRef.current) {
       ccInputRef.current.value = reward?.cc?.toString() || '1'
+      setCurrentCcValue(reward?.cc || 1)
+    }
   }, [reward])
 
   /**
@@ -85,7 +93,7 @@ export function RewardItem({
 
       onSave(
         nameInputRef.current.value,
-        parseInt(ccInputRef.current.value) || 1,
+        parseInt(ccInputRef.current.value, 10) || 1,
         index
       )
     }
@@ -116,11 +124,10 @@ export function RewardItem({
       {/* CC Value Input */}
       <NumericInput
         label="Collective Cognition"
-        value={reward?.cc ?? 1}
+        value={currentCcValue}
         onChange={(value) => {
-          if (ccInputRef.current) {
-            ccInputRef.current.value = value.toString()
-          }
+          setCurrentCcValue(value)
+          if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
         min={0}>
         <Input
@@ -131,6 +138,12 @@ export function RewardItem({
           disabled={isDisabled}
           min={0}
           onKeyDown={handleKeyDown}
+          onChange={
+            !isMobile
+              ? (e) => setCurrentCcValue(parseInt(e.target.value, 10))
+              : undefined
+          }
+          readOnly={isMobile}
           name={`cc-value-${index}`}
           id={`cc-value-${index}`}
         />
@@ -170,7 +183,7 @@ export function RewardItem({
             size="icon"
             onClick={() => {
               if (nameInputRef.current && ccInputRef.current) {
-                const ccValue = parseInt(ccInputRef.current.value) || 1
+                const ccValue = parseInt(ccInputRef.current.value, 10) || 1
                 onSave(nameInputRef.current.value, ccValue, index)
               }
             }}
@@ -200,8 +213,13 @@ export function NewRewardItem({
   onCancel,
   onSave
 }: NewRewardItemProps): ReactElement {
+  const isMobile = useIsMobile()
+
   const nameInputRef = useRef<HTMLInputElement>(null)
   const ccInputRef = useRef<HTMLInputElement>(null)
+
+  // Track the current CC value for the NumericInput
+  const [currentCcValue, setCurrentCcValue] = useState(1)
 
   /**
    * Handles the key down event for the input fields.
@@ -217,7 +235,7 @@ export function NewRewardItem({
 
       onSave(
         nameInputRef.current.value,
-        parseInt(ccInputRef.current.value) || 1
+        parseInt(ccInputRef.current.value, 10) || 1
       )
     } else if (e.key === 'Escape') {
       e.preventDefault()
@@ -238,11 +256,10 @@ export function NewRewardItem({
       {/* CC Value Input */}
       <NumericInput
         label="Collective Cognition"
-        value={1}
+        value={currentCcValue}
         onChange={(value) => {
-          if (ccInputRef.current) {
-            ccInputRef.current.value = value.toString()
-          }
+          setCurrentCcValue(value)
+          if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
         min={0}>
         <Input
@@ -252,6 +269,12 @@ export function NewRewardItem({
           defaultValue={1}
           min={0}
           onKeyDown={handleKeyDown}
+          onChange={
+            !isMobile
+              ? (e) => setCurrentCcValue(parseInt(e.target.value, 10))
+              : undefined
+          }
+          readOnly={isMobile}
           name="new-cc-value"
           id="new-cc-value"
         />
@@ -274,7 +297,7 @@ export function NewRewardItem({
           size="icon"
           onClick={() => {
             if (nameInputRef.current && ccInputRef.current) {
-              const ccValue = parseInt(ccInputRef.current.value) || 1
+              const ccValue = parseInt(ccInputRef.current.value, 10) || 1
               onSave(nameInputRef.current.value, ccValue)
             }
           }}

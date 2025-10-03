@@ -73,9 +73,10 @@ export function ResourceItem({
   onSave,
   selectedSettlement
 }: ResourceItemProps): ReactElement {
+  const isMobile = useIsMobile()
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
-  const isMobile = useIsMobile()
 
   const nameInputRef = useRef<HTMLInputElement>(null)
   const amountInputRef = useRef<HTMLInputElement>(null)
@@ -190,6 +191,7 @@ export function ResourceItem({
                       type="number"
                       min={0}
                       placeholder="0"
+                      readOnly={isMobile}
                       defaultValue={
                         selectedSettlement?.resources?.[index].amount
                       }
@@ -239,6 +241,7 @@ export function ResourceItem({
                         defaultValue={
                           selectedSettlement?.resources?.[index].amount
                         }
+                        readOnly={isMobile}
                         onChange={handleAmountChange}
                         className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                         name={`resource-amount-mobile-${index}`}
@@ -315,7 +318,7 @@ export function ResourceItem({
                     type="number"
                     min={0}
                     placeholder="0"
-                    disabled={true}
+                    readOnly={isMobile}
                     defaultValue={selectedSettlement?.resources?.[index].amount}
                     onChange={handleAmountChange}
                     className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -381,7 +384,7 @@ export function ResourceItem({
                       type="number"
                       min={0}
                       placeholder="0"
-                      disabled={true}
+                      readOnly={isMobile}
                       defaultValue={
                         selectedSettlement?.resources?.[index].amount
                       }
@@ -450,6 +453,7 @@ export function NewResourceItem({
   onSave
 }: NewResourceItemProps): ReactElement {
   const isMobile = useIsMobile()
+
   const nameInputRef = useRef<HTMLInputElement>(null)
   const amountInputRef = useRef<HTMLInputElement>(null)
 
