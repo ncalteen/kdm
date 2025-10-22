@@ -248,30 +248,23 @@ export function ActiveHuntCard({
         />
       </div>
 
-      {/* Monster Card */}
-      <HuntMonsterCard
-        saveSelectedHunt={saveSelectedHunt}
-        selectedHunt={selectedHunt}
-      />
+      <div className="flex flex-row gap-2">
+        {/* Monster Card */}
+        <HuntMonsterCard
+          saveSelectedHunt={saveSelectedHunt}
+          selectedHunt={selectedHunt}
+        />
 
-      {/* Hunt Party Survivors */}
-      <div className="w-full flex flex-row flex-wrap">
-        <div className="flex-1">
-          <HuntSurvivorsCard
-            saveSelectedHunt={saveSelectedHunt}
-            selectedHunt={selectedHunt}
-            selectedSettlement={selectedSettlement}
-            selectedSurvivor={selectedSurvivor}
-            setSurvivors={setSurvivors}
-            survivors={survivors}
-            updateSelectedSurvivor={updateSelectedSurvivor}
-          />
-        </div>
-        <div className="flex-1">
-          {/*
-            TODO: Survivor Gear Card?
-           */}
-        </div>
+        {/* Hunt Party Survivors */}
+        <HuntSurvivorsCard
+          saveSelectedHunt={saveSelectedHunt}
+          selectedHunt={selectedHunt}
+          selectedSettlement={selectedSettlement}
+          selectedSurvivor={selectedSurvivor}
+          setSurvivors={setSurvivors}
+          survivors={survivors}
+          updateSelectedSurvivor={updateSelectedSurvivor}
+        />
       </div>
 
       {/* Cancel Hunt Confirmation Dialog */}

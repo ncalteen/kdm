@@ -1,16 +1,21 @@
 'use client'
 
 import { HuntSurvivorCard } from '@/components/hunt/hunt-survivors/hunt-survivor-card'
+import { Carousel } from '@/components/ui/carousel'
 import {
   NextButton,
   PrevButton,
   usePrevNextButtons
-} from '@/components/hunt/hunt-survivors/nav-buttons'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { useSidebar } from '@/components/ui/sidebar'
+} from '@/components/ui/embla-carousel-arrow-buttons'
+import {
+  DotButton,
+  useDotButton
+} from '@/components/ui/embla-carousel-dot-button'
+import { ColorChoice } from '@/lib/enums'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
+import Fade from 'embla-carousel-fade'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ReactElement, useMemo } from 'react'
 
@@ -49,11 +54,10 @@ export function HuntSurvivorsCard({
   survivors,
   updateSelectedSurvivor
 }: HuntSurvivorsCardProps): ReactElement {
-  const { isMobile, state } = useSidebar()
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Fade()])
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true
-  })
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi)
 
   const {
     prevBtnDisabled,
@@ -71,39 +75,33 @@ export function HuntSurvivorsCard({
     return s
   }, [selectedHunt?.survivors, selectedHunt?.scout])
 
-  // Calculate width based on sidebar state
-  const getCardWidth = () => {
-    // Full width on mobile (sidebar is overlay) minus gap
-    if (isMobile) return '98vw'
+  /**
+   * Get Survivor Color
+   */
+  const getSurvivorColor = (survivorId: number): ColorChoice => {
+    if (!selectedHunt?.survivorColors) return ColorChoice.SLATE
 
-    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
-    if (state === 'expanded') return 'calc(100vw - 17rem)'
+    const survivorColor = selectedHunt.survivorColors.find(
+      (sc) => sc.id === survivorId
+    )
 
-    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
-    if (state === 'collapsed') return 'calc(100vw - 4rem)'
-
-    return '98.5vw' // Fallback to full width
+    return survivorColor?.color || ColorChoice.SLATE
   }
 
   if (huntSurvivors.length === 0 || !selectedSettlement) return <></>
 
-  return (
-    <Card
-      className="embla pt-0 gap-0 min-w-[430px]"
-      style={{
-        width: getCardWidth()
-      }}>
-      <CardHeader className="embla__controls">
-        <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-        <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
-      </CardHeader>
+  // Get filtered survivors for mapping
+  const filteredSurvivors = survivors?.filter((s) =>
+    huntSurvivors.includes(s.id)
+  )
 
-      <CardContent className="overflow-hidden" ref={emblaRef}>
+  return (
+    <Carousel className="embla p-0">
+      <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
-          {survivors
-            ?.filter((s) => huntSurvivors.includes(s.id))
-            .map((survivor) => (
-              <div className="embla__slide" key={survivor.id}>
+          {filteredSurvivors?.map((survivor) => (
+            <div className="embla__slide" key={survivor.id}>
+              <div className="embla__slide__number">
                 <HuntSurvivorCard
                   saveSelectedHunt={saveSelectedHunt}
                   selectedHunt={selectedHunt}
@@ -115,9 +113,41 @@ export function HuntSurvivorsCard({
                   updateSelectedSurvivor={updateSelectedSurvivor}
                 />
               </div>
-            ))}
+            </div>
+          ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      <div className="embla__controls">
+        <div className="embla__buttons">
+          <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
+          <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+        </div>
+
+        <div className="embla__dots">
+          {scrollSnaps.map((_, index) => {
+            const survivor = filteredSurvivors?.[index]
+            const survivorColor = survivor
+              ? getSurvivorColor(survivor.id)
+              : ColorChoice.SLATE
+            const isSelected = index === selectedIndex
+
+            return (
+              <DotButton
+                key={index}
+                onClick={() => onDotButtonClick(index)}
+                className={`embla__dot${isSelected ? ' embla__dot--selected' : ''}`}
+                style={{
+                  ['--dot-color' as string]: isSelected
+                    ? 'hsl(var(--foreground))'
+                    : 'transparent',
+                  ['--dot-bg' as string]: `var(--color-${survivorColor.toLowerCase()}-500)`
+                }}
+              />
+            )
+          })}
+        </div>
+      </div>
+    </Carousel>
   )
 }

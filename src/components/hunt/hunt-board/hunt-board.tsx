@@ -99,11 +99,11 @@ export function HuntBoard({
       <CardContent className="p-0 w-full overflow-x-auto">
         <DndContext onDragEnd={handleDragEnd}>
           {/* Hunt Board Grid */}
-          <div className="w-full overflow-x-auto gap-1 p-2 bg-muted/30 rounded-lg relative flex flex-row items-center">
+          <div className="w-full overflow-x-auto gap-1 p-2 bg-muted/30 rounded-lg relative flex flex-row flex-wrap items-center justify-center">
             {spaces.map((space) => (
               <div
                 key={space.index}
-                className="relative w-[80px] sm:w-[100px] md:w-[120px] h-[80px] sm:h-[100px] md:h-[120px] flex-shrink-0 flex-grow-2 flex items-center justify-center">
+                className="relative w-[75px] sm:w-[85px] md:w-[90px] h-[75px] sm:h-[85px] md:h-[90px] flex-shrink-0 flex items-center justify-center">
                 <HuntBoardSpace
                   index={space.index}
                   label={space.label ?? ''}
