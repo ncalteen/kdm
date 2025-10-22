@@ -92,10 +92,10 @@ export function CourageUnderstandingCard({
         {/* Desktop Layout */}
         <div className="hidden lg:flex flex-wrap justify-between mx-2">
           {/* Courage Section */}
-          <div className="flex flex-col">
+          <div className="flex flex-col w-[45%]">
             <div className="font-bold text-md mb-1">Courage</div>
 
-            <div className="flex flex-row gap-1 lg:gap-2">
+            <div className="flex flex-row justify-between">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
@@ -141,10 +141,10 @@ export function CourageUnderstandingCard({
           <div className="h-18 w-px bg-gray-800" />
 
           {/* Understanding Section */}
-          <div className="flex flex-col">
+          <div className="flex flex-col w-[45%]">
             <div className="font-bold text-md mb-1">Understanding</div>
 
-            <div className="flex flex-row gap-1 lg:gap-2">
+            <div className="flex flex-row justify-between">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox

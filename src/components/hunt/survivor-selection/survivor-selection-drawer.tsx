@@ -79,7 +79,7 @@ export function SurvivorSelectionDrawer({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="justify-start w-[165px]">
+        <Button variant="outline" className="justify-start">
           <UsersIcon className="h-4 w-4" />
           {selectedSurvivors.length > 0
             ? `${selectedSurvivors.length} survivor(s)`

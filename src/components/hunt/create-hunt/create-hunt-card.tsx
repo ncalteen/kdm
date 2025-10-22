@@ -50,21 +50,29 @@ export function CreateHuntCard({
   setSelectedHunt,
   survivors
 }: CreateHuntCardProps): ReactElement {
-  const [selectedMonsterAccuracy, setSelectedMonsterAccuracy] =
+  const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
     useState<number>(0)
   const [selectedMonsterAIDeckSize, setSelectedMonsterAIDeckSize] =
     useState<number>(0)
-  const [selectedMonsterEvasion, setSelectedMonsterEvasion] =
+  const [selectedMonsterDamage, setSelectedMonsterDamage] = useState<number>(0)
+  const [selectedMonsterDamageTokens, setSelectedMonsterDamageTokens] =
+    useState<number>(0)
+  const [selectedMonsterEvasionTokens, setSelectedMonsterEvasionTokens] =
     useState<number>(0)
   const [selectedMonsterLevel, setSelectedMonsterLevel] =
     useState<MonsterLevel>(MonsterLevel.LEVEL_1)
-  const [selectedMonsterLuck, setSelectedMonsterLuck] = useState<number>(0)
+  const [selectedMonsterLuckTokens, setSelectedMonsterLuckTokens] =
+    useState<number>(0)
   const [selectedMonsterMoods, setSelectedMonsterMoods] = useState<string[]>([])
   const [selectedMonsterMovement, setSelectedMonsterMovement] =
     useState<number>(6)
+  const [selectedMonsterMovementTokens, setSelectedMonsterMovementTokens] =
+    useState<number>(0)
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('')
   const [selectedMonsterSpeed, setSelectedMonsterSpeed] = useState<number>(0)
-  const [selectedMonsterStrength, setSelectedMonsterStrength] =
+  const [selectedMonsterSpeedTokens, setSelectedMonsterSpeedTokens] =
+    useState<number>(0)
+  const [selectedMonsterStrengthTokens, setSelectedMonsterStrengthTokens] =
     useState<number>(0)
   const [selectedMonsterToughness, setSelectedMonsterToughness] =
     useState<number>(6)
@@ -161,17 +169,25 @@ export function CreateHuntCard({
     const huntData: Hunt = {
       id: getNextHuntId(),
       monster: {
-        accuracy: selectedMonsterAccuracy,
+        accuracy: 0,
+        accuracyTokens: selectedMonsterAccuracyTokens,
         aiDeckSize: selectedMonsterAIDeckSize,
-        evasion: selectedMonsterEvasion,
+        damage: selectedMonsterDamage,
+        damageTokens: selectedMonsterDamageTokens,
+        evasion: 0,
+        evasionTokens: selectedMonsterEvasionTokens,
         knockedDown: false,
         level: selectedMonsterLevel,
-        luck: selectedMonsterLuck,
+        luck: 0,
+        luckTokens: selectedMonsterLuckTokens,
         moods: selectedMonsterMoods,
         movement: selectedMonsterMovement,
+        movementTokens: selectedMonsterMovementTokens,
         name: selectedMonsterName,
         speed: selectedMonsterSpeed,
-        strength: selectedMonsterStrength,
+        speedTokens: selectedMonsterSpeedTokens,
+        strength: 0,
+        strengthTokens: selectedMonsterStrengthTokens,
         toughness: selectedMonsterToughness,
         traits: selectedMonsterTraits,
         type: selectedMonsterType,
@@ -191,16 +207,20 @@ export function CreateHuntCard({
     )
 
     // Reset form
-    setSelectedMonsterAccuracy(0)
+    setSelectedMonsterAccuracyTokens(0)
     setSelectedMonsterAIDeckSize(0)
-    setSelectedMonsterEvasion(0)
+    setSelectedMonsterDamage(0)
+    setSelectedMonsterDamageTokens(0)
+    setSelectedMonsterEvasionTokens(0)
     setSelectedMonsterLevel(MonsterLevel.LEVEL_1)
-    setSelectedMonsterLuck(0)
+    setSelectedMonsterLuckTokens(0)
     setSelectedMonsterMoods([])
     setSelectedMonsterMovement(6)
+    setSelectedMonsterMovementTokens(0)
     setSelectedMonsterName('')
     setSelectedMonsterSpeed(0)
-    setSelectedMonsterStrength(0)
+    setSelectedMonsterSpeedTokens(0)
+    setSelectedMonsterStrengthTokens(0)
     setSelectedMonsterToughness(6)
     setSelectedMonsterTraits([])
     setSelectedMonsterType(undefined)
@@ -219,13 +239,6 @@ export function CreateHuntCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 w-full">
-        {/* Monster Selection */}
-        <div className="mb-2">
-          <h3 className="text-sm font-semibold text-muted-foreground text-center">
-            Monster Selection
-          </h3>
-        </div>
-
         {/* Hunt Quarry */}
         <div className="flex items-center justify-between">
           <label className="text-left whitespace-nowrap min-w-[90px]">
@@ -269,16 +282,6 @@ export function CreateHuntCard({
           </Select>
         </div>
 
-        {/* Monster Type (Read-only, auto-set) */}
-        <div className="flex items-center justify-between">
-          <Label className="text-left whitespace-nowrap min-w-[90px]">
-            Type
-          </Label>
-          <div className="w-full px-3 py-2 text-sm border rounded-md bg-muted">
-            {selectedMonsterType || 'Select a monster'}
-          </div>
-        </div>
-
         {/* AI Deck Size */}
         <div className="flex items-center justify-between">
           <Label className="text-left whitespace-nowrap min-w-[90px]">
@@ -308,15 +311,16 @@ export function CreateHuntCard({
         {/* Monster Attributes */}
         <div className="mb-2">
           <h3 className="text-sm font-semibold text-muted-foreground text-center">
-            Monster Attributes
+            Attributes
           </h3>
         </div>
 
-        {/* Monster Attributes Grid */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {/* Movement */}
           <div className="space-y-1">
-            <Label htmlFor="monster-movement" className="text-xs">
+            <Label
+              htmlFor="monster-movement"
+              className="text-xs justify-center">
               Movement
             </Label>
             <NumericInput
@@ -340,7 +344,9 @@ export function CreateHuntCard({
 
           {/* Toughness */}
           <div className="space-y-1">
-            <Label htmlFor="monster-toughness" className="text-xs">
+            <Label
+              htmlFor="monster-toughness"
+              className="text-xs justify-center">
               Toughness
             </Label>
             <NumericInput
@@ -364,7 +370,7 @@ export function CreateHuntCard({
 
           {/* Speed */}
           <div className="space-y-1">
-            <Label htmlFor="monster-speed" className="text-xs">
+            <Label htmlFor="monster-speed" className="text-xs justify-center">
               Speed
             </Label>
             <NumericInput
@@ -386,49 +392,164 @@ export function CreateHuntCard({
             </NumericInput>
           </div>
 
-          {/* Strength */}
+          {/* Damage */}
           <div className="space-y-1">
-            <Label htmlFor="monster-strength" className="text-xs">
+            <Label htmlFor="monster-damage" className="text-xs justify-center">
               Damage
             </Label>
             <NumericInput
               label="Damage"
-              value={selectedMonsterStrength}
-              onChange={setSelectedMonsterStrength}
+              value={selectedMonsterDamage}
+              onChange={setSelectedMonsterDamage}
               min={0}
               readOnly={false}>
               <Input
-                id="monster-strength"
+                id="monster-damage"
                 type="number"
-                value={selectedMonsterStrength}
+                value={selectedMonsterDamage}
                 onChange={(e) =>
-                  setSelectedMonsterStrength(parseInt(e.target.value) || 0)
+                  setSelectedMonsterDamage(parseInt(e.target.value) || 0)
                 }
                 min="0"
                 className="text-center no-spinners"
               />
             </NumericInput>
           </div>
+        </div>
 
+        <Separator className="my-2" />
+
+        {/* Monster Tokens */}
+        <div className="mb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground text-center">
+            Tokens
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {/* Movement */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-movement-tokens"
+              className="text-xs justify-center">
+              Movement
+            </Label>
+            <NumericInput
+              label="Movement Tokens"
+              value={selectedMonsterMovementTokens}
+              onChange={setSelectedMonsterMovementTokens}
+              readOnly={false}>
+              <Input
+                id="monster-movement-tokens"
+                type="number"
+                value={selectedMonsterMovementTokens}
+                onChange={(e) =>
+                  setSelectedMonsterMovementTokens(
+                    parseInt(e.target.value) || 0
+                  )
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Speed */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-speed-tokens"
+              className="text-xs justify-center">
+              Speed
+            </Label>
+            <NumericInput
+              label="Speed Tokens"
+              value={selectedMonsterSpeedTokens}
+              onChange={setSelectedMonsterSpeedTokens}
+              readOnly={false}>
+              <Input
+                id="monster-speed-tokens"
+                type="number"
+                value={selectedMonsterSpeedTokens}
+                onChange={(e) =>
+                  setSelectedMonsterSpeedTokens(parseInt(e.target.value) || 0)
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Damage */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-damage-tokens"
+              className="text-xs justify-center">
+              Damage
+            </Label>
+            <NumericInput
+              label="Damage Tokens"
+              value={selectedMonsterDamageTokens}
+              onChange={setSelectedMonsterDamageTokens}
+              readOnly={false}>
+              <Input
+                id="monster-damage-tokens"
+                type="number"
+                value={selectedMonsterDamageTokens}
+                onChange={(e) =>
+                  setSelectedMonsterDamageTokens(parseInt(e.target.value) || 0)
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2">
           {/* Accuracy */}
           <div className="space-y-1">
-            <Label htmlFor="monster-accuracy" className="text-xs">
+            <Label
+              htmlFor="monster-accuracy-tokens"
+              className="text-xs justify-center">
               Accuracy
             </Label>
             <NumericInput
-              label="Accuracy"
-              value={selectedMonsterAccuracy}
-              onChange={setSelectedMonsterAccuracy}
-              min={0}
+              label="Accuracy Tokens"
+              value={selectedMonsterAccuracyTokens}
+              onChange={setSelectedMonsterAccuracyTokens}
               readOnly={false}>
               <Input
-                id="monster-accuracy"
+                id="monster-accuracy-tokens"
                 type="number"
-                value={selectedMonsterAccuracy}
+                value={selectedMonsterAccuracyTokens}
                 onChange={(e) =>
-                  setSelectedMonsterAccuracy(parseInt(e.target.value) || 0)
+                  setSelectedMonsterAccuracyTokens(
+                    parseInt(e.target.value) || 0
+                  )
                 }
-                min="0"
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Strength */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-strength-tokens"
+              className="text-xs justify-center">
+              Strength
+            </Label>
+            <NumericInput
+              label="Strength Tokens"
+              value={selectedMonsterStrengthTokens}
+              onChange={setSelectedMonsterStrengthTokens}
+              readOnly={false}>
+              <Input
+                id="monster-strength-tokens"
+                type="number"
+                value={selectedMonsterStrengthTokens}
+                onChange={(e) =>
+                  setSelectedMonsterStrengthTokens(
+                    parseInt(e.target.value) || 0
+                  )
+                }
                 className="text-center no-spinners"
               />
             </NumericInput>
@@ -436,23 +557,23 @@ export function CreateHuntCard({
 
           {/* Evasion */}
           <div className="space-y-1">
-            <Label htmlFor="monster-evasion" className="text-xs">
+            <Label
+              htmlFor="monster-evasion-tokens"
+              className="text-xs justify-center">
               Evasion
             </Label>
             <NumericInput
-              label="Evasion"
-              value={selectedMonsterEvasion}
-              onChange={setSelectedMonsterEvasion}
-              min={0}
+              label="Evasion Tokens"
+              value={selectedMonsterEvasionTokens}
+              onChange={setSelectedMonsterEvasionTokens}
               readOnly={false}>
               <Input
-                id="monster-evasion"
+                id="monster-evasion-tokens"
                 type="number"
-                value={selectedMonsterEvasion}
+                value={selectedMonsterEvasionTokens}
                 onChange={(e) =>
-                  setSelectedMonsterEvasion(parseInt(e.target.value) || 0)
+                  setSelectedMonsterEvasionTokens(parseInt(e.target.value) || 0)
                 }
-                min="0"
                 className="text-center no-spinners"
               />
             </NumericInput>
@@ -460,23 +581,23 @@ export function CreateHuntCard({
 
           {/* Luck */}
           <div className="space-y-1">
-            <Label htmlFor="monster-luck" className="text-xs">
+            <Label
+              htmlFor="monster-luck-tokens"
+              className="text-xs justify-center">
               Luck
             </Label>
             <NumericInput
-              label="Luck"
-              value={selectedMonsterLuck}
-              onChange={setSelectedMonsterLuck}
-              min={0}
+              label="Luck Tokens"
+              value={selectedMonsterLuckTokens}
+              onChange={setSelectedMonsterLuckTokens}
               readOnly={false}>
               <Input
-                id="monster-luck"
+                id="monster-luck-tokens"
                 type="number"
-                value={selectedMonsterLuck}
+                value={selectedMonsterLuckTokens}
                 onChange={(e) =>
-                  setSelectedMonsterLuck(parseInt(e.target.value) || 0)
+                  setSelectedMonsterLuckTokens(parseInt(e.target.value) || 0)
                 }
-                min="0"
                 className="text-center no-spinners"
               />
             </NumericInput>
@@ -488,41 +609,31 @@ export function CreateHuntCard({
         {/* Survivor Selection */}
         <div className="mb-2">
           <h3 className="text-sm font-semibold text-muted-foreground text-center">
-            Survivor Selection
+            Survivors
           </h3>
         </div>
 
         {/* Survivors */}
-        <div className="flex items-center justify-between">
-          <Label className="text-left whitespace-nowrap min-w-[80px]">
-            Survivors
-          </Label>
-          <SurvivorSelectionDrawer
-            title="Select Hunt Party"
-            description="Choose up to 4 survivors to embark on this hunt."
-            survivors={availableSurvivors}
-            selectedSurvivors={selectedSurvivors}
-            selectedScout={selectedScout}
-            onSelectionChange={setSelectedSurvivors}
-            maxSelection={4}
-          />
-        </div>
+        <SurvivorSelectionDrawer
+          title="Select Hunt Party"
+          description="Choose up to 4 survivors to embark on this hunt."
+          survivors={availableSurvivors}
+          selectedSurvivors={selectedSurvivors}
+          selectedScout={selectedScout}
+          onSelectionChange={setSelectedSurvivors}
+          maxSelection={4}
+        />
 
         {/* Scout */}
         {selectedSettlement?.usesScouts && (
-          <div className="flex items-center justify-between">
-            <Label className="text-left whitespace-nowrap min-w-[80px]">
-              Scout
-            </Label>
-            <ScoutSelectionDrawer
-              title="Select Scout"
-              description="Choose a single scout. Their skills will help navigate the dangers ahead."
-              survivors={availableSurvivors}
-              selectedSurvivors={selectedSurvivors}
-              selectedScout={selectedScout}
-              onSelectionChange={setSelectedScout}
-            />
-          </div>
+          <ScoutSelectionDrawer
+            title="Select Scout"
+            description="Choose a single scout. Their skills will help navigate the dangers ahead."
+            survivors={availableSurvivors}
+            selectedSurvivors={selectedSurvivors}
+            selectedScout={selectedScout}
+            onSelectionChange={setSelectedScout}
+          />
         )}
 
         {availableSurvivors.length === 0 && (

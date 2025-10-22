@@ -114,8 +114,8 @@ export function HuntXPCard({
   const isDisabled = (index: number) => index > (selectedSurvivor?.huntXP || 0)
 
   return (
-    <Card className="p-2 border-0 lg:h-[85px]">
-      <CardContent className="p-0">
+    <Card className="p-2 border-0">
+      <CardContent className="p-0 lg:h-[70px]">
         <div className="flex flex-col">
           <div className="flex items-center h-[36px]">
             {/* Hunt XP */}

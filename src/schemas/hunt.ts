@@ -21,26 +21,42 @@ export const SurvivorColorSchema = z.object({
 export const HuntMonsterSchema = z.object({
   /** Accuracy */
   accuracy: z.number().int().min(0).default(0),
+  /** Accuracy Tokens */
+  accuracyTokens: z.number().int().default(0),
   /** AI Deck Size */
   aiDeckSize: z.number().int().min(0).default(0),
+  /** Damage */
+  damage: z.number().int().min(0).default(0),
+  /** Damage Tokens */
+  damageTokens: z.number().int().default(0),
   /** Evasion */
   evasion: z.number().int().min(0).default(0),
+  /** Evasion Tokens */
+  evasionTokens: z.number().int().default(0),
   /** Knocked Down */
   knockedDown: z.boolean().default(false),
   /** Monster Level */
   level: z.nativeEnum(MonsterLevel).default(MonsterLevel.LEVEL_1),
   /** Luck */
   luck: z.number().int().min(0).default(0),
+  /** Luck Tokens */
+  luckTokens: z.number().int().default(0),
   /** Moods */
   moods: z.array(z.string()).default([]),
   /** Movement */
   movement: z.number().int().min(0).default(0),
+  /** Movement Tokens */
+  movementTokens: z.number().int().default(0),
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
   /** Speed */
   speed: z.number().int().min(0).default(0),
+  /** Speed Tokens */
+  speedTokens: z.number().int().default(0),
   /** Strength */
   strength: z.number().int().min(0).default(0),
+  /** Strength Tokens */
+  strengthTokens: z.number().int().default(0),
   /** Toughness */
   toughness: z.number().int().min(0).default(0),
   /** Traits */

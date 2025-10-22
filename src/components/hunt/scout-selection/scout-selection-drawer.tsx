@@ -73,7 +73,7 @@ export function ScoutSelectionDrawer({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="justify-start w-[165px]">
+        <Button variant="outline" className="justify-start">
           <UserSearchIcon className="h-4 w-4" />
           {selectedScout ? '1 scout' : 'Select scout...'}
         </Button>

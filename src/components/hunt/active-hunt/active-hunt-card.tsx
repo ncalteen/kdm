@@ -1,6 +1,7 @@
 'use client'
 
 import { HuntBoard } from '@/components/hunt/hunt-board/hunt-board'
+import { HuntMonsterCard } from '@/components/hunt/hunt-monster/hunt-monster-card'
 import { HuntSurvivorsCard } from '@/components/hunt/hunt-survivors/hunt-survivors-card'
 import {
   AlertDialog,
@@ -28,7 +29,6 @@ import { Survivor } from '@/schemas/survivor'
 import { ChevronRightIcon, XIcon } from 'lucide-react'
 import { ReactElement, useCallback, useState } from 'react'
 import { toast } from 'sonner'
-import { HuntMonsterCard } from '../monster/hunt-monster-card'
 
 /**
  * Active Hunt Card Properties
@@ -309,7 +309,8 @@ export function ActiveHuntCard({
             <AlertDialogTitle>Proceed to Showdown</AlertDialogTitle>
             <AlertDialogDescription>
               The hunt will end and the showdown will begin. This action cannot
-              be undone.
+              be undone. Any changes to your settlement, survivors, or monster
+              will be retained.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
