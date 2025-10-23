@@ -268,36 +268,50 @@ export function HuntMonsterCard({
         </div>
       </CardHeader>
 
-      <CardContent className="flex flex-col p-2 py-0 mt-0 gap-0">
-        <HuntMonsterBaseStats
-          monster={monster}
-          saveMonsterData={saveMonsterData}
-        />
+      <CardContent className="p-2 py-0 mt-0">
+        <div className="flex flex-col lg:flex-row lg:gap-2">
+          {/* First Column: Base Stats and Attributes */}
+          <div className="flex flex-col flex-1">
+            <HuntMonsterBaseStats
+              monster={monster}
+              saveMonsterData={saveMonsterData}
+            />
 
-        <Separator className="my-1 col-span-4" />
+            <Separator className="my-1" />
 
-        <HuntMonsterAttributes
-          monster={monster}
-          saveMonsterData={saveMonsterData}
-        />
+            <HuntMonsterAttributes
+              monster={monster}
+              saveMonsterData={saveMonsterData}
+            />
+          </div>
 
-        <Separator className="my-2" />
+          {/* Separator between columns (hidden on mobile) */}
+          <div className="hidden lg:flex lg:items-stretch">
+            <Separator orientation="vertical" className="mx-2" />
+          </div>
 
-        <HuntMonsterTraitsMoods
-          monster={monster}
-          disabledTraits={disabledTraits}
-          disabledMoods={disabledMoods}
-          isAddingTrait={isAddingTrait}
-          isAddingMood={isAddingMood}
-          setIsAddingTrait={setIsAddingTrait}
-          setIsAddingMood={setIsAddingMood}
-          onEditTrait={onEditTrait}
-          onSaveTrait={onSaveTrait}
-          onRemoveTrait={onRemoveTrait}
-          onEditMood={onEditMood}
-          onSaveMood={onSaveMood}
-          onRemoveMood={onRemoveMood}
-        />
+          {/* Mobile separator (shown only on mobile) */}
+          <Separator className="my-2 lg:hidden" />
+
+          {/* Second Column: Traits and Moods */}
+          <div className="flex flex-col flex-1">
+            <HuntMonsterTraitsMoods
+              monster={monster}
+              disabledTraits={disabledTraits}
+              disabledMoods={disabledMoods}
+              isAddingTrait={isAddingTrait}
+              isAddingMood={isAddingMood}
+              setIsAddingTrait={setIsAddingTrait}
+              setIsAddingMood={setIsAddingMood}
+              onEditTrait={onEditTrait}
+              onSaveTrait={onSaveTrait}
+              onRemoveTrait={onRemoveTrait}
+              onEditMood={onEditMood}
+              onSaveMood={onSaveMood}
+              onRemoveMood={onRemoveMood}
+            />
+          </div>
+        </div>
       </CardContent>
     </Card>
   )

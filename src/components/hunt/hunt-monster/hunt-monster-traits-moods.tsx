@@ -336,7 +336,7 @@ export function HuntMonsterTraitsMoods({
   return (
     <>
       {/* Traits */}
-      <div className="mb-2">
+      <div className="mb-2 lg:mt-2">
         <h3 className="text-sm font-semibold text-muted-foreground text-center">
           Traits
           <Button
