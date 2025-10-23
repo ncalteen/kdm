@@ -8,6 +8,7 @@ import {
   DotButton,
   useDotButton
 } from '@/components/ui/embla-carousel-dot-button'
+import { useSidebar } from '@/components/ui/sidebar'
 import { ColorChoice } from '@/lib/enums'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -52,6 +53,8 @@ export function HuntSurvivorsCard({
   survivors,
   updateSelectedSurvivor
 }: HuntSurvivorsCardProps): ReactElement {
+  const { isMobile, state } = useSidebar()
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Fade()])
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
@@ -86,6 +89,22 @@ export function HuntSurvivorsCard({
     return survivorColor?.color || ColorChoice.SLATE
   }
 
+  /**
+   * Calculate width based on sidebar state
+   */
+  const getCarouselWidth = () => {
+    // Full width on mobile (sidebar is overlay) minus gap
+    if (isMobile) return '98vw'
+
+    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
+    if (state === 'expanded') return 'calc(100vw - 17rem)'
+
+    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
+    if (state === 'collapsed') return 'calc(100vw - 4rem)'
+
+    return '98.5vw' // Fallback to full width
+  }
+
   if (huntSurvivors.length === 0 || !selectedSettlement) return <></>
 
   // Get filtered survivors for mapping
@@ -94,7 +113,11 @@ export function HuntSurvivorsCard({
   )
 
   return (
-    <Carousel className="embla p-0 w-full">
+    <Carousel
+      className="embla p-0 max-w-full overflow-hidden"
+      style={{
+        width: getCarouselWidth()
+      }}>
       <div className="embla__controls">
         <div className="embla__buttons">
           <Button
