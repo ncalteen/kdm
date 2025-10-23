@@ -12,7 +12,9 @@ export const SurvivorHuntDetailsSchema = z.object({
   /** Survivor ID */
   id: z.number().int().min(0),
   /** Survivor Color Code */
-  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE)
+  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE),
+  /** Survivor Notes */
+  notes: z.string().default('')
 })
 
 /**
@@ -49,6 +51,8 @@ export const HuntMonsterSchema = z.object({
   movementTokens: z.number().int().default(0),
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Notes */
+  notes: z.string().default(''),
   /** Speed */
   speed: z.number().int().min(0).default(0),
   /** Speed Tokens */

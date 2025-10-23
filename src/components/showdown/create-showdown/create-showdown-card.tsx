@@ -166,13 +166,15 @@ export function CreateShowdownCard({
 
     const survivorDetails = selectedSurvivors.map((survivorId) => ({
       id: survivorId,
-      color: ColorChoice.SLATE
+      color: ColorChoice.SLATE,
+      notes: ''
     }))
 
     if (selectedScout)
       survivorDetails.push({
         id: selectedScout,
-        color: ColorChoice.SLATE
+        color: ColorChoice.SLATE,
+        notes: ''
       })
 
     // Save as partial data that will be merged by the hook

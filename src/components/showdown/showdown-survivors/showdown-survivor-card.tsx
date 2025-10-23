@@ -166,8 +166,10 @@ export function ShowdownSurvivorCard({
     if (!survivor?.id || !selectedShowdown) return
 
     const currentDetails = selectedShowdown.survivorDetails || []
+    const survivorDetail = currentDetails.find((sd) => sd.id === survivor.id)
     const updatedDetails = currentDetails.filter((sd) => sd.id !== survivor.id)
-    updatedDetails.push({ id: survivor.id, color })
+
+    updatedDetails.push({ ...survivorDetail!, color })
 
     saveSelectedShowdown(
       { survivorDetails: updatedDetails },

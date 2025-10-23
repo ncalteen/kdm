@@ -67,7 +67,9 @@ export const SurvivorShowdownDetailsSchema = z.object({
   /** Survivor ID */
   id: z.number().int().min(0),
   /** Survivor Color Code */
-  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE)
+  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE),
+  /** Survivor Notes */
+  notes: z.string().default('')
 })
 
 /**

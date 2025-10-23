@@ -4,13 +4,15 @@ import { HuntMonsterAttributes } from '@/components/hunt/hunt-monster/hunt-monst
 import { HuntMonsterBaseStats } from '@/components/hunt/hunt-monster/hunt-monster-base-stats'
 import { HuntMonsterTraitsMoods } from '@/components/hunt/hunt-monster/hunt-monster-traits-moods'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
 import { Hunt, HuntMonster, HuntMonsterSchema } from '@/schemas/hunt'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SkullIcon } from 'lucide-react'
+import { CheckIcon, SkullIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -55,6 +57,12 @@ export function HuntMonsterCard({
   const [isAddingTrait, setIsAddingTrait] = useState<boolean>(false)
   const [isAddingMood, setIsAddingMood] = useState<boolean>(false)
 
+  // State for managing monster notes
+  const [notesDraft, setNotesDraft] = useState<string>(
+    selectedHunt?.monster?.notes || ''
+  )
+  const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
+
   // Update form values when monster data changes
   useEffect(() => {
     if (monster) form.reset(monster)
@@ -78,6 +86,12 @@ export function HuntMonsterCard({
       return next
     })
   }, [monster?.traits, monster?.moods])
+
+  // Update notes draft when selected hunt changes
+  useEffect(() => {
+    setNotesDraft(selectedHunt?.monster?.notes || '')
+    setIsNotesDirty(false)
+  }, [selectedHunt?.monster?.notes])
 
   /**
    * Save Monster Data
@@ -222,6 +236,23 @@ export function HuntMonsterCard({
   const onEditMood = (index: number) =>
     setDisabledMoods((prev) => ({ ...prev, [index]: false }))
 
+  /**
+   * Handle Save Notes
+   */
+  const handleSaveNotes = () => {
+    setIsNotesDirty(false)
+
+    saveSelectedHunt(
+      {
+        monster: {
+          ...selectedHunt?.monster,
+          notes: notesDraft
+        } as HuntMonster
+      },
+      'The tales of this hunt are recorded for future generations.'
+    )
+  }
+
   if (!monster) return <></>
 
   return (
@@ -293,7 +324,7 @@ export function HuntMonsterCard({
           {/* Mobile separator (shown only on mobile) */}
           <Separator className="my-2 lg:hidden" />
 
-          {/* Second Column: Traits and Moods */}
+          {/* Second Column: Traits, Moods, and Notes */}
           <div className="flex flex-col flex-1">
             <HuntMonsterTraitsMoods
               monster={monster}
@@ -310,6 +341,38 @@ export function HuntMonsterCard({
               onSaveMood={onSaveMood}
               onRemoveMood={onRemoveMood}
             />
+
+            <Separator className="my-2" />
+
+            {/* Hunt Monster Notes Section */}
+            <div className="flex flex-col gap-2 pb-2">
+              <Textarea
+                value={notesDraft}
+                name="hunt-monster-notes"
+                id="hunt-monster-notes"
+                onChange={(e) => {
+                  setNotesDraft(e.target.value)
+                  setIsNotesDirty(
+                    e.target.value !== selectedHunt?.monster?.notes
+                  )
+                }}
+                placeholder="Add notes about your quarry..."
+                className="w-full resize-none"
+                style={{ minHeight: '125px' }}
+              />
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={handleSaveNotes}
+                  disabled={!isNotesDirty}
+                  title="Save hunt monster notes">
+                  <CheckIcon className="h-4 w-4" />
+                  Save
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>

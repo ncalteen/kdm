@@ -156,13 +156,15 @@ export function CreateHuntCard({
 
     const survivorDetails = selectedSurvivors.map((survivorId) => ({
       id: survivorId,
-      color: ColorChoice.SLATE
+      color: ColorChoice.SLATE,
+      notes: ''
     }))
 
     if (selectedScout)
       survivorDetails.push({
         id: selectedScout,
-        color: ColorChoice.SLATE
+        color: ColorChoice.SLATE,
+        notes: ''
       })
 
     // Save as partial data that will be merged by the hook
@@ -184,6 +186,7 @@ export function CreateHuntCard({
         movement: selectedMonsterMovement,
         movementTokens: selectedMonsterMovementTokens,
         name: selectedMonsterName,
+        notes: '',
         speed: selectedMonsterSpeed,
         speedTokens: selectedMonsterSpeedTokens,
         strength: 0,
@@ -194,7 +197,6 @@ export function CreateHuntCard({
         wounds: selectedMonsterWounds
       },
       monsterPosition: 12,
-      notes: '',
       scout: selectedScout || undefined,
       settlementId: selectedSettlement.id,
       survivorDetails,

@@ -3,6 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
 import {
@@ -29,6 +31,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { AvatarFallback } from '@radix-ui/react-avatar'
 import {
   BrainIcon,
+  CheckIcon,
   FootprintsIcon,
   HandMetalIcon,
   HardHatIcon,
@@ -82,6 +85,17 @@ export function HuntSurvivorCard({
 
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
+  // Get current survivor's hunt details
+  const survivorHuntDetails = selectedHunt?.survivorDetails?.find(
+    (detail) => detail.id === survivor?.id
+  )
+
+  // State for managing notes
+  const [notesDraft, setNotesDraft] = useState<string>(
+    survivorHuntDetails?.notes || ''
+  )
+  const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
+
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
     defaultValues: SurvivorSchema.parse(survivor || {})
@@ -91,6 +105,12 @@ export function HuntSurvivorCard({
   useEffect(() => {
     if (survivor) form.reset(survivor)
   }, [survivor, form])
+
+  // Update notes draft when survivor hunt details change
+  useEffect(() => {
+    setNotesDraft(survivorHuntDetails?.notes || '')
+    setIsNotesDirty(false)
+  }, [survivorHuntDetails?.notes])
 
   /**
    * Save Survivors to Local Storage
@@ -166,8 +186,10 @@ export function HuntSurvivorCard({
     if (!survivor?.id || !selectedHunt) return
 
     const currentDetails = selectedHunt.survivorDetails || []
+    const survivorDetail = currentDetails.find((sd) => sd.id === survivor.id)
     const updatedDetails = currentDetails.filter((sd) => sd.id !== survivor.id)
-    updatedDetails.push({ id: survivor.id, color })
+
+    updatedDetails.push({ ...survivorDetail!, color })
 
     saveSelectedHunt(
       { survivorDetails: updatedDetails },
@@ -224,6 +246,25 @@ export function HuntSurvivorCard({
       survivor.id,
       { insanity: value },
       'Insanity updated successfully.'
+    )
+  }
+
+  /**
+   * Handle Save Notes
+   */
+  const handleSaveNotes = () => {
+    if (!survivor?.id || !selectedHunt?.survivorDetails) return
+
+    setIsNotesDirty(false)
+
+    // Update or add the notes to the survivor's hunt details
+    const updatedDetails = selectedHunt.survivorDetails.map((detail) =>
+      detail.id === survivor.id ? { ...detail, notes: notesDraft } : detail
+    )
+
+    saveSelectedHunt(
+      { survivorDetails: updatedDetails },
+      "The survivor's story during this hunt has been recorded."
     )
   }
 
@@ -1488,6 +1529,35 @@ export function HuntSurvivorCard({
             </div>
           </>
         )}
+
+        {/* Hunt Notes Section */}
+        <Separator className="my-2" />
+        <div className="flex flex-col gap-2">
+          <Textarea
+            value={notesDraft}
+            name="hunt-survivor-notes"
+            id={`hunt-survivor-notes-${survivor.id}`}
+            onChange={(e) => {
+              setNotesDraft(e.target.value)
+              setIsNotesDirty(e.target.value !== survivorHuntDetails?.notes)
+            }}
+            placeholder="Add survivor hunt notes..."
+            className="w-full resize-none text-xs font-normal"
+            style={{ minHeight: '125px' }}
+          />
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleSaveNotes}
+              disabled={!isNotesDirty}
+              title="Save hunt notes">
+              <CheckIcon className="h-4 w-4" />
+              Save
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )
