@@ -4,11 +4,11 @@ import { ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
- * Survivor Color Schema
+ * Survivor Hunt Details Schema
  *
- * Used to assign colors to survivors in a hunt.
+ * Used to assign details to survivors that only persist during a hunt.
  */
-export const SurvivorColorSchema = z.object({
+export const SurvivorHuntDetailsSchema = z.object({
   /** Survivor ID */
   id: z.number().int().min(0),
   /** Survivor Color Code */
@@ -88,8 +88,8 @@ export const HuntSchema = z.object({
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),
-  /** Survivor Color Selection */
-  survivorColors: z.array(SurvivorColorSchema).default([]),
+  /** Survivor Hunt Details */
+  survivorDetails: z.array(SurvivorHuntDetailsSchema).default([]),
   /** Survivor Position on Hunt Board */
   survivorPosition: z.number().min(0).max(12).default(0),
   /** Selected Survivors */

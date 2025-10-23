@@ -59,11 +59,11 @@ export const ShowdownMonsterSchema = z.object({
 export type ShowdownMonster = z.infer<typeof ShowdownMonsterSchema>
 
 /**
- * Survivor Color Schema
+ * Survivor Showdown Details Schema
  *
- * Used to assign colors to survivors in a hunt.
+ * Used to assign details to survivors that only persist during a showdown.
  */
-export const SurvivorColorSchema = z.object({
+export const SurvivorShowdownDetailsSchema = z.object({
   /** Survivor ID */
   id: z.number().int().min(0),
   /** Survivor Color Code */
@@ -122,8 +122,8 @@ export const ShowdownSchema = z.object({
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),
-  /** Survivor Color Selection */
-  survivorColors: z.array(SurvivorColorSchema).default([]),
+  /** Survivor Showdown Details */
+  survivorDetails: z.array(SurvivorShowdownDetailsSchema).default([]),
   /** Selected Survivors */
   survivors: z
     .array(z.number())

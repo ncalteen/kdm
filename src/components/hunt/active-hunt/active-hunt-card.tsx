@@ -165,7 +165,7 @@ export function ActiveHuntCard({
         monster: selectedHunt.monster,
         scout: selectedHunt.scout,
         settlementId: selectedHunt.settlementId || 0,
-        survivorColors: selectedHunt.survivorColors || [],
+        survivorDetails: selectedHunt.survivorDetails || [],
         survivors: selectedHunt.survivors || [],
         // If survivors ambush, they go first. Otherwise, the monster does.
         turn: {

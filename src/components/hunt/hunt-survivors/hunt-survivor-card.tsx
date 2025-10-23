@@ -165,12 +165,12 @@ export function HuntSurvivorCard({
   const updateSurvivorColor = (color: ColorChoice) => {
     if (!survivor?.id || !selectedHunt) return
 
-    const currentColors = selectedHunt.survivorColors || []
-    const updatedColors = currentColors.filter((sc) => sc.id !== survivor.id)
-    updatedColors.push({ id: survivor.id, color })
+    const currentDetails = selectedHunt.survivorDetails || []
+    const updatedDetails = currentDetails.filter((sd) => sd.id !== survivor.id)
+    updatedDetails.push({ id: survivor.id, color })
 
     saveSelectedHunt(
-      { survivorColors: updatedColors },
+      { survivorDetails: updatedDetails },
       `Survivor color changed to ${color}.`
     )
   }
@@ -179,13 +179,14 @@ export function HuntSurvivorCard({
    * Get Current Survivor Color
    */
   const getCurrentColor = (): ColorChoice => {
-    if (!survivor?.id || !selectedHunt?.survivorColors) return ColorChoice.SLATE
+    if (!survivor?.id || !selectedHunt?.survivorDetails)
+      return ColorChoice.SLATE
 
-    const survivorColor = selectedHunt.survivorColors.find(
+    const survivorDetail = selectedHunt.survivorDetails.find(
       (sc) => sc.id === survivor.id
     )
 
-    return survivorColor?.color || ColorChoice.SLATE
+    return survivorDetail?.color || ColorChoice.SLATE
   }
 
   /**

@@ -80,13 +80,13 @@ export function HuntSurvivorsCard({
    * Get Survivor Color
    */
   const getSurvivorColor = (survivorId: number): ColorChoice => {
-    if (!selectedHunt?.survivorColors) return ColorChoice.SLATE
+    if (!selectedHunt?.survivorDetails) return ColorChoice.SLATE
 
-    const survivorColor = selectedHunt.survivorColors.find(
-      (sc) => sc.id === survivorId
+    const survivorDetail = selectedHunt.survivorDetails.find(
+      (sd) => sd.id === survivorId
     )
 
-    return survivorColor?.color || ColorChoice.SLATE
+    return survivorDetail?.color || ColorChoice.SLATE
   }
 
   /**

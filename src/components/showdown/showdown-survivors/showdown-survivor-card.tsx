@@ -165,12 +165,12 @@ export function ShowdownSurvivorCard({
   const updateSurvivorColor = (color: ColorChoice) => {
     if (!survivor?.id || !selectedShowdown) return
 
-    const currentColors = selectedShowdown.survivorColors || []
-    const updatedColors = currentColors.filter((sc) => sc.id !== survivor.id)
-    updatedColors.push({ id: survivor.id, color })
+    const currentDetails = selectedShowdown.survivorDetails || []
+    const updatedDetails = currentDetails.filter((sd) => sd.id !== survivor.id)
+    updatedDetails.push({ id: survivor.id, color })
 
     saveSelectedShowdown(
-      { survivorColors: updatedColors },
+      { survivorDetails: updatedDetails },
       `Survivor color changed to ${color}.`
     )
   }
@@ -179,14 +179,14 @@ export function ShowdownSurvivorCard({
    * Get Current Survivor Color
    */
   const getCurrentColor = (): ColorChoice => {
-    if (!survivor?.id || !selectedShowdown?.survivorColors)
+    if (!survivor?.id || !selectedShowdown?.survivorDetails)
       return ColorChoice.SLATE
 
-    const survivorColor = selectedShowdown.survivorColors.find(
+    const survivorDetail = selectedShowdown.survivorDetails.find(
       (sc) => sc.id === survivor.id
     )
 
-    return survivorColor?.color || ColorChoice.SLATE
+    return survivorDetail?.color || ColorChoice.SLATE
   }
 
   /**

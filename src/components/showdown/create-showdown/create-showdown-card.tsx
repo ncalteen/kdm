@@ -164,13 +164,13 @@ export function CreateShowdownCard({
         'The selected scout cannot also be one of the selected survivors for the showdown.'
       )
 
-    const survivorColors = selectedSurvivors.map((survivorId) => ({
+    const survivorDetails = selectedSurvivors.map((survivorId) => ({
       id: survivorId,
       color: ColorChoice.SLATE
     }))
 
     if (selectedScout)
-      survivorColors.push({
+      survivorDetails.push({
         id: selectedScout,
         color: ColorChoice.SLATE
       })
@@ -198,7 +198,7 @@ export function CreateShowdownCard({
       },
       scout: selectedScout || undefined,
       settlementId: selectedSettlement.id,
-      survivorColors,
+      survivorDetails,
       survivors: selectedSurvivors,
       turn: {
         currentTurn: TurnType.MONSTER,

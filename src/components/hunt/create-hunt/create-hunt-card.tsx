@@ -154,13 +154,13 @@ export function CreateHuntCard({
         'The selected scout cannot also be one of the selected survivors for the hunt.'
       )
 
-    const survivorColors = selectedSurvivors.map((survivorId) => ({
+    const survivorDetails = selectedSurvivors.map((survivorId) => ({
       id: survivorId,
       color: ColorChoice.SLATE
     }))
 
     if (selectedScout)
-      survivorColors.push({
+      survivorDetails.push({
         id: selectedScout,
         color: ColorChoice.SLATE
       })
@@ -194,9 +194,10 @@ export function CreateHuntCard({
         wounds: selectedMonsterWounds
       },
       monsterPosition: 12,
+      notes: '',
       scout: selectedScout || undefined,
       settlementId: selectedSettlement.id,
-      survivorColors,
+      survivorDetails,
       survivorPosition: 0,
       survivors: selectedSurvivors
     }
