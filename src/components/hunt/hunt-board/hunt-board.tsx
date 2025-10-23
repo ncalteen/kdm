@@ -4,7 +4,6 @@ import { HuntBoardSpace } from '@/components/hunt/hunt-board/hunt-board-space'
 import { QuarryToken } from '@/components/hunt/hunt-board/quarry-token'
 import { SurvivorToken } from '@/components/hunt/hunt-board/survivor-token'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSidebar } from '@/components/ui/sidebar'
 import { Hunt } from '@/schemas/hunt'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { ReactElement } from 'react'
@@ -30,22 +29,6 @@ export function HuntBoard({
   onPositionUpdate,
   selectedHunt
 }: HuntBoardProps): ReactElement {
-  const { isMobile, state } = useSidebar()
-
-  // Calculate width based on sidebar state
-  const getCardWidth = () => {
-    // Full width on mobile (sidebar is overlay) minus gap
-    if (isMobile) return '98vw'
-
-    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
-    if (state === 'expanded') return 'calc(100vw - 17rem)'
-
-    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
-    if (state === 'collapsed') return 'calc(100vw - 4rem)'
-
-    return '98.5vw' // Fallback to full width
-  }
-
   // Define hunt board spaces
   const spaces = [
     { index: 0, label: 'Start', isStart: true },
@@ -91,11 +74,7 @@ export function HuntBoard({
   }
 
   return (
-    <Card
-      className="p-0 min-w-[430px]"
-      style={{
-        width: getCardWidth()
-      }}>
+    <Card className="p-0 min-w-[430px]">
       <CardContent className="p-0 w-full overflow-x-auto">
         <DndContext onDragEnd={handleDragEnd}>
           {/* Hunt Board Grid */}

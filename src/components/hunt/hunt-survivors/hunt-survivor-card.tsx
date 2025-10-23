@@ -230,7 +230,7 @@ export function HuntSurvivorCard({
 
   return (
     <Card
-      className="min-w-[300px] flex-grow-2 border-2 rounded-xl py-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
+      className="min-w-[300px] flex-grow-2 border-2 rounded-xl py-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg font-bold"
       style={{
         ...getCardColorStyles(getCurrentColor()),
         borderColor: 'var(--card-border-color)'

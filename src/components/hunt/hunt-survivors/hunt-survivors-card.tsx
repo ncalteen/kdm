@@ -1,12 +1,9 @@
 'use client'
 
 import { HuntSurvivorCard } from '@/components/hunt/hunt-survivors/hunt-survivor-card'
+import { Button } from '@/components/ui/button'
 import { Carousel } from '@/components/ui/carousel'
-import {
-  NextButton,
-  PrevButton,
-  usePrevNextButtons
-} from '@/components/ui/embla-carousel-arrow-buttons'
+import { usePrevNextButtons } from '@/components/ui/embla-carousel-arrow-buttons'
 import {
   DotButton,
   useDotButton
@@ -17,6 +14,7 @@ import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import Fade from 'embla-carousel-fade'
 import useEmblaCarousel from 'embla-carousel-react'
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 import { ReactElement, useMemo } from 'react'
 
 /**
@@ -96,32 +94,25 @@ export function HuntSurvivorsCard({
   )
 
   return (
-    <Carousel className="embla p-0">
-      <div className="embla__viewport" ref={emblaRef}>
-        <div className="embla__container">
-          {filteredSurvivors?.map((survivor) => (
-            <div className="embla__slide" key={survivor.id}>
-              <div className="embla__slide__number">
-                <HuntSurvivorCard
-                  saveSelectedHunt={saveSelectedHunt}
-                  selectedHunt={selectedHunt}
-                  selectedSettlement={selectedSettlement}
-                  selectedSurvivor={selectedSurvivor}
-                  setSurvivors={setSurvivors}
-                  survivor={survivor}
-                  survivors={survivors}
-                  updateSelectedSurvivor={updateSelectedSurvivor}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
+    <Carousel className="embla p-0 w-full">
       <div className="embla__controls">
         <div className="embla__buttons">
-          <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-          <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+          <Button
+            className="h-12 w-12"
+            variant="ghost"
+            size="icon"
+            onClick={onPrevButtonClick}
+            disabled={prevBtnDisabled}>
+            <ArrowLeftIcon className="size-8" />
+          </Button>
+          <Button
+            className="h-12 w-12"
+            variant="ghost"
+            size="icon"
+            onClick={onNextButtonClick}
+            disabled={nextBtnDisabled}>
+            <ArrowRightIcon className="size-8" />
+          </Button>
         </div>
 
         <div className="embla__dots">
@@ -146,6 +137,25 @@ export function HuntSurvivorsCard({
               />
             )
           })}
+        </div>
+      </div>
+
+      <div className="embla__viewport" ref={emblaRef}>
+        <div className="embla__container">
+          {filteredSurvivors?.map((survivor) => (
+            <div className="embla__slide" key={survivor.id}>
+              <HuntSurvivorCard
+                saveSelectedHunt={saveSelectedHunt}
+                selectedHunt={selectedHunt}
+                selectedSettlement={selectedSettlement}
+                selectedSurvivor={selectedSurvivor}
+                setSurvivors={setSurvivors}
+                survivor={survivor}
+                survivors={survivors}
+                updateSelectedSurvivor={updateSelectedSurvivor}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </Carousel>

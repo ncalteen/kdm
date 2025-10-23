@@ -248,24 +248,22 @@ export function ActiveHuntCard({
         />
       </div>
 
-      <div className="flex flex-row gap-2">
-        {/* Monster Card */}
-        <HuntMonsterCard
-          saveSelectedHunt={saveSelectedHunt}
-          selectedHunt={selectedHunt}
-        />
+      {/* Monster Card */}
+      <HuntMonsterCard
+        saveSelectedHunt={saveSelectedHunt}
+        selectedHunt={selectedHunt}
+      />
 
-        {/* Hunt Party Survivors */}
-        <HuntSurvivorsCard
-          saveSelectedHunt={saveSelectedHunt}
-          selectedHunt={selectedHunt}
-          selectedSettlement={selectedSettlement}
-          selectedSurvivor={selectedSurvivor}
-          setSurvivors={setSurvivors}
-          survivors={survivors}
-          updateSelectedSurvivor={updateSelectedSurvivor}
-        />
-      </div>
+      {/* Hunt Party Survivors */}
+      <HuntSurvivorsCard
+        saveSelectedHunt={saveSelectedHunt}
+        selectedHunt={selectedHunt}
+        selectedSettlement={selectedSettlement}
+        selectedSurvivor={selectedSurvivor}
+        setSurvivors={setSurvivors}
+        survivors={survivors}
+        updateSelectedSurvivor={updateSelectedSurvivor}
+      />
 
       {/* Cancel Hunt Confirmation Dialog */}
       <AlertDialog
