@@ -674,18 +674,16 @@ export function HuntSurvivorCard({
         {/* Combat and Attributes Grid */}
         <div className="flex flex-col lg:flex-row lg:gap-2">
           {/* Attributes Column */}
-          <div className="flex flex-col flex-1">
-            <HuntSurvivorAttributes
-              survivor={survivor}
-              selectedHunt={selectedHunt}
-              selectedSettlement={selectedSettlement}
-              isMobile={isMobile}
-              updateSurvival={updateSurvival}
-              updateInsanity={updateInsanity}
-              saveSurvivorBaseAttribute={saveSurvivorBaseAttribute}
-              saveTokenAttribute={saveTokenAttribute}
-            />
-          </div>
+          <HuntSurvivorAttributes
+            survivor={survivor}
+            selectedHunt={selectedHunt}
+            selectedSettlement={selectedSettlement}
+            isMobile={isMobile}
+            updateSurvival={updateSurvival}
+            updateInsanity={updateInsanity}
+            saveSurvivorBaseAttribute={saveSurvivorBaseAttribute}
+            saveTokenAttribute={saveTokenAttribute}
+          />
 
           {/* Separator between columns (hidden on mobile) */}
           <div className="hidden lg:flex lg:items-stretch">
