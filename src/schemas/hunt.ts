@@ -9,12 +9,28 @@ import { z } from 'zod'
  * Used to assign details to survivors that only persist during a hunt.
  */
 export const SurvivorHuntDetailsSchema = z.object({
-  /** Survivor ID */
-  id: z.number().int().min(0),
+  /** Accuracy Tokens */
+  accuracyTokens: z.number().int().default(0),
   /** Survivor Color Code */
   color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE),
+  /** Evasion Tokens */
+  evasionTokens: z.number().int().default(0),
+  /** Survivor ID */
+  id: z.number().int().min(0),
+  /** Insanity Tokens */
+  insanityTokens: z.number().int().default(0),
+  /** Luck Tokens */
+  luckTokens: z.number().int().default(0),
   /** Survivor Notes */
-  notes: z.string().default('')
+  notes: z.string().default(''),
+  /** Movement Tokens */
+  movementTokens: z.number().int().default(0),
+  /** Speed Tokens */
+  speedTokens: z.number().int().default(0),
+  /** Strength Tokens */
+  strengthTokens: z.number().int().default(0),
+  /** Survival Tokens */
+  survivalTokens: z.number().int().default(0)
 })
 
 /**

@@ -1,5 +1,6 @@
 'use client'
 
+import { HuntSurvivorAttributes } from '@/components/hunt/hunt-survivors/hunt-survivor-attributes'
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +15,6 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
@@ -250,6 +250,41 @@ export function HuntSurvivorCard({
   }
 
   /**
+   * Save Survivor Base Attribute
+   */
+  const saveSurvivorBaseAttribute = (
+    attributeName: keyof Survivor,
+    value: number | boolean
+  ) => {
+    if (!survivor?.id) return
+
+    const successMessage =
+      typeof value === 'boolean'
+        ? value === false
+          ? 'The survivor freezes - survival cannot be spent.'
+          : 'The survivor can once again spend survival.'
+        : `${attributeName.charAt(0).toUpperCase() + attributeName.slice(1)} updated.`
+
+    saveToLocalStorage(survivor.id, { [attributeName]: value }, successMessage)
+  }
+
+  /**
+   * Save Token Attribute
+   */
+  const saveTokenAttribute = (attributeName: string, value: number) => {
+    if (!survivor?.id || !selectedHunt?.survivorDetails) return
+
+    const updatedDetails = selectedHunt.survivorDetails.map((detail) =>
+      detail.id === survivor.id ? { ...detail, [attributeName]: value } : detail
+    )
+
+    saveSelectedHunt(
+      { survivorDetails: updatedDetails },
+      `${attributeName.replace('Tokens', '')} tokens updated.`
+    )
+  }
+
+  /**
    * Handle Save Notes
    */
   const handleSaveNotes = () => {
@@ -272,7 +307,7 @@ export function HuntSurvivorCard({
 
   return (
     <Card
-      className="min-w-[300px] flex-grow-2 border-2 rounded-xl py-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg font-bold"
+      className="w-full min-w-[430px] flex-grow-2 border-2 rounded-xl py-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg font-bold"
       style={{
         ...getCardColorStyles(getCurrentColor()),
         borderColor: 'var(--card-border-color)'
@@ -406,6 +441,23 @@ export function HuntSurvivorCard({
               Skip Next Hunt
             </Label>
           </div>
+
+          {/* Cannot Spend Survival */}
+          <div className="flex items-center space-x-1">
+            <Checkbox
+              id={`cannotSpendSurvival-${survivor.id}`}
+              checked={!survivor.canSpendSurvival}
+              onCheckedChange={(checked) =>
+                saveSurvivorBaseAttribute('canSpendSurvival', !checked)
+              }
+              className="h-4 w-4"
+            />
+            <Label
+              htmlFor={`cannotSpendSurvival-${survivor.id}`}
+              className="text-xs">
+              Can&apos;t Spend Survival
+            </Label>
+          </div>
         </div>
       </CardHeader>
 
@@ -518,7 +570,7 @@ export function HuntSurvivorCard({
 
         {/* ARC Survivor Attributes */}
         {selectedSettlement?.survivorType === SurvivorType.ARC && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <div className="bg-background/40 rounded-lg p-0 text-center">
               <div className="text-xs text-muted-foreground pb-1">
                 Systemic Pressure
@@ -585,338 +637,56 @@ export function HuntSurvivorCard({
                 />
               </NumericInput>
             </div>
-          </div>
-        )}
-
-        {/* Movement, Survival, and Insanity */}
-        <div className="grid grid-cols-3 gap-0">
-          <div className="bg-background/40 rounded-lg p-1 text-center">
-            <div className="text-xs text-muted-foreground pb-1">Movement</div>
-            <NumericInput
-              label="Movement"
-              value={survivor.movement ?? 0}
-              onChange={(value) =>
-                saveToLocalStorage(
-                  survivor.id!,
-                  { movement: value },
-                  'Movement updated.'
-                )
-              }
-              min={0}
-              readOnly={false}>
-              <Input
-                id={`movement-${survivor.id}`}
-                type="number"
-                value={survivor.movement}
-                readOnly={isMobile}
-                onChange={(e) =>
+            <div className="bg-background/40 rounded-lg p-0 text-center">
+              <div className="text-xs text-muted-foreground pb-1">Lumi</div>
+              <NumericInput
+                label="Lumi"
+                value={survivor.lumi ?? 0}
+                onChange={(value) =>
                   saveToLocalStorage(
                     survivor.id!,
-                    { movement: parseInt(e.target.value) || 0 },
-                    'Movement updated.'
+                    { lumi: value },
+                    'Lumi updated.'
                   )
                 }
-                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                min="0"
-                name={`movement-${survivor.id}`}
-              />
-            </NumericInput>
+                min={0}
+                readOnly={false}>
+                <Input
+                  id={`lumi-${survivor.id}`}
+                  type="number"
+                  value={survivor.lumi}
+                  readOnly={isMobile}
+                  onChange={(e) =>
+                    saveToLocalStorage(
+                      survivor.id!,
+                      { lumi: parseInt(e.target.value) || 0 },
+                      'Lumi updated.'
+                    )
+                  }
+                  className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  min="0"
+                  name={`lumi-${survivor.id}`}
+                />
+              </NumericInput>
+            </div>
           </div>
-          <div className="bg-background/40 rounded-lg p-1 text-center">
-            <div className="text-xs text-muted-foreground pb-1">Survival</div>
-            <NumericInput
-              label="Survival"
-              value={survivor.survival ?? 0}
-              onChange={(value) => updateSurvival(value.toString())}
-              min={0}
-              max={selectedSettlement?.survivalLimit || 1}
-              readOnly={false}>
-              <Input
-                id={`survival-${survivor.id}`}
-                type="number"
-                value={survivor.survival}
-                readOnly={isMobile}
-                onChange={(e) => updateSurvival(e.target.value)}
-                className={`text-center border-0 p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${
-                  !survivor.canSpendSurvival
-                    ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                    : 'bg-transparent'
-                }`}
-                min="0"
-                max={selectedSettlement?.survivalLimit || 1}
-                name={`survival-${survivor.id}`}
-              />
-            </NumericInput>
-          </div>
-          <div className="bg-background/40 rounded-lg p-1 text-center">
-            <div className="text-xs text-muted-foreground pb-1">Insanity</div>
-            <NumericInput
-              label="Insanity"
-              value={survivor.insanity ?? 0}
-              onChange={(value) => updateInsanity(value.toString())}
-              min={0}
-              readOnly={false}>
-              <Input
-                id={`insanity-${survivor.id}`}
-                type="number"
-                value={survivor.insanity}
-                readOnly={isMobile}
-                onChange={(e) => updateInsanity(e.target.value)}
-                className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                min="0"
-                name={`insanity-${survivor.id}`}
-              />
-            </NumericInput>
-          </div>
-        </div>
-
-        {/* Cannot Spend Survival */}
-        <div className="flex items-center justify-center space-x-2">
-          <Switch
-            id={`cannot-spend-survival-${survivor.id}`}
-            checked={!survivor.canSpendSurvival}
-            onCheckedChange={(checked) =>
-              saveToLocalStorage(
-                survivor.id!,
-                { canSpendSurvival: !checked },
-                checked
-                  ? 'The survivor freezes - survival cannot be spent.'
-                  : 'The survivor can once again spend survival.'
-              )
-            }
-          />
-          <Label
-            htmlFor={`cannot-spend-survival-${survivor.id}`}
-            className="text-xs">
-            Cannot spend survival
-          </Label>
-        </div>
+        )}
 
         <Separator className="my-2" />
 
         {/* Combat and Attributes Grid */}
         <div className="grid grid-cols-[auto_1px_auto] gap-4">
           {/* Attributes Column */}
-          <div className="flex flex-col">
-            <Label className="text-xs font-semibold justify-center text-muted-foreground">
-              Attributes
-            </Label>
-
-            <div className="space-y-1">
-              <div className="bg-background/30 rounded p-2 flex items-center gap-3">
-                <Label
-                  htmlFor={`accuracy-${survivor.id}`}
-                  className="text-xs text-muted-foreground min-w-[50px]">
-                  Accuracy
-                </Label>
-                <NumericInput
-                  label="Accuracy"
-                  value={survivor.accuracy ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { accuracy: value },
-                      'Accuracy updated.'
-                    )
-                  }
-                  readOnly={false}>
-                  <Input
-                    id={`accuracy-${survivor.id}`}
-                    type="number"
-                    value={survivor.accuracy}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { accuracy: parseInt(e.target.value) || 0 },
-                        'Accuracy updated.'
-                      )
-                    }
-                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    name={`accuracy-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <div className="bg-background/30 rounded p-2 flex items-center gap-3">
-                <Label
-                  htmlFor={`strength-${survivor.id}`}
-                  className="text-xs text-muted-foreground min-w-[50px]">
-                  Strength
-                </Label>
-                <NumericInput
-                  label="Strength"
-                  value={survivor.strength ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { strength: value },
-                      'Strength updated.'
-                    )
-                  }
-                  readOnly={false}>
-                  <Input
-                    id={`strength-${survivor.id}`}
-                    type="number"
-                    value={survivor.strength}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { strength: parseInt(e.target.value) || 0 },
-                        'Strength updated.'
-                      )
-                    }
-                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    name={`strength-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <div className="bg-background/30 rounded p-2 flex items-center gap-3">
-                <Label
-                  htmlFor={`evasion-${survivor.id}`}
-                  className="text-xs text-muted-foreground min-w-[50px]">
-                  Evasion
-                </Label>
-                <NumericInput
-                  label="Evasion"
-                  value={survivor.evasion ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { evasion: value },
-                      'Evasion updated.'
-                    )
-                  }
-                  readOnly={false}>
-                  <Input
-                    id={`evasion-${survivor.id}`}
-                    type="number"
-                    value={survivor.evasion}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { evasion: parseInt(e.target.value) || 0 },
-                        'Evasion updated.'
-                      )
-                    }
-                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    name={`evasion-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <div className="bg-background/30 rounded p-2 flex items-center gap-3">
-                <Label
-                  htmlFor={`luck-${survivor.id}`}
-                  className="text-xs text-muted-foreground min-w-[50px]">
-                  Luck
-                </Label>
-                <NumericInput
-                  label="Luck"
-                  value={survivor.luck ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { luck: value },
-                      'Luck updated.'
-                    )
-                  }
-                  readOnly={false}>
-                  <Input
-                    id={`luck-${survivor.id}`}
-                    type="number"
-                    value={survivor.luck}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { luck: parseInt(e.target.value) || 0 },
-                        'Luck updated.'
-                      )
-                    }
-                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    name={`luck-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <div className="bg-background/30 rounded p-2 flex items-center gap-3">
-                <Label
-                  htmlFor={`speed-${survivor.id}`}
-                  className="text-xs text-muted-foreground min-w-[50px]">
-                  Speed
-                </Label>
-                <NumericInput
-                  label="Speed"
-                  value={survivor.speed ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { speed: value },
-                      'Speed updated.'
-                    )
-                  }
-                  readOnly={false}>
-                  <Input
-                    id={`speed-${survivor.id}`}
-                    type="number"
-                    value={survivor.speed}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { speed: parseInt(e.target.value) || 0 },
-                        'Speed updated.'
-                      )
-                    }
-                    className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    name={`speed-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              {selectedSettlement?.survivorType === SurvivorType.ARC && (
-                <div className="bg-background/30 rounded p-2 flex items-center gap-3">
-                  <Label
-                    htmlFor={`lumi-${survivor.id}`}
-                    className="text-xs text-muted-foreground min-w-[50px]">
-                    Lumi
-                  </Label>
-                  <NumericInput
-                    label="Lumi"
-                    value={survivor.lumi ?? 0}
-                    onChange={(value) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { lumi: value },
-                        'Lumi updated.'
-                      )
-                    }
-                    min={0}
-                    readOnly={false}>
-                    <Input
-                      id={`lumi-${survivor.id}`}
-                      type="number"
-                      value={survivor.lumi}
-                      readOnly={isMobile}
-                      onChange={(e) =>
-                        saveToLocalStorage(
-                          survivor.id!,
-                          { lumi: parseInt(e.target.value) || 0 },
-                          'Lumi updated.'
-                        )
-                      }
-                      className="text-center border-0 bg-transparent p-0 no-spinners flex-1 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      name={`lumi-${survivor.id}`}
-                    />
-                  </NumericInput>
-                </div>
-              )}
-            </div>
-          </div>
+          <HuntSurvivorAttributes
+            survivor={survivor}
+            selectedHunt={selectedHunt}
+            selectedSettlement={selectedSettlement}
+            isMobile={isMobile}
+            updateSurvival={updateSurvival}
+            updateInsanity={updateInsanity}
+            saveSurvivorBaseAttribute={saveSurvivorBaseAttribute}
+            saveTokenAttribute={saveTokenAttribute}
+          />
 
           <Separator orientation="vertical" className="h-full" />
 

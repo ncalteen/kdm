@@ -118,7 +118,7 @@ export function HuntSurvivorsCard({
       style={{
         width: getCarouselWidth()
       }}>
-      <div className="embla__controls">
+      <div className="embla__controls min-w-[430px]">
         <div className="embla__buttons">
           <Button
             className="h-12 w-12"
