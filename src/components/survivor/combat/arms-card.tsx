@@ -16,7 +16,7 @@ import { ReactElement } from 'react'
  */
 interface ArmsCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
 }

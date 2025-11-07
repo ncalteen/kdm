@@ -1,3 +1,5 @@
+import { ColorChoice } from '@/lib/enums'
+
 /**
  * Error Message
  *
@@ -144,11 +146,11 @@ export const UPDATED_MOOD_MESSAGE = () => 'The mood has been updated.'
 export const NEW_MOOD_MESSAGE = () => 'A new mood takes hold.'
 
 /**
- * Save Hunt Monster Notes
+ * Save Hunt Notes
  *
- * @returns Save Hunt Monster Notes Message
+ * @returns Save Hunt Notes Message
  */
-export const SAVE_HUNT_MONSTER_NOTES_MESSAGE = () =>
+export const SAVE_HUNT_NOTES_MESSAGE = () =>
   'The tales of this hunt are recorded for future generations.'
 
 /**
@@ -418,3 +420,85 @@ export const MONSTER_SPEED_TOKENS_UPDATED_MESSAGE = (
     : oldValue > newValue
       ? 'The monster loses speed tokens.'
       : "The monster's speed tokens remain unchanged."
+
+/**
+ * Survivor Not Found
+ *
+ * @returns Survivor Not Found Message
+ */
+export const SURVIVOR_NOT_FOUND_MESSAGE = () =>
+  'Survivor not found in campaign data.'
+
+/**
+ * Survivor Color Changed
+ *
+ * @param newColor New Color
+ * @returns Survivor Color Changed Message
+ */
+export const SURVIVOR_COLOR_CHANGED_MESSAGE = (newColor: ColorChoice) =>
+  `Survivor color changed to ${newColor}.`
+
+/**
+ * Survivor Survival Updated
+ *
+ * @param oldValue Old Value
+ * @param newValue New Value
+ * @returns Update Message
+ */
+export const SURVIVOR_SURVIVAL_UPDATED_MESSAGE = (
+  oldValue: number,
+  newValue: number
+) =>
+  oldValue < newValue
+    ? 'The survivor gains survival.'
+    : oldValue > newValue
+      ? 'The survivor loses survival.'
+      : "The survivor's survival remains unchanged."
+
+/**
+ * Survivor Insanity Updated
+ *
+ * @param oldValue Old Value
+ * @param newValue New Value
+ * @returns Update Message
+ */
+export const SURVIVOR_INSANITY_UPDATED_MESSAGE = (
+  oldValue: number,
+  newValue: number
+) =>
+  oldValue < newValue
+    ? 'The survivor gains insanity.'
+    : oldValue > newValue
+      ? 'The survivor loses insanity.'
+      : "The survivor's insanity remains unchanged."
+
+/**
+ * Survivor Can Spend Survival Updated
+ *
+ * @param value New Value
+ * @returns Update Message
+ */
+export const SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE = (value: boolean) =>
+  value === false
+    ? 'The survivor freezes - survival cannot be spent.'
+    : 'The survivor can once again spend survival.'
+
+/**
+ * Survivor Base Attribute Updated
+ *
+ * @param attributeName Attribute Name
+ * @returns Update Message
+ */
+export const SURVIVOR_BASE_ATTRIBUTE_UPDATED_MESSAGE = (
+  attributeName: string
+) => `The survivor's ${attributeName} has been updated.`
+
+/**
+ * Survivor Attribute Token Updated
+ *
+ * @param attributeName Attribute Name
+ * @returns Update Message
+ */
+export const SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE = (
+  attributeName: string
+) => `The survivor's ${attributeName} tokens have been updated.`

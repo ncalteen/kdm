@@ -19,7 +19,7 @@ import {
   NEW_TRAIT_MESSAGE,
   REMOVED_MOOD_MESSAGE,
   REMOVED_TRAIT_MESSAGE,
-  SAVE_HUNT_MONSTER_NOTES_MESSAGE,
+  SAVE_HUNT_NOTES_MESSAGE,
   UPDATED_MOOD_MESSAGE,
   UPDATED_TRAIT_MESSAGE
 } from '@/lib/messages'
@@ -262,7 +262,7 @@ export function HuntMonsterCard({
           notes: notesDraft
         } as HuntMonster
       },
-      SAVE_HUNT_MONSTER_NOTES_MESSAGE()
+      SAVE_HUNT_NOTES_MESSAGE()
     )
   }
 

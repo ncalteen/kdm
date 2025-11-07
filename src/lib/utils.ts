@@ -877,3 +877,47 @@ export function getOverwhelmingDarknessLabel(
     ? 'The Forest Wants What it Wants'
     : 'Overwhelming Darkness'
 }
+
+/**
+ * Get the Survivors Color Choice
+ *
+ * @param selectedHunt Selected Hunt
+ * @param survivorId Survivor ID
+ * @returns Color Choice
+ */
+export function getSurvivorColorChoice(
+  selectedHunt: Partial<Hunt> | null,
+  survivorId: number | undefined
+): ColorChoice {
+  if (!survivorId) return ColorChoice.SLATE
+
+  if (!selectedHunt?.survivorDetails) return ColorChoice.SLATE
+
+  const survivorDetail = selectedHunt.survivorDetails.find(
+    (sd) => sd.id === survivorId
+  )
+
+  return survivorDetail?.color || ColorChoice.SLATE
+}
+
+/**
+ * Get the Carousel Width
+ *
+ * Takes sidebar presence into account.
+ *
+ * @param isMobile Is Mobile
+ * @param sidebarState Sidebar State
+ * @returns Carousel Width
+ */
+export const getCarouselWidth = (isMobile: boolean, sidebarState: string) => {
+  // Full width on mobile (sidebar is overlay) minus gap
+  if (isMobile) return '98vw'
+
+  // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
+  if (sidebarState === 'expanded') return 'calc(100vw - 17rem)'
+
+  // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
+  if (sidebarState === 'collapsed') return 'calc(100vw - 4rem)'
+
+  return '98.5vw' // Fallback to full width
+}

@@ -21,7 +21,7 @@ interface SanityCardProps {
   /** Display Torment Input */
   displayTormentInput: boolean
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Settlemenet */
   selectedSettlement: Partial<Settlement> | null
   /** Selected Survivor */

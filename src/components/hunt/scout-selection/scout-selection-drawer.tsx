@@ -22,32 +22,33 @@ import { ReactElement, useState } from 'react'
  * Scout Selection Drawer Props
  */
 interface ScoutSelectionDrawerProps {
-  /** Drawer Title */
-  title: string
   /** Drawer Description */
   description: string
-  /** List of Survivors */
-  survivors: Survivor[]
-  /** Currently Selected Scout */
-  selectedScout: number | null
   /** Callback for Selection Change */
   onSelectionChange: (scoutId: number | null) => void
+  /** Currently Selected Scout */
+  selectedScout: number | null
   /** Currently Selected Survivors (to disable in scout list) */
   selectedSurvivors?: number[]
+  /** List of Survivors */
+  survivors: Survivor[]
+  /** Drawer Title */
+  title: string
 }
 
 /**
  * Scout Selection Drawer Component
  */
 export function ScoutSelectionDrawer({
-  title,
   description,
-  survivors,
-  selectedScout,
   onSelectionChange,
-  selectedSurvivors = []
+  selectedScout,
+  selectedSurvivors = [],
+  survivors,
+  title
 }: ScoutSelectionDrawerProps): ReactElement {
   const isMobile = useIsMobile()
+
   const [tempSelection, setTempSelection] = useState<number | null>(
     selectedScout
   )
@@ -78,11 +79,13 @@ export function ScoutSelectionDrawer({
           {selectedScout ? '1 scout' : 'Select scout...'}
         </Button>
       </DrawerTrigger>
+
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
+
         <div className="px-4 pb-4 h-[60vh] flex gap-4">
           <div className="flex flex-wrap gap-2 overflow-y-auto min-w-[200px]">
             {survivors.map((survivor) => (
@@ -96,6 +99,7 @@ export function ScoutSelectionDrawer({
               />
             ))}
           </div>
+
           {!isMobile && (
             <div className="w-[450px]">
               <SurvivorDetailsPanel
@@ -105,6 +109,7 @@ export function ScoutSelectionDrawer({
             </div>
           )}
         </div>
+
         <DrawerFooter>
           <div className="flex gap-2">
             <DrawerClose asChild>

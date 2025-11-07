@@ -24,7 +24,17 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import {
+  ERROR_MESSAGE,
+  SAVE_HUNT_NOTES_MESSAGE,
+  SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE,
+  SURVIVOR_BASE_ATTRIBUTE_UPDATED_MESSAGE,
+  SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE,
+  SURVIVOR_COLOR_CHANGED_MESSAGE,
+  SURVIVOR_INSANITY_UPDATED_MESSAGE,
+  SURVIVOR_NOT_FOUND_MESSAGE,
+  SURVIVOR_SURVIVAL_UPDATED_MESSAGE
+} from '@/lib/messages'
 import {
   getCampaign,
   getCardColorStyles,
@@ -114,11 +124,13 @@ export function HuntSurvivorCard({
    * Save Survivors to Local Storage
    */
   const saveToLocalStorage = (
-    survivorId: number,
+    survivorId: number | undefined,
     updateData: Partial<Survivor>,
     successMsg?: string
   ) => {
     if (!survivors) return
+    if (!survivorId) return
+    if (!selectedSettlement) return
 
     try {
       // Get the campaign and find the survivor to update
@@ -127,8 +139,7 @@ export function HuntSurvivorCard({
         (s: Survivor) => s.id === survivorId
       )
 
-      if (survivorIndex === -1)
-        return toast.error('Survivor not found in campaign data.')
+      if (survivorIndex === -1) return toast.error(SURVIVOR_NOT_FOUND_MESSAGE())
 
       // Update the survivor in the campaign
       const updatedSurvivor = {
@@ -159,10 +170,8 @@ export function HuntSurvivorCard({
       setSurvivors(updatedSurvivors)
 
       // Update the form with the new values
-      if (survivorId === survivor?.id) {
-        const updatedFormData = { ...survivor, ...updateData }
-        form.reset(SurvivorSchema.parse(updatedFormData))
-      }
+      if (survivorId === survivor?.id)
+        form.reset(SurvivorSchema.parse({ ...survivor, ...updateData }))
 
       // Dispatch custom event to notify other components about survivor changes
       window.dispatchEvent(new CustomEvent('campaignUpdated'))
@@ -191,7 +200,7 @@ export function HuntSurvivorCard({
 
     saveSelectedHunt(
       { survivorDetails: updatedDetails },
-      `Survivor color changed to ${color}.`
+      SURVIVOR_COLOR_CHANGED_MESSAGE(color)
     )
   }
 
@@ -212,40 +221,38 @@ export function HuntSurvivorCard({
   /**
    * Update Survival Points
    */
-  const updateSurvival = (val: string) => {
-    if (!survivor || !survivor.id || !selectedSettlement) return
-
-    const value = parseInt(val) || 0
-
-    if (value < 0) return toast.error('Survival cannot be negative.')
-    if (value > (selectedSettlement?.survivalLimit || 1))
-      return toast.error(
-        `Survival cannot exceed the settlement's limit of ${selectedSettlement.survivalLimit || 1}.`
-      )
-
+  const updateSurvival = (val: string) =>
     saveToLocalStorage(
-      survivor.id,
-      { survival: value },
-      'Survival updated successfully.'
+      survivor?.id,
+      { survival: parseInt(val) || 0 },
+      SURVIVOR_SURVIVAL_UPDATED_MESSAGE(
+        survivor?.survival || 0,
+        parseInt(val) || 0
+      )
     )
-  }
 
   /**
    * Update Insanity Points
    */
-  const updateInsanity = (val: string) => {
-    if (!survivor || !survivor.id || !selectedSettlement) return
-
-    const value = parseInt(val) || 0
-
-    if (value < 0) return toast.error('Insanity cannot be negative.')
-
+  const updateInsanity = (val: string) =>
     saveToLocalStorage(
-      survivor.id,
-      { insanity: value },
-      'Insanity updated successfully.'
+      survivor?.id,
+      { insanity: parseInt(val) || 0 },
+      SURVIVOR_INSANITY_UPDATED_MESSAGE(
+        survivor?.insanity || 0,
+        parseInt(val) || 0
+      )
     )
-  }
+
+  /**
+   * Update Survivor Can Spend Survival
+   */
+  const updateSurvivorCanSpendSurvival = (val: boolean) =>
+    saveToLocalStorage(
+      survivor?.id,
+      { canSpendSurvival: val },
+      SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE(val)
+    )
 
   /**
    * Save Survivor Base Attribute
@@ -256,29 +263,28 @@ export function HuntSurvivorCard({
   ) => {
     if (!survivor?.id) return
 
-    const successMessage =
-      typeof value === 'boolean'
-        ? value === false
-          ? 'The survivor freezes - survival cannot be spent.'
-          : 'The survivor can once again spend survival.'
-        : `${attributeName.charAt(0).toUpperCase() + attributeName.slice(1)} updated.`
-
-    saveToLocalStorage(survivor.id, { [attributeName]: value }, successMessage)
+    saveToLocalStorage(
+      survivor.id,
+      { [attributeName]: value },
+      SURVIVOR_BASE_ATTRIBUTE_UPDATED_MESSAGE(attributeName)
+    )
   }
 
   /**
-   * Save Token Attribute
+   * Save Survivor Attribute Token
    */
-  const saveTokenAttribute = (attributeName: string, value: number) => {
+  const saveAttributeToken = (attributeName: string, value: number) => {
     if (!survivor?.id || !selectedHunt?.survivorDetails) return
 
-    const updatedDetails = selectedHunt.survivorDetails.map((detail) =>
-      detail.id === survivor.id ? { ...detail, [attributeName]: value } : detail
-    )
-
     saveSelectedHunt(
-      { survivorDetails: updatedDetails },
-      `${attributeName.replace('Tokens', '')} tokens updated.`
+      {
+        survivorDetails: selectedHunt.survivorDetails.map((detail) =>
+          detail.id === survivor.id
+            ? { ...detail, [attributeName]: value }
+            : detail
+        )
+      },
+      SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE(attributeName)
     )
   }
 
@@ -297,7 +303,7 @@ export function HuntSurvivorCard({
 
     saveSelectedHunt(
       { survivorDetails: updatedDetails },
-      "The survivor's story during this hunt has been recorded."
+      SAVE_HUNT_NOTES_MESSAGE()
     )
   }
 
@@ -446,7 +452,7 @@ export function HuntSurvivorCard({
               id={`cannotSpendSurvival-${survivor.id}`}
               checked={!survivor.canSpendSurvival}
               onCheckedChange={(checked) =>
-                saveSurvivorBaseAttribute('canSpendSurvival', !checked)
+                updateSurvivorCanSpendSurvival(!checked)
               }
               className="h-4 w-4"
             />
@@ -568,113 +574,119 @@ export function HuntSurvivorCard({
 
         {/* ARC Survivor Attributes */}
         {selectedSettlement?.survivorType === SurvivorType.ARC && (
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-background/40 rounded-lg p-0 text-center">
-              <div className="text-xs text-muted-foreground pb-1">
-                Systemic Pressure
-              </div>
-              <NumericInput
-                label="Systemic Pressure"
-                value={survivor.systemicPressure ?? 0}
-                onChange={(value) =>
-                  saveToLocalStorage(
-                    survivor.id!,
-                    { systemicPressure: value },
-                    'Systemic pressure updated.'
-                  )
-                }
-                min={0}
-                readOnly={false}>
-                <Input
-                  id={`systemicPressure-${survivor.id}`}
-                  type="number"
-                  value={survivor.systemicPressure}
-                  readOnly={isMobile}
-                  onChange={(e) =>
+          <>
+            <Separator className="my-2" />
+
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-background/40 rounded-lg p-0 text-center">
+                <div className="text-xs text-muted-foreground pb-1">
+                  Systemic Pressure
+                </div>
+                <NumericInput
+                  label="Systemic Pressure"
+                  value={survivor.systemicPressure ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { systemicPressure: parseInt(e.target.value) || 0 },
+                      { systemicPressure: value },
                       'Systemic pressure updated.'
                     )
                   }
-                  className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  min="0"
-                  name={`systemicPressure-${survivor.id}`}
-                />
-              </NumericInput>
-            </div>
-            <div className="bg-background/40 rounded-lg p-0 text-center">
-              <div className="text-xs text-muted-foreground pb-1">Torment</div>
-              <NumericInput
-                label="Torment"
-                value={survivor.torment ?? 0}
-                onChange={(value) =>
-                  saveToLocalStorage(
-                    survivor.id!,
-                    { torment: value },
-                    'Torment updated.'
-                  )
-                }
-                min={0}
-                readOnly={false}>
-                <Input
-                  id={`torment-${survivor.id}`}
-                  type="number"
-                  value={survivor.torment}
-                  readOnly={isMobile}
-                  onChange={(e) =>
+                  min={0}
+                  readOnly={false}>
+                  <Input
+                    id={`systemicPressure-${survivor.id}`}
+                    type="number"
+                    value={survivor.systemicPressure}
+                    readOnly={isMobile}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { systemicPressure: parseInt(e.target.value) || 0 },
+                        'Systemic pressure updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    min="0"
+                    name={`systemicPressure-${survivor.id}`}
+                  />
+                </NumericInput>
+              </div>
+              <div className="bg-background/40 rounded-lg p-0 text-center">
+                <div className="text-xs text-muted-foreground pb-1">
+                  Torment
+                </div>
+                <NumericInput
+                  label="Torment"
+                  value={survivor.torment ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { torment: parseInt(e.target.value) || 0 },
+                      { torment: value },
                       'Torment updated.'
                     )
                   }
-                  className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  min="0"
-                  name={`torment-${survivor.id}`}
-                />
-              </NumericInput>
-            </div>
-            <div className="bg-background/40 rounded-lg p-0 text-center">
-              <div className="text-xs text-muted-foreground pb-1">Lumi</div>
-              <NumericInput
-                label="Lumi"
-                value={survivor.lumi ?? 0}
-                onChange={(value) =>
-                  saveToLocalStorage(
-                    survivor.id!,
-                    { lumi: value },
-                    'Lumi updated.'
-                  )
-                }
-                min={0}
-                readOnly={false}>
-                <Input
-                  id={`lumi-${survivor.id}`}
-                  type="number"
-                  value={survivor.lumi}
-                  readOnly={isMobile}
-                  onChange={(e) =>
+                  min={0}
+                  readOnly={false}>
+                  <Input
+                    id={`torment-${survivor.id}`}
+                    type="number"
+                    value={survivor.torment}
+                    readOnly={isMobile}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { torment: parseInt(e.target.value) || 0 },
+                        'Torment updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    min="0"
+                    name={`torment-${survivor.id}`}
+                  />
+                </NumericInput>
+              </div>
+              <div className="bg-background/40 rounded-lg p-0 text-center">
+                <div className="text-xs text-muted-foreground pb-1">Lumi</div>
+                <NumericInput
+                  label="Lumi"
+                  value={survivor.lumi ?? 0}
+                  onChange={(value) =>
                     saveToLocalStorage(
                       survivor.id!,
-                      { lumi: parseInt(e.target.value) || 0 },
+                      { lumi: value },
                       'Lumi updated.'
                     )
                   }
-                  className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  min="0"
-                  name={`lumi-${survivor.id}`}
-                />
-              </NumericInput>
+                  min={0}
+                  readOnly={false}>
+                  <Input
+                    id={`lumi-${survivor.id}`}
+                    type="number"
+                    value={survivor.lumi}
+                    readOnly={isMobile}
+                    onChange={(e) =>
+                      saveToLocalStorage(
+                        survivor.id!,
+                        { lumi: parseInt(e.target.value) || 0 },
+                        'Lumi updated.'
+                      )
+                    }
+                    className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    min="0"
+                    name={`lumi-${survivor.id}`}
+                  />
+                </NumericInput>
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         <Separator className="my-2" />
 
         {/* Combat and Attributes Grid */}
         <div className="flex flex-col lg:flex-row lg:gap-2">
-          {/* Attributes Column */}
+          {/* Base Attributes */}
           <HuntSurvivorAttributes
             survivor={survivor}
             selectedHunt={selectedHunt}
@@ -682,19 +694,19 @@ export function HuntSurvivorCard({
             isMobile={isMobile}
             updateSurvival={updateSurvival}
             updateInsanity={updateInsanity}
+            saveAttributeToken={saveAttributeToken}
             saveSurvivorBaseAttribute={saveSurvivorBaseAttribute}
-            saveTokenAttribute={saveTokenAttribute}
           />
 
-          {/* Separator between columns (hidden on mobile) */}
+          {/* Non-Mobile Separator */}
           <div className="hidden lg:flex lg:items-stretch">
             <Separator orientation="vertical" className="mx-2" />
           </div>
 
-          {/* Mobile separator (shown only on mobile) */}
+          {/* Mobile Separator */}
           <Separator className="my-2 lg:hidden" />
 
-          {/* Combat Attributes Column */}
+          {/* Combat Attributes */}
           <div className="flex flex-col flex-1">
             <div className="space-y-1 flex flex-col">
               {/* Brain */}
@@ -703,14 +715,8 @@ export function HuntSurvivorCard({
                 displayTormentInput={false}
                 saveSelectedSurvivor={(
                   updateData: Partial<Survivor>,
-                  successMsg?: string
-                ) => {
-                  saveToLocalStorage(
-                    survivor.id!,
-                    updateData,
-                    successMsg || 'Sanity updated.'
-                  )
-                }}
+                  successMsg: string
+                ) => saveToLocalStorage(survivor.id!, updateData, successMsg)}
                 selectedSurvivor={selectedSurvivor}
                 selectedSettlement={selectedSettlement}
               />
@@ -719,14 +725,8 @@ export function HuntSurvivorCard({
               <HeadCard
                 saveSelectedSurvivor={(
                   updateData: Partial<Survivor>,
-                  successMsg?: string
-                ) => {
-                  saveToLocalStorage(
-                    survivor.id!,
-                    updateData,
-                    successMsg || 'Head updated.'
-                  )
-                }}
+                  successMsg: string
+                ) => saveToLocalStorage(survivor.id!, updateData, successMsg)}
                 selectedSurvivor={selectedSurvivor}
               />
 
@@ -734,14 +734,8 @@ export function HuntSurvivorCard({
               <ArmsCard
                 saveSelectedSurvivor={(
                   updateData: Partial<Survivor>,
-                  successMsg?: string
-                ) => {
-                  saveToLocalStorage(
-                    survivor.id!,
-                    updateData,
-                    successMsg || 'Arms updated.'
-                  )
-                }}
+                  successMsg: string
+                ) => saveToLocalStorage(survivor.id!, updateData, successMsg)}
                 selectedSurvivor={selectedSurvivor}
               />
 
@@ -749,14 +743,8 @@ export function HuntSurvivorCard({
               <BodyCard
                 saveSelectedSurvivor={(
                   updateData: Partial<Survivor>,
-                  successMsg?: string
-                ) => {
-                  saveToLocalStorage(
-                    survivor.id!,
-                    updateData,
-                    successMsg || 'Body updated.'
-                  )
-                }}
+                  successMsg: string
+                ) => saveToLocalStorage(survivor.id!, updateData, successMsg)}
                 selectedSurvivor={selectedSurvivor}
               />
 
@@ -764,14 +752,8 @@ export function HuntSurvivorCard({
               <WaistCard
                 saveSelectedSurvivor={(
                   updateData: Partial<Survivor>,
-                  successMsg?: string
-                ) => {
-                  saveToLocalStorage(
-                    survivor.id!,
-                    updateData,
-                    successMsg || 'Waist updated.'
-                  )
-                }}
+                  successMsg: string
+                ) => saveToLocalStorage(survivor.id!, updateData, successMsg)}
                 selectedSurvivor={selectedSurvivor}
               />
 
@@ -779,14 +761,8 @@ export function HuntSurvivorCard({
               <LegsCard
                 saveSelectedSurvivor={(
                   updateData: Partial<Survivor>,
-                  successMsg?: string
-                ) => {
-                  saveToLocalStorage(
-                    survivor.id!,
-                    updateData,
-                    successMsg || 'Legs updated.'
-                  )
-                }}
+                  successMsg: string
+                ) => saveToLocalStorage(survivor.id!, updateData, successMsg)}
                 selectedSurvivor={selectedSurvivor}
               />
             </div>
@@ -917,8 +893,9 @@ export function HuntSurvivorCard({
           </>
         )}
 
-        {/* Hunt Notes Section */}
         <Separator className="my-2" />
+
+        {/* Hunt Notes Section */}
         <div className="flex flex-col gap-2">
           <Textarea
             value={notesDraft}
@@ -928,7 +905,7 @@ export function HuntSurvivorCard({
               setNotesDraft(e.target.value)
               setIsNotesDirty(e.target.value !== survivorHuntDetails?.notes)
             }}
-            placeholder="Add survivor hunt notes..."
+            placeholder="Add hunt notes..."
             className="w-full resize-none text-xs font-normal"
             style={{ minHeight: '125px' }}
           />

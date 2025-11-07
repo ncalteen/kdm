@@ -22,49 +22,49 @@ import { ReactElement, useState } from 'react'
  * Survivor Selection Drawer Props
  */
 interface SurvivorSelectionDrawerProps {
-  /** Drawer Title */
-  title: string
   /** Drawer Description */
   description: string
-  /** List of Survivors */
-  survivors: Survivor[]
-  /** Currently Selected Survivors */
-  selectedSurvivors: number[]
-  /** Callback for Selection Change */
-  onSelectionChange: (survivorIds: number[]) => void
   /** Maximum Survivors */
   maxSelection: number
+  /** Callback for Selection Change */
+  onSelectionChange: (survivorIds: number[]) => void
   /** Currently Selected Scout ID (to disable in survivor list) */
   selectedScout?: number | null
+  /** Currently Selected Survivors */
+  selectedSurvivors: number[]
+  /** List of Survivors */
+  survivors: Survivor[]
+  /** Drawer Title */
+  title: string
 }
 
 /**
  * Survivor Selection Drawer Component
  */
 export function SurvivorSelectionDrawer({
-  title,
   description,
-  survivors,
-  selectedSurvivors,
-  onSelectionChange,
   maxSelection,
-  selectedScout
+  onSelectionChange,
+  selectedScout,
+  selectedSurvivors,
+  survivors,
+  title
 }: SurvivorSelectionDrawerProps): ReactElement {
   const isMobile = useIsMobile()
+
   const [tempSelection, setTempSelection] =
     useState<number[]>(selectedSurvivors)
   const [hoveredSurvivor, setHoveredSurvivor] = useState<Survivor | null>(null)
   const [lastHoveredSurvivor, setLastHoveredSurvivor] =
     useState<Survivor | null>(null)
 
-  const handleSurvivorToggle = (survivorId: number) => {
+  const handleSurvivorToggle = (survivorId: number) =>
     setTempSelection((prev) => {
       if (prev.includes(survivorId))
         return prev.filter((id) => id !== survivorId)
       else if (prev.length < maxSelection) return [...prev, survivorId]
       return prev
     })
-  }
 
   const handleSurvivorHover = (survivor: Survivor | null) => {
     setHoveredSurvivor(survivor)
@@ -86,11 +86,13 @@ export function SurvivorSelectionDrawer({
             : 'Select survivors...'}
         </Button>
       </DrawerTrigger>
+
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
+
         <div className="px-4 pb-4 h-[60vh] flex gap-4">
           <div className="flex flex-wrap gap-2 overflow-y-auto min-w-[200px]">
             {survivors.map((survivor) => (
@@ -109,6 +111,7 @@ export function SurvivorSelectionDrawer({
               />
             ))}
           </div>
+
           {!isMobile && (
             <div className="w-[450px]">
               <SurvivorDetailsPanel
@@ -118,6 +121,7 @@ export function SurvivorSelectionDrawer({
             </div>
           )}
         </div>
+
         <DrawerFooter>
           <div className="flex gap-2">
             <DrawerClose asChild>

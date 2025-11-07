@@ -57,6 +57,7 @@ export function ScoutSelectionCard({
                   .slice(0, 2)}
               </AvatarFallback>
             </Avatar>
+
             <div className="text-left flex-1 min-w-0">
               <div className="font-semibold text-sm truncate">
                 {survivor.name}

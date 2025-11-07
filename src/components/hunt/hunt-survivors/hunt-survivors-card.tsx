@@ -9,7 +9,7 @@ import {
   useDotButton
 } from '@/components/ui/embla-carousel-dot-button'
 import { useSidebar } from '@/components/ui/sidebar'
-import { ColorChoice } from '@/lib/enums'
+import { getCarouselWidth, getSurvivorColorChoice } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -76,35 +76,6 @@ export function HuntSurvivorsCard({
     return s
   }, [selectedHunt?.survivors, selectedHunt?.scout])
 
-  /**
-   * Get Survivor Color
-   */
-  const getSurvivorColor = (survivorId: number): ColorChoice => {
-    if (!selectedHunt?.survivorDetails) return ColorChoice.SLATE
-
-    const survivorDetail = selectedHunt.survivorDetails.find(
-      (sd) => sd.id === survivorId
-    )
-
-    return survivorDetail?.color || ColorChoice.SLATE
-  }
-
-  /**
-   * Calculate width based on sidebar state
-   */
-  const getCarouselWidth = () => {
-    // Full width on mobile (sidebar is overlay) minus gap
-    if (isMobile) return '98vw'
-
-    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
-    if (state === 'expanded') return 'calc(100vw - 17rem)'
-
-    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
-    if (state === 'collapsed') return 'calc(100vw - 4rem)'
-
-    return '98.5vw' // Fallback to full width
-  }
-
   if (huntSurvivors.length === 0 || !selectedSettlement) return <></>
 
   // Get filtered survivors for mapping
@@ -116,7 +87,7 @@ export function HuntSurvivorsCard({
     <Carousel
       className="embla p-0 max-w-full overflow-hidden"
       style={{
-        width: getCarouselWidth()
+        width: getCarouselWidth(isMobile, state)
       }}>
       <div className="embla__controls min-w-[430px]">
         <div className="embla__buttons">
@@ -128,6 +99,7 @@ export function HuntSurvivorsCard({
             disabled={prevBtnDisabled}>
             <ArrowLeftIcon className="size-8" />
           </Button>
+
           <Button
             className="h-12 w-12"
             variant="ghost"
@@ -140,10 +112,10 @@ export function HuntSurvivorsCard({
 
         <div className="embla__dots">
           {scrollSnaps.map((_, index) => {
-            const survivor = filteredSurvivors?.[index]
-            const survivorColor = survivor
-              ? getSurvivorColor(survivor.id)
-              : ColorChoice.SLATE
+            const survivorColor = getSurvivorColorChoice(
+              selectedHunt,
+              filteredSurvivors?.[index]?.id
+            )
             const isSelected = index === selectedIndex
 
             return (

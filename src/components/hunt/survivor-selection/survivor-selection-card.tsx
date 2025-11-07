@@ -11,18 +11,18 @@ import { ReactElement } from 'react'
  * Survivor Selection Card Props
  */
 interface SurvivorSelectionCardProps {
-  /** Survivor Selected as Scout */
-  isSelectedAsScout: boolean
-  /** Survivor is Disabled */
-  isDisabled: boolean
   /** Handle Toggle Function */
   handleSurvivorToggle: (survivorId: number) => void
-  /** Temporary Selection State */
-  tempSelection: number[]
+  /** Survivor is Disabled */
+  isDisabled: boolean
+  /** Survivor Selected as Scout */
+  isSelectedAsScout: boolean
   /** Handle Hover Function */
   onHover?: (survivor: Survivor | null) => void
   /** Survivor */
   survivor: Survivor
+  /** Temporary Selection State */
+  tempSelection: number[]
 }
 
 /**
@@ -32,14 +32,12 @@ interface SurvivorSelectionCardProps {
  */
 export function SurvivorSelectionCard({
   handleSurvivorToggle,
-  isSelectedAsScout,
   isDisabled,
-  tempSelection,
+  isSelectedAsScout,
   onHover,
-  survivor
+  survivor,
+  tempSelection
 }: SurvivorSelectionCardProps): ReactElement {
-  const isSelected = tempSelection.includes(survivor.id)
-
   return (
     <div className="w-[200px] h-[280px] flex-grow-2 border-4 rounded-xl border-border/20 hover:border-border/50 transition-all duration-200">
       <Button
@@ -62,6 +60,7 @@ export function SurvivorSelectionCard({
                   .slice(0, 2)}
               </AvatarFallback>
             </Avatar>
+
             <div className="text-left flex-1 min-w-0">
               <div className="font-semibold text-sm truncate">
                 {survivor.name}
@@ -89,6 +88,7 @@ export function SurvivorSelectionCard({
               <div>Survival</div>
               <div className="font-bold text-lg">{survivor.survival}</div>
             </div>
+
             <div className="bg-background/40 rounded px-2 py-1 text-center">
               <div>Insanity</div>
               <div className="font-bold text-lg">{survivor.insanity}</div>
@@ -102,6 +102,7 @@ export function SurvivorSelectionCard({
                 <div className="text-xs truncate">
                   {survivor.weaponProficiencyType}
                 </div>
+
                 <div className="font-semibold">
                   {survivor.weaponProficiency}
                 </div>
@@ -117,7 +118,7 @@ export function SurvivorSelectionCard({
           </div>
         )}
 
-        {isSelected && !isSelectedAsScout && (
+        {tempSelection.includes(survivor.id) && !isSelectedAsScout && (
           <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
             <UserCheckIcon className="h-3 w-3" />
           </div>

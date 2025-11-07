@@ -15,7 +15,7 @@ import { ReactElement } from 'react'
  */
 interface WaistCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
 }

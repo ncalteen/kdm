@@ -12,7 +12,7 @@ import { ReactElement } from 'react'
  * Hunt Survivor Attributes Component Properties
  */
 interface HuntSurvivorAttributesProps {
-  /** Survivor data */
+  /** Survivor */
   survivor: Partial<Survivor>
   /** Selected Hunt */
   selectedHunt: Partial<Hunt> | null
@@ -24,13 +24,13 @@ interface HuntSurvivorAttributesProps {
   updateSurvival: (val: string) => void
   /** Update Insanity */
   updateInsanity: (val: string) => void
-  /** Save Survivor Base Attributes function */
+  /** Save Attribute Token */
+  saveAttributeToken: (attributeName: string, value: number) => void
+  /** Save Survivor Base Attributes */
   saveSurvivorBaseAttribute: (
     attributeName: keyof Survivor,
     value: number | boolean
   ) => void
-  /** Save Token Attributes function */
-  saveTokenAttribute: (attributeName: string, value: number) => void
 }
 
 /**
@@ -49,8 +49,8 @@ export function HuntSurvivorAttributes({
   isMobile,
   updateSurvival,
   updateInsanity,
-  saveSurvivorBaseAttribute,
-  saveTokenAttribute
+  saveAttributeToken,
+  saveSurvivorBaseAttribute
 }: HuntSurvivorAttributesProps): ReactElement {
   // Get current survivor's hunt details for token values
   const survivorHuntDetails = selectedHunt?.survivorDetails?.find(
@@ -79,6 +79,7 @@ export function HuntSurvivorAttributes({
       {/* Survival */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Survival</label>
+
         <NumericInput
           label="Survival Base"
           value={survivor.survival ?? 0}
@@ -102,17 +103,18 @@ export function HuntSurvivorAttributes({
             name={`survival-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Survival Tokens"
           value={survivalTokens}
-          onChange={(value) => saveTokenAttribute('survivalTokens', value)}
+          onChange={(value) => saveAttributeToken('survivalTokens', value)}
           readOnly={false}>
           <Input
             id={`survival-tokens-${survivor.id}`}
             type="number"
             value={survivalTokens}
             onChange={(e) =>
-              saveTokenAttribute(
+              saveAttributeToken(
                 'survivalTokens',
                 parseInt(e.target.value) || 0
               )
@@ -125,6 +127,7 @@ export function HuntSurvivorAttributes({
             name={`survival-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`survival-total-${survivor.id}`}
           type="number"
@@ -143,6 +146,7 @@ export function HuntSurvivorAttributes({
       {/* Insanity */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Insanity</label>
+
         <NumericInput
           label="Insanity Base"
           value={survivor.insanity ?? 0}
@@ -160,17 +164,18 @@ export function HuntSurvivorAttributes({
             name={`insanity-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Insanity Tokens"
           value={insanityTokens}
-          onChange={(value) => saveTokenAttribute('insanityTokens', value)}
+          onChange={(value) => saveAttributeToken('insanityTokens', value)}
           readOnly={false}>
           <Input
             id={`insanity-tokens-${survivor.id}`}
             type="number"
             value={insanityTokens}
             onChange={(e) =>
-              saveTokenAttribute(
+              saveAttributeToken(
                 'insanityTokens',
                 parseInt(e.target.value) || 0
               )
@@ -179,6 +184,7 @@ export function HuntSurvivorAttributes({
             name={`insanity-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`insanity-total-${survivor.id}`}
           type="number"
@@ -195,6 +201,7 @@ export function HuntSurvivorAttributes({
       {/* Movement */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Movement</label>
+
         <NumericInput
           label="Movement Base"
           value={survivor.movement ?? 0}
@@ -216,17 +223,18 @@ export function HuntSurvivorAttributes({
             name={`movement-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Movement Tokens"
           value={movementTokens}
-          onChange={(value) => saveTokenAttribute('movementTokens', value)}
+          onChange={(value) => saveAttributeToken('movementTokens', value)}
           readOnly={false}>
           <Input
             id={`movement-tokens-${survivor.id}`}
             type="number"
             value={movementTokens}
             onChange={(e) =>
-              saveTokenAttribute(
+              saveAttributeToken(
                 'movementTokens',
                 parseInt(e.target.value) || 0
               )
@@ -235,6 +243,7 @@ export function HuntSurvivorAttributes({
             name={`movement-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`movement-total-${survivor.id}`}
           type="number"
@@ -249,6 +258,7 @@ export function HuntSurvivorAttributes({
       {/* Accuracy */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Accuracy</label>
+
         <NumericInput
           label="Accuracy Base"
           value={survivor.accuracy ?? 0}
@@ -270,17 +280,18 @@ export function HuntSurvivorAttributes({
             name={`accuracy-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Accuracy Tokens"
           value={accuracyTokens}
-          onChange={(value) => saveTokenAttribute('accuracyTokens', value)}
+          onChange={(value) => saveAttributeToken('accuracyTokens', value)}
           readOnly={false}>
           <Input
             id={`accuracy-tokens-${survivor.id}`}
             type="number"
             value={accuracyTokens}
             onChange={(e) =>
-              saveTokenAttribute(
+              saveAttributeToken(
                 'accuracyTokens',
                 parseInt(e.target.value) || 0
               )
@@ -289,6 +300,7 @@ export function HuntSurvivorAttributes({
             name={`accuracy-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`accuracy-total-${survivor.id}`}
           type="number"
@@ -303,6 +315,7 @@ export function HuntSurvivorAttributes({
       {/* Strength */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Strength</label>
+
         <NumericInput
           label="Strength Base"
           value={survivor.strength ?? 0}
@@ -324,17 +337,18 @@ export function HuntSurvivorAttributes({
             name={`strength-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Strength Tokens"
           value={strengthTokens}
-          onChange={(value) => saveTokenAttribute('strengthTokens', value)}
+          onChange={(value) => saveAttributeToken('strengthTokens', value)}
           readOnly={false}>
           <Input
             id={`strength-tokens-${survivor.id}`}
             type="number"
             value={strengthTokens}
             onChange={(e) =>
-              saveTokenAttribute(
+              saveAttributeToken(
                 'strengthTokens',
                 parseInt(e.target.value) || 0
               )
@@ -343,6 +357,7 @@ export function HuntSurvivorAttributes({
             name={`strength-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`strength-total-${survivor.id}`}
           type="number"
@@ -357,6 +372,7 @@ export function HuntSurvivorAttributes({
       {/* Evasion */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Evasion</label>
+
         <NumericInput
           label="Evasion Base"
           value={survivor.evasion ?? 0}
@@ -378,22 +394,24 @@ export function HuntSurvivorAttributes({
             name={`evasion-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Evasion Tokens"
           value={evasionTokens}
-          onChange={(value) => saveTokenAttribute('evasionTokens', value)}
+          onChange={(value) => saveAttributeToken('evasionTokens', value)}
           readOnly={false}>
           <Input
             id={`evasion-tokens-${survivor.id}`}
             type="number"
             value={evasionTokens}
             onChange={(e) =>
-              saveTokenAttribute('evasionTokens', parseInt(e.target.value) || 0)
+              saveAttributeToken('evasionTokens', parseInt(e.target.value) || 0)
             }
             className="flex-1 h-12 text-center no-spinners text-xl"
             name={`evasion-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`evasion-total-${survivor.id}`}
           type="number"
@@ -408,6 +426,7 @@ export function HuntSurvivorAttributes({
       {/* Luck */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Luck</label>
+
         <NumericInput
           label="Luck Base"
           value={survivor.luck ?? 0}
@@ -426,22 +445,24 @@ export function HuntSurvivorAttributes({
             name={`luck-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Luck Tokens"
           value={luckTokens}
-          onChange={(value) => saveTokenAttribute('luckTokens', value)}
+          onChange={(value) => saveAttributeToken('luckTokens', value)}
           readOnly={false}>
           <Input
             id={`luck-tokens-${survivor.id}`}
             type="number"
             value={luckTokens}
             onChange={(e) =>
-              saveTokenAttribute('luckTokens', parseInt(e.target.value) || 0)
+              saveAttributeToken('luckTokens', parseInt(e.target.value) || 0)
             }
             className="flex-1 h-12 text-center no-spinners text-xl"
             name={`luck-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`luck-total-${survivor.id}`}
           type="number"
@@ -456,6 +477,7 @@ export function HuntSurvivorAttributes({
       {/* Speed */}
       <div className="flex flex-row items-center gap-2">
         <label className="text-xs w-20">Speed</label>
+
         <NumericInput
           label="Speed Base"
           value={survivor.speed ?? 0}
@@ -474,22 +496,24 @@ export function HuntSurvivorAttributes({
             name={`speed-base-${survivor.id}`}
           />
         </NumericInput>
+
         <NumericInput
           label="Speed Tokens"
           value={speedTokens}
-          onChange={(value) => saveTokenAttribute('speedTokens', value)}
+          onChange={(value) => saveAttributeToken('speedTokens', value)}
           readOnly={false}>
           <Input
             id={`speed-tokens-${survivor.id}`}
             type="number"
             value={speedTokens}
             onChange={(e) =>
-              saveTokenAttribute('speedTokens', parseInt(e.target.value) || 0)
+              saveAttributeToken('speedTokens', parseInt(e.target.value) || 0)
             }
             className="flex-1 h-12 text-center no-spinners text-xl"
             name={`speed-tokens-${survivor.id}`}
           />
         </NumericInput>
+
         <Input
           id={`speed-total-${survivor.id}`}
           type="number"
