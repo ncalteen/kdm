@@ -2,7 +2,6 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -68,15 +67,11 @@ export function HuntSurvivorAttributes({
   const insanityTokens = survivorHuntDetails?.insanityTokens ?? 0
 
   return (
-    <div className="flex flex-col">
-      <Label className="text-xs font-semibold justify-center text-muted-foreground pb-1">
-        Attributes
-      </Label>
-
+    <div className="p-2">
       <div className="flex flex-col gap-1">
         {/* Header */}
         <div className="flex flex-row items-center gap-2">
-          <div className="w-16"></div>
+          <div className="w-20"></div>
           <label className="text-xs flex-1 text-center">Base</label>
           <label className="text-xs flex-1 text-center">Tokens</label>
           <label className="text-xs flex-1 text-center">Total</label>
@@ -98,7 +93,7 @@ export function HuntSurvivorAttributes({
               value={survivor.survival}
               readOnly={isMobile}
               onChange={(e) => updateSurvival(e.target.value)}
-              className={`flex-1 h-10 text-center no-spinners ${
+              className={`flex-1 h-12 text-center no-spinners text-xl ${
                 !survivor.canSpendSurvival
                   ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
                   : ''
@@ -123,7 +118,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`survival-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -131,7 +126,7 @@ export function HuntSurvivorAttributes({
             id={`survival-total-${survivor.id}`}
             type="number"
             value={(survivor.survival ?? 0) + survivalTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`survival-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
@@ -153,7 +148,7 @@ export function HuntSurvivorAttributes({
               value={survivor.insanity}
               readOnly={isMobile}
               onChange={(e) => updateInsanity(e.target.value)}
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               min="0"
               name={`insanity-base-${survivor.id}`}
             />
@@ -173,7 +168,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`insanity-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -181,7 +176,7 @@ export function HuntSurvivorAttributes({
             id={`insanity-total-${survivor.id}`}
             type="number"
             value={(survivor.insanity ?? 0) + insanityTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`insanity-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
@@ -209,7 +204,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               min="0"
               name={`movement-base-${survivor.id}`}
             />
@@ -229,7 +224,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`movement-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -237,7 +232,7 @@ export function HuntSurvivorAttributes({
             id={`movement-total-${survivor.id}`}
             type="number"
             value={(survivor.movement ?? 0) + movementTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`movement-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
@@ -263,7 +258,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               min="0"
               name={`accuracy-base-${survivor.id}`}
             />
@@ -283,7 +278,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`accuracy-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -291,7 +286,7 @@ export function HuntSurvivorAttributes({
             id={`accuracy-total-${survivor.id}`}
             type="number"
             value={(survivor.accuracy ?? 0) + accuracyTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`accuracy-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
@@ -317,7 +312,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               min="0"
               name={`strength-base-${survivor.id}`}
             />
@@ -337,7 +332,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`strength-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -345,7 +340,7 @@ export function HuntSurvivorAttributes({
             id={`strength-total-${survivor.id}`}
             type="number"
             value={(survivor.strength ?? 0) + strengthTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`strength-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
@@ -371,7 +366,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               min="0"
               name={`evasion-base-${survivor.id}`}
             />
@@ -391,7 +386,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`evasion-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -399,7 +394,7 @@ export function HuntSurvivorAttributes({
             id={`evasion-total-${survivor.id}`}
             type="number"
             value={(survivor.evasion ?? 0) + evasionTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`evasion-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
@@ -422,7 +417,7 @@ export function HuntSurvivorAttributes({
               onChange={(e) =>
                 saveSurvivorBaseAttribute('luck', parseInt(e.target.value) || 0)
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               min="0"
               name={`luck-base-${survivor.id}`}
             />
@@ -439,7 +434,7 @@ export function HuntSurvivorAttributes({
               onChange={(e) =>
                 saveTokenAttribute('luckTokens', parseInt(e.target.value) || 0)
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`luck-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -447,7 +442,7 @@ export function HuntSurvivorAttributes({
             id={`luck-total-${survivor.id}`}
             type="number"
             value={(survivor.luck ?? 0) + luckTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`luck-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
@@ -473,7 +468,7 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               min="0"
               name={`speed-base-${survivor.id}`}
             />
@@ -490,7 +485,7 @@ export function HuntSurvivorAttributes({
               onChange={(e) =>
                 saveTokenAttribute('speedTokens', parseInt(e.target.value) || 0)
               }
-              className="flex-1 h-10 text-center no-spinners"
+              className="flex-1 h-12 text-center no-spinners text-xl"
               name={`speed-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -498,7 +493,7 @@ export function HuntSurvivorAttributes({
             id={`speed-total-${survivor.id}`}
             type="number"
             value={(survivor.speed ?? 0) + speedTokens}
-            className="flex-1 h-10 text-center no-spinners"
+            className="flex-1 h-12 text-center no-spinners text-xl"
             name={`speed-total-${survivor.id}`}
             readOnly={true}
             disabled={true}
