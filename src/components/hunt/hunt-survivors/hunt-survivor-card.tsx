@@ -24,6 +24,7 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import {
   getCampaign,
   getCardColorStyles,
@@ -172,7 +173,7 @@ export function HuntSurvivorCard({
 
       if (error instanceof ZodError && error.errors[0]?.message)
         toast.error(error.errors[0].message)
-      else toast.error('The darkness swallows your words. Please try again.')
+      else toast.error(ERROR_MESSAGE())
     }
   }
 

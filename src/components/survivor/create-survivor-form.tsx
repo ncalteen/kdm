@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Gender, SurvivorType } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import {
   bornWithUnderstanding,
   canDash,
@@ -123,7 +124,7 @@ export function CreateSurvivorForm({
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error('The darkness swallows your words. Please try again.')
+        toast.error(ERROR_MESSAGE())
       })}
       className="py-3 space-y-6">
       <Form {...form}>

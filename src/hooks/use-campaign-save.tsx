@@ -1,5 +1,6 @@
 'use client'
 
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -57,7 +58,7 @@ export function useCampaignSave(
         if (successMsg) toast.success(successMsg)
       } catch (error) {
         console.error('Campaign Save Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
+        toast.error(ERROR_MESSAGE())
       }
     },
     [

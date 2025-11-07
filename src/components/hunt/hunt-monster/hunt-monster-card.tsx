@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { Hunt, HuntMonster, HuntMonsterSchema } from '@/schemas/hunt'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, SkullIcon } from 'lucide-react'
@@ -121,7 +122,7 @@ export function HuntMonsterCard({
 
       if (error instanceof ZodError && error.errors[0]?.message)
         toast.error(error.errors[0].message)
-      else toast.error('The darkness swallows your words. Please try again.')
+      else toast.error(ERROR_MESSAGE())
     }
   }
 

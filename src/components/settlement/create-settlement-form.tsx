@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { DefaultSquiresSuspicion } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import {
   getCampaign,
   getCampaignData,
@@ -158,14 +159,14 @@ export function CreateSettlementForm({
       toast.success('A lantern pierces the darkness. A new settlement is born.')
     } catch (error) {
       console.error('Settlement Create Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error('The darkness swallows your words. Please try again.')
+        toast.error(ERROR_MESSAGE())
       })}
       className="space-y-6">
       <Form {...form}>

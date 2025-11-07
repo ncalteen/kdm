@@ -22,6 +22,7 @@ import {
   MonsterType,
   TurnType
 } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getNextShowdownId } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -148,7 +149,7 @@ export function CreateShowdownCard({
       !selectedMonsterType ||
       selectedSurvivors.length === 0
     )
-      return toast.error('The darkness swallows your words. Please try again.')
+      return toast.error(ERROR_MESSAGE())
 
     // Validate scout selection if settlement uses scouts
     if (selectedSettlement.usesScouts && !selectedScout)

@@ -14,6 +14,7 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -100,7 +101,7 @@ export function ActiveShowdownCard({
       setIsCancelDialogOpen(false)
     } catch (error) {
       console.error('Delete Showdown Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }, [selectedSettlement?.id, selectedShowdown?.id, setSelectedShowdown])
 

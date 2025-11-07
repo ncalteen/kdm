@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -88,7 +89,7 @@ export function SettingsCard({
       )
     } catch (error) {
       console.error('Uses Scouts Update Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
@@ -117,7 +118,7 @@ export function SettingsCard({
       )
     } catch (error) {
       console.error('Delete Hunt Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
@@ -146,7 +147,7 @@ export function SettingsCard({
       )
     } catch (error) {
       console.error('Delete Showdown Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
@@ -201,7 +202,7 @@ export function SettingsCard({
       )
     } catch (error) {
       console.error('Settlement Delete Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 

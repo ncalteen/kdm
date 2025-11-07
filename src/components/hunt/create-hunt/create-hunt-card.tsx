@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getNextHuntId } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -138,7 +139,7 @@ export function CreateHuntCard({
       !selectedMonsterType ||
       selectedSurvivors.length === 0
     )
-      return toast.error('The darkness swallows your words. Please try again.')
+      return toast.error(ERROR_MESSAGE())
 
     // Validate scout selection if settlement uses scouts
     if (selectedSettlement.usesScouts && !selectedScout)

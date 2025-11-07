@@ -17,6 +17,13 @@ import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { AmbushType, TabType, TurnType } from '@/lib/enums'
 import {
+  AMBUSH_MESSAGE,
+  ERROR_MESSAGE,
+  HUNT_DELETED_MESSAGE,
+  MONSTER_MOVED_MESSAGE,
+  SURVIVORS_MOVED_MESSAGE
+} from '@/lib/messages'
+import {
   getCampaign,
   getNextShowdownId,
   saveCampaignToLocalStorage
@@ -82,15 +89,13 @@ export function ActiveHuntCard({
    * Handle Position Update
    */
   const handlePositionUpdate = useCallback(
-    (survivorPosition: number, monsterPosition: number) => {
-      const survivorChanged =
-        survivorPosition !== (selectedHunt?.survivorPosition ?? 0)
-
+    (survivorPosition: number, monsterPosition: number) =>
       saveSelectedHunt(
         { survivorPosition, monsterPosition },
-        survivorChanged ? 'Survivors moved.' : 'Monster moved.'
-      )
-    },
+        survivorPosition !== (selectedHunt?.survivorPosition ?? 0)
+          ? SURVIVORS_MOVED_MESSAGE()
+          : MONSTER_MOVED_MESSAGE()
+      ),
     [selectedHunt?.survivorPosition, saveSelectedHunt]
   )
 
@@ -103,11 +108,8 @@ export function ActiveHuntCard({
    * Handle Delete Hunt
    */
   const handleDeleteHunt = useCallback(() => {
-    if (!selectedSettlement?.id) return
-
     try {
       const campaign = getCampaign()
-
       const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.id !== selectedHunt?.id
       )
@@ -116,26 +118,20 @@ export function ActiveHuntCard({
         ...campaign,
         hunts: updatedHunts
       })
-
       setSelectedHunt(null)
-
-      toast.success(
-        'The hunt ends. Survivors return to the relative safety of the settlement.'
-      )
-
       setIsCancelDialogOpen(false)
+
+      toast.success(HUNT_DELETED_MESSAGE())
     } catch (error) {
       console.error('Delete Hunt Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
-  }, [selectedSettlement?.id, selectedHunt?.id, setSelectedHunt])
+  }, [selectedHunt?.id, setSelectedHunt])
 
   /**
    * Handle Showdown
    */
-  const handleShowdown = useCallback(() => {
-    setIsShowdownDialogOpen(true)
-  }, [])
+  const handleShowdown = useCallback(() => setIsShowdownDialogOpen(true), [])
 
   /**
    * Handle Proceed to Showdown
@@ -150,14 +146,12 @@ export function ActiveHuntCard({
 
     try {
       const campaign = getCampaign()
-
-      // Convert ambush type number to enum
-      const ambushTypeMap = {
-        0: AmbushType.SURVIVORS,
-        1: AmbushType.NONE,
-        2: AmbushType.MONSTER
-      }
-      const ambush = ambushTypeMap[ambushType as keyof typeof ambushTypeMap]
+      const ambush =
+        {
+          0: AmbushType.SURVIVORS,
+          1: AmbushType.NONE,
+          2: AmbushType.MONSTER
+        }[ambushType] || AmbushType.NONE
 
       // Create showdown from current hunt
       const showdown: Showdown = {
@@ -168,13 +162,15 @@ export function ActiveHuntCard({
         settlementId: selectedHunt.settlementId || 0,
         survivorDetails: selectedHunt.survivorDetails || [],
         survivors: selectedHunt.survivors || [],
-        // If survivors ambush, they go first. Otherwise, the monster does.
         turn: {
+          // If survivors ambush, they go first. Otherwise, the monster does.
           currentTurn:
             ambush === AmbushType.SURVIVORS
               ? TurnType.SURVIVORS
               : TurnType.MONSTER,
           survivorStates: [],
+          // If there is an ambush, start at round 0 (ambush round). Otherwise,
+          // start at round 1.
           round: ambush === AmbushType.NONE ? 1 : 0
         }
       }
@@ -195,9 +191,11 @@ export function ActiveHuntCard({
       setSelectedShowdown(showdown)
       setIsShowdownDialogOpen(false)
       setSelectedTab(TabType.SHOWDOWN)
+
+      toast.success(AMBUSH_MESSAGE(ambushType))
     } catch (error) {
       console.error('Showdown Creation Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }, [
     selectedSettlement?.id,
@@ -299,9 +297,9 @@ export function ActiveHuntCard({
           {/* Ambush Selection */}
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Survivors ambush</span>
-              <span>No ambush</span>
-              <span>Monster ambushes</span>
+              <span>Survivors Ambush</span>
+              <span>No Ambush</span>
+              <span>Monster Ambushes</span>
             </div>
 
             <Slider

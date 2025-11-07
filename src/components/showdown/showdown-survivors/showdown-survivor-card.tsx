@@ -15,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import {
   getCampaign,
   getCardColorStyles,
@@ -155,7 +156,7 @@ export function ShowdownSurvivorCard({
 
       if (error instanceof ZodError && error.errors[0]?.message)
         toast.error(error.errors[0].message)
-      else toast.error('The darkness swallows your words. Please try again.')
+      else toast.error(ERROR_MESSAGE())
     }
   }
 

@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useSelectedTab } from '@/contexts/selected-tab-context'
 import { useCampaignSave } from '@/hooks/use-campaign-save'
 import { SurvivorType } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -121,10 +122,7 @@ export function SettlementSurvivorsCard({
           (s) => s.id === survivorId
         )
 
-        if (survivorIndex === -1)
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
+        if (survivorIndex === -1) return toast.error(ERROR_MESSAGE())
 
         const survivorName = campaign.survivors[survivorIndex].name
         const updatedSurvivors = [...campaign.survivors]
@@ -143,7 +141,7 @@ export function SettlementSurvivorsCard({
         setIsDeleteDialogOpen(false)
       } catch (error) {
         console.error('Survivor Delete Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
+        toast.error(ERROR_MESSAGE())
       }
     },
     [

@@ -27,6 +27,7 @@ import {
   useSidebar
 } from '@/components/ui/sidebar'
 import { CampaignType, SurvivorType, TabType } from '@/lib/enums'
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -305,9 +306,7 @@ export function AppSidebar({
         }
       } catch (error) {
         console.error('Upload Campaign JSON Error:', error)
-        setValidationErrors([
-          'The darkness swallows your words. Please try again.'
-        ])
+        setValidationErrors([ERROR_MESSAGE()])
 
         setUploadedData(undefined)
         setShowConfirmation(false)
@@ -318,7 +317,7 @@ export function AppSidebar({
 
     reader.onerror = () => {
       console.error('Read Campaign JSON Error:', reader.error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
       setIsUploading(false)
     }
 
@@ -348,7 +347,7 @@ export function AppSidebar({
       window.location.reload()
     } catch (error) {
       console.error('Save Campaign Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
