@@ -74,7 +74,7 @@ export function HuntBoard({
   }
 
   return (
-    <Card className="p-0 min-w-[430px]">
+    <Card className="p-0 w-full min-w-[430px]">
       <CardContent className="p-0 w-full overflow-x-auto">
         <DndContext onDragEnd={handleDragEnd}>
           {/* Hunt Board Grid */}

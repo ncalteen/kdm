@@ -1,7 +1,7 @@
 'use client'
 
 import { ScoutSelectionCard } from '@/components/showdown/scout-selection/scout-selection-card'
-import { SurvivorDetailsPanel } from '@/components/showdown/survivor-details-panel'
+import { SurvivorDetailsPanel } from '@/components/survivor/survivor-details-panel'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,

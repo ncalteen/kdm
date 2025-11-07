@@ -155,16 +155,32 @@ export function CreateHuntCard({
       )
 
     const survivorDetails = selectedSurvivors.map((survivorId) => ({
-      id: survivorId,
+      accuracyTokens: 0,
       color: ColorChoice.SLATE,
-      notes: ''
+      evasionTokens: 0,
+      id: survivorId,
+      insanityTokens: 0,
+      luckTokens: 0,
+      notes: '',
+      movementTokens: 0,
+      speedTokens: 0,
+      strengthTokens: 0,
+      survivalTokens: 0
     }))
 
     if (selectedScout)
       survivorDetails.push({
-        id: selectedScout,
+        accuracyTokens: 0,
         color: ColorChoice.SLATE,
-        notes: ''
+        evasionTokens: 0,
+        id: selectedScout,
+        insanityTokens: 0,
+        luckTokens: 0,
+        notes: '',
+        movementTokens: 0,
+        speedTokens: 0,
+        strengthTokens: 0,
+        survivalTokens: 0
       })
 
     // Save as partial data that will be merged by the hook

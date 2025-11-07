@@ -241,12 +241,10 @@ export function ActiveHuntCard({
       </div>
 
       {/* Hunt Board */}
-      <div className="w-full">
-        <HuntBoard
-          onPositionUpdate={handlePositionUpdate}
-          selectedHunt={selectedHunt}
-        />
-      </div>
+      <HuntBoard
+        onPositionUpdate={handlePositionUpdate}
+        selectedHunt={selectedHunt}
+      />
 
       {/* Monster Card */}
       <HuntMonsterCard
@@ -275,8 +273,8 @@ export function ActiveHuntCard({
             <AlertDialogDescription>
               The hunt will end and survivors will return to the settlement.{' '}
               <strong>
-                This action cannot be undone. Any changes made to your
-                settlement or survivors will be retained.
+                This action cannot be undone. Any changes to the settlement or
+                survivors will be retained.
               </strong>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -299,29 +297,30 @@ export function ActiveHuntCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Proceed to Showdown</AlertDialogTitle>
             <AlertDialogDescription>
-              The hunt will end and the showdown will begin. This action cannot
-              be undone. Any changes to your settlement, survivors, or monster
-              will be retained.
+              The hunt will end and the showdown will begin.{' '}
+              <strong>
+                This action cannot be undone. Any changes to the settlement,
+                survivors, or monster will be retained.
+              </strong>
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           {/* Ambush Selection */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Survivors ambush</span>
-                <span>No ambush</span>
-                <span>Monster ambushes</span>
-              </div>
-              <Slider
-                value={[ambushType]}
-                onValueChange={(value) => setAmbushType(value[0])}
-                max={2}
-                min={0}
-                step={1}
-                className="w-full"
-              />
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Survivors ambush</span>
+              <span>No ambush</span>
+              <span>Monster ambushes</span>
             </div>
+
+            <Slider
+              value={[ambushType]}
+              onValueChange={(value) => setAmbushType(value[0])}
+              max={2}
+              min={0}
+              step={1}
+              className="w-full"
+            />
           </div>
 
           <AlertDialogFooter>
