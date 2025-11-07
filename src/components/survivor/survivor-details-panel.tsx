@@ -22,7 +22,7 @@ interface SurvivorDetailsPanelProps {
  *
  * This component displays detailed information about a survivor.
  *
- * @parma props Survivor Details Panel Properties
+ * @param props Survivor Details Panel Properties
  * @returns Survivor Details Panel Component
  */
 export function SurvivorDetailsPanel({
