@@ -108,6 +108,8 @@ export function SurvivorCard({
               readOnly={false}
             />
             <SanityCard
+              displayText={true}
+              displayTormentInput={true}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}

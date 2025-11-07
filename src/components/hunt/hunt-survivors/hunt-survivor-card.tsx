@@ -2,6 +2,12 @@
 
 import { HuntSurvivorAttributes } from '@/components/hunt/hunt-survivors/hunt-survivor-attributes'
 import { NumericInput } from '@/components/menu/numeric-input'
+import { ArmsCard } from '@/components/survivor/combat/arms-card'
+import { BodyCard } from '@/components/survivor/combat/body-card'
+import { HeadCard } from '@/components/survivor/combat/head-card'
+import { LegsCard } from '@/components/survivor/combat/legs-card'
+import { WaistCard } from '@/components/survivor/combat/waist-card'
+import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -29,16 +35,7 @@ import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AvatarFallback } from '@radix-ui/react-avatar'
-import {
-  BrainIcon,
-  CheckIcon,
-  FootprintsIcon,
-  HandMetalIcon,
-  HardHatIcon,
-  RibbonIcon,
-  ShieldIcon,
-  ShirtIcon
-} from 'lucide-react'
+import { CheckIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -675,501 +672,128 @@ export function HuntSurvivorCard({
         <Separator className="my-2" />
 
         {/* Combat and Attributes Grid */}
-        <div className="grid grid-cols-[auto_1px_auto] gap-4">
+        <div className="flex flex-col lg:flex-row lg:gap-2">
           {/* Attributes Column */}
-          <HuntSurvivorAttributes
-            survivor={survivor}
-            selectedHunt={selectedHunt}
-            selectedSettlement={selectedSettlement}
-            isMobile={isMobile}
-            updateSurvival={updateSurvival}
-            updateInsanity={updateInsanity}
-            saveSurvivorBaseAttribute={saveSurvivorBaseAttribute}
-            saveTokenAttribute={saveTokenAttribute}
-          />
+          <div className="flex flex-col flex-1">
+            <HuntSurvivorAttributes
+              survivor={survivor}
+              selectedHunt={selectedHunt}
+              selectedSettlement={selectedSettlement}
+              isMobile={isMobile}
+              updateSurvival={updateSurvival}
+              updateInsanity={updateInsanity}
+              saveSurvivorBaseAttribute={saveSurvivorBaseAttribute}
+              saveTokenAttribute={saveTokenAttribute}
+            />
+          </div>
 
-          <Separator orientation="vertical" className="h-full" />
+          {/* Separator between columns (hidden on mobile) */}
+          <div className="hidden lg:flex lg:items-stretch">
+            <Separator orientation="vertical" className="mx-2" />
+          </div>
+
+          {/* Mobile separator (shown only on mobile) */}
+          <Separator className="my-2 lg:hidden" />
 
           {/* Combat Attributes Column */}
-          <div className="space-y-1 flex flex-col">
-            <Label className="text-xs font-semibold justify-center text-muted-foreground">
-              Armor & Damage
-            </Label>
+          <div className="flex flex-col flex-1">
+            <div className="space-y-1 flex flex-col">
+              <Label className="text-xs font-semibold justify-center text-muted-foreground">
+                Armor & Damage
+              </Label>
 
-            {/* Brain */}
-            <div className="space-y-1 flex flex-row items-center gap-2">
-              <div className="relative items-center">
-                <div className="h-12 w-12">
-                  {/* Empty space for alignment */}
-                </div>
-              </div>
+              {/* Brain */}
+              <SanityCard
+                displayText={false}
+                displayTormentInput={false}
+                saveSelectedSurvivor={(
+                  updateData: Partial<Survivor>,
+                  successMsg?: string
+                ) => {
+                  saveToLocalStorage(
+                    survivor.id!,
+                    updateData,
+                    successMsg || 'Sanity updated.'
+                  )
+                }}
+                selectedSurvivor={selectedSurvivor}
+                selectedSettlement={selectedSettlement}
+              />
 
-              <BrainIcon className="h-5 w-5" />
+              {/* Head */}
+              <HeadCard
+                saveSelectedSurvivor={(
+                  updateData: Partial<Survivor>,
+                  successMsg?: string
+                ) => {
+                  saveToLocalStorage(
+                    survivor.id!,
+                    updateData,
+                    successMsg || 'Head updated.'
+                  )
+                }}
+                selectedSurvivor={selectedSurvivor}
+              />
 
-              <div className="flex-1"></div>
+              {/* Arm */}
+              <ArmsCard
+                saveSelectedSurvivor={(
+                  updateData: Partial<Survivor>,
+                  successMsg?: string
+                ) => {
+                  saveToLocalStorage(
+                    survivor.id!,
+                    updateData,
+                    successMsg || 'Arms updated.'
+                  )
+                }}
+                selectedSurvivor={selectedSurvivor}
+              />
 
-              <div className="flex flex-col items-center space-y-1">
-                <Checkbox
-                  id={`brain-light-${survivor.id}`}
-                  checked={survivor.brainLightDamage}
-                  onCheckedChange={(checked) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      {
-                        brainLightDamage: !!checked
-                      },
-                      checked
-                        ? 'Brain takes light damage.'
-                        : 'Brain light damage cleared.'
-                    )
-                  }
-                />
-                <Label
-                  htmlFor={`brain-light-${survivor.id}`}
-                  className="text-xs">
-                  L
-                </Label>
-              </div>
-            </div>
+              {/* Body */}
+              <BodyCard
+                saveSelectedSurvivor={(
+                  updateData: Partial<Survivor>,
+                  successMsg?: string
+                ) => {
+                  saveToLocalStorage(
+                    survivor.id!,
+                    updateData,
+                    successMsg || 'Body updated.'
+                  )
+                }}
+                selectedSurvivor={selectedSurvivor}
+              />
 
-            {/* Head */}
-            <div className="space-y-1 flex flex-row items-center gap-2">
-              <div className="relative flex items-center">
-                <ShieldIcon
-                  className="h-12 w-12 text-muted-foreground"
-                  strokeWidth={1}
-                />
-                <NumericInput
-                  label="Head Armor"
-                  value={survivor.headArmor ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { headArmor: value },
-                      'Head armor updated.'
-                    )
-                  }
-                  min={0}
-                  readOnly={false}>
-                  <Input
-                    id={`head-armor-${survivor.id}`}
-                    placeholder="1"
-                    type="number"
-                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={survivor.headArmor ?? '0'}
-                    min={0}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { headArmor: parseInt(e.target.value) || 0 },
-                        'Head armor updated.'
-                      )
-                    }
-                    name={`head-armor-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
+              {/* Waist */}
+              <WaistCard
+                saveSelectedSurvivor={(
+                  updateData: Partial<Survivor>,
+                  successMsg?: string
+                ) => {
+                  saveToLocalStorage(
+                    survivor.id!,
+                    updateData,
+                    successMsg || 'Waist updated.'
+                  )
+                }}
+                selectedSurvivor={selectedSurvivor}
+              />
 
-              <HardHatIcon className="h-5 w-5" />
-
-              <div className="flex-1"></div>
-
-              <div className="flex flex-col items-center space-y-1">
-                <Checkbox
-                  id={`head-heavy-${survivor.id}`}
-                  className="border-2 border-white/40"
-                  checked={survivor.headHeavyDamage}
-                  onCheckedChange={(checked) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      {
-                        headHeavyDamage: !!checked
-                      },
-                      checked
-                        ? 'Head takes heavy damage.'
-                        : 'Head heavy damage cleared.'
-                    )
-                  }
-                />
-                <Label
-                  htmlFor={`head-heavy-${survivor.id}`}
-                  className="text-xs">
-                  H
-                </Label>
-              </div>
-            </div>
-
-            {/* Arm */}
-            <div className="space-y-1 flex flex-row items-center gap-2">
-              <div className="relative flex items-center">
-                <ShieldIcon
-                  className="h-12 w-12 text-muted-foreground"
-                  strokeWidth={1}
-                />
-                <NumericInput
-                  label="Arm Armor"
-                  value={survivor.armArmor ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { armArmor: value },
-                      'Arm armor updated.'
-                    )
-                  }
-                  min={0}
-                  readOnly={false}>
-                  <Input
-                    id={`arm-armor-${survivor.id}`}
-                    placeholder="1"
-                    type="number"
-                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={survivor.armArmor ?? '0'}
-                    min={0}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { armArmor: parseInt(e.target.value) || 0 },
-                        'Arm armor updated.'
-                      )
-                    }
-                    name={`arm-armor-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <HandMetalIcon className="h-5 w-5" />
-
-              <div className="flex-1"></div>
-
-              <div className="flex items-center space-x-1">
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`arm-light-${survivor.id}`}
-                    checked={survivor.armLightDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          armLightDamage: !!checked
-                        },
-                        checked
-                          ? 'Arm takes light damage.'
-                          : 'Arm light damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`arm-light-${survivor.id}`}
-                    className="text-xs">
-                    L
-                  </Label>
-                </div>
-
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`arm-heavy-${survivor.id}`}
-                    className="border-2"
-                    checked={survivor.armHeavyDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          armHeavyDamage: !!checked
-                        },
-                        checked
-                          ? 'Arm takes heavy damage.'
-                          : 'Arm heavy damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`arm-heavy-${survivor.id}`}
-                    className="text-xs">
-                    H
-                  </Label>
-                </div>
-              </div>
-            </div>
-
-            {/* Body */}
-            <div className="space-y-1 flex flex-row items-center gap-2">
-              <div className="relative flex items-center">
-                <ShieldIcon
-                  className="h-12 w-12 text-muted-foreground"
-                  strokeWidth={1}
-                />
-                <NumericInput
-                  label="Body Armor"
-                  value={survivor.bodyArmor ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { bodyArmor: value },
-                      'Body armor updated.'
-                    )
-                  }
-                  min={0}
-                  readOnly={false}>
-                  <Input
-                    id={`body-armor-${survivor.id}`}
-                    placeholder="1"
-                    type="number"
-                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={survivor.bodyArmor ?? '0'}
-                    min={0}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { bodyArmor: parseInt(e.target.value) || 0 },
-                        'Body armor updated.'
-                      )
-                    }
-                    name={`body-armor-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <ShirtIcon className="h-5 w-5" />
-
-              <div className="flex-1"></div>
-
-              <div className="flex items-center space-x-1">
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`body-light-${survivor.id}`}
-                    checked={survivor.bodyLightDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          bodyLightDamage: !!checked
-                        },
-                        checked
-                          ? 'Body takes light damage.'
-                          : 'Body light damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`body-light-${survivor.id}`}
-                    className="text-xs">
-                    L
-                  </Label>
-                </div>
-
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`body-heavy-${survivor.id}`}
-                    className="border-2"
-                    checked={survivor.bodyHeavyDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          bodyHeavyDamage: !!checked
-                        },
-                        checked
-                          ? 'Body takes heavy damage.'
-                          : 'Body heavy damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`body-heavy-${survivor.id}`}
-                    className="text-xs">
-                    H
-                  </Label>
-                </div>
-              </div>
-            </div>
-
-            {/* Waist */}
-            <div className="space-y-1 flex flex-row items-center gap-2">
-              <div className="relative flex items-center">
-                <ShieldIcon
-                  className="h-12 w-12 text-muted-foreground"
-                  strokeWidth={1}
-                />
-                <NumericInput
-                  label="Waist Armor"
-                  value={survivor.waistArmor ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { waistArmor: value },
-                      'Waist armor updated.'
-                    )
-                  }
-                  min={0}
-                  readOnly={false}>
-                  <Input
-                    id={`waist-armor-${survivor.id}`}
-                    placeholder="1"
-                    type="number"
-                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={survivor.waistArmor ?? '0'}
-                    min={0}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { waistArmor: parseInt(e.target.value) || 0 },
-                        'Waist armor updated.'
-                      )
-                    }
-                    name={`waist-armor-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <RibbonIcon className="h-5 w-5" />
-
-              <div className="flex-1"></div>
-
-              <div className="flex items-center space-x-1">
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`waist-light-${survivor.id}`}
-                    checked={survivor.waistLightDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          waistLightDamage: !!checked
-                        },
-                        checked
-                          ? 'Waist takes light damage.'
-                          : 'Waist light damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`waist-light-${survivor.id}`}
-                    className="text-xs">
-                    L
-                  </Label>
-                </div>
-
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`waist-heavy-${survivor.id}`}
-                    className="border-2"
-                    checked={survivor.waistHeavyDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          waistHeavyDamage: !!checked
-                        },
-                        checked
-                          ? 'Waist takes heavy damage.'
-                          : 'Waist heavy damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`waist-heavy-${survivor.id}`}
-                    className="text-xs">
-                    H
-                  </Label>
-                </div>
-              </div>
-            </div>
-
-            {/* Leg */}
-            <div className="space-y-1 flex flex-row items-center gap-2">
-              <div className="relative flex items-center">
-                <ShieldIcon
-                  className="h-12 w-12 text-muted-foreground"
-                  strokeWidth={1}
-                />
-                <NumericInput
-                  label="Leg Armor"
-                  value={survivor.legArmor ?? 0}
-                  onChange={(value) =>
-                    saveToLocalStorage(
-                      survivor.id!,
-                      { legArmor: value },
-                      'Leg armor updated.'
-                    )
-                  }
-                  min={0}
-                  readOnly={false}>
-                  <Input
-                    id={`leg-armor-${survivor.id}`}
-                    placeholder="1"
-                    type="number"
-                    className="absolute top-[50%] left-6 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-lg text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={survivor.legArmor ?? '0'}
-                    min={0}
-                    readOnly={isMobile}
-                    onChange={(e) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        { legArmor: parseInt(e.target.value) || 0 },
-                        'Leg armor updated.'
-                      )
-                    }
-                    name={`leg-armor-${survivor.id}`}
-                  />
-                </NumericInput>
-              </div>
-
-              <FootprintsIcon className="h-5 w-5" />
-
-              <div className="flex-1"></div>
-
-              <div className="flex items-center space-x-1">
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`leg-light-${survivor.id}`}
-                    checked={survivor.legLightDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          legLightDamage: !!checked
-                        },
-                        checked
-                          ? 'Leg takes light damage.'
-                          : 'Leg light damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`leg-light-${survivor.id}`}
-                    className="text-xs">
-                    L
-                  </Label>
-                </div>
-
-                <div className="flex flex-col items-center space-y-1">
-                  <Checkbox
-                    id={`leg-heavy-${survivor.id}`}
-                    className="border-2"
-                    checked={survivor.legHeavyDamage}
-                    onCheckedChange={(checked) =>
-                      saveToLocalStorage(
-                        survivor.id!,
-                        {
-                          legHeavyDamage: !!checked
-                        },
-                        checked
-                          ? 'Leg takes heavy damage.'
-                          : 'Leg heavy damage cleared.'
-                      )
-                    }
-                  />
-                  <Label
-                    htmlFor={`leg-heavy-${survivor.id}`}
-                    className="text-xs">
-                    H
-                  </Label>
-                </div>
-              </div>
+              {/* Leg */}
+              <LegsCard
+                saveSelectedSurvivor={(
+                  updateData: Partial<Survivor>,
+                  successMsg?: string
+                ) => {
+                  saveToLocalStorage(
+                    survivor.id!,
+                    updateData,
+                    successMsg || 'Legs updated.'
+                  )
+                }}
+                selectedSurvivor={selectedSurvivor}
+              />
             </div>
           </div>
         </div>
