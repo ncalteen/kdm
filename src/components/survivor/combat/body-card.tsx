@@ -153,7 +153,7 @@ export function BodyCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Gaping Chest Wound</label>
+                <label className="text-xs">G. Chest Wound</label>
               </div>
             </div>
 

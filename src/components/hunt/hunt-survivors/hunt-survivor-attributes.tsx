@@ -118,7 +118,11 @@ export function HuntSurvivorAttributes({
                   parseInt(e.target.value) || 0
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className={`flex-1 h-12 text-center no-spinners text-xl ${
+                !survivor.canSpendSurvival
+                  ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                  : ''
+              }`}
               name={`survival-tokens-${survivor.id}`}
             />
           </NumericInput>
@@ -126,7 +130,11 @@ export function HuntSurvivorAttributes({
             id={`survival-total-${survivor.id}`}
             type="number"
             value={(survivor.survival ?? 0) + survivalTokens}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className={`flex-1 h-12 text-center no-spinners text-xl ${
+              !survivor.canSpendSurvival
+                ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                : ''
+            }`}
             name={`survival-total-${survivor.id}`}
             readOnly={true}
             disabled={true}

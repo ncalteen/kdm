@@ -698,10 +698,6 @@ export function HuntSurvivorCard({
           {/* Combat Attributes Column */}
           <div className="flex flex-col flex-1">
             <div className="space-y-1 flex flex-col">
-              <Label className="text-xs font-semibold justify-center text-muted-foreground">
-                Armor & Damage
-              </Label>
-
               {/* Brain */}
               <SanityCard
                 displayText={false}

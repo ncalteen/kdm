@@ -163,7 +163,7 @@ export function WaistCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Warped Pelvis</label>
+                <label className="text-xs">W. Pelvis</label>
               </div>
             </div>
 
