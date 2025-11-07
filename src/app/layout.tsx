@@ -5,6 +5,7 @@ import { SelectedShowdownProvider } from '@/contexts/selected-showdown-context'
 import { SelectedSurvivorProvider } from '@/contexts/selected-survivor-context'
 import { SelectedTabProvider } from '@/contexts/selected-tab-context'
 import { SurvivorsProvider } from '@/contexts/survivors-context'
+import { TabType } from '@/lib/enums'
 import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { ReactElement, ReactNode } from 'react'
@@ -44,7 +45,7 @@ export default function RootLayout({
             <SelectedSurvivorProvider survivor={null}>
               <SelectedHuntProvider hunt={null}>
                 <SelectedShowdownProvider showdown={null}>
-                  <SelectedTabProvider tab="timeline">
+                  <SelectedTabProvider tab={TabType.TIMELINE}>
                     {children}
                   </SelectedTabProvider>
                 </SelectedShowdownProvider>

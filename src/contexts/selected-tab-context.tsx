@@ -1,5 +1,6 @@
 'use client'
 
+import { TabType } from '@/lib/enums'
 import {
   getSelectedTab,
   setSelectedTab as setSelectedTabInStorage
@@ -18,9 +19,9 @@ import {
  */
 interface SelectedTabContextType {
   /** Selected Tab */
-  selectedTab: string
+  selectedTab: TabType
   /** Set Selected Tab */
-  setSelectedTab: (tab: string) => void
+  setSelectedTab: (tab: TabType) => void
 }
 
 /**
@@ -28,7 +29,7 @@ interface SelectedTabContextType {
  */
 interface SelectedTabProviderProps {
   /** Tab */
-  tab: string
+  tab: TabType
   /** Children */
   children: ReactNode
 }
@@ -50,7 +51,7 @@ export function SelectedTabProvider({
   tab,
   children
 }: SelectedTabProviderProps): ReactElement {
-  const [selectedTab, setSelectedTabState] = useState<string>(tab)
+  const [selectedTab, setSelectedTabState] = useState<TabType>(tab)
 
   // Load selected tab from localStorage on mount
   useEffect(() => {
@@ -64,7 +65,7 @@ export function SelectedTabProvider({
    *
    * @param tab Selected Tab
    */
-  const setSelectedTab = (tab: string) => {
+  const setSelectedTab = (tab: TabType) => {
     // Update state
     setSelectedTabState(tab)
     // Save to localStorage

@@ -2,6 +2,7 @@
 
 import { ActiveHuntCard } from '@/components/hunt/active-hunt/active-hunt-card'
 import { CreateHuntCard } from '@/components/hunt/create-hunt/create-hunt-card'
+import { TabType } from '@/lib/enums'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -24,6 +25,8 @@ interface HuntCardProps {
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -45,6 +48,7 @@ export function HuntCard({
   selectedSurvivor,
   setSelectedHunt,
   setSelectedShowdown,
+  setSelectedTab,
   setSurvivors,
   survivors,
   updateSelectedSurvivor
@@ -57,6 +61,7 @@ export function HuntCard({
       selectedSurvivor={selectedSurvivor}
       setSelectedHunt={setSelectedHunt}
       setSelectedShowdown={setSelectedShowdown}
+      setSelectedTab={setSelectedTab}
       setSurvivors={setSurvivors}
       survivors={survivors}
       updateSelectedSurvivor={updateSelectedSurvivor}

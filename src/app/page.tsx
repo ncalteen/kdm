@@ -138,7 +138,7 @@ function MainPage(): ReactElement {
     setSelectedShowdown,
     updateSelectedShowdown
   } = useSelectedShowdown()
-  const { selectedTab } = useSelectedTab()
+  const { setSelectedTab, selectedTab } = useSelectedTab()
   const { setSurvivors, survivors } = useSurvivors()
 
   // Memoize form configurations to prevent unnecessary re-initializations
@@ -286,6 +286,7 @@ function MainPage(): ReactElement {
                     setSelectedSettlement={handleSetSelectedSettlement}
                     setSelectedShowdown={setSelectedShowdown}
                     setSelectedSurvivor={setSelectedSurvivor}
+                    setSelectedTab={setSelectedTab}
                     setSurvivors={setSurvivors}
                     settlementForm={settlementForm}
                     survivors={survivors}

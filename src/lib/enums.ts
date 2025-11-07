@@ -24,6 +24,33 @@ export enum SurvivorType {
   CORE = 'Core'
 }
 
+export enum TabType {
+  /** Arc Survivors */
+  ARC = 'arc',
+  /** Crafting */
+  CRAFTING = 'crafting',
+  /** Hunt */
+  HUNT = 'hunt',
+  /** Monsters */
+  MONSTERS = 'monsters',
+  /** Notes */
+  NOTES = 'notes',
+  /** Settings */
+  SETTINGS = 'settings',
+  /** Settlement */
+  SETTLEMENT = 'settlement',
+  /** Showdown */
+  SHOWDOWN = 'showdown',
+  /** Society */
+  SOCIETY = 'society',
+  /** Squires */
+  SQUIRES = 'squires',
+  /** Survivors */
+  SURVIVORS = 'survivors',
+  /** Timeline */
+  TIMELINE = 'timeline'
+}
+
 /** Philosophies */
 export enum Philosophy {
   /** Ambitionism */

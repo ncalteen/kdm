@@ -8,6 +8,7 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { useSelectedTab } from '@/contexts/selected-tab-context'
+import { TabType } from '@/lib/enums'
 import { LucideIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
@@ -22,7 +23,7 @@ export function NavMain({
 }: {
   items: {
     title: string
-    tab: string
+    tab: TabType
     icon?: LucideIcon
   }[]
 }): ReactElement {

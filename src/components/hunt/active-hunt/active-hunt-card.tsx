@@ -15,8 +15,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
-import { useSelectedTab } from '@/contexts/selected-tab-context'
-import { AmbushType, TurnType } from '@/lib/enums'
+import { AmbushType, TabType, TurnType } from '@/lib/enums'
 import {
   getCampaign,
   getNextShowdownId,
@@ -46,6 +45,8 @@ interface ActiveHuntCardProps {
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -67,11 +68,11 @@ export function ActiveHuntCard({
   selectedSurvivor,
   setSelectedHunt,
   setSelectedShowdown,
+  setSelectedTab,
   setSurvivors,
   survivors,
   updateSelectedSurvivor
 }: ActiveHuntCardProps): ReactElement {
-  const { setSelectedTab } = useSelectedTab()
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
   const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
     useState<boolean>(false)
@@ -193,17 +194,7 @@ export function ActiveHuntCard({
       setSelectedHunt(null)
       setSelectedShowdown(showdown)
       setIsShowdownDialogOpen(false)
-      setSelectedTab('showdown')
-
-      const ambushMessage = {
-        [AmbushType.SURVIVORS]: 'The survivors ambush their quarry!',
-        [AmbushType.MONSTER]: 'The monster ambushes the survivors!',
-        [AmbushType.NONE]: 'The hunt reaches its epic climax.'
-      }
-
-      toast.success(
-        `${ambushMessage[ambushTypeMap[ambushType as keyof typeof ambushTypeMap]]} The showdown begins.`
-      )
+      setSelectedTab(TabType.SHOWDOWN)
     } catch (error) {
       console.error('Showdown Creation Error:', error)
       toast.error('The darkness swallows your words. Please try again.')

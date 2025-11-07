@@ -8,7 +8,7 @@ import {
   PeopleOfTheSunCampaignData,
   SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
-import { CampaignType, ColorChoice } from '@/lib/enums'
+import { CampaignType, ColorChoice, TabType } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -294,7 +294,7 @@ export function setSelectedSurvivor(survivorId: number | null) {
  *
  * @returns Selected Tab
  */
-export function getSelectedTab(): string | null {
+export function getSelectedTab(): TabType | null {
   return getCampaign().selectedTab || null
 }
 
@@ -303,7 +303,7 @@ export function getSelectedTab(): string | null {
  *
  * @param tab Tab Name
  */
-export function setSelectedTab(tab: string | null) {
+export function setSelectedTab(tab: TabType | null) {
   const campaign = getCampaign()
 
   campaign.selectedTab = tab || undefined

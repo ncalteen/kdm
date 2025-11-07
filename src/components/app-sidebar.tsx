@@ -26,7 +26,7 @@ import {
   SidebarRail,
   useSidebar
 } from '@/components/ui/sidebar'
-import { CampaignType, SurvivorType } from '@/lib/enums'
+import { CampaignType, SurvivorType, TabType } from '@/lib/enums'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -53,37 +53,37 @@ import { toast } from 'sonner'
 const baseNavPrimary = [
   {
     title: 'Timeline',
-    tab: 'timeline',
+    tab: TabType.TIMELINE,
     icon: HourglassIcon
   },
   {
     title: 'Monsters',
-    tab: 'monsters',
+    tab: TabType.MONSTERS,
     icon: SwordsIcon
   },
   {
     title: 'Survivors',
-    tab: 'survivors',
+    tab: TabType.SURVIVORS,
     icon: UsersIcon
   },
   {
     title: 'Society',
-    tab: 'society',
+    tab: TabType.SOCIETY,
     icon: SchoolIcon
   },
   {
     title: 'Crafting',
-    tab: 'crafting',
+    tab: TabType.CRAFTING,
     icon: WrenchIcon
   },
   {
     title: 'Notes',
-    tab: 'notes',
+    tab: TabType.NOTES,
     icon: NotebookPenIcon
   },
   {
     title: 'Settings',
-    tab: 'settings',
+    tab: TabType.SETTINGS,
     icon: SettingsIcon
   }
 ]
@@ -91,32 +91,32 @@ const baseNavPrimary = [
 const navSquires = [
   {
     title: 'Timeline',
-    tab: 'timeline',
+    tab: TabType.TIMELINE,
     icon: HourglassIcon
   },
   {
     title: 'Monsters',
-    tab: 'monsters',
+    tab: TabType.MONSTERS,
     icon: SwordsIcon
   },
   {
     title: 'Squires',
-    tab: 'squires',
+    tab: TabType.SQUIRES,
     icon: UsersIcon
   },
   {
     title: 'Society',
-    tab: 'society',
+    tab: TabType.SOCIETY,
     icon: SchoolIcon
   },
   {
     title: 'Crafting',
-    tab: 'crafting',
+    tab: TabType.CRAFTING,
     icon: WrenchIcon
   },
   {
     title: 'Notes',
-    tab: 'notes',
+    tab: TabType.NOTES,
     icon: NotebookPenIcon
   }
 ]
@@ -124,12 +124,12 @@ const navSquires = [
 const navEmbark = [
   {
     title: 'Hunt',
-    tab: 'hunt',
+    tab: TabType.HUNT,
     icon: PawPrintIcon
   },
   {
     title: 'Showdown',
-    tab: 'showdown',
+    tab: TabType.SHOWDOWN,
     icon: SkullIcon
   }
 ]
@@ -211,7 +211,7 @@ export function AppSidebar({
       if (notesIndex !== -1)
         newNavItems.splice(notesIndex, 0, {
           title: 'Arc',
-          tab: 'arc',
+          tab: TabType.ARC,
           icon: LightbulbIcon
         })
     }

@@ -29,7 +29,7 @@ import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
 import { ShowdownCard } from '@/components/showdown/showdown-card'
 import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
 import { SurvivorCard } from '@/components/survivor/survivor-card'
-import { CampaignType, SurvivorType } from '@/lib/enums'
+import { CampaignType, SurvivorType, TabType } from '@/lib/enums'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -88,6 +88,8 @@ interface SettlementFormProps {
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Settlement Form */
@@ -129,6 +131,7 @@ export function SettlementForm({
   setSelectedSettlement,
   setSelectedShowdown,
   setSelectedSurvivor,
+  setSelectedTab,
   setSurvivors,
   // settlementForm,
   survivors,
@@ -429,6 +432,7 @@ export function SettlementForm({
               selectedSurvivor={selectedSurvivor}
               setSelectedHunt={setSelectedHunt}
               setSelectedShowdown={setSelectedShowdown}
+              setSelectedTab={setSelectedTab}
               setSurvivors={setSurvivors}
               survivors={survivors}
               updateSelectedSurvivor={updateSelectedSurvivor}
