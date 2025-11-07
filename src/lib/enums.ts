@@ -255,3 +255,7 @@ export enum TurnType {
   /** Monsters Turn */
   MONSTER = 'monster'
 }
+
+export enum MonsterName {
+  FLOWER_KNIGHT = 'Flower Knight'
+}

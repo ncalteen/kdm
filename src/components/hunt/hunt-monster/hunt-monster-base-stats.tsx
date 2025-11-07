@@ -2,6 +2,11 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Input } from '@/components/ui/input'
+import {
+  MONSTER_AI_DECK_UPDATED_MESSAGE,
+  MONSTER_TOUGHNESS_UPDATED_MESSAGE,
+  MONSTER_WOUND_DECK_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { HuntMonster } from '@/schemas/hunt'
 import { ReactElement } from 'react'
 
@@ -9,9 +14,9 @@ import { ReactElement } from 'react'
  * Hunt Monster Base Stats Component Properties
  */
 interface HuntMonsterBaseStatsProps {
-  /** Monster data */
+  /** Hunt Monster */
   monster: HuntMonster
-  /** Save Monster Data function */
+  /** Save Monster Data */
   saveMonsterData: (
     updateData: Partial<HuntMonster>,
     successMsg?: string
@@ -35,11 +40,15 @@ export function HuntMonsterBaseStats({
       {/* AI Deck */}
       <div className="bg-background/40 rounded-lg p-2 text-center">
         <div className="text-xs text-muted-foreground pb-1">AI Deck</div>
+
         <NumericInput
           label="AI Deck Size"
           value={monster.aiDeckSize ?? 0}
           onChange={(value) =>
-            saveMonsterData({ aiDeckSize: value }, 'AI Deck Size updated.')
+            saveMonsterData(
+              { aiDeckSize: value },
+              MONSTER_AI_DECK_UPDATED_MESSAGE(monster.aiDeckSize, value)
+            )
           }
           min={0}
           readOnly={false}>
@@ -50,7 +59,10 @@ export function HuntMonsterBaseStats({
             onChange={(e) =>
               saveMonsterData(
                 { aiDeckSize: parseInt(e.target.value) || 0 },
-                'AI Deck Size updated.'
+                MONSTER_AI_DECK_UPDATED_MESSAGE(
+                  monster.aiDeckSize,
+                  parseInt(e.target.value) || 0
+                )
               )
             }
             className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -65,11 +77,15 @@ export function HuntMonsterBaseStats({
         <div className="text-xs text-muted-foreground pb-1 flex items-center justify-center gap-1">
           Wounds
         </div>
+
         <NumericInput
           label="Wounds"
           value={monster.wounds ?? 0}
           onChange={(value) =>
-            saveMonsterData({ wounds: value }, 'Wounds updated.')
+            saveMonsterData(
+              { wounds: value },
+              MONSTER_WOUND_DECK_UPDATED_MESSAGE(monster.wounds, value)
+            )
           }
           min={0}
           readOnly={false}>
@@ -80,7 +96,10 @@ export function HuntMonsterBaseStats({
             onChange={(e) =>
               saveMonsterData(
                 { wounds: parseInt(e.target.value) || 0 },
-                'Wounds updated.'
+                MONSTER_WOUND_DECK_UPDATED_MESSAGE(
+                  monster.wounds,
+                  parseInt(e.target.value) || 0
+                )
               )
             }
             className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -95,11 +114,15 @@ export function HuntMonsterBaseStats({
         <div className="text-xs text-muted-foreground pb-1 flex items-center justify-center gap-1">
           Toughness
         </div>
+
         <NumericInput
           label="Toughness"
           value={monster.toughness ?? 0}
           onChange={(value) =>
-            saveMonsterData({ toughness: value }, 'Toughness updated.')
+            saveMonsterData(
+              { toughness: value },
+              MONSTER_TOUGHNESS_UPDATED_MESSAGE(monster.toughness, value)
+            )
           }
           min={0}
           readOnly={false}>
@@ -110,7 +133,10 @@ export function HuntMonsterBaseStats({
             onChange={(e) =>
               saveMonsterData(
                 { toughness: parseInt(e.target.value) || 0 },
-                'Toughness updated.'
+                MONSTER_TOUGHNESS_UPDATED_MESSAGE(
+                  monster.toughness,
+                  parseInt(e.target.value) || 0
+                )
               )
             }
             className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"

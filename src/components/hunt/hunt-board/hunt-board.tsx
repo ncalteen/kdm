@@ -1,9 +1,9 @@
 'use client'
 
 import { HuntBoardSpace } from '@/components/hunt/hunt-board/hunt-board-space'
-import { QuarryToken } from '@/components/hunt/hunt-board/quarry-token'
-import { SurvivorToken } from '@/components/hunt/hunt-board/survivor-token'
+import { HuntBoardToken } from '@/components/hunt/hunt-board/hunt-board-token'
 import { Card, CardContent } from '@/components/ui/card'
+import { getOverwhelmingDarknessLabel } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { ReactElement } from 'react'
@@ -39,13 +39,7 @@ export function HuntBoard({
     { index: 5 },
     {
       index: 6,
-      label: (
-        <span>
-          Overwhelming
-          <br />
-          Darkness
-        </span>
-      )
+      label: getOverwhelmingDarknessLabel(selectedHunt?.monster?.name)
     },
     { index: 7 },
     { index: 8 },
@@ -66,7 +60,7 @@ export function HuntBoard({
       const newPosition = parseInt(spaceId.replace('space-', ''))
 
       if (newPosition >= 0 && newPosition <= 12)
-        if (active.id === 'survivor-token')
+        if (active.id === 'survivors-token')
           onPositionUpdate(newPosition, selectedHunt?.monsterPosition ?? 6)
         else if (active.id === 'quarry-token')
           onPositionUpdate(selectedHunt?.survivorPosition ?? 0, newPosition)
@@ -89,21 +83,24 @@ export function HuntBoard({
                   isStart={space.isStart}
                   isStarvation={space.isStarvation}
                 />
-                {/* Show draggable tokens on their current spaces */}
+
                 {selectedHunt?.survivorPosition === space.index && (
-                  <SurvivorToken
+                  <HuntBoardToken
                     overlap={
                       selectedHunt?.survivorPosition ===
                       selectedHunt?.monsterPosition
                     }
+                    tokenType="survivors"
                   />
                 )}
+
                 {selectedHunt?.monsterPosition === space.index && (
-                  <QuarryToken
+                  <HuntBoardToken
                     overlap={
                       selectedHunt?.survivorPosition ===
                       selectedHunt?.monsterPosition
                     }
+                    tokenType="quarry"
                   />
                 )}
               </div>

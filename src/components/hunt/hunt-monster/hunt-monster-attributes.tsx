@@ -2,6 +2,16 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Input } from '@/components/ui/input'
+import {
+  MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE,
+  MONSTER_EVASION_TOKENS_UPDATED_MESSAGE,
+  MONSTER_LUCK_TOKENS_UPDATED_MESSAGE,
+  MONSTER_MOVEMENT_TOKENS_UPDATED_MESSAGE,
+  MONSTER_MOVEMENT_UPDATED_MESSAGE,
+  MONSTER_SPEED_TOKENS_UPDATED_MESSAGE,
+  MONSTER_SPEED_UPDATED_MESSAGE,
+  MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { HuntMonster } from '@/schemas/hunt'
 import { ReactElement } from 'react'
 
@@ -9,9 +19,9 @@ import { ReactElement } from 'react'
  * Hunt Monster Attributes Component Properties
  */
 interface HuntMonsterAttributesProps {
-  /** Monster data */
+  /** Hunt Monster */
   monster: HuntMonster
-  /** Save Monster Data function */
+  /** Save Monster Data */
   saveMonsterData: (
     updateData: Partial<HuntMonster>,
     successMsg?: string
@@ -49,7 +59,10 @@ export function HuntMonsterAttributes({
             label="Movement Base"
             value={monster.movement ?? 0}
             onChange={(value) =>
-              saveMonsterData({ movement: value }, 'Movement updated.')
+              saveMonsterData(
+                { movement: value },
+                MONSTER_MOVEMENT_UPDATED_MESSAGE(monster.movement, value)
+              )
             }
             min={0}
             readOnly={false}>
@@ -60,7 +73,10 @@ export function HuntMonsterAttributes({
               onChange={(e) =>
                 saveMonsterData(
                   { movement: parseInt(e.target.value) || 0 },
-                  'Movement updated.'
+                  MONSTER_MOVEMENT_UPDATED_MESSAGE(
+                    monster.movement,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
@@ -74,7 +90,10 @@ export function HuntMonsterAttributes({
             onChange={(value) =>
               saveMonsterData(
                 { movementTokens: value },
-                'Movement tokens updated.'
+                MONSTER_MOVEMENT_TOKENS_UPDATED_MESSAGE(
+                  monster.movementTokens,
+                  value
+                )
               )
             }
             readOnly={false}>
@@ -85,7 +104,10 @@ export function HuntMonsterAttributes({
               onChange={(e) =>
                 saveMonsterData(
                   { movementTokens: parseInt(e.target.value) || 0 },
-                  'Movement tokens updated.'
+                  MONSTER_MOVEMENT_TOKENS_UPDATED_MESSAGE(
+                    monster.movementTokens,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
@@ -121,7 +143,10 @@ export function HuntMonsterAttributes({
             onChange={(value) =>
               saveMonsterData(
                 { accuracyTokens: value },
-                'Accuracy tokens updated.'
+                MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE(
+                  monster.accuracyTokens,
+                  value
+                )
               )
             }
             readOnly={false}>
@@ -132,7 +157,10 @@ export function HuntMonsterAttributes({
               onChange={(e) =>
                 saveMonsterData(
                   { accuracyTokens: parseInt(e.target.value) || 0 },
-                  'Accuracy tokens updated.'
+                  MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE(
+                    monster.accuracyTokens,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
@@ -169,7 +197,10 @@ export function HuntMonsterAttributes({
             onChange={(value) =>
               saveMonsterData(
                 { strengthTokens: value },
-                'Strength tokens updated.'
+                MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE(
+                  monster.strengthTokens,
+                  value
+                )
               )
             }
             readOnly={false}>
@@ -180,7 +211,10 @@ export function HuntMonsterAttributes({
               onChange={(e) => {
                 saveMonsterData(
                   { strengthTokens: parseInt(e.target.value) || 0 },
-                  'Strength tokens updated.'
+                  MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE(
+                    monster.strengthTokens,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }}
               className="flex-1 h-12 text-center no-spinners text-xl"
@@ -217,7 +251,10 @@ export function HuntMonsterAttributes({
             onChange={(value) =>
               saveMonsterData(
                 { evasionTokens: value },
-                'Evasion tokens updated.'
+                MONSTER_EVASION_TOKENS_UPDATED_MESSAGE(
+                  monster.evasionTokens,
+                  value
+                )
               )
             }
             readOnly={false}>
@@ -228,7 +265,10 @@ export function HuntMonsterAttributes({
               onChange={(e) =>
                 saveMonsterData(
                   { evasionTokens: parseInt(e.target.value) || 0 },
-                  'Evasion tokens updated.'
+                  MONSTER_EVASION_TOKENS_UPDATED_MESSAGE(
+                    monster.evasionTokens,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
@@ -263,7 +303,10 @@ export function HuntMonsterAttributes({
             label="Luck Tokens"
             value={monster.luckTokens ?? 0}
             onChange={(value) =>
-              saveMonsterData({ luckTokens: value }, 'Luck tokens updated.')
+              saveMonsterData(
+                { luckTokens: value },
+                MONSTER_LUCK_TOKENS_UPDATED_MESSAGE(monster.luckTokens, value)
+              )
             }
             readOnly={false}>
             <Input
@@ -273,7 +316,10 @@ export function HuntMonsterAttributes({
               onChange={(e) =>
                 saveMonsterData(
                   { luckTokens: parseInt(e.target.value) || 0 },
-                  'Luck tokens updated.'
+                  MONSTER_LUCK_TOKENS_UPDATED_MESSAGE(
+                    monster.luckTokens,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
@@ -299,7 +345,10 @@ export function HuntMonsterAttributes({
             label="Speed Base"
             value={monster.speed ?? 0}
             onChange={(value) =>
-              saveMonsterData({ speed: value }, 'Speed updated.')
+              saveMonsterData(
+                { speed: value },
+                MONSTER_SPEED_UPDATED_MESSAGE(monster.speed, value)
+              )
             }
             min={0}
             readOnly={false}>
@@ -310,7 +359,10 @@ export function HuntMonsterAttributes({
               onChange={(e) =>
                 saveMonsterData(
                   { speed: parseInt(e.target.value) || 0 },
-                  'Speed updated.'
+                  MONSTER_SPEED_UPDATED_MESSAGE(
+                    monster.speed,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -322,7 +374,10 @@ export function HuntMonsterAttributes({
             label="Speed Tokens"
             value={monster.speedTokens ?? 0}
             onChange={(value) =>
-              saveMonsterData({ speedTokens: value }, 'Speed tokens updated.')
+              saveMonsterData(
+                { speedTokens: value },
+                MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(monster.speed, value)
+              )
             }
             readOnly={false}>
             <Input
@@ -332,7 +387,10 @@ export function HuntMonsterAttributes({
               onChange={(e) =>
                 saveMonsterData(
                   { speedTokens: parseInt(e.target.value) || 0 },
-                  'Speed tokens updated.'
+                  MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(
+                    monster.speed,
+                    parseInt(e.target.value) || 0
+                  )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"

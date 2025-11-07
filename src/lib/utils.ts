@@ -8,11 +8,11 @@ import {
   PeopleOfTheSunCampaignData,
   SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
-import { CampaignType, ColorChoice, TabType } from '@/lib/enums'
+import { CampaignType, ColorChoice, MonsterName, TabType } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
-import { Settlement, TimelineYear } from '@/schemas/settlement'
+import { Quarry, Settlement, TimelineYear } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { clsx, type ClassValue } from 'clsx'
@@ -813,4 +813,67 @@ export function getCardColorStyles(color: ColorChoice): CSSProperties {
     '--card-border-hover-color': colors.borderHover,
     '--card-header-bg': colors.header
   } as CSSProperties
+}
+
+/**
+ * Get All Survivors for a Settlement
+ *
+ * @param survivors All Survivors
+ * @param settlementId Settlement ID
+ * @returns All Survivors
+ */
+export function getAllSurvivors(survivors: Survivor[], settlementId: number) {
+  if (settlementId === 0) return []
+
+  return survivors.filter((survivor) => survivor.settlementId === settlementId)
+}
+
+/**
+ * Get Available Survivors for a Settlement
+ *
+ * Excludes dead and retired survivors.
+ *
+ * @param survivors All Survivors
+ * @param settlementId Settlement ID
+ * @returns Available Survivors
+ */
+export function getAvailableSurvivors(
+  survivors: Survivor[],
+  settlementId: number
+) {
+  if (settlementId === 0) return []
+
+  return survivors.filter(
+    (survivor) =>
+      survivor.settlementId === settlementId &&
+      !survivor.dead &&
+      !survivor.retired
+  )
+}
+
+/**
+ * Get Available (Unlocked) Quarries
+ *
+ * @param settlement Settlement
+ * @returns Available Quarries
+ */
+export function getAvailableQuarries(settlement: Settlement): Quarry[] {
+  return settlement.quarries.filter((quarry) => quarry.unlocked)
+}
+
+/**
+ * Get the Overwhelming Darkness Label
+ *
+ * When hunting the Flower Knight, Overwhelming Darkness is replaced with The
+ * Forest Wants What it Wants.
+ *
+ * @param monsterName Monster Name
+ * @returns Overwhelming Darkness Label
+ */
+export function getOverwhelmingDarknessLabel(
+  monsterName: string | undefined
+): string {
+  return monsterName === MonsterName.FLOWER_KNIGHT
+    ? 'The Forest Wants What it Wants'
+    : 'Overwhelming Darkness'
 }

@@ -16,7 +16,12 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import {
+  ERROR_MESSAGE,
+  HUNT_BEGINS_MESSAGE,
+  SCOUT_CONFLICT_MESSAGE,
+  SCOUT_REQUIRED_MESSAGE
+} from '@/lib/messages'
 import { getNextHuntId } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -143,7 +148,7 @@ export function CreateHuntCard({
 
     // Validate scout selection if settlement uses scouts
     if (selectedSettlement.usesScouts && !selectedScout)
-      return toast.error('A scout must be selected for the hunt.')
+      return toast.error(SCOUT_REQUIRED_MESSAGE('hunt'))
 
     // Validate that scout is not also a selected survivor
     if (
@@ -151,9 +156,7 @@ export function CreateHuntCard({
       selectedScout &&
       selectedSurvivors.includes(selectedScout)
     )
-      return toast.error(
-        'The selected scout cannot also be one of the selected survivors for the hunt.'
-      )
+      return toast.error(SCOUT_CONFLICT_MESSAGE())
 
     const survivorDetails = selectedSurvivors.map((survivorId) => ({
       accuracyTokens: 0,
@@ -221,10 +224,7 @@ export function CreateHuntCard({
       survivors: selectedSurvivors
     }
 
-    saveSelectedHunt(
-      huntData,
-      `The hunt for ${selectedMonsterName} begins. Survivors venture into the darkness.`
-    )
+    saveSelectedHunt(huntData, HUNT_BEGINS_MESSAGE(selectedMonsterName))
 
     // Reset form
     setSelectedMonsterAccuracyTokens(0)
@@ -258,18 +258,21 @@ export function CreateHuntCard({
           Begin Hunt
         </CardTitle>
       </CardHeader>
+
       <CardContent className="flex flex-col gap-2 w-full">
         {/* Hunt Quarry */}
         <div className="flex items-center justify-between">
           <label className="text-left whitespace-nowrap min-w-[90px]">
             Quarry
           </label>
+
           <Select
             value={selectedMonsterName}
             onValueChange={handleMonsterSelection}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose a quarry..." />
             </SelectTrigger>
+
             <SelectContent>
               {availableQuarries.map((quarry) => (
                 <SelectItem key={quarry.name} value={quarry.name}>
@@ -285,6 +288,7 @@ export function CreateHuntCard({
           <Label className="text-left whitespace-nowrap min-w-[90px]">
             Level
           </Label>
+
           <Select
             value={selectedMonsterLevel}
             onValueChange={(value: MonsterLevel) =>
@@ -293,6 +297,7 @@ export function CreateHuntCard({
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose level..." />
             </SelectTrigger>
+
             <SelectContent>
               <SelectItem value="1">Level 1</SelectItem>
               <SelectItem value="2">Level 2</SelectItem>
@@ -307,6 +312,7 @@ export function CreateHuntCard({
           <Label className="text-left whitespace-nowrap min-w-[90px]">
             AI Deck Size
           </Label>
+
           <NumericInput
             label="AI Deck Size"
             value={selectedMonsterAIDeckSize}
@@ -343,6 +349,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Movement
             </Label>
+
             <NumericInput
               label="Movement"
               value={selectedMonsterMovement}
@@ -369,6 +376,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Toughness
             </Label>
+
             <NumericInput
               label="Toughness"
               value={selectedMonsterToughness}
@@ -393,6 +401,7 @@ export function CreateHuntCard({
             <Label htmlFor="monster-speed" className="text-xs justify-center">
               Speed
             </Label>
+
             <NumericInput
               label="Speed"
               value={selectedMonsterSpeed}
@@ -417,6 +426,7 @@ export function CreateHuntCard({
             <Label htmlFor="monster-damage" className="text-xs justify-center">
               Damage
             </Label>
+
             <NumericInput
               label="Damage"
               value={selectedMonsterDamage}
@@ -454,6 +464,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Movement
             </Label>
+
             <NumericInput
               label="Movement Tokens"
               value={selectedMonsterMovementTokens}
@@ -480,6 +491,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Speed
             </Label>
+
             <NumericInput
               label="Speed Tokens"
               value={selectedMonsterSpeedTokens}
@@ -504,6 +516,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Damage
             </Label>
+
             <NumericInput
               label="Damage Tokens"
               value={selectedMonsterDamageTokens}
@@ -530,6 +543,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Accuracy
             </Label>
+
             <NumericInput
               label="Accuracy Tokens"
               value={selectedMonsterAccuracyTokens}
@@ -556,6 +570,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Strength
             </Label>
+
             <NumericInput
               label="Strength Tokens"
               value={selectedMonsterStrengthTokens}
@@ -582,6 +597,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Evasion
             </Label>
+
             <NumericInput
               label="Evasion Tokens"
               value={selectedMonsterEvasionTokens}
@@ -606,6 +622,7 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Luck
             </Label>
+
             <NumericInput
               label="Luck Tokens"
               value={selectedMonsterLuckTokens}
@@ -636,7 +653,7 @@ export function CreateHuntCard({
         {/* Survivors */}
         <SurvivorSelectionDrawer
           title="Select Hunt Party"
-          description="Choose up to 4 survivors to embark on this hunt."
+          description="Up to 4 survivors may embark on a hunt."
           survivors={availableSurvivors}
           selectedSurvivors={selectedSurvivors}
           selectedScout={selectedScout}

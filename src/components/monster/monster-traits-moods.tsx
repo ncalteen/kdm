@@ -4,13 +4,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { HuntMonster } from '@/schemas/hunt'
+import { ShowdownMonster } from '@/schemas/showdown'
 import { CheckIcon, PencilIcon, PlusIcon, TrashIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 
 /**
- * Hunt Monster Traits Moods Component Properties
+ * Monster Traits Moods Component Properties
  */
-interface HuntMonsterTraitsMoodsProps {
+interface MonsterTraitsMoodsProps {
   /** Disabled Moods */
   disabledMoods: { [key: number]: boolean }
   /** Disabled Traits */
@@ -20,7 +21,7 @@ interface HuntMonsterTraitsMoodsProps {
   /** Is Adding Trait */
   isAddingTrait: boolean
   /** Monster data */
-  monster: HuntMonster
+  monster: HuntMonster | ShowdownMonster
   /** On Edit Mood */
   onEditMood: (index: number) => void
   /** On Edit Trait */
@@ -310,15 +311,15 @@ function NewMoodItem({
 }
 
 /**
- * Hunt Monster Traits Moods Component
+ * Monster Traits Moods Component
  *
  * Displays and manages the monster's traits and moods using a card-based layout
  * similar to the disorders component.
  *
- * @param props Hunt Monster Traits Moods Properties
- * @returns Hunt Monster Traits Moods Component
+ * @param props Monster Traits Moods Properties
+ * @returns Monster Traits Moods Component
  */
-export function HuntMonsterTraitsMoods({
+export function MonsterTraitsMoods({
   disabledMoods,
   disabledTraits,
   isAddingMood,
@@ -332,7 +333,7 @@ export function HuntMonsterTraitsMoods({
   onSaveTrait,
   setIsAddingMood,
   setIsAddingTrait
-}: HuntMonsterTraitsMoodsProps): ReactElement {
+}: MonsterTraitsMoodsProps): ReactElement {
   return (
     <>
       {/* Traits */}

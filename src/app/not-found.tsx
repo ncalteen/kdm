@@ -8,7 +8,7 @@ export default function Page(): ReactElement {
       <h1 className="text-4xl font-bold pt-[20px]">Page Not Found</h1>
 
       <h1 className="text-2xl font-bold">
-        Uh oh...this page doesn&apos;t exist!
+        The page you are looking for has been lost to the darkness...
       </h1>
     </div>
   )

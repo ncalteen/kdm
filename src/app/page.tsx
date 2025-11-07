@@ -73,8 +73,8 @@ function MainPageContent(): ReactElement {
 
   // Effect to handle component mount and loading state
   useEffect(() => {
-    console.debug('[MainPageContent] Mounted')
     // Mark component as mounted
+    console.debug('[MainPageContent] Mounted')
     isMounted.current = true
 
     // Simulate async behavior to show loading state briefly
