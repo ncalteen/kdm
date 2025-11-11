@@ -6,6 +6,11 @@ import {
 } from '@/components/settlement/departing-bonuses/departing-bonus-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_DEPARTING_BONUS_ERROR,
+  REMOVE_DEPARTING_BONUS_MESSAGE,
+  UPDATE_DEPARTING_BONUS_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -105,7 +110,7 @@ export function DepartingBonusesCard({
 
     saveSelectedSettlement(
       { departingBonuses: currentDepartingBonuses },
-      'A blessing fades into the void.'
+      REMOVE_DEPARTING_BONUS_MESSAGE()
     )
   }
 
@@ -117,7 +122,7 @@ export function DepartingBonusesCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless blessing cannot be recorded.')
+      return toast.error(NAMELESS_DEPARTING_BONUS_ERROR())
 
     const updatedDepartingBonuses = [
       ...(selectedSettlement?.departingBonuses || [])
@@ -141,9 +146,7 @@ export function DepartingBonusesCard({
 
     saveSelectedSettlement(
       { departingBonuses: updatedDepartingBonuses },
-      i !== undefined
-        ? 'The blessing has been inscribed.'
-        : 'A new blessing graces your settlement.'
+      UPDATE_DEPARTING_BONUS_MESSAGE(i)
     )
     setIsAddingNew(false)
   }

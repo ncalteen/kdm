@@ -69,11 +69,13 @@ export const TimelineYearRow = memo(
       usesNormalNumbering
     } = data
 
-    // Get all entry indices that should be rendered (existing entries + new entries being edited)
+    // Get all entry indices that should be rendered (existing entries + new
+    // entries being edited)
     const entries = selectedSettlement?.timeline?.[index].entries || []
     const allEntryIndices = new Set([...entries.map((_, i) => i)])
 
-    // Also include any entry indices that are being edited but don't exist in the entries array yet
+    // Also include any entry indices that are being edited but don't exist in
+    // the entries array yet
     for (let i = 0; i <= entries.length; i++)
       if (isEventBeingEdited(index, i)) allEntryIndices.add(i)
 

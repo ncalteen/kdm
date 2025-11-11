@@ -6,6 +6,11 @@ import {
 } from '@/components/settlement/arrival-bonuses/arrival-bonus-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_ARRIVAL_BONUS_ERROR,
+  REMOVE_ARRIVAL_BONUS_MESSAGE,
+  UPDATE_ARRIVAL_BONUS_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -105,7 +110,7 @@ export function ArrivalBonusesCard({
         {
           arrivalBonuses: currentArrivalBonuses
         },
-        'A blessing fades into the void.'
+        REMOVE_ARRIVAL_BONUS_MESSAGE()
       )
     },
     [selectedSettlement?.arrivalBonuses, saveSelectedSettlement]
@@ -120,7 +125,7 @@ export function ArrivalBonusesCard({
   const onSave = useCallback(
     (value?: string, i?: number) => {
       if (!value || value.trim() === '')
-        return toast.error('A nameless blessing cannot be recorded.')
+        return toast.error(NAMELESS_ARRIVAL_BONUS_ERROR())
 
       const updatedArrivalBonuses = [
         ...(selectedSettlement?.arrivalBonuses || [])
@@ -146,9 +151,7 @@ export function ArrivalBonusesCard({
         {
           arrivalBonuses: updatedArrivalBonuses
         },
-        i !== undefined
-          ? 'The blessing has been inscribed.'
-          : 'A new blessing graces your settlement.'
+        UPDATE_ARRIVAL_BONUS_MESSAGE(i)
       )
       setIsAddingNew(false)
     },

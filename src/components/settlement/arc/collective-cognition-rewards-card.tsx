@@ -6,6 +6,12 @@ import {
 } from '@/components/settlement/arc/collective-cognition-reward-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  COLLECTIVE_COGNITION_REWARD_SAVED_MESSAGE,
+  COLLECTIVE_COGNITION_REWARD_UPDATED_MESSAGE,
+  NAMELESS_COLLECTIVE_COGNITION_REWARD_ERROR,
+  NO_TARGET_COLLECTIVE_COGNITION_REWARD_ERROR
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -92,7 +98,7 @@ export function CollectiveCognitionRewardsCard({
       {
         ccRewards: currentRewards
       },
-      'Reward transformed by the darkness.'
+      COLLECTIVE_COGNITION_REWARD_SAVED_MESSAGE(unlocked)
     )
   }
 
@@ -121,7 +127,7 @@ export function CollectiveCognitionRewardsCard({
       {
         ccRewards: currentRewards
       },
-      'The dark gift recedes into shadow.'
+      COLLECTIVE_COGNITION_REWARD_SAVED_MESSAGE(false)
     )
   }
 
@@ -134,10 +140,10 @@ export function CollectiveCognitionRewardsCard({
    */
   const onSave = (name?: string, cc?: number, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless reward cannot be recorded.')
+      return toast.error(NAMELESS_COLLECTIVE_COGNITION_REWARD_ERROR())
 
     if (cc === undefined || cc < 0)
-      return toast.error('A reward must have a collective cognition target.')
+      return toast.error(NO_TARGET_COLLECTIVE_COGNITION_REWARD_ERROR())
 
     const updatedRewards = [...(selectedSettlement?.ccRewards || [])]
 
@@ -162,7 +168,7 @@ export function CollectiveCognitionRewardsCard({
       {
         ccRewards: updatedRewards
       },
-      "The settlement's culinary knowledge expands."
+      COLLECTIVE_COGNITION_REWARD_UPDATED_MESSAGE()
     )
 
     setIsAddingNew(false)

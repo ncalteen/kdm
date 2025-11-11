@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { NAMELESS_HORROR_ERROR } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -255,7 +256,7 @@ export function NewNemesisItem({
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       if (!inputRef.current.value || inputRef.current.value.trim() === '')
-        return toast.error('A nameless horror cannot be summoned.')
+        return toast.error(NAMELESS_HORROR_ERROR())
 
       onSave(inputRef.current.value, false)
     } else if (e.key === 'Escape') {
@@ -295,7 +296,7 @@ export function NewNemesisItem({
               !inputRef.current?.value ||
               inputRef.current.value.trim() === ''
             ) {
-              return toast.error('A nameless horror cannot be summoned.')
+              return toast.error(NAMELESS_HORROR_ERROR())
             }
             onSave(inputRef.current.value, false)
           }}

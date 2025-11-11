@@ -7,7 +7,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useSelectedTab } from '@/contexts/selected-tab-context'
 import { useCampaignSave } from '@/hooks/use-campaign-save'
 import { SurvivorType } from '@/lib/enums'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import {
+  ERROR_MESSAGE,
+  SURVIVOR_DELETED_MESSAGE,
+  SURVIVOR_ON_HUNT_ERROR,
+  SURVIVOR_ON_SHOWDOWN_ERROR
+} from '@/lib/messages'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -111,11 +116,9 @@ export function SettlementSurvivorsCard({
       try {
         // Check if survivor is currently on an active hunt or showdown
         if (selectedShowdown?.survivors?.includes(survivorId))
-          return toast.error(
-            'The survivor cannot be erased while on a showdown.'
-          )
+          return toast.error(SURVIVOR_ON_SHOWDOWN_ERROR())
         if (selectedHunt?.survivors?.includes(survivorId))
-          return toast.error('The survivor cannot be erased while on a hunt.')
+          return toast.error(SURVIVOR_ON_HUNT_ERROR())
 
         const campaign = getCampaign()
         const survivorIndex = campaign.survivors.findIndex(
@@ -133,7 +136,7 @@ export function SettlementSurvivorsCard({
 
         saveCampaign(
           { survivors: updatedSurvivors },
-          `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
+          SURVIVOR_DELETED_MESSAGE(survivorName)
         )
         setSurvivors(getSurvivors(selectedSettlement.id))
 

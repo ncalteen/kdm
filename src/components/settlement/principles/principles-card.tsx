@@ -6,6 +6,12 @@ import {
 } from '@/components/settlement/principles/principle-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_PRINCIPLE_ERROR,
+  PRINCIPLE_OPTION_SELECTED_MESSAGE,
+  REMOVE_PRINCIPLE_MESSAGE,
+  UPDATE_PRINCIPLE_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -108,7 +114,7 @@ export function PrinciplesCard({
       {
         principles: currentPrinciples
       },
-      'The settlement has cleansed a principle from its memory.'
+      REMOVE_PRINCIPLE_MESSAGE()
     )
   }
 
@@ -127,7 +133,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless principle cannot be recorded.')
+      return toast.error(NAMELESS_PRINCIPLE_ERROR())
 
     const updatedPrinciples = [...(selectedSettlement?.principles || [])]
 
@@ -149,7 +155,7 @@ export function PrinciplesCard({
         {
           principles: updatedPrinciples
         },
-        "The settlement's principle has been etched in stone."
+        UPDATE_PRINCIPLE_MESSAGE(true)
       )
     }
     setIsAddingNew(false)
@@ -183,11 +189,11 @@ export function PrinciplesCard({
       {
         principles: updatedPrinciples
       },
-      `The settlement has chosen ${
+      PRINCIPLE_OPTION_SELECTED_MESSAGE(
         option === 1
           ? updatedPrinciples[index].option1Name
           : updatedPrinciples[index].option2Name
-      }.`
+      )
     )
   }
 
@@ -204,7 +210,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless principle cannot be recorded.')
+      return toast.error(NAMELESS_PRINCIPLE_ERROR())
 
     const updatedPrinciples = [
       ...(selectedSettlement?.principles || []),
@@ -226,7 +232,7 @@ export function PrinciplesCard({
       {
         principles: updatedPrinciples
       },
-      'A new principle emerges.'
+      UPDATE_PRINCIPLE_MESSAGE(false)
     )
 
     setIsAddingNew(false)

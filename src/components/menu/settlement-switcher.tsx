@@ -81,6 +81,7 @@ export function SettlementSwitcher({
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <GalleryVerticalEnd className="size-4" />
               </div>
+
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-medium">
                   {selectedSettlement?.name ?? 'Create a Settlement'}
@@ -89,12 +90,15 @@ export function SettlementSwitcher({
                   {selectedSettlement?.campaignType ?? 'Choose your destiny'}
                 </span>
               </div>
+
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width)"
             align="start">
+            {/* Always display the create settlement option */}
             <DropdownMenuItem
               onSelect={() => {
                 setSelectedSettlement(null)
@@ -107,7 +111,10 @@ export function SettlementSwitcher({
                 <span>Create a Settlement</span>
               </div>
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
+
+            {/* Display existing settlements */}
             {settlements.map((s) => (
               <DropdownMenuItem
                 key={s.id}

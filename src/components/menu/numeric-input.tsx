@@ -42,7 +42,7 @@ interface NumericInputProps {
  *
  * A reusable input component for desktop/mobile devices. On desktop, it
  * functions as a standard numeric input field. On mobile, it provides
- * increment/ decrement buttons for better touch interaction.
+ * increment/decrement buttons for better touch interaction.
  *
  * @param props Numeric Input Properties
  * @returns Numeric Input Component

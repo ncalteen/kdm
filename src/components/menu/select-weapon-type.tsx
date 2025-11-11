@@ -45,11 +45,11 @@ export function SelectWeaponType({
   const weaponTypeOptions = Object.values(WeaponType).sort((a, b) =>
     a.localeCompare(b)
   )
+
   const [open, setOpen] = useState(false)
 
   const handleTypeSelect = (type: string) => {
     if (onChange) onChange(type)
-
     setOpen(false)
   }
 
@@ -66,6 +66,7 @@ export function SelectWeaponType({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="p-0 min-w-[180px]">
         <Command>
           <CommandInput placeholder="Search weapon type..." />

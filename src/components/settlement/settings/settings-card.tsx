@@ -20,7 +20,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import {
+  ERROR_MESSAGE,
+  HUNT_DELETED_MESSAGE,
+  SETTLEMENT_DELETED_MESSAGE,
+  SHOWDOWN_DELETED_MESSAGE
+} from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -113,9 +118,7 @@ export function SettingsCard({
 
       setSelectedHunt(null)
 
-      toast.success(
-        'The hunt ends. Survivors return to the relative safety of the settlement.'
-      )
+      toast.success(HUNT_DELETED_MESSAGE())
     } catch (error) {
       console.error('Delete Hunt Error:', error)
       toast.error(ERROR_MESSAGE())
@@ -142,9 +145,7 @@ export function SettingsCard({
 
       setSelectedShowdown(null)
 
-      toast.success(
-        'The showdown ends. Survivors return to the relative safety of the settlement.'
-      )
+      toast.success(SHOWDOWN_DELETED_MESSAGE())
     } catch (error) {
       console.error('Delete Showdown Error:', error)
       toast.error(ERROR_MESSAGE())
@@ -197,9 +198,7 @@ export function SettingsCard({
 
       setIsDeleteDialogOpen(false)
 
-      toast.success(
-        `A wave of darkness washes over ${settlementName}. Voices cried out, and were silenced.`
-      )
+      toast.success(SETTLEMENT_DELETED_MESSAGE(settlementName))
     } catch (error) {
       console.error('Settlement Delete Error:', error)
       toast.error(ERROR_MESSAGE())

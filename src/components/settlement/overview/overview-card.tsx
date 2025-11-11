@@ -6,6 +6,10 @@ import { FormControl } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import {
+  LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR,
+  SURVIVAL_LIMIT_MINIMUM_ERROR
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement, useEffect, useMemo } from 'react'
@@ -118,8 +122,7 @@ export function OverviewCard({
 
     if (isNaN(numericValue)) return
 
-    if (numericValue < 1)
-      return toast.error('Survival limit cannot be reduced below 1.')
+    if (numericValue < 1) return toast.error(SURVIVAL_LIMIT_MINIMUM_ERROR())
 
     saveSelectedSettlement(
       { survivalLimit: numericValue },
@@ -138,7 +141,7 @@ export function OverviewCard({
     if (isNaN(numericValue)) return
 
     if (numericValue < 0)
-      return toast.error('Lantern research level cannot be reduced below 0.')
+      return toast.error(LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR())
 
     saveSelectedSettlement(
       { lanternResearchLevel: numericValue },

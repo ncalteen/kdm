@@ -6,6 +6,12 @@ import {
 } from '@/components/settlement/arc/knowledge-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  KNOWLEDGE_DELETED_MESSAGE,
+  NAMELESS_KNOWLEDGE_ERROR,
+  NEW_KNOWLEDGE_MESSAGE,
+  UPDATED_KNOWLEDGE_MESSAGE
+} from '@/lib/messages'
 import { Knowledge, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -99,7 +105,7 @@ export function KnowledgesCard({
       {
         knowledges: currentKnowledges
       },
-      'Knowledge banished to the void.'
+      KNOWLEDGE_DELETED_MESSAGE()
     )
   }
 
@@ -112,7 +118,7 @@ export function KnowledgesCard({
    */
   const onSave = (name?: string, philosophy?: string, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless knowledge cannot be recorded.')
+      return toast.error(NAMELESS_KNOWLEDGE_ERROR())
 
     // Convert empty string to undefined for optional philosophy
     const processedPhilosophy =
@@ -144,9 +150,7 @@ export function KnowledgesCard({
       {
         knowledges: updatedKnowledges
       },
-      i !== undefined
-        ? 'Knowledge carved into memory.'
-        : 'New knowledge illuminates the settlement.'
+      i !== undefined ? UPDATED_KNOWLEDGE_MESSAGE() : NEW_KNOWLEDGE_MESSAGE()
     )
 
     setIsAddingNew(false)

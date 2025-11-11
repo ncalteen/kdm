@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { SETTLEMENT_NOTES_SAVED_MESSAGE } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, StickyNoteIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
@@ -48,7 +49,7 @@ export function NotesCard({
       {
         notes: draft
       },
-      'As stories are shared amongst survivors, they are etched into the history of your settlement.'
+      SETTLEMENT_NOTES_SAVED_MESSAGE()
     )
   }
 

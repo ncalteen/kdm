@@ -6,6 +6,11 @@ import {
 } from '@/components/settlement/innovations/innovation-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_INNOVATION_ERROR,
+  REMOVE_INNOVATION_MESSAGE,
+  UPDATE_INNOVATION_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -100,7 +105,7 @@ export function InnovationsCard({
 
     saveSelectedSettlement(
       { innovations: currentInnovations },
-      'The innovation has been lost.'
+      REMOVE_INNOVATION_MESSAGE()
     )
   }
 
@@ -112,7 +117,7 @@ export function InnovationsCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless innovation cannot be recorded.')
+      return toast.error(NAMELESS_INNOVATION_ERROR())
 
     const updatedInnovations = [...(selectedSettlement?.innovations || [])]
 
@@ -134,9 +139,7 @@ export function InnovationsCard({
 
     saveSelectedSettlement(
       { innovations: updatedInnovations },
-      i !== undefined
-        ? 'The innovation has been updated.'
-        : 'The settlement has innovated.'
+      UPDATE_INNOVATION_MESSAGE(i)
     )
 
     setIsAddingNew(false)

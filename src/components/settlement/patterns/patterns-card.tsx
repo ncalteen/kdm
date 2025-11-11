@@ -6,6 +6,11 @@ import {
 } from '@/components/settlement/patterns/pattern-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_PATTERN_ERROR,
+  REMOVE_PATTERN_MESSAGE,
+  UPDATE_PATTERN_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -106,7 +111,7 @@ export function PatternsCard({
       {
         patterns: currentPatterns
       },
-      'The pattern has been banished from memory.'
+      REMOVE_PATTERN_MESSAGE()
     )
   }
 
@@ -118,7 +123,7 @@ export function PatternsCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless pattern cannot be preserved.')
+      return toast.error(NAMELESS_PATTERN_ERROR())
 
     const updatedPatterns = [...(selectedSettlement?.patterns || [])]
 
@@ -142,9 +147,7 @@ export function PatternsCard({
       {
         patterns: updatedPatterns
       },
-      i !== undefined
-        ? 'The pattern has been etched into memory.'
-        : 'Insight has granted a new pattern.'
+      UPDATE_PATTERN_MESSAGE(i)
     )
 
     setIsAddingNew(false)

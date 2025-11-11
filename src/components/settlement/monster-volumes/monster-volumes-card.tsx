@@ -6,6 +6,11 @@ import {
 } from '@/components/settlement/monster-volumes/monster-volume-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_MONSTER_VOLUME_ERROR,
+  REMOVE_MONSTER_VOLUME_MESSAGE,
+  UPDATE_MONSTER_VOLUME_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -107,7 +112,7 @@ export function MonsterVolumesCard({
       {
         monsterVolumes: currentMonsterVolumes
       },
-      'The monster volume has been consigned to darkness.'
+      REMOVE_MONSTER_VOLUME_MESSAGE()
     )
   }
 
@@ -119,7 +124,7 @@ export function MonsterVolumesCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless monster volume cannot be recorded.')
+      return toast.error(NAMELESS_MONSTER_VOLUME_ERROR())
 
     const updatedMonsterVolumes = [
       ...(selectedSettlement?.monsterVolumes || [])
@@ -145,9 +150,7 @@ export function MonsterVolumesCard({
       {
         monsterVolumes: updatedMonsterVolumes
       },
-      i !== undefined
-        ? 'Monster volume inscribed in blood.'
-        : 'New monster volume inscribed in blood.'
+      UPDATE_MONSTER_VOLUME_MESSAGE(i)
     )
 
     setIsAddingNew(false)
