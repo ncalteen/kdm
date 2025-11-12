@@ -65,7 +65,6 @@ export function SelectedSurvivorProvider({
   // Load selected survivor from localStorage on mount
   useEffect(() => {
     const savedSelectedSurvivor = getSelectedSurvivor()
-
     if (savedSelectedSurvivor) setSelectedSurvivorState(savedSelectedSurvivor)
   }, [])
 
@@ -94,9 +93,7 @@ export function SelectedSurvivorProvider({
    * Set Selected Survivor
    */
   const setSelectedSurvivor = (survivor: Survivor | null) => {
-    // Update state
     setSelectedSurvivorState(survivor)
-    // Save to localStorage
     setSelectedSurvivorInStorage(survivor?.id || null)
 
     // When selecting a survivor, stop creation mode

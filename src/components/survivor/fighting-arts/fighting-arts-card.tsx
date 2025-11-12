@@ -15,6 +15,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import {
+  FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SECRET_FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE,
+  SURVIVOR_CAN_USE_FIGHTING_ARTS_UPDATED_MESSAGE,
+  SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE,
+  SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import {
@@ -174,7 +182,7 @@ export function FightingArtsCard({
       saveToLocalStorage(
         currentArts,
         selectedSurvivor?.secretFightingArts || [],
-        'The fighting art has been forgotten.'
+        SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(false)
       )
     } else {
       const currentArts = [...(selectedSurvivor?.secretFightingArts || [])]
@@ -200,7 +208,7 @@ export function FightingArtsCard({
       saveToLocalStorage(
         selectedSurvivor?.fightingArts || [],
         currentArts,
-        'The secret fighting art has been banished from memory.'
+        SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(true)
       )
     }
   }
@@ -213,7 +221,7 @@ export function FightingArtsCard({
    */
   const onSave = (value?: string, art?: CombinedFightingArt) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless fighting art cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('fighting art'))
 
     if (art) {
       // Updating an existing fighting art
@@ -227,7 +235,7 @@ export function FightingArtsCard({
         saveToLocalStorage(
           updated,
           selectedSurvivor?.secretFightingArts || [],
-          'The fighting art has been perfected.'
+          SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, false)
         )
       } else {
         const updated = [...(selectedSurvivor?.secretFightingArts || [])]
@@ -237,7 +245,7 @@ export function FightingArtsCard({
         saveToLocalStorage(
           selectedSurvivor?.fightingArts || [],
           updated,
-          'The secret fighting art has been perfected.'
+          SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, false)
         )
       }
     } else {
@@ -245,9 +253,7 @@ export function FightingArtsCard({
       if (newArtType === 'regular') {
         if (isAtRegularFightingArtLimit())
           return toast.warning(
-            survivorType === SurvivorType.ARC
-              ? 'Arc survivors can only have 1 Fighting Art.'
-              : 'Survivors can only have 3 total Fighting Arts and Secret Fighting Arts combined.'
+            FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE(survivorType)
           )
 
         const newArts = [...(selectedSurvivor?.fightingArts || []), value]
@@ -260,14 +266,12 @@ export function FightingArtsCard({
         saveToLocalStorage(
           newArts,
           selectedSurvivor?.secretFightingArts || [],
-          'A new fighting art has been mastered.'
+          SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, true)
         )
       } else {
         if (isAtSecretFightingArtLimit())
           return toast.warning(
-            survivorType === SurvivorType.ARC
-              ? 'Arc survivors can only have 1 Secret Fighting Art.'
-              : 'Survivors can only have 3 total Fighting Arts and Secret Fighting Arts combined.'
+            SECRET_FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE(survivorType)
           )
 
         const newArts = [...(selectedSurvivor?.secretFightingArts || []), value]
@@ -280,7 +284,7 @@ export function FightingArtsCard({
         saveToLocalStorage(
           selectedSurvivor?.fightingArts || [],
           newArts,
-          'A new secret fighting art has been mastered.'
+          SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, true)
         )
       }
       setIsAddingNew(false)
@@ -304,9 +308,7 @@ export function FightingArtsCard({
   const updateCanUseFightingArtsOrKnowledges = (checked: boolean) => {
     saveSelectedSurvivor(
       { canUseFightingArtsOrKnowledges: !checked },
-      !checked
-        ? 'The survivor recalls the ways of battle.'
-        : 'The survivor has forgotten their fighting techniques.'
+      SURVIVOR_CAN_USE_FIGHTING_ARTS_UPDATED_MESSAGE(!checked)
     )
   }
 

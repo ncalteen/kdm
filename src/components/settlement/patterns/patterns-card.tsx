@@ -7,9 +7,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  NAMELESS_PATTERN_ERROR,
-  REMOVE_PATTERN_MESSAGE,
-  UPDATE_PATTERN_MESSAGE
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  PATTERN_REMOVED_MESSAGE,
+  PATTERN_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -111,7 +111,7 @@ export function PatternsCard({
       {
         patterns: currentPatterns
       },
-      REMOVE_PATTERN_MESSAGE()
+      PATTERN_REMOVED_MESSAGE()
     )
   }
 
@@ -123,7 +123,7 @@ export function PatternsCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_PATTERN_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('pattern'))
 
     const updatedPatterns = [...(selectedSettlement?.patterns || [])]
 
@@ -147,7 +147,7 @@ export function PatternsCard({
       {
         patterns: updatedPatterns
       },
-      UPDATE_PATTERN_MESSAGE(i)
+      PATTERN_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

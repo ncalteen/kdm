@@ -4,6 +4,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormItem } from '@/components/ui/form'
 import { SurvivorType } from '@/lib/enums'
+import {
+  HUNT_XP_RANK_UP_ACHIEVED_MESSAGE,
+  HUNT_XP_RANK_UP_MILESTONE_ADDED_MESSAGE,
+  HUNT_XP_RANK_UP_MILESTONE_REMOVED_MESSAGE,
+  HUNT_XP_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -72,8 +78,8 @@ export function HuntXPCard({
       checked ? index + 1 : index,
       undefined,
       checked && selectedSurvivor?.huntXPRankUp?.includes(index)
-        ? 'The survivor rises through struggle and triumph. Rank up achieved!'
-        : 'The lantern grows brighter. Hunt XP updated.'
+        ? HUNT_XP_RANK_UP_ACHIEVED_MESSAGE()
+        : HUNT_XP_UPDATED_MESSAGE()
     )
   }
 
@@ -95,13 +101,17 @@ export function HuntXPCard({
       saveToLocalStorage(
         undefined,
         currentRankUps,
-        'Rank up milestone removed.'
+        HUNT_XP_RANK_UP_MILESTONE_REMOVED_MESSAGE()
       )
     } else {
       // Add to rank up milestones
       currentRankUps.push(index)
       currentRankUps.sort((a, b) => a - b) // Keep sorted
-      saveToLocalStorage(undefined, currentRankUps, 'Rank up milestone added.')
+      saveToLocalStorage(
+        undefined,
+        currentRankUps,
+        HUNT_XP_RANK_UP_MILESTONE_ADDED_MESSAGE()
+      )
     }
   }
 

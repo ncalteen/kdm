@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_HEAD_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { HardHatIcon, Shield } from 'lucide-react'
@@ -55,7 +56,7 @@ export function HeadCard({
       {
         [attrName]: value
       },
-      'The flesh endures what the mind cannot.'
+      COMBAT_HEAD_UPDATED_MESSAGE()
     )
 
   return (

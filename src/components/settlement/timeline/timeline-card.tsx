@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { CampaignType } from '@/lib/enums'
 import {
-  TIMELINE_EVENT_EMPTY_ERROR,
-  TIMELINE_EVENT_EMPTY_WARNING,
+  TIMELINE_EVENT_EMPTY_ERROR_MESSAGE,
+  TIMELINE_EVENT_EMPTY_WARNING_MESSAGE,
   TIMELINE_EVENT_REMOVED_MESSAGE,
   TIMELINE_EVENT_SAVED_MESSAGE,
   TIMELINE_YEAR_ADDED_MESSAGE,
@@ -108,10 +108,8 @@ export function TimelineCard({
    * @returns Event is Being Edited
    */
   const isEventBeingEdited = useCallback(
-    (yearIndex: number, entryIndex: number) => {
-      const inputKey = `${yearIndex}-${entryIndex}`
-      return !!editingEvents[inputKey]
-    },
+    (yearIndex: number, entryIndex: number) =>
+      !!editingEvents[`${yearIndex}-${entryIndex}`],
     [editingEvents]
   )
 
@@ -141,7 +139,7 @@ export function TimelineCard({
       // Warn the user that there is an empty event or an event being edited
       // and prevent adding another event.
       if (isEditing || hasEmpty)
-        return toast.warning(TIMELINE_EVENT_EMPTY_WARNING())
+        return toast.warning(TIMELINE_EVENT_EMPTY_WARNING_MESSAGE())
 
       const newEntryIndex = currentEntries.length
 
@@ -219,7 +217,7 @@ export function TimelineCard({
       const currentEvent = inputElement.value
 
       if (!currentEvent || currentEvent.trim() === '')
-        return toast.warning(TIMELINE_EVENT_EMPTY_ERROR())
+        return toast.warning(TIMELINE_EVENT_EMPTY_ERROR_MESSAGE())
 
       const newEventValue = currentEvent.trim()
 

@@ -7,6 +7,20 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { SurvivorType } from '@/lib/enums'
+import {
+  SURVIVAL_LIMIT_EXCEEDED_ERROR_MESSAGE,
+  SURVIVAL_MINIMUM_ERROR_MESSAGE,
+  SURVIVOR_CAN_DASH_UPDATED_MESSAGE,
+  SURVIVOR_CAN_DODGE_UPDATED_MESSAGE,
+  SURVIVOR_CAN_ENCOURAGE_UPDATED_MESSAGE,
+  SURVIVOR_CAN_ENDURE_UPDATED_MESSAGE,
+  SURVIVOR_CAN_FIST_PUMP_UPDATED_MESSAGE,
+  SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE,
+  SURVIVOR_CAN_SURGE_UPDATED_MESSAGE,
+  SURVIVOR_SURVIVAL_UPDATED_MESSAGE,
+  SURVIVOR_SYSTEMIC_PRESSURE_UPDATED_MESSAGE,
+  SYSTEMIC_PRESSURE_MINIMUM_ERROR_MESSAGE
+} from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -52,15 +66,20 @@ export function SurvivalCard({
     const value = parseInt(val) || 0
 
     // Enforce minimum value of 0
-    if (value < 0) return toast.error('Survival cannot be negative.')
+    if (value < 0) return toast.error(SURVIVAL_MINIMUM_ERROR_MESSAGE())
 
     // Enforce maximum value of survivalLimit
     if (value > (selectedSettlement?.survivalLimit || 1))
       return toast.error(
-        `Survival cannot exceed the settlement's limit of ${selectedSettlement?.survivalLimit || 1}.`
+        SURVIVAL_LIMIT_EXCEEDED_ERROR_MESSAGE(
+          selectedSettlement?.survivalLimit || 1
+        )
       )
 
-    saveSelectedSurvivor({ survival: value }, 'Survival updated successfully.')
+    saveSelectedSurvivor(
+      { survival: value },
+      SURVIVOR_SURVIVAL_UPDATED_MESSAGE(selectedSurvivor?.survival || 0, value)
+    )
   }
 
   /**
@@ -69,9 +88,7 @@ export function SurvivalCard({
   const updateCanSpendSurvival = (checked: boolean) =>
     saveSelectedSurvivor(
       { canSpendSurvival: !checked },
-      !checked
-        ? 'The survivor can once again spend survival.'
-        : 'The survivor freezes - survival cannot be spent.'
+      SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE(!checked)
     )
 
   /**
@@ -80,9 +97,7 @@ export function SurvivalCard({
   const updateCanDodge = (checked: boolean) =>
     saveSelectedSurvivor(
       { canDodge: !!checked },
-      !!checked
-        ? 'The survivor learns to dodge with grace.'
-        : 'The survivor loses the ability to dodge.'
+      SURVIVOR_CAN_DODGE_UPDATED_MESSAGE(!!checked)
     )
 
   /**
@@ -91,9 +106,7 @@ export function SurvivalCard({
   const updateCanEncourage = (checked: boolean) =>
     saveSelectedSurvivor(
       { canEncourage: !!checked },
-      !!checked
-        ? 'The survivor finds their voice to inspire others.'
-        : 'The survivor falls silent, unable to encourage.'
+      SURVIVOR_CAN_ENCOURAGE_UPDATED_MESSAGE(!!checked)
     )
 
   /**
@@ -102,9 +115,7 @@ export function SurvivalCard({
   const updateCanSurge = (checked: boolean) =>
     saveSelectedSurvivor(
       { canSurge: !!checked },
-      !!checked
-        ? 'The survivor feels a surge of power within.'
-        : 'The survivor loses their ability to surge.'
+      SURVIVOR_CAN_SURGE_UPDATED_MESSAGE(!!checked)
     )
 
   /**
@@ -113,9 +124,7 @@ export function SurvivalCard({
   const updateCanDash = (checked: boolean) =>
     saveSelectedSurvivor(
       { canDash: !!checked },
-      !!checked
-        ? 'The survivor gains swift feet to dash ahead.'
-        : 'The survivor loses their speed, unable to dash.'
+      SURVIVOR_CAN_DASH_UPDATED_MESSAGE(!!checked)
     )
 
   /**
@@ -124,9 +133,7 @@ export function SurvivalCard({
   const updateCanFistPump = (checked: boolean) =>
     saveSelectedSurvivor(
       { canFistPump: !!checked },
-      !!checked
-        ? 'The survivor raises their fist in triumph.'
-        : 'The survivor loses their fighting spirit.'
+      SURVIVOR_CAN_FIST_PUMP_UPDATED_MESSAGE(!!checked)
     )
 
   /**
@@ -138,12 +145,12 @@ export function SurvivalCard({
     // Enforce minimum value of 0
     if (value < 0) {
       value = 0
-      return toast.error('Systemic pressure cannot be negative.')
+      return toast.error(SYSTEMIC_PRESSURE_MINIMUM_ERROR_MESSAGE())
     }
 
     saveSelectedSurvivor(
       { systemicPressure: value },
-      'Systemic pressure updated successfully.'
+      SURVIVOR_SYSTEMIC_PRESSURE_UPDATED_MESSAGE()
     )
   }
 
@@ -153,9 +160,7 @@ export function SurvivalCard({
   const updateCanEndure = (checked: boolean) =>
     saveSelectedSurvivor(
       { canEndure: !!checked },
-      !!checked
-        ? 'The survivor finds strength to endure the darkness.'
-        : 'The survivor loses their resilience to endure.'
+      SURVIVOR_CAN_ENDURE_UPDATED_MESSAGE(!!checked)
     )
 
   return (

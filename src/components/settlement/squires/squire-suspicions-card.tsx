@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { SQUIRE_SUSPICION_UPDATED_MESSAGE } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { EyeIcon } from 'lucide-react'
 import { ReactElement } from 'react'
@@ -100,7 +101,7 @@ export function SquireSuspicionsCard({
 
     saveSelectedSettlement(
       { suspicions: updatedSuspicions },
-      `${squireName}'s doubt grows deeper.`
+      SQUIRE_SUSPICION_UPDATED_MESSAGE(squireName)
     )
   }
 

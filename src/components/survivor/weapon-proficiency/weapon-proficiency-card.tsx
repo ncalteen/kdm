@@ -4,6 +4,12 @@ import { SelectWeaponType } from '@/components/menu/select-weapon-type'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { WeaponType } from '@/lib/enums'
+import {
+  SURVIVOR_WEAPON_PROFICIENCY_MASTER_ACHIEVED_MESSAGE,
+  SURVIVOR_WEAPON_PROFICIENCY_SPECIALIST_ACHIEVED_MESSAGE,
+  SURVIVOR_WEAPON_PROFICIENCY_UPDATED_MESSAGE,
+  SURVIVOR_WEAPON_TYPE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import { SwordsIcon } from 'lucide-react'
 import { ReactElement, useCallback } from 'react'
@@ -70,10 +76,10 @@ export function WeaponProficiencyCard({
       updatedProficiency,
       undefined,
       updatedProficiency === 3
-        ? 'The survivor becomes a specialist in their craft.'
+        ? SURVIVOR_WEAPON_PROFICIENCY_SPECIALIST_ACHIEVED_MESSAGE()
         : updatedProficiency === 8
-          ? 'The survivor achieves mastery beyond mortal limits.'
-          : 'The survivor hones their weapon proficiency.'
+          ? SURVIVOR_WEAPON_PROFICIENCY_MASTER_ACHIEVED_MESSAGE()
+          : SURVIVOR_WEAPON_PROFICIENCY_UPDATED_MESSAGE()
     )
   }
 
@@ -86,7 +92,7 @@ export function WeaponProficiencyCard({
     saveToLocalStorage(
       undefined,
       type as WeaponType,
-      'The survivor turns their focus to a new weapon.'
+      SURVIVOR_WEAPON_TYPE_UPDATED_MESSAGE()
     )
 
   return (

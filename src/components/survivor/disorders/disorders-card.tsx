@@ -6,6 +6,12 @@ import {
 } from '@/components/survivor/disorders/disorder-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_DISORDER_LIMIT_EXCEEDED_ERROR_MESSAGE,
+  SURVIVOR_DISORDER_REMOVED_MESSAGE,
+  SURVIVOR_DISORDER_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -113,10 +119,7 @@ export function DisordersCard({
       return next
     })
 
-    saveToLocalStorage(
-      currentDisorders,
-      'The survivor has overcome their disorder.'
-    )
+    saveToLocalStorage(currentDisorders, SURVIVOR_DISORDER_REMOVED_MESSAGE())
   }
 
   /**
@@ -127,13 +130,13 @@ export function DisordersCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless disorder cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('disorder'))
 
     if (
       i === undefined &&
       (selectedSurvivor?.disorders?.length || 0) >= MAX_DISORDERS
     )
-      return toast.error('A survivor can have at most 3 disorders.')
+      return toast.error(SURVIVOR_DISORDER_LIMIT_EXCEEDED_ERROR_MESSAGE())
 
     const updatedDisorders = [...(selectedSurvivor?.disorders || [])]
 
@@ -155,9 +158,7 @@ export function DisordersCard({
 
     saveToLocalStorage(
       updatedDisorders,
-      i !== undefined
-        ? 'The disorder has been updated.'
-        : 'The survivor gains a new disorder.'
+      SURVIVOR_DISORDER_UPDATED_MESSAGE(i === undefined)
     )
   }
 

@@ -26,7 +26,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorType } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
-  SAVE_HUNT_NOTES_MESSAGE,
+  HUNT_NOTES_SAVED_MESSAGE,
   SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE,
   SURVIVOR_BASE_ATTRIBUTE_UPDATED_MESSAGE,
   SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE,
@@ -303,7 +303,7 @@ export function HuntSurvivorCard({
 
     saveSelectedHunt(
       { survivorDetails: updatedDetails },
-      SAVE_HUNT_NOTES_MESSAGE()
+      HUNT_NOTES_SAVED_MESSAGE()
     )
   }
 

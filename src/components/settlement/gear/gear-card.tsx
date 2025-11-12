@@ -4,9 +4,9 @@ import { GearItem, NewGearItem } from '@/components/settlement/gear/gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  NAMELESS_GEAR_ERROR,
-  REMOVE_GEAR_MESSAGE,
-  UPDATE_GEAR_MESSAGE
+  GEAR_REMOVED_MESSAGE,
+  GEAR_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -100,7 +100,7 @@ export function GearCard({
       return next
     })
 
-    saveSelectedSettlement({ gear: currentGear }, REMOVE_GEAR_MESSAGE())
+    saveSelectedSettlement({ gear: currentGear }, GEAR_REMOVED_MESSAGE())
   }
 
   /**
@@ -110,7 +110,8 @@ export function GearCard({
    * @param i Gear Index (When Updating Only)
    */
   const onSave = (value?: string, i?: number) => {
-    if (!value || value.trim() === '') return toast.error(NAMELESS_GEAR_ERROR())
+    if (!value || value.trim() === '')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('gear'))
 
     const updatedGear = [...(selectedSettlement?.gear || [])]
 
@@ -130,7 +131,7 @@ export function GearCard({
       }))
     }
 
-    saveSelectedSettlement({ gear: updatedGear }, UPDATE_GEAR_MESSAGE(i))
+    saveSelectedSettlement({ gear: updatedGear }, GEAR_UPDATED_MESSAGE(i))
 
     setIsAddingNew(false)
   }

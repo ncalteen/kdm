@@ -7,10 +7,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  NAMELESS_PRINCIPLE_ERROR,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
   PRINCIPLE_OPTION_SELECTED_MESSAGE,
-  REMOVE_PRINCIPLE_MESSAGE,
-  UPDATE_PRINCIPLE_MESSAGE
+  PRINCIPLE_REMOVED_MESSAGE,
+  PRINCIPLE_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -114,7 +114,7 @@ export function PrinciplesCard({
       {
         principles: currentPrinciples
       },
-      REMOVE_PRINCIPLE_MESSAGE()
+      PRINCIPLE_REMOVED_MESSAGE()
     )
   }
 
@@ -133,7 +133,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error(NAMELESS_PRINCIPLE_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
     const updatedPrinciples = [...(selectedSettlement?.principles || [])]
 
@@ -155,7 +155,7 @@ export function PrinciplesCard({
         {
           principles: updatedPrinciples
         },
-        UPDATE_PRINCIPLE_MESSAGE(true)
+        PRINCIPLE_UPDATED_MESSAGE(true)
       )
     }
     setIsAddingNew(false)
@@ -210,7 +210,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error(NAMELESS_PRINCIPLE_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
     const updatedPrinciples = [
       ...(selectedSettlement?.principles || []),
@@ -232,7 +232,7 @@ export function PrinciplesCard({
       {
         principles: updatedPrinciples
       },
-      UPDATE_PRINCIPLE_MESSAGE(false)
+      PRINCIPLE_UPDATED_MESSAGE(false)
     )
 
     setIsAddingNew(false)

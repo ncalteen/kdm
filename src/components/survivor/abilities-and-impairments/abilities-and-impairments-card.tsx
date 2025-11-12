@@ -8,6 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import {
+  ABILITY_IMPAIRMENT_REMOVED_MESSAGE,
+  ABILITY_IMPAIRMENT_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_SKIP_NEXT_HUNT_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -124,7 +130,7 @@ export function AbilitiesAndImpairmentsCard({
     saveToLocalStorage(
       updatedAbilitiesAndImpairments,
       undefined,
-      'The ability/impairment has been removed.'
+      ABILITY_IMPAIRMENT_REMOVED_MESSAGE()
     )
   }
 
@@ -136,7 +142,7 @@ export function AbilitiesAndImpairmentsCard({
    */
   const onSaveAbilityOrImpairment = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless ability/impairment cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('ability/impairment'))
 
     const updatedAbilitiesAndImpairments = [
       ...(selectedSurvivor?.abilitiesAndImpairments || [])
@@ -161,9 +167,7 @@ export function AbilitiesAndImpairmentsCard({
     saveToLocalStorage(
       updatedAbilitiesAndImpairments,
       undefined,
-      i !== undefined
-        ? 'The ability/impairment has been updated.'
-        : 'The survivor gains a new ability/impairment.'
+      ABILITY_IMPAIRMENT_UPDATED_MESSAGE(i === undefined)
     )
   }
 
@@ -290,9 +294,7 @@ export function AbilitiesAndImpairmentsCard({
                   saveToLocalStorage(
                     undefined,
                     !!checked,
-                    !!checked
-                      ? 'The survivor will skip the next hunt.'
-                      : 'The survivor will not skip the next hunt.'
+                    SURVIVOR_SKIP_NEXT_HUNT_UPDATED_MESSAGE(!!checked)
                   )
                 }
               />

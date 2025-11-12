@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_LEGS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
@@ -55,7 +56,7 @@ export function LegsCard({
       {
         [attrName]: value
       },
-      'Each step forward defies the consuming darkness.'
+      COMBAT_LEGS_UPDATED_MESSAGE()
     )
 
   return (

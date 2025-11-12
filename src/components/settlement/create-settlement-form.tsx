@@ -19,7 +19,6 @@ import { ERROR_MESSAGE, SETTLEMENT_CREATED_MESSAGE } from '@/lib/messages'
 import {
   getCampaign,
   getCampaignData,
-  getLostSettlementCount,
   getNextSettlementId,
   saveCampaignToLocalStorage
 } from '@/lib/utils'
@@ -72,7 +71,7 @@ export function CreateSettlementForm({
     )
 
     form.setValue('id', getNextSettlementId())
-    form.setValue('lostSettlements', getLostSettlementCount())
+    form.setValue('lostSettlements', 0)
     form.setValue('innovations', campaignData.innovations)
     form.setValue('locations', campaignData.locations)
     form.setValue('milestones', campaignData.milestones)

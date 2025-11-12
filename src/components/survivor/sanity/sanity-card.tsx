@@ -6,6 +6,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { SurvivorType } from '@/lib/enums'
+import {
+  INSANITY_MINIMUM_ERROR_MESSAGE,
+  SURVIVOR_BRAIN_LIGHT_DAMAGE_UPDATED_MESSAGE,
+  SURVIVOR_INSANITY_UPDATED_MESSAGE,
+  SURVIVOR_TORMENT_UPDATED_MESSAGE,
+  TORMENT_MINIMUM_ERROR_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BrainIcon, Shield } from 'lucide-react'
@@ -56,14 +63,14 @@ export function SanityCard({
     // Enforce minimum value of 0
     if (value < 0) {
       value = 0
-      return toast.error('Insanity cannot be negative..')
+      return toast.error(INSANITY_MINIMUM_ERROR_MESSAGE())
     }
 
     saveSelectedSurvivor(
       {
         insanity: value
       },
-      'Insanity level updated.'
+      SURVIVOR_INSANITY_UPDATED_MESSAGE(selectedSurvivor?.insanity || 0, value)
     )
   }
 
@@ -75,9 +82,7 @@ export function SanityCard({
       {
         brainLightDamage: !!checked
       },
-      !!checked
-        ? 'The survivor suffers brain damage from the horrors witnessed.'
-        : 'The survivor recovers from their brain injury.'
+      SURVIVOR_BRAIN_LIGHT_DAMAGE_UPDATED_MESSAGE(!!checked)
     )
 
   /**
@@ -89,14 +94,14 @@ export function SanityCard({
     // Enforce minimum value of 0
     if (value < 0) {
       value = 0
-      return toast.error('Torment cannot be negative.')
+      return toast.error(TORMENT_MINIMUM_ERROR_MESSAGE())
     }
 
     saveSelectedSurvivor(
       {
         torment: value
       },
-      'Torment level updated.'
+      SURVIVOR_TORMENT_UPDATED_MESSAGE()
     )
   }
 

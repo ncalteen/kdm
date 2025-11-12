@@ -6,6 +6,11 @@ import {
 } from '@/components/survivor/cursed-gear/cursed-gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_CURSED_GEAR_REMOVED_MESSAGE,
+  SURVIVOR_CURSED_GEAR_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -97,7 +102,7 @@ export function CursedGearCard({
 
     saveSelectedSurvivor(
       { cursedGear: currentCursedGear },
-      `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been removed.`
+      SURVIVOR_CURSED_GEAR_REMOVED_MESSAGE(selectedSurvivor?.name)
     )
   }
 
@@ -109,7 +114,7 @@ export function CursedGearCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless cursed gear item cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('cursed gear'))
 
     const updatedCursedGear = [...(selectedSurvivor?.cursedGear || [])]
 
@@ -131,9 +136,10 @@ export function CursedGearCard({
 
     saveSelectedSurvivor(
       { cursedGear: updatedCursedGear },
-      i !== undefined
-        ? `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been updated.`
-        : `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been added.`
+      SURVIVOR_CURSED_GEAR_UPDATED_MESSAGE(
+        selectedSurvivor?.name,
+        i === undefined
+      )
     )
 
     setIsAddingNew(false)

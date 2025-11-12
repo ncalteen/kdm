@@ -24,6 +24,7 @@ import {
   ERROR_MESSAGE,
   HUNT_DELETED_MESSAGE,
   SETTLEMENT_DELETED_MESSAGE,
+  SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE,
   SHOWDOWN_DELETED_MESSAGE
 } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
@@ -88,9 +89,7 @@ export function SettingsCard({
     try {
       saveSelectedSettlement(
         { usesScouts },
-        usesScouts
-          ? 'The settlement now employs scouts to aid in hunts.'
-          : 'The settlement no longer relies on scouts for hunts.'
+        SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE(usesScouts)
       )
     } catch (error) {
       console.error('Uses Scouts Update Error:', error)

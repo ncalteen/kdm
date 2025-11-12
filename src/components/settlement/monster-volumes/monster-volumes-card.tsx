@@ -7,9 +7,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  NAMELESS_MONSTER_VOLUME_ERROR,
-  REMOVE_MONSTER_VOLUME_MESSAGE,
-  UPDATE_MONSTER_VOLUME_MESSAGE
+  MONSTER_VOLUME_REMOVED_MESSAGE,
+  MONSTER_VOLUME_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -112,7 +112,7 @@ export function MonsterVolumesCard({
       {
         monsterVolumes: currentMonsterVolumes
       },
-      REMOVE_MONSTER_VOLUME_MESSAGE()
+      MONSTER_VOLUME_REMOVED_MESSAGE()
     )
   }
 
@@ -124,7 +124,7 @@ export function MonsterVolumesCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_MONSTER_VOLUME_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('monster volume'))
 
     const updatedMonsterVolumes = [
       ...(selectedSettlement?.monsterVolumes || [])
@@ -150,7 +150,7 @@ export function MonsterVolumesCard({
       {
         monsterVolumes: updatedMonsterVolumes
       },
-      UPDATE_MONSTER_VOLUME_MESSAGE(i)
+      MONSTER_VOLUME_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

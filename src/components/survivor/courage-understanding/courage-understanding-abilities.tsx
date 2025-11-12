@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { SURVIVOR_COURAGE_UNDERSTANDING_ABILITY_UPDATED_MESSAGE } from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 
@@ -48,7 +49,7 @@ export function CourageUnderstandingAbilities({
         hasPrepared: value === 'prepared',
         hasMatchmaker: value === 'matchmaker'
       },
-      "The survivor's inner strength grows brighter."
+      SURVIVOR_COURAGE_UNDERSTANDING_ABILITY_UPDATED_MESSAGE()
     )
 
   /**
@@ -65,7 +66,7 @@ export function CourageUnderstandingAbilities({
         hasExplore: value === 'explore',
         hasTinker: value === 'tinker'
       },
-      "The survivor's inner strength grows brighter."
+      SURVIVOR_COURAGE_UNDERSTANDING_ABILITY_UPDATED_MESSAGE()
     )
 
   // Ability descriptions

@@ -74,7 +74,6 @@ export function SurvivorDataTable<TData, TValue>({
   )
 
   const table = useReactTable(tableConfig)
-
   const { rows } = table.getRowModel()
 
   const handleFilterChange = useCallback(

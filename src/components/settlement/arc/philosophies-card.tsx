@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Philosophy } from '@/lib/enums'
 import {
-  NAMELESS_PHILOSOPHY_ERROR,
-  NEW_PHILOSOPHY_MESSAGE,
-  PHILOSOPHY_DELETED_MESSAGE,
-  UPDATED_PHILOSOPHY_MESSAGE
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  PHILOSOPHY_CREATED_MESSAGE,
+  PHILOSOPHY_REMOVED_MESSAGE,
+  PHILOSOPHY_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -109,7 +109,7 @@ export function PhilosophiesCard({
       {
         philosophies: currentPhilosophies
       },
-      PHILOSOPHY_DELETED_MESSAGE()
+      PHILOSOPHY_REMOVED_MESSAGE()
     )
   }
 
@@ -121,7 +121,7 @@ export function PhilosophiesCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_PHILOSOPHY_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('philosophy'))
 
     const updatedPhilosophies = [...(selectedSettlement?.philosophies || [])]
 
@@ -145,7 +145,9 @@ export function PhilosophiesCard({
       {
         philosophies: updatedPhilosophies
       },
-      i !== undefined ? UPDATED_PHILOSOPHY_MESSAGE() : NEW_PHILOSOPHY_MESSAGE()
+      i !== undefined
+        ? PHILOSOPHY_UPDATED_MESSAGE()
+        : PHILOSOPHY_CREATED_MESSAGE()
     )
 
     setIsAddingNew(false)

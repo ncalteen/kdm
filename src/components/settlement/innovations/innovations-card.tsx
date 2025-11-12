@@ -7,9 +7,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  NAMELESS_INNOVATION_ERROR,
-  REMOVE_INNOVATION_MESSAGE,
-  UPDATE_INNOVATION_MESSAGE
+  INNOVATION_REMOVED_MESSAGE,
+  INNOVATION_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -105,7 +105,7 @@ export function InnovationsCard({
 
     saveSelectedSettlement(
       { innovations: currentInnovations },
-      REMOVE_INNOVATION_MESSAGE()
+      INNOVATION_REMOVED_MESSAGE()
     )
   }
 
@@ -117,7 +117,7 @@ export function InnovationsCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_INNOVATION_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('innovation'))
 
     const updatedInnovations = [...(selectedSettlement?.innovations || [])]
 
@@ -139,7 +139,7 @@ export function InnovationsCard({
 
     saveSelectedSettlement(
       { innovations: updatedInnovations },
-      UPDATE_INNOVATION_MESSAGE(i)
+      INNOVATION_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

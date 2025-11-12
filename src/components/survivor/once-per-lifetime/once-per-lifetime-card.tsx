@@ -8,6 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_LIFETIME_REROLL_USED_UPDATED_MESSAGE,
+  SURVIVOR_ONCE_PER_LIFETIME_EVENT_REMOVED_MESSAGE,
+  SURVIVOR_ONCE_PER_LIFETIME_EVENT_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -124,7 +130,7 @@ export function OncePerLifetimeCard({
     saveToLocalStorage(
       currentOncePerLifetime,
       undefined,
-      'A fleeting moment fades back into darkness.'
+      SURVIVOR_ONCE_PER_LIFETIME_EVENT_REMOVED_MESSAGE()
     )
   }
 
@@ -136,7 +142,9 @@ export function OncePerLifetimeCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless event cannot be recorded.')
+      return toast.error(
+        NAMELESS_OBJECT_ERROR_MESSAGE('once per lifetime event')
+      )
 
     const updatedOncePerLifetime = [
       ...(selectedSurvivor?.oncePerLifetime || [])
@@ -161,7 +169,7 @@ export function OncePerLifetimeCard({
     saveToLocalStorage(
       updatedOncePerLifetime,
       undefined,
-      'A once-in-a-lifetime moment has been inscribed in memory.'
+      SURVIVOR_ONCE_PER_LIFETIME_EVENT_UPDATED_MESSAGE()
     )
   }
 
@@ -214,9 +222,7 @@ export function OncePerLifetimeCard({
   const handleRerollUsedToggle = (checked: boolean) => {
     saveSelectedSurvivor(
       { rerollUsed: checked },
-      checked
-        ? 'The survivor has used their lifetime reroll.'
-        : 'The survivor has regained their lifetime reroll.'
+      SURVIVOR_LIFETIME_REROLL_USED_UPDATED_MESSAGE(checked)
     )
   }
 

@@ -7,11 +7,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  MILESTONE_COMPLETE_MESSAGE,
+  MILESTONE_COMPLETED_MESSAGE,
   MILESTONE_MISSING_EVENT_ERROR,
-  NAMELESS_MILESTONE_ERROR,
-  REMOVE_MILESTONE_MESSAGE,
-  UPDATE_MILESTONE_MESSAGE
+  MILESTONE_REMOVED_MESSAGE,
+  MILESTONE_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -111,7 +111,7 @@ export function MilestonesCard({
 
     saveSelectedSettlement(
       { milestones: currentMilestones },
-      REMOVE_MILESTONE_MESSAGE()
+      MILESTONE_REMOVED_MESSAGE()
     )
   }
 
@@ -124,7 +124,7 @@ export function MilestonesCard({
    */
   const onSave = (name?: string, event?: string, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error(NAMELESS_MILESTONE_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('milestone'))
 
     if (!event || event.trim() === '')
       return toast.error(MILESTONE_MISSING_EVENT_ERROR())
@@ -149,7 +149,7 @@ export function MilestonesCard({
 
     saveSelectedSettlement(
       { milestones: updatedMilestones },
-      UPDATE_MILESTONE_MESSAGE(i)
+      MILESTONE_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)
@@ -213,7 +213,7 @@ export function MilestonesCard({
 
     saveSelectedSettlement(
       { milestones: updatedMilestones },
-      MILESTONE_COMPLETE_MESSAGE(checked)
+      MILESTONE_COMPLETED_MESSAGE(checked)
     )
   }
 

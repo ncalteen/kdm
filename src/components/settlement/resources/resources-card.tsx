@@ -18,9 +18,9 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
 import {
-  NAMELESS_RESOURCE_ERROR,
-  REMOVE_RESOURCE_MESSAGE,
-  UPDATE_RESOURCE_MESSAGE
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  RESOURCE_REMOVED_MESSAGE,
+  RESOURCE_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -196,7 +196,7 @@ export function ResourcesCard({
 
     saveSelectedSettlement(
       { resources: currentResources },
-      REMOVE_RESOURCE_MESSAGE()
+      RESOURCE_REMOVED_MESSAGE()
     )
   }
 
@@ -217,7 +217,7 @@ export function ResourcesCard({
     i?: number
   ) => {
     if (!name || name.trim() === '')
-      return toast.error(NAMELESS_RESOURCE_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('resource'))
 
     const updatedResources = [...(selectedSettlement?.resources || [])]
 
@@ -249,7 +249,7 @@ export function ResourcesCard({
 
     saveSelectedSettlement(
       { resources: updatedResources },
-      UPDATE_RESOURCE_MESSAGE(i)
+      RESOURCE_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

@@ -12,16 +12,15 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import {
   ERROR_MESSAGE,
+  HUNT_NOTES_SAVED_MESSAGE,
   MONSTER_STARTS_SHOWDOWN_KNOCKED_DOWN_MESSAGE,
-  NAMELESS_MOOD_ERROR,
-  NAMELESS_TRAIT_ERROR,
-  NEW_MOOD_MESSAGE,
-  NEW_TRAIT_MESSAGE,
-  REMOVED_MOOD_MESSAGE,
-  REMOVED_TRAIT_MESSAGE,
-  SAVE_HUNT_NOTES_MESSAGE,
-  UPDATED_MOOD_MESSAGE,
-  UPDATED_TRAIT_MESSAGE
+  MOOD_CREATED_MESSAGE,
+  MOOD_REMOVED_MESSAGE,
+  MOOD_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  TRAIT_CREATED_MESSAGE,
+  TRAIT_REMOVED_MESSAGE,
+  TRAIT_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Hunt, HuntMonster, HuntMonsterSchema } from '@/schemas/hunt'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -170,12 +169,12 @@ export function HuntMonsterCard({
       return next
     })
 
-    saveTraitsAndMoods(currentTraits, undefined, REMOVED_TRAIT_MESSAGE())
+    saveTraitsAndMoods(currentTraits, undefined, TRAIT_REMOVED_MESSAGE())
   }
 
   const onSaveTrait = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_TRAIT_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
 
     const updatedTraits = [...(selectedHunt?.monster?.traits || [])]
 
@@ -193,7 +192,7 @@ export function HuntMonsterCard({
     saveTraitsAndMoods(
       updatedTraits,
       undefined,
-      i !== undefined ? UPDATED_TRAIT_MESSAGE() : NEW_TRAIT_MESSAGE()
+      i !== undefined ? TRAIT_UPDATED_MESSAGE() : TRAIT_CREATED_MESSAGE()
     )
     setIsAddingTrait(false)
   }
@@ -219,11 +218,12 @@ export function HuntMonsterCard({
       return next
     })
 
-    saveTraitsAndMoods(undefined, currentMoods, REMOVED_MOOD_MESSAGE())
+    saveTraitsAndMoods(undefined, currentMoods, MOOD_REMOVED_MESSAGE())
   }
 
   const onSaveMood = (value?: string, i?: number) => {
-    if (!value || value.trim() === '') return toast.error(NAMELESS_MOOD_ERROR())
+    if (!value || value.trim() === '')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))
 
     const updatedMoods = [...(selectedHunt?.monster?.moods || [])]
 
@@ -241,7 +241,7 @@ export function HuntMonsterCard({
     saveTraitsAndMoods(
       undefined,
       updatedMoods,
-      i !== undefined ? UPDATED_MOOD_MESSAGE() : NEW_MOOD_MESSAGE()
+      i !== undefined ? MOOD_UPDATED_MESSAGE() : MOOD_CREATED_MESSAGE()
     )
     setIsAddingMood(false)
   }
@@ -262,7 +262,7 @@ export function HuntMonsterCard({
           notes: notesDraft
         } as HuntMonster
       },
-      SAVE_HUNT_NOTES_MESSAGE()
+      HUNT_NOTES_SAVED_MESSAGE()
     )
   }
 

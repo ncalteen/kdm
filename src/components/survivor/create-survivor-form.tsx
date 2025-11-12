@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Gender, SurvivorType } from '@/lib/enums'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import { ERROR_MESSAGE, SURVIVOR_CREATED_MESSAGE } from '@/lib/messages'
 import {
   bornWithUnderstanding,
   canDash,
@@ -105,10 +105,7 @@ export function CreateSurvivorForm({
    * @param values Form Values
    */
   function onSubmit(values: Survivor) {
-    saveSelectedSurvivor(
-      values,
-      'A lantern approaches. A new survivor emerges from the darkness.'
-    )
+    saveSelectedSurvivor(values, SURVIVOR_CREATED_MESSAGE())
     setSelectedSurvivor(values)
     setIsCreatingNewSurvivor(false)
   }

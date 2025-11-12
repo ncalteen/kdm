@@ -13,10 +13,10 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import {
-  NAMELESS_NEMESIS_ERROR,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  NEMESIS_REMOVED_MESSAGE,
   NEMESIS_UNLOCKED_MESSAGE,
-  REMOVE_NEMESIS_MESSAGE,
-  UPDATE_NEMESIS_MESSAGE
+  NEMESIS_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Nemesis, Settlement } from '@/schemas/settlement'
 import {
@@ -115,7 +115,7 @@ export function NemesesCard({
 
     saveSelectedSettlement(
       { nemeses: currentNemeses },
-      REMOVE_NEMESIS_MESSAGE()
+      NEMESIS_REMOVED_MESSAGE()
     )
   }
 
@@ -128,7 +128,7 @@ export function NemesesCard({
    */
   const onSave = (value?: string, unlocked?: boolean, index?: number) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_NEMESIS_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('nemesis'))
 
     const nemesisWithCc: Nemesis = {
       name: value,
@@ -165,7 +165,7 @@ export function NemesesCard({
 
     saveSelectedSettlement(
       { nemeses: updatedNemeses },
-      UPDATE_NEMESIS_MESSAGE(index)
+      NEMESIS_UPDATED_MESSAGE(index)
     )
 
     setIsAddingNew(false)

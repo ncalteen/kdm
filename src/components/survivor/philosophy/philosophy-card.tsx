@@ -8,6 +8,17 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Philosophy } from '@/lib/enums'
+import {
+  PHILOSOPHY_RANK_MINIMUM_ERROR,
+  SURVIVOR_NEUROSIS_UPDATED_MESSAGE,
+  SURVIVOR_PHILOSOPHY_RANK_UPDATED_MESSAGE,
+  SURVIVOR_PHILOSOPHY_SELECTED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_RULES_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { BrainCogIcon } from 'lucide-react'
@@ -84,9 +95,7 @@ export function PhilosophyCard({
 
       saveSelectedSurvivor(
         updateData,
-        value
-          ? 'The path of wisdom begins to illuminate the darkness.'
-          : 'The philosophical path returns to shadow.'
+        SURVIVOR_PHILOSOPHY_SELECTED_MESSAGE(value)
       )
 
       // Update the survivors context to trigger re-renders in settlement table
@@ -118,9 +127,7 @@ export function PhilosophyCard({
 
       saveSelectedSurvivor(
         { tenetKnowledgeRankUp: newRankUp },
-        newRankUp !== undefined
-          ? 'Tenet knowledge rank up milestone marked.'
-          : 'Tenet knowledge rank up milestone removed.'
+        SURVIVOR_TENET_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE(newRankUp)
       )
     },
     [selectedSurvivor?.tenetKnowledgeRankUp, saveSelectedSurvivor]
@@ -134,11 +141,14 @@ export function PhilosophyCard({
       const value = parseInt(val) || 0
 
       // Enforce minimum value of 0
-      if (value < 0) return toast.error('Philosophy rank cannot be negative.')
+      if (value < 0) return toast.error(PHILOSOPHY_RANK_MINIMUM_ERROR())
 
       const updateData: Partial<Survivor> = { philosophyRank: value }
 
-      saveSelectedSurvivor(updateData, 'Philosophy rank has been updated.')
+      saveSelectedSurvivor(
+        updateData,
+        SURVIVOR_PHILOSOPHY_RANK_UPDATED_MESSAGE()
+      )
 
       // Update the survivors context to trigger re-renders in settlement table
       if (survivors && selectedSurvivor?.id) {
@@ -161,9 +171,7 @@ export function PhilosophyCard({
     setNeurosis(value)
     saveSelectedSurvivor(
       { neurosis: value },
-      value
-        ? 'The neurosis manifests in the mind.'
-        : 'The neurosis fades into darkness.'
+      SURVIVOR_NEUROSIS_UPDATED_MESSAGE(value)
     )
   }
 
@@ -174,9 +182,7 @@ export function PhilosophyCard({
     setTenetKnowledge(value)
     saveSelectedSurvivor(
       { tenetKnowledge: value },
-      value
-        ? 'Tenet knowledge is inscribed in memory.'
-        : 'Tenet knowledge dissolves into shadow.'
+      SURVIVOR_TENET_KNOWLEDGE_UPDATED_MESSAGE(value)
     )
   }
 
@@ -201,9 +207,10 @@ export function PhilosophyCard({
     // Save to localStorage
     saveSelectedSurvivor(
       { tenetKnowledgeObservationRank: newRank },
-      isRankUp
-        ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
-        : `Observation rank ${newRank} burns bright in the lantern's glow.`
+      SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE(
+        isRankUp,
+        newRank
+      )
     )
   }
 
@@ -214,9 +221,7 @@ export function PhilosophyCard({
     setTenetKnowledgeRules(value)
     saveSelectedSurvivor(
       { tenetKnowledgeRules: value },
-      value
-        ? 'The rules of knowledge are etched in stone.'
-        : 'The rules fade back into mystery.'
+      SURVIVOR_TENET_KNOWLEDGE_RULES_UPDATED_MESSAGE(value)
     )
   }
 
@@ -227,9 +232,7 @@ export function PhilosophyCard({
     setTenetKnowledgeObservationConditions(value)
     saveSelectedSurvivor(
       { tenetKnowledgeObservationConditions: value },
-      value
-        ? "Observation conditions are recorded in the survivor's memory."
-        : 'The conditions vanish into the void.'
+      SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE(value)
     )
   }
 

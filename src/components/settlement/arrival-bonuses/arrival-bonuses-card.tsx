@@ -7,9 +7,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  NAMELESS_ARRIVAL_BONUS_ERROR,
-  REMOVE_ARRIVAL_BONUS_MESSAGE,
-  UPDATE_ARRIVAL_BONUS_MESSAGE
+  ARRIVAL_BONUS_REMOVED_MESSAGE,
+  ARRIVAL_BONUS_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -110,7 +110,7 @@ export function ArrivalBonusesCard({
         {
           arrivalBonuses: currentArrivalBonuses
         },
-        REMOVE_ARRIVAL_BONUS_MESSAGE()
+        ARRIVAL_BONUS_REMOVED_MESSAGE()
       )
     },
     [selectedSettlement?.arrivalBonuses, saveSelectedSettlement]
@@ -125,7 +125,7 @@ export function ArrivalBonusesCard({
   const onSave = useCallback(
     (value?: string, i?: number) => {
       if (!value || value.trim() === '')
-        return toast.error(NAMELESS_ARRIVAL_BONUS_ERROR())
+        return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('arrival bonus'))
 
       const updatedArrivalBonuses = [
         ...(selectedSettlement?.arrivalBonuses || [])
@@ -151,7 +151,7 @@ export function ArrivalBonusesCard({
         {
           arrivalBonuses: updatedArrivalBonuses
         },
-        UPDATE_ARRIVAL_BONUS_MESSAGE(i)
+        ARRIVAL_BONUS_UPDATED_MESSAGE(i)
       )
       setIsAddingNew(false)
     },

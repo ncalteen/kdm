@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE } from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement } from 'react'
@@ -48,7 +49,7 @@ export function FacesInTheSky({
       {
         [property]: !currentValue
       },
-      'The stars align. Celestial traits recorded.'
+      SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
     )
 
   return (

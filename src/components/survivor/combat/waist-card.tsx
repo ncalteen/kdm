@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_WAIST_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { RibbonIcon, Shield } from 'lucide-react'
@@ -56,7 +57,7 @@ export function WaistCard({
       {
         [attrName]: value
       },
-      'The core withstands the relentless onslaught.'
+      COMBAT_WAIST_UPDATED_MESSAGE()
     )
 
   return (

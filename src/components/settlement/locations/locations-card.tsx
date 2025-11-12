@@ -7,10 +7,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
+  LOCATION_REMOVED_MESSAGE,
   LOCATION_UNLOCKED_MESSAGE,
-  NAMELESS_LOCATION_ERROR,
-  REMOVE_LOCATION_MESSAGE,
-  UPDATE_LOCATION_MESSAGE
+  LOCATION_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -106,7 +106,7 @@ export function LocationsCard({
 
     saveSelectedSettlement(
       { locations: currentLocations },
-      REMOVE_LOCATION_MESSAGE()
+      LOCATION_REMOVED_MESSAGE()
     )
   }
 
@@ -119,7 +119,7 @@ export function LocationsCard({
    */
   const onSave = (name?: string, unlocked?: boolean, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error(NAMELESS_LOCATION_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('location'))
 
     const locationData = { name: name.trim(), unlocked: unlocked || false }
 
@@ -143,7 +143,7 @@ export function LocationsCard({
 
     saveSelectedSettlement(
       { locations: updatedLocations },
-      UPDATE_LOCATION_MESSAGE(i)
+      LOCATION_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

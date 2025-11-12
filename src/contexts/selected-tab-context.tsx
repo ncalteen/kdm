@@ -56,7 +56,6 @@ export function SelectedTabProvider({
   // Load selected tab from localStorage on mount
   useEffect(() => {
     const savedSelectedTab = getSelectedTab()
-
     if (savedSelectedTab) setSelectedTabState(savedSelectedTab)
   }, [])
 
@@ -66,9 +65,7 @@ export function SelectedTabProvider({
    * @param tab Selected Tab
    */
   const setSelectedTab = (tab: TabType) => {
-    // Update state
     setSelectedTabState(tab)
-    // Save to localStorage
     setSelectedTabInStorage(tab)
   }
 

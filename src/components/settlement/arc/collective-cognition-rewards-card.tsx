@@ -7,10 +7,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
+  COLLECTIVE_COGNITION_REWARD_NO_TARGET_ERROR_MESSAGE,
   COLLECTIVE_COGNITION_REWARD_SAVED_MESSAGE,
   COLLECTIVE_COGNITION_REWARD_UPDATED_MESSAGE,
-  NAMELESS_COLLECTIVE_COGNITION_REWARD_ERROR,
-  NO_TARGET_COLLECTIVE_COGNITION_REWARD_ERROR
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -140,10 +140,12 @@ export function CollectiveCognitionRewardsCard({
    */
   const onSave = (name?: string, cc?: number, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error(NAMELESS_COLLECTIVE_COGNITION_REWARD_ERROR())
+      return toast.error(
+        NAMELESS_OBJECT_ERROR_MESSAGE('Collective Cognition reward')
+      )
 
     if (cc === undefined || cc < 0)
-      return toast.error(NO_TARGET_COLLECTIVE_COGNITION_REWARD_ERROR())
+      return toast.error(COLLECTIVE_COGNITION_REWARD_NO_TARGET_ERROR_MESSAGE())
 
     const updatedRewards = [...(selectedSettlement?.ccRewards || [])]
 

@@ -5,6 +5,15 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { SurvivorType } from '@/lib/enums'
+import {
+  SURVIVOR_ACCURACY_UPDATED_MESSAGE,
+  SURVIVOR_EVASION_UPDATED_MESSAGE,
+  SURVIVOR_LUCK_UPDATED_MESSAGE,
+  SURVIVOR_LUMI_UPDATED_MESSAGE,
+  SURVIVOR_MOVEMENT_UPDATED_MESSAGE,
+  SURVIVOR_SPEED_UPDATED_MESSAGE,
+  SURVIVOR_STRENGTH_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -63,24 +72,21 @@ export function AttributeCard({
     if (!saveSelectedSurvivor) return
 
     // Thematic success messages for each attribute
-    const attributeMessages: Record<string, string> = {
-      movement: 'Strides through darkness grow more confident.',
-      accuracy: "The survivor's aim pierces through shadow.",
-      strength: 'Muscles forged in adversity grow stronger.',
-      evasion: 'Grace in the face of death improves.',
-      luck: 'Fortune favors the desperate soul.',
-      speed: 'Swift as shadows, the survivor advances.',
-      lumi: 'Arc energy courses through enlightened veins.'
+    const attributeMessages: Record<string, () => string> = {
+      movement: SURVIVOR_MOVEMENT_UPDATED_MESSAGE,
+      accuracy: SURVIVOR_ACCURACY_UPDATED_MESSAGE,
+      strength: SURVIVOR_STRENGTH_UPDATED_MESSAGE,
+      evasion: SURVIVOR_EVASION_UPDATED_MESSAGE,
+      luck: SURVIVOR_LUCK_UPDATED_MESSAGE,
+      speed: SURVIVOR_SPEED_UPDATED_MESSAGE,
+      lumi: SURVIVOR_LUMI_UPDATED_MESSAGE
     }
 
     const updateData: Partial<Survivor> = {
       [attrName]: value
     }
 
-    saveSelectedSurvivor(
-      updateData,
-      attributeMessages[attrName] || "The survivor's potential grows."
-    )
+    saveSelectedSurvivor(updateData, attributeMessages[attrName]())
   }
 
   return (

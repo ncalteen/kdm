@@ -73,9 +73,7 @@ export function SelectedShowdownProvider({
    * Set Selected Showdown
    */
   const setSelectedShowdown = (showdown: Showdown | null) => {
-    // Update state
     setSelectedShowdownState(showdown)
-    // Save to localStorage
     setSelectedShowdownInStorage(showdown?.id || null)
 
     // When selecting a showdown, stop creation mode

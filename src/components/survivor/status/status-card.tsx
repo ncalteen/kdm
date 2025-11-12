@@ -4,6 +4,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Gender } from '@/lib/enums'
+import {
+  SURVIVOR_DEAD_STATUS_UPDATED_MESSAGE,
+  SURVIVOR_GENDER_UPDATED_MESSAGE,
+  SURVIVOR_NAME_UPDATED_MESSAGE,
+  SURVIVOR_RETIRED_STATUS_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import { SkullIcon, UserXIcon } from 'lucide-react'
 import { KeyboardEvent, ReactElement, useCallback } from 'react'
@@ -82,9 +88,7 @@ export function StatusCard({
 
       saveSelectedSurvivor(
         { name: value },
-        value.trim()
-          ? "The survivor's name echoes through the lantern light."
-          : undefined
+        value.trim() ? SURVIVOR_NAME_UPDATED_MESSAGE() : undefined
       )
 
       if (survivors) {
@@ -105,10 +109,7 @@ export function StatusCard({
    */
   const handleGenderChange = useCallback(
     (gender: Gender) => {
-      saveSelectedSurvivor(
-        { gender },
-        "The survivor's essence is recorded in the lantern's glow."
-      )
+      saveSelectedSurvivor({ gender }, SURVIVOR_GENDER_UPDATED_MESSAGE())
 
       if (survivors && selectedSurvivor?.id) {
         const updatedSurvivors = survivors.map((s) =>
@@ -132,9 +133,7 @@ export function StatusCard({
       saveStatusToLocalStorage(
         checked,
         undefined,
-        checked
-          ? 'The darkness claims another soul. The survivor has fallen.'
-          : 'Against all odds, life returns. The survivor lives again.'
+        SURVIVOR_DEAD_STATUS_UPDATED_MESSAGE(checked)
       )
     },
     [saveStatusToLocalStorage]
@@ -150,9 +149,7 @@ export function StatusCard({
       saveStatusToLocalStorage(
         undefined,
         checked,
-        checked
-          ? 'The survivor retires from the hunt, seeking peace in the settlement.'
-          : 'The call of adventure stirs once more. The survivor returns from retirement.'
+        SURVIVOR_RETIRED_STATUS_UPDATED_MESSAGE(checked)
       )
     },
     [saveStatusToLocalStorage]

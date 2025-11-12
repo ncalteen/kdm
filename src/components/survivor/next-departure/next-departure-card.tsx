@@ -6,6 +6,11 @@ import {
 } from '@/components/survivor/next-departure/next-departure-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_NEXT_DEPARTURE_BONUS_REMOVED_MESSAGE,
+  SURVIVOR_NEXT_DEPARTURE_BONUS_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -97,7 +102,7 @@ export function NextDepartureCard({
 
     saveSelectedSurvivor(
       { nextDeparture: currentNextDeparture },
-      'The lantern dims. Next departure bonus removed.'
+      SURVIVOR_NEXT_DEPARTURE_BONUS_REMOVED_MESSAGE()
     )
   }
 
@@ -109,7 +114,7 @@ export function NextDepartureCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless departure bonus cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('next departure bonus'))
 
     const updatedNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
 
@@ -131,9 +136,7 @@ export function NextDepartureCard({
 
     saveSelectedSurvivor(
       { nextDeparture: updatedNextDeparture },
-      i !== undefined
-        ? 'The lantern glows. Next departure bonus updated.'
-        : 'The lantern glows. Next departure bonus added.'
+      SURVIVOR_NEXT_DEPARTURE_BONUS_UPDATED_MESSAGE(i === undefined)
     )
 
     setIsAddingNew(false)

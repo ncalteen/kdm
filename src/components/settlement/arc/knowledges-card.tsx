@@ -7,10 +7,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  KNOWLEDGE_DELETED_MESSAGE,
-  NAMELESS_KNOWLEDGE_ERROR,
-  NEW_KNOWLEDGE_MESSAGE,
-  UPDATED_KNOWLEDGE_MESSAGE
+  KNOWLEDGE_CREATED_MESSAGE,
+  KNOWLEDGE_REMOVED_MESSAGE,
+  KNOWLEDGE_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
 import { Knowledge, Settlement } from '@/schemas/settlement'
 import {
@@ -105,7 +105,7 @@ export function KnowledgesCard({
       {
         knowledges: currentKnowledges
       },
-      KNOWLEDGE_DELETED_MESSAGE()
+      KNOWLEDGE_REMOVED_MESSAGE()
     )
   }
 
@@ -118,7 +118,7 @@ export function KnowledgesCard({
    */
   const onSave = (name?: string, philosophy?: string, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error(NAMELESS_KNOWLEDGE_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('knowledge'))
 
     // Convert empty string to undefined for optional philosophy
     const processedPhilosophy =
@@ -150,7 +150,9 @@ export function KnowledgesCard({
       {
         knowledges: updatedKnowledges
       },
-      i !== undefined ? UPDATED_KNOWLEDGE_MESSAGE() : NEW_KNOWLEDGE_MESSAGE()
+      i !== undefined
+        ? KNOWLEDGE_UPDATED_MESSAGE()
+        : KNOWLEDGE_CREATED_MESSAGE()
     )
 
     setIsAddingNew(false)

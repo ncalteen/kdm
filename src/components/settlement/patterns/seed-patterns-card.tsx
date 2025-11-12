@@ -7,9 +7,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  NAMELESS_SEED_PATTERN_ERROR,
-  REMOVE_SEED_PATTERN_MESSAGE,
-  UPDATE_SEED_PATTERN_MESSAGE
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SEED_PATTERN_REMOVED_MESSAGE,
+  SEED_PATTERN_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -105,7 +105,7 @@ export function SeedPatternsCard({
 
     saveSelectedSettlement(
       { seedPatterns: currentSeedPatterns },
-      REMOVE_SEED_PATTERN_MESSAGE()
+      SEED_PATTERN_REMOVED_MESSAGE()
     )
   }
 
@@ -117,7 +117,7 @@ export function SeedPatternsCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_SEED_PATTERN_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('seed pattern'))
 
     const updatedSeedPatterns = [...(selectedSettlement?.seedPatterns || [])]
 
@@ -139,7 +139,7 @@ export function SeedPatternsCard({
 
     saveSelectedSettlement(
       { seedPatterns: updatedSeedPatterns },
-      UPDATE_SEED_PATTERN_MESSAGE(i)
+      SEED_PATTERN_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

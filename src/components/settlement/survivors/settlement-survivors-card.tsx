@@ -9,9 +9,9 @@ import { useCampaignSave } from '@/hooks/use-campaign-save'
 import { SurvivorType } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
-  SURVIVOR_DELETED_MESSAGE,
-  SURVIVOR_ON_HUNT_ERROR,
-  SURVIVOR_ON_SHOWDOWN_ERROR
+  SURVIVOR_ON_HUNT_ERROR_MESSAGE,
+  SURVIVOR_ON_SHOWDOWN_ERROR_MESSAGE,
+  SURVIVOR_REMOVED_MESSAGE
 } from '@/lib/messages'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
@@ -116,9 +116,9 @@ export function SettlementSurvivorsCard({
       try {
         // Check if survivor is currently on an active hunt or showdown
         if (selectedShowdown?.survivors?.includes(survivorId))
-          return toast.error(SURVIVOR_ON_SHOWDOWN_ERROR())
+          return toast.error(SURVIVOR_ON_SHOWDOWN_ERROR_MESSAGE())
         if (selectedHunt?.survivors?.includes(survivorId))
-          return toast.error(SURVIVOR_ON_HUNT_ERROR())
+          return toast.error(SURVIVOR_ON_HUNT_ERROR_MESSAGE())
 
         const campaign = getCampaign()
         const survivorIndex = campaign.survivors.findIndex(
@@ -136,7 +136,7 @@ export function SettlementSurvivorsCard({
 
         saveCampaign(
           { survivors: updatedSurvivors },
-          SURVIVOR_DELETED_MESSAGE(survivorName)
+          SURVIVOR_REMOVED_MESSAGE(survivorName)
         )
         setSurvivors(getSurvivors(selectedSettlement.id))
 

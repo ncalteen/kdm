@@ -6,6 +6,10 @@ import { FacesInTheSky } from '@/components/survivor/courage-understanding/faces
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CampaignType } from '@/lib/enums'
+import {
+  SURVIVOR_COURAGE_UPDATED_MESSAGE,
+  SURVIVOR_UNDERSTANDING_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
@@ -53,8 +57,8 @@ export function CourageUnderstandingCard({
         [attrName]: value
       },
       attrName === 'courage'
-        ? 'Courage burns brighter in the darkness.'
-        : 'Understanding illuminates the path forward.'
+        ? SURVIVOR_COURAGE_UPDATED_MESSAGE()
+        : SURVIVOR_UNDERSTANDING_UPDATED_MESSAGE()
     )
 
   /**

@@ -22,8 +22,8 @@ import { twMerge } from 'tailwind-merge'
 /**
  * Duration to cache the loaded campaign in milliseconds.
  *
- * This is used to reduce the number of reads from localStorage
- * and improve performance when accessing campaign data frequently.
+ * This is used to reduce the number of reads from localStorage and improve
+ * performance when accessing campaign data frequently.
  */
 const CACHE_DURATION = 5000
 
@@ -153,9 +153,7 @@ export function getNextSurvivorId(): number {
 export function getNextHuntId(): number {
   const campaign = getCampaign()
 
-  if (!campaign.hunts) return 1
-
-  return campaign.hunts.length === 0
+  return !campaign.hunts || campaign.hunts.length === 0
     ? 1
     : Math.max(...campaign.hunts.map((hunt) => hunt.id)) + 1
 }
@@ -168,25 +166,9 @@ export function getNextHuntId(): number {
 export function getNextShowdownId(): number {
   const campaign = getCampaign()
 
-  if (!campaign.showdowns) return 1
-
-  return campaign.showdowns.length === 0
+  return !campaign.showdowns || campaign.showdowns.length === 0
     ? 1
     : Math.max(...campaign.showdowns.map((showdown) => showdown.id)) + 1
-}
-
-/**
- * Get Lost Settlement Count
- *
- * @returns Lost Settlement Count
- */
-export function getLostSettlementCount(): number {
-  return getCampaign().settlements.filter(
-    (settlement) =>
-      settlement.milestones.filter(
-        (m) => m.complete && m.name === 'Population reaches 0'
-      ).length > 0
-  ).length
 }
 
 /**
@@ -255,7 +237,6 @@ export function getSelectedSettlement(): Settlement | null {
  */
 export function setSelectedSettlement(settlementId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedSettlementId = settlementId || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -283,7 +264,6 @@ export function getSelectedSurvivor(): Survivor | null {
  */
 export function setSelectedSurvivor(survivorId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedSurvivorId = survivorId || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -305,7 +285,6 @@ export function getSelectedTab(): TabType | null {
  */
 export function setSelectedTab(tab: TabType | null) {
   const campaign = getCampaign()
-
   campaign.selectedTab = tab || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -331,7 +310,6 @@ export function getSelectedHunt(): Hunt | null {
  */
 export function setSelectedHunt(huntId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedHuntId = huntId || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -360,7 +338,6 @@ export function getSelectedShowdown(): Showdown | null {
  */
 export function setSelectedShowdown(showdownId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedShowdownId = showdownId || undefined
 
   saveCampaignToLocalStorage(campaign)

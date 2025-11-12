@@ -5,6 +5,14 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  SURVIVOR_CAN_USE_FIGHTING_ARTS_OR_KNOWLEDGES_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_RULES_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { LightBulbIcon } from '@primer/octicons-react'
@@ -81,7 +89,7 @@ export function KnowledgeCard({
         {
           [fieldName]: rank
         },
-        'The lantern illuminates newfound wisdom.'
+        SURVIVOR_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE()
       )
     },
     [saveSelectedSurvivor]
@@ -96,9 +104,7 @@ export function KnowledgeCard({
         {
           canUseFightingArtsOrKnowledges: !checked
         },
-        !checked
-          ? 'The survivor recalls their knowledge.'
-          : 'The survivor has forgotten their learnings.'
+        SURVIVOR_CAN_USE_FIGHTING_ARTS_OR_KNOWLEDGES_UPDATED_MESSAGE(!checked)
       )
     },
     [saveSelectedSurvivor]
@@ -111,9 +117,7 @@ export function KnowledgeCard({
     setKnowledge1(value)
     saveSelectedSurvivor(
       { knowledge1: value },
-      value
-        ? 'Knowledge inscribed in the lantern light.'
-        : 'Knowledge forgotten in the darkness.'
+      SURVIVOR_KNOWLEDGE_UPDATED_MESSAGE(value)
     )
   }
 
@@ -145,9 +149,7 @@ export function KnowledgeCard({
         {
           knowledge1RankUp: newRankUp
         },
-        newRankUp !== undefined
-          ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.'
+        SURVIVOR_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE(newRankUp)
       )
     },
     [selectedSurvivor?.knowledge1RankUp, saveSelectedSurvivor]
@@ -162,9 +164,7 @@ export function KnowledgeCard({
       {
         knowledge1Rules: value
       },
-      value.trim()
-        ? 'The rules of wisdom are inscribed in lantern light.'
-        : undefined
+      value.trim() ? SURVIVOR_KNOWLEDGE_RULES_UPDATED_MESSAGE() : undefined
     )
   }
 
@@ -178,7 +178,7 @@ export function KnowledgeCard({
         knowledge1ObservationConditions: value
       },
       value.trim()
-        ? 'Observation conditions etched in the darkness.'
+        ? SURVIVOR_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE()
         : undefined
     )
   }
@@ -190,9 +190,7 @@ export function KnowledgeCard({
     setKnowledge2(value)
     saveSelectedSurvivor(
       { knowledge2: value },
-      value
-        ? 'Knowledge inscribed in the lantern light.'
-        : 'Knowledge forgotten in the darkness.'
+      SURVIVOR_KNOWLEDGE_UPDATED_MESSAGE(value)
     )
   }
 
@@ -224,9 +222,7 @@ export function KnowledgeCard({
         {
           knowledge2RankUp: newRankUp
         },
-        newRankUp !== undefined
-          ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.'
+        SURVIVOR_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE(newRankUp)
       )
     },
     [selectedSurvivor?.knowledge2RankUp, saveSelectedSurvivor]
@@ -241,9 +237,7 @@ export function KnowledgeCard({
       {
         knowledge2Rules: value
       },
-      value.trim()
-        ? 'The rules of wisdom are inscribed in lantern light.'
-        : undefined
+      value.trim() ? SURVIVOR_KNOWLEDGE_RULES_UPDATED_MESSAGE() : undefined
     )
   }
 
@@ -257,7 +251,7 @@ export function KnowledgeCard({
         knowledge2ObservationConditions: value
       },
       value.trim()
-        ? 'Observation conditions etched in the darkness.'
+        ? SURVIVOR_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE()
         : undefined
     )
   }

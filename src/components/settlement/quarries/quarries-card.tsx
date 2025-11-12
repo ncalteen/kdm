@@ -14,10 +14,10 @@ import {
 } from '@/components/ui/card'
 import { NodeLevel } from '@/lib/enums'
 import {
-  NAMELESS_QUARRY_ERROR,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  QUARRY_REMOVED_MESSAGE,
   QUARRY_UNLOCKED_MESSAGE,
-  REMOVE_QUARRY_MESSAGE,
-  UPDATE_QUARRY_MESSAGE
+  QUARRY_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { Quarry, Settlement } from '@/schemas/settlement'
 import {
@@ -116,7 +116,7 @@ export function QuarriesCard({
 
     saveSelectedSettlement(
       { quarries: currentQuarries },
-      REMOVE_QUARRY_MESSAGE()
+      QUARRY_REMOVED_MESSAGE()
     )
   }
 
@@ -135,7 +135,7 @@ export function QuarriesCard({
     index?: number
   ) => {
     if (!value || value.trim() === '')
-      return toast.error(NAMELESS_QUARRY_ERROR())
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('quarry'))
 
     const quarryWithCc: Quarry = {
       name: value,
@@ -172,7 +172,7 @@ export function QuarriesCard({
 
     saveSelectedSettlement(
       { quarries: updatedQuarries },
-      UPDATE_QUARRY_MESSAGE(index)
+      QUARRY_UPDATED_MESSAGE(index)
     )
     setIsAddingNew(false)
   }

@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_ARMS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { HandMetalIcon, Shield } from 'lucide-react'
@@ -57,7 +58,7 @@ export function ArmsCard({
       {
         [attrName]: value
       },
-      'Arms endure another battle.'
+      COMBAT_ARMS_UPDATED_MESSAGE()
     )
 
   return (
