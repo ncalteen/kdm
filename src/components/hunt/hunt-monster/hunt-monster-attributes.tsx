@@ -2,8 +2,10 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import {
   MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE,
+  MONSTER_DAMAGE_TOKENS_UPDATED_MESSAGE,
   MONSTER_EVASION_TOKENS_UPDATED_MESSAGE,
   MONSTER_LUCK_TOKENS_UPDATED_MESSAGE,
   MONSTER_MOVEMENT_TOKENS_UPDATED_MESSAGE,
@@ -51,6 +53,62 @@ export function HuntMonsterAttributes({
           <label className="text-xs flex-1 text-center">Tokens</label>
           <label className="text-xs flex-1 text-center">Total</label>
         </div>
+
+        {/* Damage */}
+        <div className="flex flex-row items-center gap-2">
+          <label className="text-xs w-20">Damage</label>
+          <Input
+            id="monster-damage"
+            type="number"
+            value={monster.damage ?? 0}
+            className="flex-1 h-12 text-center no-spinners text-xl"
+            name="monster-damage"
+            readOnly={true}
+            disabled={true}
+          />
+          <NumericInput
+            label="Damage Tokens"
+            value={monster.damageTokens ?? 0}
+            onChange={(value) =>
+              saveMonsterData(
+                { damageTokens: value },
+                MONSTER_DAMAGE_TOKENS_UPDATED_MESSAGE(
+                  monster.damageTokens,
+                  value
+                )
+              )
+            }
+            readOnly={false}>
+            <Input
+              id="monster-damage-tokens"
+              type="number"
+              value={monster.damageTokens}
+              onChange={(e) =>
+                saveMonsterData(
+                  { damageTokens: parseInt(e.target.value) || 0 },
+                  MONSTER_DAMAGE_TOKENS_UPDATED_MESSAGE(
+                    monster.damageTokens,
+                    parseInt(e.target.value) || 0
+                  )
+                )
+              }
+              className="flex-1 h-12 text-center no-spinners text-xl"
+              min="0"
+              name="monster-damage-tokens"
+            />
+          </NumericInput>
+          <Input
+            id="monster-damage-total"
+            type="number"
+            value={(monster.damage ?? 0) + (monster.damageTokens ?? 0)}
+            className="flex-1 h-12 text-center no-spinners text-xl"
+            name="monster-damage-total"
+            readOnly={true}
+            disabled={true}
+          />
+        </div>
+
+        <Separator className="my-1" />
 
         {/* Movement */}
         <div className="flex flex-row items-center gap-2">

@@ -449,6 +449,23 @@ export const MONSTER_AI_DECK_UPDATED_MESSAGE = (
       : 'The monster AI deck remains unchanged.'
 
 /**
+ * Monster Damage Tokens Updated
+ *
+ * @param oldValue Old Value
+ * @param newValue New Value
+ * @returns Update Message
+ */
+export const MONSTER_DAMAGE_TOKENS_UPDATED_MESSAGE = (
+  oldValue: number,
+  newValue: number
+) =>
+  oldValue < newValue
+    ? 'The monster gains damage tokens.'
+    : oldValue > newValue
+      ? 'The monster loses damage tokens.'
+      : "The monster's damage tokens remain unchanged."
+
+/**
  * Monster Evasion Updated
  *
  * @param oldValue Old Value
