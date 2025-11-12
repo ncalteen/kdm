@@ -34,6 +34,11 @@ export const SurvivorHuntDetailsSchema = z.object({
 })
 
 /**
+ * Survivor Hunt Details
+ */
+export type SurvivorHuntDetails = z.infer<typeof SurvivorHuntDetailsSchema>
+
+/**
  * Hunt Monster Schema
  */
 export const HuntMonsterSchema = z.object({

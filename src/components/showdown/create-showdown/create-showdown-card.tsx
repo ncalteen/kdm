@@ -1,6 +1,7 @@
 'use client'
 
 import { NumericInput } from '@/components/menu/numeric-input'
+import { MonsterTraitsMoods } from '@/components/monster/monster-traits-moods'
 import { ScoutSelectionDrawer } from '@/components/showdown/scout-selection/scout-selection-drawer'
 import { SurvivorSelectionDrawer } from '@/components/showdown/survivor-selection/survivor-selection-drawer'
 import { Button } from '@/components/ui/button'
@@ -22,10 +23,14 @@ import {
   MonsterType,
   TurnType
 } from '@/lib/enums'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import {
+  ERROR_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SHOWDOWN_CREATED_MESSAGE
+} from '@/lib/messages'
 import { getNextShowdownId } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
-import { Showdown } from '@/schemas/showdown'
+import { Showdown, SurvivorShowdownDetails } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { SkullIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
@@ -60,21 +65,29 @@ export function CreateShowdownCard({
   setSelectedShowdown,
   survivors
 }: CreateShowdownCardProps): ReactElement {
-  const [selectedMonsterAccuracy, setSelectedMonsterAccuracy] =
+  const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
     useState<number>(0)
   const [selectedMonsterAIDeckSize, setSelectedMonsterAIDeckSize] =
     useState<number>(0)
-  const [selectedMonsterEvasion, setSelectedMonsterEvasion] =
+  const [selectedMonsterDamage, setSelectedMonsterDamage] = useState<number>(0)
+  const [selectedMonsterDamageTokens, setSelectedMonsterDamageTokens] =
+    useState<number>(0)
+  const [selectedMonsterEvasionTokens, setSelectedMonsterEvasionTokens] =
     useState<number>(0)
   const [selectedMonsterLevel, setSelectedMonsterLevel] =
     useState<MonsterLevel>(MonsterLevel.LEVEL_1)
-  const [selectedMonsterLuck, setSelectedMonsterLuck] = useState<number>(0)
+  const [selectedMonsterLuckTokens, setSelectedMonsterLuckTokens] =
+    useState<number>(0)
   const [selectedMonsterMoods, setSelectedMonsterMoods] = useState<string[]>([])
   const [selectedMonsterMovement, setSelectedMonsterMovement] =
     useState<number>(6)
+  const [selectedMonsterMovementTokens, setSelectedMonsterMovementTokens] =
+    useState<number>(0)
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('')
   const [selectedMonsterSpeed, setSelectedMonsterSpeed] = useState<number>(0)
-  const [selectedMonsterStrength, setSelectedMonsterStrength] =
+  const [selectedMonsterSpeedTokens, setSelectedMonsterSpeedTokens] =
+    useState<number>(0)
+  const [selectedMonsterStrengthTokens, setSelectedMonsterStrengthTokens] =
     useState<number>(0)
   const [selectedMonsterToughness, setSelectedMonsterToughness] =
     useState<number>(6)
@@ -82,10 +95,19 @@ export function CreateShowdownCard({
     []
   )
   const [selectedMonsterType, setSelectedMonsterType] = useState<MonsterType>()
-  const [selectedMonsterWounds, setSelectedMonsterWounds] = useState<number>(0)
 
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
+
+  // State for managing trait and mood editing
+  const [disabledTraits, setDisabledTraits] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [disabledMoods, setDisabledMoods] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [isAddingTrait, setIsAddingTrait] = useState<boolean>(false)
+  const [isAddingMood, setIsAddingMood] = useState<boolean>(false)
 
   // Handle monster selection and auto-set type
   const handleMonsterSelection = (monsterName: string) => {
@@ -141,6 +163,96 @@ export function CreateShowdownCard({
     [selectedSettlement?.nemeses]
   )
 
+  /**
+   * Trait Operations
+   */
+
+  const onRemoveTrait = (index: number) => {
+    const currentTraits = [...selectedMonsterTraits]
+    currentTraits.splice(index, 1)
+
+    setDisabledTraits((prev) => {
+      const next: { [key: number]: boolean } = {}
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+      return next
+    })
+
+    setSelectedMonsterTraits(currentTraits)
+  }
+
+  const onSaveTrait = (value?: string, i?: number) => {
+    if (!value || value.trim() === '')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
+
+    const updatedTraits = [...selectedMonsterTraits]
+
+    if (i !== undefined) {
+      updatedTraits[i] = value
+      setDisabledTraits((prev) => ({ ...prev, [i]: true }))
+    } else {
+      updatedTraits.push(value)
+      setDisabledTraits((prev) => ({
+        ...prev,
+        [updatedTraits.length - 1]: true
+      }))
+    }
+
+    setSelectedMonsterTraits(updatedTraits)
+    setIsAddingTrait(false)
+  }
+
+  const onEditTrait = (index: number) =>
+    setDisabledTraits((prev) => ({ ...prev, [index]: false }))
+
+  /**
+   * Mood Operations
+   */
+
+  const onRemoveMood = (index: number) => {
+    const currentMoods = [...selectedMonsterMoods]
+    currentMoods.splice(index, 1)
+
+    setDisabledMoods((prev) => {
+      const next: { [key: number]: boolean } = {}
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
+      })
+      return next
+    })
+
+    setSelectedMonsterMoods(currentMoods)
+  }
+
+  const onSaveMood = (value?: string, i?: number) => {
+    if (!value || value.trim() === '')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))
+
+    const updatedMoods = [...selectedMonsterMoods]
+
+    if (i !== undefined) {
+      updatedMoods[i] = value
+      setDisabledMoods((prev) => ({ ...prev, [i]: true }))
+    } else {
+      updatedMoods.push(value)
+      setDisabledMoods((prev) => ({
+        ...prev,
+        [updatedMoods.length - 1]: true
+      }))
+    }
+
+    setSelectedMonsterMoods(updatedMoods)
+    setIsAddingMood(false)
+  }
+
+  const onEditMood = (index: number) =>
+    setDisabledMoods((prev) => ({ ...prev, [index]: false }))
+
   // Create Showdown
   const handleCreateShowdown = () => {
     if (
@@ -165,17 +277,45 @@ export function CreateShowdownCard({
         'The selected scout cannot also be one of the selected survivors for the showdown.'
       )
 
-    const survivorDetails = selectedSurvivors.map((survivorId) => ({
-      id: survivorId,
-      color: ColorChoice.SLATE,
-      notes: ''
-    }))
+    const survivorDetails: SurvivorShowdownDetails[] = selectedSurvivors.map(
+      (survivorId) => ({
+        accuracyTokens: 0,
+        bleedingTokens: 0,
+        blockTokens: 0,
+        color: ColorChoice.SLATE,
+        deflectTokens: 0,
+        evasionTokens: 0,
+        id: survivorId,
+        insanityTokens: 0,
+        knockedDown: false,
+        luckTokens: 0,
+        movementTokens: 0,
+        notes: '',
+        priorityTarget: false,
+        speedTokens: 0,
+        strengthTokens: 0,
+        survivalTokens: 0
+      })
+    )
 
     if (selectedScout)
       survivorDetails.push({
-        id: selectedScout,
+        accuracyTokens: 0,
+        bleedingTokens: 0,
+        blockTokens: 0,
         color: ColorChoice.SLATE,
-        notes: ''
+        deflectTokens: 0,
+        evasionTokens: 0,
+        id: selectedScout,
+        insanityTokens: 0,
+        knockedDown: false,
+        luckTokens: 0,
+        movementTokens: 0,
+        notes: '',
+        priorityTarget: false,
+        speedTokens: 0,
+        strengthTokens: 0,
+        survivalTokens: 0
       })
 
     // Save as partial data that will be merged by the hook
@@ -183,21 +323,30 @@ export function CreateShowdownCard({
       ambush: AmbushType.NONE,
       id: getNextShowdownId(),
       monster: {
-        accuracy: selectedMonsterAccuracy,
+        accuracy: 0,
+        accuracyTokens: selectedMonsterAccuracyTokens,
         aiDeckSize: selectedMonsterAIDeckSize,
-        evasion: selectedMonsterEvasion,
+        damage: selectedMonsterDamage,
+        damageTokens: selectedMonsterDamageTokens,
+        evasion: 0,
+        evasionTokens: selectedMonsterEvasionTokens,
         knockedDown: false,
         level: selectedMonsterLevel,
-        luck: selectedMonsterLuck,
+        luck: 0,
+        luckTokens: selectedMonsterLuckTokens,
         moods: selectedMonsterMoods,
         movement: selectedMonsterMovement,
+        movementTokens: selectedMonsterMovementTokens,
         name: selectedMonsterName,
+        notes: '',
         speed: selectedMonsterSpeed,
-        strength: selectedMonsterStrength,
+        speedTokens: selectedMonsterSpeedTokens,
+        strength: 0,
+        strengthTokens: selectedMonsterStrengthTokens,
         toughness: selectedMonsterToughness,
         traits: selectedMonsterTraits,
         type: selectedMonsterType,
-        wounds: selectedMonsterWounds
+        wounds: 0
       },
       scout: selectedScout || undefined,
       settlementId: selectedSettlement.id,
@@ -206,32 +355,43 @@ export function CreateShowdownCard({
       turn: {
         currentTurn: TurnType.MONSTER,
         round: 1,
-        survivorStates: []
+        survivorStates: survivorDetails.map((survivor) => ({
+          activationUsed: false,
+          id: survivor.id,
+          movementUsed: false
+        }))
       }
     }
 
     saveSelectedShowdown(
       showdownData,
-      `The showdown against ${selectedMonsterName} begins. ${selectedMonsterType === MonsterType.QUARRY ? 'Survivors prepare themselves.' : 'Survivors must defend their home.'}`
+      SHOWDOWN_CREATED_MESSAGE(selectedMonsterName, selectedMonsterType)
     )
 
     // Reset form
-    setSelectedMonsterAccuracy(0)
+    setSelectedMonsterAccuracyTokens(0)
     setSelectedMonsterAIDeckSize(0)
-    setSelectedMonsterEvasion(0)
+    setSelectedMonsterDamage(0)
+    setSelectedMonsterDamageTokens(0)
+    setSelectedMonsterEvasionTokens(0)
     setSelectedMonsterLevel(MonsterLevel.LEVEL_1)
-    setSelectedMonsterLuck(0)
+    setSelectedMonsterLuckTokens(0)
     setSelectedMonsterMoods([])
     setSelectedMonsterMovement(6)
+    setSelectedMonsterMovementTokens(0)
     setSelectedMonsterName('')
     setSelectedMonsterSpeed(0)
-    setSelectedMonsterStrength(0)
+    setSelectedMonsterSpeedTokens(0)
+    setSelectedMonsterStrengthTokens(0)
     setSelectedMonsterToughness(6)
     setSelectedMonsterTraits([])
     setSelectedMonsterType(undefined)
-    setSelectedMonsterWounds(0)
     setSelectedSurvivors([])
     setSelectedScout(null)
+    setDisabledTraits({})
+    setDisabledMoods({})
+    setIsAddingTrait(false)
+    setIsAddingMood(false)
     setSelectedShowdown(showdownData)
   }
 
@@ -244,13 +404,6 @@ export function CreateShowdownCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 w-full">
-        {/* Monster Selection */}
-        <div className="mb-2">
-          <h3 className="text-sm font-semibold text-muted-foreground text-center">
-            Monster Selection
-          </h3>
-        </div>
-
         {/* Showdown Monster */}
         <div className="flex items-center justify-between">
           <Label className="text-left whitespace-nowrap min-w-[90px]">
@@ -295,7 +448,7 @@ export function CreateShowdownCard({
           </Select>
         </div>
 
-        {/* Monster Type (Read-only, auto-set) */}
+        {/* Monster Type */}
         <div className="flex items-center justify-between">
           <Label className="text-left whitespace-nowrap min-w-[90px]">
             Type
@@ -334,17 +487,19 @@ export function CreateShowdownCard({
         {/* Monster Attributes */}
         <div className="mb-2">
           <h3 className="text-sm font-semibold text-muted-foreground text-center">
-            Monster Attributes
+            Attributes
           </h3>
         </div>
 
-        {/* Monster Attributes Grid */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {/* Movement */}
           <div className="space-y-1">
-            <Label htmlFor="monster-movement" className="text-xs">
+            <Label
+              htmlFor="monster-movement"
+              className="text-xs justify-center">
               Movement
             </Label>
+
             <NumericInput
               label="Movement"
               value={selectedMonsterMovement}
@@ -366,9 +521,12 @@ export function CreateShowdownCard({
 
           {/* Toughness */}
           <div className="space-y-1">
-            <Label htmlFor="monster-toughness" className="text-xs">
+            <Label
+              htmlFor="monster-toughness"
+              className="text-xs justify-center">
               Toughness
             </Label>
+
             <NumericInput
               label="Toughness"
               value={selectedMonsterToughness}
@@ -390,9 +548,10 @@ export function CreateShowdownCard({
 
           {/* Speed */}
           <div className="space-y-1">
-            <Label htmlFor="monster-speed" className="text-xs">
+            <Label htmlFor="monster-speed" className="text-xs justify-center">
               Speed
             </Label>
+
             <NumericInput
               label="Speed"
               value={selectedMonsterSpeed}
@@ -412,95 +571,24 @@ export function CreateShowdownCard({
             </NumericInput>
           </div>
 
-          {/* Strength */}
+          {/* Damage */}
           <div className="space-y-1">
-            <Label htmlFor="monster-strength" className="text-xs">
+            <Label htmlFor="monster-damage" className="text-xs justify-center">
               Damage
             </Label>
+
             <NumericInput
               label="Damage"
-              value={selectedMonsterStrength}
-              onChange={setSelectedMonsterStrength}
+              value={selectedMonsterDamage}
+              onChange={setSelectedMonsterDamage}
               min={0}
               readOnly={false}>
               <Input
-                id="monster-strength"
+                id="monster-damage"
                 type="number"
-                value={selectedMonsterStrength}
+                value={selectedMonsterDamage}
                 onChange={(e) =>
-                  setSelectedMonsterStrength(parseInt(e.target.value) || 0)
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
-          </div>
-
-          {/* Accuracy */}
-          <div className="space-y-1">
-            <Label htmlFor="monster-accuracy" className="text-xs">
-              Accuracy
-            </Label>
-            <NumericInput
-              label="Accuracy"
-              value={selectedMonsterAccuracy}
-              onChange={setSelectedMonsterAccuracy}
-              min={0}
-              readOnly={false}>
-              <Input
-                id="monster-accuracy"
-                type="number"
-                value={selectedMonsterAccuracy}
-                onChange={(e) =>
-                  setSelectedMonsterAccuracy(parseInt(e.target.value) || 0)
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
-          </div>
-
-          {/* Evasion */}
-          <div className="space-y-1">
-            <Label htmlFor="monster-evasion" className="text-xs">
-              Evasion
-            </Label>
-            <NumericInput
-              label="Evasion"
-              value={selectedMonsterEvasion}
-              onChange={setSelectedMonsterEvasion}
-              min={0}
-              readOnly={false}>
-              <Input
-                id="monster-evasion"
-                type="number"
-                value={selectedMonsterEvasion}
-                onChange={(e) =>
-                  setSelectedMonsterEvasion(parseInt(e.target.value) || 0)
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
-          </div>
-
-          {/* Luck */}
-          <div className="space-y-1">
-            <Label htmlFor="monster-luck" className="text-xs">
-              Luck
-            </Label>
-            <NumericInput
-              label="Luck"
-              value={selectedMonsterLuck}
-              onChange={setSelectedMonsterLuck}
-              min={0}
-              readOnly={false}>
-              <Input
-                id="monster-luck"
-                type="number"
-                value={selectedMonsterLuck}
-                onChange={(e) =>
-                  setSelectedMonsterLuck(parseInt(e.target.value) || 0)
+                  setSelectedMonsterDamage(parseInt(e.target.value) || 0)
                 }
                 min="0"
                 className="text-center no-spinners"
@@ -511,44 +599,272 @@ export function CreateShowdownCard({
 
         <Separator className="my-2" />
 
+        {/* Monster Tokens */}
+        <div className="mb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground text-center">
+            Tokens
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {/* Movement */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-movement-tokens"
+              className="text-xs justify-center">
+              Movement
+            </Label>
+
+            <NumericInput
+              label="Movement Tokens"
+              value={selectedMonsterMovementTokens}
+              onChange={setSelectedMonsterMovementTokens}
+              readOnly={false}>
+              <Input
+                id="monster-movement-tokens"
+                type="number"
+                value={selectedMonsterMovementTokens}
+                onChange={(e) =>
+                  setSelectedMonsterMovementTokens(
+                    parseInt(e.target.value) || 0
+                  )
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Speed */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-speed-tokens"
+              className="text-xs justify-center">
+              Speed
+            </Label>
+
+            <NumericInput
+              label="Speed Tokens"
+              value={selectedMonsterSpeedTokens}
+              onChange={setSelectedMonsterSpeedTokens}
+              readOnly={false}>
+              <Input
+                id="monster-speed-tokens"
+                type="number"
+                value={selectedMonsterSpeedTokens}
+                onChange={(e) =>
+                  setSelectedMonsterSpeedTokens(parseInt(e.target.value) || 0)
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Damage */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-damage-tokens"
+              className="text-xs justify-center">
+              Damage
+            </Label>
+
+            <NumericInput
+              label="Damage Tokens"
+              value={selectedMonsterDamageTokens}
+              onChange={setSelectedMonsterDamageTokens}
+              readOnly={false}>
+              <Input
+                id="monster-damage-tokens"
+                type="number"
+                value={selectedMonsterDamageTokens}
+                onChange={(e) =>
+                  setSelectedMonsterDamageTokens(parseInt(e.target.value) || 0)
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2">
+          {/* Accuracy */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-accuracy-tokens"
+              className="text-xs justify-center">
+              Accuracy
+            </Label>
+
+            <NumericInput
+              label="Accuracy Tokens"
+              value={selectedMonsterAccuracyTokens}
+              onChange={setSelectedMonsterAccuracyTokens}
+              readOnly={false}>
+              <Input
+                id="monster-accuracy-tokens"
+                type="number"
+                value={selectedMonsterAccuracyTokens}
+                onChange={(e) =>
+                  setSelectedMonsterAccuracyTokens(
+                    parseInt(e.target.value) || 0
+                  )
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Strength */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-strength-tokens"
+              className="text-xs justify-center">
+              Strength
+            </Label>
+
+            <NumericInput
+              label="Strength Tokens"
+              value={selectedMonsterStrengthTokens}
+              onChange={setSelectedMonsterStrengthTokens}
+              readOnly={false}>
+              <Input
+                id="monster-strength-tokens"
+                type="number"
+                value={selectedMonsterStrengthTokens}
+                onChange={(e) =>
+                  setSelectedMonsterStrengthTokens(
+                    parseInt(e.target.value) || 0
+                  )
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Evasion */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-evasion-tokens"
+              className="text-xs justify-center">
+              Evasion
+            </Label>
+
+            <NumericInput
+              label="Evasion Tokens"
+              value={selectedMonsterEvasionTokens}
+              onChange={setSelectedMonsterEvasionTokens}
+              readOnly={false}>
+              <Input
+                id="monster-evasion-tokens"
+                type="number"
+                value={selectedMonsterEvasionTokens}
+                onChange={(e) =>
+                  setSelectedMonsterEvasionTokens(parseInt(e.target.value) || 0)
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+
+          {/* Luck */}
+          <div className="space-y-1">
+            <Label
+              htmlFor="monster-luck-tokens"
+              className="text-xs justify-center">
+              Luck
+            </Label>
+
+            <NumericInput
+              label="Luck Tokens"
+              value={selectedMonsterLuckTokens}
+              onChange={setSelectedMonsterLuckTokens}
+              readOnly={false}>
+              <Input
+                id="monster-luck-tokens"
+                type="number"
+                value={selectedMonsterLuckTokens}
+                onChange={(e) =>
+                  setSelectedMonsterLuckTokens(parseInt(e.target.value) || 0)
+                }
+                className="text-center no-spinners"
+              />
+            </NumericInput>
+          </div>
+        </div>
+
+        <Separator className="my-2" />
+
+        {/* Monster Traits and Moods */}
+        <MonsterTraitsMoods
+          monster={{
+            accuracy: 0,
+            accuracyTokens: selectedMonsterAccuracyTokens,
+            aiDeckSize: selectedMonsterAIDeckSize,
+            damage: selectedMonsterDamage,
+            damageTokens: selectedMonsterDamageTokens,
+            evasion: 0,
+            evasionTokens: selectedMonsterEvasionTokens,
+            knockedDown: false,
+            level: selectedMonsterLevel,
+            luck: 0,
+            luckTokens: selectedMonsterLuckTokens,
+            moods: selectedMonsterMoods,
+            movement: selectedMonsterMovement,
+            movementTokens: selectedMonsterMovementTokens,
+            name: selectedMonsterName,
+            notes: '',
+            speed: selectedMonsterSpeed,
+            speedTokens: selectedMonsterSpeedTokens,
+            strength: 0,
+            strengthTokens: selectedMonsterStrengthTokens,
+            toughness: selectedMonsterToughness,
+            traits: selectedMonsterTraits,
+            type: selectedMonsterType || MonsterType.QUARRY,
+            wounds: 0
+          }}
+          disabledTraits={disabledTraits}
+          disabledMoods={disabledMoods}
+          isAddingTrait={isAddingTrait}
+          isAddingMood={isAddingMood}
+          setIsAddingTrait={setIsAddingTrait}
+          setIsAddingMood={setIsAddingMood}
+          onEditTrait={onEditTrait}
+          onSaveTrait={onSaveTrait}
+          onRemoveTrait={onRemoveTrait}
+          onEditMood={onEditMood}
+          onSaveMood={onSaveMood}
+          onRemoveMood={onRemoveMood}
+        />
+
+        <Separator className="my-2" />
+
         {/* Survivor Selection */}
         <div className="mb-2">
           <h3 className="text-sm font-semibold text-muted-foreground text-center">
-            Survivor Selection
+            Survivors
           </h3>
         </div>
 
         {/* Survivors */}
-        <div className="flex items-center justify-between">
-          <Label className="text-left whitespace-nowrap min-w-[80px]">
-            Survivors
-          </Label>
-          <SurvivorSelectionDrawer
-            title="Select Showdown Party"
-            description="Choose up to 4 survivors to embark on this showdown."
-            survivors={availableSurvivors}
-            selectedSurvivors={selectedSurvivors}
-            selectedScout={selectedScout}
-            onSelectionChange={setSelectedSurvivors}
-            maxSelection={4}
-          />
-        </div>
+        <SurvivorSelectionDrawer
+          title="Select Showdown Party"
+          description="Up to 4 survivors may embark on a showdown."
+          survivors={availableSurvivors}
+          selectedSurvivors={selectedSurvivors}
+          selectedScout={selectedScout}
+          onSelectionChange={setSelectedSurvivors}
+          maxSelection={4}
+        />
 
         {/* Scout */}
         {selectedSettlement?.usesScouts && (
-          <div className="flex items-center justify-between">
-            <Label className="text-left whitespace-nowrap min-w-[80px]">
-              Scout
-            </Label>
-            <ScoutSelectionDrawer
-              title="Select Scout"
-              description="Choose a single scout. Their skills will help navigate the dangers ahead."
-              survivors={availableSurvivors}
-              selectedSurvivors={selectedSurvivors}
-              selectedScout={selectedScout}
-              onSelectionChange={setSelectedScout}
-            />
-          </div>
+          <ScoutSelectionDrawer
+            title="Select Scout"
+            description="Choose a single scout. Their skills will help navigate the dangers ahead."
+            survivors={availableSurvivors}
+            selectedSurvivors={selectedSurvivors}
+            selectedScout={selectedScout}
+            onSelectionChange={setSelectedScout}
+          />
         )}
 
         {availableSurvivors.length === 0 && (

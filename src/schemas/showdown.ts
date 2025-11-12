@@ -13,6 +13,8 @@ import { z } from 'zod'
  * Showdown Monster Schema
  */
 export const ShowdownMonsterSchema = z.object({
+  /** Accuracy */
+  accuracy: z.number().int().min(0).default(0),
   /** Accuracy Tokens */
   accuracyTokens: z.number().int().min(0).default(0),
   /** AI Deck Size */
@@ -21,12 +23,16 @@ export const ShowdownMonsterSchema = z.object({
   damage: z.number().int().min(0).default(0),
   /** Damage Tokens */
   damageTokens: z.number().int().min(0).default(0),
+  /** Evasion */
+  evasion: z.number().int().min(0).default(0),
   /** Evasion Tokens */
-  evasionTokens: z.number().int().min(0).default(0),
+  evasionTokens: z.number().int().default(0),
   /** Knocked Down */
   knockedDown: z.boolean().default(false),
   /** Monster Level */
   level: z.nativeEnum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  /** Luck */
+  luck: z.number().int().min(0).default(0),
   /** Luck Tokens */
   luckTokens: z.number().int().min(0).default(0),
   /** Moods */
@@ -37,10 +43,14 @@ export const ShowdownMonsterSchema = z.object({
   movementTokens: z.number().int().min(0).default(0),
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Notes */
+  notes: z.string().default(''),
   /** Speed */
   speed: z.number().int().min(0).default(0),
   /** Speed Tokens */
   speedTokens: z.number().int().min(0).default(0),
+  /** Strength */
+  strength: z.number().int().min(0).default(0),
   /** Strength Tokens */
   strengthTokens: z.number().int().min(0).default(0),
   /** Toughness */
@@ -64,13 +74,46 @@ export type ShowdownMonster = z.infer<typeof ShowdownMonsterSchema>
  * Used to assign details to survivors that only persist during a showdown.
  */
 export const SurvivorShowdownDetailsSchema = z.object({
-  /** Survivor ID */
-  id: z.number().int().min(0),
+  /** Accuracy Tokens */
+  accuracyTokens: z.number().int().default(0),
+  /** Bleeding Tokens */
+  bleedingTokens: z.number().int().min(0).default(0),
+  /** Block Tokens */
+  blockTokens: z.number().int().min(0).default(0),
   /** Survivor Color Code */
   color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE),
+  /** Deflect Tokens */
+  deflectTokens: z.number().int().min(0).default(0),
+  /** Evasion Tokens */
+  evasionTokens: z.number().int().default(0),
+  /** Survivor ID */
+  id: z.number().int().min(0),
+  /** Insanity Tokens */
+  insanityTokens: z.number().int().default(0),
+  /** Knocked Down */
+  knockedDown: z.boolean().default(false),
+  /** Luck Tokens */
+  luckTokens: z.number().int().default(0),
+  /** Movement Tokens */
+  movementTokens: z.number().int().default(0),
   /** Survivor Notes */
-  notes: z.string().default('')
+  notes: z.string().default(''),
+  /** Priority Target */
+  priorityTarget: z.boolean().default(false),
+  /** Speed Tokens */
+  speedTokens: z.number().int().default(0),
+  /** Strength Tokens */
+  strengthTokens: z.number().int().default(0),
+  /** Survival Tokens */
+  survivalTokens: z.number().int().default(0)
 })
+
+/**
+ * Survivor Showdown Details
+ */
+export type SurvivorShowdownDetails = z.infer<
+  typeof SurvivorShowdownDetailsSchema
+>
 
 /**
  * Survivor Turn State Schema
@@ -78,12 +121,12 @@ export const SurvivorShowdownDetailsSchema = z.object({
  * Tracks movement and activation usage for each survivor during their turn.
  */
 export const SurvivorTurnStateSchema = z.object({
+  /** Activation Used */
+  activationUsed: z.boolean().default(false),
   /** Survivor ID */
   id: z.number().int().min(0),
   /** Movement Used */
-  movementUsed: z.boolean().default(false),
-  /** Activation Used */
-  activationUsed: z.boolean().default(false)
+  movementUsed: z.boolean().default(false)
 })
 
 /**

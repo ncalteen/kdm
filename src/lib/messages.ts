@@ -1,4 +1,4 @@
-import { ColorChoice, SurvivorType, TurnType } from '@/lib/enums'
+import { ColorChoice, MonsterType, SurvivorType, TurnType } from '@/lib/enums'
 
 /**
  * Ability/Impairment Removed
@@ -991,6 +991,19 @@ export const SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE = (
   usesScouts
     ? 'The settlement now employs scouts to aid in hunts.'
     : 'The settlement no longer relies on scouts for hunts.'
+
+/**
+ * Showdown Created
+ *
+ * @param monsterName Monster Name
+ * @param monsterType Monster Type
+ * @returns Showdown Created Message
+ */
+export const SHOWDOWN_CREATED_MESSAGE = (
+  monsterName: string,
+  monsterType: MonsterType
+) =>
+  `The showdown against ${monsterName} begins. ${monsterType === MonsterType.QUARRY ? 'Survivors prepare themselves.' : 'Survivors must defend their home.'}`
 
 /**
  * Showdown Deleted

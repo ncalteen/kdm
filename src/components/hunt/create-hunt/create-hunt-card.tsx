@@ -23,7 +23,7 @@ import {
   SCOUT_REQUIRED_MESSAGE
 } from '@/lib/messages'
 import { getNextHuntId } from '@/lib/utils'
-import { Hunt } from '@/schemas/hunt'
+import { Hunt, SurvivorHuntDetails } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { PawPrintIcon } from 'lucide-react'
@@ -158,19 +158,21 @@ export function CreateHuntCard({
     )
       return toast.error(SCOUT_CONFLICT_MESSAGE())
 
-    const survivorDetails = selectedSurvivors.map((survivorId) => ({
-      accuracyTokens: 0,
-      color: ColorChoice.SLATE,
-      evasionTokens: 0,
-      id: survivorId,
-      insanityTokens: 0,
-      luckTokens: 0,
-      notes: '',
-      movementTokens: 0,
-      speedTokens: 0,
-      strengthTokens: 0,
-      survivalTokens: 0
-    }))
+    const survivorDetails: SurvivorHuntDetails[] = selectedSurvivors.map(
+      (survivorId) => ({
+        accuracyTokens: 0,
+        color: ColorChoice.SLATE,
+        evasionTokens: 0,
+        id: survivorId,
+        insanityTokens: 0,
+        luckTokens: 0,
+        notes: '',
+        movementTokens: 0,
+        speedTokens: 0,
+        strengthTokens: 0,
+        survivalTokens: 0
+      })
+    )
 
     if (selectedScout)
       survivorDetails.push({
@@ -305,6 +307,16 @@ export function CreateHuntCard({
               <SelectItem value="4">Level 4</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Monster Type */}
+        <div className="flex items-center justify-between">
+          <Label className="text-left whitespace-nowrap min-w-[90px]">
+            Type
+          </Label>
+          <div className="w-full px-3 py-2 text-sm border rounded-md bg-muted">
+            {selectedMonsterType || 'Select a monster'}
+          </div>
         </div>
 
         {/* AI Deck Size */}
