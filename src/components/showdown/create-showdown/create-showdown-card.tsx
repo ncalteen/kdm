@@ -16,6 +16,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { Toggle } from '@/components/ui/toggle'
 import {
   AmbushType,
   ColorChoice,
@@ -98,6 +99,7 @@ export function CreateShowdownCard({
 
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
+  const [startingTurn, setStartingTurn] = useState<TurnType>(TurnType.MONSTER)
 
   // State for managing trait and mood editing
   const [disabledTraits, setDisabledTraits] = useState<{
@@ -353,8 +355,8 @@ export function CreateShowdownCard({
       survivorDetails,
       survivors: selectedSurvivors,
       turn: {
-        currentTurn: TurnType.MONSTER,
-        round: 1,
+        currentTurn: startingTurn,
+        round: startingTurn === TurnType.MONSTER ? 1 : 0,
         survivorStates: survivorDetails.map((survivor) => ({
           activationUsed: false,
           id: survivor.id,
@@ -388,6 +390,7 @@ export function CreateShowdownCard({
     setSelectedMonsterType(undefined)
     setSelectedSurvivors([])
     setSelectedScout(null)
+    setStartingTurn(TurnType.MONSTER)
     setDisabledTraits({})
     setDisabledMoods({})
     setIsAddingTrait(false)
@@ -834,6 +837,36 @@ export function CreateShowdownCard({
           onSaveMood={onSaveMood}
           onRemoveMood={onRemoveMood}
         />
+
+        <Separator className="my-2" />
+
+        {/* Starting Turn Selection */}
+        <div className="mb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground text-center">
+            Starting Turn
+          </h3>
+        </div>
+
+        <div className="flex items-center justify-center gap-2">
+          <Toggle
+            pressed={startingTurn === TurnType.SURVIVORS}
+            onPressedChange={(pressed) =>
+              setStartingTurn(pressed ? TurnType.SURVIVORS : TurnType.MONSTER)
+            }
+            variant="outline"
+            className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+            Survivors
+          </Toggle>
+          <Toggle
+            pressed={startingTurn === TurnType.MONSTER}
+            onPressedChange={(pressed) =>
+              setStartingTurn(pressed ? TurnType.MONSTER : TurnType.SURVIVORS)
+            }
+            variant="outline"
+            className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+            Monster
+          </Toggle>
+        </div>
 
         <Separator className="my-2" />
 
