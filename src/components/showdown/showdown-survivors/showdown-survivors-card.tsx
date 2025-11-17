@@ -1,17 +1,21 @@
 'use client'
 
-import {
-  NextButton,
-  PrevButton,
-  usePrevNextButtons
-} from '@/components/showdown/showdown-survivors/nav-buttons'
 import { ShowdownSurvivorCard } from '@/components/showdown/showdown-survivors/showdown-survivor-card'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Carousel } from '@/components/ui/carousel'
+import { usePrevNextButtons } from '@/components/ui/embla-carousel-arrow-buttons'
+import {
+  DotButton,
+  useDotButton
+} from '@/components/ui/embla-carousel-dot-button'
 import { useSidebar } from '@/components/ui/sidebar'
+import { getCarouselWidth, getSurvivorColorChoice } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
+import Fade from 'embla-carousel-fade'
 import useEmblaCarousel from 'embla-carousel-react'
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 import { ReactElement, useMemo } from 'react'
 
 /**
@@ -54,9 +58,10 @@ export function ShowdownSurvivorsCard({
 }: ShowdownSurvivorsCardProps): ReactElement {
   const { isMobile, state } = useSidebar()
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true
-  })
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Fade()])
+
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi)
 
   const {
     prevBtnDisabled,
@@ -74,53 +79,83 @@ export function ShowdownSurvivorsCard({
     return s
   }, [selectedShowdown?.survivors, selectedShowdown?.scout])
 
-  // Calculate width based on sidebar state
-  const getCardWidth = () => {
-    // Full width on mobile (sidebar is overlay) minus gap
-    if (isMobile) return '98vw'
-
-    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
-    if (state === 'expanded') return 'calc(100vw - 17rem)'
-
-    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
-    if (state === 'collapsed') return 'calc(100vw - 4rem)'
-
-    return '98.5vw' // Fallback to full width
-  }
+  // Get filtered survivors for mapping
+  const filteredSurvivors = survivors?.filter((s) =>
+    showdownSurvivors.includes(s.id)
+  )
 
   if (showdownSurvivors.length === 0 || !selectedSettlement) return <></>
 
   return (
-    <Card
-      className="embla pt-0 gap-0 min-w-[430px]"
+    <Carousel
+      className="embla p-0 max-w-full overflow-hidden"
       style={{
-        width: getCardWidth()
+        width: getCarouselWidth(isMobile, state)
       }}>
-      <CardHeader className="embla__controls">
-        <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-        <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
-      </CardHeader>
+      <div className="embla__controls min-w-[430px]">
+        <div className="embla__buttons">
+          <Button
+            className="h-12 w-12"
+            variant="ghost"
+            size="icon"
+            onClick={onPrevButtonClick}
+            disabled={prevBtnDisabled}>
+            <ArrowLeftIcon className="size-8" />
+          </Button>
 
-      <CardContent className="overflow-hidden" ref={emblaRef}>
-        <div className="embla__container">
-          {survivors
-            ?.filter((s) => showdownSurvivors.includes(s.id))
-            .map((survivor) => (
-              <div className="embla__slide" key={survivor.id}>
-                <ShowdownSurvivorCard
-                  saveSelectedShowdown={saveSelectedShowdown}
-                  selectedShowdown={selectedShowdown}
-                  selectedSettlement={selectedSettlement}
-                  selectedSurvivor={selectedSurvivor}
-                  setSurvivors={setSurvivors}
-                  survivor={survivor}
-                  survivors={survivors}
-                  updateSelectedSurvivor={updateSelectedSurvivor}
-                />
-              </div>
-            ))}
+          <Button
+            className="h-12 w-12"
+            variant="ghost"
+            size="icon"
+            onClick={onNextButtonClick}
+            disabled={nextBtnDisabled}>
+            <ArrowRightIcon className="size-8" />
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+
+        <div className="embla__dots">
+          {scrollSnaps.map((_, index) => {
+            const survivorColor = getSurvivorColorChoice(
+              selectedShowdown,
+              filteredSurvivors?.[index]?.id
+            )
+            const isSelected = index === selectedIndex
+
+            return (
+              <DotButton
+                key={index}
+                onClick={() => onDotButtonClick(index)}
+                className={`embla__dot${isSelected ? ' embla__dot--selected' : ''}`}
+                style={{
+                  ['--dot-color' as string]: isSelected
+                    ? 'hsl(var(--foreground))'
+                    : 'transparent',
+                  ['--dot-bg' as string]: `var(--color-${survivorColor.toLowerCase()}-500)`
+                }}
+              />
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="embla__viewport" ref={emblaRef}>
+        <div className="embla__container">
+          {filteredSurvivors?.map((survivor) => (
+            <div className="embla__slide" key={survivor.id}>
+              <ShowdownSurvivorCard
+                saveSelectedShowdown={saveSelectedShowdown}
+                selectedSettlement={selectedSettlement}
+                selectedShowdown={selectedShowdown}
+                selectedSurvivor={selectedSurvivor}
+                setSurvivors={setSurvivors}
+                survivor={survivor}
+                survivors={survivors}
+                updateSelectedSurvivor={updateSelectedSurvivor}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </Carousel>
   )
 }
