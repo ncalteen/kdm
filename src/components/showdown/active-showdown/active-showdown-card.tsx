@@ -20,7 +20,7 @@ import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ChevronRightIcon, XIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -40,6 +40,8 @@ interface ActiveShowdownCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -60,33 +62,12 @@ export function ActiveShowdownCard({
   selectedSettlement,
   selectedSurvivor,
   setSelectedShowdown,
+  setSelectedSurvivor,
   setSurvivors,
   survivors,
   updateSelectedSurvivor
 }: ActiveShowdownCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
-  const [activeSurvivor, setActiveSurvivor] = useState<Survivor | null>(null)
-
-  /**
-   * Set initial active survivor when component loads
-   */
-  useEffect(() => {
-    // Only set the active survivor if none is set yet
-    if (
-      activeSurvivor ||
-      !survivors ||
-      !selectedShowdown ||
-      selectedShowdown.survivors?.length === 0
-    )
-      return
-
-    // Try to use the first party survivor, then the scout
-    return setActiveSurvivor(
-      survivors?.find((s) => s.id === selectedShowdown?.survivors![0]) ||
-        survivors?.find((s) => s.id === selectedShowdown?.scout) ||
-        null
-    )
-  }, [activeSurvivor, survivors, selectedShowdown])
 
   /**
    * Handle Cancel Showdown
@@ -152,7 +133,8 @@ export function ActiveShowdownCard({
           size="sm"
           onClick={handleSettlementPhase}
           className="pointer-events-auto"
-          title="Begin Settlement Phase">
+          title="Begin Settlement Phase"
+          disabled={true}>
           Begin Settlement Phase <ChevronRightIcon className="size-4" />
         </Button>
       </div>
@@ -165,7 +147,7 @@ export function ActiveShowdownCard({
           />
 
           <TurnCard
-            activeSurvivor={activeSurvivor}
+            selectedSurvivor={selectedSurvivor}
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
           />
@@ -176,7 +158,7 @@ export function ActiveShowdownCard({
           selectedShowdown={selectedShowdown}
           selectedSettlement={selectedSettlement}
           selectedSurvivor={selectedSurvivor}
-          setActiveSurvivor={setActiveSurvivor}
+          setSelectedSurvivor={setSelectedSurvivor}
           setSurvivors={setSurvivors}
           survivors={survivors}
           updateSelectedSurvivor={updateSelectedSurvivor}

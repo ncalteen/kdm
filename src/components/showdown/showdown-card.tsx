@@ -24,6 +24,8 @@ interface ShowdownCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -44,6 +46,7 @@ export function ShowdownCard({
   selectedSettlement,
   selectedSurvivor,
   setSelectedShowdown,
+  setSelectedSurvivor,
   setSurvivors,
   survivors,
   updateSelectedSurvivor
@@ -55,6 +58,7 @@ export function ShowdownCard({
       selectedSettlement={selectedSettlement}
       selectedSurvivor={selectedSurvivor}
       setSelectedShowdown={setSelectedShowdown}
+      setSelectedSurvivor={setSelectedSurvivor}
       setSurvivors={setSurvivors}
       survivors={survivors}
       updateSelectedSurvivor={updateSelectedSurvivor}

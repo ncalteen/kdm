@@ -33,8 +33,8 @@ interface ShowdownSurvivorsCardProps {
   selectedSettlement: Partial<Settlement> | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
-  /** Set Active Survivor */
-  setActiveSurvivor: (survivor: Survivor | null) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -54,7 +54,7 @@ export function ShowdownSurvivorsCard({
   selectedShowdown,
   selectedSettlement,
   selectedSurvivor,
-  setActiveSurvivor,
+  setSelectedSurvivor,
   setSurvivors,
   survivors,
   updateSelectedSurvivor

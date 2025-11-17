@@ -16,8 +16,6 @@ import { ReactElement, useCallback, useMemo } from 'react'
  * Turn Card Properties
  */
 interface TurnCardProps {
-  /** Active Survivor */
-  activeSurvivor: Survivor | null
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -25,6 +23,8 @@ interface TurnCardProps {
   ) => void
   /** Selected Showdown */
   selectedShowdown: Partial<Showdown> | null
+  /** Selected Survivor */
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -37,26 +37,26 @@ interface TurnCardProps {
  * @returns Turn Card Component
  */
 export function TurnCard({
-  activeSurvivor,
   saveSelectedShowdown,
-  selectedShowdown
+  selectedShowdown,
+  selectedSurvivor
 }: TurnCardProps): ReactElement {
   /**
    * Get active survivor's turn state
    */
-  const activeSurvivorTurnState = useMemo(() => {
-    if (!activeSurvivor?.id || !selectedShowdown) return null
+  const selectedSurvivorTurnState = useMemo(() => {
+    if (!selectedSurvivor?.id || !selectedShowdown) return null
 
     return (
       selectedShowdown.turn?.survivorStates?.find(
-        (state) => state.id === activeSurvivor.id
+        (state) => state.id === selectedSurvivor.id
       ) || {
-        id: activeSurvivor.id,
+        id: selectedSurvivor.id,
         movementUsed: false,
         activationUsed: false
       }
     )
-  }, [activeSurvivor?.id, selectedShowdown])
+  }, [selectedSurvivor?.id, selectedShowdown])
 
   /**
    * Switch Turn
@@ -151,8 +151,8 @@ export function TurnCard({
             <>
               <UsersIcon className="h-5 w-5" />
               {selectedShowdown?.turn?.round === 0
-                ? 'Survivors Turn (Ambush)'
-                : `Survivor Turn (Round: ${selectedShowdown?.turn?.round})`}
+                ? "Survivors' Turn (Ambush)"
+                : `Survivors' Turn (Round: ${selectedShowdown?.turn?.round})`}
             </>
           )}
         </CardTitle>
@@ -182,14 +182,14 @@ export function TurnCard({
           <>
             <Separator />
 
-            {/* Active Survivor Actions */}
-            {activeSurvivor && activeSurvivorTurnState ? (
+            {/* Survivor Actions */}
+            {selectedSurvivor && selectedSurvivorTurnState ? (
               <div className="space-y-3">
                 <div className="border rounded-lg p-3 space-y-2">
                   {/* Survivor Name */}
                   <div className="font-medium text-sm">
-                    {activeSurvivor.name || `Survivor ${activeSurvivor.id}`}
-                    {activeSurvivor.id === selectedShowdown?.scout && (
+                    {selectedSurvivor.name || `Survivor ${selectedSurvivor.id}`}
+                    {selectedSurvivor.id === selectedShowdown?.scout && (
                       <Badge variant="outline" className="ml-2">
                         Scout
                       </Badge>
@@ -201,13 +201,13 @@ export function TurnCard({
                     {/* Movement */}
                     <div className="flex items-center space-x-2">
                       <Toggle
-                        id={`movement-${activeSurvivor.id}`}
+                        id={`movement-${selectedSurvivor.id}`}
                         size="sm"
                         variant="outline"
                         className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500"
-                        pressed={activeSurvivorTurnState.movementUsed}
+                        pressed={selectedSurvivorTurnState.movementUsed}
                         onPressedChange={(pressed: boolean) =>
-                          updateSurvivorTurnState(activeSurvivor.id!, {
+                          updateSurvivorTurnState(selectedSurvivor.id!, {
                             movementUsed: !!pressed
                           })
                         }>
@@ -219,13 +219,13 @@ export function TurnCard({
                     {/* Activation */}
                     <div className="flex items-center space-x-2">
                       <Toggle
-                        id={`activation-${activeSurvivor.id}`}
+                        id={`activation-${selectedSurvivor.id}`}
                         size="sm"
                         variant="outline"
                         className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500"
-                        pressed={activeSurvivorTurnState.activationUsed}
+                        pressed={selectedSurvivorTurnState.activationUsed}
                         onPressedChange={(pressed: boolean) =>
-                          updateSurvivorTurnState(activeSurvivor.id!, {
+                          updateSurvivorTurnState(selectedSurvivor.id!, {
                             activationUsed: !!pressed
                           })
                         }>
