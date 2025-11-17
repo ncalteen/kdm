@@ -1,8 +1,8 @@
 'use client'
 
-import { ShowdownMonsterCard } from '@/components/showdown/monster/showdown-monster-card'
+import { ShowdownMonsterCard } from '@/components/showdown/showdown-monster/showdown-monster-card'
 import { ShowdownSurvivorsCard } from '@/components/showdown/showdown-survivors/showdown-survivors-card'
-import { TurnCard } from '@/components/showdown/turn/turn-card'
+import { TurnCard } from '@/components/showdown/showdown-turn/showdown-turn-card'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -117,7 +117,7 @@ export function ActiveShowdownCard({
       {/* Action Buttons */}
       <div className="flex justify-between pointer-events-none">
         <Button
-          variant="destructive"
+          variant="ghost"
           size="sm"
           onClick={handleCancelShowdown}
           className="pointer-events-auto"
@@ -126,54 +126,39 @@ export function ActiveShowdownCard({
           End Showdown
         </Button>
         <Button
-          variant="default"
+          variant="secondary"
           size="sm"
           onClick={handleSettlementPhase}
-          disabled={true}
           className="pointer-events-auto"
-          title="Proceed to Settlement Phase">
-          Settlement Phase <ChevronRightIcon className="size-4" />
+          title="Begin Settlement Phase">
+          Begin Settlement Phase <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-2 flex-1">
-        {/* Left Column - Monster and Survivors */}
-        <div className="flex flex-col gap-2 flex-1">
-          {/* Turn Card - Mobile: above monster card */}
-          <div className="lg:hidden">
-            <TurnCard
-              saveSelectedShowdown={saveSelectedShowdown}
-              selectedShowdown={selectedShowdown}
-              survivors={survivors}
-            />
-          </div>
-
-          {/* Monster Card */}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col lg:flex-row gap-2">
           <ShowdownMonsterCard
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
           />
 
-          {/* Showdown Party Survivors */}
-          <ShowdownSurvivorsCard
-            saveSelectedShowdown={saveSelectedShowdown}
-            selectedShowdown={selectedShowdown}
-            selectedSettlement={selectedSettlement}
-            selectedSurvivor={selectedSurvivor}
-            setSurvivors={setSurvivors}
-            survivors={survivors}
-            updateSelectedSurvivor={updateSelectedSurvivor}
-          />
-        </div>
-
-        {/* Right Column - Turn Card for larger screens */}
-        <div className="hidden lg:block lg:w-80">
           <TurnCard
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
+            selectedSurvivor={selectedSurvivor}
             survivors={survivors}
           />
         </div>
+
+        <ShowdownSurvivorsCard
+          saveSelectedShowdown={saveSelectedShowdown}
+          selectedShowdown={selectedShowdown}
+          selectedSettlement={selectedSettlement}
+          selectedSurvivor={selectedSurvivor}
+          setSurvivors={setSurvivors}
+          survivors={survivors}
+          updateSelectedSurvivor={updateSelectedSurvivor}
+        />
       </div>
 
       {/* Cancel Showdown Confirmation Dialog */}
