@@ -1033,14 +1033,6 @@ export const SHOWDOWN_NOTES_SAVED_MESSAGE = () =>
   'The tales of this showdown are recorded for future generations.'
 
 /**
- * Showdown Survivors Reset Message
- *
- * @returns Showdown Survivors Reset Message
- */
-export const SHOWDOWN_SURVIVORS_RESET_MESSAGE = () =>
-  'Survivors regain their movement and activation.'
-
-/**
  * Showdown Turn Message
  *
  * @param nextTurn Next Turn
