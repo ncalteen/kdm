@@ -1014,6 +1014,25 @@ export const SHOWDOWN_DELETED_MESSAGE = () =>
   'The showdown ends. Survivors catch their breath.'
 
 /**
+ * Showdown Monster Knocked Down
+ *
+ * @param knockedDown Knocked Down Status
+ * @returns Showdown Monster Knocked Down Message
+ */
+export const SHOWDOWN_MONSTER_KNOCKED_DOWN_MESSAGE = (knockedDown: boolean) =>
+  knockedDown
+    ? 'The monster is knocked down!'
+    : 'The monster rises to its feet.'
+
+/**
+ * Showdown Notes Saved
+ *
+ * @returns Showdown Notes Saved Message
+ */
+export const SHOWDOWN_NOTES_SAVED_MESSAGE = () =>
+  'The tales of this showdown are recorded for future generations.'
+
+/**
  * Showdown Survivors Reset Message
  *
  * @returns Showdown Survivors Reset Message
