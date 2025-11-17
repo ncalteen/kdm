@@ -3,7 +3,6 @@
 import { ShowdownSurvivorCard } from '@/components/showdown/showdown-survivors/showdown-survivor-card'
 import { Button } from '@/components/ui/button'
 import { Carousel } from '@/components/ui/carousel'
-import { usePrevNextButtons } from '@/components/ui/embla-carousel-arrow-buttons'
 import {
   DotButton,
   useDotButton
@@ -16,7 +15,7 @@ import { Survivor } from '@/schemas/survivor'
 import Fade from 'embla-carousel-fade'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 /**
  * Showdown Survivors Card Properties
@@ -66,13 +65,6 @@ export function ShowdownSurvivorsCard({
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi)
 
-  const {
-    prevBtnDisabled,
-    nextBtnDisabled,
-    onPrevButtonClick,
-    onNextButtonClick
-  } = usePrevNextButtons(emblaApi)
-
   const showdownSurvivors = useMemo(() => {
     let s: number[] = []
 
@@ -87,11 +79,34 @@ export function ShowdownSurvivorsCard({
     showdownSurvivors.includes(s.id)
   )
 
-  // Sync active survivor with carousel index
-  useEffect(() => {
-    if (filteredSurvivors && filteredSurvivors[selectedIndex])
-      setActiveSurvivor(filteredSurvivors[selectedIndex])
-  }, [selectedIndex, setActiveSurvivor, filteredSurvivors])
+  // When the selected survivor changes, set the carousel to that survivor (if
+  // they exist in the filtered survivors). If not, set the selected survivor to
+  // the first survivor in the filtered list.
+  useMemo(() => {
+    if (!emblaApi) return
+
+    if (!selectedSurvivor) {
+      setSelectedSurvivor(filteredSurvivors?.[0] || null)
+      emblaApi.scrollTo(0)
+    } else {
+      const survivorIndex = filteredSurvivors?.findIndex(
+        (s) => s.id === selectedSurvivor.id
+      )
+
+      if (
+        survivorIndex !== undefined &&
+        survivorIndex >= 0 &&
+        survivorIndex < scrollSnaps.length
+      )
+        emblaApi.scrollTo(survivorIndex)
+    }
+  }, [
+    emblaApi,
+    filteredSurvivors,
+    scrollSnaps.length,
+    setSelectedSurvivor,
+    selectedSurvivor
+  ])
 
   if (showdownSurvivors.length === 0 || !selectedSettlement) return <></>
 
@@ -107,8 +122,14 @@ export function ShowdownSurvivorsCard({
             className="h-12 w-12"
             variant="ghost"
             size="icon"
-            onClick={onPrevButtonClick}
-            disabled={prevBtnDisabled}>
+            onClick={() =>
+              setSelectedSurvivor(
+                filteredSurvivors?.[
+                  (emblaApi!.selectedScrollSnap() - 1 + scrollSnaps.length) %
+                    scrollSnaps.length
+                ] || null
+              )
+            }>
             <ArrowLeftIcon className="size-8" />
           </Button>
 
@@ -116,8 +137,13 @@ export function ShowdownSurvivorsCard({
             className="h-12 w-12"
             variant="ghost"
             size="icon"
-            onClick={onNextButtonClick}
-            disabled={nextBtnDisabled}>
+            onClick={() =>
+              setSelectedSurvivor(
+                filteredSurvivors?.[
+                  (emblaApi!.selectedScrollSnap() + 1) % scrollSnaps.length
+                ] || null
+              )
+            }>
             <ArrowRightIcon className="size-8" />
           </Button>
         </div>
