@@ -20,7 +20,7 @@ import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ChevronRightIcon, XIcon } from 'lucide-react'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -65,6 +65,28 @@ export function ActiveShowdownCard({
   updateSelectedSurvivor
 }: ActiveShowdownCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
+  const [activeSurvivor, setActiveSurvivor] = useState<Survivor | null>(null)
+
+  /**
+   * Set initial active survivor when component loads
+   */
+  useEffect(() => {
+    // Only set the active survivor if none is set yet
+    if (
+      activeSurvivor ||
+      !survivors ||
+      !selectedShowdown ||
+      selectedShowdown.survivors?.length === 0
+    )
+      return
+
+    // Try to use the first party survivor, then the scout
+    return setActiveSurvivor(
+      survivors?.find((s) => s.id === selectedShowdown?.survivors![0]) ||
+        survivors?.find((s) => s.id === selectedShowdown?.scout) ||
+        null
+    )
+  }, [activeSurvivor, survivors, selectedShowdown])
 
   /**
    * Handle Cancel Showdown
@@ -143,10 +165,9 @@ export function ActiveShowdownCard({
           />
 
           <TurnCard
+            activeSurvivor={activeSurvivor}
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
-            selectedSurvivor={selectedSurvivor}
-            survivors={survivors}
           />
         </div>
 
@@ -155,6 +176,7 @@ export function ActiveShowdownCard({
           selectedShowdown={selectedShowdown}
           selectedSettlement={selectedSettlement}
           selectedSurvivor={selectedSurvivor}
+          setActiveSurvivor={setActiveSurvivor}
           setSurvivors={setSurvivors}
           survivors={survivors}
           updateSelectedSurvivor={updateSelectedSurvivor}

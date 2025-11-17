@@ -16,7 +16,7 @@ import { Survivor } from '@/schemas/survivor'
 import Fade from 'embla-carousel-fade'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 
 /**
  * Showdown Survivors Card Properties
@@ -33,6 +33,8 @@ interface ShowdownSurvivorsCardProps {
   selectedSettlement: Partial<Settlement> | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
+  /** Set Active Survivor */
+  setActiveSurvivor: (survivor: Survivor | null) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -52,6 +54,7 @@ export function ShowdownSurvivorsCard({
   selectedShowdown,
   selectedSettlement,
   selectedSurvivor,
+  setActiveSurvivor,
   setSurvivors,
   survivors,
   updateSelectedSurvivor
@@ -83,6 +86,12 @@ export function ShowdownSurvivorsCard({
   const filteredSurvivors = survivors?.filter((s) =>
     showdownSurvivors.includes(s.id)
   )
+
+  // Sync active survivor with carousel index
+  useEffect(() => {
+    if (filteredSurvivors && filteredSurvivors[selectedIndex])
+      setActiveSurvivor(filteredSurvivors[selectedIndex])
+  }, [selectedIndex, setActiveSurvivor, filteredSurvivors])
 
   if (showdownSurvivors.length === 0 || !selectedSettlement) return <></>
 
