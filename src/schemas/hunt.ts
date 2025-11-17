@@ -67,7 +67,7 @@ export const HuntMonsterSchema = z.object({
   /** Moods */
   moods: z.array(z.string()).default([]),
   /** Movement */
-  movement: z.number().int().min(0).default(0),
+  movement: z.number().int().min(1).default(1),
   /** Movement Tokens */
   movementTokens: z.number().int().default(0),
   /** Monster Name */

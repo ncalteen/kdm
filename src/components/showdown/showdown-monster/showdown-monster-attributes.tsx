@@ -114,14 +114,14 @@ export function ShowdownMonsterAttributes({
           <label className="text-xs w-20">Movement</label>
           <NumericInput
             label="Movement Base"
-            value={monster.movement ?? 0}
+            value={monster.movement ?? 1}
             onChange={(value) =>
               saveMonsterData(
                 { movement: value },
                 MONSTER_MOVEMENT_UPDATED_MESSAGE(monster.movement, value)
               )
             }
-            min={0}
+            min={1}
             readOnly={false}>
             <Input
               id="monster-movement"
@@ -129,15 +129,15 @@ export function ShowdownMonsterAttributes({
               value={monster.movement}
               onChange={(e) =>
                 saveMonsterData(
-                  { movement: parseInt(e.target.value) || 0 },
+                  { movement: parseInt(e.target.value) || 1 },
                   MONSTER_MOVEMENT_UPDATED_MESSAGE(
                     monster.movement,
-                    parseInt(e.target.value) || 0
+                    parseInt(e.target.value) || 1
                   )
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
-              min="0"
+              min="1"
               name="monster-movement"
             />
           </NumericInput>
