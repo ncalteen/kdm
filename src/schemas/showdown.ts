@@ -14,17 +14,17 @@ import { z } from 'zod'
  */
 export const ShowdownMonsterSchema = z.object({
   /** Accuracy */
-  accuracy: z.number().int().min(0).default(0),
+  accuracy: z.number().int().default(0),
   /** Accuracy Tokens */
-  accuracyTokens: z.number().int().min(0).default(0),
+  accuracyTokens: z.number().int().default(0),
   /** AI Deck Size */
   aiDeckSize: z.number().int().min(0).default(0),
   /** Damage */
   damage: z.number().int().min(0).default(0),
   /** Damage Tokens */
-  damageTokens: z.number().int().min(0).default(0),
+  damageTokens: z.number().int().default(0),
   /** Evasion */
-  evasion: z.number().int().min(0).default(0),
+  evasion: z.number().int().default(0),
   /** Evasion Tokens */
   evasionTokens: z.number().int().default(0),
   /** Knocked Down */
@@ -32,27 +32,27 @@ export const ShowdownMonsterSchema = z.object({
   /** Monster Level */
   level: z.nativeEnum(MonsterLevel).default(MonsterLevel.LEVEL_1),
   /** Luck */
-  luck: z.number().int().min(0).default(0),
+  luck: z.number().int().default(0),
   /** Luck Tokens */
-  luckTokens: z.number().int().min(0).default(0),
+  luckTokens: z.number().int().default(0),
   /** Moods */
   moods: z.array(z.string()).default([]),
   /** Movement */
   movement: z.number().int().min(0).default(0),
   /** Movement Tokens */
-  movementTokens: z.number().int().min(0).default(0),
+  movementTokens: z.number().int().default(0),
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Notes */
   notes: z.string().default(''),
   /** Speed */
-  speed: z.number().int().min(0).default(0),
+  speed: z.number().int().default(0),
   /** Speed Tokens */
-  speedTokens: z.number().int().min(0).default(0),
+  speedTokens: z.number().int().default(0),
   /** Strength */
-  strength: z.number().int().min(0).default(0),
+  strength: z.number().int().default(0),
   /** Strength Tokens */
-  strengthTokens: z.number().int().min(0).default(0),
+  strengthTokens: z.number().int().default(0),
   /** Toughness */
   toughness: z.number().int().min(0).default(0),
   /** Traits */

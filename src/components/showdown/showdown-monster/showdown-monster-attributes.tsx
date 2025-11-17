@@ -93,7 +93,6 @@ export function ShowdownMonsterAttributes({
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
-              min="0"
               name="monster-damage-tokens"
             />
           </NumericInput>
@@ -222,7 +221,6 @@ export function ShowdownMonsterAttributes({
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
-              min="0"
               name="monster-accuracy-tokens"
             />
           </NumericInput>
@@ -276,7 +274,6 @@ export function ShowdownMonsterAttributes({
                 )
               }}
               className="flex-1 h-12 text-center no-spinners text-xl"
-              min="0"
               name="monster-strength-tokens"
             />
           </NumericInput>
@@ -330,7 +327,6 @@ export function ShowdownMonsterAttributes({
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
-              min="0"
               name="monster-evasion-tokens"
             />
           </NumericInput>
@@ -381,7 +377,6 @@ export function ShowdownMonsterAttributes({
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
-              min="0"
               name="monster-luck-tokens"
             />
           </NumericInput>
@@ -408,7 +403,6 @@ export function ShowdownMonsterAttributes({
                 MONSTER_SPEED_UPDATED_MESSAGE(monster.speed, value)
               )
             }
-            min={0}
             readOnly={false}>
             <Input
               id="monster-speed"
@@ -424,7 +418,6 @@ export function ShowdownMonsterAttributes({
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              min="0"
               name="monster-speed"
             />
           </NumericInput>
@@ -452,7 +445,6 @@ export function ShowdownMonsterAttributes({
                 )
               }
               className="flex-1 h-12 text-center no-spinners text-xl"
-              min="0"
               name="monster-speed-tokens"
             />
           </NumericInput>
