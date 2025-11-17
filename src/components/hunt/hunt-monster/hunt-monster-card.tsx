@@ -127,7 +127,7 @@ export function HuntMonsterCard({
       // Update the form with the new values
       form.reset(HuntMonsterSchema.parse(updatedMonster))
     } catch (error) {
-      console.error('Monster Save Error:', error)
+      console.error('Hunt Monster Save Error:', error)
 
       if (error instanceof ZodError && error.errors[0]?.message)
         toast.error(error.errors[0].message)
