@@ -15,7 +15,7 @@ interface ScoutSelectionCardProps {
   handleSurvivorToggle: (survivorId: number) => void
   /** Survivor Selected as Scout */
   isCurrentlySelected: boolean
-  /** Survivor is Selected for Hunt Party */
+  /** Survivor is Selected for Party */
   isSelectedAsSurvivor: boolean
   /** Handle Hover Function */
   onHover?: (survivor: Survivor | null) => void
@@ -26,7 +26,8 @@ interface ScoutSelectionCardProps {
 /**
  * Scout Selection Card Component
  *
- * This component is used to display a survivor for selection during a hunt.
+ * This component is used to display a survivor for selection when creating a
+ * hunt or showdown.
  */
 export function ScoutSelectionCard({
   handleSurvivorToggle,

@@ -1,7 +1,7 @@
 'use client'
 
-import { SurvivorSelectionCard } from '@/components/hunt/survivor-selection/survivor-selection-card'
 import { SurvivorDetailsPanel } from '@/components/survivor/survivor-details-panel'
+import { SurvivorSelectionCard } from '@/components/survivor/survivor-selection/survivor-selection-card'
 import { Button } from '@/components/ui/button'
 import {
   Drawer,

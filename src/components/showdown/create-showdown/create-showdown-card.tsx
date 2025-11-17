@@ -2,8 +2,8 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { MonsterTraitsMoods } from '@/components/monster/monster-traits-moods'
-import { ScoutSelectionDrawer } from '@/components/showdown/scout-selection/scout-selection-drawer'
-import { SurvivorSelectionDrawer } from '@/components/showdown/survivor-selection/survivor-selection-drawer'
+import { ScoutSelectionDrawer } from '@/components/survivor/scout-selection/scout-selection-drawer'
+import { SurvivorSelectionDrawer } from '@/components/survivor/survivor-selection/survivor-selection-drawer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
