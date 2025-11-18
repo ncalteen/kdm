@@ -29,7 +29,12 @@ import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
 import { ShowdownCard } from '@/components/showdown/showdown-card'
 import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
 import { SurvivorCard } from '@/components/survivor/survivor-card'
-import { CampaignType, SurvivorType, TabType } from '@/lib/enums'
+import {
+  CampaignType,
+  SurvivorCardMode,
+  SurvivorType,
+  TabType
+} from '@/lib/enums'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -261,6 +266,7 @@ export function SettlementForm({
                 {/* Selected Survivor */}
                 {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard
+                    mode={SurvivorCardMode.SURVIVOR_CARD}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedSettlement={selectedSettlement}
                     selectedSurvivor={selectedSurvivor}

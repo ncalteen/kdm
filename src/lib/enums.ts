@@ -259,3 +259,15 @@ export enum TurnType {
 export enum MonsterName {
   FLOWER_KNIGHT = 'Flower Knight'
 }
+
+/**
+ * Survivor Card Mode
+ */
+export enum SurvivorCardMode {
+  /** Hunt Page */
+  HUNT_CARD = 'hunt',
+  /** Showdown Page */
+  SHOWDOWN_CARD = 'showdown',
+  /** Survivor Page */
+  SURVIVOR_CARD = 'survivor'
+}

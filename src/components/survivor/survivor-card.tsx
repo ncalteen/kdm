@@ -21,7 +21,7 @@ import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
 import { Card, CardContent } from '@/components/ui/card'
-import { SurvivorType } from '@/lib/enums'
+import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -30,6 +30,8 @@ import { ReactElement } from 'react'
  * Survivor Card Props
  */
 interface SurvivorCardProps extends Partial<Survivor> {
+  /** Mode */
+  mode: SurvivorCardMode
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Settlement */
@@ -48,6 +50,7 @@ interface SurvivorCardProps extends Partial<Survivor> {
  * This component is used to display/edit a survivor.
  */
 export function SurvivorCard({
+  mode,
   saveSelectedSurvivor,
   selectedSettlement,
   selectedSurvivor,
