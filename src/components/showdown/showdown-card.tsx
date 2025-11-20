@@ -16,6 +16,11 @@ interface ShowdownCardProps {
     updateData: Partial<Showdown>,
     successMsg?: string
   ) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (
+    updateData: Partial<Survivor>,
+    successMsg?: string
+  ) => void
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Selected Settlement */
@@ -30,8 +35,6 @@ interface ShowdownCardProps {
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Selected Survivor */
-  updateSelectedSurvivor: (survivor: Survivor) => void
 }
 
 /**
@@ -42,18 +45,19 @@ interface ShowdownCardProps {
  */
 export function ShowdownCard({
   saveSelectedShowdown,
+  saveSelectedSurvivor,
   selectedShowdown,
   selectedSettlement,
   selectedSurvivor,
   setSelectedShowdown,
   setSelectedSurvivor,
   setSurvivors,
-  survivors,
-  updateSelectedSurvivor
+  survivors
 }: ShowdownCardProps): ReactElement {
   return selectedShowdown ? (
     <ActiveShowdownCard
       saveSelectedShowdown={saveSelectedShowdown}
+      saveSelectedSurvivor={saveSelectedSurvivor}
       selectedShowdown={selectedShowdown}
       selectedSettlement={selectedSettlement}
       selectedSurvivor={selectedSurvivor}
@@ -61,7 +65,6 @@ export function ShowdownCard({
       setSelectedSurvivor={setSelectedSurvivor}
       setSurvivors={setSurvivors}
       survivors={survivors}
-      updateSelectedSurvivor={updateSelectedSurvivor}
     />
   ) : (
     <CreateShowdownCard

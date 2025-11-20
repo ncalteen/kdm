@@ -267,8 +267,10 @@ export function SettlementForm({
                 {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard
                     mode={SurvivorCardMode.SURVIVOR_CARD}
+                    saveSelectedShowdown={saveSelectedShowdown}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedSettlement={selectedSettlement}
+                    selectedShowdown={selectedShowdown}
                     selectedSurvivor={selectedSurvivor}
                     setSurvivors={setSurvivors}
                     survivors={survivors}
@@ -449,6 +451,7 @@ export function SettlementForm({
           {selectedSettlement && selectedTab === 'showdown' && (
             <ShowdownCard
               saveSelectedShowdown={saveSelectedShowdown}
+              saveSelectedSurvivor={saveSelectedSurvivor}
               selectedShowdown={selectedShowdown}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
@@ -456,7 +459,6 @@ export function SettlementForm({
               setSelectedSurvivor={setSelectedSurvivor}
               setSurvivors={setSurvivors}
               survivors={survivors}
-              updateSelectedSurvivor={updateSelectedSurvivor}
             />
           )}
         </div>
