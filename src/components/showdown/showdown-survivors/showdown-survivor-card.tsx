@@ -12,21 +12,12 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { ColorChoice } from '@/lib/enums'
+import { ColorChoice, SurvivorCardMode } from '@/lib/enums'
 import {
-  ERROR_MESSAGE,
   HUNT_NOTES_SAVED_MESSAGE,
-  SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE,
-  SURVIVOR_COLOR_CHANGED_MESSAGE,
-  SURVIVOR_NOT_FOUND_MESSAGE
+  SURVIVOR_COLOR_CHANGED_MESSAGE
 } from '@/lib/messages'
-import {
-  getCampaign,
-  getCardColorStyles,
-  getColorStyle,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
+import { getCardColorStyles, getColorStyle } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
@@ -35,8 +26,6 @@ import { AvatarFallback } from '@radix-ui/react-avatar'
 import { CheckIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
 
 /**
  * Showdown Survivor Card Component
@@ -45,6 +34,11 @@ interface ShowdownSurvivorCardProps {
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
+    successMsg?: string
+  ) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (
+    updateData: Partial<Survivor>,
     successMsg?: string
   ) => void
   /** Selected Showdown */
@@ -59,8 +53,6 @@ interface ShowdownSurvivorCardProps {
   survivor: Partial<Survivor> | null
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Selected Survivor */
-  updateSelectedSurvivor: (survivor: Survivor) => void
 }
 
 /**
@@ -70,16 +62,14 @@ interface ShowdownSurvivorCardProps {
  */
 export function ShowdownSurvivorCard({
   saveSelectedShowdown,
+  saveSelectedSurvivor,
   selectedShowdown,
   selectedSettlement,
   selectedSurvivor,
   setSurvivors,
   survivor,
-  survivors,
-  updateSelectedSurvivor
+  survivors
 }: ShowdownSurvivorCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
   // Get current survivor's showdown details
@@ -108,72 +98,6 @@ export function ShowdownSurvivorCard({
     setNotesDraft(survivorShowdownDetails?.notes || '')
     setIsNotesDirty(false)
   }, [survivorShowdownDetails?.notes])
-
-  /**
-   * Save Survivors to Local Storage
-   */
-  const saveToLocalStorage = (
-    survivorId: number | undefined,
-    updateData: Partial<Survivor>,
-    successMsg?: string
-  ) => {
-    if (!survivors) return
-    if (!survivorId) return
-    if (!selectedSettlement) return
-
-    try {
-      // Get the campaign and find the survivor to update
-      const campaign = getCampaign()
-      const survivorIndex = campaign.survivors.findIndex(
-        (s: Survivor) => s.id === survivorId
-      )
-
-      if (survivorIndex === -1) return toast.error(SURVIVOR_NOT_FOUND_MESSAGE())
-
-      // Update the survivor in the campaign
-      const updatedSurvivor = {
-        ...campaign.survivors[survivorIndex],
-        ...updateData
-      }
-
-      // Validate the updated survivor data
-      SurvivorSchema.parse(updatedSurvivor)
-
-      // Update the campaign with the modified survivor
-      campaign.survivors[survivorIndex] = updatedSurvivor
-
-      // Save the updated campaign to localStorage
-      saveCampaignToLocalStorage(campaign)
-
-      const updatedSurvivors = survivors.map((s) =>
-        s.id === survivorId ? { ...s, ...updateData } : s
-      )
-
-      // Update selected survivor if this is the currently selected survivor
-      if (survivorId === selectedSurvivor?.id)
-        updateSelectedSurvivor({
-          ...selectedSurvivor,
-          ...updateData
-        })
-
-      setSurvivors(updatedSurvivors)
-
-      // Update the form with the new values
-      if (survivorId === survivor?.id)
-        form.reset(SurvivorSchema.parse({ ...survivor, ...updateData }))
-
-      // Dispatch custom event to notify other components about survivor changes
-      window.dispatchEvent(new CustomEvent('campaignUpdated'))
-
-      if (successMsg) toast.success(successMsg)
-    } catch (error) {
-      console.error('Showdown Survivor Save Error:', error)
-
-      if (error instanceof ZodError && error.errors[0]?.message)
-        toast.error(error.errors[0].message)
-      else toast.error(ERROR_MESSAGE())
-    }
-  }
 
   /**
    * Update Survivor Color
@@ -206,16 +130,6 @@ export function ShowdownSurvivorCard({
 
     return survivorDetail?.color || ColorChoice.SLATE
   }
-
-  /**
-   * Update Survivor Can Spend Survival
-   */
-  const updateSurvivorCanSpendSurvival = (val: boolean) =>
-    saveToLocalStorage(
-      survivor?.id,
-      { canSpendSurvival: val },
-      SURVIVOR_CAN_SPEND_SURVIVAL_UPDATED_MESSAGE(val)
-    )
 
   /**
    * Handle Save Notes
@@ -313,8 +227,11 @@ export function ShowdownSurvivorCard({
 
       <CardContent className="px-2">
         <SurvivorCard
-          saveSelectedSurvivor={() => {}}
+          mode={SurvivorCardMode.SHOWDOWN_CARD}
+          saveSelectedShowdown={saveSelectedShowdown}
+          saveSelectedSurvivor={saveSelectedSurvivor}
           selectedSettlement={selectedSettlement}
+          selectedShowdown={selectedShowdown}
           selectedSurvivor={selectedSurvivor}
           setSurvivors={setSurvivors}
           survivors={survivors}
