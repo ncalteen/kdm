@@ -92,7 +92,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-damage-tokens"
             />
           </NumericInput>
@@ -167,7 +167,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-movement-tokens"
             />
           </NumericInput>
@@ -220,7 +220,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-accuracy-tokens"
             />
           </NumericInput>
@@ -273,7 +273,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }}
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-strength-tokens"
             />
           </NumericInput>
@@ -326,7 +326,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-evasion-tokens"
             />
           </NumericInput>
@@ -376,7 +376,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-luck-tokens"
             />
           </NumericInput>
@@ -444,7 +444,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-speed-tokens"
             />
           </NumericInput>
