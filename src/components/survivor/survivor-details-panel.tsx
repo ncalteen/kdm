@@ -3,6 +3,7 @@
 import { AttributeCard } from '@/components/survivor/attributes/attribute-card'
 import { Avatar } from '@/components/ui/avatar'
 import { CardContent } from '@/components/ui/card'
+import { SurvivorCardMode } from '@/lib/enums'
 import { Survivor } from '@/schemas/survivor'
 import { AvatarFallback } from '@radix-ui/react-avatar'
 import { ReactElement } from 'react'
@@ -72,6 +73,7 @@ export function SurvivorDetailsPanel({
 
       <CardContent className="p-4 space-y-4 max-h-[calc(60vh-120px)] overflow-y-auto">
         <AttributeCard
+          mode={SurvivorCardMode.SURVIVOR_CARD}
           saveSelectedSurvivor={null}
           selectedSettlement={null}
           selectedSurvivor={survivor}

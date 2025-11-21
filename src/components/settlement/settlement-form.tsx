@@ -252,7 +252,7 @@ export function SettlementForm({
                 <SettlementSurvivorsCard
                   selectedHunt={selectedHunt}
                   selectedSettlement={selectedSettlement}
-                  selectedShowdown={null}
+                  selectedShowdown={selectedShowdown}
                   selectedSurvivor={selectedSurvivor}
                   setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                   setSelectedSurvivor={setSelectedSurvivor}
@@ -423,7 +423,7 @@ export function SettlementForm({
               saveSelectedSettlement={saveSelectedSettlement}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
-              selectedShowdown={null}
+              selectedShowdown={selectedShowdown}
               setSelectedHunt={setSelectedHunt}
               setSelectedSettlement={setSelectedSettlement}
               setSelectedShowdown={() => {}}
