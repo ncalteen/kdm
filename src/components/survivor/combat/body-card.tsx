@@ -61,7 +61,7 @@ export function BodyCard({
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
           {/* Body Armor */}
           <div className="relative flex items-center">
@@ -96,13 +96,13 @@ export function BodyCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <ShirtIcon /> Body
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <ShirtIcon className="h-5 w-5" /> Body
             </div>
-            <div className="flex flex-col items-start gap-1 ml-2">
+            <div className="flex flex-col gap-1 ml-2">
               {/* Severe Injuries - Destroyed Back */}
               <div className="space-y-0 flex flex-row items-center gap-2">
                 <Checkbox
@@ -161,7 +161,7 @@ export function BodyCard({
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -179,7 +179,7 @@ export function BodyCard({
               </div>
 
               {/* Heavy Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',

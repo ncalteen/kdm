@@ -125,16 +125,13 @@ export function HuntXPCard({
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 lg:h-[70px]">
+      <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex items-center h-[36px]">
-            {/* Hunt XP */}
+          <div className="flex items-center">
             <FormItem className="flex-1">
               <div className="flex justify-between items-center">
-                <label className="font-bold text-left text-sm lg:text-md">
-                  Hunt XP
-                </label>
-                <div className="flex items-center gap-1 lg:gap-2">
+                <label className="font-bold text-left text-sm">Hunt XP</label>
+                <div className="flex items-center gap-1">
                   {Array.from({ length: 16 }, (_, i) => {
                     const checked = (selectedSurvivor?.huntXP || 0) > i
 
@@ -179,7 +176,7 @@ export function HuntXPCard({
                   className="!bg-white border border-gray-300 h-3 w-3"
                 />
               ))}
-              <span className="text-xs">
+              <span className="text-xs text-muted-foreground">
                 {selectedSettlement?.survivorType === SurvivorType.CORE ? (
                   <div className="flex items-center gap-1">
                     <BookOpenIcon className="h-4 w-4" /> Age
@@ -192,9 +189,10 @@ export function HuntXPCard({
               </span>
             </div>
           ))}
+
           <div className="flex items-center gap-1">
             <Checkbox disabled className="border-4 border-gray-300 h-3 w-3" />
-            <span className="text-xs">Retired</span>
+            <span className="text-xs text-muted-foreground">Retired</span>
           </div>
         </div>
       </CardContent>

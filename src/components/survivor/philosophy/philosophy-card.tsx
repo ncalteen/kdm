@@ -21,7 +21,6 @@ import {
 } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { BrainCogIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -237,13 +236,12 @@ export function PhilosophyCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2 h-[483px] justify-between">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-2 border-0">
+      {/* Title */}
+      <CardHeader className="p-0">
         <div className="flex flex-row justify-between">
-          {/* Philosophy */}
           <div className="flex flex-col gap-1">
-            <CardTitle className="text-md flex flex-row items-center gap-1">
-              <BrainCogIcon className="h-4 w-4" />
+            <CardTitle className="text-sm flex flex-row items-center gap-1">
               Philosophy
             </CardTitle>
             <SelectPhilosophy
@@ -286,11 +284,11 @@ export function PhilosophyCard({
           <strong>returning survivor</strong> and reach a new Hunt XP milestone,
           you must rank up your philosophy. Limit, once per settlement phase.
         </p>
+
+        <hr />
       </CardHeader>
 
-      <hr className="my-1" />
-
-      <CardContent className="p-2 flex flex-col">
+      <CardContent className="p-0 flex flex-col">
         {/* Neurosis */}
         <div className="flex flex-col gap-1">
           <Input
@@ -355,7 +353,9 @@ export function PhilosophyCard({
             onChange={(e) => setTenetKnowledgeRules(e.target.value)}
             onBlur={(e) => updateTenetKnowledgeRules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground">Rules</label>
+          <label className="text-xs text-muted-foreground text-right">
+            Rules
+          </label>
         </div>
 
         {/* Tenet Knowledge Observation Conditions */}
@@ -371,7 +371,7 @@ export function PhilosophyCard({
               updateTenetKnowledgeObservationConditions(e.target.value)
             }
           />
-          <label className="text-xs text-muted-foreground">
+          <label className="text-xs text-muted-foreground text-right">
             Observation Conditions
           </label>
         </div>

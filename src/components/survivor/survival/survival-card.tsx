@@ -6,10 +6,11 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { SurvivorType } from '@/lib/enums'
+import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
   SURVIVAL_LIMIT_EXCEEDED_ERROR_MESSAGE,
   SURVIVAL_MINIMUM_ERROR_MESSAGE,
+  SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE,
   SURVIVOR_CAN_DASH_UPDATED_MESSAGE,
   SURVIVOR_CAN_DODGE_UPDATED_MESSAGE,
   SURVIVOR_CAN_ENCOURAGE_UPDATED_MESSAGE,
@@ -23,19 +24,26 @@ import {
 } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { LockIcon } from 'lucide-react'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { toast } from 'sonner'
 
 /**
  * Survival Card Properties
  */
 interface SurvivalCardProps {
+  /** Mode */
+  mode: SurvivorCardMode
+  /** Save Selected Showdown */
+  saveSelectedShowdown: (data: Partial<Showdown>, successMsg?: string) => void
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Showdown */
+  selectedShowdown: Partial<Showdown> | null
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
 }
@@ -53,11 +61,96 @@ interface SurvivalCardProps {
  * @returns Survival Card Component
  */
 export function SurvivalCard({
+  mode,
+  saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedSettlement,
+  selectedShowdown,
   selectedSurvivor
 }: SurvivalCardProps): ReactElement {
   const isMobile = useIsMobile()
+
+  /**
+   * Save Token to Showdown Details
+   *
+   * @param tokenName Token attribute name
+   * @param value New value
+   */
+  const saveTokenToShowdown = (tokenName: 'survivalTokens', value: number) => {
+    if (!saveSelectedShowdown || !selectedSurvivor?.id || !selectedShowdown)
+      return
+
+    // Get current survivor details or create new one
+    const currentDetails = selectedShowdown.survivorDetails || []
+    const survivorDetailIndex = currentDetails.findIndex(
+      (sd) => sd.id === selectedSurvivor.id
+    )
+
+    let updatedDetails
+    if (survivorDetailIndex >= 0) {
+      // Update existing survivor details
+      updatedDetails = [...currentDetails]
+      updatedDetails[survivorDetailIndex] = {
+        ...updatedDetails[survivorDetailIndex],
+        [tokenName]: value
+      }
+    } else {
+      // Create new survivor details entry
+      updatedDetails = [
+        ...currentDetails,
+        {
+          id: selectedSurvivor.id!,
+          accuracyTokens: 0,
+          bleedingTokens: 0,
+          blockTokens: 0,
+          color: ColorChoice.SLATE,
+          deflectTokens: 0,
+          evasionTokens: 0,
+          insanityTokens: 0,
+          knockedDown: false,
+          luckTokens: 0,
+          movementTokens: 0,
+          notes: '',
+          priorityTarget: false,
+          speedTokens: 0,
+          strengthTokens: 0,
+          [tokenName]: value
+        }
+      ]
+    }
+
+    saveSelectedShowdown(
+      {
+        survivorDetails: updatedDetails
+      },
+      SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE('survival')
+    )
+  }
+
+  const survivorDetails = useMemo(
+    () =>
+      selectedShowdown?.survivorDetails?.find(
+        (sd) => sd.id === selectedSurvivor?.id
+      ) || {
+        accuracyTokens: 0,
+        bleedingTokens: 0,
+        blockTokens: 0,
+        color: ColorChoice.SLATE,
+        deflectTokens: 0,
+        evasionTokens: 0,
+        id: 0,
+        insanityTokens: 0,
+        knockedDown: false,
+        luckTokens: 0,
+        movementTokens: 0,
+        notes: '',
+        priorityTarget: false,
+        speedTokens: 0,
+        strengthTokens: 0,
+        survivalTokens: 0
+      },
+    [selectedShowdown, selectedSurvivor?.id]
+  )
 
   /**
    * Update Survival Points
@@ -167,40 +260,85 @@ export function SurvivalCard({
     <Card className="p-2 border-0">
       <CardContent className="p-0">
         <div className="flex">
-          {/* Left - Survival and cannot spend survival inputs */}
+          {/* Survival */}
           <div className="flex-1 flex flex-col justify-between">
-            {/* Survival Input */}
-            <div className="flex items-center gap-2">
-              <NumericInput
-                value={selectedSurvivor?.survival ?? 1}
-                min={0}
-                max={selectedSettlement?.survivalLimit || 1}
-                label="Survival"
-                onChange={(value) => updateSurvival(value.toString())}
-                readOnly={false}>
-                <Input
-                  key={`survival-${selectedSurvivor?.id || 'new'}`}
-                  placeholder="1"
-                  type="number"
-                  className={cn(
-                    'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+            <div className="flex flex-col">
+              {/* Survival Base */}
+              <label className="font-bold">Survival</label>
+              <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
+                  {mode === SurvivorCardMode.SHOWDOWN_CARD && (
+                    <label className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Base
+                    </label>
                   )}
-                  value={selectedSurvivor?.survival ?? '1'}
-                  readOnly={isMobile}
-                  onChange={
-                    !isMobile
-                      ? (e) => updateSurvival(e.target.value)
-                      : undefined
-                  }
-                  name="survival"
-                  id="survival"
-                />
-              </NumericInput>
-              <label className="font-bold text-left">Survival</label>
+                  <NumericInput
+                    value={selectedSurvivor?.survival ?? 1}
+                    min={0}
+                    max={selectedSettlement?.survivalLimit || 1}
+                    label="Survival"
+                    onChange={(value) => updateSurvival(value.toString())}
+                    readOnly={false}>
+                    <Input
+                      key={`survival-${selectedSurvivor?.id || 'new'}`}
+                      placeholder="1"
+                      type="number"
+                      className={cn(
+                        'w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+                      )}
+                      value={selectedSurvivor?.survival ?? '1'}
+                      readOnly={isMobile}
+                      onChange={
+                        !isMobile
+                          ? (e) => updateSurvival(e.target.value)
+                          : undefined
+                      }
+                      name="survival"
+                      id="survival"
+                    />
+                  </NumericInput>
+                </div>
+
+                {/* Survival Tokens */}
+                {mode === SurvivorCardMode.SHOWDOWN_CARD && (
+                  <div className="flex flex-col items-center gap-1">
+                    <label className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Tokens
+                    </label>
+                    <NumericInput
+                      value={survivorDetails.survivalTokens}
+                      label="Survival Tokens"
+                      onChange={(value) =>
+                        saveTokenToShowdown('survivalTokens', value)
+                      }
+                      readOnly={false}>
+                      <Input
+                        key={`survival-tokens-${selectedSurvivor?.id || 'new'}`}
+                        placeholder="0"
+                        type="number"
+                        className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+                        value={survivorDetails.survivalTokens}
+                        readOnly={isMobile}
+                        onChange={
+                          !isMobile
+                            ? (e) =>
+                                saveTokenToShowdown(
+                                  'survivalTokens',
+                                  parseInt(e.target.value, 10)
+                                )
+                            : undefined
+                        }
+                        name="survival-tokens"
+                        id="survival-tokens"
+                      />
+                    </NumericInput>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Cannot Spend Survival Checkbox */}
-            <div className="flex gap-2">
+            {/* Cannot Spend Survival */}
+            <div className="flex gap-2 pt-2">
               <Checkbox
                 checked={!selectedSurvivor?.canSpendSurvival}
                 onCheckedChange={(checked) => updateCanSpendSurvival(!!checked)}
@@ -208,15 +346,15 @@ export function SurvivalCard({
                 id="cannot-spend-survival"
               />
               <div className="text-xs font-medium leading-none flex items-center">
-                <LockIcon className="inline h-3 w-3 mr-1" /> Cannot spend
-                survival
+                <LockIcon className="inline h-3 w-3 mr-1" /> Cannot Spend
+                Survival
               </div>
             </div>
           </div>
 
-          {/* Middle - Survival Actions */}
+          {/* Survival Actions */}
           <div className="flex">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 justify-evenly">
               {/* Dodge */}
               <div className="flex gap-2">
                 <Checkbox
@@ -291,7 +429,13 @@ export function SurvivalCard({
                 <Separator orientation="vertical" className="mx-2.5" />
 
                 {/* Systemic Pressure */}
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <label className="text-xs">
+                    Systemic
+                    <br />
+                    Pressure
+                  </label>
+
                   <NumericInput
                     value={selectedSurvivor?.systemicPressure ?? 0}
                     min={0}
@@ -316,11 +460,6 @@ export function SurvivalCard({
                       id="systemic-pressure"
                     />
                   </NumericInput>
-                  <label className="text-xs">
-                    Systemic
-                    <br />
-                    Pressure
-                  </label>
                 </div>
               </>
             )}

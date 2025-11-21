@@ -40,7 +40,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { PlusIcon, ZapIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -417,177 +417,172 @@ export function FightingArtsCard({
     return <></>
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <ZapIcon className="h-4 w-4" />
-            Fighting Arts &amp; Secret Fighting Arts
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      className="border-0 h-8 w-8"
-                      disabled={
-                        isAddingNew ||
-                        Object.values(disabledInputs).some((v) => v === false)
-                      }>
-                      <PlusIcon className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={addRegularFightingArt}
-                      disabled={isAtRegularFightingArtLimit()}>
-                      Fighting Art
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={addSecretFightingArt}
-                      disabled={isAtSecretFightingArtLimit()}>
-                      Secret Fighting Art
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-2 border-0 gap-0">
+      {/* Title */}
+      <CardHeader className="p-0">
+        <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
+          Fighting Arts &amp; Secret Fighting Arts
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-6 w-6"
+                    disabled={
+                      isAddingNew ||
+                      Object.values(disabledInputs).some((v) => v === false)
+                    }>
+                    <PlusIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={addRegularFightingArt}
+                    disabled={isAtRegularFightingArtLimit()}>
+                    Fighting Art
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={addSecretFightingArt}
+                    disabled={isAtSecretFightingArtLimit()}>
+                    Secret Fighting Art
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Fighting Arts List */}
-      <CardContent className="p-1 pb-2 pt-0">
-        <div className="flex flex-col h-[140px]">
-          <div className="flex-1 overflow-y-auto">
-            {/* Regular Fighting Arts */}
-            {selectedSurvivor?.fightingArts?.length !== 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => handleDragEnd(event, 'regular')}>
-                <SortableContext
-                  items={(selectedSurvivor?.fightingArts || []).map(
-                    (_, index) => index.toString()
-                  )}
-                  strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.fightingArts || []).map((art, index) => (
+      <CardContent className="p-0">
+        <div className="flex flex-col h-27">
+          {/* Fighting Arts */}
+          {selectedSurvivor?.fightingArts?.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => handleDragEnd(event, 'regular')}>
+              <SortableContext
+                items={(selectedSurvivor?.fightingArts || []).map((_, index) =>
+                  index.toString()
+                )}
+                strategy={verticalListSortingStrategy}>
+                {(selectedSurvivor?.fightingArts || []).map((art, index) => (
+                  <FightingArtItem
+                    key={`regular-${index}`}
+                    id={index.toString()}
+                    index={index}
+                    arrayName="fightingArts"
+                    onRemove={() =>
+                      onRemove({
+                        value: art,
+                        type: 'regular',
+                        originalIndex: index
+                      })
+                    }
+                    isDisabled={!!disabledInputs[`regular-${index}`]}
+                    onSave={(value) =>
+                      onSave(value, {
+                        value: art,
+                        type: 'regular',
+                        originalIndex: index
+                      })
+                    }
+                    onEdit={() =>
+                      onEdit({
+                        value: art,
+                        type: 'regular',
+                        originalIndex: index
+                      })
+                    }
+                    placeholder="Fighting Art"
+                    selectedSurvivor={selectedSurvivor}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
+
+          {/* Secret Fighting Arts */}
+          {selectedSurvivor?.secretFightingArts?.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => handleDragEnd(event, 'secret')}>
+              <SortableContext
+                items={(selectedSurvivor?.secretFightingArts || []).map(
+                  (_, index) => index.toString()
+                )}
+                strategy={verticalListSortingStrategy}>
+                {(selectedSurvivor?.secretFightingArts || []).map(
+                  (art, index) => (
                     <FightingArtItem
-                      key={`regular-${index}`}
+                      key={`secret-${index}`}
                       id={index.toString()}
                       index={index}
-                      arrayName="fightingArts"
+                      arrayName="secretFightingArts"
                       onRemove={() =>
                         onRemove({
                           value: art,
-                          type: 'regular',
+                          type: 'secret',
                           originalIndex: index
                         })
                       }
-                      isDisabled={!!disabledInputs[`regular-${index}`]}
+                      isDisabled={!!disabledInputs[`secret-${index}`]}
                       onSave={(value) =>
                         onSave(value, {
                           value: art,
-                          type: 'regular',
+                          type: 'secret',
                           originalIndex: index
                         })
                       }
                       onEdit={() =>
                         onEdit({
                           value: art,
-                          type: 'regular',
+                          type: 'secret',
                           originalIndex: index
                         })
                       }
-                      placeholder="Fighting Art"
+                      placeholder="Secret Fighting Art"
                       selectedSurvivor={selectedSurvivor}
                     />
-                  ))}
-                </SortableContext>
-              </DndContext>
-            )}
+                  )
+                )}
+              </SortableContext>
+            </DndContext>
+          )}
 
-            {/* Secret Fighting Arts */}
-            {selectedSurvivor?.secretFightingArts?.length !== 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => handleDragEnd(event, 'secret')}>
-                <SortableContext
-                  items={(selectedSurvivor?.secretFightingArts || []).map(
-                    (_, index) => index.toString()
-                  )}
-                  strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.secretFightingArts || []).map(
-                    (art, index) => (
-                      <FightingArtItem
-                        key={`secret-${index}`}
-                        id={index.toString()}
-                        index={index}
-                        arrayName="secretFightingArts"
-                        onRemove={() =>
-                          onRemove({
-                            value: art,
-                            type: 'secret',
-                            originalIndex: index
-                          })
-                        }
-                        isDisabled={!!disabledInputs[`secret-${index}`]}
-                        onSave={(value) =>
-                          onSave(value, {
-                            value: art,
-                            type: 'secret',
-                            originalIndex: index
-                          })
-                        }
-                        onEdit={() =>
-                          onEdit({
-                            value: art,
-                            type: 'secret',
-                            originalIndex: index
-                          })
-                        }
-                        placeholder="Secret Fighting Art"
-                        selectedSurvivor={selectedSurvivor}
-                      />
-                    )
-                  )}
-                </SortableContext>
-              </DndContext>
-            )}
+          {/* Add New Fighting Art */}
+          {isAddingNew && (
+            <NewFightingArtItem
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
+              placeholder={
+                newArtType === 'regular'
+                  ? 'Fighting Art'
+                  : 'Secret Fighting Art'
+              }
+              artType={newArtType}
+            />
+          )}
+        </div>
 
-            {/* Add New Fighting Art */}
-            {isAddingNew && (
-              <NewFightingArtItem
-                onSave={onSave}
-                onCancel={() => setIsAddingNew(false)}
-                placeholder={
-                  newArtType === 'regular'
-                    ? 'Fighting Art'
-                    : 'Secret Fighting Art'
-                }
-                artType={newArtType}
-              />
-            )}
-          </div>
-
-          {/* Cannot Use Fighting Arts - Bottom Right */}
-          <div className="flex justify-end mt-2 pr-2">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="canUseFightingArtsOrKnowledges"
-                checked={!selectedSurvivor?.canUseFightingArtsOrKnowledges}
-                onCheckedChange={updateCanUseFightingArtsOrKnowledges}
-              />
-              <Label
-                htmlFor="canUseFightingArtsOrKnowledges"
-                className="text-xs cursor-pointer">
-                Cannot Use Fighting Arts
-              </Label>
-            </div>
+        {/* Cannot Use Fighting Arts */}
+        <div className="flex justify-end mt-2 pr-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="canUseFightingArtsOrKnowledges"
+              checked={!selectedSurvivor?.canUseFightingArtsOrKnowledges}
+              onCheckedChange={updateCanUseFightingArtsOrKnowledges}
+            />
+            <Label
+              htmlFor="canUseFightingArtsOrKnowledges"
+              className="text-xs cursor-pointer">
+              Cannot Use Fighting Arts
+            </Label>
           </div>
         </div>
       </CardContent>

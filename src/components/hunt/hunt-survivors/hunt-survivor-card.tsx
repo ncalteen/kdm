@@ -23,7 +23,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { ColorChoice, SurvivorType } from '@/lib/enums'
+import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
   HUNT_NOTES_SAVED_MESSAGE,
@@ -713,6 +713,7 @@ export function HuntSurvivorCard({
               <SanityCard
                 displayText={false}
                 displayTormentInput={false}
+                mode={SurvivorCardMode.HUNT_CARD}
                 saveSelectedSurvivor={(
                   updateData: Partial<Survivor>,
                   successMsg: string

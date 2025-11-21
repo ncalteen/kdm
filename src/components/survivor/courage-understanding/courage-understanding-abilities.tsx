@@ -1,6 +1,5 @@
 'use client'
 
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
   SelectContent,
@@ -83,89 +82,10 @@ export function CourageUnderstandingAbilities({
   }
 
   return (
-    <div className="mx-2">
-      {/* Desktop Layout - Radio Groups */}
-      <div className="hidden lg:flex flex-row items-start justify-between">
-        {/* Courage Abilities */}
-        <div className="flex flex-col w-[45%]">
-          <RadioGroup
-            value={
-              selectedSurvivor?.hasStalwart
-                ? 'stalwart'
-                : selectedSurvivor?.hasPrepared
-                  ? 'prepared'
-                  : selectedSurvivor?.hasMatchmaker
-                    ? 'matchmaker'
-                    : ''
-            }
-            onValueChange={handleCourageGroupChange}>
-            <div className="flex gap-2 text-xs">
-              <RadioGroupItem value="stalwart" id="stalwart" />
-              <div>
-                <strong>Stalwart:</strong> {courageAbilities.stalwart}
-              </div>
-            </div>
-            <hr className="mt-0 mb-0" />
-            <div className="flex gap-2 text-xs">
-              <RadioGroupItem value="prepared" id="prepared" />
-              <div>
-                <strong>Prepared:</strong> {courageAbilities.prepared}
-              </div>
-            </div>
-            <hr />
-            <div className="flex gap-2 text-xs">
-              <RadioGroupItem value="matchmaker" id="matchmaker" />
-              <div>
-                <strong>Matchmaker:</strong> {courageAbilities.matchmaker}
-              </div>
-            </div>
-          </RadioGroup>
-        </div>
-
-        {/* Vertical Divider */}
-        <div className="h-36 w-px bg-gray-800" />
-
-        <div className="flex flex-col w-[45%]">
-          <RadioGroup
-            value={
-              selectedSurvivor?.hasAnalyze
-                ? 'analyze'
-                : selectedSurvivor?.hasExplore
-                  ? 'explore'
-                  : selectedSurvivor?.hasTinker
-                    ? 'tinker'
-                    : ''
-            }
-            onValueChange={handleUnderstandingGroupChange}>
-            <div className="flex gap-2 text-xs">
-              <RadioGroupItem value="analyze" id="analyze" />
-              <div>
-                <strong>Analyze:</strong> {understandingAbilities.analyze}
-              </div>
-            </div>
-            <hr />
-            <div className="flex gap-2 text-xs">
-              <RadioGroupItem value="explore" id="explore" />
-              <div>
-                <strong>Explore:</strong> {understandingAbilities.explore}
-              </div>
-            </div>
-            <hr />
-            <div className="flex gap-2 text-xs">
-              <RadioGroupItem value="tinker" id="tinker" />
-              <div>
-                <strong>Tinker:</strong> {understandingAbilities.tinker}
-              </div>
-            </div>
-          </RadioGroup>
-        </div>
-      </div>
-
-      {/* Mobile Layout - Select Dropdowns */}
-      <div className="lg:hidden flex flex-col gap-4">
-        {/* Courage Abilities */}
-        <div className="flex flex-col gap-2">
-          <label className="font-bold text-sm">Courage Ability</label>
+    <div className="pb-2">
+      <div className="flex flex-row justify-between">
+        {/* Courage Ability */}
+        <div className="flex flex-col w-[45%] gap-2 pt-2">
           <Select
             value={
               selectedSurvivor?.hasStalwart
@@ -193,7 +113,7 @@ export function CourageUnderstandingAbilities({
               : selectedSurvivor?.hasMatchmaker
                 ? 'matchmaker'
                 : '') && (
-            <div className="text-xs p-2 rounded border">
+            <div className="text-[10px] p-2 rounded border">
               {
                 courageAbilities[
                   selectedSurvivor?.hasStalwart
@@ -209,9 +129,8 @@ export function CourageUnderstandingAbilities({
           )}
         </div>
 
-        {/* Understanding Abilities */}
-        <div className="flex flex-col gap-2">
-          <label className="font-bold text-sm">Understanding Ability</label>
+        {/* Understanding Ability */}
+        <div className="flex flex-col w-[45%] gap-2 pt-2">
           <Select
             value={
               selectedSurvivor?.hasAnalyze
@@ -239,7 +158,7 @@ export function CourageUnderstandingAbilities({
               : selectedSurvivor?.hasTinker
                 ? 'tinker'
                 : '') && (
-            <div className="text-xs p-2 rounded border">
+            <div className="text-[10px] p-2 rounded border">
               {
                 understandingAbilities[
                   selectedSurvivor?.hasAnalyze

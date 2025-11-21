@@ -63,7 +63,7 @@ export function ArmsCard({
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
           {/* Arm Armor */}
           <div className="relative flex items-center">
@@ -98,11 +98,11 @@ export function ArmsCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <HandMetalIcon /> Arms
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <HandMetalIcon className="h-5 w-5" /> Arms
             </div>
             <div className="flex flex-col items-start gap-1 ml-2">
               {/* Severe Injuries - Broken Arm */}
@@ -189,7 +189,7 @@ export function ArmsCard({
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <FormControl>
                   <Checkbox
                     className={cn(
@@ -209,7 +209,7 @@ export function ArmsCard({
               </div>
 
               {/* Heavy Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',

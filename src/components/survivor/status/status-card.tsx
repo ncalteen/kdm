@@ -156,10 +156,10 @@ export function StatusCard({
   )
 
   return (
-    <Card className="p-2 border-0 lg:h-[85px]">
+    <Card className="p-2 border-0">
       <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex items-center h-[36px]">
+          <div className="flex items-center">
             {/* Survivor Name */}
             <div className="flex-1 flex items-center gap-2">
               <label className="font-bold text-left">Name</label>
@@ -205,7 +205,7 @@ export function StatusCard({
 
         {/* Status Section */}
         <div className="flex justify-between items-center">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[10px] lg:text-xs text-muted-foreground">
             When you name your survivor, gain +1 <strong>survival</strong>.
           </p>
 

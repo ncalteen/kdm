@@ -28,7 +28,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { BrainCircuitIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -206,10 +206,10 @@ export function DisordersCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          <BrainCircuitIcon className="h-4 w-4" />
+    <Card className="p-2 border-0 gap-0">
+      {/* Title */}
+      <CardHeader className="p-0">
+        <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
           Disorders
           {!isAddingNew && (
             <Button
@@ -217,56 +217,52 @@ export function DisordersCard({
               size="sm"
               variant="outline"
               onClick={addDisorder}
-              className="border-0 h-8 w-8"
+              className="h-6 w-6"
               disabled={
                 isAddingNew ||
                 (selectedSurvivor?.disorders?.length || 0) >= MAX_DISORDERS ||
                 Object.values(disabledInputs).some((v) => v === false)
               }>
-              <PlusIcon className="h-4 w-4" />
+              <PlusIcon />
             </Button>
           )}
         </CardTitle>
       </CardHeader>
 
       {/* Disorders List */}
-      <CardContent className="p-1 pb-2 pt-0">
-        <div className="flex flex-col h-[125px]">
-          <div className="flex-1 overflow-y-auto">
-            {selectedSurvivor?.disorders?.length !== 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}>
-                <SortableContext
-                  items={(selectedSurvivor?.disorders || []).map((_, index) =>
-                    index.toString()
-                  )}
-                  strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.disorders || []).map(
-                    (disorder, index) => (
-                      <DisorderItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
-                        selectedSurvivor={selectedSurvivor}
-                      />
-                    )
-                  )}
-                </SortableContext>
-              </DndContext>
-            )}
-            {isAddingNew && (
-              <NewDisorderItem
-                onSave={onSave}
-                onCancel={() => setIsAddingNew(false)}
-              />
-            )}
-          </div>
+      <CardContent className="p-0">
+        <div className="flex flex-col h-27">
+          {selectedSurvivor?.disorders?.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={(selectedSurvivor?.disorders || []).map((_, index) =>
+                  index.toString()
+                )}
+                strategy={verticalListSortingStrategy}>
+                {(selectedSurvivor?.disorders || []).map((disorder, index) => (
+                  <DisorderItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={onEdit}
+                    selectedSurvivor={selectedSurvivor}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
+          {isAddingNew && (
+            <NewDisorderItem
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
         </div>
       </CardContent>
     </Card>

@@ -62,8 +62,9 @@ export function WaistCard({
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
+          {/* Waist Armor */}
           <div className="relative flex items-center">
             <Shield
               className="h-14 w-14 text-muted-foreground"
@@ -97,13 +98,13 @@ export function WaistCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <RibbonIcon /> Waist
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <RibbonIcon className="h-5 w-5" /> Waist
             </div>
-            <div className="flex flex-col items-start gap-1 ml-2">
+            <div className="flex flex-col gap-1 ml-2">
               {/* Severe Injuries */}
               <div className="space-y-0 flex flex-row items-center gap-2">
                 <Checkbox
@@ -171,7 +172,7 @@ export function WaistCard({
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -191,7 +192,7 @@ export function WaistCard({
               </div>
 
               {/* Heavy Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',

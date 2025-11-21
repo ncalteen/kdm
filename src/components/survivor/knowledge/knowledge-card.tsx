@@ -15,7 +15,6 @@ import {
 } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { LightBulbIcon } from '@primer/octicons-react'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 /**
@@ -257,13 +256,12 @@ export function KnowledgeCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-0">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-2 border-0 gap-0">
+      {/* Title */}
+      <CardHeader className="p-0">
         <div className="flex flex-row justify-between">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <LightBulbIcon className="h-4 w-4" />
-            Knowledges
+          <CardTitle className="text-sm flex flex-row items-center gap-1">
+            Knowledge
           </CardTitle>
 
           {/* Cannot Use Fighting Arts or Knowledges */}
@@ -282,7 +280,7 @@ export function KnowledgeCard({
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 py-0 flex flex-col">
+      <CardContent className="p-0 flex flex-col">
         {/* Knowledge 1 */}
         <div className="flex items-start gap-2">
           <div className="flex-grow flex flex-col gap-1">
@@ -335,7 +333,9 @@ export function KnowledgeCard({
             onChange={(e) => setKnowledge1Rules(e.target.value)}
             onBlur={(e) => updateKnowledge1Rules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground">Rules</label>
+          <label className="text-xs text-muted-foreground text-right">
+            Rules
+          </label>
         </div>
 
         {/* Knowledge 1 Observation Conditions */}
@@ -352,13 +352,13 @@ export function KnowledgeCard({
                 updateKnowledge1ObservationConditions(e.target.value)
               }
             />
-            <label className="text-xs text-muted-foreground">
+            <label className="text-xs text-muted-foreground text-right">
               Observation Conditions
             </label>
           </div>
         </div>
 
-        <hr className="mt-2 mb-2 border-1" />
+        <hr className="my-2 border-4" />
 
         {/* Knowledge 2 */}
         <div className="flex items-start gap-2">
@@ -412,7 +412,9 @@ export function KnowledgeCard({
             onChange={(e) => setKnowledge2Rules(e.target.value)}
             onBlur={(e) => updateKnowledge2Rules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground">Rules</label>
+          <label className="text-xs text-muted-foreground text-right">
+            Rules
+          </label>
         </div>
 
         {/* Knowledge 2 Observation Conditions */}
@@ -426,7 +428,7 @@ export function KnowledgeCard({
               updateKnowledge2ObservationConditions(e.target.value)
             }
           />
-          <label className="text-xs text-muted-foreground">
+          <label className="text-xs text-muted-foreground text-right">
             Observation Conditions
           </label>
         </div>

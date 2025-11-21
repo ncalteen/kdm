@@ -84,8 +84,11 @@ export function SurvivorCard({
               selectedSurvivor={selectedSurvivor}
             />
             <SurvivalCard
+              mode={mode}
+              saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
+              selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
             />
             <WeaponProficiencyCard
@@ -125,8 +128,11 @@ export function SurvivorCard({
             <SanityCard
               displayText={true}
               displayTormentInput={true}
+              mode={mode}
+              saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
+              selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
             />
             <HeadCard
