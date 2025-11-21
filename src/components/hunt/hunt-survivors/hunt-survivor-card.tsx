@@ -235,6 +235,7 @@ export function HuntSurvivorCard({
           saveSelectedSurvivor={saveSelectedSurvivor}
           selectedHunt={selectedHunt}
           selectedSettlement={selectedSettlement}
+          selectedShowdown={null}
           selectedSurvivor={selectedSurvivor}
           setSurvivors={setSurvivors}
           survivors={survivors}
