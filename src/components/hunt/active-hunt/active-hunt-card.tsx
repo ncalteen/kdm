@@ -217,10 +217,8 @@ export function ActiveHuntCard({
             ambush === AmbushType.SURVIVORS
               ? TurnType.SURVIVORS
               : TurnType.MONSTER,
-          survivorStates: [],
-          // If there is an ambush, start at round 0 (ambush round). Otherwise,
-          // start at round 1.
-          round: ambush === AmbushType.NONE ? 1 : 0
+          monsterState: { aiCardDrawn: false },
+          survivorStates: []
         }
       }
 

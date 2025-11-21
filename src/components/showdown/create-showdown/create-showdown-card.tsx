@@ -365,7 +365,7 @@ export function CreateShowdownCard({
       survivors: selectedSurvivors,
       turn: {
         currentTurn: startingTurn,
-        round: startingTurn === TurnType.MONSTER ? 1 : 0,
+        monsterState: { aiCardDrawn: false },
         survivorStates: survivorDetails.map((survivor) => ({
           activationUsed: false,
           id: survivor.id,
