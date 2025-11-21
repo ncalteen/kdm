@@ -173,7 +173,6 @@ export function KnowledgeItem({
               placeholder="Add knowledge..."
               defaultValue={selectedSettlement?.knowledges?.[index].name || ''}
               onKeyDown={handleKeyDown}
-              autoFocus
             />
 
             {/* Philosophy Selection */}
@@ -271,7 +270,6 @@ export function NewKnowledgeItem({
             placeholder="Add knowledge..."
             defaultValue={''}
             onKeyDown={handleKeyDown}
-            autoFocus
           />
 
           {/* Philosophy Selection */}

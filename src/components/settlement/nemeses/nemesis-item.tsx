@@ -143,7 +143,6 @@ export function NemesisItem({
           defaultValue={selectedSettlement?.nemeses?.[index].name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -282,7 +281,6 @@ export function NewNemesisItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       {/* Interaction Buttons */}

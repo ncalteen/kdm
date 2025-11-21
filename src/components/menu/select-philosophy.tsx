@@ -29,8 +29,6 @@ import {
  * Select Philosophy Component Properties
  */
 export interface SelectPhilosophyProps {
-  /** Auto Focus */
-  autoFocus?: boolean
   /** Disabled State */
   disabled?: boolean
   /** OnChange Handler */
@@ -54,7 +52,7 @@ export const SelectPhilosophy = forwardRef<
   SelectPhilosophyProps
 >(
   (
-    { autoFocus, onChange, onKeyDown, value: propValue, options, disabled },
+    { onChange, onKeyDown, value: propValue, options, disabled },
     ref
   ): ReactElement => {
     const [open, setOpen] = useState(false)
@@ -92,7 +90,6 @@ export const SelectPhilosophy = forwardRef<
             aria-expanded={open}
             className="w-[200px] justify-between"
             disabled={disabled}
-            autoFocus={autoFocus}
             onKeyDown={handleKeyDown}>
             {value
               ? philosophyOptions.find((p) => p.value === value)?.label

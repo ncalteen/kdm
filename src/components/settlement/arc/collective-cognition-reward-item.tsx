@@ -162,7 +162,6 @@ export function RewardItem({
           defaultValue={reward.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus={!isDisabled}
         />
       )}
 
@@ -288,7 +287,6 @@ export function NewRewardItem({
         placeholder="Add a reward..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

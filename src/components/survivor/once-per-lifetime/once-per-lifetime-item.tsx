@@ -111,7 +111,6 @@ export function OncePerLifetimeItem({
           defaultValue={selectedSurvivor?.oncePerLifetime?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -190,7 +189,6 @@ export function NewOncePerLifetimeItem({
         placeholder="Once Per Lifetime Event"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

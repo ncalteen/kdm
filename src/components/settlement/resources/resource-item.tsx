@@ -290,7 +290,6 @@ export function ResourceItem({
                   placeholder="Resource Name"
                   defaultValue={selectedSettlement?.resources?.[index].name}
                   onKeyDown={handleNameKeyDown}
-                  autoFocus
                 />
               </div>
               <div className="col-span-2">
@@ -368,7 +367,6 @@ export function ResourceItem({
                     placeholder="Resource Name"
                     defaultValue={selectedSettlement?.resources?.[index].name}
                     onKeyDown={handleNameKeyDown}
-                    autoFocus
                     className="w-full"
                   />
                 </div>
@@ -510,7 +508,6 @@ export function NewResourceItem({
                   placeholder="Add a resource..."
                   defaultValue={''}
                   onKeyDown={handleKeyDown}
-                  autoFocus
                 />
               </div>
               <div className="col-span-2">
@@ -574,7 +571,6 @@ export function NewResourceItem({
                     placeholder="Add a resource..."
                     defaultValue={''}
                     onKeyDown={handleKeyDown}
-                    autoFocus
                     className="w-full"
                   />
                 </div>

@@ -155,7 +155,6 @@ export function PrincipleItem({
                 value={nameValue}
                 onChange={(e) => setNameValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                autoFocus
               />
 
               {/* Options */}
@@ -274,7 +273,6 @@ export function NewPrincipleItem({
             onChange={(e) => setName(e.target.value)}
             onKeyDown={handleKeyDown}
             className="w-full"
-            autoFocus
           />
 
           {/* Options */}

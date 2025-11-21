@@ -122,7 +122,6 @@ export function MilestoneItem({
           defaultValue={milestone.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus={!isDisabled}
         />
       )}
 
@@ -223,7 +222,6 @@ export function NewMilestoneItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       {/* Event Input Field */}

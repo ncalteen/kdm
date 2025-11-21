@@ -191,7 +191,6 @@ export const TimelineYearRow = memo(
                     defaultValue={entries[entryIndex] || ''}
                     ref={(element) => setInputRef(element, index, entryIndex)}
                     onKeyDown={(e) => handleKeyDown(e, index, entryIndex)}
-                    autoFocus
                     className="h-7 text-xs"
                     id={`timeline.${index}.entries.${entryIndex}`}
                     name={`timeline.${index}.entries.${entryIndex}`}

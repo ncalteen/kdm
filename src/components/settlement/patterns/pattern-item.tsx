@@ -111,7 +111,6 @@ export function PatternItem({
           defaultValue={selectedSettlement?.patterns?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -191,7 +190,6 @@ export function NewPatternItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

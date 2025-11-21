@@ -111,7 +111,6 @@ export function NextDepartureItem({
           defaultValue={selectedSurvivor?.nextDeparture?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -190,7 +189,6 @@ export function NewNextDepartureItem({
         placeholder="Next Departure"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

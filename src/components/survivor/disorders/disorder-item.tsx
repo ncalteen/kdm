@@ -111,7 +111,6 @@ export function DisorderItem({
           defaultValue={selectedSurvivor?.disorders?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -191,7 +190,6 @@ export function NewDisorderItem({
         placeholder="Disorder"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

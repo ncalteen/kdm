@@ -128,7 +128,6 @@ export function LocationItem({
           defaultValue={selectedSettlement?.locations?.[index].name || ''}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -217,7 +216,6 @@ export function NewLocationItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

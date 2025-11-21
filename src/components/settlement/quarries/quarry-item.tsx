@@ -149,7 +149,6 @@ export function QuarryItem({
           defaultValue={selectedSettlement?.quarries?.[index].name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -264,7 +263,6 @@ export function NewQuarryItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

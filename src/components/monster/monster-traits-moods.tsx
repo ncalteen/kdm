@@ -84,7 +84,6 @@ function TraitItem({
           defaultValue={trait}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -150,7 +149,6 @@ function NewTraitItem({
         placeholder="Trait"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">
@@ -219,7 +217,6 @@ function MoodItem({
           defaultValue={mood}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -285,7 +282,6 @@ function NewMoodItem({
         placeholder="Mood"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

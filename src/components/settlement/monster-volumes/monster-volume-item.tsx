@@ -111,7 +111,6 @@ export function MonsterVolumeItem({
           defaultValue={selectedSettlement?.monsterVolumes?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -191,7 +190,6 @@ export function NewMonsterVolumeItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

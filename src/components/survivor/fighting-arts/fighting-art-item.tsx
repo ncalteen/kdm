@@ -125,7 +125,6 @@ export function FightingArtItem({
           defaultValue={selectedSurvivor?.[arrayName]?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -214,7 +213,6 @@ export function NewFightingArtItem({
         placeholder={placeholder}
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">
