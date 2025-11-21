@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -117,9 +118,9 @@ export function LocationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <Label className="text-sm" htmlFor={`location-unlocked-${index}`}>
             {selectedSettlement?.locations?.[index].name || ''}
-          </span>
+          </Label>
         </div>
       ) : (
         <Input

@@ -4,6 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_HEAD_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
@@ -112,7 +113,7 @@ export function HeadCard({
                     saveToLocalStorage('headDeaf', !!checked)
                   }
                 />
-                <label className="text-xs">Deaf</label>
+                <Label className="text-xs">Deaf</Label>
               </div>
 
               {/* Severe Injuries - Blind */}
@@ -148,7 +149,7 @@ export function HeadCard({
                     saveToLocalStorage('headShatteredJaw', !!checked)
                   }
                 />
-                <label className="text-xs">Shattered Jaw</label>
+                <Label className="text-xs">Shattered Jaw</Label>
               </div>
 
               {/* Severe Injuries - Intracranial Hemorrhage */}
@@ -160,7 +161,7 @@ export function HeadCard({
                     saveToLocalStorage('headIntracranialHemorrhage', !!checked)
                   }
                 />
-                <label className="text-xs">Intracranial Hemorrhage</label>
+                <Label className="text-xs">Intracranial Hemorrhage</Label>
               </div>
             </div>
 
@@ -180,7 +181,7 @@ export function HeadCard({
                     saveToLocalStorage('headHeavyDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

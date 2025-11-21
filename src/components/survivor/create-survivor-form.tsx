@@ -11,6 +11,7 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Gender, SurvivorType } from '@/lib/enums'
 import { ERROR_MESSAGE, SURVIVOR_CREATED_MESSAGE } from '@/lib/messages'
 import {
@@ -170,9 +171,9 @@ export function CreateSurvivorForm({
                           if (checked) form.setValue('gender', Gender.MALE)
                         }}
                       />
-                      <label htmlFor="male-checkbox" className="text-sm">
+                      <Label htmlFor="male-checkbox" className="text-sm">
                         M
-                      </label>
+                      </Label>
                       <Checkbox
                         id="female-checkbox"
                         checked={field.value === Gender.FEMALE}
@@ -180,9 +181,9 @@ export function CreateSurvivorForm({
                           if (checked) form.setValue('gender', Gender.FEMALE)
                         }}
                       />
-                      <label htmlFor="female-checkbox" className="text-sm">
+                      <Label htmlFor="female-checkbox" className="text-sm">
                         F
-                      </label>
+                      </Label>
                     </div>
                   </div>
                 </FormItem>

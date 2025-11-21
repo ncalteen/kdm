@@ -1,5 +1,7 @@
 'use client'
 
+import { MonsterCalculatedStats } from '@/components/showdown/showdown-monster/monster-calculated-stats'
+import { SurvivorCalculatedStats } from '@/components/showdown/showdown-survivors/survivor-calculated-stats'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,13 +13,16 @@ import {
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
-import { TurnType } from '@/lib/enums'
+import { AmbushType, TurnType } from '@/lib/enums'
 import { SHOWDOWN_TURN_MESSAGE } from '@/lib/messages'
-import { Showdown, SurvivorTurnState } from '@/schemas/showdown'
+import {
+  MonsterTurnState,
+  Showdown,
+  SurvivorTurnState
+} from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { CheckCircleIcon, SkullIcon, UsersIcon, ZapIcon } from 'lucide-react'
 import { ReactElement, useCallback, useMemo } from 'react'
-import { SurvivorCalculatedStats } from '../showdown-survivors/survivor-calculated-stats'
 
 /**
  * Turn Card Properties
@@ -71,20 +76,20 @@ export function TurnCard({
   const switchTurn = useCallback(() => {
     if (!selectedShowdown) return
 
-    const currentRound = selectedShowdown.turn?.round || 1
     const currentTurn = selectedShowdown.turn?.currentTurn || TurnType.MONSTER
 
-    // If the showdown starts with an ambush, and it is the first round, the
-    // next turn is monster (regardless of who ambushed whom). Otherwise, switch
-    // turns normally.
+    // If the showdown starts with an ambush, the next turn is monster
+    // (regardless of who ambushed whom). Otherwise, switch turns normally. E.g.
+    // if the monster ambushes, it gets to go twice.
     const nextTurn =
-      selectedShowdown.ambush && currentRound === 0
+      selectedShowdown.ambush === AmbushType.SURVIVORS ||
+      selectedShowdown.ambush === AmbushType.MONSTER
         ? TurnType.MONSTER
         : currentTurn === TurnType.MONSTER
           ? TurnType.SURVIVORS
           : TurnType.MONSTER
 
-    // If switching to survivors turn, reset all survivor turn states
+    // If switching to survivors turn, reset all survivor turn states.
     const survivorStates =
       nextTurn === TurnType.SURVIVORS
         ? selectedShowdown.survivors?.map((survivorId) => ({
@@ -96,12 +101,14 @@ export function TurnCard({
 
     saveSelectedShowdown(
       {
+        // Always clear ambush (it only applies to the first turn).
+        ambush: AmbushType.NONE,
         turn: {
           currentTurn: nextTurn,
-          survivorStates,
-          round: selectedShowdown.turn?.round
-            ? selectedShowdown.turn.round + 1
-            : 1
+          monsterState: selectedShowdown.turn?.monsterState || {
+            aiCardDrawn: false
+          },
+          survivorStates
         }
       },
       SHOWDOWN_TURN_MESSAGE(nextTurn)
@@ -133,8 +140,30 @@ export function TurnCard({
       saveSelectedShowdown({
         turn: {
           currentTurn: selectedShowdown.turn?.currentTurn || TurnType.MONSTER,
-          round: selectedShowdown.turn?.round || 1,
+          monsterState: selectedShowdown.turn?.monsterState || {
+            aiCardDrawn: false
+          },
           survivorStates: updatedStates
+        }
+      })
+    },
+    [selectedShowdown, saveSelectedShowdown]
+  )
+
+  /**
+   * Update Monster Turn State
+   */
+  const updateMonsterTurnState = useCallback(
+    (updates: Partial<MonsterTurnState>) => {
+      if (!selectedShowdown) return
+
+      const currentState = selectedShowdown.turn?.monsterState || {}
+
+      saveSelectedShowdown({
+        turn: {
+          currentTurn: selectedShowdown.turn?.currentTurn || TurnType.MONSTER,
+          survivorStates: selectedShowdown.turn?.survivorStates || [],
+          monsterState: { ...currentState, ...updates }
         }
       })
     },
@@ -151,16 +180,12 @@ export function TurnCard({
             {isMonsterTurn ? (
               <>
                 <SkullIcon className="h-5 w-5" />
-                {selectedShowdown?.turn?.round === 0
-                  ? 'Monster Turn (Ambush)'
-                  : `Monster Turn (Round: ${selectedShowdown?.turn?.round})`}
+                Monster Turn
               </>
             ) : (
               <>
                 <UsersIcon className="h-5 w-5" />
-                {selectedShowdown?.turn?.round === 0
-                  ? "Survivors' Turn (Ambush)"
-                  : `Survivors' Turn (Round: ${selectedShowdown?.turn?.round})`}
+                Survivors&apos; Turn
               </>
             )}
           </CardTitle>
@@ -168,13 +193,13 @@ export function TurnCard({
 
         <CardContent className="space-y-2">
           {/* Survivor Turn Content */}
-          {!isMonsterTurn && selectedSurvivor && selectedSurvivorTurnState && (
+          {!isMonsterTurn && (
             <div className="space-y-3">
               <div className="space-y-2">
                 {/* Survivor Name */}
                 <div className="font-medium text-sm text-center h-6">
-                  {selectedSurvivor.name || `Survivor ${selectedSurvivor.id}`}
-                  {selectedSurvivor.id === selectedShowdown?.scout && (
+                  {selectedSurvivor?.name || 'No Survivor Selected'}
+                  {selectedSurvivor?.id === selectedShowdown?.scout && (
                     <Badge variant="outline" className="ml-2">
                       Scout
                     </Badge>
@@ -186,15 +211,16 @@ export function TurnCard({
                   {/* Movement */}
                   <div className="flex items-center space-x-2">
                     <Toggle
-                      id={`movement-${selectedSurvivor.id}`}
                       size="sm"
                       variant="outline"
                       className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
-                      pressed={selectedSurvivorTurnState.movementUsed}
+                      pressed={selectedSurvivorTurnState?.movementUsed}
                       onPressedChange={(pressed: boolean) =>
-                        updateSurvivorTurnState(selectedSurvivor.id!, {
-                          movementUsed: !!pressed
-                        })
+                        selectedSurvivor
+                          ? updateSurvivorTurnState(selectedSurvivor.id!, {
+                              movementUsed: !!pressed
+                            })
+                          : null
                       }>
                       <CheckCircleIcon className="h-3 w-3" />
                       Move
@@ -204,15 +230,16 @@ export function TurnCard({
                   {/* Activation */}
                   <div className="flex items-center space-x-2">
                     <Toggle
-                      id={`activation-${selectedSurvivor.id}`}
                       size="sm"
                       variant="outline"
                       className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
-                      pressed={selectedSurvivorTurnState.activationUsed}
+                      pressed={selectedSurvivorTurnState?.activationUsed}
                       onPressedChange={(pressed: boolean) =>
-                        updateSurvivorTurnState(selectedSurvivor.id!, {
-                          activationUsed: !!pressed
-                        })
+                        selectedSurvivor
+                          ? updateSurvivorTurnState(selectedSurvivor.id!, {
+                              activationUsed: !!pressed
+                            })
+                          : null
                       }>
                       <CheckCircleIcon className="h-3 w-3" />
                       Activate
@@ -233,13 +260,49 @@ export function TurnCard({
 
           {/* Monster Turn Content */}
           {isMonsterTurn && (
-            <>
-              <Separator />
-              <div className="text-center text-sm text-muted-foreground py-4">
-                <ZapIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                End the turn when the monster is finished.
+            <div className="space-y-3">
+              <div className="space-y-2">
+                {/* Survivor Name */}
+                <div className="font-medium text-sm text-center h-6">
+                  Targeting: {selectedSurvivor?.name || 'No Survivor Selected'}
+                  {selectedSurvivor?.id === selectedShowdown?.scout && (
+                    <Badge variant="outline" className="ml-2">
+                      Scout
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-center">
+                  {/* AI Card */}
+                  <div className="flex items-center space-x-2">
+                    <Toggle
+                      size="sm"
+                      variant="outline"
+                      className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
+                      pressed={selectedShowdown?.turn.monsterState?.aiCardDrawn}
+                      onPressedChange={(pressed: boolean) =>
+                        selectedShowdown
+                          ? updateMonsterTurnState({
+                              aiCardDrawn: !!pressed
+                            })
+                          : null
+                      }>
+                      <CheckCircleIcon className="h-3 w-3" />
+                      AI Card
+                    </Toggle>
+                  </div>
+                </div>
               </div>
-            </>
+
+              <Separator />
+
+              {/* Calculated Stats */}
+              <MonsterCalculatedStats
+                selectedShowdown={selectedShowdown}
+                selectedSurvivor={selectedSurvivor}
+              />
+            </div>
           )}
         </CardContent>
       </div>

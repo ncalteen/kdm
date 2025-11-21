@@ -275,9 +275,9 @@ export function CreateHuntCard({
       <CardContent className="flex flex-col gap-2 w-full">
         {/* Hunt Quarry */}
         <div className="flex items-center justify-between">
-          <label className="text-left whitespace-nowrap min-w-[90px]">
+          <Label className="text-left whitespace-nowrap min-w-[90px]">
             Quarry
-          </label>
+          </Label>
 
           <Select
             value={selectedMonsterName}

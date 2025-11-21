@@ -4,6 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
@@ -338,14 +339,14 @@ export function SurvivalCard({
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col">
               {/* Survival Base */}
-              <label className="font-bold">Survival</label>
+              <Label className="font-bold">Survival</Label>
               <div className="flex flex-row items-center gap-2">
                 <div className="flex flex-col items-center gap-1">
                   {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
                     mode === SurvivorCardMode.HUNT_CARD) && (
-                    <label className="text-xs text-muted-foreground uppercase tracking-wide">
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wide">
                       Base
-                    </label>
+                    </Label>
                   )}
                   <NumericInput
                     value={selectedSurvivor?.survival ?? 1}
@@ -377,9 +378,9 @@ export function SurvivalCard({
                 {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
                   mode === SurvivorCardMode.HUNT_CARD) && (
                   <div className="flex flex-col items-center gap-1">
-                    <label className="text-xs text-muted-foreground uppercase tracking-wide">
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wide">
                       Tokens
-                    </label>
+                    </Label>
                     <NumericInput
                       value={
                         mode === SurvivorCardMode.SHOWDOWN_CARD
@@ -426,10 +427,11 @@ export function SurvivalCard({
                 name="cannot-spend-survival"
                 id="cannot-spend-survival"
               />
-              <div className="text-xs font-medium leading-none flex items-center">
-                <LockIcon className="inline h-3 w-3 mr-1" /> Cannot Spend
-                Survival
-              </div>
+              <Label
+                className="text-xs font-medium leading-none flex items-center"
+                htmlFor="cannot-spend-survival">
+                <LockIcon className="inline h-3 w-3" /> Cannot Spend Survival
+              </Label>
             </div>
           </div>
 
@@ -444,7 +446,9 @@ export function SurvivalCard({
                   name="can-dodge"
                   id="can-dodge"
                 />
-                <label className="text-xs">Dodge</label>
+                <Label className="text-xs" htmlFor="can-dodge">
+                  Dodge
+                </Label>
               </div>
 
               {/* Encourage */}
@@ -455,7 +459,9 @@ export function SurvivalCard({
                   name="can-encourage"
                   id="can-encourage"
                 />
-                <label className="text-xs">Encourage</label>
+                <Label className="text-xs" htmlFor="can-encourage">
+                  Encourage
+                </Label>
               </div>
 
               {/* Surge */}
@@ -466,7 +472,9 @@ export function SurvivalCard({
                   name="can-surge"
                   id="can-surge"
                 />
-                <label className="text-xs">Surge</label>
+                <Label className="text-xs" htmlFor="can-surge">
+                  Surge
+                </Label>
               </div>
 
               {/* Dash */}
@@ -477,7 +485,9 @@ export function SurvivalCard({
                   name="can-dash"
                   id="can-dash"
                 />
-                <label className="text-xs">Dash</label>
+                <Label className="text-xs" htmlFor="can-dash">
+                  Dash
+                </Label>
               </div>
 
               {/* Conditional rendering for Arc-specific attributes */}
@@ -489,7 +499,9 @@ export function SurvivalCard({
                     name="can-fist-pump"
                     id="can-fist-pump"
                   />
-                  <label className="text-xs">Fist Pump</label>
+                  <Label className="text-xs" htmlFor="can-fist-pump">
+                    Fist Pump
+                  </Label>
                 </div>
               ) : (
                 <div className="flex gap-2">
@@ -499,7 +511,9 @@ export function SurvivalCard({
                     name="can-endure"
                     id="can-endure"
                   />
-                  <label className="text-xs">Endure</label>
+                  <Label className="text-xs" htmlFor="can-endure">
+                    Endure
+                  </Label>
                 </div>
               )}
             </div>
@@ -511,11 +525,11 @@ export function SurvivalCard({
 
                 {/* Systemic Pressure */}
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <label className="text-xs">
+                  <Label className="text-xs">
                     Systemic
                     <br />
                     Pressure
-                  </label>
+                  </Label>
 
                   <NumericInput
                     value={selectedSurvivor?.systemicPressure ?? 0}

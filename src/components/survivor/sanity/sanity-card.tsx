@@ -4,6 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
@@ -305,7 +306,7 @@ export function SanityCard({
                 />
               </NumericInput>
             </div>
-            {displayText && <label className="text-xs">Insanity</label>}
+            {displayText && <Label className="text-xs">Insanity</Label>}
           </div>
 
           {/* Insanity Tokens (Showdown) */}
@@ -343,9 +344,9 @@ export function SanityCard({
                   id="insanity-tokens"
                 />
               </NumericInput>
-              <label className="text-xs text-muted-foreground uppercase tracking-wide">
+              <Label className="text-xs text-muted-foreground uppercase tracking-wide">
                 Tokens
-              </label>
+              </Label>
             </div>
           )}
 
@@ -367,7 +368,7 @@ export function SanityCard({
                   name="brain-light-damage"
                   id="brain-light-damage"
                 />
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
             </div>
             {displayText && (
@@ -381,7 +382,7 @@ export function SanityCard({
           {selectedSettlement?.survivorType === SurvivorType.ARC &&
             displayTormentInput && (
               <div className="flex flex-col items-center gap-1">
-                <label className="text-xs">Torment</label>
+                <Label className="text-xs">Torment</Label>
                 <NumericInput
                   value={selectedSurvivor?.torment ?? 0}
                   min={0}

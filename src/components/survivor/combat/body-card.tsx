@@ -4,6 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_BODY_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
@@ -112,7 +113,7 @@ export function BodyCard({
                     saveToLocalStorage('bodyDestroyedBack', !!checked)
                   }
                 />
-                <label className="text-xs">Destroyed Back</label>
+                <Label className="text-xs">Destroyed Back</Label>
               </div>
 
               {/* Severe Injuries - Broken Rib */}
@@ -132,7 +133,7 @@ export function BodyCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Broken Rib</label>
+                <Label className="text-xs">Broken Rib</Label>
               </div>
 
               {/* Severe Injuries - Gaping Chest Wound */}
@@ -154,7 +155,7 @@ export function BodyCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">G. Chest Wound</label>
+                <Label className="text-xs">G. Chest Wound</Label>
               </div>
             </div>
 
@@ -175,7 +176,7 @@ export function BodyCard({
                     saveToLocalStorage('bodyLightDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
@@ -193,7 +194,7 @@ export function BodyCard({
                     saveToLocalStorage('bodyHeavyDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

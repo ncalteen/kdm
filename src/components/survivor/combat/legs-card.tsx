@@ -4,6 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_LEGS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
@@ -114,7 +115,7 @@ export function LegsCard({
                   name="leg-hamstrung"
                   id="leg-hamstrung"
                 />
-                <label className="text-xs">Hamstrung</label>
+                <Label className="text-xs">Hamstrung</Label>
               </div>
 
               <div className="flex flex-row gap-2">
@@ -187,7 +188,7 @@ export function LegsCard({
                   name="leg-light-damage"
                   id="leg-light-damage"
                 />
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
@@ -207,7 +208,7 @@ export function LegsCard({
                   name="leg-heavy-damage"
                   id="leg-heavy-damage"
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

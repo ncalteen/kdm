@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_ARMS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
@@ -138,7 +139,7 @@ export function ArmsCard({
                     saveToLocalStorage('armRupturedMuscle', !!checked)
                   }
                 />
-                <label className="text-xs">Ruptured Muscle</label>
+                <Label className="text-xs">Ruptured Muscle</Label>
               </div>
 
               {/* Severe Injuries - Dismembered Arm */}
@@ -182,7 +183,7 @@ export function ArmsCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Contracture</label>
+                <Label className="text-xs">Contracture</Label>
               </div>
             </div>
 
@@ -205,7 +206,7 @@ export function ArmsCard({
                     }
                   />
                 </FormControl>
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
@@ -223,7 +224,7 @@ export function ArmsCard({
                     saveToLocalStorage('armHeavyDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

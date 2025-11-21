@@ -3,6 +3,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Gender } from '@/lib/enums'
 import {
   SURVIVOR_DEAD_STATUS_UPDATED_MESSAGE,
@@ -162,7 +163,7 @@ export function StatusCard({
           <div className="flex items-center">
             {/* Survivor Name */}
             <div className="flex-1 flex items-center gap-2">
-              <label className="font-bold text-left">Name</label>
+              <Label className="font-bold text-left">Name</Label>
               <Input
                 placeholder="Survivor name..."
                 defaultValue={selectedSurvivor?.name ?? ''}
@@ -173,9 +174,9 @@ export function StatusCard({
             {/* Gender */}
             <div className="ml-4 flex items-center gap-2">
               <div className="flex items-center space-x-2">
-                <label htmlFor="male-checkbox" className="text-xs">
+                <Label htmlFor="male-checkbox" className="text-xs">
                   M
-                </label>
+                </Label>
                 <Checkbox
                   id="male-checkbox"
                   checked={selectedSurvivor?.gender === Gender.MALE}
@@ -185,9 +186,9 @@ export function StatusCard({
                 />
               </div>
               <div className="flex items-center space-x-2">
-                <label htmlFor="female-checkbox" className="text-xs">
+                <Label htmlFor="female-checkbox" className="text-xs">
                   F
-                </label>
+                </Label>
                 <Checkbox
                   id="female-checkbox"
                   checked={selectedSurvivor?.gender === Gender.FEMALE}
@@ -212,27 +213,33 @@ export function StatusCard({
             {/* Dead Status */}
             <div className="flex flex-row items-center gap-1 space-y-0">
               <Checkbox
+                id={`dead-checkbox-${selectedSurvivor?.id}`}
                 checked={selectedSurvivor?.dead}
                 onCheckedChange={handleDeadToggle}
                 className="h-4 w-4 rounded-sm"
               />
               <SkullIcon className="h-3 w-3 text-muted-foreground" />
-              <label className="text-xs text-muted-foreground cursor-pointer">
+              <Label
+                className="text-xs text-muted-foreground cursor-pointer"
+                htmlFor={`dead-checkbox-${selectedSurvivor?.id}`}>
                 Dead
-              </label>
+              </Label>
             </div>
 
             {/* Retired Status */}
             <div className="flex flex-row items-center gap-1 space-y-0">
               <Checkbox
+                id={`retired-checkbox-${selectedSurvivor?.id}`}
                 checked={selectedSurvivor?.retired}
                 onCheckedChange={handleRetiredToggle}
                 className="h-4 w-4 rounded-sm"
               />
               <UserXIcon className="h-3 w-3 text-muted-foreground" />
-              <label className="text-xs text-muted-foreground cursor-pointer">
+              <Label
+                className="text-xs text-muted-foreground cursor-pointer"
+                htmlFor={`retired-checkbox-${selectedSurvivor?.id}`}>
                 Retired
-              </label>
+              </Label>
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { SelectPhilosophy } from '@/components/menu/select-philosophy'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Philosophy } from '@/lib/enums'
@@ -300,7 +301,7 @@ export function PhilosophyCard({
               updateNeurosis(e.target.value)
             }}
           />
-          <label className="text-xs text-muted-foreground">Neurosis</label>
+          <Label className="text-xs text-muted-foreground">Neurosis</Label>
         </div>
 
         {/* Tenet Knowledge and Ranks */}
@@ -315,9 +316,9 @@ export function PhilosophyCard({
                 updateTenetKnowledge(e.target.value)
               }}
             />
-            <label className="text-xs text-muted-foreground">
+            <Label className="text-xs text-muted-foreground">
               Tenet Knowledge
-            </label>
+            </Label>
           </div>
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
@@ -353,9 +354,9 @@ export function PhilosophyCard({
             onChange={(e) => setTenetKnowledgeRules(e.target.value)}
             onBlur={(e) => updateTenetKnowledgeRules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground text-right">
+          <Label className="text-xs text-muted-foreground text-right">
             Rules
-          </label>
+          </Label>
         </div>
 
         {/* Tenet Knowledge Observation Conditions */}
@@ -371,9 +372,9 @@ export function PhilosophyCard({
               updateTenetKnowledgeObservationConditions(e.target.value)
             }
           />
-          <label className="text-xs text-muted-foreground text-right">
+          <Label className="text-xs text-muted-foreground text-right">
             Observation Conditions
-          </label>
+          </Label>
         </div>
       </CardContent>
     </Card>

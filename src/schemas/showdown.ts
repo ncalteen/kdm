@@ -135,6 +135,21 @@ export const SurvivorTurnStateSchema = z.object({
 export type SurvivorTurnState = z.infer<typeof SurvivorTurnStateSchema>
 
 /**
+ * Monster Turn State Schema
+ *
+ * Tracks AI card draw and other actions for monsters during their turn.
+ */
+export const MonsterTurnStateSchema = z.object({
+  /** AI Card Drawn */
+  aiCardDrawn: z.boolean().default(false)
+})
+
+/**
+ * Survivor Turn State
+ */
+export type MonsterTurnState = z.infer<typeof MonsterTurnStateSchema>
+
+/**
  * Turn Schema
  *
  * Tracks whose turn it is and survivor action states.
@@ -142,8 +157,10 @@ export type SurvivorTurnState = z.infer<typeof SurvivorTurnStateSchema>
 export const TurnSchema = z.object({
   /** Current Turn: 'monster' or 'survivors' */
   currentTurn: z.nativeEnum(TurnType).default(TurnType.MONSTER),
-  /** Round Number (0 === ambush) */
-  round: z.number().int().min(0).default(1),
+  /** Monster Turn State */
+  monsterState: MonsterTurnStateSchema.default({
+    aiCardDrawn: false
+  }),
   /** Survivor Turn States */
   survivorStates: z.array(SurvivorTurnStateSchema).default([])
 })

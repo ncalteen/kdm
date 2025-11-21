@@ -5,6 +5,7 @@ import { CourageUnderstandingAbilities } from '@/components/survivor/courage-und
 import { FacesInTheSky } from '@/components/survivor/courage-understanding/faces-in-the-sky'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import { CampaignType } from '@/lib/enums'
 import {
   SURVIVOR_COURAGE_UPDATED_MESSAGE,
@@ -96,7 +97,7 @@ export function CourageUnderstandingCard({
         <div className="flex flex-row justify-between">
           {/* Courage */}
           <div className="flex flex-col w-[45%] gap-2">
-            <label className="font-bold text-left text-sm">Courage</label>
+            <Label className="font-bold text-left text-sm">Courage</Label>
             <div className="flex flex-row justify-between">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
@@ -141,7 +142,7 @@ export function CourageUnderstandingCard({
 
           {/* Understanding Section */}
           <div className="flex flex-col w-[45%] gap-2">
-            <label className="font-bold text-left text-sm">Understanding</label>
+            <Label className="font-bold text-left text-sm">Understanding</Label>
             <div className="flex flex-row justify-between">
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">

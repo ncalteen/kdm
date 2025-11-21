@@ -292,9 +292,9 @@ export function KnowledgeCard({
                 onChange={(e) => setKnowledge1(e.target.value)}
                 onBlur={(e) => updateKnowledge1(e.target.value)}
               />
-              <label className="text-xs text-muted-foreground">
+              <Label className="text-xs text-muted-foreground">
                 Knowledge Name
-              </label>
+              </Label>
             </div>
           </div>
           <div className="flex gap-1 pt-2">
@@ -333,9 +333,9 @@ export function KnowledgeCard({
             onChange={(e) => setKnowledge1Rules(e.target.value)}
             onBlur={(e) => updateKnowledge1Rules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground text-right">
+          <Label className="text-xs text-muted-foreground text-right">
             Rules
-          </label>
+          </Label>
         </div>
 
         {/* Knowledge 1 Observation Conditions */}
@@ -352,9 +352,9 @@ export function KnowledgeCard({
                 updateKnowledge1ObservationConditions(e.target.value)
               }
             />
-            <label className="text-xs text-muted-foreground text-right">
+            <Label className="text-xs text-muted-foreground text-right">
               Observation Conditions
-            </label>
+            </Label>
           </div>
         </div>
 
@@ -371,9 +371,9 @@ export function KnowledgeCard({
                 onChange={(e) => setKnowledge2(e.target.value)}
                 onBlur={(e) => updateKnowledge2(e.target.value)}
               />
-              <label className="text-xs text-muted-foreground">
+              <Label className="text-xs text-muted-foreground">
                 Knowledge Name
-              </label>
+              </Label>
             </div>
           </div>
           <div className="flex gap-1 pt-2">
@@ -412,9 +412,9 @@ export function KnowledgeCard({
             onChange={(e) => setKnowledge2Rules(e.target.value)}
             onBlur={(e) => updateKnowledge2Rules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground text-right">
+          <Label className="text-xs text-muted-foreground text-right">
             Rules
-          </label>
+          </Label>
         </div>
 
         {/* Knowledge 2 Observation Conditions */}
@@ -428,9 +428,9 @@ export function KnowledgeCard({
               updateKnowledge2ObservationConditions(e.target.value)
             }
           />
-          <label className="text-xs text-muted-foreground text-right">
+          <Label className="text-xs text-muted-foreground text-right">
             Observation Conditions
-          </label>
+          </Label>
         </div>
       </CardContent>
     </Card>

@@ -3,6 +3,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormItem } from '@/components/ui/form'
+import { Label } from '@/components/ui/label'
 import { SurvivorType } from '@/lib/enums'
 import {
   HUNT_XP_RANK_UP_ACHIEVED_MESSAGE,
@@ -130,7 +131,7 @@ export function HuntXPCard({
           <div className="flex items-center">
             <FormItem className="flex-1">
               <div className="flex justify-between items-center">
-                <label className="font-bold text-left text-sm">Hunt XP</label>
+                <Label className="font-bold text-left text-sm">Hunt XP</Label>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 16 }, (_, i) => {
                     const checked = (selectedSurvivor?.huntXP || 0) > i

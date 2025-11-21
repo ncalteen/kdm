@@ -2,6 +2,7 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import {
   MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE,
@@ -49,14 +50,14 @@ export function ShowdownMonsterAttributes({
         {/* Header */}
         <div className="flex flex-row items-center gap-2">
           <div className="w-20"></div>
-          <label className="text-xs flex-1 text-center">Base</label>
-          <label className="text-xs flex-1 text-center">Tokens</label>
-          <label className="text-xs flex-1 text-center">Total</label>
+          <Label className="text-xs flex-1 text-center">Base</Label>
+          <Label className="text-xs flex-1 text-center">Tokens</Label>
+          <Label className="text-xs flex-1 text-center">Total</Label>
         </div>
 
         {/* Damage */}
         <div className="flex flex-row items-center gap-2">
-          <label className="text-xs w-20">Damage</label>
+          <Label className="text-xs w-20">Damage</Label>
           <Input
             id="monster-damage"
             type="number"
@@ -111,7 +112,7 @@ export function ShowdownMonsterAttributes({
 
         {/* Movement */}
         <div className="flex flex-row items-center gap-2">
-          <label className="text-xs w-20">Movement</label>
+          <Label className="text-xs w-20">Movement</Label>
           <NumericInput
             label="Movement Base"
             value={monster.movement ?? 1}
@@ -184,7 +185,7 @@ export function ShowdownMonsterAttributes({
 
         {/* Accuracy */}
         <div className="flex flex-row items-center gap-2">
-          <label className="text-xs w-20">Accuracy</label>
+          <Label className="text-xs w-20">Accuracy</Label>
           <Input
             id="monster-accuracy"
             type="number"
@@ -237,7 +238,7 @@ export function ShowdownMonsterAttributes({
 
         {/* Strength */}
         <div className="flex flex-row items-center gap-2">
-          <label className="text-xs w-20">Strength</label>
+          <Label className="text-xs w-20">Strength</Label>
           <Input
             id="monster-strength"
             type="number"
@@ -290,7 +291,7 @@ export function ShowdownMonsterAttributes({
 
         {/* Evasion */}
         <div className="flex flex-row items-center gap-2">
-          <label className="text-xs w-20">Evasion</label>
+          <Label className="text-xs w-20">Evasion</Label>
           <Input
             id="monster-evasion"
             type="number"
@@ -343,7 +344,7 @@ export function ShowdownMonsterAttributes({
 
         {/* Luck */}
         <div className="flex flex-row items-center gap-2">
-          <label className="text-xs w-20">Luck</label>
+          <Label className="text-xs w-20">Luck</Label>
           <Input
             id="monster-luck"
             type="number"
@@ -393,7 +394,7 @@ export function ShowdownMonsterAttributes({
 
         {/* Speed */}
         <div className="flex flex-row items-center gap-2">
-          <label className="text-xs w-20">Speed</label>
+          <Label className="text-xs w-20">Speed</Label>
           <NumericInput
             label="Speed Base"
             value={monster.speed ?? 0}

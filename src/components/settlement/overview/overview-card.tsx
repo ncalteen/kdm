@@ -3,6 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import {
@@ -192,7 +193,7 @@ export function OverviewCard({
               name="survival-limit-desktop"
               id="survival-limit-desktop"
             />
-            <label className="text-center text-xs">Survival Limit</label>
+            <Label className="text-center text-xs">Survival Limit</Label>
           </div>
 
           <Separator
@@ -210,7 +211,7 @@ export function OverviewCard({
               name="population-desktop"
               id="population-desktop"
             />
-            <label className="text-center text-xs">Population</label>
+            <Label className="text-center text-xs">Population</Label>
           </div>
 
           <Separator
@@ -228,7 +229,7 @@ export function OverviewCard({
               name="death-count-desktop"
               id="death-count-desktop"
             />
-            <label className="text-center text-xs">Death Count</label>
+            <Label className="text-center text-xs">Death Count</Label>
           </div>
 
           <Separator
@@ -253,7 +254,7 @@ export function OverviewCard({
               name="lost-settlements-desktop"
               id="lost-settlements-desktop"
             />
-            <label className="text-center text-xs">Lost Settlements</label>
+            <Label className="text-center text-xs">Lost Settlements</Label>
           </div>
 
           {/* Collective Cognition (ARC only) */}
@@ -273,9 +274,9 @@ export function OverviewCard({
                   name="collective-cognition-desktop"
                   id="collective-cognition-desktop"
                 />
-                <label className="text-center text-xs">
+                <Label className="text-center text-xs">
                   Collective Cognition
-                </label>
+                </Label>
               </div>
             </>
           )}
@@ -304,7 +305,7 @@ export function OverviewCard({
                   name="lantern-research-desktop"
                   id="lantern-research-desktop"
                 />
-                <label className="text-center text-xs">Lantern Research</label>
+                <Label className="text-center text-xs">Lantern Research</Label>
               </div>
             </>
           )}
@@ -314,7 +315,7 @@ export function OverviewCard({
         <div className="lg:hidden space-y-2">
           {/* Survival Limit */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Survival Limit</label>
+            <Label className="text-sm">Survival Limit</Label>
             <NumericInput
               value={selectedSettlement?.survivalLimit ?? 1}
               min={1}
@@ -341,7 +342,7 @@ export function OverviewCard({
 
           {/* Population */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Population</label>
+            <Label className="text-sm">Population</Label>
             <Input
               type="number"
               className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -354,7 +355,7 @@ export function OverviewCard({
 
           {/* Death Count */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Death Count</label>
+            <Label className="text-sm">Death Count</Label>
             <Input
               type="number"
               className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -367,7 +368,7 @@ export function OverviewCard({
 
           {/* Lost Settlement Count */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Lost Settlements</label>
+            <Label className="text-sm">Lost Settlements</Label>
             <NumericInput
               value={selectedSettlement?.lostSettlements ?? 0}
               min={1}
@@ -395,7 +396,7 @@ export function OverviewCard({
           {/* Collective Cognition (ARC only) */}
           {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <div className="flex items-center justify-between">
-              <label className="text-sm">Collective Cognition</label>
+              <Label className="text-sm">Collective Cognition</Label>
               <Input
                 type="number"
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -413,7 +414,7 @@ export function OverviewCard({
             selectedSettlement?.campaignType ===
               CampaignType.PEOPLE_OF_THE_SUN) && (
             <div className="flex items-center justify-between">
-              <label className="text-sm">Lantern Research</label>
+              <Label className="text-sm">Lantern Research</Label>
               <NumericInput
                 value={selectedSettlement?.lanternResearchLevel ?? 0}
                 min={0}

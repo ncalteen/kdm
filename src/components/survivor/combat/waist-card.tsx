@@ -4,6 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_WAIST_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
@@ -115,7 +116,7 @@ export function WaistCard({
                   name="waist-broken-hip"
                   id="waist-broken-hip"
                 />
-                <label className="text-xs">Broken Hip</label>
+                <Label className="text-xs">Broken Hip</Label>
               </div>
 
               <div className="space-y-0 flex flex-row items-center gap-2">
@@ -128,7 +129,7 @@ export function WaistCard({
                   name="waist-intestinal-prolapse"
                   id="waist-intestinal-prolapse"
                 />
-                <label className="text-xs">Intestinal Prolapse</label>
+                <Label className="text-xs">Intestinal Prolapse</Label>
               </div>
 
               <div className="space-y-0 flex flex-row items-center gap-2">
@@ -141,7 +142,7 @@ export function WaistCard({
                   name="waist-destroyed-genitals"
                   id="waist-destroyed-genitals"
                 />
-                <label className="text-xs">Destroyed Genitals</label>
+                <Label className="text-xs">Destroyed Genitals</Label>
               </div>
 
               <div className="space-y-0 flex flex-row items-center gap-2">
@@ -164,7 +165,7 @@ export function WaistCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">W. Pelvis</label>
+                <Label className="text-xs">W. Pelvis</Label>
               </div>
             </div>
 
@@ -187,7 +188,7 @@ export function WaistCard({
                   name="waist-light-damage"
                   id="waist-light-damage"
                 />
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
@@ -207,7 +208,7 @@ export function WaistCard({
                   name="waist-heavy-damage"
                   id="waist-heavy-damage"
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Milestone } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -103,6 +104,7 @@ export function MilestoneItem({
 
       {/* Completion Checkbox */}
       <Checkbox
+        id={`milestone-${index}-complete`}
         checked={milestone.complete}
         disabled={!isDisabled}
         onCheckedChange={(checked) => {
@@ -113,7 +115,9 @@ export function MilestoneItem({
       {/* Name Display/Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">{milestone.name}</span>
+          <Label className="text-sm" htmlFor={`milestone-${index}-complete`}>
+            {milestone.name}
+          </Label>
         </div>
       ) : (
         <Input

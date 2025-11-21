@@ -3,6 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
@@ -257,21 +258,21 @@ export function AttributeCard({
         {/* Label Row */}
         {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
           mode === SurvivorCardMode.HUNT_CARD) && <div className="max-w-12" />}
-        <label className="text-xs text-center">Movement</label>
-        <label className="text-xs text-center">Accuracy</label>
-        <label className="text-xs text-center">Strength</label>
-        <label className="text-xs text-center">Evasion</label>
-        <label className="text-xs text-center">Luck</label>
-        <label className="text-xs text-center">Speed</label>
+        <Label className="text-xs text-center">Movement</Label>
+        <Label className="text-xs text-center">Accuracy</Label>
+        <Label className="text-xs text-center">Strength</Label>
+        <Label className="text-xs text-center">Evasion</Label>
+        <Label className="text-xs text-center">Luck</Label>
+        <Label className="text-xs text-center">Speed</Label>
         {selectedSettlement?.survivorType === SurvivorType.ARC && (
-          <label className="text-xs text-center">Lumi</label>
+          <Label className="text-xs text-center">Lumi</Label>
         )}
 
         {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
           mode === SurvivorCardMode.HUNT_CARD) && (
-          <label className="text-xs flex items-center justify-center max-w-12">
+          <Label className="text-xs flex items-center justify-center max-w-12">
             Base
-          </label>
+          </Label>
         )}
 
         {/* Movement */}
@@ -468,9 +469,9 @@ export function AttributeCard({
         {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
           mode === SurvivorCardMode.HUNT_CARD) && (
           <>
-            <label className="text-xs text-center flex items-center justify-center max-w-12">
+            <Label className="text-xs text-center flex items-center justify-center max-w-12">
               Tokens
-            </label>
+            </Label>
 
             {/* Movement Tokens */}
             <div className="flex flex-col items-center gap-1">
