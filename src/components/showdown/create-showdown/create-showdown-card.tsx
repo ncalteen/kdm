@@ -859,18 +859,14 @@ export function CreateShowdownCard({
         <div className="flex items-center justify-center gap-2">
           <Toggle
             pressed={startingTurn === TurnType.SURVIVORS}
-            onPressedChange={(pressed) =>
-              setStartingTurn(pressed ? TurnType.SURVIVORS : TurnType.MONSTER)
-            }
+            onPressedChange={() => setStartingTurn(TurnType.SURVIVORS)}
             variant="outline"
             className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
             Survivors
           </Toggle>
           <Toggle
             pressed={startingTurn === TurnType.MONSTER}
-            onPressedChange={(pressed) =>
-              setStartingTurn(pressed ? TurnType.MONSTER : TurnType.SURVIVORS)
-            }
+            onPressedChange={() => setStartingTurn(TurnType.MONSTER)}
             variant="outline"
             className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
             Monster
