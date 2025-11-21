@@ -42,6 +42,11 @@ import { toast } from 'sonner'
 interface ActiveHuntCardProps {
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (
+    updateData: Partial<Survivor>,
+    successMsg?: string
+  ) => void
   /** Selected Hunt */
   selectedHunt: Partial<Hunt> | null
   /** Selected Settlement */
@@ -52,14 +57,14 @@ interface ActiveHuntCardProps {
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
   setSelectedTab: (tab: TabType) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Selected Survivor */
-  updateSelectedSurvivor: (survivor: Survivor) => void
 }
 
 /**
@@ -70,15 +75,16 @@ interface ActiveHuntCardProps {
  */
 export function ActiveHuntCard({
   saveSelectedHunt,
+  saveSelectedSurvivor,
   selectedHunt,
   selectedSettlement,
   selectedSurvivor,
   setSelectedHunt,
   setSelectedShowdown,
+  setSelectedSurvivor,
   setSelectedTab,
   setSurvivors,
-  survivors,
-  updateSelectedSurvivor
+  survivors
 }: ActiveHuntCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
   const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
@@ -287,12 +293,13 @@ export function ActiveHuntCard({
       {/* Hunt Party Survivors */}
       <HuntSurvivorsCard
         saveSelectedHunt={saveSelectedHunt}
+        saveSelectedSurvivor={saveSelectedSurvivor}
         selectedHunt={selectedHunt}
         selectedSettlement={selectedSettlement}
         selectedSurvivor={selectedSurvivor}
+        setSelectedSurvivor={setSelectedSurvivor}
         setSurvivors={setSurvivors}
         survivors={survivors}
-        updateSelectedSurvivor={updateSelectedSurvivor}
       />
 
       {/* Cancel Hunt Confirmation Dialog */}

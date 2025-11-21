@@ -231,7 +231,7 @@ export function DisordersCard({
 
       {/* Disorders List */}
       <CardContent className="p-0">
-        <div className="flex flex-col h-27">
+        <div className="flex flex-col">
           {selectedSurvivor?.disorders?.length !== 0 && (
             <DndContext
               sensors={sensors}

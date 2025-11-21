@@ -458,7 +458,7 @@ export function FightingArtsCard({
 
       {/* Fighting Arts List */}
       <CardContent className="p-0">
-        <div className="flex flex-col h-27">
+        <div className="flex flex-col">
           {/* Fighting Arts */}
           {selectedSurvivor?.fightingArts?.length !== 0 && (
             <DndContext

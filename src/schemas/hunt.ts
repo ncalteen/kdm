@@ -21,10 +21,10 @@ export const SurvivorHuntDetailsSchema = z.object({
   insanityTokens: z.number().int().default(0),
   /** Luck Tokens */
   luckTokens: z.number().int().default(0),
-  /** Survivor Notes */
-  notes: z.string().default(''),
   /** Movement Tokens */
   movementTokens: z.number().int().default(0),
+  /** Survivor Notes */
+  notes: z.string().default(''),
   /** Speed Tokens */
   speedTokens: z.number().int().default(0),
   /** Strength Tokens */

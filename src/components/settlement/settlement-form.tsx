@@ -435,15 +435,16 @@ export function SettlementForm({
           {selectedSettlement && selectedTab === 'hunt' && (
             <HuntCard
               saveSelectedHunt={saveSelectedHunt}
+              saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
               setSelectedHunt={setSelectedHunt}
               setSelectedShowdown={setSelectedShowdown}
+              setSelectedSurvivor={setSelectedSurvivor}
               setSelectedTab={setSelectedTab}
               setSurvivors={setSurvivors}
               survivors={survivors}
-              updateSelectedSurvivor={updateSelectedSurvivor}
             />
           )}
 

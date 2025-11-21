@@ -14,7 +14,7 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { ColorChoice, SurvivorCardMode } from '@/lib/enums'
 import {
-  HUNT_NOTES_SAVED_MESSAGE,
+  SHOWDOWN_NOTES_SAVED_MESSAGE,
   SURVIVOR_COLOR_CHANGED_MESSAGE
 } from '@/lib/messages'
 import { getCardColorStyles, getColorStyle } from '@/lib/utils'
@@ -41,10 +41,10 @@ interface ShowdownSurvivorCardProps {
     updateData: Partial<Survivor>,
     successMsg?: string
   ) => void
-  /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
+  /** Selected Showdown */
+  selectedShowdown: Partial<Showdown> | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Survivors */
@@ -63,8 +63,8 @@ interface ShowdownSurvivorCardProps {
 export function ShowdownSurvivorCard({
   saveSelectedShowdown,
   saveSelectedSurvivor,
-  selectedShowdown,
   selectedSettlement,
+  selectedShowdown,
   selectedSurvivor,
   setSurvivors,
   survivor,
@@ -146,7 +146,7 @@ export function ShowdownSurvivorCard({
 
     saveSelectedShowdown(
       { survivorDetails: updatedDetails },
-      HUNT_NOTES_SAVED_MESSAGE()
+      SHOWDOWN_NOTES_SAVED_MESSAGE()
     )
   }
 
@@ -214,14 +214,15 @@ export function ShowdownSurvivorCard({
         </Popover>
 
         <div className="text-left flex-1 min-w-0">
-          <div className="font-semibold text-sm truncate">{survivor.name}</div>
+          <div className="font-semibold text-sm truncate">
+            {survivor.name}{' '}
+            {selectedShowdown?.scout === survivor.id && (
+              <Badge variant="secondary" className="mt-1 text-xs">
+                Scout
+              </Badge>
+            )}
+          </div>
           <div className="text-xs text-muted-foreground">{survivor.gender}</div>
-          {/* Scout Badge */}
-          {selectedShowdown?.scout === survivor.id && (
-            <Badge variant="secondary" className="mt-1 text-xs">
-              Scout
-            </Badge>
-          )}
         </div>
       </CardHeader>
 

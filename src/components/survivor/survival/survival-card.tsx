@@ -23,6 +23,7 @@ import {
   SYSTEMIC_PRESSURE_MINIMUM_ERROR_MESSAGE
 } from '@/lib/messages'
 import { cn } from '@/lib/utils'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -36,14 +37,18 @@ import { toast } from 'sonner'
 interface SurvivalCardProps {
   /** Mode */
   mode: SurvivorCardMode
+  /** Save Selected Hunt */
+  saveSelectedHunt?: (data: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Showdown */
-  saveSelectedShowdown: (data: Partial<Showdown>, successMsg?: string) => void
+  saveSelectedShowdown?: (data: Partial<Showdown>, successMsg?: string) => void
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Hunt */
+  selectedHunt?: Partial<Hunt> | null
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
   /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown?: Partial<Showdown> | null
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
 }
@@ -62,8 +67,10 @@ interface SurvivalCardProps {
  */
 export function SurvivalCard({
   mode,
+  saveSelectedHunt,
   saveSelectedShowdown,
   saveSelectedSurvivor,
+  selectedHunt,
   selectedSettlement,
   selectedShowdown,
   selectedSurvivor
@@ -71,63 +78,110 @@ export function SurvivalCard({
   const isMobile = useIsMobile()
 
   /**
-   * Save Token to Showdown Details
+   * Save Survival Tokens
    *
-   * @param tokenName Token attribute name
+   * Saves to either hunt or showdown based on mode
+   *
    * @param value New value
    */
-  const saveTokenToShowdown = (tokenName: 'survivalTokens', value: number) => {
-    if (!saveSelectedShowdown || !selectedSurvivor?.id || !selectedShowdown)
-      return
+  const saveSurvivalTokens = (value: number) => {
+    if (!selectedSurvivor?.id) return
 
-    // Get current survivor details or create new one
-    const currentDetails = selectedShowdown.survivorDetails || []
-    const survivorDetailIndex = currentDetails.findIndex(
-      (sd) => sd.id === selectedSurvivor.id
-    )
+    if (mode === SurvivorCardMode.SHOWDOWN_CARD) {
+      if (!saveSelectedShowdown || !selectedShowdown) return
 
-    let updatedDetails
-    if (survivorDetailIndex >= 0) {
-      // Update existing survivor details
-      updatedDetails = [...currentDetails]
-      updatedDetails[survivorDetailIndex] = {
-        ...updatedDetails[survivorDetailIndex],
-        [tokenName]: value
-      }
-    } else {
-      // Create new survivor details entry
-      updatedDetails = [
-        ...currentDetails,
-        {
-          id: selectedSurvivor.id!,
-          accuracyTokens: 0,
-          bleedingTokens: 0,
-          blockTokens: 0,
-          color: ColorChoice.SLATE,
-          deflectTokens: 0,
-          evasionTokens: 0,
-          insanityTokens: 0,
-          knockedDown: false,
-          luckTokens: 0,
-          movementTokens: 0,
-          notes: '',
-          priorityTarget: false,
-          speedTokens: 0,
-          strengthTokens: 0,
-          [tokenName]: value
+      // Get current survivor details or create new one
+      const currentDetails = selectedShowdown.survivorDetails || []
+      const survivorDetailIndex = currentDetails.findIndex(
+        (sd) => sd.id === selectedSurvivor.id
+      )
+
+      let updatedDetails
+      if (survivorDetailIndex >= 0) {
+        // Update existing survivor details
+        updatedDetails = [...currentDetails]
+        updatedDetails[survivorDetailIndex] = {
+          ...updatedDetails[survivorDetailIndex],
+          survivalTokens: value
         }
-      ]
-    }
+      } else {
+        // Create new survivor details entry
+        updatedDetails = [
+          ...currentDetails,
+          {
+            accuracyTokens: 0,
+            bleedingTokens: 0,
+            blockTokens: 0,
+            color: ColorChoice.SLATE,
+            deflectTokens: 0,
+            evasionTokens: 0,
+            id: selectedSurvivor.id,
+            insanityTokens: 0,
+            knockedDown: false,
+            luckTokens: 0,
+            movementTokens: 0,
+            notes: '',
+            priorityTarget: false,
+            speedTokens: 0,
+            strengthTokens: 0,
+            survivalTokens: value
+          }
+        ]
+      }
 
-    saveSelectedShowdown(
-      {
-        survivorDetails: updatedDetails
-      },
-      SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE('survival')
-    )
+      saveSelectedShowdown(
+        {
+          survivorDetails: updatedDetails
+        },
+        SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE('survival')
+      )
+    } else if (mode === SurvivorCardMode.HUNT_CARD) {
+      if (!saveSelectedHunt || !selectedHunt) return
+
+      // Get current survivor details or create new one
+      const currentDetails = selectedHunt.survivorDetails || []
+      const survivorDetailIndex = currentDetails.findIndex(
+        (sd) => sd.id === selectedSurvivor.id
+      )
+
+      let updatedDetails
+      if (survivorDetailIndex >= 0) {
+        // Update existing survivor details
+        updatedDetails = [...currentDetails]
+        updatedDetails[survivorDetailIndex] = {
+          ...updatedDetails[survivorDetailIndex],
+          survivalTokens: value
+        }
+      } else {
+        // Create new survivor details entry
+        updatedDetails = [
+          ...currentDetails,
+          {
+            accuracyTokens: 0,
+            color: ColorChoice.SLATE,
+            evasionTokens: 0,
+            id: selectedSurvivor.id,
+            insanityTokens: 0,
+            luckTokens: 0,
+            movementTokens: 0,
+            notes: '',
+            speedTokens: 0,
+            strengthTokens: 0,
+            survivalTokens: value
+          }
+        ]
+      }
+
+      saveSelectedHunt(
+        {
+          survivorDetails: updatedDetails
+        },
+        SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE('survival')
+      )
+    }
   }
 
-  const survivorDetails = useMemo(
+  const survivorShowdownDetails = useMemo(
     () =>
       selectedShowdown?.survivorDetails?.find(
         (sd) => sd.id === selectedSurvivor?.id
@@ -150,6 +204,26 @@ export function SurvivalCard({
         survivalTokens: 0
       },
     [selectedShowdown, selectedSurvivor?.id]
+  )
+
+  const survivorHuntDetails = useMemo(
+    () =>
+      selectedHunt?.survivorDetails?.find(
+        (sd) => sd.id === selectedSurvivor?.id
+      ) || {
+        accuracyTokens: 0,
+        color: ColorChoice.SLATE,
+        evasionTokens: 0,
+        id: 0,
+        insanityTokens: 0,
+        luckTokens: 0,
+        movementTokens: 0,
+        notes: '',
+        speedTokens: 0,
+        strengthTokens: 0,
+        survivalTokens: 0
+      },
+    [selectedHunt, selectedSurvivor?.id]
   )
 
   /**
@@ -267,7 +341,8 @@ export function SurvivalCard({
               <label className="font-bold">Survival</label>
               <div className="flex flex-row items-center gap-2">
                 <div className="flex flex-col items-center gap-1">
-                  {mode === SurvivorCardMode.SHOWDOWN_CARD && (
+                  {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
+                    mode === SurvivorCardMode.HUNT_CARD) && (
                     <label className="text-xs text-muted-foreground uppercase tracking-wide">
                       Base
                     </label>
@@ -300,32 +375,40 @@ export function SurvivalCard({
                 </div>
 
                 {/* Survival Tokens */}
-                {mode === SurvivorCardMode.SHOWDOWN_CARD && (
+                {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
+                  mode === SurvivorCardMode.HUNT_CARD) && (
                   <div className="flex flex-col items-center gap-1">
                     <label className="text-xs text-muted-foreground uppercase tracking-wide">
                       Tokens
                     </label>
                     <NumericInput
-                      value={survivorDetails.survivalTokens}
-                      label="Survival Tokens"
-                      onChange={(value) =>
-                        saveTokenToShowdown('survivalTokens', value)
+                      value={
+                        mode === SurvivorCardMode.SHOWDOWN_CARD
+                          ? survivorShowdownDetails.survivalTokens
+                          : mode === SurvivorCardMode.HUNT_CARD
+                            ? survivorHuntDetails.survivalTokens
+                            : 0
                       }
+                      label="Survival Tokens"
+                      onChange={(value) => saveSurvivalTokens(value)}
                       readOnly={false}>
                       <Input
                         key={`survival-tokens-${selectedSurvivor?.id || 'new'}`}
                         placeholder="0"
                         type="number"
                         className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                        value={survivorDetails.survivalTokens}
+                        value={
+                          mode === SurvivorCardMode.SHOWDOWN_CARD
+                            ? survivorShowdownDetails.survivalTokens
+                            : mode === SurvivorCardMode.HUNT_CARD
+                              ? survivorHuntDetails.survivalTokens
+                              : 0
+                        }
                         readOnly={isMobile}
                         onChange={
                           !isMobile
                             ? (e) =>
-                                saveTokenToShowdown(
-                                  'survivalTokens',
-                                  parseInt(e.target.value, 10)
-                                )
+                                saveSurvivalTokens(parseInt(e.target.value, 10))
                             : undefined
                         }
                         name="survival-tokens"

@@ -240,7 +240,7 @@ export function AbilitiesAndImpairmentsCard({
 
       {/* Abilities/Impairments List */}
       <CardContent className="p-0">
-        <div className="flex flex-col h-34">
+        <div className="flex flex-col">
           <div className="flex-1 overflow-y-auto">
             {selectedSurvivor?.abilitiesAndImpairments?.length !== 0 && (
               <DndContext

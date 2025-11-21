@@ -22,6 +22,7 @@ import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
 import { Card, CardContent } from '@/components/ui/card'
 import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -33,14 +34,18 @@ import { ReactElement } from 'react'
 interface SurvivorCardProps extends Partial<Survivor> {
   /** Mode */
   mode: SurvivorCardMode
+  /** Save Selected Hunt */
+  saveSelectedHunt?: (data: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Showdown */
-  saveSelectedShowdown: (data: Partial<Showdown>, successMsg?: string) => void
+  saveSelectedShowdown?: (data: Partial<Showdown>, successMsg?: string) => void
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Hunt */
+  selectedHunt?: Partial<Hunt> | null
   /** Selected Settlement */
   selectedSettlement: Partial<Settlement> | null
   /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown?: Partial<Showdown> | null
   /** Selected Survivor */
   selectedSurvivor: Partial<Survivor> | null
   /** Set Survivors */
@@ -56,8 +61,10 @@ interface SurvivorCardProps extends Partial<Survivor> {
  */
 export function SurvivorCard({
   mode,
+  saveSelectedHunt,
   saveSelectedShowdown,
   saveSelectedSurvivor,
+  selectedHunt,
   selectedSettlement,
   selectedShowdown,
   selectedSurvivor,
@@ -85,8 +92,10 @@ export function SurvivorCard({
             />
             <SurvivalCard
               mode={mode}
+              saveSelectedHunt={saveSelectedHunt}
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
               selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
@@ -118,8 +127,10 @@ export function SurvivorCard({
           <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px]">
             <AttributeCard
               mode={mode}
+              saveSelectedHunt={saveSelectedHunt}
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
               selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}

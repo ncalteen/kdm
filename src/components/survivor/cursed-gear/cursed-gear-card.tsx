@@ -213,7 +213,7 @@ export function CursedGearCard({
 
       {/* Cursed Gear List */}
       <CardContent className="p-0">
-        <div className="flex flex-col h-27">
+        <div className="flex flex-col">
           <div className="flex-1 overflow-y-auto">
             {(selectedSurvivor?.cursedGear || []).length !== 0 && (
               <DndContext

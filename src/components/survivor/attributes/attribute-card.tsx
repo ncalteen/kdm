@@ -14,6 +14,7 @@ import {
   SURVIVOR_SPEED_UPDATED_MESSAGE,
   SURVIVOR_STRENGTH_UPDATED_MESSAGE
 } from '@/lib/messages'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -25,14 +26,18 @@ import { ReactElement, useMemo } from 'react'
 interface AttributeCardProps {
   /** Mode */
   mode: SurvivorCardMode
+  /** Save Selected Hunt */
+  saveSelectedHunt?: (data: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Showdown */
-  saveSelectedShowdown:
+  saveSelectedShowdown?:
     | ((data: Partial<Showdown>, successMsg?: string) => void)
     | null
   /** Save Selected Survivor */
   saveSelectedSurvivor:
     | ((data: Partial<Survivor>, successMsg?: string) => void)
     | null
+  /** Selected Hunt */
+  selectedHunt?: Partial<Hunt> | null
   /** Selected Settlemenet */
   selectedSettlement: Partial<Settlement> | null
   /** Selected Showdown */
@@ -55,8 +60,10 @@ interface AttributeCardProps {
  */
 export function AttributeCard({
   mode,
+  saveSelectedHunt,
   saveSelectedShowdown,
   saveSelectedSurvivor,
+  selectedHunt,
   selectedSettlement,
   selectedShowdown,
   selectedSurvivor,
@@ -102,75 +109,123 @@ export function AttributeCard({
   }
 
   /**
-   * Save Token to Showdown Details
+   * Save Tokens
+   *
+   * Saves to either hunt or showdown based on mode
    *
    * @param tokenName Token attribute name
    * @param value New value
    */
-  const saveTokenToShowdown = (
+  const saveTokens = (
     tokenName:
-      | 'movementTokens'
       | 'accuracyTokens'
-      | 'strengthTokens'
       | 'evasionTokens'
       | 'luckTokens'
-      | 'speedTokens',
+      | 'movementTokens'
+      | 'speedTokens'
+      | 'strengthTokens',
     value: number
   ) => {
-    if (!saveSelectedShowdown || !selectedSurvivor?.id || !selectedShowdown)
-      return
+    if (!selectedSurvivor?.id) return
 
-    // Get current survivor details or create new one
-    const currentDetails = selectedShowdown.survivorDetails || []
-    const survivorDetailIndex = currentDetails.findIndex(
-      (sd) => sd.id === selectedSurvivor.id
-    )
+    if (mode === SurvivorCardMode.SHOWDOWN_CARD) {
+      if (!saveSelectedShowdown || !selectedShowdown) return
 
-    let updatedDetails
-    if (survivorDetailIndex >= 0) {
-      // Update existing survivor details
-      updatedDetails = [...currentDetails]
-      updatedDetails[survivorDetailIndex] = {
-        ...updatedDetails[survivorDetailIndex],
-        [tokenName]: value
-      }
-    } else {
-      // Create new survivor details entry
-      updatedDetails = [
-        ...currentDetails,
-        {
-          id: selectedSurvivor.id!,
-          accuracyTokens: 0,
-          bleedingTokens: 0,
-          blockTokens: 0,
-          color: ColorChoice.SLATE,
-          deflectTokens: 0,
-          evasionTokens: 0,
-          insanityTokens: 0,
-          knockedDown: false,
-          luckTokens: 0,
-          movementTokens: 0,
-          notes: '',
-          priorityTarget: false,
-          speedTokens: 0,
-          strengthTokens: 0,
-          survivalTokens: 0,
+      // Get current survivor details or create new one
+      const currentDetails = selectedShowdown.survivorDetails || []
+      const survivorDetailIndex = currentDetails.findIndex(
+        (sd) => sd.id === selectedSurvivor.id
+      )
+
+      let updatedDetails
+      if (survivorDetailIndex >= 0) {
+        // Update existing survivor details
+        updatedDetails = [...currentDetails]
+        updatedDetails[survivorDetailIndex] = {
+          ...updatedDetails[survivorDetailIndex],
           [tokenName]: value
         }
-      ]
-    }
+      } else {
+        // Create new survivor details entry
+        updatedDetails = [
+          ...currentDetails,
+          {
+            accuracyTokens: 0,
+            bleedingTokens: 0,
+            blockTokens: 0,
+            color: ColorChoice.SLATE,
+            deflectTokens: 0,
+            evasionTokens: 0,
+            id: selectedSurvivor.id!,
+            insanityTokens: 0,
+            knockedDown: false,
+            luckTokens: 0,
+            movementTokens: 0,
+            notes: '',
+            priorityTarget: false,
+            speedTokens: 0,
+            strengthTokens: 0,
+            survivalTokens: 0,
+            [tokenName]: value
+          }
+        ]
+      }
 
-    saveSelectedShowdown({
-      survivorDetails: updatedDetails
-    })
+      saveSelectedShowdown({
+        survivorDetails: updatedDetails
+      })
+    } else if (mode === SurvivorCardMode.HUNT_CARD) {
+      if (!saveSelectedHunt || !selectedHunt) return
+
+      // Get current survivor details or create new one
+      const currentDetails = selectedHunt.survivorDetails || []
+      const survivorDetailIndex = currentDetails.findIndex(
+        (sd) => sd.id === selectedSurvivor.id
+      )
+
+      let updatedDetails
+      if (survivorDetailIndex >= 0) {
+        // Update existing survivor details
+        updatedDetails = [...currentDetails]
+        updatedDetails[survivorDetailIndex] = {
+          ...updatedDetails[survivorDetailIndex],
+          [tokenName]: value
+        }
+      } else {
+        // Create new survivor details entry
+        updatedDetails = [
+          ...currentDetails,
+          {
+            accuracyTokens: 0,
+            color: ColorChoice.SLATE,
+            evasionTokens: 0,
+            id: selectedSurvivor.id!,
+            insanityTokens: 0,
+            luckTokens: 0,
+            movementTokens: 0,
+            notes: '',
+            speedTokens: 0,
+            strengthTokens: 0,
+            survivalTokens: 0,
+            [tokenName]: value
+          }
+        ]
+      }
+
+      saveSelectedHunt({
+        survivorDetails: updatedDetails
+      })
+    }
   }
 
   const columnCount = useMemo(() => {
     return selectedSettlement?.survivorType === SurvivorType.ARC
-      ? mode === SurvivorCardMode.SHOWDOWN_CARD
+      ? mode === SurvivorCardMode.SHOWDOWN_CARD ||
+        mode === SurvivorCardMode.HUNT_CARD
         ? 'grid-cols-8'
         : 'grid-cols-7'
-      : mode === SurvivorCardMode.SHOWDOWN_CARD
+      : mode === SurvivorCardMode.SHOWDOWN_CARD ||
+          mode === SurvivorCardMode.HUNT_CARD
         ? 'grid-cols-7'
         : 'grid-cols-6'
   }, [selectedSettlement?.survivorType, mode])
@@ -204,9 +259,8 @@ export function AttributeCard({
     <Card className="p-2 border-0">
       <CardContent className={`grid ${columnCount} gap-2 p-0`}>
         {/* Label Row */}
-        {mode === SurvivorCardMode.SHOWDOWN_CARD && (
-          <div className="max-w-12" />
-        )}
+        {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
+          mode === SurvivorCardMode.HUNT_CARD) && <div className="max-w-12" />}
         <label className="text-xs text-center">Movement</label>
         <label className="text-xs text-center">Accuracy</label>
         <label className="text-xs text-center">Strength</label>
@@ -217,7 +271,8 @@ export function AttributeCard({
           <label className="text-xs text-center">Lumi</label>
         )}
 
-        {mode === SurvivorCardMode.SHOWDOWN_CARD && (
+        {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
+          mode === SurvivorCardMode.HUNT_CARD) && (
           <label className="text-xs flex items-center justify-center max-w-12">
             Base
           </label>
@@ -421,7 +476,8 @@ export function AttributeCard({
           </div>
         )}
 
-        {mode === SurvivorCardMode.SHOWDOWN_CARD && (
+        {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
+          mode === SurvivorCardMode.HUNT_CARD) && (
           <>
             <label className="text-xs text-center flex items-center justify-center max-w-12">
               Tokens
@@ -432,9 +488,7 @@ export function AttributeCard({
               <NumericInput
                 value={survivorDetails.movementTokens}
                 label="Movement Tokens"
-                onChange={(value) =>
-                  saveTokenToShowdown('movementTokens', value)
-                }
+                onChange={(value) => saveTokens('movementTokens', value)}
                 readOnly={readOnly}>
                 <Input
                   key={`movement-tokens-${selectedSurvivor?.id || 'new'}`}
@@ -446,7 +500,7 @@ export function AttributeCard({
                   onChange={
                     !isMobile && !readOnly
                       ? (e) =>
-                          saveTokenToShowdown(
+                          saveTokens(
                             'movementTokens',
                             parseInt(e.target.value, 10)
                           )
@@ -463,9 +517,7 @@ export function AttributeCard({
               <NumericInput
                 value={survivorDetails.accuracyTokens}
                 label="Accuracy Tokens"
-                onChange={(value) =>
-                  saveTokenToShowdown('accuracyTokens', value)
-                }
+                onChange={(value) => saveTokens('accuracyTokens', value)}
                 readOnly={readOnly}>
                 <Input
                   key={`accuracy-tokens-${selectedSurvivor?.id || 'new'}`}
@@ -477,7 +529,7 @@ export function AttributeCard({
                   onChange={
                     !isMobile && !readOnly
                       ? (e) =>
-                          saveTokenToShowdown(
+                          saveTokens(
                             'accuracyTokens',
                             parseInt(e.target.value, 10)
                           )
@@ -494,9 +546,7 @@ export function AttributeCard({
               <NumericInput
                 value={survivorDetails.strengthTokens}
                 label="Strength Tokens"
-                onChange={(value) =>
-                  saveTokenToShowdown('strengthTokens', value)
-                }
+                onChange={(value) => saveTokens('strengthTokens', value)}
                 readOnly={readOnly}>
                 <Input
                   key={`strength-tokens-${selectedSurvivor?.id || 'new'}`}
@@ -508,7 +558,7 @@ export function AttributeCard({
                   onChange={
                     !isMobile && !readOnly
                       ? (e) =>
-                          saveTokenToShowdown(
+                          saveTokens(
                             'strengthTokens',
                             parseInt(e.target.value, 10)
                           )
@@ -525,9 +575,7 @@ export function AttributeCard({
               <NumericInput
                 value={survivorDetails.evasionTokens}
                 label="Evasion Tokens"
-                onChange={(value) =>
-                  saveTokenToShowdown('evasionTokens', value)
-                }
+                onChange={(value) => saveTokens('evasionTokens', value)}
                 readOnly={readOnly}>
                 <Input
                   key={`evasion-tokens-${selectedSurvivor?.id || 'new'}`}
@@ -539,7 +587,7 @@ export function AttributeCard({
                   onChange={
                     !isMobile && !readOnly
                       ? (e) =>
-                          saveTokenToShowdown(
+                          saveTokens(
                             'evasionTokens',
                             parseInt(e.target.value, 10)
                           )
@@ -556,7 +604,7 @@ export function AttributeCard({
               <NumericInput
                 value={survivorDetails.luckTokens}
                 label="Luck Tokens"
-                onChange={(value) => saveTokenToShowdown('luckTokens', value)}
+                onChange={(value) => saveTokens('luckTokens', value)}
                 readOnly={readOnly}>
                 <Input
                   key={`luck-tokens-${selectedSurvivor?.id || 'new'}`}
@@ -568,10 +616,7 @@ export function AttributeCard({
                   onChange={
                     !isMobile && !readOnly
                       ? (e) =>
-                          saveTokenToShowdown(
-                            'luckTokens',
-                            parseInt(e.target.value, 10)
-                          )
+                          saveTokens('luckTokens', parseInt(e.target.value, 10))
                       : undefined
                   }
                   name="luck-tokens"
@@ -585,7 +630,7 @@ export function AttributeCard({
               <NumericInput
                 value={survivorDetails.speedTokens}
                 label="Speed Tokens"
-                onChange={(value) => saveTokenToShowdown('speedTokens', value)}
+                onChange={(value) => saveTokens('speedTokens', value)}
                 readOnly={readOnly}>
                 <Input
                   key={`speed-tokens-${selectedSurvivor?.id || 'new'}`}
@@ -597,7 +642,7 @@ export function AttributeCard({
                   onChange={
                     !isMobile && !readOnly
                       ? (e) =>
-                          saveTokenToShowdown(
+                          saveTokens(
                             'speedTokens',
                             parseInt(e.target.value, 10)
                           )
