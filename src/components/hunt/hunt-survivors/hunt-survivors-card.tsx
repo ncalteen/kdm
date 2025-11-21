@@ -143,7 +143,6 @@ export function HuntSurvivorsCard({
       </div>
 
       <HuntSurvivorCard
-        key={`hunt-survivor-card-${selectedSurvivor?.id}`}
         saveSelectedHunt={saveSelectedHunt}
         saveSelectedSurvivor={saveSelectedSurvivor}
         selectedHunt={selectedHunt}

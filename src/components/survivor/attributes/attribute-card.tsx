@@ -283,7 +283,6 @@ export function AttributeCard({
             onChange={(value) => saveToLocalStorage('movement', value)}
             readOnly={readOnly}>
             <Input
-              key={`movement-${selectedSurvivor?.id || 'new'}`}
               placeholder="1"
               type="number"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -312,7 +311,6 @@ export function AttributeCard({
             onChange={(value) => saveToLocalStorage('accuracy', value)}
             readOnly={readOnly}>
             <Input
-              key={`accuracy-${selectedSurvivor?.id || 'new'}`}
               placeholder="0"
               type="number"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -341,7 +339,6 @@ export function AttributeCard({
             onChange={(value) => saveToLocalStorage('strength', value)}
             readOnly={readOnly}>
             <Input
-              key={`strength-${selectedSurvivor?.id || 'new'}`}
               placeholder="0"
               type="number"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -370,7 +367,6 @@ export function AttributeCard({
             onChange={(value) => saveToLocalStorage('evasion', value)}
             readOnly={readOnly}>
             <Input
-              key={`evasion-${selectedSurvivor?.id || 'new'}`}
               placeholder="0"
               type="number"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -399,7 +395,6 @@ export function AttributeCard({
             onChange={(value) => saveToLocalStorage('luck', value)}
             readOnly={readOnly}>
             <Input
-              key={`luck-${selectedSurvivor?.id || 'new'}`}
               placeholder="0"
               type="number"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -425,7 +420,6 @@ export function AttributeCard({
             onChange={(value) => saveToLocalStorage('speed', value)}
             readOnly={readOnly}>
             <Input
-              key={`speed-${selectedSurvivor?.id || 'new'}`}
               placeholder="0"
               type="number"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -453,7 +447,6 @@ export function AttributeCard({
               onChange={(value) => saveToLocalStorage('lumi', value)}
               readOnly={readOnly}>
               <Input
-                key={`lumi-${selectedSurvivor?.id || 'new'}`}
                 placeholder="0"
                 type="number"
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -487,7 +480,6 @@ export function AttributeCard({
                 onChange={(value) => saveTokens('movementTokens', value)}
                 readOnly={readOnly}>
                 <Input
-                  key={`movement-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="1"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
@@ -516,7 +508,6 @@ export function AttributeCard({
                 onChange={(value) => saveTokens('accuracyTokens', value)}
                 readOnly={readOnly}>
                 <Input
-                  key={`accuracy-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="0"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
@@ -545,7 +536,6 @@ export function AttributeCard({
                 onChange={(value) => saveTokens('strengthTokens', value)}
                 readOnly={readOnly}>
                 <Input
-                  key={`strength-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="0"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
@@ -574,7 +564,6 @@ export function AttributeCard({
                 onChange={(value) => saveTokens('evasionTokens', value)}
                 readOnly={readOnly}>
                 <Input
-                  key={`evasion-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="0"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
@@ -603,7 +592,6 @@ export function AttributeCard({
                 onChange={(value) => saveTokens('luckTokens', value)}
                 readOnly={readOnly}>
                 <Input
-                  key={`luck-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="0"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
@@ -629,7 +617,6 @@ export function AttributeCard({
                 onChange={(value) => saveTokens('speedTokens', value)}
                 readOnly={readOnly}>
                 <Input
-                  key={`speed-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="0"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"

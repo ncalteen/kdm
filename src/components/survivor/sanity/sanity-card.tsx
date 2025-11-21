@@ -323,7 +323,6 @@ export function SanityCard({
                 onChange={(value) => saveInsanityTokens(value)}
                 readOnly={false}>
                 <Input
-                  key={`insanity-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="0"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"

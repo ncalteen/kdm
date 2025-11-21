@@ -146,7 +146,6 @@ export function ShowdownSurvivorsCard({
       </div>
 
       <ShowdownSurvivorCard
-        key={`showdown-survivor-card-${selectedSurvivor?.id}`}
         saveSelectedShowdown={saveSelectedShowdown}
         saveSelectedSurvivor={saveSelectedSurvivor}
         selectedSettlement={selectedSettlement}

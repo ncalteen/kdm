@@ -164,7 +164,6 @@ export function StatusCard({
             <div className="flex-1 flex items-center gap-2">
               <label className="font-bold text-left">Name</label>
               <Input
-                key={`name-${selectedSurvivor?.id || 'new'}`}
                 placeholder="Survivor name..."
                 defaultValue={selectedSurvivor?.name ?? ''}
                 onKeyDown={(e) => handleNameKeyDown(e, e.currentTarget.value)}

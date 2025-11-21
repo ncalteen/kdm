@@ -39,7 +39,6 @@ export function ScoutSelectionCard({
   return (
     <div className="w-[200px] h-[280px] flex-grow-2 border-4 rounded-xl border-border/20 hover:border-border/50 transition-all duration-200">
       <Button
-        key={survivor.id}
         variant={isCurrentlySelected ? 'default' : 'outline'}
         className="justify-start flex flex-col p-0 w-full h-full items-stretch relative overflow-hidden"
         onClick={() => handleSurvivorToggle(survivor.id)}

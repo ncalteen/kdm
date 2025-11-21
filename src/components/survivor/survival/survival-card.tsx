@@ -355,7 +355,6 @@ export function SurvivalCard({
                     onChange={(value) => updateSurvival(value.toString())}
                     readOnly={false}>
                     <Input
-                      key={`survival-${selectedSurvivor?.id || 'new'}`}
                       placeholder="1"
                       type="number"
                       className={cn(
@@ -393,7 +392,6 @@ export function SurvivalCard({
                       onChange={(value) => saveSurvivalTokens(value)}
                       readOnly={false}>
                       <Input
-                        key={`survival-tokens-${selectedSurvivor?.id || 'new'}`}
                         placeholder="0"
                         type="number"
                         className="w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
@@ -528,7 +526,6 @@ export function SurvivalCard({
                     }
                     readOnly={false}>
                     <Input
-                      key={`systemicPressure-${selectedSurvivor?.id || 'new'}`}
                       placeholder="0"
                       type="number"
                       className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
