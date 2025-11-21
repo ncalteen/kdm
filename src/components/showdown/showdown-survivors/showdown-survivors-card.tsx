@@ -24,9 +24,9 @@ interface ShowdownSurvivorsCardProps {
     successMsg?: string
   ) => void
   /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Selected Survivor */
@@ -153,7 +153,6 @@ export function ShowdownSurvivorsCard({
         selectedShowdown={selectedShowdown}
         selectedSurvivor={selectedSurvivor}
         setSurvivors={setSurvivors}
-        survivor={selectedSurvivor}
         survivors={survivors}
       />
     </div>

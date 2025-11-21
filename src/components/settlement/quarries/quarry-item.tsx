@@ -44,7 +44,7 @@ export interface QuarryItemProps {
   /** On Update Node Handler */
   onUpdateNode: (index: number, node: NodeLevel) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**

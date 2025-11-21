@@ -28,7 +28,7 @@ export interface LocationItemProps {
   /** OnToggleUnlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**

@@ -42,15 +42,13 @@ interface ShowdownSurvivorCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
-  /** Survivor */
-  survivor: Partial<Survivor> | null
   /** Survivors */
   survivors: Survivor[] | null
 }
@@ -67,14 +65,13 @@ export function ShowdownSurvivorCard({
   selectedShowdown,
   selectedSurvivor,
   setSurvivors,
-  survivor,
   survivors
 }: ShowdownSurvivorCardProps): ReactElement {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
   // Get current survivor's showdown details
   const survivorShowdownDetails = selectedShowdown?.survivorDetails?.find(
-    (detail) => detail.id === survivor?.id
+    (detail) => detail.id === selectedSurvivor?.id
   )
 
   // State for managing notes
@@ -85,13 +82,13 @@ export function ShowdownSurvivorCard({
 
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: SurvivorSchema.parse(survivor || {})
+    defaultValues: SurvivorSchema.parse(selectedSurvivor || {})
   })
 
   // Update form values when survivor data changes
   useEffect(() => {
-    if (survivor) form.reset(survivor)
-  }, [survivor, form])
+    if (selectedSurvivor) form.reset(selectedSurvivor)
+  }, [selectedSurvivor, form])
 
   // Update notes draft when survivor showdown details change
   useEffect(() => {
@@ -103,11 +100,15 @@ export function ShowdownSurvivorCard({
    * Update Survivor Color
    */
   const updateSurvivorColor = (color: ColorChoice) => {
-    if (!survivor?.id || !selectedShowdown) return
+    if (!selectedSurvivor?.id || !selectedShowdown) return
 
     const currentDetails = selectedShowdown.survivorDetails || []
-    const survivorDetail = currentDetails.find((sd) => sd.id === survivor.id)
-    const updatedDetails = currentDetails.filter((sd) => sd.id !== survivor.id)
+    const survivorDetail = currentDetails.find(
+      (sd) => sd.id === selectedSurvivor?.id
+    )
+    const updatedDetails = currentDetails.filter(
+      (sd) => sd.id !== selectedSurvivor?.id
+    )
 
     updatedDetails.push({ ...survivorDetail!, color })
 
@@ -121,11 +122,11 @@ export function ShowdownSurvivorCard({
    * Get Current Survivor Color
    */
   const getCurrentColor = (): ColorChoice => {
-    if (!survivor?.id || !selectedShowdown?.survivorDetails)
+    if (!selectedSurvivor?.id || !selectedShowdown?.survivorDetails)
       return ColorChoice.SLATE
 
     const survivorDetail = selectedShowdown.survivorDetails.find(
-      (sc) => sc.id === survivor.id
+      (sc) => sc.id === selectedSurvivor.id
     )
 
     return survivorDetail?.color || ColorChoice.SLATE
@@ -135,13 +136,15 @@ export function ShowdownSurvivorCard({
    * Handle Save Notes
    */
   const handleSaveNotes = () => {
-    if (!survivor?.id || !selectedShowdown?.survivorDetails) return
+    if (!selectedSurvivor?.id || !selectedShowdown?.survivorDetails) return
 
     setIsNotesDirty(false)
 
     // Update or add the notes to the survivor's showdown details
     const updatedDetails = selectedShowdown.survivorDetails.map((detail) =>
-      detail.id === survivor.id ? { ...detail, notes: notesDraft } : detail
+      detail.id === selectedSurvivor.id
+        ? { ...detail, notes: notesDraft }
+        : detail
     )
 
     saveSelectedShowdown(
@@ -150,7 +153,7 @@ export function ShowdownSurvivorCard({
     )
   }
 
-  if (!survivor) return <></>
+  if (!selectedSurvivor) return <></>
 
   return (
     <Card
@@ -179,8 +182,8 @@ export function ShowdownSurvivorCard({
                 setIsColorPickerOpen(true)
               }}>
               <AvatarFallback className="font-bold text-lg text-white">
-                {survivor.name
-                  ? survivor.name
+                {selectedSurvivor.name
+                  ? selectedSurvivor.name
                       .split(' ')
                       .map((n) => n[0])
                       .join('')
@@ -215,14 +218,16 @@ export function ShowdownSurvivorCard({
 
         <div className="text-left flex-1 min-w-0">
           <div className="font-semibold text-sm truncate">
-            {survivor.name}{' '}
-            {selectedShowdown?.scout === survivor.id && (
+            {selectedSurvivor.name}{' '}
+            {selectedShowdown?.scout === selectedSurvivor.id && (
               <Badge variant="secondary" className="mt-1 text-xs">
                 Scout
               </Badge>
             )}
           </div>
-          <div className="text-xs text-muted-foreground">{survivor.gender}</div>
+          <div className="text-xs text-muted-foreground">
+            {selectedSurvivor.gender}
+          </div>
         </div>
       </CardHeader>
 
@@ -231,6 +236,7 @@ export function ShowdownSurvivorCard({
           mode={SurvivorCardMode.SHOWDOWN_CARD}
           saveSelectedShowdown={saveSelectedShowdown}
           saveSelectedSurvivor={saveSelectedSurvivor}
+          selectedHunt={null}
           selectedSettlement={selectedSettlement}
           selectedShowdown={selectedShowdown}
           selectedSurvivor={selectedSurvivor}
@@ -245,7 +251,7 @@ export function ShowdownSurvivorCard({
           <Textarea
             value={notesDraft}
             name="showdown-survivor-notes"
-            id={`showdown-survivor-notes-${survivor.id}`}
+            id={`showdown-survivor-notes-${selectedSurvivor.id}`}
             onChange={(e) => {
               setNotesDraft(e.target.value)
               setIsNotesDirty(e.target.value !== survivorShowdownDetails?.notes)

@@ -20,11 +20,13 @@ import {
   ERROR_MESSAGE,
   HUNT_BEGINS_MESSAGE,
   SCOUT_CONFLICT_MESSAGE,
-  SCOUT_REQUIRED_MESSAGE
+  SCOUT_REQUIRED_MESSAGE,
+  SHOWDOWN_ALREADY_ACTIVE_ERROR_MESSAGE
 } from '@/lib/messages'
 import { getNextHuntId } from '@/lib/utils'
 import { Hunt, SurvivorHuntDetails } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { PawPrintIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
@@ -38,6 +40,8 @@ interface CreateHuntCardProps {
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Showdown */
+  selectedShowdown: Showdown | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Survivors */
@@ -53,6 +57,7 @@ interface CreateHuntCardProps {
 export function CreateHuntCard({
   saveSelectedHunt,
   selectedSettlement,
+  selectedShowdown,
   setSelectedHunt,
   survivors
 }: CreateHuntCardProps): ReactElement {
@@ -138,6 +143,12 @@ export function CreateHuntCard({
 
   // Create Hunt
   const handleCreateHunt = () => {
+    if (
+      selectedShowdown &&
+      selectedShowdown.settlementId === selectedSettlement?.id
+    )
+      return toast.error(SHOWDOWN_ALREADY_ACTIVE_ERROR_MESSAGE())
+
     if (
       !selectedSettlement ||
       !selectedMonsterName ||

@@ -15,7 +15,7 @@ interface HuntBoardProps {
   /** On Position Update */
   onPositionUpdate: (survivorPosition: number, quarryPosition: number) => void
   /** Selected Hunt */
-  selectedHunt: Partial<Hunt> | null
+  selectedHunt: Hunt | null
 }
 
 /**

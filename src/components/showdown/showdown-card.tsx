@@ -2,6 +2,7 @@
 
 import { ActiveShowdownCard } from '@/components/showdown/active-showdown/active-showdown-card'
 import { CreateShowdownCard } from '@/components/showdown/create-showdown/create-showdown-card'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -21,6 +22,8 @@ interface ShowdownCardProps {
     updateData: Partial<Survivor>,
     successMsg?: string
   ) => void
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Selected Settlement */
@@ -46,6 +49,7 @@ interface ShowdownCardProps {
 export function ShowdownCard({
   saveSelectedShowdown,
   saveSelectedSurvivor,
+  selectedHunt,
   selectedShowdown,
   selectedSettlement,
   selectedSurvivor,
@@ -69,6 +73,7 @@ export function ShowdownCard({
   ) : (
     <CreateShowdownCard
       saveSelectedShowdown={saveSelectedShowdown}
+      selectedHunt={selectedHunt}
       selectedSettlement={selectedSettlement}
       setSelectedShowdown={setSelectedShowdown}
       survivors={survivors}

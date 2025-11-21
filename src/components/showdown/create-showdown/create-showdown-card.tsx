@@ -26,10 +26,12 @@ import {
 } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
+  HUNT_ALREADY_ACTIVE_ERROR_MESSAGE,
   NAMELESS_OBJECT_ERROR_MESSAGE,
   SHOWDOWN_CREATED_MESSAGE
 } from '@/lib/messages'
 import { getNextShowdownId } from '@/lib/utils'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown, SurvivorShowdownDetails } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -46,6 +48,8 @@ interface CreateShowdownCardProps {
     updateData: Partial<Showdown>,
     successMsg?: string
   ) => void
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Set Selected Showdown */
@@ -62,6 +66,7 @@ interface CreateShowdownCardProps {
  */
 export function CreateShowdownCard({
   saveSelectedShowdown,
+  selectedHunt,
   selectedSettlement,
   setSelectedShowdown,
   survivors
@@ -257,6 +262,10 @@ export function CreateShowdownCard({
 
   // Create Showdown
   const handleCreateShowdown = () => {
+    // Check if there's already an active hunt for this settlement
+    if (selectedHunt && selectedHunt.settlementId === selectedSettlement?.id)
+      return toast.error(HUNT_ALREADY_ACTIVE_ERROR_MESSAGE())
+
     if (
       !selectedSettlement ||
       !selectedMonsterName ||

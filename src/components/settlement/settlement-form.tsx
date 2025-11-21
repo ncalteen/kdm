@@ -269,6 +269,7 @@ export function SettlementForm({
                     mode={SurvivorCardMode.SURVIVOR_CARD}
                     saveSelectedShowdown={saveSelectedShowdown}
                     saveSelectedSurvivor={saveSelectedSurvivor}
+                    selectedHunt={selectedHunt}
                     selectedSettlement={selectedSettlement}
                     selectedShowdown={selectedShowdown}
                     selectedSurvivor={selectedSurvivor}
@@ -438,6 +439,7 @@ export function SettlementForm({
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
+              selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
               setSelectedHunt={setSelectedHunt}
               setSelectedShowdown={setSelectedShowdown}
@@ -453,6 +455,7 @@ export function SettlementForm({
             <ShowdownCard
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
               selectedShowdown={selectedShowdown}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}

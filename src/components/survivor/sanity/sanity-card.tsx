@@ -14,6 +14,7 @@ import {
   SURVIVOR_TORMENT_UPDATED_MESSAGE,
   TORMENT_MINIMUM_ERROR_MESSAGE
 } from '@/lib/messages'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -31,16 +32,20 @@ interface SanityCardProps {
   displayTormentInput: boolean
   /** Mode */
   mode: SurvivorCardMode
+  /** Save Selected Hunt */
+  saveSelectedHunt?: (data: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Showdown */
   saveSelectedShowdown?: (data: Partial<Showdown>, successMsg?: string) => void
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
   /** Selected Settlemenet */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Showdown */
-  selectedShowdown?: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -57,8 +62,10 @@ export function SanityCard({
   displayText,
   displayTormentInput,
   mode,
+  saveSelectedHunt,
   saveSelectedShowdown,
   saveSelectedSurvivor,
+  selectedHunt,
   selectedSettlement,
   selectedShowdown,
   selectedSurvivor
@@ -66,63 +73,110 @@ export function SanityCard({
   const isMobile = useIsMobile()
 
   /**
-   * Save Token to Showdown Details
+   * Save Insanity Tokens
    *
-   * @param tokenName Token attribute name
+   * Saves to hunt or showdown based on the mode.
+   *
    * @param value New value
    */
-  const saveTokenToShowdown = (tokenName: 'insanityTokens', value: number) => {
-    if (!saveSelectedShowdown || !selectedSurvivor?.id || !selectedShowdown)
-      return
+  const saveInsanityTokens = (value: number) => {
+    if (!selectedSurvivor?.id) return
 
-    // Get current survivor details or create new one
-    const currentDetails = selectedShowdown.survivorDetails || []
-    const survivorDetailIndex = currentDetails.findIndex(
-      (sd) => sd.id === selectedSurvivor.id
-    )
+    if (mode === SurvivorCardMode.SHOWDOWN_CARD) {
+      if (!saveSelectedShowdown || !selectedShowdown) return
 
-    let updatedDetails
-    if (survivorDetailIndex >= 0) {
-      // Update existing survivor details
-      updatedDetails = [...currentDetails]
-      updatedDetails[survivorDetailIndex] = {
-        ...updatedDetails[survivorDetailIndex],
-        [tokenName]: value
-      }
-    } else {
-      // Create new survivor details entry
-      updatedDetails = [
-        ...currentDetails,
-        {
-          id: selectedSurvivor.id!,
-          accuracyTokens: 0,
-          bleedingTokens: 0,
-          blockTokens: 0,
-          color: ColorChoice.SLATE,
-          deflectTokens: 0,
-          evasionTokens: 0,
-          knockedDown: false,
-          luckTokens: 0,
-          movementTokens: 0,
-          notes: '',
-          priorityTarget: false,
-          speedTokens: 0,
-          strengthTokens: 0,
-          survivalTokens: 0,
-          [tokenName]: value
+      // Get current survivor details or create new one
+      const currentDetails = selectedShowdown.survivorDetails || []
+      const survivorDetailIndex = currentDetails.findIndex(
+        (sd) => sd.id === selectedSurvivor.id
+      )
+
+      let updatedDetails
+      if (survivorDetailIndex >= 0) {
+        // Update existing survivor details
+        updatedDetails = [...currentDetails]
+        updatedDetails[survivorDetailIndex] = {
+          ...updatedDetails[survivorDetailIndex],
+          insanityTokens: value
         }
-      ]
-    }
+      } else {
+        // Create new survivor details entry
+        updatedDetails = [
+          ...currentDetails,
+          {
+            accuracyTokens: 0,
+            bleedingTokens: 0,
+            blockTokens: 0,
+            color: ColorChoice.SLATE,
+            deflectTokens: 0,
+            evasionTokens: 0,
+            id: selectedSurvivor.id!,
+            insanityTokens: value,
+            knockedDown: false,
+            luckTokens: 0,
+            movementTokens: 0,
+            notes: '',
+            priorityTarget: false,
+            speedTokens: 0,
+            strengthTokens: 0,
+            survivalTokens: 0
+          }
+        ]
+      }
 
-    saveSelectedShowdown(
-      {
-        survivorDetails: updatedDetails
-      },
-      SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE('insanity')
-    )
+      saveSelectedShowdown(
+        {
+          survivorDetails: updatedDetails
+        },
+        SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE('insanity')
+      )
+    } else if (mode === SurvivorCardMode.HUNT_CARD) {
+      if (!saveSelectedHunt || !selectedHunt) return
+
+      // Get current survivor details or create new one
+      const currentDetails = selectedHunt.survivorDetails || []
+      const survivorDetailIndex = currentDetails.findIndex(
+        (sd) => sd.id === selectedSurvivor.id
+      )
+
+      let updatedDetails
+      if (survivorDetailIndex >= 0) {
+        // Update existing survivor details
+        updatedDetails = [...currentDetails]
+        updatedDetails[survivorDetailIndex] = {
+          ...updatedDetails[survivorDetailIndex],
+          insanityTokens: value
+        }
+      } else {
+        // Create new survivor details entry
+        updatedDetails = [
+          ...currentDetails,
+          {
+            accuracyTokens: 0,
+            color: ColorChoice.SLATE,
+            evasionTokens: 0,
+            id: selectedSurvivor.id!,
+            insanityTokens: value,
+            luckTokens: 0,
+            movementTokens: 0,
+            notes: '',
+            speedTokens: 0,
+            strengthTokens: 0,
+            survivalTokens: 0
+          }
+        ]
+      }
+
+      saveSelectedHunt(
+        {
+          survivorDetails: updatedDetails
+        },
+        SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE('insanity')
+      )
+    }
   }
 
-  const survivorDetails = useMemo(
+  const survivorShowdownDetails = useMemo(
     () =>
       selectedShowdown?.survivorDetails?.find(
         (sd) => sd.id === selectedSurvivor?.id
@@ -145,6 +199,26 @@ export function SanityCard({
         survivalTokens: 0
       },
     [selectedShowdown, selectedSurvivor?.id]
+  )
+
+  const survivorHuntDetails = useMemo(
+    () =>
+      selectedHunt?.survivorDetails?.find(
+        (sd) => sd.id === selectedSurvivor?.id
+      ) || {
+        accuracyTokens: 0,
+        color: ColorChoice.SLATE,
+        evasionTokens: 0,
+        id: 0,
+        insanityTokens: 0,
+        luckTokens: 0,
+        movementTokens: 0,
+        notes: '',
+        speedTokens: 0,
+        strengthTokens: 0,
+        survivalTokens: 0
+      },
+    [selectedHunt, selectedSurvivor?.id]
   )
 
   /**
@@ -238,26 +312,32 @@ export function SanityCard({
           {mode === SurvivorCardMode.SHOWDOWN_CARD && (
             <div className="flex flex-col items-center gap-2 pt-1">
               <NumericInput
-                value={survivorDetails.insanityTokens}
-                label="Insanity Tokens"
-                onChange={(value) =>
-                  saveTokenToShowdown('insanityTokens', value)
+                value={
+                  mode === SurvivorCardMode.SHOWDOWN_CARD
+                    ? survivorShowdownDetails.insanityTokens
+                    : mode === SurvivorCardMode.HUNT_CARD
+                      ? survivorHuntDetails.insanityTokens
+                      : 0
                 }
+                label="Insanity Tokens"
+                onChange={(value) => saveInsanityTokens(value)}
                 readOnly={false}>
                 <Input
                   key={`insanity-tokens-${selectedSurvivor?.id || 'new'}`}
                   placeholder="0"
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={survivorDetails.insanityTokens}
+                  value={
+                    mode === SurvivorCardMode.SHOWDOWN_CARD
+                      ? survivorShowdownDetails.insanityTokens
+                      : mode === SurvivorCardMode.HUNT_CARD
+                        ? survivorHuntDetails.insanityTokens
+                        : 0
+                  }
                   readOnly={isMobile}
                   onChange={
                     !isMobile
-                      ? (e) =>
-                          saveTokenToShowdown(
-                            'insanityTokens',
-                            parseInt(e.target.value, 10)
-                          )
+                      ? (e) => saveInsanityTokens(parseInt(e.target.value, 10))
                       : undefined
                   }
                   name="insanity-tokens"

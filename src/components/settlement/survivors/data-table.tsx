@@ -30,7 +30,7 @@ interface DataTableProps<TData, TValue> {
   /** On New Survivor Callback */
   onNewSurvivor?: () => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**

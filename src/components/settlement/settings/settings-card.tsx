@@ -46,11 +46,11 @@ interface SettingsCardProps {
     successMsg?: string
   ) => void
   /** Selected Hunt */
-  selectedHunt: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Showdown */
-  selectedShowdown?: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */

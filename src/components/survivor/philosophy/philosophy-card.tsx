@@ -31,7 +31,7 @@ interface PhilosophyCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */

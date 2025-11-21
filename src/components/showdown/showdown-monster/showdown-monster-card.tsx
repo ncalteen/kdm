@@ -44,7 +44,7 @@ interface ShowdownMonsterCardProps {
     successMsg?: string
   ) => void
   /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
 }
 
 /**

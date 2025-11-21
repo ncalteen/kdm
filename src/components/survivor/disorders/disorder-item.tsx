@@ -25,7 +25,7 @@ export interface DisorderItemProps {
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**

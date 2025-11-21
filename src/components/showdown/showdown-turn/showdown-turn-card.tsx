@@ -29,7 +29,7 @@ interface TurnCardProps {
     successMsg?: string
   ) => void
   /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
 }

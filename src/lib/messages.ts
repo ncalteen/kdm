@@ -193,6 +193,14 @@ export const GEAR_UPDATED_MESSAGE = (index?: number) =>
     : 'New gear added to settlement storage.'
 
 /**
+ * Hunt Already Active Error
+ *
+ * @returns Hunt Already Active Error Message
+ */
+export const HUNT_ALREADY_ACTIVE_ERROR_MESSAGE = () =>
+  'A hunt is already underway. Complete it before beginning another.'
+
+/**
  * Hunt Begins
  *
  * @param monsterName Monster Name
@@ -991,6 +999,14 @@ export const SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE = (
   usesScouts
     ? 'The settlement now employs scouts to aid in hunts.'
     : 'The settlement no longer relies on scouts for hunts.'
+
+/**
+ * Showdown Already Active Error
+ *
+ * @returns Showdown Already Active Error Message
+ */
+export const SHOWDOWN_ALREADY_ACTIVE_ERROR_MESSAGE = () =>
+  'A showdown is already in progress. Survive it before facing another foe.'
 
 /**
  * Showdown Created

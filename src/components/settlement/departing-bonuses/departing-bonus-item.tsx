@@ -25,7 +25,7 @@ export interface DepartingBonusItemProps {
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**

@@ -30,7 +30,7 @@ export interface FightingArtItemProps {
   /** Placeholder Text */
   placeholder: string
   /** Selected Survivor  */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**

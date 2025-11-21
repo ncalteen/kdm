@@ -24,6 +24,8 @@ interface HuntCardProps {
   selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Showdown */
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
@@ -51,6 +53,7 @@ export function HuntCard({
   saveSelectedSurvivor,
   selectedHunt,
   selectedSettlement,
+  selectedShowdown,
   selectedSurvivor,
   setSelectedHunt,
   setSelectedShowdown,
@@ -77,6 +80,7 @@ export function HuntCard({
     <CreateHuntCard
       saveSelectedHunt={saveSelectedHunt}
       selectedSettlement={selectedSettlement}
+      selectedShowdown={selectedShowdown}
       setSelectedHunt={setSelectedHunt}
       survivors={survivors}
     />

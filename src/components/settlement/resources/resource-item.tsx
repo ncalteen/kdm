@@ -39,7 +39,7 @@ export interface ResourceItemProps {
     amount: number
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**

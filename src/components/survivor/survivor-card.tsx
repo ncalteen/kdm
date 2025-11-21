@@ -41,13 +41,13 @@ interface SurvivorCardProps extends Partial<Survivor> {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Hunt */
-  selectedHunt?: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Showdown */
-  selectedShowdown?: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */

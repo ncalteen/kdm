@@ -29,21 +29,17 @@ interface AttributeCardProps {
   /** Save Selected Hunt */
   saveSelectedHunt?: (data: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Showdown */
-  saveSelectedShowdown?:
-    | ((data: Partial<Showdown>, successMsg?: string) => void)
-    | null
+  saveSelectedShowdown?: (data: Partial<Showdown>, successMsg?: string) => void
   /** Save Selected Survivor */
-  saveSelectedSurvivor:
-    | ((data: Partial<Survivor>, successMsg?: string) => void)
-    | null
+  saveSelectedSurvivor?: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Hunt */
-  selectedHunt?: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Selected Settlemenet */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Showdown */
-  selectedShowdown?: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
   /** Read Only Mode */
   readOnly: boolean
 }

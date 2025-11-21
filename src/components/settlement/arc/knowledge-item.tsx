@@ -30,7 +30,7 @@ export interface KnowledgeItemProps {
   /** Available Philosophies */
   philosophies: Philosophy[]
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**

@@ -45,9 +45,9 @@ export interface ColumnProps {
   /** Set Selected Tab */
   setSelectedTab: (tab: TabType) => void
   /** Hunt Data */
-  selectedHunt: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Showdown Data */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
 }
 
 /**
