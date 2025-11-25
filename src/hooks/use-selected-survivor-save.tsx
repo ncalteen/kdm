@@ -1,11 +1,11 @@
 'use client'
 
+import { useToast } from '@/hooks/use-toast'
 import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
 /**
@@ -19,6 +19,8 @@ export function useSelectedSurvivorSave(
   form: UseFormReturn<Survivor>,
   updateSelectedSurvivor: () => void
 ) {
+  const { toast } = useToast()
+
   /**
    * Save Selected Survivor
    *
@@ -91,7 +93,7 @@ export function useSelectedSurvivorSave(
         else toast.error(ERROR_MESSAGE())
       }
     },
-    [form, updateSelectedSurvivor]
+    [form, toast, updateSelectedSurvivor]
   )
 
   return { saveSelectedSurvivor }

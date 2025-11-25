@@ -1,4 +1,5 @@
 {
+  "disableToasts": false,
   "settlements": [
     {
       "campaignType": "People of the Lantern",

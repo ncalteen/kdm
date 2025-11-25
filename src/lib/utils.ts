@@ -49,6 +49,7 @@ export function getCampaign(): Campaign {
   const storedCampaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
+        disableToasts: false,
         hunts: [],
         selectedHuntId: undefined,
         selectedShowdownId: undefined,
@@ -63,6 +64,7 @@ export function getCampaign(): Campaign {
 
   // Ensure backwards compatibility for existing campaign data
   const needsReload =
+    !('disableToasts' in storedCampaign) ||
     !('hunts' in storedCampaign) ||
     !('selectedHuntId' in storedCampaign) ||
     !('selectedSettlementId' in storedCampaign) ||
@@ -74,6 +76,7 @@ export function getCampaign(): Campaign {
     !('showdowns' in storedCampaign)
 
   const campaign: Campaign = {
+    disableToasts: storedCampaign.disableToasts ?? false,
     hunts: storedCampaign.hunts || [],
     selectedHuntId: storedCampaign.selectedHuntId || null,
     selectedShowdownId: storedCampaign.selectedShowdownId || null,

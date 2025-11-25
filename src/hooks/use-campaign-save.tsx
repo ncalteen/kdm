@@ -1,5 +1,6 @@
 'use client'
 
+import { useToast } from '@/hooks/use-toast'
 import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
@@ -7,7 +8,6 @@ import { Hunt } from '@/schemas/hunt'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { useCallback } from 'react'
-import { toast } from 'sonner'
 
 /**
  * Save Campaign Data Custom Hook
@@ -31,6 +31,8 @@ export function useCampaignSave(
   updateSelectedShowdown: (showdown: Showdown | null) => void,
   updateSelectedSurvivor: () => void
 ) {
+  const { toast } = useToast()
+
   /**
    * Save Campaign Data
    *
@@ -62,6 +64,7 @@ export function useCampaignSave(
       }
     },
     [
+      toast,
       updateSelectedHunt,
       updateSelectedSettlement,
       updateSelectedShowdown,

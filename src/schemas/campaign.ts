@@ -11,6 +11,8 @@ import { z } from 'zod'
  * All of the data stored for all of the settlements and survivors for a player.
  */
 export const CampaignSchema = z.object({
+  /** Disable Toast Notifications */
+  disableToasts: z.boolean().default(false),
   /** Hunts */
   hunts: z.array(HuntSchema).nullable().optional(),
   /** Selected Hunt ID */

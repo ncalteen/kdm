@@ -20,7 +20,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { useToast } from '@/hooks/use-toast'
 import {
+  DISABLE_TOASTS_SETTING_UPDATED_MESSAGE,
   ERROR_MESSAGE,
   HUNT_DELETED_MESSAGE,
   SETTLEMENT_DELETED_MESSAGE,
@@ -34,7 +36,7 @@ import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { Trash2Icon, XIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
-import { toast } from 'sonner'
+import { toast as sonnerToast } from 'sonner'
 
 /**
  * Settings Card Properties
@@ -79,7 +81,40 @@ export function SettingsCard({
   setSelectedShowdown,
   setSelectedSurvivor
 }: SettingsCardProps): ReactElement {
+  const { toast } = useToast()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+  const [disableToasts, setDisableToasts] = useState<boolean>(() => {
+    try {
+      return getCampaign().disableToasts ?? false
+    } catch {
+      return false
+    }
+  })
+
+  /**
+   * Handles updating the disable toasts setting
+   */
+  const handleDisableToastsChange = (value: string) => {
+    const newDisableToasts = value === 'true'
+    try {
+      const campaign = getCampaign()
+
+      saveCampaignToLocalStorage({
+        ...campaign,
+        disableToasts: newDisableToasts
+      })
+
+      setDisableToasts(newDisableToasts)
+
+      // Always show this toast so user knows the setting was changed
+      sonnerToast.success(
+        DISABLE_TOASTS_SETTING_UPDATED_MESSAGE(newDisableToasts)
+      )
+    } catch (error) {
+      console.error('Disable Toasts Update Error:', error)
+      toast.error(ERROR_MESSAGE())
+    }
+  }
 
   /**
    * Handles updating the uses scouts setting
@@ -206,10 +241,40 @@ export function SettingsCard({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Settings */}
+      {/* Global Settings */}
       <Card className="p-0">
         <CardHeader className="px-4 pt-3 pb-0">
-          <CardTitle className="text-lg">Settings</CardTitle>
+          <CardTitle className="text-lg">Global Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-sm">Disable Notifications</div>
+              <div className="text-sm text-muted-foreground">
+                Silences success messages. Error messages will always be shown.
+              </div>
+            </div>
+            <Select
+              value={disableToasts.toString()}
+              onValueChange={handleDisableToastsChange}
+              name="disable-toasts"
+              aria-label="Disable Notifications">
+              <SelectTrigger className="w-24" id="disable-toasts">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="true">Yes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Settlement Settings */}
+      <Card className="p-0">
+        <CardHeader className="px-4 pt-3 pb-0">
+          <CardTitle className="text-lg">Settlement Settings</CardTitle>
         </CardHeader>
         <CardContent className="p-4 pt-0">
           <div className="flex items-center justify-between">
@@ -225,8 +290,10 @@ export function SettingsCard({
                   ? selectedSettlement.usesScouts.toString()
                   : 'false'
               }
-              onValueChange={handleUsesScoutsChange}>
-              <SelectTrigger className="w-24">
+              onValueChange={handleUsesScoutsChange}
+              name="uses-scouts"
+              aria-label="Uses Scouts">
+              <SelectTrigger className="w-24" id="uses-scouts">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
