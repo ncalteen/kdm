@@ -1006,7 +1006,9 @@ export const SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE = (
  * @param disableToasts Disable Toasts Setting
  * @returns Disable Toasts Setting Updated Message
  */
-export const DISABLE_TOASTS_SETTING_UPDATED_MESSAGE = (disableToasts: boolean) =>
+export const DISABLE_TOASTS_SETTING_UPDATED_MESSAGE = (
+  disableToasts: boolean
+) =>
   disableToasts
     ? 'Notification messages have been silenced.'
     : 'Notification messages will now illuminate your journey.'
