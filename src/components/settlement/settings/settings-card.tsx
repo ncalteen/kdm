@@ -36,7 +36,6 @@ import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { Trash2Icon, XIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
-import { toast as sonnerToast } from 'sonner'
 
 /**
  * Settings Card Properties
@@ -82,6 +81,7 @@ export function SettingsCard({
   setSelectedSurvivor
 }: SettingsCardProps): ReactElement {
   const { toast } = useToast()
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
   const [disableToasts, setDisableToasts] = useState<boolean>(() => {
     try {
@@ -107,9 +107,7 @@ export function SettingsCard({
       setDisableToasts(newDisableToasts)
 
       // Always show this toast so user knows the setting was changed
-      sonnerToast.success(
-        DISABLE_TOASTS_SETTING_UPDATED_MESSAGE(newDisableToasts)
-      )
+      toast.success(DISABLE_TOASTS_SETTING_UPDATED_MESSAGE(newDisableToasts))
     } catch (error) {
       console.error('Disable Toasts Update Error:', error)
       toast.error(ERROR_MESSAGE())

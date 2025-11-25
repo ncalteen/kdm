@@ -1,17 +1,17 @@
 'use client'
 
 import { getCampaign } from '@/lib/utils'
-import { toast as sonnerToast, ExternalToast } from 'sonner'
 import { useCallback, useMemo } from 'react'
+import { ExternalToast, toast as sonnerToast } from 'sonner'
 
 /**
- * useToast Custom Hook
+ * Toast Custom Hook
  *
  * Provides wrapped toast functions that respect the disableToasts setting
  * from the campaign configuration. Success/info messages are suppressed
  * when toasts are disabled, but error messages are always shown.
  *
- * @returns Wrapped toast functions
+ * @returns Wrapped Toast Functions
  */
 export function useToast() {
   /**
@@ -37,9 +37,7 @@ export function useToast() {
    */
   const success = useCallback(
     (message: string, options?: ExternalToast) => {
-      if (!areToastsDisabled()) {
-        sonnerToast.success(message, options)
-      }
+      if (!areToastsDisabled()) sonnerToast.success(message, options)
     },
     [areToastsDisabled]
   )
@@ -53,9 +51,8 @@ export function useToast() {
    * @param options Toast options
    */
   const error = useCallback(
-    (message: string, options?: ExternalToast) => {
-      sonnerToast.error(message, options)
-    },
+    (message: string, options?: ExternalToast) =>
+      sonnerToast.error(message, options),
     []
   )
 
@@ -69,9 +66,7 @@ export function useToast() {
    */
   const info = useCallback(
     (message: string, options?: ExternalToast) => {
-      if (!areToastsDisabled()) {
-        sonnerToast.info(message, options)
-      }
+      if (!areToastsDisabled()) sonnerToast.info(message, options)
     },
     [areToastsDisabled]
   )
@@ -86,9 +81,7 @@ export function useToast() {
    */
   const warning = useCallback(
     (message: string, options?: ExternalToast) => {
-      if (!areToastsDisabled()) {
-        sonnerToast.warning(message, options)
-      }
+      if (!areToastsDisabled()) sonnerToast.warning(message, options)
     },
     [areToastsDisabled]
   )
