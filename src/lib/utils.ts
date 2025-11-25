@@ -49,47 +49,35 @@ export function getCampaign(): Campaign {
   const storedCampaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
-        disableToasts: false,
         hunts: [],
         selectedHuntId: undefined,
         selectedShowdownId: undefined,
         selectedSettlementId: undefined,
         selectedSurvivorId: undefined,
         selectedTab: undefined,
+        settings: {
+          disableToasts: false
+        },
         settlements: [],
         showdowns: [],
         survivors: []
       })
   )
 
-  // Ensure backwards compatibility for existing campaign data
-  const needsReload =
-    !('disableToasts' in storedCampaign) ||
-    !('hunts' in storedCampaign) ||
-    !('selectedHuntId' in storedCampaign) ||
-    !('selectedSettlementId' in storedCampaign) ||
-    !('selectedShowdownId' in storedCampaign) ||
-    !('selectedSurvivorId' in storedCampaign) ||
-    !('selectedTab' in storedCampaign) ||
-    !('settlements' in storedCampaign) ||
-    !('survivors' in storedCampaign) ||
-    !('showdowns' in storedCampaign)
-
   const campaign: Campaign = {
-    disableToasts: storedCampaign.disableToasts ?? false,
     hunts: storedCampaign.hunts || [],
     selectedHuntId: storedCampaign.selectedHuntId || null,
     selectedShowdownId: storedCampaign.selectedShowdownId || null,
     selectedSettlementId: storedCampaign.selectedSettlementId || null,
     selectedSurvivorId: storedCampaign.selectedSurvivorId || null,
     selectedTab: storedCampaign.selectedTab || null,
+    settings: {
+      disableToasts: storedCampaign.settings?.disableToasts ?? false
+    },
     settlements: storedCampaign.settlements || [],
     survivors: storedCampaign.survivors || [],
     showdowns: storedCampaign.showdowns || []
   }
-
-  // Save the campaign back to localStorage
-  if (needsReload) localStorage.setItem('campaign', JSON.stringify(campaign))
 
   cachedCampaign = campaign
   lastCacheUpdate = now

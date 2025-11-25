@@ -85,7 +85,7 @@ export function SettingsCard({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
   const [disableToasts, setDisableToasts] = useState<boolean>(() => {
     try {
-      return getCampaign().disableToasts ?? false
+      return getCampaign().settings.disableToasts ?? false
     } catch {
       return false
     }
@@ -96,12 +96,16 @@ export function SettingsCard({
    */
   const handleDisableToastsChange = (value: string) => {
     const newDisableToasts = value === 'true'
+
     try {
       const campaign = getCampaign()
 
       saveCampaignToLocalStorage({
         ...campaign,
-        disableToasts: newDisableToasts
+        settings: {
+          ...campaign.settings,
+          disableToasts: newDisableToasts
+        }
       })
 
       setDisableToasts(newDisableToasts)

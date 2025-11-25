@@ -8,20 +8,21 @@ import { ExternalToast, toast as sonnerToast } from 'sonner'
  * Toast Custom Hook
  *
  * Provides wrapped toast functions that respect the disableToasts setting
- * from the campaign configuration. Success/info messages are suppressed
+ * from the campaign configuration. Success/info/warning messages are suppressed
  * when toasts are disabled, but error messages are always shown.
  *
  * @returns Wrapped Toast Functions
  */
 export function useToast() {
   /**
-   * Check if toasts are disabled
+   * Check if Toasts are Disabled
    *
-   * @returns True if toasts are disabled
+   * @returns Toasts Disabled Status
    */
   const areToastsDisabled = useCallback(() => {
+    // Safety check in case campaign settings data is unavailable
     try {
-      return getCampaign().disableToasts === true
+      return getCampaign().settings.disableToasts === true
     } catch {
       return false
     }
@@ -30,10 +31,8 @@ export function useToast() {
   /**
    * Success Toast
    *
-   * Shows a success toast message unless toasts are disabled.
-   *
-   * @param message Toast message
-   * @param options Toast options
+   * @param message Message
+   * @param options Options
    */
   const success = useCallback(
     (message: string, options?: ExternalToast) => {
@@ -45,10 +44,8 @@ export function useToast() {
   /**
    * Error Toast
    *
-   * Always shows error toast messages, regardless of toast settings.
-   *
-   * @param message Toast message
-   * @param options Toast options
+   * @param message Message
+   * @param options Options
    */
   const error = useCallback(
     (message: string, options?: ExternalToast) =>
@@ -59,10 +56,8 @@ export function useToast() {
   /**
    * Info Toast
    *
-   * Shows an info toast message unless toasts are disabled.
-   *
-   * @param message Toast message
-   * @param options Toast options
+   * @param message Message
+   * @param options Options
    */
   const info = useCallback(
     (message: string, options?: ExternalToast) => {
@@ -74,10 +69,8 @@ export function useToast() {
   /**
    * Warning Toast
    *
-   * Shows a warning toast message unless toasts are disabled.
-   *
-   * @param message Toast message
-   * @param options Toast options
+   * @param message Message
+   * @param options Options
    */
   const warning = useCallback(
     (message: string, options?: ExternalToast) => {
