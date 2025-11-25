@@ -258,14 +258,28 @@ export function AttributeCard({
         {/* Label Row */}
         {(mode === SurvivorCardMode.SHOWDOWN_CARD ||
           mode === SurvivorCardMode.HUNT_CARD) && <div className="max-w-12" />}
-        <Label className="text-xs text-center">Movement</Label>
-        <Label className="text-xs text-center">Accuracy</Label>
-        <Label className="text-xs text-center">Strength</Label>
-        <Label className="text-xs text-center">Evasion</Label>
-        <Label className="text-xs text-center">Luck</Label>
-        <Label className="text-xs text-center">Speed</Label>
+        <div className="flex items-center justify-center">
+          <Label className="text-xs">Movement</Label>
+        </div>
+        <div className="flex items-center justify-center">
+          <Label className="text-xs">Accuracy</Label>
+        </div>
+        <div className="flex items-center justify-center">
+          <Label className="text-xs">Strength</Label>
+        </div>
+        <div className="flex items-center justify-center">
+          <Label className="text-xs">Evasion</Label>
+        </div>
+        <div className="flex items-center justify-center">
+          <Label className="text-xs">Luck</Label>
+        </div>
+        <div className="flex items-center justify-center">
+          <Label className="text-xs">Speed</Label>
+        </div>
         {selectedSettlement?.survivorType === SurvivorType.ARC && (
-          <Label className="text-xs text-center">Lumi</Label>
+          <div className="flex items-center justify-center">
+            <Label className="text-xs">Lumi</Label>
+          </div>
         )}
 
         {(mode === SurvivorCardMode.SHOWDOWN_CARD ||

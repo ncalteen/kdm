@@ -339,7 +339,7 @@ export function SurvivalCard({
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col">
               {/* Survival Base */}
-              <Label className="font-bold">Survival</Label>
+              <Label className="font-bold pb-2">Survival</Label>
               <div className="flex flex-row items-center gap-2">
                 <div className="flex flex-col items-center gap-1">
                   {(mode === SurvivorCardMode.SHOWDOWN_CARD ||

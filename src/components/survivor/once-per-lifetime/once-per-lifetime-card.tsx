@@ -253,8 +253,8 @@ export function OncePerLifetimeCard({
 
       {/* Once Per Lifetime List */}
       <CardContent className="p-0">
-        <div className="flex flex-col h-25">
-          <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col">
+          <div className="flex-1">
             {selectedSurvivor?.oncePerLifetime?.length !== 0 && (
               <DndContext
                 sensors={sensors}
