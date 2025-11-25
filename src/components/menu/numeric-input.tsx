@@ -35,6 +35,8 @@ interface NumericInputProps {
   children: React.ReactNode
   /** Read Only Mode */
   readOnly: boolean
+  /** Disabled Mode */
+  disabled?: boolean
 }
 
 /**
@@ -55,7 +57,8 @@ export function NumericInput({
   label,
   onChange,
   children,
-  readOnly
+  readOnly,
+  disabled = false
 }: NumericInputProps): ReactElement {
   const isMobile = useIsMobile()
 
@@ -78,66 +81,70 @@ export function NumericInput({
   }
 
   return isMobile ? (
-    <Drawer>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="text-center">
-          <DrawerTitle>{label}</DrawerTitle>
-        </DrawerHeader>
+    disabled ? (
+      <>{children}</>
+    ) : (
+      <Drawer>
+        <DrawerTrigger asChild>{children}</DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="text-center">
+            <DrawerTitle>{label}</DrawerTitle>
+          </DrawerHeader>
 
-        <div className="px-4 pb-4">
-          <div className="flex items-center justify-center gap-4">
-            {/* Decrement Button */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleDecrement}
-              disabled={readOnly || (min !== undefined && value <= min)}
-              className="h-12 w-12 rounded-full"
-              name="decrement"
-              id="decrement-button">
-              <Minus className="h-6 w-6" />
-            </Button>
+          <div className="px-4 pb-4">
+            <div className="flex items-center justify-center gap-4">
+              {/* Decrement Button */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleDecrement}
+                disabled={readOnly || (min !== undefined && value <= min)}
+                className="h-12 w-12 rounded-full"
+                name="decrement"
+                id="decrement-button">
+                <Minus className="h-6 w-6" />
+              </Button>
 
-            {/* Current Value Display */}
-            <div className="flex flex-col items-center gap-2">
-              <Input
-                type="number"
-                value={value}
-                readOnly
-                className="w-20 h-12 text-center text-xl font-semibold focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                name={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
-                id={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
-              />
+              {/* Current Value Display */}
+              <div className="flex flex-col items-center gap-2">
+                <Input
+                  type="number"
+                  value={value}
+                  readOnly
+                  className="w-20 h-12 text-center text-xl font-semibold focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  name={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
+                  id={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
+                />
+              </div>
+
+              {/* Increment Button */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleIncrement}
+                disabled={readOnly || (max !== undefined && value >= max)}
+                className="h-12 w-12 rounded-full"
+                name="increment"
+                id="increment-button">
+                <Plus className="h-6 w-6" />
+              </Button>
             </div>
-
-            {/* Increment Button */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleIncrement}
-              disabled={readOnly || (max !== undefined && value >= max)}
-              className="h-12 w-12 rounded-full"
-              name="increment"
-              id="increment-button">
-              <Plus className="h-6 w-6" />
-            </Button>
           </div>
-        </div>
 
-        <DrawerFooter className="flex justify-center w-full items-center">
-          <DrawerClose asChild>
-            <Button
-              variant="outline"
-              className="w-[150px]"
-              name="close-drawer"
-              id="close-drawer-button">
-              Go Back
-            </Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+          <DrawerFooter className="flex justify-center w-full items-center">
+            <DrawerClose asChild>
+              <Button
+                variant="outline"
+                className="w-[150px]"
+                name="close-drawer"
+                id="close-drawer-button">
+                Go Back
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    )
   ) : (
     <>{children}</>
   )
