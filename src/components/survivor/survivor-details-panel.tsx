@@ -1,7 +1,9 @@
 'use client'
 
+import { AttributeCard } from '@/components/survivor/attributes/attribute-card'
 import { Avatar } from '@/components/ui/avatar'
 import { CardContent } from '@/components/ui/card'
+import { SurvivorCardMode } from '@/lib/enums'
 import { Survivor } from '@/schemas/survivor'
 import { AvatarFallback } from '@radix-ui/react-avatar'
 import { ReactElement } from 'react'
@@ -21,7 +23,7 @@ interface SurvivorDetailsPanelProps {
  *
  * This component displays detailed information about a survivor.
  *
- * @parma props Survivor Details Panel Properties
+ * @param props Survivor Details Panel Properties
  * @returns Survivor Details Panel Component
  */
 export function SurvivorDetailsPanel({
@@ -70,42 +72,31 @@ export function SurvivorDetailsPanel({
       </div>
 
       <CardContent className="p-4 space-y-4 max-h-[calc(60vh-120px)] overflow-y-auto">
-        {/* Core Stats Section */}
-        <div className="grid grid-cols-4 gap-3">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 rounded-lg p-3 text-center border border-blue-200/50 dark:border-blue-800/30">
-            <div className="text-xs font-medium text-blue-700 dark:text-blue-300">
-              Hunt XP
-            </div>
-            <div className="text-xl font-bold text-blue-900 dark:text-blue-100">
-              {survivor.huntXP}
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/20 rounded-lg p-3 text-center border border-green-200/50 dark:border-green-800/30">
-            <div className="text-xs font-medium text-green-700 dark:text-green-300">
-              Survival
-            </div>
-            <div className="text-xl font-bold text-green-900 dark:text-green-100">
-              {survivor.survival}
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/30 dark:to-red-900/20 rounded-lg p-3 text-center border border-red-200/50 dark:border-red-800/30">
-            <div className="text-xs font-medium text-red-700 dark:text-red-300">
-              Insanity
-            </div>
-            <div className="text-xl font-bold text-red-900 dark:text-red-100">
-              {survivor.insanity}
-            </div>
-          </div>
-          {survivor.weaponProficiencyType && (
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20 rounded-lg p-3 text-center border border-purple-200/50 dark:border-purple-800/30">
-              <div className="text-xs font-medium text-purple-700 dark:text-purple-300 truncate">
-                {survivor.weaponProficiencyType}
+        <AttributeCard
+          mode={SurvivorCardMode.SURVIVOR_CARD}
+          selectedHunt={null}
+          selectedSettlement={null}
+          selectedShowdown={null}
+          selectedSurvivor={survivor}
+          readOnly={true}
+        />
+
+        {/* Additional Attributes Section */}
+        <div className="bg-muted/20 rounded-lg border border-border/30 overflow-hidden">
+          <div className="p-3 grid grid-cols-2 gap-3">
+            <div className="text-center">
+              <div className="text-xs font-medium text-muted-foreground">
+                Courage
               </div>
-              <div className="text-xl font-bold text-purple-900 dark:text-purple-100">
-                {survivor.weaponProficiency}
-              </div>
+              <div className="text-lg font-bold">{survivor.courage}</div>
             </div>
-          )}
+            <div className="text-center">
+              <div className="text-xs font-medium text-muted-foreground">
+                Understanding
+              </div>
+              <div className="text-lg font-bold">{survivor.understanding}</div>
+            </div>
+          </div>
         </div>
 
         {/* Details Grid */}
@@ -220,6 +211,42 @@ export function SurvivorDetailsPanel({
                     {survivor.knowledge2}
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Cursed Gear */}
+          {survivor.cursedGear && survivor.cursedGear.length > 0 && (
+            <div className="bg-muted/20 rounded-lg border border-border/30 overflow-hidden">
+              <div className="bg-muted/40 px-3 py-2 border-b border-border/30">
+                <h4 className="text-sm font-semibold">Cursed Gear</h4>
+              </div>
+              <div className="p-3 space-y-1 max-h-32 overflow-y-auto">
+                {survivor.cursedGear.map((gear, index) => (
+                  <div
+                    key={index}
+                    className="text-xs bg-gradient-to-r from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-800/20 border border-purple-200/50 dark:border-purple-700/30 rounded px-2 py-1">
+                    {gear}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Next Departure */}
+          {survivor.nextDeparture && survivor.nextDeparture.length > 0 && (
+            <div className="bg-muted/20 rounded-lg border border-border/30 overflow-hidden">
+              <div className="bg-muted/40 px-3 py-2 border-b border-border/30">
+                <h4 className="text-sm font-semibold">Next Departure</h4>
+              </div>
+              <div className="p-3 space-y-1 max-h-32 overflow-y-auto">
+                {survivor.nextDeparture.map((departure, index) => (
+                  <div
+                    key={index}
+                    className="text-xs bg-gradient-to-r from-teal-100 to-teal-50 dark:from-teal-900/30 dark:to-teal-800/20 border border-teal-200/50 dark:border-teal-700/30 rounded px-2 py-1">
+                    {departure}
+                  </div>
+                ))}
               </div>
             </div>
           )}

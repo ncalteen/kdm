@@ -15,10 +15,10 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { DefaultSquiresSuspicion } from '@/lib/common'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import { ERROR_MESSAGE, SETTLEMENT_CREATED_MESSAGE } from '@/lib/messages'
 import {
   getCampaign,
   getCampaignData,
-  getLostSettlementCount,
   getNextSettlementId,
   saveCampaignToLocalStorage
 } from '@/lib/utils'
@@ -71,7 +71,7 @@ export function CreateSettlementForm({
     )
 
     form.setValue('id', getNextSettlementId())
-    form.setValue('lostSettlements', getLostSettlementCount())
+    form.setValue('lostSettlements', 0)
     form.setValue('innovations', campaignData.innovations)
     form.setValue('locations', campaignData.locations)
     form.setValue('milestones', campaignData.milestones)
@@ -121,21 +121,16 @@ export function CreateSettlementForm({
       )
   }, [form, watchedCampaignType, watchedSurvivorType])
 
-  // Define a submit handler with the correct schema type
   function onSubmit(values: Settlement) {
     try {
       // Get campaign data based on the selected campaign type
       const campaignData = getCampaignData(values.campaignType)
 
-      /*
-       * Arc Survivor Settlements
-       */
+      // Arc Survivor Settlements
       if (values.survivorType === SurvivorType.ARC)
         values.ccRewards = campaignData.ccRewards
 
-      /*
-       * Squires of the Citadel Campaigns
-       */
+      // Squires of the Citadel Campaigns
       if (values.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
         values.suspicions = DefaultSquiresSuspicion
 
@@ -155,17 +150,17 @@ export function CreateSettlementForm({
       setSelectedSettlement(values)
 
       // Show success message
-      toast.success('A lantern pierces the darkness. A new settlement is born.')
+      toast.success(SETTLEMENT_CREATED_MESSAGE())
     } catch (error) {
       console.error('Settlement Create Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error('The darkness swallows your words. Please try again.')
+        toast.error(ERROR_MESSAGE())
       })}
       className="space-y-6">
       <Form {...form}>
@@ -198,11 +193,6 @@ export function CreateSettlementForm({
             />
 
             <hr className="my-0" />
-
-            <div className="text-xs text-muted-foreground">
-              When the settlement is named for the first time,{' '}
-              <strong>returning survivors</strong> gain +1 survival.
-            </div>
 
             {/* Campaign Type */}
             <FormField

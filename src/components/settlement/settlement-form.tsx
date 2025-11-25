@@ -26,11 +26,18 @@ import { SquireProgressionCards } from '@/components/settlement/squires/squire-p
 import { SquireSuspicionsCard } from '@/components/settlement/squires/squire-suspicions-card'
 import { SettlementSurvivorsCard } from '@/components/settlement/survivors/settlement-survivors-card'
 import { TimelineCard } from '@/components/settlement/timeline/timeline-card'
+import { ShowdownCard } from '@/components/showdown/showdown-card'
 import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
 import { SurvivorCard } from '@/components/survivor/survivor-card'
-import { CampaignType, SurvivorType } from '@/lib/enums'
+import {
+  CampaignType,
+  SurvivorCardMode,
+  SurvivorType,
+  TabType
+} from '@/lib/enums'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 import { UseFormReturn } from 'react-hook-form'
@@ -41,6 +48,8 @@ import { UseFormReturn } from 'react-hook-form'
 interface SettlementFormProps {
   /** New Hunt Being Created */
   isCreatingNewHunt: boolean
+  /** New Showdown Being Created */
+  isCreatingNewShowdown: boolean
   /** New Survivor Being Created */
   isCreatingNewSurvivor: boolean
   /** Save Selected Hunt */
@@ -48,6 +57,11 @@ interface SettlementFormProps {
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
+  /** Save Selected Showdown */
+  saveSelectedShowdown: (
+    updateData: Partial<Showdown>,
     successMsg?: string
   ) => void
   /** Save Selected Survivor */
@@ -59,20 +73,28 @@ interface SettlementFormProps {
   selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Showdown */
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Selected Tab */
   selectedTab: string
   /** Set New Hunt Being Created */
   setIsCreatingNewHunt: (isCreating: boolean) => void
+  /** Set New Showdown Being Created */
+  setIsCreatingNewShowdown: (isCreating: boolean) => void
   /** Set New Survivor Being Created */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Showdown */
+  setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Settlement Form */
@@ -83,6 +105,8 @@ interface SettlementFormProps {
   updateSelectedHunt: (hunt: Hunt | null) => void
   /** Update Selected Settlement */
   updateSelectedSettlement: () => void
+  /** Update Selected Showdown */
+  updateSelectedShowdown: () => void
   /** Update Selected Survivor */
   updateSelectedSurvivor: () => void
 }
@@ -93,22 +117,32 @@ interface SettlementFormProps {
  * @returns Main Page Component
  */
 export function SettlementForm({
+  // isCreatingNewHunt,
+  // isCreatingNewShowdown,
   isCreatingNewSurvivor,
   saveSelectedHunt,
   saveSelectedSettlement,
+  saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
   selectedSettlement,
+  selectedShowdown,
   selectedSurvivor,
   selectedTab,
+  // setIsCreatingNewHunt,
+  // setIsCreatingNewShowdown,
   setIsCreatingNewSurvivor,
   setSelectedHunt,
   setSelectedSettlement,
+  setSelectedShowdown,
   setSelectedSurvivor,
+  setSelectedTab,
   setSurvivors,
+  // settlementForm,
   survivors,
   updateSelectedHunt,
   updateSelectedSettlement,
+  updateSelectedShowdown,
   updateSelectedSurvivor
 }: SettlementFormProps): ReactElement {
   return (
@@ -218,7 +252,7 @@ export function SettlementForm({
                 <SettlementSurvivorsCard
                   selectedHunt={selectedHunt}
                   selectedSettlement={selectedSettlement}
-                  selectedShowdown={null}
+                  selectedShowdown={selectedShowdown}
                   selectedSurvivor={selectedSurvivor}
                   setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                   setSelectedSurvivor={setSelectedSurvivor}
@@ -226,13 +260,18 @@ export function SettlementForm({
                   survivors={survivors}
                   updateSelectedHunt={updateSelectedHunt}
                   updateSelectedSettlement={updateSelectedSettlement}
+                  updateSelectedShowdown={updateSelectedShowdown}
                   updateSelectedSurvivor={updateSelectedSurvivor}
                 />
                 {/* Selected Survivor */}
                 {selectedSurvivor && !isCreatingNewSurvivor && (
                   <SurvivorCard
+                    mode={SurvivorCardMode.SURVIVOR_CARD}
+                    saveSelectedShowdown={saveSelectedShowdown}
                     saveSelectedSurvivor={saveSelectedSurvivor}
+                    selectedHunt={selectedHunt}
                     selectedSettlement={selectedSettlement}
+                    selectedShowdown={selectedShowdown}
                     selectedSurvivor={selectedSurvivor}
                     setSurvivors={setSurvivors}
                     survivors={survivors}
@@ -385,7 +424,7 @@ export function SettlementForm({
               saveSelectedSettlement={saveSelectedSettlement}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
-              selectedShowdown={null}
+              selectedShowdown={selectedShowdown}
               setSelectedHunt={setSelectedHunt}
               setSelectedSettlement={setSelectedSettlement}
               setSelectedShowdown={() => {}}
@@ -397,17 +436,35 @@ export function SettlementForm({
           {selectedSettlement && selectedTab === 'hunt' && (
             <HuntCard
               saveSelectedHunt={saveSelectedHunt}
+              saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
+              selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
               setSelectedHunt={setSelectedHunt}
+              setSelectedShowdown={setSelectedShowdown}
+              setSelectedSurvivor={setSelectedSurvivor}
+              setSelectedTab={setSelectedTab}
               setSurvivors={setSurvivors}
               survivors={survivors}
-              updateSelectedSurvivor={updateSelectedSurvivor}
             />
           )}
 
-          {/* Showdown */}
+          {/* Showdown Tab */}
+          {selectedSettlement && selectedTab === 'showdown' && (
+            <ShowdownCard
+              saveSelectedShowdown={saveSelectedShowdown}
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
+              selectedShowdown={selectedShowdown}
+              selectedSettlement={selectedSettlement}
+              selectedSurvivor={selectedSurvivor}
+              setSelectedShowdown={setSelectedShowdown}
+              setSelectedSurvivor={setSelectedSurvivor}
+              setSurvivors={setSurvivors}
+              survivors={survivors}
+            />
+          )}
         </div>
       </div>
     </>

@@ -25,7 +25,7 @@ export interface AbilityImpairmentItemProps {
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -108,7 +108,6 @@ export function AbilityImpairmentItem({
           defaultValue={selectedSurvivor?.abilitiesAndImpairments?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -187,7 +186,6 @@ export function NewAbilityImpairmentItem({
         placeholder="Ability or Impairment"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

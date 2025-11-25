@@ -27,10 +27,8 @@ export interface KnowledgeItemProps {
   onRemove: (index: number) => void
   /** OnSave Handler */
   onSave: (name?: string, philosophy?: string, index?: number) => void
-  /** Available Philosophies */
-  philosophies: Philosophy[]
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -41,8 +39,6 @@ export interface NewKnowledgeItemProps {
   onCancel: () => void
   /** OnSave Handler */
   onSave: (name?: string, philosophy?: string) => void
-  /** Available Philosophies */
-  philosophies: Philosophy[]
 }
 
 /**
@@ -58,7 +54,6 @@ export function KnowledgeItem({
   onEdit,
   onRemove,
   onSave,
-  philosophies,
   selectedSettlement
 }: KnowledgeItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -173,13 +168,11 @@ export function KnowledgeItem({
               placeholder="Add knowledge..."
               defaultValue={selectedSettlement?.knowledges?.[index].name || ''}
               onKeyDown={handleKeyDown}
-              autoFocus
             />
 
             {/* Philosophy Selection */}
             <SelectPhilosophy
               ref={selectRef}
-              options={philosophies}
               value={selectedSettlement?.knowledges?.[index].philosophy ?? ''}
               onChange={(value) =>
                 onSave(
@@ -228,8 +221,7 @@ export function KnowledgeItem({
  */
 export function NewKnowledgeItem({
   onCancel,
-  onSave,
-  philosophies
+  onSave
 }: NewKnowledgeItemProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
   const selectRef = useRef<HTMLButtonElement>(null)
@@ -271,13 +263,11 @@ export function NewKnowledgeItem({
             placeholder="Add knowledge..."
             defaultValue={''}
             onKeyDown={handleKeyDown}
-            autoFocus
           />
 
           {/* Philosophy Selection */}
           <SelectPhilosophy
             ref={selectRef}
-            options={philosophies}
             value={selectedPhilosophy}
             onChange={(value) => setSelectedPhilosophy(value as Philosophy)}
           />

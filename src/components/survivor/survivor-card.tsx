@@ -21,8 +21,10 @@ import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
 import { Card, CardContent } from '@/components/ui/card'
-import { SurvivorType } from '@/lib/enums'
+import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
+import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
 
@@ -30,12 +32,22 @@ import { ReactElement } from 'react'
  * Survivor Card Props
  */
 interface SurvivorCardProps extends Partial<Survivor> {
+  /** Mode */
+  mode: SurvivorCardMode
+  /** Save Selected Hunt */
+  saveSelectedHunt?: (data: Partial<Hunt>, successMsg?: string) => void
+  /** Save Selected Showdown */
+  saveSelectedShowdown?: (data: Partial<Showdown>, successMsg?: string) => void
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  /** Selected Hunt */
+  selectedHunt: Hunt | null
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
+  /** Selected Showdown */
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -48,8 +60,13 @@ interface SurvivorCardProps extends Partial<Survivor> {
  * This component is used to display/edit a survivor.
  */
 export function SurvivorCard({
+  mode,
+  saveSelectedHunt,
+  saveSelectedShowdown,
   saveSelectedSurvivor,
+  selectedHunt,
   selectedSettlement,
+  selectedShowdown,
   selectedSurvivor,
   setSurvivors,
   survivors
@@ -60,20 +77,27 @@ export function SurvivorCard({
         <div className="flex flex-col xl:flex-row xl:flex-wrap gap-2 w-full">
           {/* First Column - Essential Stats */}
           <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px]">
-            <StatusCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSurvivor={selectedSurvivor}
-              setSurvivors={setSurvivors}
-              survivors={survivors}
-            />
+            {mode === SurvivorCardMode.SURVIVOR_CARD && (
+              <StatusCard
+                saveSelectedSurvivor={saveSelectedSurvivor}
+                selectedSurvivor={selectedSurvivor}
+                setSurvivors={setSurvivors}
+                survivors={survivors}
+              />
+            )}
             <HuntXPCard
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
             />
             <SurvivalCard
+              mode={mode}
+              saveSelectedHunt={saveSelectedHunt}
+              saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
+              selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
             />
             <WeaponProficiencyCard
@@ -102,13 +126,25 @@ export function SurvivorCard({
           {/* Second Column - Combat */}
           <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px]">
             <AttributeCard
+              mode={mode}
+              saveSelectedHunt={saveSelectedHunt}
+              saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
+              selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
+              readOnly={false}
             />
             <SanityCard
+              displayText={true}
+              displayTormentInput={true}
+              mode={mode}
+              saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
+              selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
             />
             <HeadCard
@@ -140,10 +176,12 @@ export function SurvivorCard({
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedSurvivor={selectedSurvivor}
             />
-            <NextDepartureCard
-              saveSelectedSurvivor={saveSelectedSurvivor}
-              selectedSurvivor={selectedSurvivor}
-            />
+            {mode === SurvivorCardMode.SURVIVOR_CARD && (
+              <NextDepartureCard
+                saveSelectedSurvivor={saveSelectedSurvivor}
+                selectedSurvivor={selectedSurvivor}
+              />
+            )}
           </div>
 
           {/* Third Column - ARC */}

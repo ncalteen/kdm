@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Principle } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -122,17 +123,21 @@ export function PrincipleItem({
               </div>
               <div className="col-span-4 flex items-center gap-2">
                 <Checkbox
+                  id={`principle-${index}-option-1`}
                   checked={principle.option1Selected}
                   onCheckedChange={(checked) => {
                     if (checked) handleOptionSelect(index, 1)
                   }}
                 />
-                <span className="text-xs text-left">
+                <Label
+                  className="text-xs text-left"
+                  htmlFor={`principle-${index}-option-1`}>
                   {principle.option1Name}
-                </span>
+                </Label>
               </div>
               <div className="col-span-4 flex items-center gap-2">
                 <Checkbox
+                  id={`principle-${index}-option-2`}
                   checked={principle.option2Selected}
                   onCheckedChange={(checked) => {
                     if (checked) {
@@ -140,9 +145,11 @@ export function PrincipleItem({
                     }
                   }}
                 />
-                <span className="text-xs text-left">
+                <Label
+                  className="text-xs text-left"
+                  htmlFor={`principle-${index}-option-2`}>
                   {principle.option2Name}
-                </span>
+                </Label>
               </div>
             </div>
           ) : (
@@ -155,7 +162,6 @@ export function PrincipleItem({
                 value={nameValue}
                 onChange={(e) => setNameValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                autoFocus
               />
 
               {/* Options */}
@@ -274,7 +280,6 @@ export function NewPrincipleItem({
             onChange={(e) => setName(e.target.value)}
             onKeyDown={handleKeyDown}
             className="w-full"
-            autoFocus
           />
 
           {/* Options */}

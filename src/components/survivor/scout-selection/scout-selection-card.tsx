@@ -15,7 +15,7 @@ interface ScoutSelectionCardProps {
   handleSurvivorToggle: (survivorId: number) => void
   /** Survivor Selected as Scout */
   isCurrentlySelected: boolean
-  /** Survivor is Selected for Hunt Party */
+  /** Survivor is Selected for Party */
   isSelectedAsSurvivor: boolean
   /** Handle Hover Function */
   onHover?: (survivor: Survivor | null) => void
@@ -26,7 +26,8 @@ interface ScoutSelectionCardProps {
 /**
  * Scout Selection Card Component
  *
- * This component is used to display a survivor for selection during a hunt.
+ * This component is used to display a survivor for selection when creating a
+ * hunt or showdown.
  */
 export function ScoutSelectionCard({
   handleSurvivorToggle,
@@ -38,7 +39,6 @@ export function ScoutSelectionCard({
   return (
     <div className="w-[200px] h-[280px] flex-grow-2 border-4 rounded-xl border-border/20 hover:border-border/50 transition-all duration-200">
       <Button
-        key={survivor.id}
         variant={isCurrentlySelected ? 'default' : 'outline'}
         className="justify-start flex flex-col p-0 w-full h-full items-stretch relative overflow-hidden"
         onClick={() => handleSurvivorToggle(survivor.id)}
@@ -57,6 +57,7 @@ export function ScoutSelectionCard({
                   .slice(0, 2)}
               </AvatarFallback>
             </Avatar>
+
             <div className="text-left flex-1 min-w-0">
               <div className="font-semibold text-sm truncate">
                 {survivor.name}

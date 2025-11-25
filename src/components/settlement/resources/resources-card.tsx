@@ -17,6 +17,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ResourceCategory, ResourceType } from '@/lib/enums'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  RESOURCE_REMOVED_MESSAGE,
+  RESOURCE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -47,7 +52,7 @@ interface ResourcesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -191,7 +196,7 @@ export function ResourcesCard({
 
     saveSelectedSettlement(
       { resources: currentResources },
-      'The resource is destroyed.'
+      RESOURCE_REMOVED_MESSAGE()
     )
   }
 
@@ -212,7 +217,7 @@ export function ResourcesCard({
     i?: number
   ) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless resource cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('resource'))
 
     const updatedResources = [...(selectedSettlement?.resources || [])]
 
@@ -244,9 +249,7 @@ export function ResourcesCard({
 
     saveSelectedSettlement(
       { resources: updatedResources },
-      i !== undefined
-        ? 'The resource has been updated.'
-        : 'A resource has been added to settlement storage.'
+      RESOURCE_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

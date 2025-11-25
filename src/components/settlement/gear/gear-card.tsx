@@ -3,6 +3,11 @@
 import { GearItem, NewGearItem } from '@/components/settlement/gear/gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  GEAR_REMOVED_MESSAGE,
+  GEAR_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -33,7 +38,7 @@ interface GearCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -95,7 +100,7 @@ export function GearCard({
       return next
     })
 
-    saveSelectedSettlement({ gear: currentGear }, 'Gear has been archived.')
+    saveSelectedSettlement({ gear: currentGear }, GEAR_REMOVED_MESSAGE())
   }
 
   /**
@@ -106,7 +111,7 @@ export function GearCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('Nameless gear cannot be stored.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('gear'))
 
     const updatedGear = [...(selectedSettlement?.gear || [])]
 
@@ -126,12 +131,7 @@ export function GearCard({
       }))
     }
 
-    saveSelectedSettlement(
-      { gear: updatedGear },
-      i !== undefined
-        ? 'Gear has been modified.'
-        : 'New gear added to settlement storage.'
-    )
+    saveSelectedSettlement({ gear: updatedGear }, GEAR_UPDATED_MESSAGE(i))
 
     setIsAddingNew(false)
   }

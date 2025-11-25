@@ -8,11 +8,11 @@ import {
   PeopleOfTheSunCampaignData,
   SquiresOfTheCitadelCampaignData
 } from '@/lib/common'
-import { CampaignType, ColorChoice } from '@/lib/enums'
+import { CampaignType, ColorChoice, MonsterName, TabType } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
-import { Settlement, TimelineYear } from '@/schemas/settlement'
+import { Quarry, Settlement, TimelineYear } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { clsx, type ClassValue } from 'clsx'
@@ -22,8 +22,8 @@ import { twMerge } from 'tailwind-merge'
 /**
  * Duration to cache the loaded campaign in milliseconds.
  *
- * This is used to reduce the number of reads from localStorage
- * and improve performance when accessing campaign data frequently.
+ * This is used to reduce the number of reads from localStorage and improve
+ * performance when accessing campaign data frequently.
  */
 const CACHE_DURATION = 5000
 
@@ -153,9 +153,7 @@ export function getNextSurvivorId(): number {
 export function getNextHuntId(): number {
   const campaign = getCampaign()
 
-  if (!campaign.hunts) return 1
-
-  return campaign.hunts.length === 0
+  return !campaign.hunts || campaign.hunts.length === 0
     ? 1
     : Math.max(...campaign.hunts.map((hunt) => hunt.id)) + 1
 }
@@ -168,25 +166,9 @@ export function getNextHuntId(): number {
 export function getNextShowdownId(): number {
   const campaign = getCampaign()
 
-  if (!campaign.showdowns) return 1
-
-  return campaign.showdowns.length === 0
+  return !campaign.showdowns || campaign.showdowns.length === 0
     ? 1
     : Math.max(...campaign.showdowns.map((showdown) => showdown.id)) + 1
-}
-
-/**
- * Get Lost Settlement Count
- *
- * @returns Lost Settlement Count
- */
-export function getLostSettlementCount(): number {
-  return getCampaign().settlements.filter(
-    (settlement) =>
-      settlement.milestones.filter(
-        (m) => m.complete && m.name === 'Population reaches 0'
-      ).length > 0
-  ).length
 }
 
 /**
@@ -255,7 +237,6 @@ export function getSelectedSettlement(): Settlement | null {
  */
 export function setSelectedSettlement(settlementId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedSettlementId = settlementId || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -283,7 +264,6 @@ export function getSelectedSurvivor(): Survivor | null {
  */
 export function setSelectedSurvivor(survivorId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedSurvivorId = survivorId || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -294,7 +274,7 @@ export function setSelectedSurvivor(survivorId: number | null) {
  *
  * @returns Selected Tab
  */
-export function getSelectedTab(): string | null {
+export function getSelectedTab(): TabType | null {
   return getCampaign().selectedTab || null
 }
 
@@ -303,9 +283,8 @@ export function getSelectedTab(): string | null {
  *
  * @param tab Tab Name
  */
-export function setSelectedTab(tab: string | null) {
+export function setSelectedTab(tab: TabType | null) {
   const campaign = getCampaign()
-
   campaign.selectedTab = tab || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -331,7 +310,6 @@ export function getSelectedHunt(): Hunt | null {
  */
 export function setSelectedHunt(huntId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedHuntId = huntId || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -360,7 +338,6 @@ export function getSelectedShowdown(): Showdown | null {
  */
 export function setSelectedShowdown(showdownId: number | null) {
   const campaign = getCampaign()
-
   campaign.selectedShowdownId = showdownId || undefined
 
   saveCampaignToLocalStorage(campaign)
@@ -813,4 +790,111 @@ export function getCardColorStyles(color: ColorChoice): CSSProperties {
     '--card-border-hover-color': colors.borderHover,
     '--card-header-bg': colors.header
   } as CSSProperties
+}
+
+/**
+ * Get All Survivors for a Settlement
+ *
+ * @param survivors All Survivors
+ * @param settlementId Settlement ID
+ * @returns All Survivors
+ */
+export function getAllSurvivors(survivors: Survivor[], settlementId: number) {
+  if (settlementId === 0) return []
+
+  return survivors.filter((survivor) => survivor.settlementId === settlementId)
+}
+
+/**
+ * Get Available Survivors for a Settlement
+ *
+ * Excludes dead and retired survivors.
+ *
+ * @param survivors All Survivors
+ * @param settlementId Settlement ID
+ * @returns Available Survivors
+ */
+export function getAvailableSurvivors(
+  survivors: Survivor[],
+  settlementId: number
+) {
+  if (settlementId === 0) return []
+
+  return survivors.filter(
+    (survivor) =>
+      survivor.settlementId === settlementId &&
+      !survivor.dead &&
+      !survivor.retired
+  )
+}
+
+/**
+ * Get Available (Unlocked) Quarries
+ *
+ * @param settlement Settlement
+ * @returns Available Quarries
+ */
+export function getAvailableQuarries(settlement: Settlement): Quarry[] {
+  return settlement.quarries.filter((quarry) => quarry.unlocked)
+}
+
+/**
+ * Get the Overwhelming Darkness Label
+ *
+ * When hunting the Flower Knight, Overwhelming Darkness is replaced with The
+ * Forest Wants What it Wants.
+ *
+ * @param monsterName Monster Name
+ * @returns Overwhelming Darkness Label
+ */
+export function getOverwhelmingDarknessLabel(
+  monsterName: string | undefined
+): string {
+  return monsterName === MonsterName.FLOWER_KNIGHT
+    ? 'The Forest Wants What it Wants'
+    : 'Overwhelming Darkness'
+}
+
+/**
+ * Get the Survivors Color Choice
+ *
+ * @param selectedHunt Selected Hunt
+ * @param survivorId Survivor ID
+ * @returns Color Choice
+ */
+export function getSurvivorColorChoice(
+  selectedHunt: Partial<Hunt> | null,
+  survivorId: number | undefined
+): ColorChoice {
+  if (!survivorId) return ColorChoice.SLATE
+
+  if (!selectedHunt?.survivorDetails) return ColorChoice.SLATE
+
+  const survivorDetail = selectedHunt.survivorDetails.find(
+    (sd) => sd.id === survivorId
+  )
+
+  return survivorDetail?.color || ColorChoice.SLATE
+}
+
+/**
+ * Get the Carousel Width
+ *
+ * Takes sidebar presence into account.
+ *
+ * @param isMobile Is Mobile
+ * @param sidebarState Sidebar State
+ * @returns Carousel Width
+ */
+export const getCarouselWidth = (isMobile: boolean, sidebarState: string) => {
+  // Full width on mobile (sidebar is overlay) minus gap
+  if (isMobile) return '98vw'
+
+  // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
+  if (sidebarState === 'expanded') return 'calc(100vw - 17rem)'
+
+  // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
+  if (sidebarState === 'collapsed') return 'calc(100vw - 4rem)'
+
+  return '98.5vw' // Fallback to full width
 }

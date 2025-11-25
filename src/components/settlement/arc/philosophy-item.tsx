@@ -26,7 +26,7 @@ export interface PhilosophyItemProps {
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -189,7 +189,6 @@ export function NewPhilosophyItem({
         value={selectedValue as Philosophy}
         onChange={(value) => setSelectedValue(value)}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

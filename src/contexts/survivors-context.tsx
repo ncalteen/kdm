@@ -59,7 +59,6 @@ export function SurvivorsProvider({
   // Load survivors from localStorage on mount
   useEffect(() => {
     const savedSurvivors = getSurvivors()
-
     if (savedSurvivors) setSurvivorsState(savedSurvivors)
   }, [])
 

@@ -45,11 +45,11 @@ export function SelectWeaponType({
   const weaponTypeOptions = Object.values(WeaponType).sort((a, b) =>
     a.localeCompare(b)
   )
+
   const [open, setOpen] = useState(false)
 
   const handleTypeSelect = (type: string) => {
     if (onChange) onChange(type)
-
     setOpen(false)
   }
 
@@ -60,13 +60,14 @@ export function SelectWeaponType({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between mt-1 text-sm min-w-[180px]"
+          className="justify-between text-sm min-w-[180px]"
           disabled={disabled}>
           {value || 'Select Type'}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 min-w-[180px]">
+
+      <PopoverContent className="p-0">
         <Command>
           <CommandInput placeholder="Search weapon type..." />
           <CommandList>
@@ -79,7 +80,7 @@ export function SelectWeaponType({
                   onSelect={() => handleTypeSelect(type)}>
                   <Check
                     className={cn(
-                      'mr-2 h-4 w-4',
+                      'h-4 w-4',
                       value === type ? 'opacity-100' : 'opacity-0'
                     )}
                   />

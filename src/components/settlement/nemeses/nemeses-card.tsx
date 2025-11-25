@@ -12,6 +12,12 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  NEMESIS_REMOVED_MESSAGE,
+  NEMESIS_UNLOCKED_MESSAGE,
+  NEMESIS_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Nemesis, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -42,7 +48,7 @@ interface NemesesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -109,7 +115,7 @@ export function NemesesCard({
 
     saveSelectedSettlement(
       { nemeses: currentNemeses },
-      'The nemesis has returned to the darkness.'
+      NEMESIS_REMOVED_MESSAGE()
     )
   }
 
@@ -122,7 +128,7 @@ export function NemesesCard({
    */
   const onSave = (value?: string, unlocked?: boolean, index?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless nemesis cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('nemesis'))
 
     const nemesisWithCc: Nemesis = {
       name: value,
@@ -159,9 +165,7 @@ export function NemesesCard({
 
     saveSelectedSettlement(
       { nemeses: updatedNemeses },
-      index !== undefined
-        ? 'The nemesis waits outside your settlement.'
-        : 'A new nemesis emerges.'
+      NEMESIS_UPDATED_MESSAGE(index)
     )
 
     setIsAddingNew(false)
@@ -188,7 +192,10 @@ export function NemesesCard({
 
     saveSelectedSettlement(
       { nemeses: updatedNemeses },
-      `${selectedSettlement?.nemeses![index]?.name} ${unlocked ? 'emerges, ready to accept your challenge.' : 'retreats into the darkness, beyond your reach.'}`
+      NEMESIS_UNLOCKED_MESSAGE(
+        selectedSettlement?.nemeses![index]?.name || '',
+        unlocked
+      )
     )
   }
 

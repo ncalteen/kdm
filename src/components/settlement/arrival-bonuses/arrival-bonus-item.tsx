@@ -25,7 +25,7 @@ export interface ArrivalBonusItemProps {
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -110,7 +110,6 @@ export function ArrivalBonusItem({
           defaultValue={selectedSettlement?.arrivalBonuses?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -190,7 +189,6 @@ export function NewArrivalBonusItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

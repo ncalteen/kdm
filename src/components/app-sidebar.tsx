@@ -26,7 +26,12 @@ import {
   SidebarRail,
   useSidebar
 } from '@/components/ui/sidebar'
-import { CampaignType, SurvivorType } from '@/lib/enums'
+import { CampaignType, SurvivorType, TabType } from '@/lib/enums'
+import {
+  ERROR_MESSAGE,
+  SETTLEMENT_LOADED_MESSAGE,
+  SETTLEMENT_SAVED_MESSAGE
+} from '@/lib/messages'
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -41,6 +46,7 @@ import {
   PawPrintIcon,
   SchoolIcon,
   SettingsIcon,
+  SkullIcon,
   SwordsIcon,
   UploadIcon,
   UsersIcon,
@@ -52,37 +58,37 @@ import { toast } from 'sonner'
 const baseNavPrimary = [
   {
     title: 'Timeline',
-    tab: 'timeline',
+    tab: TabType.TIMELINE,
     icon: HourglassIcon
   },
   {
     title: 'Monsters',
-    tab: 'monsters',
+    tab: TabType.MONSTERS,
     icon: SwordsIcon
   },
   {
     title: 'Survivors',
-    tab: 'survivors',
+    tab: TabType.SURVIVORS,
     icon: UsersIcon
   },
   {
     title: 'Society',
-    tab: 'society',
+    tab: TabType.SOCIETY,
     icon: SchoolIcon
   },
   {
     title: 'Crafting',
-    tab: 'crafting',
+    tab: TabType.CRAFTING,
     icon: WrenchIcon
   },
   {
     title: 'Notes',
-    tab: 'notes',
+    tab: TabType.NOTES,
     icon: NotebookPenIcon
   },
   {
     title: 'Settings',
-    tab: 'settings',
+    tab: TabType.SETTINGS,
     icon: SettingsIcon
   }
 ]
@@ -90,32 +96,32 @@ const baseNavPrimary = [
 const navSquires = [
   {
     title: 'Timeline',
-    tab: 'timeline',
+    tab: TabType.TIMELINE,
     icon: HourglassIcon
   },
   {
     title: 'Monsters',
-    tab: 'monsters',
+    tab: TabType.MONSTERS,
     icon: SwordsIcon
   },
   {
     title: 'Squires',
-    tab: 'squires',
+    tab: TabType.SQUIRES,
     icon: UsersIcon
   },
   {
     title: 'Society',
-    tab: 'society',
+    tab: TabType.SOCIETY,
     icon: SchoolIcon
   },
   {
     title: 'Crafting',
-    tab: 'crafting',
+    tab: TabType.CRAFTING,
     icon: WrenchIcon
   },
   {
     title: 'Notes',
-    tab: 'notes',
+    tab: TabType.NOTES,
     icon: NotebookPenIcon
   }
 ]
@@ -123,14 +129,14 @@ const navSquires = [
 const navEmbark = [
   {
     title: 'Hunt',
-    tab: 'hunt',
+    tab: TabType.HUNT,
     icon: PawPrintIcon
+  },
+  {
+    title: 'Showdown',
+    tab: TabType.SHOWDOWN,
+    icon: SkullIcon
   }
-  // {
-  //   title: 'Showdown',
-  //   tab: 'showdown',
-  //   icon: SkullIcon
-  // }
 ]
 
 /**
@@ -210,7 +216,7 @@ export function AppSidebar({
       if (notesIndex !== -1)
         newNavItems.splice(notesIndex, 0, {
           title: 'Arc',
-          tab: 'arc',
+          tab: TabType.ARC,
           icon: LightbulbIcon
         })
     }
@@ -259,10 +265,10 @@ export function AppSidebar({
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
 
-      toast.success('Settlement records preserved!')
+      toast.success(SETTLEMENT_SAVED_MESSAGE())
     } catch (error) {
       console.error('Download Campaign Error:', error)
-      toast.error('Failed to preserve records. Please try again.')
+      toast.error(ERROR_MESSAGE())
     } finally {
       setIsDownloading(false)
     }
@@ -304,9 +310,7 @@ export function AppSidebar({
         }
       } catch (error) {
         console.error('Upload Campaign JSON Error:', error)
-        setValidationErrors([
-          'The darkness swallows your words. Please try again.'
-        ])
+        setValidationErrors([ERROR_MESSAGE()])
 
         setUploadedData(undefined)
         setShowConfirmation(false)
@@ -317,7 +321,7 @@ export function AppSidebar({
 
     reader.onerror = () => {
       console.error('Read Campaign JSON Error:', reader.error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
       setIsUploading(false)
     }
 
@@ -333,7 +337,7 @@ export function AppSidebar({
     try {
       // Replace existing campaign data
       localStorage.setItem('campaign', JSON.stringify(uploadedData))
-      toast.success('Settlement chronicles loaded!')
+      toast.success(SETTLEMENT_LOADED_MESSAGE())
 
       // Reset state
       setUploadedData(undefined)
@@ -346,8 +350,8 @@ export function AppSidebar({
       // Reload the page to reflect changes
       window.location.reload()
     } catch (error) {
-      console.error('Save Campaign Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      console.error('Upload Campaign Error:', error)
+      toast.error(ERROR_MESSAGE())
     }
   }
 
@@ -379,16 +383,19 @@ export function AppSidebar({
           setSelectedSurvivor={setSelectedSurvivor}
         />
       </SidebarHeader>
+
       <SidebarContent className="group-data-[collapsible=icon]:justify-center">
         <SidebarGroup className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex-1">
           <SidebarGroupLabel>Settlement</SidebarGroupLabel>
           <NavMain items={navItems} />
         </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>Embark</SidebarGroupLabel>
           <NavMain items={navEmbark} />
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
         {state === 'expanded' && (
           <p className="text-center text-xs text-gray-500 pb-2">
@@ -401,6 +408,7 @@ export function AppSidebar({
             intended for commercial use or distribution.
           </p>
         )}
+
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -412,6 +420,7 @@ export function AppSidebar({
               Preserve Records
             </SidebarMenuButton>
           </SidebarMenuItem>
+
           <SidebarMenuItem>
             <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
               <AlertDialogTrigger asChild>
@@ -458,7 +467,6 @@ export function AppSidebar({
                   )}
                 </AlertDialogHeader>
 
-                {/* Content outside of AlertDialogDescription to avoid nesting issues */}
                 <div className="text-sm text-muted-foreground">
                   {showConfirmation ? (
                     <div className="text-left space-y-4">

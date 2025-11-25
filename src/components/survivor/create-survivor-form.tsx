@@ -11,7 +11,9 @@ import {
   FormLabel
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Gender, SurvivorType } from '@/lib/enums'
+import { ERROR_MESSAGE, SURVIVOR_CREATED_MESSAGE } from '@/lib/messages'
 import {
   bornWithUnderstanding,
   canDash,
@@ -104,10 +106,7 @@ export function CreateSurvivorForm({
    * @param values Form Values
    */
   function onSubmit(values: Survivor) {
-    saveSelectedSurvivor(
-      values,
-      'A lantern approaches. A new survivor emerges from the darkness.'
-    )
+    saveSelectedSurvivor(values, SURVIVOR_CREATED_MESSAGE())
     setSelectedSurvivor(values)
     setIsCreatingNewSurvivor(false)
   }
@@ -123,7 +122,7 @@ export function CreateSurvivorForm({
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, () => {
-        toast.error('The darkness swallows your words. Please try again.')
+        toast.error(ERROR_MESSAGE())
       })}
       className="py-3 space-y-6">
       <Form {...form}>
@@ -172,9 +171,9 @@ export function CreateSurvivorForm({
                           if (checked) form.setValue('gender', Gender.MALE)
                         }}
                       />
-                      <label htmlFor="male-checkbox" className="text-sm">
+                      <Label htmlFor="male-checkbox" className="text-sm">
                         M
-                      </label>
+                      </Label>
                       <Checkbox
                         id="female-checkbox"
                         checked={field.value === Gender.FEMALE}
@@ -182,9 +181,9 @@ export function CreateSurvivorForm({
                           if (checked) form.setValue('gender', Gender.FEMALE)
                         }}
                       />
-                      <label htmlFor="female-checkbox" className="text-sm">
+                      <Label htmlFor="female-checkbox" className="text-sm">
                         F
-                      </label>
+                      </Label>
                     </div>
                   </div>
                 </FormItem>

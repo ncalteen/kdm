@@ -6,6 +6,11 @@ import {
 } from '@/components/survivor/cursed-gear/cursed-gear-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_CURSED_GEAR_REMOVED_MESSAGE,
+  SURVIVOR_CURSED_GEAR_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -22,7 +27,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { BadgeMinusIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -33,7 +38,7 @@ interface CursedGearCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -97,7 +102,7 @@ export function CursedGearCard({
 
     saveSelectedSurvivor(
       { cursedGear: currentCursedGear },
-      `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been removed.`
+      SURVIVOR_CURSED_GEAR_REMOVED_MESSAGE(selectedSurvivor?.name)
     )
   }
 
@@ -109,7 +114,7 @@ export function CursedGearCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless cursed gear item cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('cursed gear'))
 
     const updatedCursedGear = [...(selectedSurvivor?.cursedGear || [])]
 
@@ -131,9 +136,10 @@ export function CursedGearCard({
 
     saveSelectedSurvivor(
       { cursedGear: updatedCursedGear },
-      i !== undefined
-        ? `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been updated.`
-        : `${selectedSurvivor?.name || 'Survivor'}'s cursed gear has been added.`
+      SURVIVOR_CURSED_GEAR_UPDATED_MESSAGE(
+        selectedSurvivor?.name,
+        i === undefined
+      )
     )
 
     setIsAddingNew(false)
@@ -183,10 +189,10 @@ export function CursedGearCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
-        <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          <BadgeMinusIcon className="h-4 w-4" />
+    <Card className="p-2 border-0 gap-0">
+      {/* Title */}
+      <CardHeader className="p-0">
+        <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
           Cursed Gear
           {!isAddingNew && (
             <Button
@@ -194,20 +200,20 @@ export function CursedGearCard({
               size="sm"
               variant="outline"
               onClick={addItem}
-              className="border-0 h-8 w-8"
+              className="h-6 w-6"
               disabled={
                 isAddingNew ||
                 Object.values(disabledInputs).some((v) => v === false)
               }>
-              <PlusIcon className="h-4 w-4" />
+              <PlusIcon />
             </Button>
           )}
         </CardTitle>
       </CardHeader>
 
       {/* Cursed Gear List */}
-      <CardContent className="p-1 pb-2 pt-0">
-        <div className="flex flex-col h-[125px]">
+      <CardContent className="p-0">
+        <div className="flex flex-col">
           <div className="flex-1 overflow-y-auto">
             {(selectedSurvivor?.cursedGear || []).length !== 0 && (
               <DndContext

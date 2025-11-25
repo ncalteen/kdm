@@ -7,14 +7,17 @@ import { Form } from '@/components/ui/form'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { useSelectedHunt } from '@/contexts/selected-hunt-context'
 import { useSelectedSettlement } from '@/contexts/selected-settlement-context'
+import { useSelectedShowdown } from '@/contexts/selected-showdown-context'
 import { useSelectedSurvivor } from '@/contexts/selected-survivor-context'
 import { useSelectedTab } from '@/contexts/selected-tab-context'
 import { useSurvivors } from '@/contexts/survivors-context'
 import { useSelectedHuntSave } from '@/hooks/use-selected-hunt-save'
 import { useSelectedSettlementSave } from '@/hooks/use-selected-settlement-save'
+import { useSelectedShowdownSave } from '@/hooks/use-selected-showdown-save'
 import { useSelectedSurvivorSave } from '@/hooks/use-selected-survivor-save'
 import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import { Showdown, ShowdownSchema } from '@/schemas/showdown'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -70,8 +73,8 @@ function MainPageContent(): ReactElement {
 
   // Effect to handle component mount and loading state
   useEffect(() => {
-    console.debug('[MainPageContent] Mounted')
     // Mark component as mounted
+    console.debug('[MainPageContent] Mounted')
     isMounted.current = true
 
     // Simulate async behavior to show loading state briefly
@@ -128,7 +131,14 @@ function MainPage(): ReactElement {
     setSelectedHunt,
     updateSelectedHunt
   } = useSelectedHunt()
-  const { selectedTab } = useSelectedTab()
+  const {
+    isCreatingNewShowdown,
+    selectedShowdown,
+    setIsCreatingNewShowdown,
+    setSelectedShowdown,
+    updateSelectedShowdown
+  } = useSelectedShowdown()
+  const { setSelectedTab, selectedTab } = useSelectedTab()
   const { setSurvivors, survivors } = useSurvivors()
 
   // Memoize form configurations to prevent unnecessary re-initializations
@@ -148,6 +158,14 @@ function MainPage(): ReactElement {
     [selectedSettlement]
   )
 
+  const showdownFormConfig = useMemo(
+    () => ({
+      resolver: zodResolver(ShowdownSchema) as Resolver<Showdown>,
+      defaultValues: selectedShowdown || undefined
+    }),
+    [selectedShowdown]
+  )
+
   const survivorFormConfig = useMemo(
     () => ({
       resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
@@ -159,6 +177,7 @@ function MainPage(): ReactElement {
   // Initialize the form data from the context
   const huntForm = useForm<Hunt>(huntFormConfig)
   const settlementForm = useForm<Settlement>(settlementFormConfig)
+  const showdownForm = useForm<Showdown>(showdownFormConfig)
   const survivorForm = useForm<Survivor>(survivorFormConfig)
 
   // Initialize save hooks with the forms and update functions
@@ -166,6 +185,10 @@ function MainPage(): ReactElement {
   const { saveSelectedSettlement } = useSelectedSettlementSave(
     settlementForm,
     updateSelectedSettlement
+  )
+  const { saveSelectedShowdown } = useSelectedShowdownSave(
+    showdownForm,
+    updateSelectedShowdown
   )
   const { saveSelectedSurvivor } = useSelectedSurvivorSave(
     survivorForm,
@@ -176,10 +199,16 @@ function MainPage(): ReactElement {
   const handleSetSelectedSettlement = useMemo(
     () => (settlement: Settlement | null) => {
       setSelectedSettlement(settlement)
-      updateSelectedSettlement()
       updateSelectedHunt()
+      updateSelectedSettlement()
+      updateSelectedShowdown()
     },
-    [setSelectedSettlement, updateSelectedSettlement, updateSelectedHunt]
+    [
+      setSelectedSettlement,
+      updateSelectedHunt,
+      updateSelectedSettlement,
+      updateSelectedShowdown
+    ]
   )
 
   // Handle settlement data changes
@@ -196,14 +225,19 @@ function MainPage(): ReactElement {
 
       // Reset the hunt form
       if (selectedHunt) huntForm.reset(selectedHunt)
+
+      // Reset the showdown form
+      if (selectedShowdown) showdownForm.reset(selectedShowdown)
     }
   }, [
+    huntForm,
+    selectedHunt,
     selectedSettlement,
+    selectedShowdown,
     selectedSurvivor?.settlementId,
     setSelectedSurvivor,
     settlementForm,
-    huntForm,
-    selectedHunt
+    showdownForm
   ])
 
   // Reset the survivor form when the selected survivor changes
@@ -222,10 +256,10 @@ function MainPage(): ReactElement {
           <AppSidebar
             selectedHunt={selectedHunt}
             selectedSettlement={selectedSettlement}
-            selectedShowdown={null} // Showdown not implemented yet
+            selectedShowdown={selectedShowdown}
             setSelectedHunt={setSelectedHunt}
             setSelectedSettlement={handleSetSelectedSettlement}
-            setSelectedShowdown={() => {}} // No showdown context yet
+            setSelectedShowdown={setSelectedShowdown}
             setSelectedSurvivor={setSelectedSurvivor}
           />
           <SidebarInset>
@@ -234,24 +268,31 @@ function MainPage(): ReactElement {
                 <Form {...huntForm}>
                   <SettlementForm
                     isCreatingNewHunt={isCreatingNewHunt}
+                    isCreatingNewShowdown={isCreatingNewShowdown}
                     isCreatingNewSurvivor={isCreatingNewSurvivor}
                     saveSelectedHunt={saveSelectedHunt}
                     saveSelectedSettlement={saveSelectedSettlement}
+                    saveSelectedShowdown={saveSelectedShowdown}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedHunt={selectedHunt}
                     selectedSettlement={selectedSettlement}
+                    selectedShowdown={selectedShowdown}
                     selectedSurvivor={selectedSurvivor}
                     selectedTab={selectedTab}
                     setIsCreatingNewHunt={setIsCreatingNewHunt}
+                    setIsCreatingNewShowdown={setIsCreatingNewShowdown}
                     setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                     setSelectedHunt={setSelectedHunt}
                     setSelectedSettlement={handleSetSelectedSettlement}
+                    setSelectedShowdown={setSelectedShowdown}
                     setSelectedSurvivor={setSelectedSurvivor}
+                    setSelectedTab={setSelectedTab}
                     setSurvivors={setSurvivors}
                     settlementForm={settlementForm}
                     survivors={survivors}
                     updateSelectedHunt={updateSelectedHunt}
                     updateSelectedSettlement={updateSelectedSettlement}
+                    updateSelectedShowdown={updateSelectedShowdown}
                     updateSelectedSurvivor={updateSelectedSurvivor}
                   />
                 </Form>

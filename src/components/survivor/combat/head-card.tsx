@@ -4,7 +4,9 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_HEAD_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { HardHatIcon, Shield } from 'lucide-react'
@@ -15,9 +17,9 @@ import { ReactElement } from 'react'
  */
 interface HeadCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -55,13 +57,14 @@ export function HeadCard({
       {
         [attrName]: value
       },
-      'The flesh endures what the mind cannot.'
+      COMBAT_HEAD_UPDATED_MESSAGE()
     )
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
+          {/* Head Armor */}
           <div className="relative flex items-center">
             <Shield
               className="h-14 w-14 text-muted-foreground"
@@ -71,11 +74,12 @@ export function HeadCard({
               value={selectedSurvivor?.headArmor ?? 0}
               min={0}
               label="Head Armor"
-              onChange={(value) => saveToLocalStorage('headArmor', value)}>
+              onChange={(value) => saveToLocalStorage('headArmor', value)}
+              readOnly={false}>
               <Input
                 placeholder="1"
                 type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.headArmor ?? '0'}
                 readOnly={isMobile}
                 onChange={
@@ -93,14 +97,13 @@ export function HeadCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
-          {/* Body part label and severe injuries in a single row */}
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <HardHatIcon /> Head
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <HardHatIcon className="h-5 w-5" /> Head
             </div>
-            <div className="flex flex-col items-start gap-1 ml-2">
+            <div className="flex flex-col gap-1 ml-2">
               {/* Severe Injuries - Deaf */}
               <div className="space-y-0 flex flex-row items-center gap-2">
                 <Checkbox
@@ -110,7 +113,7 @@ export function HeadCard({
                     saveToLocalStorage('headDeaf', !!checked)
                   }
                 />
-                <label className="text-xs">Deaf</label>
+                <Label className="text-xs">Deaf</Label>
               </div>
 
               {/* Severe Injuries - Blind */}
@@ -146,7 +149,7 @@ export function HeadCard({
                     saveToLocalStorage('headShatteredJaw', !!checked)
                   }
                 />
-                <label className="text-xs">Shattered Jaw</label>
+                <Label className="text-xs">Shattered Jaw</Label>
               </div>
 
               {/* Severe Injuries - Intracranial Hemorrhage */}
@@ -158,13 +161,13 @@ export function HeadCard({
                     saveToLocalStorage('headIntracranialHemorrhage', !!checked)
                   }
                 />
-                <label className="text-xs">Intracranial Hemorrhage</label>
+                <Label className="text-xs">Intracranial Hemorrhage</Label>
               </div>
             </div>
 
             {/* Heavy Head Damage */}
             <div className="flex flex-col items-center ml-auto">
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -178,7 +181,7 @@ export function HeadCard({
                     saveToLocalStorage('headHeavyDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

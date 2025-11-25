@@ -78,7 +78,7 @@ export const BaseSurvivorSchema = z.object({
   /** Luck */
   luck: z.number().default(0),
   /** Movement */
-  movement: z.number().min(0, 'Movement cannot be negative.').default(5),
+  movement: z.number().min(1, 'Movement cannot be less than 1.').default(5),
   /** Next Departure */
   nextDeparture: z
     .array(z.string().min(1, 'A nameless departure bonus cannot be recorded.'))

@@ -5,12 +5,23 @@ import { SelectPhilosophy } from '@/components/menu/select-philosophy'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Philosophy } from '@/lib/enums'
+import {
+  PHILOSOPHY_RANK_MINIMUM_ERROR,
+  SURVIVOR_NEUROSIS_UPDATED_MESSAGE,
+  SURVIVOR_PHILOSOPHY_RANK_UPDATED_MESSAGE,
+  SURVIVOR_PHILOSOPHY_SELECTED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_RULES_UPDATED_MESSAGE,
+  SURVIVOR_TENET_KNOWLEDGE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { BrainCogIcon } from 'lucide-react'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -21,7 +32,7 @@ interface PhilosophyCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
@@ -84,9 +95,7 @@ export function PhilosophyCard({
 
       saveSelectedSurvivor(
         updateData,
-        value
-          ? 'The path of wisdom begins to illuminate the darkness.'
-          : 'The philosophical path returns to shadow.'
+        SURVIVOR_PHILOSOPHY_SELECTED_MESSAGE(value)
       )
 
       // Update the survivors context to trigger re-renders in settlement table
@@ -118,9 +127,7 @@ export function PhilosophyCard({
 
       saveSelectedSurvivor(
         { tenetKnowledgeRankUp: newRankUp },
-        newRankUp !== undefined
-          ? 'Tenet knowledge rank up milestone marked.'
-          : 'Tenet knowledge rank up milestone removed.'
+        SURVIVOR_TENET_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE(newRankUp)
       )
     },
     [selectedSurvivor?.tenetKnowledgeRankUp, saveSelectedSurvivor]
@@ -134,11 +141,14 @@ export function PhilosophyCard({
       const value = parseInt(val) || 0
 
       // Enforce minimum value of 0
-      if (value < 0) return toast.error('Philosophy rank cannot be negative.')
+      if (value < 0) return toast.error(PHILOSOPHY_RANK_MINIMUM_ERROR())
 
       const updateData: Partial<Survivor> = { philosophyRank: value }
 
-      saveSelectedSurvivor(updateData, 'Philosophy rank has been updated.')
+      saveSelectedSurvivor(
+        updateData,
+        SURVIVOR_PHILOSOPHY_RANK_UPDATED_MESSAGE()
+      )
 
       // Update the survivors context to trigger re-renders in settlement table
       if (survivors && selectedSurvivor?.id) {
@@ -161,9 +171,7 @@ export function PhilosophyCard({
     setNeurosis(value)
     saveSelectedSurvivor(
       { neurosis: value },
-      value
-        ? 'The neurosis manifests in the mind.'
-        : 'The neurosis fades into darkness.'
+      SURVIVOR_NEUROSIS_UPDATED_MESSAGE(value)
     )
   }
 
@@ -174,9 +182,7 @@ export function PhilosophyCard({
     setTenetKnowledge(value)
     saveSelectedSurvivor(
       { tenetKnowledge: value },
-      value
-        ? 'Tenet knowledge is inscribed in memory.'
-        : 'Tenet knowledge dissolves into shadow.'
+      SURVIVOR_TENET_KNOWLEDGE_UPDATED_MESSAGE(value)
     )
   }
 
@@ -201,9 +207,10 @@ export function PhilosophyCard({
     // Save to localStorage
     saveSelectedSurvivor(
       { tenetKnowledgeObservationRank: newRank },
-      isRankUp
-        ? 'Wisdom ascends through knowledge and understanding. Rank up achieved!'
-        : `Observation rank ${newRank} burns bright in the lantern's glow.`
+      SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE(
+        isRankUp,
+        newRank
+      )
     )
   }
 
@@ -214,9 +221,7 @@ export function PhilosophyCard({
     setTenetKnowledgeRules(value)
     saveSelectedSurvivor(
       { tenetKnowledgeRules: value },
-      value
-        ? 'The rules of knowledge are etched in stone.'
-        : 'The rules fade back into mystery.'
+      SURVIVOR_TENET_KNOWLEDGE_RULES_UPDATED_MESSAGE(value)
     )
   }
 
@@ -227,20 +232,17 @@ export function PhilosophyCard({
     setTenetKnowledgeObservationConditions(value)
     saveSelectedSurvivor(
       { tenetKnowledgeObservationConditions: value },
-      value
-        ? "Observation conditions are recorded in the survivor's memory."
-        : 'The conditions vanish into the void.'
+      SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE(value)
     )
   }
 
   return (
-    <Card className="p-0 border-1 gap-2 h-[483px] justify-between">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-2 border-0">
+      {/* Title */}
+      <CardHeader className="p-0">
         <div className="flex flex-row justify-between">
-          {/* Philosophy */}
           <div className="flex flex-col gap-1">
-            <CardTitle className="text-md flex flex-row items-center gap-1">
-              <BrainCogIcon className="h-4 w-4" />
+            <CardTitle className="text-sm flex flex-row items-center gap-1">
               Philosophy
             </CardTitle>
             <SelectPhilosophy
@@ -255,7 +257,8 @@ export function PhilosophyCard({
             label="Philosophy Rank"
             value={selectedSurvivor?.philosophyRank ?? 0}
             onChange={(value) => updatePhilosophyRank(value.toString())}
-            min={0}>
+            min={0}
+            readOnly={false}>
             <Input
               placeholder="0"
               type="number"
@@ -282,11 +285,11 @@ export function PhilosophyCard({
           <strong>returning survivor</strong> and reach a new Hunt XP milestone,
           you must rank up your philosophy. Limit, once per settlement phase.
         </p>
+
+        <hr />
       </CardHeader>
 
-      <hr className="my-1" />
-
-      <CardContent className="p-2 flex flex-col">
+      <CardContent className="p-0 flex flex-col">
         {/* Neurosis */}
         <div className="flex flex-col gap-1">
           <Input
@@ -298,7 +301,7 @@ export function PhilosophyCard({
               updateNeurosis(e.target.value)
             }}
           />
-          <label className="text-xs text-muted-foreground">Neurosis</label>
+          <Label className="text-xs text-muted-foreground">Neurosis</Label>
         </div>
 
         {/* Tenet Knowledge and Ranks */}
@@ -313,9 +316,9 @@ export function PhilosophyCard({
                 updateTenetKnowledge(e.target.value)
               }}
             />
-            <label className="text-xs text-muted-foreground">
+            <Label className="text-xs text-muted-foreground">
               Tenet Knowledge
-            </label>
+            </Label>
           </div>
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
@@ -351,7 +354,9 @@ export function PhilosophyCard({
             onChange={(e) => setTenetKnowledgeRules(e.target.value)}
             onBlur={(e) => updateTenetKnowledgeRules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground">Rules</label>
+          <Label className="text-xs text-muted-foreground text-right">
+            Rules
+          </Label>
         </div>
 
         {/* Tenet Knowledge Observation Conditions */}
@@ -367,9 +372,9 @@ export function PhilosophyCard({
               updateTenetKnowledgeObservationConditions(e.target.value)
             }
           />
-          <label className="text-xs text-muted-foreground">
+          <Label className="text-xs text-muted-foreground text-right">
             Observation Conditions
-          </label>
+          </Label>
         </div>
       </CardContent>
     </Card>

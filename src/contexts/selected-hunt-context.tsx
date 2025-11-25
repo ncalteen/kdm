@@ -63,7 +63,6 @@ export function SelectedHuntProvider({
   // Load selected hunt from localStorage on mount
   useEffect(() => {
     const savedSelectedHunt = getSelectedHunt()
-
     if (savedSelectedHunt) setSelectedHuntState(savedSelectedHunt)
   }, [])
 
@@ -71,9 +70,7 @@ export function SelectedHuntProvider({
    * Set Selected Hunt
    */
   const setSelectedHunt = (hunt: Hunt | null) => {
-    // Update state
     setSelectedHuntState(hunt)
-    // Save to localStorage
     setSelectedHuntInStorage(hunt?.id || null)
 
     // When selecting a hunt, stop creation mode

@@ -7,6 +7,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useSelectedTab } from '@/contexts/selected-tab-context'
 import { useCampaignSave } from '@/hooks/use-campaign-save'
 import { SurvivorType } from '@/lib/enums'
+import {
+  ERROR_MESSAGE,
+  SURVIVOR_ON_HUNT_ERROR_MESSAGE,
+  SURVIVOR_ON_SHOWDOWN_ERROR_MESSAGE,
+  SURVIVOR_REMOVED_MESSAGE
+} from '@/lib/messages'
 import { getCampaign, getSurvivors } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -21,13 +27,13 @@ import { toast } from 'sonner'
  */
 interface SettlementSurvivorsCardProps {
   /** Selected Hunt */
-  selectedHunt: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Showdown */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
   /** Set Is Creating New Survivor */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Survivor */
@@ -40,6 +46,8 @@ interface SettlementSurvivorsCardProps {
   updateSelectedHunt: (hunt: Hunt | null) => void
   /** Update Selected Settlement */
   updateSelectedSettlement: () => void
+  /** Update Selected Showdown */
+  updateSelectedShowdown: () => void
   /** Update Selected Survivor */
   updateSelectedSurvivor: () => void
 }
@@ -66,6 +74,7 @@ export function SettlementSurvivorsCard({
   survivors,
   updateSelectedHunt,
   updateSelectedSettlement,
+  updateSelectedShowdown,
   updateSelectedSurvivor
 }: SettlementSurvivorsCardProps): ReactElement {
   // This component uses the campaign and tab contexts directly. They are not
@@ -76,6 +85,7 @@ export function SettlementSurvivorsCard({
     survivors,
     updateSelectedHunt,
     updateSelectedSettlement,
+    updateSelectedShowdown,
     updateSelectedSurvivor
   )
   const { setSelectedTab } = useSelectedTab()
@@ -106,21 +116,16 @@ export function SettlementSurvivorsCard({
       try {
         // Check if survivor is currently on an active hunt or showdown
         if (selectedShowdown?.survivors?.includes(survivorId))
-          return toast.error(
-            'The survivor cannot be erased while on a showdown.'
-          )
+          return toast.error(SURVIVOR_ON_SHOWDOWN_ERROR_MESSAGE())
         if (selectedHunt?.survivors?.includes(survivorId))
-          return toast.error('The survivor cannot be erased while on a hunt.')
+          return toast.error(SURVIVOR_ON_HUNT_ERROR_MESSAGE())
 
         const campaign = getCampaign()
         const survivorIndex = campaign.survivors.findIndex(
           (s) => s.id === survivorId
         )
 
-        if (survivorIndex === -1)
-          return toast.error(
-            'The darkness swallows your words. Please try again.'
-          )
+        if (survivorIndex === -1) return toast.error(ERROR_MESSAGE())
 
         const survivorName = campaign.survivors[survivorIndex].name
         const updatedSurvivors = [...campaign.survivors]
@@ -131,7 +136,7 @@ export function SettlementSurvivorsCard({
 
         saveCampaign(
           { survivors: updatedSurvivors },
-          `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
+          SURVIVOR_REMOVED_MESSAGE(survivorName)
         )
         setSurvivors(getSurvivors(selectedSettlement.id))
 
@@ -139,7 +144,7 @@ export function SettlementSurvivorsCard({
         setIsDeleteDialogOpen(false)
       } catch (error) {
         console.error('Survivor Delete Error:', error)
-        toast.error('The darkness swallows your words. Please try again.')
+        toast.error(ERROR_MESSAGE())
       }
     },
     [

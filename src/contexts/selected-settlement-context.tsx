@@ -65,7 +65,6 @@ export function SelectedSettlementProvider({
   // Load selected settlement from localStorage on mount
   useEffect(() => {
     const savedSelectedSettlement = getSelectedSettlement()
-
     if (savedSelectedSettlement)
       setSelectedSettlementState(savedSelectedSettlement)
   }, [])
@@ -74,9 +73,7 @@ export function SelectedSettlementProvider({
    * Set Selected Settlement
    */
   const setSelectedSettlement = (settlement: Settlement | null) => {
-    // Update state
     setSelectedSettlementState(settlement)
-    // Save to localStorage
     setSelectedSettlementInStorage(settlement?.id || null)
 
     // When selecting a settlement, stop creation mode

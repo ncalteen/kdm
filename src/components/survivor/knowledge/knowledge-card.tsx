@@ -5,9 +5,16 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  SURVIVOR_CAN_USE_FIGHTING_ARTS_OR_KNOWLEDGES_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_RULES_UPDATED_MESSAGE,
+  SURVIVOR_KNOWLEDGE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { LightBulbIcon } from '@primer/octicons-react'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 /**
@@ -17,7 +24,7 @@ interface KnowledgeCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -81,7 +88,7 @@ export function KnowledgeCard({
         {
           [fieldName]: rank
         },
-        'The lantern illuminates newfound wisdom.'
+        SURVIVOR_KNOWLEDGE_OBSERVATION_RANK_UPDATED_MESSAGE()
       )
     },
     [saveSelectedSurvivor]
@@ -96,9 +103,7 @@ export function KnowledgeCard({
         {
           canUseFightingArtsOrKnowledges: !checked
         },
-        !checked
-          ? 'The survivor recalls their knowledge.'
-          : 'The survivor has forgotten their learnings.'
+        SURVIVOR_CAN_USE_FIGHTING_ARTS_OR_KNOWLEDGES_UPDATED_MESSAGE(!checked)
       )
     },
     [saveSelectedSurvivor]
@@ -111,9 +116,7 @@ export function KnowledgeCard({
     setKnowledge1(value)
     saveSelectedSurvivor(
       { knowledge1: value },
-      value
-        ? 'Knowledge inscribed in the lantern light.'
-        : 'Knowledge forgotten in the darkness.'
+      SURVIVOR_KNOWLEDGE_UPDATED_MESSAGE(value)
     )
   }
 
@@ -145,9 +148,7 @@ export function KnowledgeCard({
         {
           knowledge1RankUp: newRankUp
         },
-        newRankUp !== undefined
-          ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.'
+        SURVIVOR_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE(newRankUp)
       )
     },
     [selectedSurvivor?.knowledge1RankUp, saveSelectedSurvivor]
@@ -162,9 +163,7 @@ export function KnowledgeCard({
       {
         knowledge1Rules: value
       },
-      value.trim()
-        ? 'The rules of wisdom are inscribed in lantern light.'
-        : undefined
+      value.trim() ? SURVIVOR_KNOWLEDGE_RULES_UPDATED_MESSAGE() : undefined
     )
   }
 
@@ -178,7 +177,7 @@ export function KnowledgeCard({
         knowledge1ObservationConditions: value
       },
       value.trim()
-        ? 'Observation conditions etched in the darkness.'
+        ? SURVIVOR_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE()
         : undefined
     )
   }
@@ -190,9 +189,7 @@ export function KnowledgeCard({
     setKnowledge2(value)
     saveSelectedSurvivor(
       { knowledge2: value },
-      value
-        ? 'Knowledge inscribed in the lantern light.'
-        : 'Knowledge forgotten in the darkness.'
+      SURVIVOR_KNOWLEDGE_UPDATED_MESSAGE(value)
     )
   }
 
@@ -224,9 +221,7 @@ export function KnowledgeCard({
         {
           knowledge2RankUp: newRankUp
         },
-        newRankUp !== undefined
-          ? 'Knowledge rank up milestone marked.'
-          : 'Knowledge rank up milestone removed.'
+        SURVIVOR_KNOWLEDGE_RANK_UP_UPDATED_MESSAGE(newRankUp)
       )
     },
     [selectedSurvivor?.knowledge2RankUp, saveSelectedSurvivor]
@@ -241,9 +236,7 @@ export function KnowledgeCard({
       {
         knowledge2Rules: value
       },
-      value.trim()
-        ? 'The rules of wisdom are inscribed in lantern light.'
-        : undefined
+      value.trim() ? SURVIVOR_KNOWLEDGE_RULES_UPDATED_MESSAGE() : undefined
     )
   }
 
@@ -257,19 +250,18 @@ export function KnowledgeCard({
         knowledge2ObservationConditions: value
       },
       value.trim()
-        ? 'Observation conditions etched in the darkness.'
+        ? SURVIVOR_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE()
         : undefined
     )
   }
 
   return (
-    <Card className="p-0 border-1 gap-0">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-2 border-0 gap-0">
+      {/* Title */}
+      <CardHeader className="p-0">
         <div className="flex flex-row justify-between">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <LightBulbIcon className="h-4 w-4" />
-            Knowledges
+          <CardTitle className="text-sm flex flex-row items-center gap-1">
+            Knowledge
           </CardTitle>
 
           {/* Cannot Use Fighting Arts or Knowledges */}
@@ -288,7 +280,7 @@ export function KnowledgeCard({
         </div>
       </CardHeader>
 
-      <CardContent className="p-2 py-0 flex flex-col">
+      <CardContent className="p-0 flex flex-col">
         {/* Knowledge 1 */}
         <div className="flex items-start gap-2">
           <div className="flex-grow flex flex-col gap-1">
@@ -300,9 +292,9 @@ export function KnowledgeCard({
                 onChange={(e) => setKnowledge1(e.target.value)}
                 onBlur={(e) => updateKnowledge1(e.target.value)}
               />
-              <label className="text-xs text-muted-foreground">
+              <Label className="text-xs text-muted-foreground">
                 Knowledge Name
-              </label>
+              </Label>
             </div>
           </div>
           <div className="flex gap-1 pt-2">
@@ -341,7 +333,9 @@ export function KnowledgeCard({
             onChange={(e) => setKnowledge1Rules(e.target.value)}
             onBlur={(e) => updateKnowledge1Rules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground">Rules</label>
+          <Label className="text-xs text-muted-foreground text-right">
+            Rules
+          </Label>
         </div>
 
         {/* Knowledge 1 Observation Conditions */}
@@ -358,13 +352,13 @@ export function KnowledgeCard({
                 updateKnowledge1ObservationConditions(e.target.value)
               }
             />
-            <label className="text-xs text-muted-foreground">
+            <Label className="text-xs text-muted-foreground text-right">
               Observation Conditions
-            </label>
+            </Label>
           </div>
         </div>
 
-        <hr className="mt-2 mb-2 border-1" />
+        <hr className="my-2 border-4" />
 
         {/* Knowledge 2 */}
         <div className="flex items-start gap-2">
@@ -377,9 +371,9 @@ export function KnowledgeCard({
                 onChange={(e) => setKnowledge2(e.target.value)}
                 onBlur={(e) => updateKnowledge2(e.target.value)}
               />
-              <label className="text-xs text-muted-foreground">
+              <Label className="text-xs text-muted-foreground">
                 Knowledge Name
-              </label>
+              </Label>
             </div>
           </div>
           <div className="flex gap-1 pt-2">
@@ -418,7 +412,9 @@ export function KnowledgeCard({
             onChange={(e) => setKnowledge2Rules(e.target.value)}
             onBlur={(e) => updateKnowledge2Rules(e.target.value)}
           />
-          <label className="text-xs text-muted-foreground">Rules</label>
+          <Label className="text-xs text-muted-foreground text-right">
+            Rules
+          </Label>
         </div>
 
         {/* Knowledge 2 Observation Conditions */}
@@ -432,9 +428,9 @@ export function KnowledgeCard({
               updateKnowledge2ObservationConditions(e.target.value)
             }
           />
-          <label className="text-xs text-muted-foreground">
+          <Label className="text-xs text-muted-foreground text-right">
             Observation Conditions
-          </label>
+          </Label>
         </div>
       </CardContent>
     </Card>

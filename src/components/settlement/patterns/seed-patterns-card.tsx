@@ -6,6 +6,11 @@ import {
 } from '@/components/settlement/patterns/seed-pattern-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SEED_PATTERN_REMOVED_MESSAGE,
+  SEED_PATTERN_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   closestCenter,
@@ -36,7 +41,7 @@ interface SeedPatternsCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -100,7 +105,7 @@ export function SeedPatternsCard({
 
     saveSelectedSettlement(
       { seedPatterns: currentSeedPatterns },
-      'The seed pattern has been consumed by darkness.'
+      SEED_PATTERN_REMOVED_MESSAGE()
     )
   }
 
@@ -112,7 +117,7 @@ export function SeedPatternsCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless seed pattern cannot be preserved.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('seed pattern'))
 
     const updatedSeedPatterns = [...(selectedSettlement?.seedPatterns || [])]
 
@@ -134,9 +139,7 @@ export function SeedPatternsCard({
 
     saveSelectedSettlement(
       { seedPatterns: updatedSeedPatterns },
-      i !== undefined
-        ? 'The seed pattern is carved into memory.'
-        : "A new seed pattern awakens in the survivors' minds."
+      SEED_PATTERN_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)

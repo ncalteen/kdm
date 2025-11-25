@@ -13,6 +13,12 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { NodeLevel } from '@/lib/enums'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  QUARRY_REMOVED_MESSAGE,
+  QUARRY_UNLOCKED_MESSAGE,
+  QUARRY_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Quarry, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -43,7 +49,7 @@ interface QuarriesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -110,7 +116,7 @@ export function QuarriesCard({
 
     saveSelectedSettlement(
       { quarries: currentQuarries },
-      'The beast retreats back into the void.'
+      QUARRY_REMOVED_MESSAGE()
     )
   }
 
@@ -129,7 +135,7 @@ export function QuarriesCard({
     index?: number
   ) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless quarry cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('quarry'))
 
     const quarryWithCc: Quarry = {
       name: value,
@@ -166,9 +172,7 @@ export function QuarriesCard({
 
     saveSelectedSettlement(
       { quarries: updatedQuarries },
-      index !== undefined
-        ? 'The quarry prowls the darkness. Hunt or be hunted.'
-        : 'A new quarry emerges.'
+      QUARRY_UPDATED_MESSAGE(index)
     )
     setIsAddingNew(false)
   }
@@ -194,7 +198,10 @@ export function QuarriesCard({
 
     saveSelectedSettlement(
       { quarries: updatedQuarries },
-      `${selectedSettlement?.quarries![index].name} ${unlocked ? 'emerges, ready to be hunted.' : 'retreats into the darkness, beyond your reach.'}`
+      QUARRY_UNLOCKED_MESSAGE(
+        selectedSettlement?.quarries![index].name || '',
+        unlocked
+      )
     )
   }
 

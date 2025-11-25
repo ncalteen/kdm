@@ -27,7 +27,7 @@ export interface TimelineContentProps {
   /** Save Event Handler */
   saveEvent: (yearIndex: number, entryIndex: number) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Set Input Reference Function */
   setInputRef: (
     element: HTMLInputElement | null,

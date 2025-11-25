@@ -4,8 +4,13 @@ import { SelectWeaponType } from '@/components/menu/select-weapon-type'
 import { Card, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { WeaponType } from '@/lib/enums'
+import {
+  SURVIVOR_WEAPON_PROFICIENCY_MASTER_ACHIEVED_MESSAGE,
+  SURVIVOR_WEAPON_PROFICIENCY_SPECIALIST_ACHIEVED_MESSAGE,
+  SURVIVOR_WEAPON_PROFICIENCY_UPDATED_MESSAGE,
+  SURVIVOR_WEAPON_TYPE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
-import { SwordsIcon } from 'lucide-react'
 import { ReactElement, useCallback } from 'react'
 
 /**
@@ -15,7 +20,7 @@ interface WeaponProficiencyCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -70,10 +75,10 @@ export function WeaponProficiencyCard({
       updatedProficiency,
       undefined,
       updatedProficiency === 3
-        ? 'The survivor becomes a specialist in their craft.'
+        ? SURVIVOR_WEAPON_PROFICIENCY_SPECIALIST_ACHIEVED_MESSAGE()
         : updatedProficiency === 8
-          ? 'The survivor achieves mastery beyond mortal limits.'
-          : 'The survivor hones their weapon proficiency.'
+          ? SURVIVOR_WEAPON_PROFICIENCY_MASTER_ACHIEVED_MESSAGE()
+          : SURVIVOR_WEAPON_PROFICIENCY_UPDATED_MESSAGE()
     )
   }
 
@@ -86,16 +91,15 @@ export function WeaponProficiencyCard({
     saveToLocalStorage(
       undefined,
       type as WeaponType,
-      'The survivor turns their focus to a new weapon.'
+      SURVIVOR_WEAPON_TYPE_UPDATED_MESSAGE()
     )
 
   return (
     <Card className="p-2 border-0">
       <CardContent className="p-0">
         <div className="flex flex-row justify-between">
-          <div className="flex flex-col justify-between">
-            <CardTitle className="text-md flex flex-row items-center gap-1">
-              <SwordsIcon className="h-4 w-4" />
+          <div className="flex flex-col justify-between gap-2">
+            <CardTitle className="text-sm flex flex-row items-center gap-1">
               Weapon Proficiency
             </CardTitle>
             <SelectWeaponType
@@ -103,12 +107,10 @@ export function WeaponProficiencyCard({
               onChange={handleWeaponTypeChange}
             />
           </div>
-          <div className="flex flex-col pt-2">
+          <div className="flex flex-col justify-between">
             <div className="flex flex-row gap-2">
               {Array.from({ length: 8 }, (_, i) => (
-                <div
-                  key={i}
-                  className="w-4 h-4 flex items-center justify-center">
+                <div key={i} className="w-4 h-4 flex">
                   <Checkbox
                     checked={(selectedSurvivor?.weaponProficiency || 0) > i}
                     onCheckedChange={(checked) =>
@@ -123,7 +125,7 @@ export function WeaponProficiencyCard({
               ))}
             </div>
 
-            <hr className="my-3" />
+            <hr />
 
             <div className="flex flex-row justify-between gap-2">
               {Array.from({ length: 2 }, (_, i) => (
@@ -136,9 +138,13 @@ export function WeaponProficiencyCard({
                     />
                   ))}
                   {i === 0 ? (
-                    <span className="text-xs">Specialist</span>
+                    <span className="text-xs text-muted-foreground">
+                      Specialist
+                    </span>
                   ) : (
-                    <span className="text-xs">Master</span>
+                    <span className="text-xs text-muted-foreground">
+                      Master
+                    </span>
                   )}
                 </div>
               ))}

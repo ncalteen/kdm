@@ -39,7 +39,7 @@ export interface ResourceItemProps {
     amount: number
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -185,7 +185,8 @@ export function ResourceItem({
                     label="Resource Amount"
                     value={selectedSettlement?.resources?.[index].amount ?? 0}
                     onChange={(value) => onAmountChange?.(index, value)}
-                    min={0}>
+                    min={0}
+                    readOnly={false}>
                     <Input
                       ref={amountInputRef}
                       type="number"
@@ -232,7 +233,8 @@ export function ResourceItem({
                       label="Resource Amount"
                       value={selectedSettlement?.resources?.[index].amount ?? 0}
                       onChange={(value) => onAmountChange?.(index, value)}
-                      min={0}>
+                      min={0}
+                      readOnly={false}>
                       <Input
                         ref={amountInputRef}
                         type="number"
@@ -288,7 +290,6 @@ export function ResourceItem({
                   placeholder="Resource Name"
                   defaultValue={selectedSettlement?.resources?.[index].name}
                   onKeyDown={handleNameKeyDown}
-                  autoFocus
                 />
               </div>
               <div className="col-span-2">
@@ -312,7 +313,8 @@ export function ResourceItem({
                       amountInputRef.current.value = value.toString()
                     }
                   }}
-                  min={0}>
+                  min={0}
+                  readOnly={false}>
                   <Input
                     ref={amountInputRef}
                     type="number"
@@ -365,7 +367,6 @@ export function ResourceItem({
                     placeholder="Resource Name"
                     defaultValue={selectedSettlement?.resources?.[index].name}
                     onKeyDown={handleNameKeyDown}
-                    autoFocus
                     className="w-full"
                   />
                 </div>
@@ -378,7 +379,8 @@ export function ResourceItem({
                         amountInputRef.current.value = value.toString()
                       }
                     }}
-                    min={0}>
+                    min={0}
+                    readOnly={false}>
                     <Input
                       ref={amountInputRef}
                       type="number"
@@ -506,7 +508,6 @@ export function NewResourceItem({
                   placeholder="Add a resource..."
                   defaultValue={''}
                   onKeyDown={handleKeyDown}
-                  autoFocus
                 />
               </div>
               <div className="col-span-2">
@@ -570,7 +571,6 @@ export function NewResourceItem({
                     placeholder="Add a resource..."
                     defaultValue={''}
                     onKeyDown={handleKeyDown}
-                    autoFocus
                     className="w-full"
                   />
                 </div>

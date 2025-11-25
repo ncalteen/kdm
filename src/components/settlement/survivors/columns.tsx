@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { TabType } from '@/lib/enums'
 import { Hunt } from '@/schemas/hunt'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -42,11 +43,11 @@ export interface ColumnProps {
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor) => void
   /** Set Selected Tab */
-  setSelectedTab: (tab: string) => void
+  setSelectedTab: (tab: TabType) => void
   /** Hunt Data */
-  selectedHunt: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Showdown Data */
-  selectedShowdown: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
 }
 
 /**
@@ -73,7 +74,7 @@ export const createColumns = ({
    */
   const handleEditSurvivor = (survivor: Survivor) => {
     setSelectedSurvivor(survivor)
-    setSelectedTab('survivors')
+    setSelectedTab(TabType.SURVIVORS)
   }
 
   /**

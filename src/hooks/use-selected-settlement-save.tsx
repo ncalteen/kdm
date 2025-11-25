@@ -1,5 +1,6 @@
 'use client'
 
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { useCallback } from 'react'
@@ -62,7 +63,7 @@ export function useSelectedSettlementSave(
 
         if (error instanceof ZodError && error.errors[0]?.message)
           toast.error(error.errors[0].message)
-        else toast.error('The darkness swallows your words. Please try again.')
+        else toast.error(ERROR_MESSAGE())
       }
     },
     [form, updateSelectedSettlement]

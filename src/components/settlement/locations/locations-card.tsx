@@ -6,6 +6,12 @@ import {
 } from '@/components/settlement/locations/location-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  LOCATION_REMOVED_MESSAGE,
+  LOCATION_UNLOCKED_MESSAGE,
+  LOCATION_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -36,7 +42,7 @@ interface LocationsCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -100,7 +106,7 @@ export function LocationsCard({
 
     saveSelectedSettlement(
       { locations: currentLocations },
-      'The location has been destroyed.'
+      LOCATION_REMOVED_MESSAGE()
     )
   }
 
@@ -113,7 +119,7 @@ export function LocationsCard({
    */
   const onSave = (name?: string, unlocked?: boolean, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless location cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('location'))
 
     const locationData = { name: name.trim(), unlocked: unlocked || false }
 
@@ -137,9 +143,7 @@ export function LocationsCard({
 
     saveSelectedSettlement(
       { locations: updatedLocations },
-      i !== undefined
-        ? 'The location has been updated.'
-        : 'A new location illuminates within settlement.'
+      LOCATION_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)
@@ -157,9 +161,7 @@ export function LocationsCard({
 
     saveSelectedSettlement(
       { locations: currentLocations },
-      unlocked
-        ? 'The location has been illuminated.'
-        : 'The location fades into darkness.'
+      LOCATION_UNLOCKED_MESSAGE(unlocked)
     )
   }
 

@@ -4,7 +4,9 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_LEGS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { FootprintsIcon, Shield } from 'lucide-react'
@@ -15,9 +17,9 @@ import { ReactElement } from 'react'
  */
 interface LegsCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -55,13 +57,14 @@ export function LegsCard({
       {
         [attrName]: value
       },
-      'Each step forward defies the consuming darkness.'
+      COMBAT_LEGS_UPDATED_MESSAGE()
     )
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
+          {/* Leg Armor */}
           <div className="relative flex items-center">
             <Shield
               className="h-14 w-14 text-muted-foreground"
@@ -71,11 +74,12 @@ export function LegsCard({
               value={selectedSurvivor?.legArmor ?? 0}
               min={0}
               label="Leg Armor"
-              onChange={(value) => saveToLocalStorage('legArmor', value)}>
+              onChange={(value) => saveToLocalStorage('legArmor', value)}
+              readOnly={false}>
               <Input
                 placeholder="1"
                 type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.legArmor ?? '0'}
                 readOnly={isMobile}
                 onChange={
@@ -93,13 +97,13 @@ export function LegsCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <FootprintsIcon /> Legs
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <FootprintsIcon className="h-5 w-5" /> Legs
             </div>
-            <div className="flex flex-col items-start gap-1 ml-2">
+            <div className="flex flex-col gap-1 ml-2">
               {/* Severe Injuries */}
               <div className="space-y-0 flex flex-row items-center gap-2">
                 <Checkbox
@@ -111,7 +115,7 @@ export function LegsCard({
                   name="leg-hamstrung"
                   id="leg-hamstrung"
                 />
-                <label className="text-xs">Hamstrung</label>
+                <Label className="text-xs">Hamstrung</Label>
               </div>
 
               <div className="flex flex-row gap-2">
@@ -168,7 +172,7 @@ export function LegsCard({
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -184,11 +188,11 @@ export function LegsCard({
                   name="leg-light-damage"
                   id="leg-light-damage"
                 />
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -204,7 +208,7 @@ export function LegsCard({
                   name="leg-heavy-damage"
                   id="leg-heavy-damage"
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

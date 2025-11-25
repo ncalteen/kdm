@@ -24,6 +24,33 @@ export enum SurvivorType {
   CORE = 'Core'
 }
 
+export enum TabType {
+  /** Arc Survivors */
+  ARC = 'arc',
+  /** Crafting */
+  CRAFTING = 'crafting',
+  /** Hunt */
+  HUNT = 'hunt',
+  /** Monsters */
+  MONSTERS = 'monsters',
+  /** Notes */
+  NOTES = 'notes',
+  /** Settings */
+  SETTINGS = 'settings',
+  /** Settlement */
+  SETTLEMENT = 'settlement',
+  /** Showdown */
+  SHOWDOWN = 'showdown',
+  /** Society */
+  SOCIETY = 'society',
+  /** Squires */
+  SQUIRES = 'squires',
+  /** Survivors */
+  SURVIVORS = 'survivors',
+  /** Timeline */
+  TIMELINE = 'timeline'
+}
+
 /** Philosophies */
 export enum Philosophy {
   /** Ambitionism */
@@ -52,6 +79,8 @@ export enum Philosophy {
   MONSTER = 'Monster',
   /** Optimism */
   OPTIMISM = 'Optimism',
+  /** Other */
+  OTHER = 'Other',
   /** Regalism */
   REGALISM = 'Regalism',
   /** Romanticism */
@@ -59,7 +88,9 @@ export enum Philosophy {
   /** Survivalism */
   SURVIVALISM = 'Survivalism',
   /** Verminism */
-  VERMINISM = 'Verminism'
+  VERMINISM = 'Verminism',
+  /** Wanderer */
+  WANDERER = 'Wanderer'
 }
 
 /** Survivor Gender */
@@ -211,4 +242,36 @@ export enum ColorChoice {
   PINK = 'pink',
   /** Rose */
   ROSE = 'rose'
+}
+
+export enum AmbushType {
+  /** Survivors Ambush Monster */
+  SURVIVORS = 'survivors',
+  /** Monster Ambush Survivors */
+  MONSTER = 'monster',
+  /** No Ambush */
+  NONE = 'none'
+}
+
+export enum TurnType {
+  /** Survivors Turn */
+  SURVIVORS = 'survivors',
+  /** Monsters Turn */
+  MONSTER = 'monster'
+}
+
+export enum MonsterName {
+  FLOWER_KNIGHT = 'Flower Knight'
+}
+
+/**
+ * Survivor Card Mode
+ */
+export enum SurvivorCardMode {
+  /** Hunt Page */
+  HUNT_CARD = 'hunt',
+  /** Showdown Page */
+  SHOWDOWN_CARD = 'showdown',
+  /** Survivor Page */
+  SURVIVOR_CARD = 'survivor'
 }

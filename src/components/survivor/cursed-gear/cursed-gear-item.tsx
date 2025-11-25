@@ -25,7 +25,7 @@ export interface CursedGearItemProps {
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -111,7 +111,6 @@ export function CursedGearItem({
           defaultValue={selectedSurvivor?.cursedGear?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -190,7 +189,6 @@ export function NewCursedGearItem({
         placeholder="Cursed Gear"
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

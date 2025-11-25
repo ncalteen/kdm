@@ -30,7 +30,7 @@ interface DataTableProps<TData, TValue> {
   /** On New Survivor Callback */
   onNewSurvivor?: () => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -74,7 +74,6 @@ export function SurvivorDataTable<TData, TValue>({
   )
 
   const table = useReactTable(tableConfig)
-
   const { rows } = table.getRowModel()
 
   const handleFilterChange = useCallback(

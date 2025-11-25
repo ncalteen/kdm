@@ -25,7 +25,7 @@ export interface GearItemProps {
   /** OnSave Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -109,7 +109,6 @@ export function GearItem({
           defaultValue={selectedSettlement?.gear?.[index]}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -189,7 +188,6 @@ export function NewGearItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

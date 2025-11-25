@@ -7,6 +7,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Philosophy } from '@/lib/enums'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  PHILOSOPHY_CREATED_MESSAGE,
+  PHILOSOPHY_REMOVED_MESSAGE,
+  PHILOSOPHY_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -37,7 +43,7 @@ interface PhilosophiesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -103,7 +109,7 @@ export function PhilosophiesCard({
       {
         philosophies: currentPhilosophies
       },
-      'The philosophy fade into the void.'
+      PHILOSOPHY_REMOVED_MESSAGE()
     )
   }
 
@@ -115,7 +121,7 @@ export function PhilosophiesCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless philosophy cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('philosophy'))
 
     const updatedPhilosophies = [...(selectedSettlement?.philosophies || [])]
 
@@ -140,8 +146,8 @@ export function PhilosophiesCard({
         philosophies: updatedPhilosophies
       },
       i !== undefined
-        ? 'Philosophy etched into memory.'
-        : 'A new philosophy emerges.'
+        ? PHILOSOPHY_UPDATED_MESSAGE()
+        : PHILOSOPHY_CREATED_MESSAGE()
     )
 
     setIsAddingNew(false)

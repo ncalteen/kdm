@@ -4,7 +4,9 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_WAIST_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { RibbonIcon, Shield } from 'lucide-react'
@@ -15,9 +17,9 @@ import { ReactElement } from 'react'
  */
 interface WaistCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -56,13 +58,14 @@ export function WaistCard({
       {
         [attrName]: value
       },
-      'The core withstands the relentless onslaught.'
+      COMBAT_WAIST_UPDATED_MESSAGE()
     )
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
+          {/* Waist Armor */}
           <div className="relative flex items-center">
             <Shield
               className="h-14 w-14 text-muted-foreground"
@@ -72,12 +75,12 @@ export function WaistCard({
               value={selectedSurvivor?.waistArmor ?? 0}
               min={0}
               label="Waist Armor"
-              onChange={(value) => saveToLocalStorage('waistArmor', value)}>
+              onChange={(value) => saveToLocalStorage('waistArmor', value)}
+              readOnly={false}>
               <Input
-                key={`waistArmor-${selectedSurvivor?.id || 'new'}`}
                 placeholder="1"
                 type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.waistArmor ?? 0}
                 readOnly={isMobile}
                 onChange={
@@ -95,13 +98,13 @@ export function WaistCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <RibbonIcon /> Waist
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <RibbonIcon className="h-5 w-5" /> Waist
             </div>
-            <div className="flex flex-col items-start gap-1 ml-2">
+            <div className="flex flex-col gap-1 ml-2">
               {/* Severe Injuries */}
               <div className="space-y-0 flex flex-row items-center gap-2">
                 <Checkbox
@@ -113,7 +116,7 @@ export function WaistCard({
                   name="waist-broken-hip"
                   id="waist-broken-hip"
                 />
-                <label className="text-xs">Broken Hip</label>
+                <Label className="text-xs">Broken Hip</Label>
               </div>
 
               <div className="space-y-0 flex flex-row items-center gap-2">
@@ -126,7 +129,7 @@ export function WaistCard({
                   name="waist-intestinal-prolapse"
                   id="waist-intestinal-prolapse"
                 />
-                <label className="text-xs">Intestinal Prolapse</label>
+                <Label className="text-xs">Intestinal Prolapse</Label>
               </div>
 
               <div className="space-y-0 flex flex-row items-center gap-2">
@@ -139,7 +142,7 @@ export function WaistCard({
                   name="waist-destroyed-genitals"
                   id="waist-destroyed-genitals"
                 />
-                <label className="text-xs">Destroyed Genitals</label>
+                <Label className="text-xs">Destroyed Genitals</Label>
               </div>
 
               <div className="space-y-0 flex flex-row items-center gap-2">
@@ -162,14 +165,14 @@ export function WaistCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Warped Pelvis</label>
+                <Label className="text-xs">W. Pelvis</Label>
               </div>
             </div>
 
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -185,11 +188,11 @@ export function WaistCard({
                   name="waist-light-damage"
                   id="waist-light-damage"
                 />
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -205,7 +208,7 @@ export function WaistCard({
                   name="waist-heavy-damage"
                   id="waist-heavy-damage"
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

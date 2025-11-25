@@ -3,7 +3,14 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormItem } from '@/components/ui/form'
+import { Label } from '@/components/ui/label'
 import { SurvivorType } from '@/lib/enums'
+import {
+  HUNT_XP_RANK_UP_ACHIEVED_MESSAGE,
+  HUNT_XP_RANK_UP_MILESTONE_ADDED_MESSAGE,
+  HUNT_XP_RANK_UP_MILESTONE_REMOVED_MESSAGE,
+  HUNT_XP_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -17,9 +24,9 @@ interface HuntXPCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Settlemenet */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -72,8 +79,8 @@ export function HuntXPCard({
       checked ? index + 1 : index,
       undefined,
       checked && selectedSurvivor?.huntXPRankUp?.includes(index)
-        ? 'The survivor rises through struggle and triumph. Rank up achieved!'
-        : 'The lantern grows brighter. Hunt XP updated.'
+        ? HUNT_XP_RANK_UP_ACHIEVED_MESSAGE()
+        : HUNT_XP_UPDATED_MESSAGE()
     )
   }
 
@@ -95,13 +102,17 @@ export function HuntXPCard({
       saveToLocalStorage(
         undefined,
         currentRankUps,
-        'Rank up milestone removed.'
+        HUNT_XP_RANK_UP_MILESTONE_REMOVED_MESSAGE()
       )
     } else {
       // Add to rank up milestones
       currentRankUps.push(index)
       currentRankUps.sort((a, b) => a - b) // Keep sorted
-      saveToLocalStorage(undefined, currentRankUps, 'Rank up milestone added.')
+      saveToLocalStorage(
+        undefined,
+        currentRankUps,
+        HUNT_XP_RANK_UP_MILESTONE_ADDED_MESSAGE()
+      )
     }
   }
 
@@ -114,17 +125,14 @@ export function HuntXPCard({
   const isDisabled = (index: number) => index > (selectedSurvivor?.huntXP || 0)
 
   return (
-    <Card className="p-2 border-0 lg:h-[85px]">
+    <Card className="p-2 border-0">
       <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex items-center h-[36px]">
-            {/* Hunt XP */}
+          <div className="flex items-center">
             <FormItem className="flex-1">
               <div className="flex justify-between items-center">
-                <label className="font-bold text-left text-sm lg:text-md">
-                  Hunt XP
-                </label>
-                <div className="flex items-center gap-1 lg:gap-2">
+                <Label className="font-bold text-left text-sm">Hunt XP</Label>
+                <div className="flex items-center gap-1">
                   {Array.from({ length: 16 }, (_, i) => {
                     const checked = (selectedSurvivor?.huntXP || 0) > i
 
@@ -169,7 +177,7 @@ export function HuntXPCard({
                   className="!bg-white border border-gray-300 h-3 w-3"
                 />
               ))}
-              <span className="text-xs">
+              <span className="text-xs text-muted-foreground">
                 {selectedSettlement?.survivorType === SurvivorType.CORE ? (
                   <div className="flex items-center gap-1">
                     <BookOpenIcon className="h-4 w-4" /> Age
@@ -182,9 +190,10 @@ export function HuntXPCard({
               </span>
             </div>
           ))}
+
           <div className="flex items-center gap-1">
             <Checkbox disabled className="border-4 border-gray-300 h-3 w-3" />
-            <span className="text-xs">Retired</span>
+            <span className="text-xs text-muted-foreground">Retired</span>
           </div>
         </div>
       </CardContent>

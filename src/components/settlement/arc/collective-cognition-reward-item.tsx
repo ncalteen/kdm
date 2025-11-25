@@ -129,7 +129,8 @@ export function RewardItem({
           setCurrentCcValue(value)
           if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
-        min={0}>
+        min={0}
+        readOnly={false}>
         <Input
           ref={ccInputRef}
           type="number"
@@ -161,7 +162,6 @@ export function RewardItem({
           defaultValue={reward.name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus={!isDisabled}
         />
       )}
 
@@ -261,7 +261,8 @@ export function NewRewardItem({
           setCurrentCcValue(value)
           if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
-        min={0}>
+        min={0}
+        readOnly={false}>
         <Input
           ref={ccInputRef}
           type="number"
@@ -286,7 +287,6 @@ export function NewRewardItem({
         placeholder="Add a reward..."
         defaultValue={''}
         onKeyDown={handleKeyDown}
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

@@ -5,7 +5,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_ARMS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { HandMetalIcon, Shield } from 'lucide-react'
@@ -16,9 +18,9 @@ import { ReactElement } from 'react'
  */
 interface ArmsCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -57,12 +59,12 @@ export function ArmsCard({
       {
         [attrName]: value
       },
-      'Arms endure another battle.'
+      COMBAT_ARMS_UPDATED_MESSAGE()
     )
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
           {/* Arm Armor */}
           <div className="relative flex items-center">
@@ -74,11 +76,12 @@ export function ArmsCard({
               value={selectedSurvivor?.armArmor ?? 0}
               min={0}
               label="Arm Armor"
-              onChange={(value) => saveToLocalStorage('armArmor', value)}>
+              onChange={(value) => saveToLocalStorage('armArmor', value)}
+              readOnly={false}>
               <Input
                 placeholder="1"
                 type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.armArmor ?? '0'}
                 readOnly={isMobile}
                 onChange={
@@ -96,11 +99,11 @@ export function ArmsCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <HandMetalIcon /> Arms
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <HandMetalIcon className="h-5 w-5" /> Arms
             </div>
             <div className="flex flex-col items-start gap-1 ml-2">
               {/* Severe Injuries - Broken Arm */}
@@ -136,7 +139,7 @@ export function ArmsCard({
                     saveToLocalStorage('armRupturedMuscle', !!checked)
                   }
                 />
-                <label className="text-xs">Ruptured Muscle</label>
+                <Label className="text-xs">Ruptured Muscle</Label>
               </div>
 
               {/* Severe Injuries - Dismembered Arm */}
@@ -180,14 +183,14 @@ export function ArmsCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Contracture</label>
+                <Label className="text-xs">Contracture</Label>
               </div>
             </div>
 
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <FormControl>
                   <Checkbox
                     className={cn(
@@ -203,11 +206,11 @@ export function ArmsCard({
                     }
                   />
                 </FormControl>
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -221,7 +224,7 @@ export function ArmsCard({
                     saveToLocalStorage('armHeavyDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

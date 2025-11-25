@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { NAMELESS_OBJECT_ERROR_MESSAGE } from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -41,7 +43,7 @@ export interface NemesisItemProps {
   /** OnToggleUnlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -131,9 +133,9 @@ export function NemesisItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex flex-1 ml-1">
-          <span className="text-sm">
+          <Label className="text-sm" htmlFor={`nemesis-${index}-unlocked`}>
             {selectedSettlement?.nemeses?.[index].name}
-          </span>
+          </Label>
         </div>
       ) : (
         <Input
@@ -142,7 +144,6 @@ export function NemesisItem({
           defaultValue={selectedSettlement?.nemeses?.[index].name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -159,9 +160,9 @@ export function NemesisItem({
                 }}
                 id={`nemesis-${index}-level1`}
               />
-              <label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
+              <Label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
                 Lvl 1
-              </label>
+              </Label>
             </div>
 
             <div className="flex items-center space-x-1">
@@ -173,9 +174,9 @@ export function NemesisItem({
                 }}
                 id={`nemesis-${index}-level2`}
               />
-              <label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
+              <Label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
                 Lvl 2
-              </label>
+              </Label>
             </div>
 
             <div className="flex items-center space-x-1">
@@ -187,9 +188,9 @@ export function NemesisItem({
                 }}
                 id={`nemesis-${index}-level3`}
               />
-              <label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
+              <Label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
                 Lvl 3
-              </label>
+              </Label>
             </div>
           </div>
         )}
@@ -255,7 +256,7 @@ export function NewNemesisItem({
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
       if (!inputRef.current.value || inputRef.current.value.trim() === '')
-        return toast.error('A nameless horror cannot be summoned.')
+        return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('nemesis'))
 
       onSave(inputRef.current.value, false)
     } else if (e.key === 'Escape') {
@@ -281,7 +282,6 @@ export function NewNemesisItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       {/* Interaction Buttons */}
@@ -295,7 +295,7 @@ export function NewNemesisItem({
               !inputRef.current?.value ||
               inputRef.current.value.trim() === ''
             ) {
-              return toast.error('A nameless horror cannot be summoned.')
+              return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('nemesis'))
             }
             onSave(inputRef.current.value, false)
           }}

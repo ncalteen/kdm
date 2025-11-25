@@ -1,19 +1,101 @@
 'use client'
 
-import { ColorChoice, MonsterLevel } from '@/lib/enums'
+import { ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
- * Survivor Color Schema
+ * Survivor Hunt Details Schema
  *
- * Used to assign colors to survivors in a hunt.
+ * Used to assign details to survivors that only persist during a hunt.
  */
-export const SurvivorColorSchema = z.object({
+export const SurvivorHuntDetailsSchema = z.object({
+  /** Accuracy Tokens */
+  accuracyTokens: z.number().int().default(0),
+  /** Survivor Color Code */
+  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE),
+  /** Evasion Tokens */
+  evasionTokens: z.number().int().default(0),
   /** Survivor ID */
   id: z.number().int().min(0),
-  /** Survivor Color Code */
-  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE)
+  /** Insanity Tokens */
+  insanityTokens: z.number().int().default(0),
+  /** Luck Tokens */
+  luckTokens: z.number().int().default(0),
+  /** Movement Tokens */
+  movementTokens: z.number().int().default(0),
+  /** Survivor Notes */
+  notes: z.string().default(''),
+  /** Speed Tokens */
+  speedTokens: z.number().int().default(0),
+  /** Strength Tokens */
+  strengthTokens: z.number().int().default(0),
+  /** Survival Tokens */
+  survivalTokens: z.number().int().default(0)
 })
+
+/**
+ * Survivor Hunt Details
+ */
+export type SurvivorHuntDetails = z.infer<typeof SurvivorHuntDetailsSchema>
+
+/**
+ * Hunt Monster Schema
+ */
+export const HuntMonsterSchema = z.object({
+  /** Accuracy */
+  accuracy: z.number().int().default(0),
+  /** Accuracy Tokens */
+  accuracyTokens: z.number().int().default(0),
+  /** AI Deck Size */
+  aiDeckSize: z.number().int().min(0).default(0),
+  /** Damage */
+  damage: z.number().int().min(0).default(0),
+  /** Damage Tokens */
+  damageTokens: z.number().int().default(0),
+  /** Evasion */
+  evasion: z.number().int().default(0),
+  /** Evasion Tokens */
+  evasionTokens: z.number().int().default(0),
+  /** Knocked Down */
+  knockedDown: z.boolean().default(false),
+  /** Monster Level */
+  level: z.nativeEnum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  /** Luck */
+  luck: z.number().int().default(0),
+  /** Luck Tokens */
+  luckTokens: z.number().int().default(0),
+  /** Moods */
+  moods: z.array(z.string()).default([]),
+  /** Movement */
+  movement: z.number().int().min(1).default(1),
+  /** Movement Tokens */
+  movementTokens: z.number().int().default(0),
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Notes */
+  notes: z.string().default(''),
+  /** Speed */
+  speed: z.number().int().default(0),
+  /** Speed Tokens */
+  speedTokens: z.number().int().default(0),
+  /** Strength */
+  strength: z.number().int().default(0),
+  /** Strength Tokens */
+  strengthTokens: z.number().int().default(0),
+  /** Toughness */
+  toughness: z.number().int().min(0).default(0),
+  /** Traits */
+  traits: z.array(z.string()).default([]),
+  /** Monster Type */
+  type: z.nativeEnum(MonsterType),
+  /** Wounds */
+  wounds: z.number().int().min(0).default(0)
+})
+
+/**
+ * Hunt Monster
+ */
+export type HuntMonster = z.infer<typeof HuntMonsterSchema>
 
 /**
  * Hunt Schema
@@ -21,22 +103,18 @@ export const SurvivorColorSchema = z.object({
  * This includes any information needed to track a selected hunt.
  */
 export const HuntSchema = z.object({
-  /** Hunt Ended in Monster Ambushing Survivors */
-  ambush: z.boolean().default(false),
   /** Hunt ID */
   id: z.number().int().min(0),
-  /** Quarry Name */
-  quarryName: z.string().min(1, 'The quarry name cannot be empty for a hunt.'),
-  /** Quarry Level */
-  quarryLevel: z.nativeEnum(MonsterLevel),
-  /** Quarry Position on Hunt Board */
-  quarryPosition: z.number().min(0).max(12).default(6),
+  /** Hunt Monster */
+  monster: HuntMonsterSchema,
+  /** Monster Position on Hunt Board */
+  monsterPosition: z.number().min(0).max(12),
   /** Selected Scout (Required if Settlement uses Scouts) */
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),
-  /** Survivor Color Selection */
-  survivorColors: z.array(SurvivorColorSchema).default([]),
+  /** Survivor Hunt Details */
+  survivorDetails: z.array(SurvivorHuntDetailsSchema).default([]),
   /** Survivor Position on Hunt Board */
   survivorPosition: z.number().min(0).max(12).default(0),
   /** Selected Survivors */

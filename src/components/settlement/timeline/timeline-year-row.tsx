@@ -31,7 +31,7 @@ export interface TimelineRowData {
   /** Save Event Handler */
   saveEvent: (yearIndex: number, entryIndex: number) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Set Input Reference Function */
   setInputRef: (
     element: HTMLInputElement | null,
@@ -69,11 +69,13 @@ export const TimelineYearRow = memo(
       usesNormalNumbering
     } = data
 
-    // Get all entry indices that should be rendered (existing entries + new entries being edited)
+    // Get all entry indices that should be rendered (existing entries + new
+    // entries being edited)
     const entries = selectedSettlement?.timeline?.[index].entries || []
     const allEntryIndices = new Set([...entries.map((_, i) => i)])
 
-    // Also include any entry indices that are being edited but don't exist in the entries array yet
+    // Also include any entry indices that are being edited but don't exist in
+    // the entries array yet
     for (let i = 0; i <= entries.length; i++)
       if (isEventBeingEdited(index, i)) allEntryIndices.add(i)
 
@@ -121,40 +123,33 @@ export const TimelineYearRow = memo(
             {/* Saved Event Badges and Add Event Button (mobile) */}
             {entries.length > 0 && (
               <div className="flex flex-wrap gap-0.5 items-center">
-                {entries.map((entry: string, entryIndex: number) => {
-                  if (
-                    !isEventBeingEdited(index, entryIndex) &&
-                    entry &&
-                    entry.trim() !== ''
-                  ) {
-                    return (
-                      <TimelineEventBadge
-                        key={entryIndex}
-                        entry={entry}
-                        yearIndex={index}
-                        entryIndex={entryIndex}
-                        onEdit={
-                          !selectedSettlement?.timeline?.[index].completed
-                            ? editEvent
-                            : () => {}
-                        }
-                        isCompleted={
-                          selectedSettlement?.timeline?.[index].completed
-                        }
-                      />
-                    )
-                  }
-                  return null
-                })}
+                {entries.map((entry: string, entryIndex: number) =>
+                  !isEventBeingEdited(index, entryIndex) &&
+                  entry &&
+                  entry.trim() !== '' ? (
+                    <TimelineEventBadge
+                      key={entryIndex}
+                      entry={entry}
+                      yearIndex={index}
+                      entryIndex={entryIndex}
+                      onEdit={
+                        !selectedSettlement?.timeline?.[index].completed
+                          ? editEvent
+                          : () => {}
+                      }
+                      isCompleted={
+                        selectedSettlement?.timeline?.[index].completed
+                      }
+                    />
+                  ) : null
+                )}
                 {/* Add Event Button for mobile - inline with badges */}
                 {!selectedSettlement?.timeline?.[index].completed && (
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      addEventToYear(index)
-                    }}
+                    onClick={() => addEventToYear(index)}
                     className="h-6 px-2 text-xs sm:hidden ml-auto">
                     <PlusCircleIcon className="h-3 w-3" />
                     <span className="text-xs hidden">Add Event</span>
@@ -182,50 +177,45 @@ export const TimelineYearRow = memo(
               )}
 
             {/* Edit Event Input Fields */}
-            {sortedIndices.map((entryIndex: number) => {
-              if (isEventBeingEdited(index, entryIndex)) {
-                const entry = entries[entryIndex] || ''
-                return (
-                  <div key={entryIndex} className="flex items-center gap-1">
-                    <Input
-                      placeholder={`${
-                        index === 0 && !usesNormalNumbering
-                          ? 'Prologue'
-                          : usesNormalNumbering
-                            ? `Year ${index + 1}`
-                            : `Year ${index}`
-                      } event...`}
-                      defaultValue={entry}
-                      ref={(element) => setInputRef(element, index, entryIndex)}
-                      onKeyDown={(e) => handleKeyDown(e, index, entryIndex)}
-                      autoFocus
-                      className="h-7 text-xs"
-                      id={`timeline.${index}.entries.${entryIndex}`}
-                      name={`timeline.${index}.entries.${entryIndex}`}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => saveEvent(index, entryIndex)}
-                      title="Save event">
-                      <CheckIcon className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => removeEventFromYear(index, entryIndex)}
-                      title="Remove event">
-                      <TrashIcon className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )
-              }
-              return null
-            })}
+            {sortedIndices.map((entryIndex: number) =>
+              isEventBeingEdited(index, entryIndex) ? (
+                <div key={entryIndex} className="flex items-center gap-1">
+                  <Input
+                    placeholder={`${
+                      index === 0 && !usesNormalNumbering
+                        ? 'Prologue'
+                        : usesNormalNumbering
+                          ? `Year ${index + 1}`
+                          : `Year ${index}`
+                    } event...`}
+                    defaultValue={entries[entryIndex] || ''}
+                    ref={(element) => setInputRef(element, index, entryIndex)}
+                    onKeyDown={(e) => handleKeyDown(e, index, entryIndex)}
+                    className="h-7 text-xs"
+                    id={`timeline.${index}.entries.${entryIndex}`}
+                    name={`timeline.${index}.entries.${entryIndex}`}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => saveEvent(index, entryIndex)}
+                    title="Save event">
+                    <CheckIcon className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => removeEventFromYear(index, entryIndex)}
+                    title="Remove event">
+                    <TrashIcon className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : null
+            )}
 
             {entries.length === 0 && (
               <div className="text-xs text-muted-foreground italic leading-none">

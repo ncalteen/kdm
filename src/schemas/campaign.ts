@@ -1,3 +1,4 @@
+import { TabType } from '@/lib/enums'
 import { HuntSchema } from '@/schemas/hunt'
 import { SettlementSchema } from '@/schemas/settlement'
 import { ShowdownSchema } from '@/schemas/showdown'
@@ -21,7 +22,7 @@ export const CampaignSchema = z.object({
   /** Selected Survivor ID */
   selectedSurvivorId: z.number().nullable().optional(),
   /** Selected Tab Name */
-  selectedTab: z.string().nullable().optional(),
+  selectedTab: z.nativeEnum(TabType).nullable().optional(),
   /** Settlements */
   settlements: z.array(SettlementSchema),
   /** Showdowns */

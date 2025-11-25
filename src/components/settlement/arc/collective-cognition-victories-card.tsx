@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table,
@@ -16,6 +10,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE } from '@/lib/messages'
 import { Nemesis, Quarry, Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
@@ -30,7 +25,7 @@ interface CollectiveCognitionVictoriesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -70,10 +65,6 @@ export function CollectiveCognitionVictoriesCard({
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <TrophyIcon className="h-4 w-4" /> Settlement Victories
         </CardTitle>
-        <CardDescription className="text-left text-xs">
-          After a victorious showdown, fill a box for the defeated
-          monster&apos;s level.
-        </CardDescription>
       </CardHeader>
 
       <CardContent className="p-1 pb-2 pt-0">
@@ -125,7 +116,9 @@ export function CollectiveCognitionVictoriesCard({
                                 saveToLocalStorage(
                                   updatedQuarries,
                                   null,
-                                  "The settlement's legacy grows stronger."
+                                  COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                    !!checked
+                                  )
                                 )
                               }
                             }}
@@ -154,7 +147,9 @@ export function CollectiveCognitionVictoriesCard({
                               saveToLocalStorage(
                                 updatedQuarries,
                                 null,
-                                "The settlement's legacy grows stronger."
+                                COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                  !!checked
+                                )
                               )
                             }
                           }}
@@ -194,7 +189,9 @@ export function CollectiveCognitionVictoriesCard({
                                     saveToLocalStorage(
                                       updatedQuarries,
                                       null,
-                                      "The settlement's legacy grows stronger."
+                                      COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                        !!checked
+                                      )
                                     )
                                   }
                                 }}
@@ -238,7 +235,9 @@ export function CollectiveCognitionVictoriesCard({
                                     saveToLocalStorage(
                                       updatedQuarries,
                                       null,
-                                      "The settlement's legacy grows stronger."
+                                      COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                        !!checked
+                                      )
                                     )
                                   }
                                 }}
@@ -298,7 +297,9 @@ export function CollectiveCognitionVictoriesCard({
                               saveToLocalStorage(
                                 null,
                                 updatedNemeses,
-                                "The settlement's legacy grows stronger."
+                                COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                  !!checked
+                                )
                               )
                             }
                           }}
@@ -326,7 +327,9 @@ export function CollectiveCognitionVictoriesCard({
                               saveToLocalStorage(
                                 null,
                                 updatedNemeses,
-                                "The settlement's legacy grows stronger."
+                                COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                  !!checked
+                                )
                               )
                             }
                           }}
@@ -354,7 +357,9 @@ export function CollectiveCognitionVictoriesCard({
                               saveToLocalStorage(
                                 null,
                                 updatedNemeses,
-                                "The settlement's legacy grows stronger."
+                                COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                  !!checked
+                                )
                               )
                             }
                           }}

@@ -4,6 +4,14 @@ import { TimelineContent } from '@/components/settlement/timeline/timeline-conte
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { CampaignType } from '@/lib/enums'
+import {
+  TIMELINE_EVENT_EMPTY_ERROR_MESSAGE,
+  TIMELINE_EVENT_EMPTY_WARNING_MESSAGE,
+  TIMELINE_EVENT_REMOVED_MESSAGE,
+  TIMELINE_EVENT_SAVED_MESSAGE,
+  TIMELINE_YEAR_ADDED_MESSAGE,
+  TIMELINE_YEAR_COMPLETED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { PlusCircleIcon } from 'lucide-react'
 import {
@@ -27,7 +35,7 @@ interface TimelineCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -100,10 +108,8 @@ export function TimelineCard({
    * @returns Event is Being Edited
    */
   const isEventBeingEdited = useCallback(
-    (yearIndex: number, entryIndex: number) => {
-      const inputKey = `${yearIndex}-${entryIndex}`
-      return !!editingEvents[inputKey]
-    },
+    (yearIndex: number, entryIndex: number) =>
+      !!editingEvents[`${yearIndex}-${entryIndex}`],
     [editingEvents]
   )
 
@@ -133,9 +139,7 @@ export function TimelineCard({
       // Warn the user that there is an empty event or an event being edited
       // and prevent adding another event.
       if (isEditing || hasEmpty)
-        return toast.warning(
-          'Finish editing the current event before adding another.'
-        )
+        return toast.warning(TIMELINE_EVENT_EMPTY_WARNING_MESSAGE())
 
       const newEntryIndex = currentEntries.length
 
@@ -191,7 +195,7 @@ export function TimelineCard({
         {
           timeline: updatedTimeline
         },
-        'The chronicle is altered - a memory fades into darkness.'
+        TIMELINE_EVENT_REMOVED_MESSAGE()
       )
     },
     [selectedSettlement?.timeline, saveSelectedSettlement]
@@ -213,7 +217,7 @@ export function TimelineCard({
       const currentEvent = inputElement.value
 
       if (!currentEvent || currentEvent.trim() === '')
-        return toast.warning('Cannot save an empty event!')
+        return toast.warning(TIMELINE_EVENT_EMPTY_ERROR_MESSAGE())
 
       const newEventValue = currentEvent.trim()
 
@@ -234,7 +238,7 @@ export function TimelineCard({
         {
           timeline: updatedTimeline
         },
-        'The chronicles remember - a memory is etched in stone.'
+        TIMELINE_EVENT_SAVED_MESSAGE()
       )
     },
     [selectedSettlement?.timeline, inputRefs, saveSelectedSettlement]
@@ -258,9 +262,7 @@ export function TimelineCard({
         {
           timeline: updatedTimeline
         },
-        completed
-          ? 'The year concludes in triumph.'
-          : 'The year remains unfinished.'
+        TIMELINE_YEAR_COMPLETED_MESSAGE(completed)
       )
     },
     [selectedSettlement?.timeline, saveSelectedSettlement]
@@ -372,7 +374,7 @@ export function TimelineCard({
                   {
                     timeline: newTimeline
                   },
-                  'A new lantern year is added - the chronicles expand.'
+                  TIMELINE_YEAR_ADDED_MESSAGE()
                 )
               })
             }}>

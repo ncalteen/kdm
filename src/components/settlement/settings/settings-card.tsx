@@ -20,6 +20,13 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import {
+  ERROR_MESSAGE,
+  HUNT_DELETED_MESSAGE,
+  SETTLEMENT_DELETED_MESSAGE,
+  SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE,
+  SHOWDOWN_DELETED_MESSAGE
+} from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -39,11 +46,11 @@ interface SettingsCardProps {
     successMsg?: string
   ) => void
   /** Selected Hunt */
-  selectedHunt: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Showdown */
-  selectedShowdown?: Partial<Showdown> | null
+  selectedShowdown: Showdown | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
@@ -82,13 +89,11 @@ export function SettingsCard({
     try {
       saveSelectedSettlement(
         { usesScouts },
-        usesScouts
-          ? 'The settlement now employs scouts to aid in hunts.'
-          : 'The settlement no longer relies on scouts for hunts.'
+        SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE(usesScouts)
       )
     } catch (error) {
       console.error('Uses Scouts Update Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
@@ -112,12 +117,10 @@ export function SettingsCard({
 
       setSelectedHunt(null)
 
-      toast.success(
-        'The hunt ends. Survivors return to the relative safety of the settlement.'
-      )
+      toast.success(HUNT_DELETED_MESSAGE())
     } catch (error) {
       console.error('Delete Hunt Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
@@ -141,12 +144,10 @@ export function SettingsCard({
 
       setSelectedShowdown(null)
 
-      toast.success(
-        'The showdown ends. Survivors return to the relative safety of the settlement.'
-      )
+      toast.success(SHOWDOWN_DELETED_MESSAGE())
     } catch (error) {
       console.error('Delete Showdown Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 
@@ -196,12 +197,10 @@ export function SettingsCard({
 
       setIsDeleteDialogOpen(false)
 
-      toast.success(
-        `A wave of darkness washes over ${settlementName}. Voices cried out, and were silenced.`
-      )
+      toast.success(SETTLEMENT_DELETED_MESSAGE(settlementName))
     } catch (error) {
       console.error('Settlement Delete Error:', error)
-      toast.error('The darkness swallows your words. Please try again.')
+      toast.error(ERROR_MESSAGE())
     }
   }
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { useCallback } from 'react'
@@ -62,7 +63,7 @@ export function useSelectedHuntSave(
 
         if (error instanceof ZodError && error.errors[0]?.message)
           toast.error(error.errors[0].message)
-        else toast.error('The darkness swallows your words. Please try again.')
+        else toast.error(ERROR_MESSAGE())
       }
     },
     [form, updateSelectedHunt]

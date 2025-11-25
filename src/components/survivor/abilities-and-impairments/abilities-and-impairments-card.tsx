@@ -8,6 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import {
+  ABILITY_IMPAIRMENT_REMOVED_MESSAGE,
+  ABILITY_IMPAIRMENT_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_SKIP_NEXT_HUNT_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -24,7 +30,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { BicepsFlexedIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -35,7 +41,7 @@ interface AbilitiesAndImpairmentsCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -124,7 +130,7 @@ export function AbilitiesAndImpairmentsCard({
     saveToLocalStorage(
       updatedAbilitiesAndImpairments,
       undefined,
-      'The ability/impairment has been removed.'
+      ABILITY_IMPAIRMENT_REMOVED_MESSAGE()
     )
   }
 
@@ -136,7 +142,7 @@ export function AbilitiesAndImpairmentsCard({
    */
   const onSaveAbilityOrImpairment = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless ability/impairment cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('ability/impairment'))
 
     const updatedAbilitiesAndImpairments = [
       ...(selectedSurvivor?.abilitiesAndImpairments || [])
@@ -161,9 +167,7 @@ export function AbilitiesAndImpairmentsCard({
     saveToLocalStorage(
       updatedAbilitiesAndImpairments,
       undefined,
-      i !== undefined
-        ? 'The ability/impairment has been updated.'
-        : 'The survivor gains a new ability/impairment.'
+      ABILITY_IMPAIRMENT_UPDATED_MESSAGE(i === undefined)
     )
   }
 
@@ -210,77 +214,72 @@ export function AbilitiesAndImpairmentsCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <BicepsFlexedIcon className="h-4 w-4" />
-            Abilities & Impairments
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addAbility}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-2 border-0 gap-0">
+      {/* Title */}
+      <CardHeader className="p-0">
+        <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
+          Abilities & Impairments
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addAbility}
+                className="h-6 w-6"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Abilities/Impairments List */}
-      <CardContent className="p-1 pb-2">
-        <div className="flex flex-col h-[140px]">
+      <CardContent className="p-0">
+        <div className="flex flex-col">
           <div className="flex-1 overflow-y-auto">
-            <div className="space-y-1">
-              {selectedSurvivor?.abilitiesAndImpairments?.length !== 0 && (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}>
-                  <SortableContext
-                    items={(
-                      selectedSurvivor?.abilitiesAndImpairments || []
-                    ).map((_, index) => index.toString())}
-                    strategy={verticalListSortingStrategy}>
-                    {selectedSurvivor?.abilitiesAndImpairments?.map(
-                      (ability, index) => (
-                        <AbilityImpairmentItem
-                          key={index}
-                          id={index.toString()}
-                          index={index}
-                          onRemove={onRemove}
-                          isDisabled={!!disabledInputs[index]}
-                          onSave={(value, i) =>
-                            onSaveAbilityOrImpairment(value, i)
-                          }
-                          onEdit={onEdit}
-                          selectedSurvivor={selectedSurvivor}
-                        />
-                      )
-                    )}
-                  </SortableContext>
-                </DndContext>
-              )}
-              {isAddingNew && (
-                <NewAbilityImpairmentItem
-                  onSave={onSaveAbilityOrImpairment}
-                  onCancel={() => setIsAddingNew(false)}
-                />
-              )}
-            </div>
+            {selectedSurvivor?.abilitiesAndImpairments?.length !== 0 && (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={(selectedSurvivor?.abilitiesAndImpairments || []).map(
+                    (_, index) => index.toString()
+                  )}
+                  strategy={verticalListSortingStrategy}>
+                  {selectedSurvivor?.abilitiesAndImpairments?.map(
+                    (ability, index) => (
+                      <AbilityImpairmentItem
+                        key={index}
+                        id={index.toString()}
+                        index={index}
+                        onRemove={onRemove}
+                        isDisabled={!!disabledInputs[index]}
+                        onSave={(value, i) =>
+                          onSaveAbilityOrImpairment(value, i)
+                        }
+                        onEdit={onEdit}
+                        selectedSurvivor={selectedSurvivor}
+                      />
+                    )
+                  )}
+                </SortableContext>
+              </DndContext>
+            )}
+            {isAddingNew && (
+              <NewAbilityImpairmentItem
+                onSave={onSaveAbilityOrImpairment}
+                onCancel={() => setIsAddingNew(false)}
+              />
+            )}
           </div>
 
-          {/* Skip Next Hunt - Bottom Right */}
+          {/* Skip Next Hunt */}
           <div className="flex justify-end mt-2 pr-2">
             <div className="flex items-center gap-2">
               <Checkbox
@@ -290,9 +289,7 @@ export function AbilitiesAndImpairmentsCard({
                   saveToLocalStorage(
                     undefined,
                     !!checked,
-                    !!checked
-                      ? 'The survivor will skip the next hunt.'
-                      : 'The survivor will not skip the next hunt.'
+                    SURVIVOR_SKIP_NEXT_HUNT_UPDATED_MESSAGE(!!checked)
                   )
                 }
               />

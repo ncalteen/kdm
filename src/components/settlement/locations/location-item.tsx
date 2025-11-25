@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -28,7 +29,7 @@ export interface LocationItemProps {
   /** OnToggleUnlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -117,9 +118,9 @@ export function LocationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <Label className="text-sm" htmlFor={`location-unlocked-${index}`}>
             {selectedSettlement?.locations?.[index].name || ''}
-          </span>
+          </Label>
         </div>
       ) : (
         <Input
@@ -128,7 +129,6 @@ export function LocationItem({
           defaultValue={selectedSettlement?.locations?.[index].name || ''}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -217,7 +217,6 @@ export function NewLocationItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

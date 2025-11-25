@@ -1,17 +1,12 @@
 'use client'
 
 import { HuntSurvivorCard } from '@/components/hunt/hunt-survivors/hunt-survivor-card'
-import {
-  NextButton,
-  PrevButton,
-  usePrevNextButtons
-} from '@/components/hunt/hunt-survivors/nav-buttons'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { useSidebar } from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button'
+import { getSurvivorColorChoice } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
-import useEmblaCarousel from 'embla-carousel-react'
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 import { ReactElement, useMemo } from 'react'
 
 /**
@@ -20,18 +15,23 @@ import { ReactElement, useMemo } from 'react'
 interface HuntSurvivorsCardProps {
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Save Selected Survivor */
+  saveSelectedSurvivor: (
+    updateData: Partial<Survivor>,
+    successMsg?: string
+  ) => void
   /** Selected Hunt */
-  selectedHunt: Partial<Hunt> | null
+  selectedHunt: Hunt | null
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
   /** Survivors */
   survivors: Survivor[] | null
-  /** Update Selected Survivor */
-  updateSelectedSurvivor: (survivor: Survivor) => void
 }
 
 /**
@@ -42,26 +42,14 @@ interface HuntSurvivorsCardProps {
  */
 export function HuntSurvivorsCard({
   saveSelectedHunt,
+  saveSelectedSurvivor,
   selectedHunt,
   selectedSettlement,
   selectedSurvivor,
+  setSelectedSurvivor,
   setSurvivors,
-  survivors,
-  updateSelectedSurvivor
+  survivors
 }: HuntSurvivorsCardProps): ReactElement {
-  const { isMobile, state } = useSidebar()
-
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true
-  })
-
-  const {
-    prevBtnDisabled,
-    nextBtnDisabled,
-    onPrevButtonClick,
-    onNextButtonClick
-  } = usePrevNextButtons(emblaApi)
-
   const huntSurvivors = useMemo(() => {
     let s: number[] = []
 
@@ -71,53 +59,98 @@ export function HuntSurvivorsCard({
     return s
   }, [selectedHunt?.survivors, selectedHunt?.scout])
 
-  // Calculate width based on sidebar state
-  const getCardWidth = () => {
-    // Full width on mobile (sidebar is overlay) minus gap
-    if (isMobile) return '98vw'
+  // Get filtered survivors for mapping
+  const filteredSurvivors = survivors?.filter((s) =>
+    huntSurvivors.includes(s.id)
+  )
 
-    // Full width minus SIDEBAR_WIDTH (16rem) + 1rem (gap)
-    if (state === 'expanded') return 'calc(100vw - 17rem)'
+  // When the selected survivor changes, set to that survivor (if they exist in
+  // the filtered survivors). If not, set the selected survivor to the first
+  // survivor in the filtered list.
+  useMemo(() => {
+    if (!selectedSurvivor) setSelectedSurvivor(filteredSurvivors?.[0] || null)
+  }, [filteredSurvivors, setSelectedSurvivor, selectedSurvivor])
 
-    // Full width minus SIDEBAR_WIDTH_ICON (3rem) + 1rem (gap)
-    if (state === 'collapsed') return 'calc(100vw - 4rem)'
+  // Get current survivor index
+  const currentIndex =
+    filteredSurvivors?.findIndex((s) => s.id === selectedSurvivor?.id) ?? 0
 
-    return '98.5vw' // Fallback to full width
+  // Navigation handlers
+  const handlePrevious = () => {
+    if (!filteredSurvivors || filteredSurvivors.length === 0) return
+    const newIndex =
+      (currentIndex - 1 + filteredSurvivors.length) % filteredSurvivors.length
+    setSelectedSurvivor(filteredSurvivors[newIndex])
+  }
+
+  const handleNext = () => {
+    if (!filteredSurvivors || filteredSurvivors.length === 0) return
+    const newIndex = (currentIndex + 1) % filteredSurvivors.length
+    setSelectedSurvivor(filteredSurvivors[newIndex])
+  }
+
+  const handleDotClick = (index: number) => {
+    if (!filteredSurvivors || !filteredSurvivors[index]) return
+    setSelectedSurvivor(filteredSurvivors[index])
   }
 
   if (huntSurvivors.length === 0 || !selectedSettlement) return <></>
 
   return (
-    <Card
-      className="embla pt-0 gap-0 min-w-[430px]"
-      style={{
-        width: getCardWidth()
-      }}>
-      <CardHeader className="embla__controls">
-        <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-        <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
-      </CardHeader>
+    <div className="p-0">
+      <div className="survivor_carousel_controls min-w-[430px]">
+        <div className="survivor_carousel_buttons">
+          <Button
+            className="h-12 w-12"
+            variant="ghost"
+            size="icon"
+            onClick={handlePrevious}>
+            <ArrowLeftIcon className="size-8" />
+          </Button>
 
-      <CardContent className="overflow-hidden" ref={emblaRef}>
-        <div className="embla__container">
-          {survivors
-            ?.filter((s) => huntSurvivors.includes(s.id))
-            .map((survivor) => (
-              <div className="embla__slide" key={survivor.id}>
-                <HuntSurvivorCard
-                  saveSelectedHunt={saveSelectedHunt}
-                  selectedHunt={selectedHunt}
-                  selectedSettlement={selectedSettlement}
-                  selectedSurvivor={selectedSurvivor}
-                  setSurvivors={setSurvivors}
-                  survivor={survivor}
-                  survivors={survivors}
-                  updateSelectedSurvivor={updateSelectedSurvivor}
-                />
-              </div>
-            ))}
+          <Button
+            className="h-12 w-12"
+            variant="ghost"
+            size="icon"
+            onClick={handleNext}>
+            <ArrowRightIcon className="size-8" />
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+
+        <div className="survivor_carousel_dots">
+          {filteredSurvivors?.map((survivor, index) => {
+            const survivorColor = getSurvivorColorChoice(
+              selectedHunt,
+              survivor.id
+            )
+            const isSelected = index === currentIndex
+
+            return (
+              <button
+                key={index}
+                onClick={() => handleDotClick(index)}
+                className={`survivor_carousel_dot${isSelected ? ' survivor_carousel_dot--selected' : ''}`}
+                style={{
+                  ['--dot-color' as string]: isSelected
+                    ? 'hsl(var(--foreground))'
+                    : 'transparent',
+                  ['--dot-bg' as string]: `var(--color-${survivorColor.toLowerCase()}-500)`
+                }}
+              />
+            )
+          })}
+        </div>
+      </div>
+
+      <HuntSurvivorCard
+        saveSelectedHunt={saveSelectedHunt}
+        saveSelectedSurvivor={saveSelectedSurvivor}
+        selectedHunt={selectedHunt}
+        selectedSettlement={selectedSettlement}
+        selectedSurvivor={selectedSurvivor}
+        setSurvivors={setSurvivors}
+        survivors={survivors}
+      />
+    </div>
   )
 }

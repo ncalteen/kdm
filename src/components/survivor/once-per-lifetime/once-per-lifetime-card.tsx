@@ -8,6 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  SURVIVOR_LIFETIME_REROLL_USED_UPDATED_MESSAGE,
+  SURVIVOR_ONCE_PER_LIFETIME_EVENT_REMOVED_MESSAGE,
+  SURVIVOR_ONCE_PER_LIFETIME_EVENT_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import {
   closestCenter,
@@ -24,7 +30,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { CopyCheckIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -35,7 +41,7 @@ interface OncePerLifetimeCardProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -124,7 +130,7 @@ export function OncePerLifetimeCard({
     saveToLocalStorage(
       currentOncePerLifetime,
       undefined,
-      'A fleeting moment fades back into darkness.'
+      SURVIVOR_ONCE_PER_LIFETIME_EVENT_REMOVED_MESSAGE()
     )
   }
 
@@ -136,7 +142,9 @@ export function OncePerLifetimeCard({
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
-      return toast.error('A nameless event cannot be recorded.')
+      return toast.error(
+        NAMELESS_OBJECT_ERROR_MESSAGE('once per lifetime event')
+      )
 
     const updatedOncePerLifetime = [
       ...(selectedSurvivor?.oncePerLifetime || [])
@@ -161,7 +169,7 @@ export function OncePerLifetimeCard({
     saveToLocalStorage(
       updatedOncePerLifetime,
       undefined,
-      'A once-in-a-lifetime moment has been inscribed in memory.'
+      SURVIVOR_ONCE_PER_LIFETIME_EVENT_UPDATED_MESSAGE()
     )
   }
 
@@ -214,44 +222,39 @@ export function OncePerLifetimeCard({
   const handleRerollUsedToggle = (checked: boolean) => {
     saveSelectedSurvivor(
       { rerollUsed: checked },
-      checked
-        ? 'The survivor has used their lifetime reroll.'
-        : 'The survivor has regained their lifetime reroll.'
+      SURVIVOR_LIFETIME_REROLL_USED_UPDATED_MESSAGE(checked)
     )
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
-        <div className="flex justify-between items-center">
-          {/* Title */}
-          <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-            <CopyCheckIcon className="h-4 w-4" />
-            Once Per Lifetime
-            {!isAddingNew && (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addOncePerLifetime}
-                  className="border-0 h-8 w-8"
-                  disabled={
-                    isAddingNew ||
-                    Object.values(disabledInputs).some((v) => v === false)
-                  }>
-                  <PlusIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardTitle>
-        </div>
+    <Card className="p-2 border-0 gap-0">
+      {/* Title */}
+      <CardHeader className="p-0">
+        <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
+          Once Per Lifetime
+          {!isAddingNew && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={addOncePerLifetime}
+                className="h-6 w-6"
+                disabled={
+                  isAddingNew ||
+                  Object.values(disabledInputs).some((v) => v === false)
+                }>
+                <PlusIcon />
+              </Button>
+            </div>
+          )}
+        </CardTitle>
       </CardHeader>
 
       {/* Once Per Lifetime List */}
-      <CardContent className="p-1 pb-2 pt-0">
-        <div className="flex flex-col h-[65px]">
-          <div className="flex-1 overflow-y-auto">
+      <CardContent className="p-0">
+        <div className="flex flex-col">
+          <div className="flex-1">
             {selectedSurvivor?.oncePerLifetime?.length !== 0 && (
               <DndContext
                 sensors={sensors}

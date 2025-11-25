@@ -6,6 +6,12 @@ import {
 } from '@/components/settlement/arc/knowledge-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  KNOWLEDGE_CREATED_MESSAGE,
+  KNOWLEDGE_REMOVED_MESSAGE,
+  KNOWLEDGE_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
+} from '@/lib/messages'
 import { Knowledge, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -36,7 +42,7 @@ interface KnowledgesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -99,7 +105,7 @@ export function KnowledgesCard({
       {
         knowledges: currentKnowledges
       },
-      'Knowledge banished to the void.'
+      KNOWLEDGE_REMOVED_MESSAGE()
     )
   }
 
@@ -112,7 +118,7 @@ export function KnowledgesCard({
    */
   const onSave = (name?: string, philosophy?: string, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless knowledge cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('knowledge'))
 
     // Convert empty string to undefined for optional philosophy
     const processedPhilosophy =
@@ -145,8 +151,8 @@ export function KnowledgesCard({
         knowledges: updatedKnowledges
       },
       i !== undefined
-        ? 'Knowledge carved into memory.'
-        : 'New knowledge illuminates the settlement.'
+        ? KNOWLEDGE_UPDATED_MESSAGE()
+        : KNOWLEDGE_CREATED_MESSAGE()
     )
 
     setIsAddingNew(false)
@@ -247,7 +253,6 @@ export function KnowledgesCard({
                         onSave(name, philosophy, i)
                       }
                       onEdit={onEdit}
-                      philosophies={selectedSettlement?.philosophies || []}
                       selectedSettlement={selectedSettlement}
                     />
                   )
@@ -259,7 +264,6 @@ export function KnowledgesCard({
             <NewKnowledgeItem
               onSave={(name, philosophy) => onSave(name, philosophy)}
               onCancel={() => setIsAddingNew(false)}
-              philosophies={selectedSettlement?.philosophies || []}
             />
           )}
         </div>

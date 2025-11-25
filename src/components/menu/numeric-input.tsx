@@ -33,6 +33,8 @@ interface NumericInputProps {
   onChange: (value: number) => void
   /** Child Element */
   children: React.ReactNode
+  /** Read Only Mode */
+  readOnly: boolean
 }
 
 /**
@@ -40,7 +42,7 @@ interface NumericInputProps {
  *
  * A reusable input component for desktop/mobile devices. On desktop, it
  * functions as a standard numeric input field. On mobile, it provides
- * increment/ decrement buttons for better touch interaction.
+ * increment/decrement buttons for better touch interaction.
  *
  * @param props Numeric Input Properties
  * @returns Numeric Input Component
@@ -52,7 +54,8 @@ export function NumericInput({
   step = 1,
   label,
   onChange,
-  children
+  children,
+  readOnly
 }: NumericInputProps): ReactElement {
   const isMobile = useIsMobile()
 
@@ -89,7 +92,7 @@ export function NumericInput({
               variant="outline"
               size="icon"
               onClick={handleDecrement}
-              disabled={min !== undefined && value <= min}
+              disabled={readOnly || (min !== undefined && value <= min)}
               className="h-12 w-12 rounded-full"
               name="decrement"
               id="decrement-button">
@@ -113,7 +116,7 @@ export function NumericInput({
               variant="outline"
               size="icon"
               onClick={handleIncrement}
-              disabled={max !== undefined && value >= max}
+              disabled={readOnly || (max !== undefined && value >= max)}
               className="h-12 w-12 rounded-full"
               name="increment"
               id="increment-button">

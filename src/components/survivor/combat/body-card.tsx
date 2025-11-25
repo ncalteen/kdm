@@ -4,7 +4,9 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { COMBAT_BODY_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
 import { Shield, ShirtIcon } from 'lucide-react'
@@ -15,9 +17,9 @@ import { ReactElement } from 'react'
  */
 interface BodyCardProps {
   /** Save Selected Survivor */
-  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
+  saveSelectedSurvivor: (data: Partial<Survivor>, successMsg: string) => void
   /** Selected Survivor */
-  selectedSurvivor?: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -55,12 +57,12 @@ export function BodyCard({
       {
         [attrName]: value
       },
-      'The body persists through torment and pain.'
+      COMBAT_BODY_UPDATED_MESSAGE()
     )
 
   return (
     <Card className="p-2 border-0">
-      <CardContent className="p-0 h-[80px]">
+      <CardContent className="p-0 h-19">
         <div className="flex flex-row">
           {/* Body Armor */}
           <div className="relative flex items-center">
@@ -72,11 +74,12 @@ export function BodyCard({
               value={selectedSurvivor?.bodyArmor ?? 0}
               min={0}
               label="Body Armor"
-              onChange={(value) => saveToLocalStorage('bodyArmor', value)}>
+              onChange={(value) => saveToLocalStorage('bodyArmor', value)}
+              readOnly={false}>
               <Input
                 placeholder="1"
                 type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.bodyArmor ?? '0'}
                 readOnly={isMobile}
                 onChange={
@@ -94,13 +97,13 @@ export function BodyCard({
             </NumericInput>
           </div>
 
-          <div className="mx-2 w-px bg-border h-[80px]" />
+          <div className="mx-2 w-px bg-border h-19" />
 
           <div className="flex flex-row items-start w-full">
-            <div className="text-md font-bold flex flex-row gap-1 w-[70px]">
-              <ShirtIcon /> Body
+            <div className="text-sm font-bold flex flex-row gap-1 w-18">
+              <ShirtIcon className="h-5 w-5" /> Body
             </div>
-            <div className="flex flex-col items-start gap-1 ml-2">
+            <div className="flex flex-col gap-1 ml-2">
               {/* Severe Injuries - Destroyed Back */}
               <div className="space-y-0 flex flex-row items-center gap-2">
                 <Checkbox
@@ -110,7 +113,7 @@ export function BodyCard({
                     saveToLocalStorage('bodyDestroyedBack', !!checked)
                   }
                 />
-                <label className="text-xs">Destroyed Back</label>
+                <Label className="text-xs">Destroyed Back</Label>
               </div>
 
               {/* Severe Injuries - Broken Rib */}
@@ -130,7 +133,7 @@ export function BodyCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Broken Rib</label>
+                <Label className="text-xs">Broken Rib</Label>
               </div>
 
               {/* Severe Injuries - Gaping Chest Wound */}
@@ -152,14 +155,14 @@ export function BodyCard({
                     />
                   ))}
                 </div>
-                <label className="text-xs">Gaping Chest Wound</label>
+                <Label className="text-xs">G. Chest Wound</Label>
               </div>
             </div>
 
             {/* Light and Heavy Damage */}
             <div className="flex flex-row gap-2 ml-auto">
               {/* Light Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -173,11 +176,11 @@ export function BodyCard({
                     saveToLocalStorage('bodyLightDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">L</label>
+                <Label className="text-xs mt-1">L</Label>
               </div>
 
               {/* Heavy Damage */}
-              <div className="space-y-0 flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <Checkbox
                   className={cn(
                     'h-4 w-4 rounded-sm',
@@ -191,7 +194,7 @@ export function BodyCard({
                     saveToLocalStorage('bodyHeavyDamage', !!checked)
                   }
                 />
-                <label className="text-xs mt-1">H</label>
+                <Label className="text-xs mt-1">H</Label>
               </div>
             </div>
           </div>

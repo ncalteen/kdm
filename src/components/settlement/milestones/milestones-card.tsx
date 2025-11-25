@@ -6,6 +6,13 @@ import {
 } from '@/components/settlement/milestones/milestone-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  MILESTONE_COMPLETED_MESSAGE,
+  MILESTONE_MISSING_EVENT_ERROR,
+  MILESTONE_REMOVED_MESSAGE,
+  MILESTONE_UPDATED_MESSAGE,
+  NAMELESS_OBJECT_ERROR_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -36,7 +43,7 @@ interface MilestonesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -104,7 +111,7 @@ export function MilestonesCard({
 
     saveSelectedSettlement(
       { milestones: currentMilestones },
-      'The milestone fades into the darkness.'
+      MILESTONE_REMOVED_MESSAGE()
     )
   }
 
@@ -117,10 +124,10 @@ export function MilestonesCard({
    */
   const onSave = (name?: string, event?: string, i?: number) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless milestone cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('milestone'))
 
     if (!event || event.trim() === '')
-      return toast.error('A milestone must include a story event.')
+      return toast.error(MILESTONE_MISSING_EVENT_ERROR())
 
     const updatedMilestones = [...(selectedSettlement?.milestones || [])]
 
@@ -142,9 +149,7 @@ export function MilestonesCard({
 
     saveSelectedSettlement(
       { milestones: updatedMilestones },
-      i !== undefined
-        ? 'Milestones have been updated.'
-        : "A new milestone marks the settlement's destiny."
+      MILESTONE_UPDATED_MESSAGE(i)
     )
 
     setIsAddingNew(false)
@@ -208,9 +213,7 @@ export function MilestonesCard({
 
     saveSelectedSettlement(
       { milestones: updatedMilestones },
-      checked
-        ? 'Milestone achieved - the settlement persists through the darkness.'
-        : 'Milestone status updated.'
+      MILESTONE_COMPLETED_MESSAGE(checked)
     )
   }
 

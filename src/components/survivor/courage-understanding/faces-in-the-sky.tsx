@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE } from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
 import { ReactElement } from 'react'
@@ -19,7 +20,7 @@ interface FacesInTheSkyProps {
   /** Save Selected Survivor */
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
-  selectedSurvivor: Partial<Survivor> | null
+  selectedSurvivor: Survivor | null
 }
 
 /**
@@ -48,17 +49,11 @@ export function FacesInTheSky({
       {
         [property]: !currentValue
       },
-      'The stars align. Celestial traits recorded.'
+      SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
     )
 
   return (
     <div>
-      <div className="text-xs flex flex-row items-center justify-center gap-1">
-        If marked traits complete a horizontal or vertical line,
-        <BookOpenIcon className="h-4 w-4" />
-        <strong>Faces in the Sky.</strong>
-      </div>
-
       <Table>
         <TableHeader>
           <TableRow>
@@ -267,6 +262,12 @@ export function FacesInTheSky({
           </TableRow>
         </TableBody>
       </Table>
+
+      <div className="text-xs text-muted-foreground flex flex-row items-center justify-center gap-1 pt-2">
+        If marked traits complete a horizontal or vertical line,
+        <BookOpenIcon className="h-4 w-4" />
+        <strong>Faces in the Sky.</strong>
+      </div>
     </div>
   )
 }

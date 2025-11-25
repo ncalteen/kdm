@@ -6,6 +6,12 @@ import {
 } from '@/components/settlement/principles/principle-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  NAMELESS_OBJECT_ERROR_MESSAGE,
+  PRINCIPLE_OPTION_SELECTED_MESSAGE,
+  PRINCIPLE_REMOVED_MESSAGE,
+  PRINCIPLE_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -36,7 +42,7 @@ interface PrinciplesCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -108,7 +114,7 @@ export function PrinciplesCard({
       {
         principles: currentPrinciples
       },
-      'The settlement has cleansed a principle from its memory.'
+      PRINCIPLE_REMOVED_MESSAGE()
     )
   }
 
@@ -127,7 +133,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless principle cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
     const updatedPrinciples = [...(selectedSettlement?.principles || [])]
 
@@ -149,7 +155,7 @@ export function PrinciplesCard({
         {
           principles: updatedPrinciples
         },
-        "The settlement's principle has been etched in stone."
+        PRINCIPLE_UPDATED_MESSAGE(true)
       )
     }
     setIsAddingNew(false)
@@ -183,11 +189,11 @@ export function PrinciplesCard({
       {
         principles: updatedPrinciples
       },
-      `The settlement has chosen ${
+      PRINCIPLE_OPTION_SELECTED_MESSAGE(
         option === 1
           ? updatedPrinciples[index].option1Name
           : updatedPrinciples[index].option2Name
-      }.`
+      )
     )
   }
 
@@ -204,7 +210,7 @@ export function PrinciplesCard({
     option2Name: string
   ) => {
     if (!name || name.trim() === '')
-      return toast.error('A nameless principle cannot be recorded.')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
     const updatedPrinciples = [
       ...(selectedSettlement?.principles || []),
@@ -226,7 +232,7 @@ export function PrinciplesCard({
       {
         principles: updatedPrinciples
       },
-      'A new principle emerges.'
+      PRINCIPLE_UPDATED_MESSAGE(false)
     )
 
     setIsAddingNew(false)

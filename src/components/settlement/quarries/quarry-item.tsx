@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -44,7 +45,7 @@ export interface QuarryItemProps {
   /** On Update Node Handler */
   onUpdateNode: (index: number, node: NodeLevel) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -129,6 +130,7 @@ export function QuarryItem({
 
       {/* Unlocked Checkbox */}
       <Checkbox
+        id={`quarry-unlocked-${index}`}
         checked={selectedSettlement?.quarries?.[index].unlocked}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
@@ -138,9 +140,9 @@ export function QuarryItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <Label className="text-sm" htmlFor={`quarry-unlocked-${index}`}>
             {selectedSettlement?.quarries?.[index].name}
-          </span>
+          </Label>
         </div>
       ) : (
         <Input
@@ -149,7 +151,6 @@ export function QuarryItem({
           defaultValue={selectedSettlement?.quarries?.[index].name}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
-          autoFocus
         />
       )}
 
@@ -264,7 +265,6 @@ export function NewQuarryItem({
         defaultValue={''}
         onKeyDown={handleKeyDown}
         className="flex-1"
-        autoFocus
       />
 
       <div className="flex items-center gap-1 ml-auto">

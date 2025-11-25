@@ -2,10 +2,17 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
-import { FormControl } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { CampaignType, SurvivorType } from '@/lib/enums'
+import {
+  LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR,
+  LOST_SETTLEMENT_COUNT_MINIMUM_ERROR,
+  LOST_SETTLEMENT_COUNT_UPDATED_MESSAGE,
+  SURVIVAL_LIMIT_MINIMUM_ERROR_MESSAGE,
+  SURVIVAL_LIMIT_UPDATED_MESSAGE
+} from '@/lib/messages'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement, useEffect, useMemo } from 'react'
@@ -21,7 +28,7 @@ interface OverviewCardProps {
     successMsg?: string
   ) => void
   /** Selected Settlement */
-  selectedSettlement: Partial<Settlement> | null
+  selectedSettlement: Settlement | null
   /** Survivors */
   survivors: Survivor[] | null
 }
@@ -111,19 +118,37 @@ export function OverviewCard({
   /**
    * Handle Survival Limit Change
    *
-   * @param value Survival Limit
+   * @param oldValue Old Survival Limit
+   * @param newValue New Survival Limit
    */
-  const handleSurvivalLimitChange = (value: string) => {
-    const numericValue = parseInt(value, 10)
+  const handleSurvivalLimitChange = (oldValue: number, newValue: number) => {
+    if (isNaN(oldValue) || isNaN(newValue)) return
 
-    if (isNaN(numericValue)) return
-
-    if (numericValue < 1)
-      return toast.error('Survival limit cannot be reduced below 1.')
+    if (newValue < 1) return toast.error(SURVIVAL_LIMIT_MINIMUM_ERROR_MESSAGE())
 
     saveSelectedSettlement(
-      { survivalLimit: numericValue },
-      "The settlement's will to live grows stronger."
+      { survivalLimit: newValue },
+      SURVIVAL_LIMIT_UPDATED_MESSAGE(oldValue, newValue)
+    )
+  }
+
+  /**
+   * Handle Lost Settlement Count Change
+   *
+   * @param oldValue Old Lost Settlement Count
+   * @param newValue New Lost Settlement Count
+   */
+  const handleLostSettlementCountChange = (
+    oldValue: number,
+    newValue: number
+  ) => {
+    if (isNaN(oldValue) || isNaN(newValue)) return
+
+    if (newValue < 0) return toast.error(LOST_SETTLEMENT_COUNT_MINIMUM_ERROR())
+
+    saveSelectedSettlement(
+      { lostSettlements: newValue },
+      LOST_SETTLEMENT_COUNT_UPDATED_MESSAGE(oldValue, newValue)
     )
   }
 
@@ -138,7 +163,7 @@ export function OverviewCard({
     if (isNaN(numericValue)) return
 
     if (numericValue < 0)
-      return toast.error('Lantern research level cannot be reduced below 0.')
+      return toast.error(LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR())
 
     saveSelectedSettlement(
       { lanternResearchLevel: numericValue },
@@ -158,12 +183,17 @@ export function OverviewCard({
               min="1"
               placeholder="1"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSettlement?.survivalLimit ?? '1'}
-              onChange={(e) => handleSurvivalLimitChange(e.target.value)}
+              value={selectedSettlement?.survivalLimit ?? 1}
+              onChange={(e) =>
+                handleSurvivalLimitChange(
+                  selectedSettlement?.survivalLimit ?? 1,
+                  parseInt(e.target.value, 10)
+                )
+              }
               name="survival-limit-desktop"
               id="survival-limit-desktop"
             />
-            <label className="text-center text-xs">Survival Limit</label>
+            <Label className="text-center text-xs">Survival Limit</Label>
           </div>
 
           <Separator
@@ -181,7 +211,7 @@ export function OverviewCard({
               name="population-desktop"
               id="population-desktop"
             />
-            <label className="text-center text-xs">Population</label>
+            <Label className="text-center text-xs">Population</Label>
           </div>
 
           <Separator
@@ -199,7 +229,7 @@ export function OverviewCard({
               name="death-count-desktop"
               id="death-count-desktop"
             />
-            <label className="text-center text-xs">Death Count</label>
+            <Label className="text-center text-xs">Death Count</Label>
           </div>
 
           <Separator
@@ -211,14 +241,20 @@ export function OverviewCard({
           <div className="flex flex-col items-center gap-1">
             <Input
               type="number"
+              min="0"
               placeholder="0"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSettlement?.lostSettlements ?? '0'}
-              disabled
+              value={selectedSettlement?.lostSettlements ?? 0}
+              onChange={(e) =>
+                handleLostSettlementCountChange(
+                  selectedSettlement?.lostSettlements ?? 0,
+                  parseInt(e.target.value, 10)
+                )
+              }
               name="lost-settlements-desktop"
               id="lost-settlements-desktop"
             />
-            <label className="text-center text-xs">Lost Settlements</label>
+            <Label className="text-center text-xs">Lost Settlements</Label>
           </div>
 
           {/* Collective Cognition (ARC only) */}
@@ -233,14 +269,14 @@ export function OverviewCard({
                 <Input
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={selectedSettlement?.ccValue ?? '0'}
+                  value={selectedSettlement?.ccValue ?? 0}
                   disabled
                   name="collective-cognition-desktop"
                   id="collective-cognition-desktop"
                 />
-                <label className="text-center text-xs">
+                <Label className="text-center text-xs">
                   Collective Cognition
-                </label>
+                </Label>
               </div>
             </>
           )}
@@ -262,14 +298,14 @@ export function OverviewCard({
                   min="0"
                   placeholder="0"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={selectedSettlement?.lanternResearchLevel ?? '0'}
+                  value={selectedSettlement?.lanternResearchLevel ?? 0}
                   onChange={(e) => {
                     handleLanternResearchLevelChange(e.target.value)
                   }}
                   name="lantern-research-desktop"
                   id="lantern-research-desktop"
                 />
-                <label className="text-center text-xs">Lantern Research</label>
+                <Label className="text-center text-xs">Lantern Research</Label>
               </div>
             </>
           )}
@@ -279,18 +315,24 @@ export function OverviewCard({
         <div className="lg:hidden space-y-2">
           {/* Survival Limit */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Survival Limit</label>
+            <Label className="text-sm">Survival Limit</Label>
             <NumericInput
               value={selectedSettlement?.survivalLimit ?? 1}
               min={1}
               label="Survival Limit"
-              onChange={(value) => handleSurvivalLimitChange(value.toString())}>
+              onChange={(value) =>
+                handleSurvivalLimitChange(
+                  selectedSettlement?.survivalLimit ?? 1,
+                  value
+                )
+              }
+              readOnly={false}>
               <Input
                 type="number"
                 min="1"
                 placeholder="1"
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSettlement?.survivalLimit ?? '1'}
+                value={selectedSettlement?.survivalLimit ?? 1}
                 readOnly
                 name="survival-limit-mobile"
                 id="survival-limit-mobile"
@@ -300,7 +342,7 @@ export function OverviewCard({
 
           {/* Population */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Population</label>
+            <Label className="text-sm">Population</Label>
             <Input
               type="number"
               className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -313,7 +355,7 @@ export function OverviewCard({
 
           {/* Death Count */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Death Count</label>
+            <Label className="text-sm">Death Count</Label>
             <Input
               type="number"
               className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -326,28 +368,39 @@ export function OverviewCard({
 
           {/* Lost Settlement Count */}
           <div className="flex items-center justify-between">
-            <label className="text-sm">Lost Settlements</label>
-            <FormControl>
+            <Label className="text-sm">Lost Settlements</Label>
+            <NumericInput
+              value={selectedSettlement?.lostSettlements ?? 0}
+              min={1}
+              label="Lost Settlements"
+              onChange={(value) =>
+                handleLostSettlementCountChange(
+                  selectedSettlement?.lostSettlements ?? 0,
+                  value
+                )
+              }
+              readOnly={false}>
               <Input
                 type="number"
+                min="0"
                 placeholder="0"
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSettlement?.lostSettlements ?? '0'}
-                disabled
+                value={selectedSettlement?.lostSettlements ?? 0}
+                readOnly
                 name="lost-settlements-mobile"
                 id="lost-settlements-mobile"
               />
-            </FormControl>
+            </NumericInput>
           </div>
 
           {/* Collective Cognition (ARC only) */}
           {selectedSettlement?.survivorType === SurvivorType.ARC && (
             <div className="flex items-center justify-between">
-              <label className="text-sm">Collective Cognition</label>
+              <Label className="text-sm">Collective Cognition</Label>
               <Input
                 type="number"
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSettlement?.ccValue ?? '0'}
+                value={selectedSettlement?.ccValue ?? 0}
                 disabled
                 name="collective-cognition-mobile"
                 id="collective-cognition-mobile"
@@ -361,20 +414,21 @@ export function OverviewCard({
             selectedSettlement?.campaignType ===
               CampaignType.PEOPLE_OF_THE_SUN) && (
             <div className="flex items-center justify-between">
-              <label className="text-sm">Lantern Research</label>
+              <Label className="text-sm">Lantern Research</Label>
               <NumericInput
                 value={selectedSettlement?.lanternResearchLevel ?? 0}
                 min={0}
                 label="Lantern Research"
                 onChange={(value) =>
                   handleLanternResearchLevelChange(value.toString())
-                }>
+                }
+                readOnly={false}>
                 <Input
                   type="number"
                   min="0"
                   placeholder="0"
                   className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={selectedSettlement?.lanternResearchLevel ?? '0'}
+                  value={selectedSettlement?.lanternResearchLevel ?? 0}
                   readOnly
                   name="lantern-research-mobile"
                   id="lantern-research-mobile"
