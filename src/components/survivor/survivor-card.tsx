@@ -142,6 +142,7 @@ export function SurvivorCard({
               mode={mode}
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
               selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
