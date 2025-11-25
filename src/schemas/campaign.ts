@@ -6,6 +6,19 @@ import { SurvivorSchema } from '@/schemas/survivor'
 import { z } from 'zod'
 
 /**
+ * Global Settings Schema
+ */
+export const GlobalSettingsSchema = z.object({
+  /** Disable Toast Notifications */
+  disableToasts: z.boolean().default(false)
+})
+
+/**
+ * Global Settings
+ */
+export type GlobalSettings = z.infer<typeof GlobalSettingsSchema>
+
+/**
  * Campaign Schema
  *
  * All of the data stored for all of the settlements and survivors for a player.
@@ -23,6 +36,8 @@ export const CampaignSchema = z.object({
   selectedSurvivorId: z.number().nullable().optional(),
   /** Selected Tab Name */
   selectedTab: z.nativeEnum(TabType).nullable().optional(),
+  /** Global Settings */
+  settings: GlobalSettingsSchema,
   /** Settlements */
   settlements: z.array(SettlementSchema),
   /** Showdowns */

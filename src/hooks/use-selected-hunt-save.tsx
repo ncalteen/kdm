@@ -1,11 +1,11 @@
 'use client'
 
+import { useToast } from '@/hooks/use-toast'
 import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
 /**
@@ -19,6 +19,8 @@ export function useSelectedHuntSave(
   form: UseFormReturn<Hunt>,
   updateSelectedHunt: () => void
 ) {
+  const { toast } = useToast()
+
   /**
    * Save Selected Hunt Data
    *
@@ -66,7 +68,7 @@ export function useSelectedHuntSave(
         else toast.error(ERROR_MESSAGE())
       }
     },
-    [form, updateSelectedHunt]
+    [form, toast, updateSelectedHunt]
   )
 
   return { saveSelectedHunt }

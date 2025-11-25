@@ -1,11 +1,11 @@
 'use client'
 
+import { useToast } from '@/hooks/use-toast'
 import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Showdown, ShowdownSchema } from '@/schemas/showdown'
 import { useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
 /**
@@ -19,6 +19,8 @@ export function useSelectedShowdownSave(
   form: UseFormReturn<Showdown>,
   updateSelectedShowdown: () => void
 ) {
+  const { toast } = useToast()
+
   /**
    * Save Selected Showdown Data
    *
@@ -66,7 +68,7 @@ export function useSelectedShowdownSave(
         else toast.error(ERROR_MESSAGE())
       }
     },
-    [form, updateSelectedShowdown]
+    [form, toast, updateSelectedShowdown]
   )
 
   return { saveSelectedShowdown }

@@ -1,11 +1,11 @@
 'use client'
 
+import { useToast } from '@/hooks/use-toast'
 import { ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
-import { toast } from 'sonner'
 import { ZodError } from 'zod'
 
 /**
@@ -19,6 +19,8 @@ export function useSelectedSettlementSave(
   form: UseFormReturn<Settlement>,
   updateSelectedSettlement: () => void
 ) {
+  const { toast } = useToast()
+
   /**
    * Save Selected Settlement Data
    *
@@ -66,7 +68,7 @@ export function useSelectedSettlementSave(
         else toast.error(ERROR_MESSAGE())
       }
     },
-    [form, updateSelectedSettlement]
+    [form, toast, updateSelectedSettlement]
   )
 
   return { saveSelectedSettlement }
