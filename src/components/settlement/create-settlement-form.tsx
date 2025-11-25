@@ -184,7 +184,7 @@ export function CreateSettlementForm({
                         onChange={(e) =>
                           form.setValue(field.name, e.target.value)
                         }
-                        className="w-full max-w-[300px]"
+                        className="w-full max-w-[250px]"
                       />
                     </FormControl>
                   </div>
