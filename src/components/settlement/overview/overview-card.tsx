@@ -190,6 +190,7 @@ export function OverviewCard({
                   parseInt(e.target.value, 10)
                 )
               }
+              disabled={!selectedSettlement}
               name="survival-limit-desktop"
               id="survival-limit-desktop"
             />
@@ -251,6 +252,7 @@ export function OverviewCard({
                   parseInt(e.target.value, 10)
                 )
               }
+              disabled={!selectedSettlement}
               name="lost-settlements-desktop"
               id="lost-settlements-desktop"
             />
@@ -326,7 +328,8 @@ export function OverviewCard({
                   value
                 )
               }
-              readOnly={false}>
+              readOnly={false}
+              disabled={!selectedSettlement}>
               <Input
                 type="number"
                 min="1"
@@ -334,6 +337,7 @@ export function OverviewCard({
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSettlement?.survivalLimit ?? 1}
                 readOnly
+                disabled={!selectedSettlement}
                 name="survival-limit-mobile"
                 id="survival-limit-mobile"
               />
@@ -371,7 +375,7 @@ export function OverviewCard({
             <Label className="text-sm">Lost Settlements</Label>
             <NumericInput
               value={selectedSettlement?.lostSettlements ?? 0}
-              min={1}
+              min={0}
               label="Lost Settlements"
               onChange={(value) =>
                 handleLostSettlementCountChange(
@@ -379,7 +383,8 @@ export function OverviewCard({
                   value
                 )
               }
-              readOnly={false}>
+              readOnly={false}
+              disabled={!selectedSettlement}>
               <Input
                 type="number"
                 min="0"
@@ -387,6 +392,7 @@ export function OverviewCard({
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSettlement?.lostSettlements ?? 0}
                 readOnly
+                disabled={!selectedSettlement}
                 name="lost-settlements-mobile"
                 id="lost-settlements-mobile"
               />
