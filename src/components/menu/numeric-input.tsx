@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Minus, Plus } from 'lucide-react'
-import { ReactElement } from 'react'
+import { cloneElement, isValidElement, ReactElement } from 'react'
 
 /**
  * Numeric Input Properties
@@ -77,9 +77,14 @@ export function NumericInput({
     if (min === undefined || newValue >= min) onChange(newValue)
   }
 
+  // Clone children with readOnly=true on mobile to prevent keyboard popup
+  const mobileChildren = isValidElement<React.InputHTMLAttributes<HTMLInputElement>>(children)
+    ? cloneElement(children, { readOnly: true })
+    : children
+
   return isMobile ? (
     <Drawer>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+      <DrawerTrigger asChild>{mobileChildren}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-center">
           <DrawerTitle>{label}</DrawerTitle>
