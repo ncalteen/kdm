@@ -79,6 +79,8 @@ export enum Philosophy {
   MONSTER = 'Monster',
   /** Optimism */
   OPTIMISM = 'Optimism',
+  /** Other */
+  OTHER = 'Other',
   /** Regalism */
   REGALISM = 'Regalism',
   /** Romanticism */
@@ -86,7 +88,9 @@ export enum Philosophy {
   /** Survivalism */
   SURVIVALISM = 'Survivalism',
   /** Verminism */
-  VERMINISM = 'Verminism'
+  VERMINISM = 'Verminism',
+  /** Wanderer */
+  WANDERER = 'Wanderer'
 }
 
 /** Survivor Gender */

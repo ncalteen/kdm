@@ -253,7 +253,6 @@ export function KnowledgesCard({
                         onSave(name, philosophy, i)
                       }
                       onEdit={onEdit}
-                      philosophies={selectedSettlement?.philosophies || []}
                       selectedSettlement={selectedSettlement}
                     />
                   )
@@ -265,7 +264,6 @@ export function KnowledgesCard({
             <NewKnowledgeItem
               onSave={(name, philosophy) => onSave(name, philosophy)}
               onCancel={() => setIsAddingNew(false)}
-              philosophies={selectedSettlement?.philosophies || []}
             />
           )}
         </div>

@@ -35,8 +35,8 @@ export interface SelectPhilosophyProps {
   onChange?: (value: string) => void
   /** OnKeyDown Handler */
   onKeyDown?: (e: KeyboardEvent) => void
-  /** Options */
-  options: string[]
+  /** Options (defaults to all Philosophy enum values if not provided) */
+  options?: string[]
   /** Value */
   value?: Philosophy | ''
 }
@@ -75,9 +75,11 @@ export const SelectPhilosophy = forwardRef<
       if (onKeyDown) onKeyDown(e)
     }
 
+    const availableOptions = options || Object.values(Philosophy)
+
     const philosophyOptions = [
       { value: '', label: 'None' },
-      ...options.map((p) => ({ value: p, label: p }))
+      ...availableOptions.map((p) => ({ value: p, label: p }))
     ]
 
     return (
