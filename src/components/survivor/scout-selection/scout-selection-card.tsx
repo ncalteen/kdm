@@ -51,10 +51,12 @@ export function ScoutSelectionCard({
             <Avatar className="h-10 w-10 border-1 border-background items-center justify-center">
               <AvatarFallback className="font-bold text-lg">
                 {survivor.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .slice(0, 2)}
+                  ? survivor.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .slice(0, 2)
+                  : '??'}
               </AvatarFallback>
             </Avatar>
 

@@ -14,8 +14,20 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
 import { Slider } from '@/components/ui/slider'
-import { AmbushType, TabType, TurnType } from '@/lib/enums'
+import {
+  AmbushType,
+  HuntEventCount,
+  HuntEventType,
+  SurvivorType,
+  TabType,
+  TurnType
+} from '@/lib/enums'
 import {
   AMBUSH_MESSAGE,
   ERROR_MESSAGE,
@@ -32,7 +44,7 @@ import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
-import { ChevronRightIcon, XIcon } from 'lucide-react'
+import { ChevronRightIcon, DicesIcon, XIcon } from 'lucide-react'
 import { ReactElement, useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -90,6 +102,26 @@ export function ActiveHuntCard({
   const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
     useState<boolean>(false)
   const [ambushType, setAmbushType] = useState<number>(1)
+  const [huntEventPopoverOpen, setHuntEventPopoverOpen] =
+    useState<boolean>(false)
+
+  /**
+   * Roll Random Hunt Event
+   *
+   * @param eventType Event type to roll for (Basic, Arc, or Scout)
+   */
+  const rollHuntEvent = useCallback((eventType: HuntEventType) => {
+    const maxValue =
+      eventType === HuntEventType.BASIC
+        ? HuntEventCount.BASIC
+        : HuntEventCount.ARC_SCOUT
+    const randomEvent = Math.floor(Math.random() * maxValue) + 1
+
+    toast.success(
+      `${eventType === HuntEventType.BASIC ? 'Basic' : eventType === HuntEventType.ARC ? 'Arc' : 'Scout'} Hunt Event: ${randomEvent}`
+    )
+    setHuntEventPopoverOpen(false)
+  }, [])
 
   /**
    * Handle Position Update
@@ -266,6 +298,61 @@ export function ActiveHuntCard({
           <XIcon className="size-4" />
           End Hunt
         </Button>
+
+        {selectedSettlement?.survivorType === SurvivorType.ARC ||
+        selectedSettlement?.usesScouts ? (
+          <Popover
+            open={huntEventPopoverOpen}
+            onOpenChange={setHuntEventPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="pointer-events-auto"
+                title="Roll Hunt Event">
+                Roll Hunt Event <DicesIcon className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-2">
+              <div className="flex flex-col gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => rollHuntEvent(HuntEventType.BASIC)}
+                  className="justify-start">
+                  Basic
+                </Button>
+                {selectedSettlement?.survivorType === SurvivorType.ARC && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => rollHuntEvent(HuntEventType.ARC)}
+                    className="justify-start">
+                    Arc
+                  </Button>
+                )}
+                {selectedSettlement?.usesScouts && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => rollHuntEvent(HuntEventType.SCOUT)}
+                    className="justify-start">
+                    Scout
+                  </Button>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => rollHuntEvent(HuntEventType.BASIC)}
+            className="pointer-events-auto"
+            title="Roll Hunt Event">
+            Roll Hunt Event <DicesIcon className="size-4" />
+          </Button>
+        )}
+
         <Button
           variant="destructive"
           size="sm"

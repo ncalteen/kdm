@@ -275,3 +275,31 @@ export enum SurvivorCardMode {
   /** Survivor Page */
   SURVIVOR_CARD = 'survivor'
 }
+
+/**
+ * Hunt Event Type
+ */
+export enum HuntEventType {
+  /** Arc Hunt Event */
+  ARC = 'arc',
+  /** Basic Hunt Event */
+  BASIC = 'basic',
+  /** Scout Hunt Event */
+  SCOUT = 'scout'
+}
+
+/**
+ * Hunt Event Count
+ *
+ * The hunt event tables for:
+ *
+ * - Basic Hunt Events (100)
+ * - Arc Survivor Hunt Events (10)
+ * - Scout Hunt Events (10)
+ */
+export enum HuntEventCount {
+  /** Arc/Scout Hunt Events (10) */
+  ARC_SCOUT = 10,
+  /** Basic Hunt Events (100) */
+  BASIC = 100
+}

@@ -1623,8 +1623,10 @@ export const SURVIVOR_PHILOSOPHY_SELECTED_MESSAGE = (value: string) =>
  * @param survivorName Name of the survivor
  * @returns Survivor Removed Message
  */
-export const SURVIVOR_REMOVED_MESSAGE = (survivorName: string) =>
-  `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
+export const SURVIVOR_REMOVED_MESSAGE = (survivorName: string | undefined) =>
+  survivorName
+    ? `Darkness overtook ${survivorName}. A voice cried out, and was suddenly silenced.`
+    : 'A voice cried out, and was suddenly silenced.'
 
 /**
  * Survivor Retired Status Updated

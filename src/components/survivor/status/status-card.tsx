@@ -13,7 +13,13 @@ import {
 } from '@/lib/messages'
 import { Survivor } from '@/schemas/survivor'
 import { SkullIcon, UserXIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useCallback } from 'react'
+import {
+  KeyboardEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 
 /**
  * Status Card Props
@@ -46,6 +52,14 @@ export function StatusCard({
   setSurvivors,
   survivors
 }: StatusCardProps): ReactElement {
+  const [survivorName, setSurvivorName] = useState(selectedSurvivor?.name ?? '')
+
+  // Update the local name state when the selected survivor changes
+  useEffect(
+    () => setSurvivorName(selectedSurvivor?.name ?? ''),
+    [selectedSurvivor?.id, selectedSurvivor?.name]
+  )
+
   /**
    * Save Status to Local Storage
    *
@@ -166,7 +180,8 @@ export function StatusCard({
               <Label className="font-bold text-left">Name</Label>
               <Input
                 placeholder="Survivor name..."
-                defaultValue={selectedSurvivor?.name ?? ''}
+                value={survivorName}
+                onChange={(e) => setSurvivorName(e.target.value)}
                 onKeyDown={(e) => handleNameKeyDown(e, e.currentTarget.value)}
               />
             </div>
