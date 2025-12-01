@@ -56,10 +56,12 @@ export function SurvivorDetailsPanel({
           <Avatar className="h-16 w-16 border-2 border-background shadow-lg items-center justify-center">
             <AvatarFallback className="font-bold text-xl from-primary/20 to-primary/10 flex items-center justify-center">
               {survivor.name
-                .split(' ')
-                .map((n) => n[0])
-                .join('')
-                .slice(0, 2)}
+                ? survivor.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                    .slice(0, 2)
+                : '??'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
