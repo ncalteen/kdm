@@ -1,8 +1,9 @@
 'use client'
 
 import { HuntSurvivorCard } from '@/components/hunt/hunt-survivors/hunt-survivor-card'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { getSurvivorColorChoice } from '@/lib/utils'
+import { getColorStyle, getSurvivorColorChoice } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -125,18 +126,35 @@ export function HuntSurvivorsCard({
             )
             const isSelected = index === currentIndex
 
+            console.log(
+              'survivor',
+              survivor,
+              survivorColor,
+              isSelected,
+              getColorStyle(survivorColor, 'bg')
+            )
+
             return (
-              <button
+              <Avatar
                 key={index}
-                onClick={() => handleDotClick(index)}
-                className={`survivor_carousel_dot${isSelected ? ' survivor_carousel_dot--selected' : ''}`}
+                className={`survivor_carousel_dot${isSelected ? ' survivor_carousel_dot--selected' : ''}  ${getColorStyle(survivorColor, 'bg')} items-center justify-center cursor-pointer`}
                 style={{
                   ['--dot-color' as string]: isSelected
                     ? 'hsl(var(--foreground))'
                     : 'transparent',
                   ['--dot-bg' as string]: `var(--color-${survivorColor.toLowerCase()}-500)`
                 }}
-              />
+                onClick={() => handleDotClick(index)}>
+                <AvatarFallback className="font-bold text-lg text-white bg-transparent">
+                  {survivor.name
+                    ? survivor.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                    : '??'}
+                </AvatarFallback>
+              </Avatar>
             )
           })}
         </div>
