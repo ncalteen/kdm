@@ -126,14 +126,6 @@ export function HuntSurvivorsCard({
             )
             const isSelected = index === currentIndex
 
-            console.log(
-              'survivor',
-              survivor,
-              survivorColor,
-              isSelected,
-              getColorStyle(survivorColor, 'bg')
-            )
-
             return (
               <Avatar
                 key={index}
