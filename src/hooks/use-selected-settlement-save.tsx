@@ -63,8 +63,8 @@ export function useSelectedSettlementSave(
       } catch (error) {
         console.error('Settlement Save Error:', error)
 
-        if (error instanceof ZodError && error.errors[0]?.message)
-          toast.error(error.errors[0].message)
+        if (error instanceof ZodError && error.issues[0]?.message)
+          toast.error(error.issues[0].message)
         else toast.error(ERROR_MESSAGE())
       }
     },

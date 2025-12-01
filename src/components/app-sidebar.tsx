@@ -300,7 +300,7 @@ export function AppSidebar({
           setShowConfirmation(true)
         } else {
           // Collect validation errors
-          const errors = result.error.errors.map(
+          const errors = result.error.issues.map(
             (err) => `${err.path.join('.')}: ${err.message}`
           )
 

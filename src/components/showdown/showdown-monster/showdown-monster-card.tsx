@@ -136,8 +136,8 @@ export function ShowdownMonsterCard({
     } catch (error) {
       console.error('Showdown Monster Save Error:', error)
 
-      if (error instanceof ZodError && error.errors[0]?.message)
-        toast.error(error.errors[0].message)
+      if (error instanceof ZodError && error.issues[0]?.message)
+        toast.error(error.issues[0].message)
       else toast.error(ERROR_MESSAGE())
     }
   }
