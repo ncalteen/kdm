@@ -20,7 +20,7 @@
     "format:write": "prettier --write '**'",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "license": "MIT",
   "dependencies": {
@@ -82,7 +82,6 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/lodash": "^4.17.21",
     "@types/node": "^24.9.2",
@@ -91,7 +90,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/react-window": "^2.0.0",
     "eslint": "^9.39.0",
-    "eslint-config-next": "^15.5.4",
+    "eslint-config-next": "^16.0.6",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.16",
