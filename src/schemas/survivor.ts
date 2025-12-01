@@ -372,7 +372,7 @@ export const SurvivorSchema = BaseSurvivorSchema.extend({
   /** Survivor ID */
   id: z.number(),
   /** Name */
-  name: z.string(),
+  name: z.string().optional(),
   /** Settlement ID */
   settlementId: z.number()
 })
