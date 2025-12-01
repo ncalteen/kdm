@@ -96,5 +96,8 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.16",
     "typescript": "^5"
+  },
+  "overrides": {
+    "prismjs": ">=1.30.0"
   }
 }
