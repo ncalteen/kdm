@@ -366,15 +366,15 @@ export type BaseSurvivor = z.infer<typeof BaseSurvivorSchema>
  */
 export const SurvivorSchema = BaseSurvivorSchema.extend({
   /** Gender */
-  gender: z.enum(Gender),
+  gender: z.enum(Gender).default(Gender.FEMALE),
   /** Hunt XP Rank Up Milestones */
-  huntXPRankUp: z.array(z.number()),
+  huntXPRankUp: z.array(z.number()).default([]),
   /** Survivor ID */
-  id: z.number(),
+  id: z.number().default(0),
   /** Name */
   name: z.string().optional(),
   /** Settlement ID */
-  settlementId: z.number()
+  settlementId: z.number().default(0)
 })
 
 /**
