@@ -133,13 +133,9 @@ export function CreateHuntCard({
   )
 
   // Get available quarries (unlocked ones)
-  const availableQuarries = useMemo(
-    () =>
-      selectedSettlement?.quarries
-        ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
-        : [],
-    [selectedSettlement?.quarries]
-  )
+  const availableQuarries = selectedSettlement?.quarries
+    ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
+    : []
 
   // Create Hunt
   const handleCreateHunt = () => {
