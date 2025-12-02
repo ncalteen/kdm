@@ -52,15 +52,9 @@ export function SurvivorsProvider({
   survivors,
   children
 }: SurvivorsProviderProps): ReactElement {
-  const [survivorsState, setSurvivorsState] = useState<Survivor[] | null>(
-    survivors
+  const [survivorsState, setSurvivorsState] = useState<Survivor[] | null>(() =>
+    typeof window === 'undefined' ? survivors : getSurvivors() || survivors
   )
-
-  // Load survivors from localStorage on mount
-  useEffect(() => {
-    const savedSurvivors = getSurvivors()
-    if (savedSurvivors) setSurvivorsState(savedSurvivors)
-  }, [])
 
   // Listen for campaign updates to keep survivors in sync
   useEffect(() => {
