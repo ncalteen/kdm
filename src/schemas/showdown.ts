@@ -30,7 +30,7 @@ export const ShowdownMonsterSchema = z.object({
   /** Knocked Down */
   knockedDown: z.boolean().default(false),
   /** Monster Level */
-  level: z.nativeEnum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
   /** Luck */
   luck: z.number().int().default(0),
   /** Luck Tokens */
@@ -58,7 +58,7 @@ export const ShowdownMonsterSchema = z.object({
   /** Traits */
   traits: z.array(z.string()).default([]),
   /** Monster Type */
-  type: z.nativeEnum(MonsterType),
+  type: z.enum(MonsterType),
   /** Wounds */
   wounds: z.number().int().min(0).default(0)
 })
@@ -81,7 +81,7 @@ export const SurvivorShowdownDetailsSchema = z.object({
   /** Block Tokens */
   blockTokens: z.number().int().min(0).default(0),
   /** Survivor Color Code */
-  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE),
+  color: z.enum(ColorChoice).default(ColorChoice.SLATE),
   /** Deflect Tokens */
   deflectTokens: z.number().int().min(0).default(0),
   /** Evasion Tokens */
@@ -156,7 +156,7 @@ export type MonsterTurnState = z.infer<typeof MonsterTurnStateSchema>
  */
 export const TurnSchema = z.object({
   /** Current Turn: 'monster' or 'survivors' */
-  currentTurn: z.nativeEnum(TurnType).default(TurnType.MONSTER),
+  currentTurn: z.enum(TurnType).default(TurnType.MONSTER),
   /** Monster Turn State */
   monsterState: MonsterTurnStateSchema.default({
     aiCardDrawn: false
@@ -175,7 +175,7 @@ export type Turn = z.infer<typeof TurnSchema>
  */
 export const ShowdownSchema = z.object({
   /** Hunt Ended in Ambush */
-  ambush: z.nativeEnum(AmbushType),
+  ambush: z.enum(AmbushType),
   /** Showdown ID */
   id: z.number(),
   /** Showdown Monster */

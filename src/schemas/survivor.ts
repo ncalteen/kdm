@@ -120,7 +120,7 @@ export const BaseSurvivorSchema = z.object({
     .max(8, 'Weapon proficiency cannot exceed 8.')
     .default(0),
   /** Weapon Proficiency (Type) */
-  weaponProficiencyType: z.nativeEnum(WeaponType).optional(),
+  weaponProficiencyType: z.enum(WeaponType).optional(),
 
   /*
    * Hunt/Showdown Attributes
@@ -284,7 +284,7 @@ export const BaseSurvivorSchema = z.object({
   /** Neurosis */
   neurosis: z.string().optional(),
   /** Philosophy */
-  philosophy: z.nativeEnum(Philosophy).nullable().optional(),
+  philosophy: z.enum(Philosophy).nullable().optional(),
   /** Philosophy Rank */
   philosophyRank: z
     .number()
@@ -366,7 +366,7 @@ export type BaseSurvivor = z.infer<typeof BaseSurvivorSchema>
  */
 export const SurvivorSchema = BaseSurvivorSchema.extend({
   /** Gender */
-  gender: z.nativeEnum(Gender),
+  gender: z.enum(Gender),
   /** Hunt XP Rank Up Milestones */
   huntXPRankUp: z.array(z.number()),
   /** Survivor ID */

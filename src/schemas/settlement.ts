@@ -40,7 +40,7 @@ export const QuarrySchema = z.object({
   /** Quarry Name */
   name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
   /** Node Level */
-  node: z.nativeEnum(NodeLevel),
+  node: z.enum(NodeLevel),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -141,12 +141,12 @@ export const ResourceSchema = z.object({
   /** Amount/Quantity */
   amount: z.number().min(0),
   /** Category (Basic, Monster, Strange, etc.) */
-  category: z.nativeEnum(ResourceCategory),
+  category: z.enum(ResourceCategory),
   /** Resource Name */
   name: z.string().min(1, 'A nameless resource cannot be recorded.'),
   /** Types (Bone, Hide, Organ, etc.) */
   types: z
-    .array(z.nativeEnum(ResourceType))
+    .array(z.enum(ResourceType))
     .min(1, 'A resource must have at least one type.')
 })
 
@@ -181,7 +181,7 @@ export const KnowledgeSchema = z.object({
   /** Knowledge Name */
   name: z.string().min(1, 'A nameless knowledge cannot be recorded.'),
   /** Philosophy */
-  philosophy: z.nativeEnum(Philosophy).optional()
+  philosophy: z.enum(Philosophy).optional()
 })
 
 /**
@@ -223,7 +223,7 @@ export const BaseSettlementSchema = z.object({
     .default([]),
   /** Campaign Type */
   campaignType: z
-    .nativeEnum(CampaignType)
+    .enum(CampaignType)
     .default(CampaignType.PEOPLE_OF_THE_LANTERN),
   /** Death Count */
   deathCount: z.number().min(0).default(0),
@@ -268,7 +268,7 @@ export const BaseSettlementSchema = z.object({
   /** Survival Limit */
   survivalLimit: z.number().min(1).default(1),
   /** Survivor Type */
-  survivorType: z.nativeEnum(SurvivorType).default(SurvivorType.CORE),
+  survivorType: z.enum(SurvivorType).default(SurvivorType.CORE),
   /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
   usesScouts: z.boolean().default(false),
   /** Settlment Timeline */
@@ -285,7 +285,7 @@ export const BaseSettlementSchema = z.object({
   /** Settlement Knowledges */
   knowledges: z.array(KnowledgeSchema).default([]),
   /** Settlement Philosophies */
-  philosophies: z.array(z.nativeEnum(Philosophy)).default([]),
+  philosophies: z.array(z.enum(Philosophy)).default([]),
 
   /*
    * People of the Lantern/Sun Campaigns
