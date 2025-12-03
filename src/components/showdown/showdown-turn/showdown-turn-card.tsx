@@ -2,6 +2,7 @@
 
 import { MonsterCalculatedStats } from '@/components/showdown/showdown-monster/monster-calculated-stats'
 import { SurvivorCalculatedStats } from '@/components/showdown/showdown-survivors/survivor-calculated-stats'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,8 +14,13 @@ import {
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
-import { AmbushType, TurnType } from '@/lib/enums'
+import { AmbushType, ColorChoice, TurnType } from '@/lib/enums'
 import { SHOWDOWN_TURN_MESSAGE } from '@/lib/messages'
+import {
+  getCardColorStyles,
+  getColorStyle,
+  getSurvivorColorChoice
+} from '@/lib/utils'
 import {
   MonsterTurnState,
   Showdown,
@@ -172,149 +178,177 @@ export function TurnCard({
 
   const isMonsterTurn = selectedShowdown?.turn?.currentTurn === TurnType.MONSTER
 
+  /**
+   * Get Current Survivor Color
+   */
+  const currentColor = useMemo((): ColorChoice => {
+    if (isMonsterTurn || !selectedSurvivor?.id || !selectedShowdown)
+      return ColorChoice.SLATE
+
+    return getSurvivorColorChoice(selectedShowdown, selectedSurvivor.id)
+  }, [isMonsterTurn, selectedSurvivor?.id, selectedShowdown])
+
+  const handleMouseEnter = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
+    },
+    []
+  )
+
+  const handleMouseLeave = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.borderColor = 'var(--card-border-color)'
+    },
+    []
+  )
+
   return (
-    <Card className="h-full min-w-[300px] gap-2 flex flex-col justify-between">
-      <div>
-        <CardHeader className="pb-0">
-          <CardTitle className="text-lg flex items-center gap-2">
+    <Card
+      className="h-full min-w-[300px] border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
+      style={{
+        ...getCardColorStyles(currentColor),
+        borderColor: 'var(--card-border-color)'
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}>
+      <CardHeader
+        className="flex items-center gap-3 p-3 rounded-t-lg"
+        style={{ backgroundColor: 'var(--card-header-bg)' }}>
+        <Avatar className="h-12 w-12 border-2 items-center justify-center">
+          <AvatarFallback
+            className={`font-bold text-lg text-white ${getColorStyle(currentColor, 'bg')}`}>
             {isMonsterTurn ? (
-              <>
-                <SkullIcon className="h-5 w-5" />
-                Monster Turn
-              </>
+              <SkullIcon className="h-5 w-5" />
             ) : (
-              <>
-                <UsersIcon className="h-5 w-5" />
-                Survivors&apos; Turn
-              </>
+              <UsersIcon className="h-5 w-5" />
             )}
-          </CardTitle>
-        </CardHeader>
+          </AvatarFallback>
+        </Avatar>
+        <CardTitle className="text-lg flex items-center gap-2">
+          {isMonsterTurn ? <>Monster Turn</> : <>Survivors&apos; Turn</>}
+        </CardTitle>
+      </CardHeader>
 
-        <CardContent className="space-y-2">
-          {/* Survivor Turn Content */}
-          {!isMonsterTurn && (
-            <div className="space-y-3">
-              <div className="space-y-2">
-                {/* Survivor Name */}
-                <div className="font-medium text-sm text-center h-6">
-                  {selectedSurvivor?.name || 'No Survivor Selected'}
-                  {selectedSurvivor?.id === selectedShowdown?.scout && (
-                    <Badge variant="outline" className="ml-2">
-                      Scout
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="grid grid-cols-2 gap-2">
-                  {/* Movement */}
-                  <div className="flex items-center space-x-2">
-                    <Toggle
-                      size="sm"
-                      variant="outline"
-                      className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
-                      pressed={selectedSurvivorTurnState?.movementUsed}
-                      onPressedChange={(pressed: boolean) =>
-                        selectedSurvivor
-                          ? updateSurvivorTurnState(selectedSurvivor.id!, {
-                              movementUsed: !!pressed
-                            })
-                          : null
-                      }>
-                      <CheckCircleIcon className="h-3 w-3" />
-                      Move
-                    </Toggle>
-                  </div>
-
-                  {/* Activation */}
-                  <div className="flex items-center space-x-2">
-                    <Toggle
-                      size="sm"
-                      variant="outline"
-                      className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
-                      pressed={selectedSurvivorTurnState?.activationUsed}
-                      onPressedChange={(pressed: boolean) =>
-                        selectedSurvivor
-                          ? updateSurvivorTurnState(selectedSurvivor.id!, {
-                              activationUsed: !!pressed
-                            })
-                          : null
-                      }>
-                      <CheckCircleIcon className="h-3 w-3" />
-                      Activate
-                    </Toggle>
-                  </div>
-                </div>
+      <CardContent className="space-y-2">
+        {/* Survivor Turn Content */}
+        {!isMonsterTurn && (
+          <div className="space-y-3">
+            <div className="space-y-2">
+              {/* Survivor Name */}
+              <div className="font-medium text-sm text-center h-6">
+                {selectedSurvivor?.name || 'No Survivor Selected'}
+                {selectedSurvivor?.id === selectedShowdown?.scout && (
+                  <Badge variant="outline" className="ml-2">
+                    Scout
+                  </Badge>
+                )}
               </div>
 
-              <Separator />
-
-              {/* Calculated Stats */}
-              <SurvivorCalculatedStats
-                selectedShowdown={selectedShowdown}
-                selectedSurvivor={selectedSurvivor}
-              />
-            </div>
-          )}
-
-          {/* Monster Turn Content */}
-          {isMonsterTurn && (
-            <div className="space-y-3">
-              <div className="space-y-2">
-                {/* Survivor Name */}
-                <div className="font-medium text-sm text-center h-6">
-                  Targeting: {selectedSurvivor?.name || 'No Survivor Selected'}
-                  {selectedSurvivor?.id === selectedShowdown?.scout && (
-                    <Badge variant="outline" className="ml-2">
-                      Scout
-                    </Badge>
-                  )}
+              {/* Actions */}
+              <div className="grid grid-cols-2 gap-2">
+                {/* Movement */}
+                <div className="flex items-center space-x-2">
+                  <Toggle
+                    size="sm"
+                    variant="outline"
+                    className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
+                    pressed={selectedSurvivorTurnState?.movementUsed}
+                    onPressedChange={(pressed: boolean) =>
+                      selectedSurvivor
+                        ? updateSurvivorTurnState(selectedSurvivor.id!, {
+                            movementUsed: !!pressed
+                          })
+                        : null
+                    }>
+                    <CheckCircleIcon className="h-3 w-3" />
+                    Move
+                  </Toggle>
                 </div>
 
-                {/* Actions */}
-                <div className="flex justify-center">
-                  {/* AI Card */}
-                  <div className="flex items-center space-x-2">
-                    <Toggle
-                      size="sm"
-                      variant="outline"
-                      className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
-                      pressed={selectedShowdown?.turn.monsterState?.aiCardDrawn}
-                      onPressedChange={(pressed: boolean) =>
-                        selectedShowdown
-                          ? updateMonsterTurnState({
-                              aiCardDrawn: !!pressed
-                            })
-                          : null
-                      }>
-                      <CheckCircleIcon className="h-3 w-3" />
-                      AI Card
-                    </Toggle>
-                  </div>
+                {/* Activation */}
+                <div className="flex items-center space-x-2">
+                  <Toggle
+                    size="sm"
+                    variant="outline"
+                    className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
+                    pressed={selectedSurvivorTurnState?.activationUsed}
+                    onPressedChange={(pressed: boolean) =>
+                      selectedSurvivor
+                        ? updateSurvivorTurnState(selectedSurvivor.id!, {
+                            activationUsed: !!pressed
+                          })
+                        : null
+                    }>
+                    <CheckCircleIcon className="h-3 w-3" />
+                    Activate
+                  </Toggle>
                 </div>
               </div>
-
-              <Separator />
-
-              {/* Calculated Stats */}
-              <MonsterCalculatedStats
-                selectedShowdown={selectedShowdown}
-                selectedSurvivor={selectedSurvivor}
-              />
             </div>
-          )}
-        </CardContent>
-      </div>
+
+            <Separator />
+
+            {/* Calculated Stats */}
+            <SurvivorCalculatedStats
+              selectedShowdown={selectedShowdown}
+              selectedSurvivor={selectedSurvivor}
+            />
+          </div>
+        )}
+
+        {/* Monster Turn Content */}
+        {isMonsterTurn && (
+          <div className="space-y-3">
+            <div className="space-y-2">
+              {/* Survivor Name */}
+              <div className="font-medium text-sm text-center h-6">
+                Targeting: {selectedSurvivor?.name || 'No Survivor Selected'}
+                {selectedSurvivor?.id === selectedShowdown?.scout && (
+                  <Badge variant="outline" className="ml-2">
+                    Scout
+                  </Badge>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-center">
+                {/* AI Card */}
+                <div className="flex items-center space-x-2">
+                  <Toggle
+                    size="sm"
+                    variant="outline"
+                    className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:outline-green-500 data-[state=on]:*:[svg]:stroke-green-500 w-[120px]"
+                    pressed={selectedShowdown?.turn.monsterState?.aiCardDrawn}
+                    onPressedChange={(pressed: boolean) =>
+                      selectedShowdown
+                        ? updateMonsterTurnState({
+                            aiCardDrawn: !!pressed
+                          })
+                        : null
+                    }>
+                    <CheckCircleIcon className="h-3 w-3" />
+                    AI Card
+                  </Toggle>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Calculated Stats */}
+            <MonsterCalculatedStats
+              selectedShowdown={selectedShowdown}
+              selectedSurvivor={selectedSurvivor}
+            />
+          </div>
+        )}
+      </CardContent>
 
       <CardFooter className="flex flex-col gap-2">
         <Separator />
 
         {/* Turn Switch Button */}
-        <Button
-          onClick={switchTurn}
-          variant={isMonsterTurn ? 'default' : 'secondary'}
-          className="w-full">
+        <Button onClick={switchTurn} variant="secondary" className="w-full">
           {isMonsterTurn ? (
             <>
               <UsersIcon className="h-4 w-4 mr-2" />
