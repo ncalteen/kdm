@@ -183,10 +183,12 @@ export function TimelineCard({
       const newEntries = [...currentEntries]
       newEntries.splice(eventIndex, 1)
 
-      const updatedTimeline = selectedSettlement?.timeline || []
-      const year = { ...selectedSettlement?.timeline?.[yearIndex] }
-      year.entries = newEntries
-      updatedTimeline[yearIndex] = year as {
+      // Create a new timeline array instead of mutating the existing one
+      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
+      updatedTimeline[yearIndex] = {
+        ...selectedSettlement?.timeline?.[yearIndex],
+        entries: newEntries
+      } as {
         entries: string[]
         completed: boolean
       }
@@ -228,11 +230,14 @@ export function TimelineCard({
       })
 
       // Save to localStorage with the updated timeline
-      const updatedTimeline = selectedSettlement?.timeline || []
-      const year = { ...updatedTimeline[yearIndex] }
-      year.entries = [...(year.entries || [])]
-      year.entries[entryIndex] = newEventValue
-      updatedTimeline[yearIndex] = year
+      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
+      const currentEntries = [...(updatedTimeline[yearIndex]?.entries || [])]
+      currentEntries[entryIndex] = newEventValue
+
+      updatedTimeline[yearIndex] = {
+        ...updatedTimeline[yearIndex],
+        entries: currentEntries
+      }
 
       saveSelectedSettlement(
         {
@@ -253,10 +258,11 @@ export function TimelineCard({
   const handleYearCompletionChange = useCallback(
     (yearIndex: number, completed: boolean) => {
       // Save to localStorage with the updated timeline
-      const updatedTimeline = selectedSettlement?.timeline || []
-      const year = { ...updatedTimeline[yearIndex] }
-      year.completed = completed
-      updatedTimeline[yearIndex] = year
+      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
+      updatedTimeline[yearIndex] = {
+        ...updatedTimeline[yearIndex],
+        completed
+      }
 
       saveSelectedSettlement(
         {
