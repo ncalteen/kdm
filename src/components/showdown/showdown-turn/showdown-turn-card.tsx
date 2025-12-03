@@ -181,32 +181,42 @@ export function TurnCard({
   /**
    * Get Current Survivor Color
    */
-  const getCurrentColor = (): ColorChoice => {
+  const currentColor = useMemo((): ColorChoice => {
     if (isMonsterTurn || !selectedSurvivor?.id || !selectedShowdown)
       return ColorChoice.SLATE
 
     return getSurvivorColorChoice(selectedShowdown, selectedSurvivor.id)
-  }
+  }, [isMonsterTurn, selectedSurvivor?.id, selectedShowdown])
+
+  const handleMouseEnter = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
+    },
+    []
+  )
+
+  const handleMouseLeave = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.borderColor = 'var(--card-border-color)'
+    },
+    []
+  )
 
   return (
     <Card
-      className="h-full min-w-[300px] flex-grow-2 border-2 rounded-xl py-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
+      className="h-full min-w-[300px] border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
       style={{
-        ...getCardColorStyles(getCurrentColor()),
+        ...getCardColorStyles(currentColor),
         borderColor: 'var(--card-border-color)'
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--card-border-color)'
-      }}>
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}>
       <CardHeader
         className="flex items-center gap-3 p-3 rounded-t-lg"
         style={{ backgroundColor: 'var(--card-header-bg)' }}>
-        <Avatar className="h-12 w-12 border-2 items-center justify-center cursor-pointer">
+        <Avatar className="h-12 w-12 border-2 items-center justify-center">
           <AvatarFallback
-            className={`font-bold text-lg text-white ${getColorStyle(getCurrentColor(), 'bg')}`}>
+            className={`font-bold text-lg text-white ${getColorStyle(currentColor, 'bg')}`}>
             {isMonsterTurn ? (
               <SkullIcon className="h-5 w-5" />
             ) : (

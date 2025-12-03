@@ -849,19 +849,19 @@ export function getOverwhelmingDarknessLabel(
 /**
  * Get the Survivors Color Choice
  *
- * @param selectedHunt Selected Hunt
+ * @param selectedHuntOrShowdown Selected Hunt or Showdown
  * @param survivorId Survivor ID
  * @returns Color Choice
  */
 export function getSurvivorColorChoice(
-  selectedHunt: Partial<Hunt> | null,
+  selectedHuntOrShowdown: Partial<Hunt> | Partial<Showdown> | null,
   survivorId: number | undefined
 ): ColorChoice {
   if (!survivorId) return ColorChoice.SLATE
 
-  if (!selectedHunt?.survivorDetails) return ColorChoice.SLATE
+  if (!selectedHuntOrShowdown?.survivorDetails) return ColorChoice.SLATE
 
-  const survivorDetail = selectedHunt.survivorDetails.find(
+  const survivorDetail = selectedHuntOrShowdown.survivorDetails.find(
     (sd) => sd.id === survivorId
   )
 
