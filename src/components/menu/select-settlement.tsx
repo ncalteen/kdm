@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/popover'
 import { cn, getCampaign } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 /**
  * Select Settlement Component Properties
@@ -43,30 +43,19 @@ export function SelectSettlement({
 }: SelectSettlementProps): ReactElement {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(propValue || '')
-  const [settlementOptions, setSettlementOptions] = useState<
-    Array<{ value: string; label: string }>
-  >([])
+  const [settlementOptions] = useState<Array<{ value: string; label: string }>>(
+    () => {
+      console.debug('[SelectSettlement] Fetching Settlements')
 
-  // Get settlements from the campaign
-  useEffect(() => {
-    console.debug('[SelectSettlement] Fetching Settlements')
+      const campaign = getCampaign()
+      const settlements = campaign.settlements || []
 
-    const campaign = getCampaign()
-    const settlements = campaign.settlements || []
-
-    const options = settlements.map((settlement) => ({
-      value: settlement.id.toString(),
-      label: settlement.name
-    }))
-
-    setSettlementOptions(options)
-  }, [])
-
-  useEffect(() => {
-    console.debug('[SelectSettlement] Value Changed:', propValue)
-
-    if (propValue !== undefined) setValue(propValue)
-  }, [propValue])
+      return settlements.map((settlement) => ({
+        value: settlement.id.toString(),
+        label: settlement.name
+      }))
+    }
+  )
 
   const handleSelect = (currentValue: string) => {
     setValue(currentValue)
