@@ -123,7 +123,7 @@ export function ActiveShowdownCard({
       {/* Action Buttons */}
       <div className="flex justify-between pointer-events-none">
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={handleCancelShowdown}
           className="pointer-events-auto"
