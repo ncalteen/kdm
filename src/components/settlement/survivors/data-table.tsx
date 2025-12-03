@@ -73,6 +73,7 @@ export function SurvivorDataTable<TData, TValue>({
     [data, columns, sorting, columnFilters, columnVisibility, rowSelection]
   )
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable(tableConfig)
   const { rows } = table.getRowModel()
 
