@@ -25,7 +25,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, WrenchIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -51,24 +51,22 @@ export function GearCard({
   saveSelectedSettlement,
   selectedSettlement
 }: GearCardProps): ReactElement {
+  const settlementIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState(false)
 
-  useEffect(() => {
-    console.debug('[GearCard] Initialize Disabled Inputs')
+  if (settlementIdRef.current !== selectedSettlement?.id) {
+    settlementIdRef.current = selectedSettlement?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      selectedSettlement?.gear?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSettlement?.gear])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.gear || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),

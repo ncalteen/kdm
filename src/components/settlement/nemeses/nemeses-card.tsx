@@ -35,7 +35,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, SkullIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -61,24 +61,22 @@ export function NemesesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: NemesesCardProps): ReactElement {
+  const settlementIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.debug('[NemesesCard] Initialize Disabled Inputs')
+  if (settlementIdRef.current !== selectedSettlement?.id) {
+    settlementIdRef.current = selectedSettlement?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      selectedSettlement?.nemeses?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSettlement?.nemeses])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.nemeses || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   /**
    * Add Nemesis

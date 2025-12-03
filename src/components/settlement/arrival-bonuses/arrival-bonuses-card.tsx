@@ -28,7 +28,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { HousePlusIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -51,24 +51,22 @@ export function ArrivalBonusesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: ArrivalBonusesCardProps): ReactElement {
+  const settlementIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.debug('[ArrivalBonusesCard] Initialize Disabled Inputs')
+  if (settlementIdRef.current !== selectedSettlement?.id) {
+    settlementIdRef.current = selectedSettlement?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      selectedSettlement?.arrivalBonuses?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSettlement?.arrivalBonuses])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.arrivalBonuses || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   /**
    * Add Arrival Bonus

@@ -29,7 +29,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon, StampIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -58,24 +58,22 @@ export function PrinciplesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: PrinciplesCardProps): ReactElement {
+  const settlementIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.debug('[PrinciplesCard] Initialize Disabled Inputs')
+  if (settlementIdRef.current !== selectedSettlement?.id) {
+    settlementIdRef.current = selectedSettlement?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      selectedSettlement?.principles?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSettlement?.principles])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.principles || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   /**
    * Add Principle

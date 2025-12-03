@@ -28,7 +28,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { LightbulbIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -54,24 +54,22 @@ export function InnovationsCard({
   saveSelectedSettlement,
   selectedSettlement
 }: InnovationsCardProps): ReactElement {
+  const settlementIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.debug('[InnovationsCard] Initialize Disabled Inputs')
+  if (settlementIdRef.current !== selectedSettlement?.id) {
+    settlementIdRef.current = selectedSettlement?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      selectedSettlement?.innovations?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSettlement?.innovations])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.innovations || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),

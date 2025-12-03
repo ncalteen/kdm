@@ -31,7 +31,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -54,24 +54,22 @@ export function OncePerLifetimeCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: OncePerLifetimeCardProps): ReactElement {
+  const survivorIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.debug('[OncePerLifetimeCard] Initialize Disabled Inputs')
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      selectedSurvivor?.oncePerLifetime?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSurvivor?.oncePerLifetime])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSurvivor?.oncePerLifetime || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),

@@ -28,7 +28,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -51,24 +51,22 @@ export function CursedGearCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: CursedGearCardProps): ReactElement {
+  const survivorIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.debug('[CursedGearCard] Initialize Disabled Inputs')
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      ;(selectedSurvivor?.cursedGear || []).forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSurvivor?.cursedGear])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSurvivor?.cursedGear || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),

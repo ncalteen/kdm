@@ -29,7 +29,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BrainIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -58,24 +58,22 @@ export function CollectiveCognitionRewardsCard({
   saveSelectedSettlement,
   selectedSettlement
 }: CollectiveCognitionRewardsCardProps): ReactElement {
+  const settlementIdRef = useRef<string | undefined>(undefined)
+
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
 
-  useEffect(() => {
-    console.debug('[CollectiveCognitionRewardsCard] Initialize Disabled Inputs')
+  if (settlementIdRef.current !== selectedSettlement?.id) {
+    settlementIdRef.current = selectedSettlement?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      ;(selectedSettlement?.ccRewards || []).forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSettlement?.ccRewards])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.ccRewards || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -265,7 +263,7 @@ export function CollectiveCognitionRewardsCard({
                   {(selectedSettlement?.ccRewards || []).map(
                     (reward, index) => (
                       <RewardItem
-                        key={index}
+                        key={`${index}-${reward.name}-${reward.cc}`}
                         id={index.toString()}
                         index={index}
                         reward={reward}

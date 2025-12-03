@@ -15,7 +15,7 @@ import {
 } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useRef, useState } from 'react'
 
 /**
  * Knowledge Card Properties
@@ -37,7 +37,9 @@ export function KnowledgeCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: KnowledgeCardProps): ReactElement {
-  // Local state for text fields to enable controlled components that update when survivor changes
+  const survivorIdRef = useRef(selectedSurvivor?.id)
+
+  // Local state for text fields to enable controlled components
   const [knowledge1, setKnowledge1] = useState(
     selectedSurvivor?.knowledge1 ?? ''
   )
@@ -55,8 +57,10 @@ export function KnowledgeCard({
   const [knowledge2ObservationConditions, setKnowledge2ObservationConditions] =
     useState(selectedSurvivor?.knowledge2ObservationConditions ?? '')
 
-  // Update local state when selected survivor changes
-  useEffect(() => {
+  // Reset local state when survivor changes (different ID)
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
+
     setKnowledge1(selectedSurvivor?.knowledge1 ?? '')
     setKnowledge1Rules(selectedSurvivor?.knowledge1Rules ?? '')
     setKnowledge1ObservationConditions(
@@ -67,14 +71,7 @@ export function KnowledgeCard({
     setKnowledge2ObservationConditions(
       selectedSurvivor?.knowledge2ObservationConditions ?? ''
     )
-  }, [
-    selectedSurvivor?.knowledge1,
-    selectedSurvivor?.knowledge1Rules,
-    selectedSurvivor?.knowledge1ObservationConditions,
-    selectedSurvivor?.knowledge2,
-    selectedSurvivor?.knowledge2Rules,
-    selectedSurvivor?.knowledge2ObservationConditions
-  ])
+  }
 
   /**
    * Handles observation rank changes
