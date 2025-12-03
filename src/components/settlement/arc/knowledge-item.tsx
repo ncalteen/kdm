@@ -161,7 +161,7 @@ export function KnowledgeItem({
           </div>
 
           {/* Form Fields */}
-          <div className="flex flex-col gap-1">
+          <div className="flex gap-2">
             {/* Knowledge Name Input */}
             <Input
               ref={inputRef}
