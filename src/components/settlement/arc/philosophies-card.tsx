@@ -30,7 +30,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BrainCogIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -56,24 +56,24 @@ export function PhilosophiesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: PhilosophiesCardProps): ReactElement {
+  const settlementIdRef = useRef<string | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
+  if (settlementIdRef.current !== selectedSettlement?.id) {
     console.debug('[PhilosophiesCard] Initialize Disabled Inputs')
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
+    settlementIdRef.current = selectedSettlement?.id
 
-      selectedSettlement?.philosophies?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSettlement?.philosophies])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),

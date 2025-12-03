@@ -60,6 +60,8 @@ export function KnowledgesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
+    console.debug('[KnowledgesCard] Initialize Disabled Inputs')
+
     settlementIdRef.current = selectedSettlement?.id
 
     setDisabledInputs(
