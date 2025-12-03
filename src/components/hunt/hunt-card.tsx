@@ -82,6 +82,7 @@ export function HuntCard({
       selectedSettlement={selectedSettlement}
       selectedShowdown={selectedShowdown}
       setSelectedHunt={setSelectedHunt}
+      setSelectedSurvivor={setSelectedSurvivor}
       survivors={survivors}
     />
   )
