@@ -50,7 +50,7 @@ export function SurvivorDetailsPanel({
 
   return (
     <div className="w-[450px] h-full bg-gradient-to-br from-background to-background/95 border-2 border-border rounded-lg">
-      {/* Professional Header */}
+      {/* Header */}
       <div className="bg-muted/30 border-b border-border/30 p-4">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16 border-2 border-background shadow-lg items-center justify-center">
