@@ -17,7 +17,7 @@ import {
   KeyboardEvent,
   ReactElement,
   useCallback,
-  useEffect,
+  useRef,
   useState
 } from 'react'
 
@@ -52,13 +52,16 @@ export function StatusCard({
   setSurvivors,
   survivors
 }: StatusCardProps): ReactElement {
+  const survivorIdRef = useRef(selectedSurvivor?.id)
+
   const [survivorName, setSurvivorName] = useState(selectedSurvivor?.name ?? '')
 
-  // Update the local name state when the selected survivor changes
-  useEffect(
-    () => setSurvivorName(selectedSurvivor?.name ?? ''),
-    [selectedSurvivor?.id, selectedSurvivor?.name]
-  )
+  // Reset survivor name when survivor changes (different ID)
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
+
+    setSurvivorName(selectedSurvivor?.name ?? '')
+  }
 
   /**
    * Save Status to Local Storage

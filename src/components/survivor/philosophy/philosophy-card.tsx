@@ -22,7 +22,7 @@ import {
 } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -53,6 +53,8 @@ export function PhilosophyCard({
 }: PhilosophyCardProps): ReactElement {
   const isMobile = useIsMobile()
 
+  const survivorIdRef = useRef(selectedSurvivor?.id)
+
   // Local state for text fields to enable controlled components that update when survivor changes
   const [neurosis, setNeurosis] = useState(selectedSurvivor?.neurosis ?? '')
   const [tenetKnowledge, setTenetKnowledge] = useState(
@@ -66,20 +68,17 @@ export function PhilosophyCard({
     setTenetKnowledgeObservationConditions
   ] = useState(selectedSurvivor?.tenetKnowledgeObservationConditions ?? '')
 
-  // Update local state when selected survivor changes
-  useEffect(() => {
+  // Reset local state when survivor changes (different ID)
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
+
     setNeurosis(selectedSurvivor?.neurosis ?? '')
     setTenetKnowledge(selectedSurvivor?.tenetKnowledge ?? '')
     setTenetKnowledgeRules(selectedSurvivor?.tenetKnowledgeRules ?? '')
     setTenetKnowledgeObservationConditions(
       selectedSurvivor?.tenetKnowledgeObservationConditions ?? ''
     )
-  }, [
-    selectedSurvivor?.neurosis,
-    selectedSurvivor?.tenetKnowledge,
-    selectedSurvivor?.tenetKnowledgeRules,
-    selectedSurvivor?.tenetKnowledgeObservationConditions
-  ])
+  }
 
   /**
    * Handles the change of philosophy selection.
