@@ -25,7 +25,7 @@ import {
 import { Hunt, HuntMonster, HuntMonsterSchema } from '@/schemas/hunt'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, SkullIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -57,13 +57,31 @@ export function HuntMonsterCard({
     defaultValues: HuntMonsterSchema.parse(selectedHunt?.monster || {})
   })
 
+  // Compute the initial disabled state based on current traits
+  const initialDisabledTraits = useMemo(() => {
+    const next: { [key: number]: boolean } = {}
+    selectedHunt?.monster?.traits?.forEach((_, i) => {
+      next[i] = true
+    })
+    return next
+  }, [selectedHunt?.monster?.traits])
+
+  // Compute the initial disabled state based on current moods
+  const initialDisabledMoods = useMemo(() => {
+    const next: { [key: number]: boolean } = {}
+    selectedHunt?.monster?.moods?.forEach((_, i) => {
+      next[i] = true
+    })
+    return next
+  }, [selectedHunt?.monster?.moods])
+
   // State for managing trait and mood editing
   const [disabledTraits, setDisabledTraits] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(initialDisabledTraits)
   const [disabledMoods, setDisabledMoods] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(initialDisabledMoods)
   const [isAddingTrait, setIsAddingTrait] = useState<boolean>(false)
   const [isAddingMood, setIsAddingMood] = useState<boolean>(false)
 
@@ -78,30 +96,18 @@ export function HuntMonsterCard({
     if (selectedHunt?.monster) form.reset(selectedHunt?.monster)
   }, [selectedHunt?.monster, form])
 
-  // Initialize disabled states for traits and moods
+  // Update disabled inputs when the computed initial state changes
   useEffect(() => {
-    setDisabledTraits((prev) => {
-      const next: { [key: number]: boolean } = {}
-      selectedHunt?.monster?.traits?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-      return next
-    })
+    console.debug('[HuntMonsterCard] Initialize Disabled Traits')
 
-    setDisabledMoods((prev) => {
-      const next: { [key: number]: boolean } = {}
-      selectedHunt?.monster?.moods?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-      return next
-    })
-  }, [selectedHunt?.monster?.traits, selectedHunt?.monster?.moods])
+    setDisabledTraits(initialDisabledTraits)
+  }, [initialDisabledTraits])
 
-  // Update notes draft when selected hunt changes
   useEffect(() => {
-    setNotesDraft(selectedHunt?.monster?.notes || '')
-    setIsNotesDirty(false)
-  }, [selectedHunt?.monster?.notes])
+    console.debug('[HuntMonsterCard] Initialize Disabled Moods')
+
+    setDisabledMoods(initialDisabledMoods)
+  }, [initialDisabledMoods])
 
   /**
    * Save Monster Data

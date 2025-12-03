@@ -29,7 +29,7 @@ import {
 } from '@/schemas/showdown'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, SkullIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
@@ -64,13 +64,31 @@ export function ShowdownMonsterCard({
     defaultValues: ShowdownMonsterSchema.parse(selectedShowdown?.monster || {})
   })
 
+  // Compute the initial disabled state based on current traits
+  const initialDisabledTraits = useMemo(() => {
+    const next: { [key: number]: boolean } = {}
+    selectedShowdown?.monster?.traits?.forEach((_, i) => {
+      next[i] = true
+    })
+    return next
+  }, [selectedShowdown?.monster?.traits])
+
+  // Compute the initial disabled state based on current moods
+  const initialDisabledMoods = useMemo(() => {
+    const next: { [key: number]: boolean } = {}
+    selectedShowdown?.monster?.moods?.forEach((_, i) => {
+      next[i] = true
+    })
+    return next
+  }, [selectedShowdown?.monster?.moods])
+
   // State for managing trait and mood editing
   const [disabledTraits, setDisabledTraits] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(initialDisabledTraits)
   const [disabledMoods, setDisabledMoods] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(initialDisabledMoods)
   const [isAddingTrait, setIsAddingTrait] = useState<boolean>(false)
   const [isAddingMood, setIsAddingMood] = useState<boolean>(false)
 
@@ -85,24 +103,18 @@ export function ShowdownMonsterCard({
     if (selectedShowdown?.monster) form.reset(selectedShowdown?.monster)
   }, [selectedShowdown?.monster, form])
 
-  // Initialize disabled states for traits and moods
+  // Update disabled inputs when the computed initial state changes
   useEffect(() => {
-    setDisabledTraits((prev) => {
-      const next: { [key: number]: boolean } = {}
-      selectedShowdown?.monster?.traits?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-      return next
-    })
+    console.debug('[ShowdownMonsterCard] Initialize Disabled Traits')
 
-    setDisabledMoods((prev) => {
-      const next: { [key: number]: boolean } = {}
-      selectedShowdown?.monster?.moods?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-      return next
-    })
-  }, [selectedShowdown?.monster?.traits, selectedShowdown?.monster?.moods])
+    setDisabledTraits(initialDisabledTraits)
+  }, [initialDisabledTraits])
+
+  useEffect(() => {
+    console.debug('[ShowdownMonsterCard] Initialize Disabled Moods')
+
+    setDisabledMoods(initialDisabledMoods)
+  }, [initialDisabledMoods])
 
   // Update notes draft when selected showdown changes
   useEffect(() => {

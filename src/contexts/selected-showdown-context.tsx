@@ -10,7 +10,6 @@ import {
   ReactElement,
   ReactNode,
   useContext,
-  useEffect,
   useState
 } from 'react'
 
@@ -58,16 +57,13 @@ export function SelectedShowdownProvider({
   children
 }: SelectedShowdownProviderProps): ReactElement {
   const [selectedShowdown, setSelectedShowdownState] =
-    useState<Showdown | null>(showdown)
+    useState<Showdown | null>(() =>
+      typeof window === 'undefined'
+        ? showdown
+        : getSelectedShowdown() || showdown
+    )
   const [isCreatingNewShowdown, setIsCreatingNewShowdown] =
     useState<boolean>(false)
-
-  // Load selected showdown from localStorage on mount
-  useEffect(() => {
-    const savedSelectedShowdown = getSelectedShowdown()
-
-    if (savedSelectedShowdown) setSelectedShowdownState(savedSelectedShowdown)
-  }, [])
 
   /**
    * Set Selected Showdown

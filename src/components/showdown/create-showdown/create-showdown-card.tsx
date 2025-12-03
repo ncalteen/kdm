@@ -153,22 +153,14 @@ export function CreateShowdownCard({
   )
 
   // Get available quarries (unlocked ones)
-  const availableQuarries = useMemo(
-    () =>
-      selectedSettlement?.quarries
-        ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
-        : [],
-    [selectedSettlement?.quarries]
-  )
+  const availableQuarries = selectedSettlement?.quarries
+    ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
+    : []
 
   // Get available nemeses (unlocked ones)
-  const availableNemeses = useMemo(
-    () =>
-      selectedSettlement?.nemeses
-        ? selectedSettlement.nemeses.filter((nemesis) => nemesis.unlocked)
-        : [],
-    [selectedSettlement?.nemeses]
-  )
+  const availableNemeses = selectedSettlement?.nemeses
+    ? selectedSettlement.nemeses.filter((nemesis) => nemesis.unlocked)
+    : []
 
   /**
    * Trait Operations

@@ -39,7 +39,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { BeefIcon, ChevronDownIcon, PlusIcon, XIcon } from 'lucide-react'
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -66,6 +66,9 @@ export function ResourcesCard({
   selectedSettlement
 }: ResourcesCardProps): ReactElement {
   const isMobile = useIsMobile()
+
+  const settlementIdRef = useRef<number | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
@@ -106,7 +109,7 @@ export function ResourcesCard({
         const originalIndex = selectedSettlement.resources!.indexOf(resource)
         return { resource, originalIndex, filteredIndex }
       })
-  }, [selectedSettlement?.resources, filterCategories, filterTypes])
+  }, [selectedSettlement, filterCategories, filterTypes])
 
   // Clear all filters
   const clearFilters = useCallback(() => {
@@ -116,22 +119,16 @@ export function ResourcesCard({
 
   const handleCategoryFilterChange = useCallback(
     (category: ResourceCategory, checked: boolean) => {
-      if (checked) {
-        setFilterCategories((prev) => [...prev, category])
-      } else {
-        setFilterCategories((prev) => prev.filter((c) => c !== category))
-      }
+      if (checked) setFilterCategories((prev) => [...prev, category])
+      else setFilterCategories((prev) => prev.filter((c) => c !== category))
     },
     []
   )
 
   const handleTypeFilterChange = useCallback(
     (type: ResourceType, checked: boolean) => {
-      if (checked) {
-        setFilterTypes((prev) => [...prev, type])
-      } else {
-        setFilterTypes((prev) => prev.filter((t) => t !== type))
-      }
+      if (checked) setFilterTypes((prev) => [...prev, type])
+      else setFilterTypes((prev) => prev.filter((t) => t !== type))
     },
     []
   )
@@ -139,17 +136,15 @@ export function ResourcesCard({
   // Check if any filters are active
   const hasActiveFilters = filterCategories.length > 0 || filterTypes.length > 0
 
-  useEffect(() => {
-    console.debug('[ResourcesCard] Initialize Disabled Inputs')
+  if (settlementIdRef.current !== selectedSettlement?.id) {
+    settlementIdRef.current = selectedSettlement?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-      selectedSettlement?.resources?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-      return next
-    })
-  }, [selectedSettlement?.resources])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSettlement?.resources || []).map((_, i) => [i, true])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -443,7 +438,7 @@ export function ResourcesCard({
                   strategy={verticalListSortingStrategy}>
                   {filteredResources.map((item) => (
                     <ResourceItem
-                      key={item.originalIndex}
+                      key={`${selectedSettlement?.id}-${item.originalIndex}-${selectedSettlement?.resources?.[item.originalIndex]?.name}`}
                       id={item.originalIndex.toString()}
                       index={item.originalIndex}
                       onRemove={onRemove}

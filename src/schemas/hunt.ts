@@ -12,7 +12,7 @@ export const SurvivorHuntDetailsSchema = z.object({
   /** Accuracy Tokens */
   accuracyTokens: z.number().int().default(0),
   /** Survivor Color Code */
-  color: z.nativeEnum(ColorChoice).default(ColorChoice.SLATE),
+  color: z.enum(ColorChoice).default(ColorChoice.SLATE),
   /** Evasion Tokens */
   evasionTokens: z.number().int().default(0),
   /** Survivor ID */
@@ -59,7 +59,7 @@ export const HuntMonsterSchema = z.object({
   /** Knocked Down */
   knockedDown: z.boolean().default(false),
   /** Monster Level */
-  level: z.nativeEnum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
   /** Luck */
   luck: z.number().int().default(0),
   /** Luck Tokens */
@@ -87,7 +87,7 @@ export const HuntMonsterSchema = z.object({
   /** Traits */
   traits: z.array(z.string()).default([]),
   /** Monster Type */
-  type: z.nativeEnum(MonsterType),
+  type: z.enum(MonsterType),
   /** Wounds */
   wounds: z.number().int().min(0).default(0)
 })

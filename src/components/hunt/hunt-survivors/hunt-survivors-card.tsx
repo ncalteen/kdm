@@ -58,19 +58,12 @@ export function HuntSurvivorsCard({
     if (selectedHunt?.scout) s = [...s, selectedHunt.scout]
 
     return s
-  }, [selectedHunt?.survivors, selectedHunt?.scout])
+  }, [selectedHunt])
 
   // Get filtered survivors for mapping
   const filteredSurvivors = survivors?.filter((s) =>
     huntSurvivors.includes(s.id)
   )
-
-  // When the selected survivor changes, set to that survivor (if they exist in
-  // the filtered survivors). If not, set the selected survivor to the first
-  // survivor in the filtered list.
-  useMemo(() => {
-    if (!selectedSurvivor) setSelectedSurvivor(filteredSurvivors?.[0] || null)
-  }, [filteredSurvivors, setSelectedSurvivor, selectedSurvivor])
 
   // Get current survivor index
   const currentIndex =

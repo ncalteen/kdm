@@ -10,7 +10,6 @@ import {
   ReactElement,
   ReactNode,
   useContext,
-  useEffect,
   useState
 } from 'react'
 
@@ -58,16 +57,13 @@ export function SelectedSettlementProvider({
   children
 }: SelectedSettlementProviderProps): ReactElement {
   const [selectedSettlement, setSelectedSettlementState] =
-    useState<Settlement | null>(settlement)
+    useState<Settlement | null>(() =>
+      typeof window === 'undefined'
+        ? settlement
+        : getSelectedSettlement() || settlement
+    )
   const [isCreatingNewSettlement, setIsCreatingNewSettlement] =
     useState<boolean>(false)
-
-  // Load selected settlement from localStorage on mount
-  useEffect(() => {
-    const savedSelectedSettlement = getSelectedSettlement()
-    if (savedSelectedSettlement)
-      setSelectedSettlementState(savedSelectedSettlement)
-  }, [])
 
   /**
    * Set Selected Settlement

@@ -98,7 +98,7 @@ export function CreateSurvivorForm({
       ...form.getValues(),
       ...updatedValues
     })
-  }, [form, selectedSettlement?.id, selectedSettlement?.survivorType])
+  }, [form, selectedSettlement])
 
   /**
    * Handles form submission

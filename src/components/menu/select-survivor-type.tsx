@@ -17,7 +17,7 @@ import {
 import { SurvivorType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 /**
  * Select Survivor Type Component Properties
@@ -54,10 +54,6 @@ export function SelectSurvivorType({
       label: survivorType
     })
   )
-
-  useEffect(() => {
-    if (propValue) setValue(propValue)
-  }, [propValue])
 
   /**
    * Selects a survivor option and updates the state.

@@ -41,7 +41,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 // Type for a combined fighting art item with metadata
@@ -77,6 +77,8 @@ export function FightingArtsCard({
   selectedSettlement,
   selectedSurvivor
 }: FightingArtsCardProps): ReactElement {
+  const survivorIdRef = useRef<number | undefined>(undefined)
+
   // Determine survivor type from settlement data
   const survivorType = selectedSettlement?.survivorType || SurvivorType.CORE
 
@@ -94,26 +96,22 @@ export function FightingArtsCard({
   const [newArtType, setNewArtType] = useState<'regular' | 'secret'>('regular')
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  // Initialize disabled inputs for fighting arts
-  useEffect(() => {
-    console.debug('[FightingArtsCard] Initialize Disabled Inputs')
+  // Reset disabled inputs when survivor changes
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: string]: boolean } = {}
+    const next: { [key: string]: boolean } = {}
 
-      selectedSurvivor?.fightingArts?.forEach((_, index) => {
-        const key = `regular-${index}`
-        next[key] = prev[key] !== undefined ? prev[key] : true
-      })
-
-      selectedSurvivor?.secretFightingArts?.forEach((_, index) => {
-        const key = `secret-${index}`
-        next[key] = prev[key] !== undefined ? prev[key] : true
-      })
-
-      return next
+    selectedSurvivor?.fightingArts?.forEach((_, index) => {
+      next[`regular-${index}`] = true
     })
-  }, [selectedSurvivor?.fightingArts, selectedSurvivor?.secretFightingArts])
+
+    selectedSurvivor?.secretFightingArts?.forEach((_, index) => {
+      next[`secret-${index}`] = true
+    })
+
+    setDisabledInputs(next)
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),

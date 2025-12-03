@@ -17,7 +17,7 @@ import {
 import { CampaignType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { type ReactElement, useEffect, useState } from 'react'
+import { type ReactElement, useState } from 'react'
 
 /**
  * Select Campaign Type Component Properties
@@ -53,12 +53,6 @@ export function SelectCampaignType({
     value: campaign,
     label: campaign
   }))
-
-  useEffect(() => {
-    console.debug('[SelectCampaignType] Value Changed:', propValue)
-
-    if (propValue) setValue(propValue)
-  }, [propValue])
 
   /**
    * Selects a campaign option and updates the state.

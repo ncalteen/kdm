@@ -44,6 +44,8 @@ interface CreateHuntCardProps {
   selectedShowdown: Showdown | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Survivor */
+  setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Survivors */
   survivors: Survivor[] | null
 }
@@ -59,6 +61,7 @@ export function CreateHuntCard({
   selectedSettlement,
   selectedShowdown,
   setSelectedHunt,
+  setSelectedSurvivor,
   survivors
 }: CreateHuntCardProps): ReactElement {
   const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
@@ -133,13 +136,9 @@ export function CreateHuntCard({
   )
 
   // Get available quarries (unlocked ones)
-  const availableQuarries = useMemo(
-    () =>
-      selectedSettlement?.quarries
-        ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
-        : [],
-    [selectedSettlement?.quarries]
-  )
+  const availableQuarries = selectedSettlement?.quarries
+    ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
+    : []
 
   // Create Hunt
   const handleCreateHunt = () => {
@@ -259,6 +258,7 @@ export function CreateHuntCard({
     setSelectedMonsterType(undefined)
     setSelectedMonsterWounds(0)
     setSelectedSurvivors([])
+    setSelectedSurvivor(null)
     setSelectedScout(null)
     setSelectedHunt(huntData)
   }

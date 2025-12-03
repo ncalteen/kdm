@@ -58,15 +58,13 @@ export function SelectedSurvivorProvider({
   children
 }: SelectedSurvivorProviderProps): ReactElement {
   const [selectedSurvivor, setSelectedSurvivorState] =
-    useState<Survivor | null>(survivor)
+    useState<Survivor | null>(() =>
+      typeof window === 'undefined'
+        ? survivor
+        : getSelectedSurvivor() || survivor
+    )
   const [isCreatingNewSurvivor, setIsCreatingNewSurvivor] =
     useState<boolean>(false)
-
-  // Load selected survivor from localStorage on mount
-  useEffect(() => {
-    const savedSelectedSurvivor = getSelectedSurvivor()
-    if (savedSelectedSurvivor) setSelectedSurvivorState(savedSelectedSurvivor)
-  }, [])
 
   // Listen for campaign updates to keep selected survivor in sync
   useEffect(() => {

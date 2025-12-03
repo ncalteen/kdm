@@ -12,7 +12,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, ReactElement, useRef, useState } from 'react'
 
 /**
  * Resource Item Component Properties
@@ -87,30 +87,6 @@ export function ResourceItem({
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
     selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
   )
-
-  useEffect(() => {
-    console.debug(
-      '[ResourceItem] Changed',
-      selectedSettlement?.resources?.[index],
-      index
-    )
-
-    if (nameInputRef.current)
-      nameInputRef.current.value =
-        selectedSettlement?.resources?.[index].name || ''
-
-    if (amountInputRef.current)
-      amountInputRef.current.value = (
-        selectedSettlement?.resources?.[index].amount || 0
-      ).toString()
-
-    setSelectedCategory(
-      selectedSettlement?.resources?.[index].category || ResourceCategory.BASIC
-    )
-    setSelectedTypes(
-      selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
-    )
-  }, [selectedSettlement?.resources, index])
 
   /**
    * Handles the key down event for the name input field.

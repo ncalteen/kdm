@@ -87,12 +87,6 @@ export function HuntSurvivorCard({
     if (selectedSurvivor) form.reset(selectedSurvivor)
   }, [selectedSurvivor, form])
 
-  // Update notes draft when survivor hunt details change
-  useEffect(() => {
-    setNotesDraft(survivorHuntDetails?.notes || '')
-    setIsNotesDirty(false)
-  }, [survivorHuntDetails?.notes])
-
   /**
    * Update Survivor Color
    */

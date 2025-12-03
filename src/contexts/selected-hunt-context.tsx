@@ -10,7 +10,6 @@ import {
   ReactElement,
   ReactNode,
   useContext,
-  useEffect,
   useState
 } from 'react'
 
@@ -57,14 +56,10 @@ export function SelectedHuntProvider({
   hunt,
   children
 }: SelectedHuntProviderProps): ReactElement {
-  const [selectedHunt, setSelectedHuntState] = useState<Hunt | null>(hunt)
+  const [selectedHunt, setSelectedHuntState] = useState<Hunt | null>(() =>
+    typeof window === 'undefined' ? hunt : getSelectedHunt() || hunt
+  )
   const [isCreatingNewHunt, setIsCreatingNewHunt] = useState<boolean>(false)
-
-  // Load selected hunt from localStorage on mount
-  useEffect(() => {
-    const savedSelectedHunt = getSelectedHunt()
-    if (savedSelectedHunt) setSelectedHuntState(savedSelectedHunt)
-  }, [])
 
   /**
    * Set Selected Hunt

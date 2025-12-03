@@ -35,7 +35,7 @@ export const CampaignSchema = z.object({
   /** Selected Survivor ID */
   selectedSurvivorId: z.number().nullable().optional(),
   /** Selected Tab Name */
-  selectedTab: z.nativeEnum(TabType).nullable().optional(),
+  selectedTab: z.enum(TabType).nullable().optional(),
   /** Global Settings */
   settings: GlobalSettingsSchema,
   /** Settlements */

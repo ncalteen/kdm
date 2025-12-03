@@ -31,7 +31,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { PlusIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -54,24 +54,25 @@ export function AbilitiesAndImpairmentsCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: AbilitiesAndImpairmentsCardProps): ReactElement {
+  const survivorIdRef = useRef<number | undefined>(undefined)
+
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
   }>({})
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.debug('[AbilitiesAndImpairmentsCard] Initialize Disabled Inputs')
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
 
-    setDisabledInputs((prev) => {
-      const next: { [key: number]: boolean } = {}
-
-      selectedSurvivor?.abilitiesAndImpairments?.forEach((_, i) => {
-        next[i] = prev[i] !== undefined ? prev[i] : true
-      })
-
-      return next
-    })
-  }, [selectedSurvivor?.abilitiesAndImpairments])
+    setDisabledInputs(
+      Object.fromEntries(
+        (selectedSurvivor?.abilitiesAndImpairments || []).map((_, i) => [
+          i,
+          true
+        ])
+      )
+    )
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),

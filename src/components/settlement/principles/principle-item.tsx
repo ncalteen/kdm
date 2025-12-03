@@ -8,7 +8,7 @@ import { Principle } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, ReactElement, useState, useRef } from 'react'
 
 /**
  * Principle Item Component Properties
@@ -66,23 +66,9 @@ export function PrincipleItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const [nameValue, setNameValue] = useState<string>(principle.name || '')
-  const [option1Value, setOption1Value] = useState<string>(
-    principle.option1Name || ''
-  )
-  const [option2Value, setOption2Value] = useState<string>(
-    principle.option2Name || ''
-  )
-
   const nameInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    console.debug('[PrincipleItem] Changed', principle)
-
-    setNameValue(principle.name || '')
-    setOption1Value(principle.option1Name || '')
-    setOption2Value(principle.option2Name || '')
-  }, [principle])
+  const option1InputRef = useRef<HTMLInputElement>(null)
+  const option2InputRef = useRef<HTMLInputElement>(null)
 
   /**
    * Handles the key down event for the input fields.
@@ -93,9 +79,15 @@ export function PrincipleItem({
    * @param e Key Down Event
    */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && nameValue && option1Value && option2Value) {
-      e.preventDefault()
-      onSave(index, nameValue, option1Value, option2Value)
+    if (e.key === 'Enter') {
+      const name = nameInputRef.current?.value || ''
+      const option1 = option1InputRef.current?.value || ''
+      const option2 = option2InputRef.current?.value || ''
+
+      if (name && option1 && option2) {
+        e.preventDefault()
+        onSave(index, name, option1, option2)
+      }
     }
   }
 
@@ -159,8 +151,7 @@ export function PrincipleItem({
               <Input
                 ref={nameInputRef}
                 placeholder="Principle Name"
-                value={nameValue}
-                onChange={(e) => setNameValue(e.target.value)}
+                defaultValue={principle.name}
                 onKeyDown={handleKeyDown}
               />
 
@@ -168,17 +159,17 @@ export function PrincipleItem({
               <div className="flex items-center gap-2">
                 <Checkbox checked={principle.option1Selected} disabled />
                 <Input
+                  ref={option1InputRef}
                   placeholder="Option 1"
-                  value={option1Value}
-                  onChange={(e) => setOption1Value(e.target.value)}
+                  defaultValue={principle.option1Name}
                   onKeyDown={handleKeyDown}
                   className="flex-1"
                 />
                 <Checkbox checked={principle.option2Selected} disabled />
                 <Input
+                  ref={option2InputRef}
                   placeholder="Option 2"
-                  value={option2Value}
-                  onChange={(e) => setOption2Value(e.target.value)}
+                  defaultValue={principle.option2Name}
                   onKeyDown={handleKeyDown}
                   className="flex-1"
                 />
@@ -204,8 +195,12 @@ export function PrincipleItem({
               variant="ghost"
               size="icon"
               onClick={() => {
-                if (nameValue && option1Value && option2Value)
-                  onSave(index, nameValue, option1Value, option2Value)
+                const name = nameInputRef.current?.value || ''
+                const option1 = option1InputRef.current?.value || ''
+                const option2 = option2InputRef.current?.value || ''
+
+                if (name && option1 && option2)
+                  onSave(index, name, option1, option2)
               }}
               title="Save principle">
               <CheckIcon className="h-4 w-4" />

@@ -90,12 +90,6 @@ export function ShowdownSurvivorCard({
     if (selectedSurvivor) form.reset(selectedSurvivor)
   }, [selectedSurvivor, form])
 
-  // Update notes draft when survivor showdown details change
-  useEffect(() => {
-    setNotesDraft(survivorShowdownDetails?.notes || '')
-    setIsNotesDirty(false)
-  }, [survivorShowdownDetails?.notes])
-
   /**
    * Update Survivor Color
    */

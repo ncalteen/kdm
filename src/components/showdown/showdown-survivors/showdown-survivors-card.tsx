@@ -61,7 +61,7 @@ export function ShowdownSurvivorsCard({
     if (selectedShowdown?.scout) s = [...s, selectedShowdown.scout]
 
     return s
-  }, [selectedShowdown?.survivors, selectedShowdown?.scout])
+  }, [selectedShowdown])
 
   // Get filtered survivors for mapping
   const filteredSurvivors = survivors?.filter((s) =>

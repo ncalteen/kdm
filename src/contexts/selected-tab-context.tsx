@@ -10,7 +10,6 @@ import {
   ReactElement,
   ReactNode,
   useContext,
-  useEffect,
   useState
 } from 'react'
 
@@ -51,13 +50,9 @@ export function SelectedTabProvider({
   tab,
   children
 }: SelectedTabProviderProps): ReactElement {
-  const [selectedTab, setSelectedTabState] = useState<TabType>(tab)
-
-  // Load selected tab from localStorage on mount
-  useEffect(() => {
-    const savedSelectedTab = getSelectedTab()
-    if (savedSelectedTab) setSelectedTabState(savedSelectedTab)
-  }, [])
+  const [selectedTab, setSelectedTabState] = useState<TabType>(() =>
+    typeof window === 'undefined' ? tab : getSelectedTab() || tab
+  )
 
   /**
    * Set Selected Tab

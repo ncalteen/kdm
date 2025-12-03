@@ -17,7 +17,7 @@ import {
   KeyboardEvent,
   ReactElement,
   useCallback,
-  useEffect,
+  useRef,
   useState
 } from 'react'
 
@@ -52,13 +52,15 @@ export function StatusCard({
   setSurvivors,
   survivors
 }: StatusCardProps): ReactElement {
+  const survivorIdRef = useRef<number | undefined>(undefined)
+
   const [survivorName, setSurvivorName] = useState(selectedSurvivor?.name ?? '')
 
-  // Update the local name state when the selected survivor changes
-  useEffect(
-    () => setSurvivorName(selectedSurvivor?.name ?? ''),
-    [selectedSurvivor?.id, selectedSurvivor?.name]
-  )
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
+
+    setSurvivorName(selectedSurvivor?.name ?? '')
+  }
 
   /**
    * Save Status to Local Storage
@@ -67,7 +69,7 @@ export function StatusCard({
    * @param updatedRetired Updated retired status
    * @param successMsg Success Message
    */
-  const saveStatusToLocalStorage = useCallback(
+  const saveToLocalStorage = useCallback(
     (updatedDead?: boolean, updatedRetired?: boolean, successMsg?: string) => {
       const updateData: Partial<Survivor> = {}
 
@@ -76,14 +78,12 @@ export function StatusCard({
 
       saveSelectedSurvivor(updateData, successMsg)
 
-      if (survivors) {
-        const updatedSurvivors = survivors.map((s) =>
-          s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+      if (survivors)
+        setSurvivors(
+          survivors.map((s) =>
+            s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+          )
         )
-
-        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        setSurvivors(updatedSurvivors)
-      }
     },
     [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
   )
@@ -106,14 +106,12 @@ export function StatusCard({
         value.trim() ? SURVIVOR_NAME_UPDATED_MESSAGE() : undefined
       )
 
-      if (survivors) {
-        const updatedSurvivors = survivors.map((s) =>
-          s.id === selectedSurvivor?.id ? { ...s, ...{ name: value } } : s
+      if (survivors)
+        setSurvivors(
+          survivors.map((s) =>
+            s.id === selectedSurvivor?.id ? { ...s, ...{ name: value } } : s
+          )
         )
-
-        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        setSurvivors(updatedSurvivors)
-      }
     }
   }
 
@@ -126,14 +124,12 @@ export function StatusCard({
     (gender: Gender) => {
       saveSelectedSurvivor({ gender }, SURVIVOR_GENDER_UPDATED_MESSAGE())
 
-      if (survivors && selectedSurvivor?.id) {
-        const updatedSurvivors = survivors.map((s) =>
-          s.id === selectedSurvivor?.id ? { ...s, ...{ gender } } : s
+      if (survivors && selectedSurvivor?.id)
+        setSurvivors(
+          survivors.map((s) =>
+            s.id === selectedSurvivor?.id ? { ...s, ...{ gender } } : s
+          )
         )
-
-        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        setSurvivors(updatedSurvivors)
-      }
     },
     [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
   )
@@ -145,13 +141,13 @@ export function StatusCard({
    */
   const handleDeadToggle = useCallback(
     (checked: boolean) => {
-      saveStatusToLocalStorage(
+      saveToLocalStorage(
         checked,
         undefined,
         SURVIVOR_DEAD_STATUS_UPDATED_MESSAGE(checked)
       )
     },
-    [saveStatusToLocalStorage]
+    [saveToLocalStorage]
   )
 
   /**
@@ -161,13 +157,13 @@ export function StatusCard({
    */
   const handleRetiredToggle = useCallback(
     (checked: boolean) => {
-      saveStatusToLocalStorage(
+      saveToLocalStorage(
         undefined,
         checked,
         SURVIVOR_RETIRED_STATUS_UPDATED_MESSAGE(checked)
       )
     },
-    [saveStatusToLocalStorage]
+    [saveToLocalStorage]
   )
 
   return (

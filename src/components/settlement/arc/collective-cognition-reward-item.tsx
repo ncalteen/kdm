@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, ReactElement, useRef, useState } from 'react'
 
 /**
  * Reward Item Component Properties
@@ -68,16 +68,6 @@ export function RewardItem({
 
   // Track the current CC value for the NumericInput
   const [currentCcValue, setCurrentCcValue] = useState(reward?.cc || 1)
-
-  useEffect(() => {
-    console.debug('[RewardItem] Changed Reward:', reward)
-
-    if (nameInputRef.current) nameInputRef.current.value = reward?.name || ''
-    if (ccInputRef.current) {
-      ccInputRef.current.value = reward?.cc?.toString() || '1'
-      setCurrentCcValue(reward?.cc || 1)
-    }
-  }, [reward])
 
   /**
    * Handles the key down event for the input fields.
