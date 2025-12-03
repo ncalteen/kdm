@@ -290,7 +290,7 @@ export function ActiveHuntCard({
       {/* Action Buttons */}
       <div className="flex justify-between pointer-events-none">
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={handleCancelHunt}
           className="pointer-events-auto"
