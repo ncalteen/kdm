@@ -29,7 +29,7 @@ import {
 } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ReactElement, useEffect } from 'react'
-import { Resolver, useForm } from 'react-hook-form'
+import { Resolver, useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 
 /**
@@ -58,8 +58,14 @@ export function CreateSettlementForm({
     defaultValues: BaseSettlementSchema.parse({})
   })
 
-  const watchedCampaignType = form.watch('campaignType')
-  const watchedSurvivorType = form.watch('survivorType')
+  const watchedCampaignType = useWatch({
+    control: form.control,
+    name: 'campaignType'
+  })
+  const watchedSurvivorType = useWatch({
+    control: form.control,
+    name: 'survivorType'
+  })
 
   // Set the form values when the component mounts.
   useEffect(() => {

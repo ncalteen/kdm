@@ -17,13 +17,7 @@ import {
 import { Philosophy } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import {
-  KeyboardEvent,
-  ReactElement,
-  forwardRef,
-  useEffect,
-  useState
-} from 'react'
+import { KeyboardEvent, ReactElement, forwardRef, useState } from 'react'
 
 /**
  * Select Philosophy Component Properties
@@ -57,12 +51,6 @@ export const SelectPhilosophy = forwardRef<
   ): ReactElement => {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState(propValue || '')
-
-    useEffect(() => {
-      console.debug('[SelectPhilosophy] Value Changed:', propValue)
-
-      if (propValue !== undefined) setValue(propValue)
-    }, [propValue])
 
     const handleSelect = (currentValue: string) => {
       setValue(currentValue)
