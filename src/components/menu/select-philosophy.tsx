@@ -50,10 +50,8 @@ export const SelectPhilosophy = forwardRef<
     ref
   ): ReactElement => {
     const [open, setOpen] = useState(false)
-    const [value, setValue] = useState(propValue || '')
 
     const handleSelect = (currentValue: string) => {
-      setValue(currentValue)
       setOpen(false)
 
       if (onChange) onChange(currentValue)
@@ -81,8 +79,8 @@ export const SelectPhilosophy = forwardRef<
             className="w-[200px] justify-between"
             disabled={disabled}
             onKeyDown={handleKeyDown}>
-            {value
-              ? philosophyOptions.find((p) => p.value === value)?.label
+            {propValue
+              ? philosophyOptions.find((p) => p.value === propValue)?.label
               : 'Select philosophy...'}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -102,7 +100,7 @@ export const SelectPhilosophy = forwardRef<
                     <Check
                       className={cn(
                         'mr-1 h-4 w-4',
-                        value === p.value ? 'opacity-100' : 'opacity-0'
+                        propValue === p.value ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                     {p.label}
