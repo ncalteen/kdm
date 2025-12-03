@@ -62,8 +62,6 @@ export function AbilitiesAndImpairmentsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (survivorIdRef.current !== selectedSurvivor?.id) {
-    console.debug('[AbilitiesAndImpairmentsCard] Initialize Disabled Inputs')
-
     survivorIdRef.current = selectedSurvivor?.id
 
     setDisabledInputs(

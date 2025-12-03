@@ -98,15 +98,12 @@ export function PhilosophyCard({
       )
 
       // Update the survivors context to trigger re-renders in settlement table
-      if (survivors && selectedSurvivor?.id) {
-        const updatedSurvivors = survivors.map((s) =>
-          s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+      if (survivors && selectedSurvivor?.id)
+        setSurvivors(
+          survivors.map((s) =>
+            s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+          )
         )
-
-        // Update both localStorage and context
-        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        setSurvivors(updatedSurvivors)
-      }
     },
     [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
   )
@@ -150,15 +147,12 @@ export function PhilosophyCard({
       )
 
       // Update the survivors context to trigger re-renders in settlement table
-      if (survivors && selectedSurvivor?.id) {
-        const updatedSurvivors = survivors.map((s) =>
-          s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+      if (survivors && selectedSurvivor?.id)
+        setSurvivors(
+          survivors.map((s) =>
+            s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
+          )
         )
-
-        // Update both localStorage and context
-        localStorage.setItem('survivors', JSON.stringify(updatedSurvivors))
-        setSurvivors(updatedSurvivors)
-      }
     },
     [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
   )
