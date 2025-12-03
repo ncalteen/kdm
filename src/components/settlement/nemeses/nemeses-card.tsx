@@ -61,7 +61,7 @@ export function NemesesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: NemesesCardProps): ReactElement {
-  const settlementIdRef = useRef<string | undefined>(undefined)
+  const settlementIdRef = useRef<number | undefined>(undefined)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean

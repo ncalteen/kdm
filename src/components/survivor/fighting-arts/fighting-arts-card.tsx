@@ -77,7 +77,7 @@ export function FightingArtsCard({
   selectedSettlement,
   selectedSurvivor
 }: FightingArtsCardProps): ReactElement {
-  const survivorIdRef = useRef<string | undefined>(undefined)
+  const survivorIdRef = useRef<number | undefined>(undefined)
 
   // Determine survivor type from settlement data
   const survivorType = selectedSettlement?.survivorType || SurvivorType.CORE

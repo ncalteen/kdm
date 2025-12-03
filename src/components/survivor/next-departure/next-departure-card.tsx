@@ -51,7 +51,7 @@ export function NextDepartureCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: NextDepartureCardProps): ReactElement {
-  const survivorIdRef = useRef<string | undefined>(undefined)
+  const survivorIdRef = useRef<number | undefined>(undefined)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean

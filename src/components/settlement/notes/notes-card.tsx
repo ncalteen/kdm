@@ -31,7 +31,7 @@ export function NotesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: NotesCardProps): ReactElement {
-  const settlementIdRef = useRef<string | undefined>(undefined)
+  const settlementIdRef = useRef<number | undefined>(undefined)
 
   const [draft, setDraft] = useState<string | undefined>(
     selectedSettlement?.notes || ''

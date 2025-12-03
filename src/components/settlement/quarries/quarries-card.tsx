@@ -62,7 +62,7 @@ export function QuarriesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: QuarriesCardProps): ReactElement {
-  const settlementIdRef = useRef<string | undefined>(undefined)
+  const settlementIdRef = useRef<number | undefined>(undefined)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean

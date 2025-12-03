@@ -53,7 +53,7 @@ export function PhilosophyCard({
 }: PhilosophyCardProps): ReactElement {
   const isMobile = useIsMobile()
 
-  const survivorIdRef = useRef(selectedSurvivor?.id)
+  const survivorIdRef = useRef<number | undefined>(undefined)
 
   // Local state for text fields to enable controlled components that update when survivor changes
   const [neurosis, setNeurosis] = useState(selectedSurvivor?.neurosis ?? '')

@@ -56,7 +56,7 @@ export function PhilosophiesCard({
   saveSelectedSettlement,
   selectedSettlement
 }: PhilosophiesCardProps): ReactElement {
-  const settlementIdRef = useRef<string | undefined>(undefined)
+  const settlementIdRef = useRef<number | undefined>(undefined)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean

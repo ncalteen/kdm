@@ -58,7 +58,7 @@ export function CollectiveCognitionRewardsCard({
   saveSelectedSettlement,
   selectedSettlement
 }: CollectiveCognitionRewardsCardProps): ReactElement {
-  const settlementIdRef = useRef<string | undefined>(undefined)
+  const settlementIdRef = useRef<number | undefined>(undefined)
 
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
   const [disabledInputs, setDisabledInputs] = useState<{

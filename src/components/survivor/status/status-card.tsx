@@ -52,7 +52,7 @@ export function StatusCard({
   setSurvivors,
   survivors
 }: StatusCardProps): ReactElement {
-  const survivorIdRef = useRef<string | undefined>(undefined)
+  const survivorIdRef = useRef<number | undefined>(undefined)
 
   const [survivorName, setSurvivorName] = useState(selectedSurvivor?.name ?? '')
 
