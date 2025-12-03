@@ -63,8 +63,6 @@ export function LocationsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
-    console.debug('[LocationsCard] Initialize Disabled Inputs')
-
     settlementIdRef.current = selectedSettlement?.id
 
     setDisabledInputs(

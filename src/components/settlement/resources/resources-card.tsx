@@ -119,22 +119,16 @@ export function ResourcesCard({
 
   const handleCategoryFilterChange = useCallback(
     (category: ResourceCategory, checked: boolean) => {
-      if (checked) {
-        setFilterCategories((prev) => [...prev, category])
-      } else {
-        setFilterCategories((prev) => prev.filter((c) => c !== category))
-      }
+      if (checked) setFilterCategories((prev) => [...prev, category])
+      else setFilterCategories((prev) => prev.filter((c) => c !== category))
     },
     []
   )
 
   const handleTypeFilterChange = useCallback(
     (type: ResourceType, checked: boolean) => {
-      if (checked) {
-        setFilterTypes((prev) => [...prev, type])
-      } else {
-        setFilterTypes((prev) => prev.filter((t) => t !== type))
-      }
+      if (checked) setFilterTypes((prev) => [...prev, type])
+      else setFilterTypes((prev) => prev.filter((t) => t !== type))
     },
     []
   )
@@ -143,8 +137,6 @@ export function ResourcesCard({
   const hasActiveFilters = filterCategories.length > 0 || filterTypes.length > 0
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
-    console.debug('[ResourcesCard] Initialize Disabled Inputs')
-
     settlementIdRef.current = selectedSettlement?.id
 
     setDisabledInputs(

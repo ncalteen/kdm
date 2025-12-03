@@ -37,7 +37,7 @@ export function KnowledgeCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: KnowledgeCardProps): ReactElement {
-  const survivorIdRef = useRef(selectedSurvivor?.id)
+  const survivorIdRef = useRef<string | undefined>(undefined)
 
   // Local state for text fields to enable controlled components
   const [knowledge1, setKnowledge1] = useState(

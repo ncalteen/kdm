@@ -62,8 +62,6 @@ export function MonsterVolumesCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
-    console.debug('[MonsterVolumesCard] Initialize Disabled Inputs')
-
     settlementIdRef.current = selectedSettlement?.id
 
     setDisabledInputs(
