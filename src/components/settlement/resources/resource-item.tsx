@@ -12,7 +12,13 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useRef, useState } from 'react'
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  ReactElement,
+  useRef,
+  useState
+} from 'react'
 
 /**
  * Resource Item Component Properties
@@ -114,7 +120,7 @@ export function ResourceItem({
    *
    * @param e Change Event
    */
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const amount = Number(e.target.value)
 
     if (onAmountChange && !isNaN(amount) && amount >= 0)

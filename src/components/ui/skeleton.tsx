@@ -1,8 +1,9 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import { ComponentProps } from 'react'
 
-function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
+function Skeleton({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="skeleton"

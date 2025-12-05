@@ -9,8 +9,17 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { MoonIcon, SunIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { ReactElement } from 'react'
 
-export function ModeToggle() {
+/**
+ * Mode Toggle Component
+ *
+ * Provides a dropdown menu for switching between light, dark, and system theme modes.
+ * The button displays a sun icon in light mode and a moon icon in dark mode.
+ *
+ * @returns Mode Toggle Component
+ */
+export function ModeToggle(): ReactElement {
   const { setTheme } = useTheme()
 
   return (

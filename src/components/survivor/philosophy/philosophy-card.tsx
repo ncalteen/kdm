@@ -22,7 +22,7 @@ import {
 } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
-import { ReactElement, useCallback, useRef, useState } from 'react'
+import { MouseEvent, ReactElement, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -115,7 +115,7 @@ export function PhilosophyCard({
    * @param event The mouse event
    */
   const handleRightClick = useCallback(
-    (index: number, event: React.MouseEvent) => {
+    (index: number, event: MouseEvent) => {
       event.preventDefault()
 
       const newRankUp =

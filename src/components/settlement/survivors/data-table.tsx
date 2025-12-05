@@ -15,7 +15,7 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import { PlusIcon } from 'lucide-react'
-import { useCallback, useMemo, useState } from 'react'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
 /**
  * Data Table Properties
@@ -78,7 +78,7 @@ export function SurvivorDataTable<TData, TValue>({
   const { rows } = table.getRowModel()
 
   const handleFilterChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       table.getColumn('name')?.setFilterValue(event.target.value)
     },
     [table]
