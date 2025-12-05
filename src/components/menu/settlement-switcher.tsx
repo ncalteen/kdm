@@ -19,12 +19,12 @@ import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { Check, ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react'
-import { ReactElement } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
 /**
  * Settlement Switcher Properties
  */
-interface SettlementSwitcherProps extends React.ComponentProps<typeof Sidebar> {
+interface SettlementSwitcherProps extends ComponentProps<typeof Sidebar> {
   /** Selected Hunt */
   selectedHunt: Hunt | null
   /** Selected Settlement */

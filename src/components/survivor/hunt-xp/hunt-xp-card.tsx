@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { ReactElement, useCallback } from 'react'
+import { MouseEvent, ReactElement, useCallback } from 'react'
 
 /**
  * Hunt XP Card Properties
@@ -90,7 +90,7 @@ export function HuntXPCard({
    * @param index The index of the checkbox (0-based)
    * @param event The mouse event
    */
-  const updateHuntXPRankUp = (index: number, event: React.MouseEvent) => {
+  const updateHuntXPRankUp = (index: number, event: MouseEvent) => {
     event.preventDefault()
 
     const currentRankUps = [...(selectedSurvivor?.huntXPRankUp || [])]

@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { SelectedHuntProvider } from '@/contexts/selected-hunt-context'
 import { SelectedSettlementProvider } from '@/contexts/selected-settlement-context'
@@ -37,23 +38,29 @@ export default function RootLayout({
   children: ReactNode
 }>): ReactElement {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SurvivorsProvider survivors={[]}>
-          <SelectedSettlementProvider settlement={null}>
-            <SelectedSurvivorProvider survivor={null}>
-              <SelectedHuntProvider hunt={null}>
-                <SelectedShowdownProvider showdown={null}>
-                  <SelectedTabProvider tab={TabType.TIMELINE}>
-                    {children}
-                  </SelectedTabProvider>
-                </SelectedShowdownProvider>
-              </SelectedHuntProvider>
-            </SelectedSurvivorProvider>
-          </SelectedSettlementProvider>
-        </SurvivorsProvider>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange>
+          <SurvivorsProvider survivors={[]}>
+            <SelectedSettlementProvider settlement={null}>
+              <SelectedSurvivorProvider survivor={null}>
+                <SelectedHuntProvider hunt={null}>
+                  <SelectedShowdownProvider showdown={null}>
+                    <SelectedTabProvider tab={TabType.TIMELINE}>
+                      {children}
+                    </SelectedTabProvider>
+                  </SelectedShowdownProvider>
+                </SelectedHuntProvider>
+              </SelectedSurvivorProvider>
+            </SelectedSettlementProvider>
+          </SurvivorsProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   )

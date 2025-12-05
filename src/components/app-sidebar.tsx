@@ -52,7 +52,14 @@ import {
   UsersIcon,
   WrenchIcon
 } from 'lucide-react'
-import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import {
+  ChangeEvent,
+  ComponentProps,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { toast } from 'sonner'
 
 const baseNavPrimary = [
@@ -142,7 +149,7 @@ const navEmbark = [
 /**
  * Application Sidebar Properties
  */
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   /** Selected Hunt */
   selectedHunt: Hunt | null
   /** Selected Settlement */

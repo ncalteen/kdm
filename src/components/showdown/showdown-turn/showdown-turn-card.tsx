@@ -28,7 +28,7 @@ import {
 } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { CheckCircleIcon, SkullIcon, UsersIcon, ZapIcon } from 'lucide-react'
-import { ReactElement, useCallback, useMemo } from 'react'
+import { MouseEvent, ReactElement, useCallback, useMemo } from 'react'
 
 /**
  * Turn Card Properties
@@ -188,19 +188,13 @@ export function TurnCard({
     return getSurvivorColorChoice(selectedShowdown, selectedSurvivor.id)
   }, [isMonsterTurn, selectedSurvivor?.id, selectedShowdown])
 
-  const handleMouseEnter = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
-    },
-    []
-  )
+  const handleMouseEnter = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
+  }, [])
 
-  const handleMouseLeave = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      e.currentTarget.style.borderColor = 'var(--card-border-color)'
-    },
-    []
-  )
+  const handleMouseLeave = useCallback((e: MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.borderColor = 'var(--card-border-color)'
+  }, [])
 
   return (
     <Card

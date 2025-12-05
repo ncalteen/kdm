@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { Minus, Plus } from 'lucide-react'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 /**
  * Numeric Input Properties
@@ -32,7 +32,7 @@ interface NumericInputProps {
   /** On Change Function */
   onChange: (value: number) => void
   /** Child Element */
-  children: React.ReactNode
+  children: ReactNode
   /** Read Only Mode */
   readOnly: boolean
   /** Disabled Mode */

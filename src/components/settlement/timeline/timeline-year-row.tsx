@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Settlement } from '@/schemas/settlement'
 import { CheckIcon, PlusCircleIcon, ScrollIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, memo } from 'react'
+import { CSSProperties, KeyboardEvent, memo } from 'react'
 
 /**
  * Timeline Row Data Interface
@@ -46,7 +46,7 @@ export interface TimelineRowData {
 
 export interface TimelineRowProps {
   index: number
-  style: React.CSSProperties
+  style: CSSProperties
   data: TimelineRowData
 }
 
