@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { NodeLevel } from '@/lib/enums'
+import { MonsterNode } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -36,14 +36,14 @@ export interface QuarryItemProps {
   /** On Save Handler */
   onSave: (
     value?: string,
-    node?: NodeLevel,
+    node?: MonsterNode,
     unlocked?: boolean,
     index?: number
   ) => void
   /** On Toggle Unlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
   /** On Update Node Handler */
-  onUpdateNode: (index: number, node: NodeLevel) => void
+  onUpdateNode: (index: number, node: MonsterNode) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
 }
@@ -55,7 +55,7 @@ export interface NewQuarryItemProps {
   /** On Cancel Handler */
   onCancel: () => void
   /** On Save Handler */
-  onSave: (value?: string, node?: NodeLevel, unlocked?: boolean) => void
+  onSave: (value?: string, node?: MonsterNode, unlocked?: boolean) => void
 }
 
 /**
@@ -163,7 +163,7 @@ export function QuarryItem({
         ) : (
           <Select
             value={selectedSettlement?.quarries?.[index].node}
-            onValueChange={(value) => onUpdateNode(index, value as NodeLevel)}
+            onValueChange={(value) => onUpdateNode(index, value as MonsterNode)}
             disabled={isDisabled}>
             <SelectTrigger className="h-8 w-24">
               <SelectValue
@@ -171,10 +171,10 @@ export function QuarryItem({
               />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Node 1">Node 1</SelectItem>
-              <SelectItem value="Node 2">Node 2</SelectItem>
-              <SelectItem value="Node 3">Node 3</SelectItem>
-              <SelectItem value="Node 4">Node 4</SelectItem>
+              <SelectItem value={MonsterNode.NQ1}>NQ1</SelectItem>
+              <SelectItem value={MonsterNode.NQ2}>NQ2</SelectItem>
+              <SelectItem value={MonsterNode.NQ3}>NQ3</SelectItem>
+              <SelectItem value={MonsterNode.NQ4}>NQ4</SelectItem>
             </SelectContent>
           </Select>
         )}
@@ -228,7 +228,7 @@ export function NewQuarryItem({
   onSave
 }: NewQuarryItemProps): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
-  const nodeRef = useRef<string>('Node 1')
+  const nodeRef = useRef<MonsterNode>(MonsterNode.NQ1)
 
   /**
    * Handles the key down event for the input field.
@@ -241,7 +241,7 @@ export function NewQuarryItem({
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
-      onSave(inputRef.current.value, nodeRef.current as NodeLevel, false)
+      onSave(inputRef.current.value, nodeRef.current as MonsterNode, false)
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()
@@ -270,16 +270,16 @@ export function NewQuarryItem({
       <div className="flex items-center gap-1 ml-auto">
         {/* Node Selection */}
         <Select
-          defaultValue="Node 1"
-          onValueChange={(value) => (nodeRef.current = value)}>
+          defaultValue={MonsterNode.NQ1}
+          onValueChange={(value) => (nodeRef.current = value as MonsterNode)}>
           <SelectTrigger className="h-8 w-24">
             <SelectValue placeholder="Node" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Node 1">Node 1</SelectItem>
-            <SelectItem value="Node 2">Node 2</SelectItem>
-            <SelectItem value="Node 3">Node 3</SelectItem>
-            <SelectItem value="Node 4">Node 4</SelectItem>
+            <SelectItem value={MonsterNode.NQ1}>NQ1</SelectItem>
+            <SelectItem value={MonsterNode.NQ2}>NQ2</SelectItem>
+            <SelectItem value={MonsterNode.NQ3}>NQ3</SelectItem>
+            <SelectItem value={MonsterNode.NQ4}>NQ4</SelectItem>
           </SelectContent>
         </Select>
 
@@ -289,7 +289,11 @@ export function NewQuarryItem({
           variant="ghost"
           size="icon"
           onClick={() =>
-            onSave(inputRef.current?.value, nodeRef.current as NodeLevel, false)
+            onSave(
+              inputRef.current?.value,
+              nodeRef.current as MonsterNode,
+              false
+            )
           }
           title="Save quarry">
           <CheckIcon className="h-4 w-4" />

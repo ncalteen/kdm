@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { NodeLevel } from '@/lib/enums'
+import { MonsterNode } from '@/lib/enums'
 import {
   NAMELESS_OBJECT_ERROR_MESSAGE,
   QUARRY_REMOVED_MESSAGE,
@@ -128,7 +128,7 @@ export function QuarriesCard({
    */
   const onSave = (
     value?: string,
-    node?: NodeLevel,
+    node?: MonsterNode,
     unlocked?: boolean,
     index?: number
   ) => {
@@ -137,7 +137,7 @@ export function QuarriesCard({
 
     const quarryWithCc: Quarry = {
       name: value,
-      node: node || NodeLevel.NODE_1,
+      node: node || MonsterNode.NQ1,
       unlocked: unlocked || false,
       ccPrologue: false,
       ccLevel1: false,
@@ -152,7 +152,7 @@ export function QuarriesCard({
       updatedQuarries[index] = {
         ...updatedQuarries[index],
         name: value,
-        node: node || NodeLevel.NODE_1,
+        node: node || MonsterNode.NQ1,
         unlocked: unlocked || false
       }
       setDisabledInputs((prev) => ({
@@ -209,7 +209,7 @@ export function QuarriesCard({
    * @param index Quarry Index
    * @param node Node Value
    */
-  const onUpdateNode = (index: number, node: NodeLevel) => {
+  const onUpdateNode = (index: number, node: MonsterNode) => {
     const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
       i === index ? { ...q, node } : q
     )

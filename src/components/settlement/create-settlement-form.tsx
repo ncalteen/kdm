@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { DefaultSquiresSuspicion } from '@/lib/common'
+import { DefaultSquiresSuspicion } from '@/lib/campaigns/squires'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { ERROR_MESSAGE, SETTLEMENT_CREATED_MESSAGE } from '@/lib/messages'
 import {

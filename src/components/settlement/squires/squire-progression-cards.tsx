@@ -8,7 +8,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
-import { SquireCardData } from '@/lib/common'
+import { SquireCardData } from '@/lib/campaigns/squires'
 import { ReactElement } from 'react'
 
 /**

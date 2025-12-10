@@ -1,13 +1,11 @@
 'use client'
 
-import {
-  CustomCampaignData,
-  PeopleOfTheDreamKeeperCampaignData,
-  PeopleOfTheLanternCampaignData,
-  PeopleOfTheStarsCampaignData,
-  PeopleOfTheSunCampaignData,
-  SquiresOfTheCitadelCampaignData
-} from '@/lib/common'
+import { CustomCampaignData } from '@/lib/campaigns/custom'
+import { PeopleOfTheDreamKeeperCampaignData } from '@/lib/campaigns/potdk'
+import { PeopleOfTheLanternCampaignData } from '@/lib/campaigns/potl'
+import { PeopleOfTheStarsCampaignData } from '@/lib/campaigns/potstars'
+import { PeopleOfTheSunCampaignData } from '@/lib/campaigns/potsun'
+import { SquiresOfTheCitadelCampaignData } from '@/lib/campaigns/squires'
 import { CampaignType, ColorChoice, MonsterName, TabType } from '@/lib/enums'
 import type { CampaignData } from '@/lib/types'
 import { Campaign } from '@/schemas/campaign'

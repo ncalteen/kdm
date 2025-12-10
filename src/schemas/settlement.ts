@@ -2,7 +2,7 @@
 
 import {
   CampaignType,
-  NodeLevel,
+  MonsterNode,
   Philosophy,
   ResourceCategory,
   ResourceType,
@@ -40,7 +40,7 @@ export const QuarrySchema = z.object({
   /** Quarry Name */
   name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
   /** Node Level */
-  node: z.enum(NodeLevel),
+  node: z.enum(MonsterNode),
   /** Unlocked */
   unlocked: z.boolean()
 })

@@ -112,13 +112,13 @@ export function ActiveHuntCard({
    */
   const rollHuntEvent = useCallback((eventType: HuntEventType) => {
     const maxValue =
-      eventType === HuntEventType.BASIC
+      eventType === HuntEventType.BASIC || eventType === HuntEventType.MONSTER
         ? HuntEventCount.BASIC
         : HuntEventCount.ARC_SCOUT
     const randomEvent = Math.floor(Math.random() * maxValue) + 1
 
     toast.success(
-      `${eventType === HuntEventType.BASIC ? 'Basic' : eventType === HuntEventType.ARC ? 'Arc' : 'Scout'} Hunt Event: ${randomEvent}`
+      `${eventType === HuntEventType.BASIC ? 'Basic' : eventType === HuntEventType.ARC ? 'Arc' : eventType === HuntEventType.SCOUT ? 'Scout' : 'Monster'} Hunt Event: ${randomEvent}`
     )
     setHuntEventPopoverOpen(false)
   }, [])
