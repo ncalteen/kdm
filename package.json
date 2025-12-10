@@ -15,12 +15,14 @@
     "node": ">=22"
   },
   "scripts": {
+    "build": "next build",
+    "ci-test": "vitest run",
     "dev": "next dev --turbopack",
     "format:check": "prettier --check '**'",
     "format:write": "prettier --write '**'",
-    "build": "next build",
+    "lint": "eslint .",
     "start": "next start",
-    "lint": "eslint ."
+    "test": "vitest"
   },
   "license": "MIT",
   "dependencies": {
@@ -88,12 +90,17 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.2",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitest/coverage-v8": "^4.0.15",
+    "@vitest/eslint-plugin": "^1.5.2",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.6",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.16",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^6.4.1",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.15"
   },
   "overrides": {
     "prismjs": ">=1.30.0"
