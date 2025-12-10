@@ -1,7 +1,14 @@
 'use client'
 
 import { CoreMilestones } from '@/lib/campaigns/common'
-import { MonsterNode } from '@/lib/enums'
+import { BUTCHER } from '@/lib/monsters/butcher'
+import { GOLD_SMOKE_KNIGHT } from '@/lib/monsters/gold-smoke-knight'
+import { HAND } from '@/lib/monsters/hand'
+import { KINGS_MAN } from '@/lib/monsters/kings-man'
+import { PHOENIX } from '@/lib/monsters/phoenix'
+import { SCREAMING_ANTELOPE } from '@/lib/monsters/screaming-antelope'
+import { WATCHER } from '@/lib/monsters/watcher'
+import { WHITE_LION } from '@/lib/monsters/white-lion'
 import { CampaignData } from '@/lib/types'
 
 /**
@@ -89,39 +96,7 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
       event: 'Hooded Knight'
     }
   ],
-  nemeses: [
-    {
-      name: 'Butcher',
-      level1: false,
-      level2: false,
-      level3: false,
-      unlocked: false,
-      ccLevel1: false,
-      ccLevel2: false,
-      ccLevel3: false
-    },
-    {
-      name: "King's Man",
-      level1: false,
-      level2: false,
-      level3: false,
-      unlocked: false,
-      ccLevel1: false,
-      ccLevel2: false,
-      ccLevel3: false
-    },
-
-    {
-      name: 'The Hand',
-      level1: false,
-      level2: false,
-      level3: false,
-      unlocked: false,
-      ccLevel1: false,
-      ccLevel2: false,
-      ccLevel3: false
-    }
-  ],
+  nemeses: [BUTCHER, KINGS_MAN, HAND, WATCHER, GOLD_SMOKE_KNIGHT],
   principles: [
     {
       name: 'New Life',
@@ -152,75 +127,89 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
       option2Selected: false
     }
   ],
-  quarries: [
-    {
-      name: 'White Lion',
-      node: MonsterNode.NQ1,
-      unlocked: false,
-      ccPrologue: false,
-      ccLevel1: false,
-      ccLevel2: [false, false],
-      ccLevel3: [false, false, false]
-    },
-    {
-      name: 'Screaming Antelope',
-      node: MonsterNode.NQ2,
-      unlocked: false,
-      ccPrologue: false,
-      ccLevel1: false,
-      ccLevel2: [false, false],
-      ccLevel3: [false, false, false]
-    },
-    {
-      name: 'Phoenix',
-      node: MonsterNode.NQ3,
-      unlocked: false,
-      ccPrologue: false,
-      ccLevel1: false,
-      ccLevel2: [false, false],
-      ccLevel3: [false, false, false]
-    }
-  ],
+  quarries: [WHITE_LION, SCREAMING_ANTELOPE, PHOENIX],
   timeline: [
-    { completed: false, entries: ['White Lion'] },
+    // Year 0 (Prologue)
+    { completed: false, entries: [] },
+    // Year 1
     { completed: false, entries: ['First Day', 'Returning Survivors'] },
-    { completed: false, entries: ['Endless Screams'] },
+    // Year 2
     { completed: false, entries: [] },
-    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 1'] },
+    // Year 3
+    { completed: false, entries: [] },
+    // Year 4
+    { completed: false, entries: [] },
+    // Year 5
     { completed: false, entries: ['Hands of Heat'] },
-    { completed: false, entries: ['Armored Strangers'] },
-    { completed: false, entries: ['Phoenix Feather'] },
+    // Year 6
     { completed: false, entries: [] },
-    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 1"] },
+    // Year 7
     { completed: false, entries: [] },
-    { completed: false, entries: ['Regal Visit'] },
+    // Year 8
+    { completed: false, entries: [] },
+    // Year 9
+    { completed: false, entries: [] },
+    // Year 10
+    { completed: false, entries: [] },
+    // Year 11
+    { completed: false, entries: [] },
+    // Year 12
     { completed: false, entries: ['Principle: Conviction'] },
-    { completed: false, entries: ['Nemesis Encounter - The Hand Lvl 1'] },
+    // Year 13
     { completed: false, entries: [] },
+    // Year 14
     { completed: false, entries: [] },
-    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 2'] },
+    // Year 15
     { completed: false, entries: [] },
+    // Year 16
     { completed: false, entries: [] },
-    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 2"] },
-    { completed: false, entries: ['Watched'] },
+    // Year 17
     { completed: false, entries: [] },
+    // Year 18
     { completed: false, entries: [] },
-    { completed: false, entries: ['Nemesis Encounter - Butcher Lvl 3'] },
+    // Year 19
     { completed: false, entries: [] },
-    { completed: false, entries: ['Nemesis Encounter - Watcher'] },
+    // Year 20
     { completed: false, entries: [] },
+    // Year 21
     { completed: false, entries: [] },
-    { completed: false, entries: ["Nemesis Encounter - King's Man Lvl 3"] },
+    // Year 22
     { completed: false, entries: [] },
-    { completed: false, entries: ['Nemesis Encounter - Gold Smoke Knight'] },
+    // Year 23
     { completed: false, entries: [] },
+    // Year 24
     { completed: false, entries: [] },
+    // Year 25
     { completed: false, entries: [] },
+    // Year 26
     { completed: false, entries: [] },
+    // Year 27
     { completed: false, entries: [] },
+    // Year 28
     { completed: false, entries: [] },
+    // Year 29
     { completed: false, entries: [] },
+    // Year 30
     { completed: false, entries: [] },
+    // Year 31
+    { completed: false, entries: [] },
+    // Year 32
+    { completed: false, entries: [] },
+    // Year 33
+    { completed: false, entries: [] },
+    // Year 34
+    { completed: false, entries: [] },
+    // Year 35
+    { completed: false, entries: [] },
+    // Year 36
+    { completed: false, entries: [] },
+    // Year 37
+    { completed: false, entries: [] },
+    // Year 38
+    { completed: false, entries: [] },
+    // Year 39
+    { completed: false, entries: [] },
+    // Year 40
     { completed: false, entries: [] }
   ]
 }

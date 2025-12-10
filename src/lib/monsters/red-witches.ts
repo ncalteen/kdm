@@ -1,4 +1,4 @@
-import { MonsterNode, MonsterType } from '@/lib/enums'
+import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
 import { NemesisMonsterData } from '@/lib/types'
 
 /**
@@ -14,7 +14,22 @@ export const RED_WITCHES: NemesisMonsterData = {
   node: MonsterNode.NN2,
   type: MonsterType.NEMESIS,
   timeline: {
-    10: 'Challenger At the Gates'
+    9: {
+      title: 'Challenger At the Gates',
+      campaigns: [
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+        CampaignType.PEOPLE_OF_THE_LANTERN,
+        CampaignType.PEOPLE_OF_THE_STARS
+      ]
+    },
+    21: {
+      title: 'Nemesis Encounter - Braal & Nico',
+      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+    },
+    23: {
+      title: 'Nemesis Encounter - Braal, Nico & Seer',
+      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+    }
   }
 }
 

@@ -37,6 +37,7 @@ export const WATCHER: NemesisMonsterData = {
     ]
   },
   timeline: {
-    20: 'Watched'
+    20: ['Watched'],
+    25: ['Nemesis Encounter - Watcher']
   }
 }

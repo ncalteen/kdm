@@ -111,5 +111,5 @@ export const KING: QuarryMonsterData = {
       'Indomitable'
     ]
   },
-  timeline: {}
+  timeline: { 22: ['The Awaited'] }
 }

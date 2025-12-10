@@ -1,4 +1,4 @@
-import { MonsterNode, MonsterType } from '@/lib/enums'
+import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
 import { NemesisMonsterData } from '@/lib/types'
 
 /**
@@ -82,6 +82,16 @@ export const PARIAH: NemesisMonsterData = {
     ]
   },
   timeline: {
-    4: 'The Fiend'
+    3: {
+      title: 'The Fiend',
+      campaigns: [
+        CampaignType.PEOPLE_OF_THE_LANTERN,
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+      ]
+    },
+    22: {
+      title: 'Nemesis Encounter - Pariah Lvl 22',
+      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+    }
   }
 }

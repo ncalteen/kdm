@@ -99,6 +99,6 @@ export const SPIDICULES: QuarryMonsterData = {
     ]
   },
   timeline: {
-    2: 'Young Rivals'
+    2: ['Young Rivals']
   }
 }

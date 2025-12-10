@@ -106,6 +106,6 @@ export const FROGDOG: QuarryMonsterData = {
     ]
   },
   timeline: {
-    0: 'Devour the White Lion'
+    0: ['Devour the White Lion']
   }
 }

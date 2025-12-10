@@ -99,6 +99,6 @@ export const PHOENIX: QuarryMonsterData = {
     ]
   },
   timeline: {
-    7: 'Phoenix Feather'
+    7: ['Phoenix Feather']
   }
 }

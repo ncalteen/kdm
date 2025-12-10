@@ -103,6 +103,6 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
     ]
   },
   timeline: {
-    6: "A Crone's Tale"
+    5: ["A Crone's Tale"]
   }
 }

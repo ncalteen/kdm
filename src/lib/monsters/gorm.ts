@@ -102,6 +102,6 @@ export const GORM: QuarryMonsterData = {
     ]
   },
   timeline: {
-    2: 'The Approaching Storm'
+    1: ['The Approaching Storm']
   }
 }

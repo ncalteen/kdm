@@ -1,4 +1,4 @@
-import { MonsterNode, MonsterType } from '@/lib/enums'
+import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
 import { NemesisMonsterData } from '@/lib/types'
 
 /**
@@ -88,9 +88,45 @@ export const KINGS_MAN: NemesisMonsterData = {
     ]
   },
   timeline: {
-    6: 'Armored Strangers',
-    9: "Nemesis Encounter - King's Man Lvl 1",
-    19: "Nemesis Encounter - King's Man Lvl 2",
-    28: "Nemesis Encounter - King's Man Lvl 3"
+    6: {
+      title: 'Armored Strangers',
+      campaigns: [
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+        CampaignType.PEOPLE_OF_THE_LANTERN,
+        CampaignType.PEOPLE_OF_THE_STARS
+      ]
+    },
+    9: {
+      title: "Nemesis Encounter - King's Man Lvl 1",
+      campaigns: [
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+        CampaignType.PEOPLE_OF_THE_LANTERN,
+        CampaignType.PEOPLE_OF_THE_STARS
+      ]
+    },
+    19: {
+      title: "Nemesis Encounter - King's Man Lvl 2",
+      campaigns: [
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+        CampaignType.PEOPLE_OF_THE_LANTERN,
+        CampaignType.PEOPLE_OF_THE_STARS
+      ]
+    },
+    21: {
+      title: "Nemesis Encounter - King's Man Lvl 2",
+      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+    },
+    23: {
+      title: "Nemesis Encounter - King's Man Lvl 3",
+      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+    },
+    28: {
+      title: "Nemesis Encounter - King's Man Lvl 3",
+      campaigns: [
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+        CampaignType.PEOPLE_OF_THE_LANTERN,
+        CampaignType.PEOPLE_OF_THE_STARS
+      ]
+    }
   }
 }

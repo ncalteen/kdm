@@ -1,4 +1,4 @@
-import { MonsterNode, MonsterType } from '@/lib/enums'
+import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
 import { NemesisMonsterData } from '@/lib/types'
 
 /**
@@ -94,8 +94,12 @@ export const ATNAS: NemesisMonsterData = {
     ]
   },
   timeline: {
-    9: 'Nemesis Encounter - Atnas the Child Eater Lvl 1',
-    18: 'Nemesis Encounter - Atnas the Child Eater Lvl 2',
-    28: 'Nemesis Encounter - Atnas the Child Eater Lvl 3'
+    6: {
+      title: 'Unwanted Gifts',
+      campaigns: [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]
+    },
+    9: ['Nemesis Encounter - Atnas the Child Eater Lvl 1'],
+    18: ['Nemesis Encounter - Atnas the Child Eater Lvl 2'],
+    28: ['Nemesis Encounter - Atnas the Child Eater Lvl 3']
   }
 }

@@ -80,5 +80,9 @@ export const TYRANT: NemesisMonsterData = {
       'Indomitable'
     ]
   },
-  timeline: {}
+  timeline: {
+    4: ['Nemesis Encounter - Tyrant Lvl 1'],
+    9: ['Nemesis Encounter - Tyrant Lvl 2'],
+    19: ['Nemesis Encounter - Tyrant Lvl 3']
+  }
 }

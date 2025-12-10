@@ -1,4 +1,4 @@
-import { MonsterNode, MonsterType } from '@/lib/enums'
+import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
 import { NemesisMonsterData } from '@/lib/types'
 
 /**
@@ -99,6 +99,20 @@ export const HAND: NemesisMonsterData = {
     ]
   },
   timeline: {
-    13: 'Nemesis Encounter - The Hand Lvl 1'
+    11: {
+      title: 'Regal Visit',
+      campaigns: [CampaignType.PEOPLE_OF_THE_LANTERN]
+    },
+    13: {
+      title: 'Nemesis Encounter - The Hand Lvl 1',
+      campaigns: [
+        CampaignType.PEOPLE_OF_THE_LANTERN,
+        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+      ]
+    },
+    24: {
+      title: 'Nemesis Encounter - The Hand Lvl 3',
+      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+    }
   }
 }

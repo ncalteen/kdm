@@ -37,6 +37,6 @@ export const GAMBLER: NemesisMonsterData = {
     ]
   },
   timeline: {
-    20: 'Nemesis Encounter - The Gambler'
+    20: ['Nemesis Encounter - The Gambler']
   }
 }

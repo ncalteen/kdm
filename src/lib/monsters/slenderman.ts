@@ -75,6 +75,9 @@ export const SLENDERMAN: NemesisMonsterData = {
     traits: ['Ensnare', 'Gloom', 'Hounds', 'Indomitable']
   },
   timeline: {
-    7: "It's Already Here"
+    6: ["It's Already Here"],
+    9: ['Nemesis Encounter - Slenderman Lvl 1'],
+    19: ['Nemesis Encounter - Slenderman Lvl 2'],
+    28: ['Nemesis Encounter - Slenderman Lvl 3']
   }
 }

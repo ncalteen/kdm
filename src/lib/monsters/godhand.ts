@@ -32,6 +32,6 @@ export const GODHAND: NemesisMonsterData = {
     traits: ['True Ghost Step', 'Reinforcements', 'Old Blood', 'Indomitable']
   },
   timeline: {
-    30: 'Nemesis Encounter - Godhand'
+    30: ['Nemesis Encounter - Godhand']
   }
 }

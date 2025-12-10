@@ -105,6 +105,6 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     ]
   },
   timeline: {
-    0: 'Crimson Crocodile'
+    0: ['Crimson Crocodile']
   }
 }

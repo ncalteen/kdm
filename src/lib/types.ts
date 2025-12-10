@@ -1,13 +1,16 @@
 'use client'
 
-import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
+import {
+  CampaignType,
+  HuntEventType,
+  MonsterNode,
+  MonsterType
+} from '@/lib/enums'
 import type {
   CollectiveCognitionReward,
   Location,
   Milestone,
-  Nemesis,
   Principle,
-  Quarry,
   TimelineYear
 } from '@/schemas/settlement'
 
@@ -26,11 +29,11 @@ export type CampaignData = {
   /** Milestones */
   milestones: Milestone[]
   /** Nemeses */
-  nemeses: Nemesis[]
+  nemeses: NemesisMonsterData[]
   /** Principles */
   principles: Principle[]
   /** Quarries */
-  quarries: Quarry[]
+  quarries: QuarryMonsterData[]
   /** Settlement Timeline */
   timeline: TimelineYear[]
 }
@@ -118,7 +121,9 @@ export type NemesisMonsterData = {
   /** Level 4 Data */
   level4?: NemesisMonsterLevelData
   /** Timeline Entries */
-  timeline: { [key: number]: string }
+  timeline: {
+    [key: number]: string[] | { title: string; campaigns: CampaignType[] }
+  }
 }
 
 /**
@@ -144,5 +149,7 @@ export type QuarryMonsterData = {
   /** Level 4 Data */
   level4?: QuarryMonsterLevelData
   /** Timeline Entries */
-  timeline: { [key: number]: string }
+  timeline: {
+    [key: number]: string[] | { title: string; campaigns: CampaignType[] }
+  }
 }

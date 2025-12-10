@@ -37,6 +37,6 @@ export const GOLD_SMOKE_KNIGHT: NemesisMonsterData = {
     ]
   },
   timeline: {
-    30: 'Nemesis Encounter - Gold Smoke Knight'
+    30: ['Nemesis Encounter - Gold Smoke Knight']
   }
 }

@@ -109,6 +109,9 @@ export const MANHUNTER: NemesisMonsterData = {
     ]
   },
   timeline: {
-    6: 'The Hanged Man'
+    5: ['The Hanged Man'],
+    10: ['Nemesis Encounter - Manhunter Lvl 2'],
+    16: ['Nemesis Encounter - Manhunter Lvl 3'],
+    22: ['Nemesis Encounter - Manhunter Lvl 4']
   }
 }

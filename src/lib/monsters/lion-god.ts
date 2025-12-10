@@ -100,6 +100,6 @@ export const LION_GOD: QuarryMonsterData = {
     ]
   },
   timeline: {
-    14: 'The Silver City'
+    13: ['The Silver City']
   }
 }

@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { NemesisMonsterData, QuarryMonsterData } from '@/lib/types'
 
 /**
  * Dragon King Monster Data
@@ -93,6 +93,43 @@ export const DRAGON_KING: QuarryMonsterData = {
     traits: ['Irradiate', 'Unseen Agony', 'Smolder', 'Indomitable']
   },
   timeline: {
-    9: 'Glowing Crater'
+    8: ['Glowing Crater']
+  }
+}
+
+/**
+ * Dying God Monster Data
+ *
+ * Finale boss for PotStars campaigns.
+ */
+export const DYING_GOD: NemesisMonsterData = {
+  name: 'Dying God (Dragon King)',
+  node: MonsterNode.FI,
+  type: MonsterType.NEMESIS,
+  level3: {
+    accuracy: 0,
+    accuracyTokens: 0,
+    aiDeckSize: 12,
+    damage: 3,
+    damageTokens: 0,
+    evasion: 0,
+    evasionTokens: 0,
+    life: 20,
+    luck: 0,
+    luckTokens: 0,
+    moods: [],
+    movement: 10,
+    movementTokens: 0,
+    speed: 2,
+    speedTokens: 0,
+    strength: 0,
+    strengthTokens: 0,
+    survivorStatuses: [],
+    toughness: 17,
+    toughnessTokens: 0,
+    traits: ['Irradiate', 'Unseen Agony', 'Smolder', 'Trample']
+  },
+  timeline: {
+    24: ['Nemesis Encounter - Death of the Dragon King']
   }
 }

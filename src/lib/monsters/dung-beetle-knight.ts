@@ -112,6 +112,6 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     ]
   },
   timeline: {
-    9: 'Rumbling in the Dark'
+    8: ['Rumbling in the Dark']
   }
 }

@@ -75,6 +75,9 @@ export const LION_KNIGHT: NemesisMonsterData = {
     traits: ['Drama Lessons', 'Indomitable', 'Last Act', 'Outburst', 'Zeal']
   },
   timeline: {
-    7: 'An Uninvited Guest'
+    6: ['An Uninvited Guest'],
+    8: ['Places Everyone', 'Nemesis Encounter - Lion Knight Lvl 1'],
+    12: ['Places Everyone', 'Nemesis Encounter - Lion Knight Lvl 2'],
+    16: ['Places Everyone', 'Nemesis Encounter - Lion Knight Lvl 3']
   }
 }

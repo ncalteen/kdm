@@ -83,6 +83,6 @@ export const BLACK_KNIGHT: NemesisMonsterData = {
     ]
   },
   timeline: {
-    14: 'Waiting Bell'
+    13: ['Waiting Bell']
   }
 }

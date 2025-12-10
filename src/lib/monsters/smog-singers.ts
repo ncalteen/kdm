@@ -104,5 +104,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
       'Indomitable'
     ]
   },
-  timeline: {}
+  timeline: {
+    2: ['Death of Song']
+  }
 }
