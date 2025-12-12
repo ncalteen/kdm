@@ -2,6 +2,7 @@
 
 import {
   CollectiveCognitionReward,
+  Location,
   Milestone,
   Principle
 } from '@/schemas/settlement'
@@ -102,3 +103,11 @@ export const CorePrinciples: Principle[] = [
   }
 ]
 
+/**
+ * Scout Campaign Data
+ */
+export const ScoutCampaignData: {
+  locations: Location[]
+} = {
+  locations: [{ name: 'Outskirts', unlocked: false }]
+}
