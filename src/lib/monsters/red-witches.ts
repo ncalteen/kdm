@@ -10,27 +10,32 @@ import { NemesisMonsterData } from '@/lib/types'
  * added in the background when the user selects this monster.
  */
 export const RED_WITCHES: NemesisMonsterData = {
-  id: 22,
   name: 'Red Witches',
   node: MonsterNode.NN2,
   type: MonsterType.NEMESIS,
   timeline: {
-    9: {
-      title: 'Challenger At the Gates',
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_STARS
-      ]
-    },
-    21: {
-      title: 'Nemesis Encounter - Braal & Nico',
-      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
-    },
-    23: {
-      title: 'Nemesis Encounter - Braal, Nico & Seer',
-      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
-    }
+    9: [
+      {
+        title: 'Challenger At the Gates',
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN,
+          CampaignType.PEOPLE_OF_THE_STARS
+        ]
+      }
+    ],
+    21: [
+      {
+        title: 'Nemesis Encounter - Braal & Nico',
+        campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+      }
+    ],
+    23: [
+      {
+        title: 'Nemesis Encounter - Braal, Nico & Seer',
+        campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+      }
+    ]
   }
 }
 

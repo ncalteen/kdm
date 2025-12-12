@@ -27,7 +27,6 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
-  id: 23,
   name: 'Screaming Antelope',
   node: MonsterNode.NQ2,
   type: MonsterType.QUARRY,

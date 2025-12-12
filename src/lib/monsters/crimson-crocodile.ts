@@ -27,7 +27,6 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
-  id: 4,
   name: 'Crimson Crocodile',
   node: MonsterNode.NQ1,
   type: MonsterType.QUARRY,

@@ -5,7 +5,6 @@ import { NemesisMonsterData } from '@/lib/types'
  * Atnas the Child Eater Monster Data
  */
 export const ATNAS: NemesisMonsterData = {
-  id: 1,
   name: 'Atnas the Child Eater',
   node: MonsterNode.NN2,
   type: MonsterType.NEMESIS,
@@ -96,10 +95,12 @@ export const ATNAS: NemesisMonsterData = {
     ]
   },
   timeline: {
-    6: {
-      title: 'Unwanted Gifts',
-      campaigns: [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]
-    },
+    6: [
+      {
+        title: 'Unwanted Gifts',
+        campaigns: [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]
+      }
+    ],
     9: ['Nemesis Encounter - Atnas the Child Eater Lvl 1'],
     18: ['Nemesis Encounter - Atnas the Child Eater Lvl 2'],
     28: ['Nemesis Encounter - Atnas the Child Eater Lvl 3']

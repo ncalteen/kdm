@@ -5,7 +5,6 @@ import { NemesisMonsterData } from '@/lib/types'
  * King's Man Monster Data
  */
 export const KINGS_MAN: NemesisMonsterData = {
-  id: 15,
   name: "King's Man",
   node: MonsterNode.NN2,
   type: MonsterType.NEMESIS,
@@ -90,45 +89,57 @@ export const KINGS_MAN: NemesisMonsterData = {
     ]
   },
   timeline: {
-    6: {
-      title: 'Armored Strangers',
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_STARS
-      ]
-    },
-    9: {
-      title: "Nemesis Encounter - King's Man Lvl 1",
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_STARS
-      ]
-    },
-    19: {
-      title: "Nemesis Encounter - King's Man Lvl 2",
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_STARS
-      ]
-    },
-    21: {
-      title: "Nemesis Encounter - King's Man Lvl 2",
-      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
-    },
-    23: {
-      title: "Nemesis Encounter - King's Man Lvl 3",
-      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
-    },
-    28: {
-      title: "Nemesis Encounter - King's Man Lvl 3",
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_STARS
-      ]
-    }
+    6: [
+      {
+        title: 'Armored Strangers',
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN,
+          CampaignType.PEOPLE_OF_THE_STARS
+        ]
+      }
+    ],
+    9: [
+      {
+        title: "Nemesis Encounter - King's Man Lvl 1",
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN,
+          CampaignType.PEOPLE_OF_THE_STARS
+        ]
+      }
+    ],
+    19: [
+      {
+        title: "Nemesis Encounter - King's Man Lvl 2",
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN,
+          CampaignType.PEOPLE_OF_THE_STARS
+        ]
+      }
+    ],
+    21: [
+      {
+        title: "Nemesis Encounter - King's Man Lvl 2",
+        campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+      }
+    ],
+    23: [
+      {
+        title: "Nemesis Encounter - King's Man Lvl 3",
+        campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+      }
+    ],
+    28: [
+      {
+        title: "Nemesis Encounter - King's Man Lvl 3",
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN,
+          CampaignType.PEOPLE_OF_THE_STARS
+        ]
+      }
+    ]
   }
 }

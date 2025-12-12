@@ -5,7 +5,6 @@ import { NemesisMonsterData } from '@/lib/types'
  * Butcher Monster Data
  */
 export const BUTCHER: NemesisMonsterData = {
-  id: 3,
   name: 'Butcher',
   node: MonsterNode.NN1,
   type: MonsterType.NEMESIS,
@@ -83,35 +82,45 @@ export const BUTCHER: NemesisMonsterData = {
     ]
   },
   timeline: {
-    4: {
-      title: 'Nemesis Encounter - Butcher Lvl 1',
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN
-      ]
-    },
-    13: {
-      title: 'Nemesis Encounter - Butcher Lvl 2',
-      campaigns: [CampaignType.PEOPLE_OF_THE_STARS]
-    },
-    16: {
-      title: 'Nemesis Encounter - Butcher Lvl 2',
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN
-      ]
-    },
-    22: {
-      title: 'Nemesis Encounter - Butcher Lvl 3',
-      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
-    },
-    23: {
-      title: 'Nemesis Encounter - Butcher Lvl 3',
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN
-      ]
-    }
+    4: [
+      {
+        title: 'Nemesis Encounter - Butcher Lvl 1',
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN
+        ]
+      }
+    ],
+    13: [
+      {
+        title: 'Nemesis Encounter - Butcher Lvl 2',
+        campaigns: [CampaignType.PEOPLE_OF_THE_STARS]
+      }
+    ],
+    16: [
+      {
+        title: 'Nemesis Encounter - Butcher Lvl 2',
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN
+        ]
+      }
+    ],
+    22: [
+      {
+        title: 'Nemesis Encounter - Butcher Lvl 3',
+        campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+      }
+    ],
+    23: [
+      {
+        title: 'Nemesis Encounter - Butcher Lvl 3',
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+          CampaignType.PEOPLE_OF_THE_LANTERN
+        ]
+      }
+    ]
   }
 }
 

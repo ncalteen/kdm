@@ -21,7 +21,6 @@ export const SUNSTALKER: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
-  id: 27,
   name: 'Sunstalker',
   node: MonsterNode.NQ3,
   type: MonsterType.QUARRY,

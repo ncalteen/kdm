@@ -21,7 +21,6 @@ export const LION_GOD: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
-  id: 16,
   name: 'Lion God',
   node: MonsterNode.NQ4,
   type: MonsterType.QUARRY,

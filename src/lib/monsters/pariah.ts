@@ -5,7 +5,6 @@ import { NemesisMonsterData } from '@/lib/types'
  * Pariah Monster Data
  */
 export const PARIAH: NemesisMonsterData = {
-  id: 20,
   name: 'Pariah',
   node: MonsterNode.NN1,
   type: MonsterType.NEMESIS,
@@ -84,16 +83,20 @@ export const PARIAH: NemesisMonsterData = {
     ]
   },
   timeline: {
-    3: {
-      title: 'The Fiend',
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-      ]
-    },
-    22: {
-      title: 'Nemesis Encounter - Pariah Lvl 22',
-      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
-    }
+    3: [
+      {
+        title: 'The Fiend',
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_LANTERN,
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+        ]
+      }
+    ],
+    22: [
+      {
+        title: 'Nemesis Encounter - Pariah Lvl 22',
+        campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+      }
+    ]
   }
 }

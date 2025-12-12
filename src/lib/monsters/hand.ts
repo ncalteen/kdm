@@ -7,7 +7,6 @@ import { NemesisMonsterData } from '@/lib/types'
  * Note: For People of the Dream Keeper campaigns, add the Suspicious trait.
  */
 export const HAND: NemesisMonsterData = {
-  id: 13,
   name: 'The Hand',
   node: MonsterNode.NN3,
   type: MonsterType.NEMESIS,
@@ -101,20 +100,26 @@ export const HAND: NemesisMonsterData = {
     ]
   },
   timeline: {
-    11: {
-      title: 'Regal Visit',
-      campaigns: [CampaignType.PEOPLE_OF_THE_LANTERN]
-    },
-    13: {
-      title: 'Nemesis Encounter - The Hand Lvl 1',
-      campaigns: [
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-      ]
-    },
-    24: {
-      title: 'Nemesis Encounter - The Hand Lvl 3',
-      campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
-    }
+    11: [
+      {
+        title: 'Regal Visit',
+        campaigns: [CampaignType.PEOPLE_OF_THE_LANTERN]
+      }
+    ],
+    13: [
+      {
+        title: 'Nemesis Encounter - The Hand Lvl 1',
+        campaigns: [
+          CampaignType.PEOPLE_OF_THE_LANTERN,
+          CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+        ]
+      }
+    ],
+    24: [
+      {
+        title: 'Nemesis Encounter - The Hand Lvl 3',
+        campaigns: [CampaignType.PEOPLE_OF_THE_SUN]
+      }
+    ]
   }
 }
