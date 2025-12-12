@@ -15,7 +15,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useRef } from 'react'
 
 /**
  * Nemesis Item Properties
@@ -86,17 +86,20 @@ export function NemesisItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const nemesisData = selectedSettlement
-    ? NEMESES[selectedSettlement.nemeses?.[index]?.id as keyof typeof NEMESES]
-    : null
+  const nemesisIdRef = useRef<number | undefined>(
+    selectedSettlement?.nemeses?.[index]?.id
+  )
+  const currentNemesisId = selectedSettlement?.nemeses?.[index]?.id
 
-  useEffect(() => {
-    console.debug(
-      '[NemesisItem] Changed',
-      selectedSettlement?.nemeses?.[index],
-      index
-    )
-  }, [selectedSettlement?.nemeses, index])
+  // Only update ref when nemesis ID actually changes
+  if (nemesisIdRef.current !== currentNemesisId) {
+    nemesisIdRef.current = currentNemesisId
+    console.debug('[NemesisItem] Nemesis ID changed', currentNemesisId, index)
+  }
+
+  const nemesisData = currentNemesisId
+    ? NEMESES[currentNemesisId as keyof typeof NEMESES]
+    : null
 
   return (
     <div

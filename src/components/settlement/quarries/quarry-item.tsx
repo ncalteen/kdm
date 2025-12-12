@@ -17,7 +17,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 
 /**
  * Quarry Item Properties
@@ -78,19 +78,20 @@ export function QuarryItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const quarryData = selectedSettlement
-    ? QUARRIES[
-        selectedSettlement.quarries?.[index]?.id as keyof typeof QUARRIES
-      ]
-    : null
+  const quarryIdRef = useRef<number | undefined>(
+    selectedSettlement?.quarries?.[index]?.id
+  )
+  const currentQuarryId = selectedSettlement?.quarries?.[index]?.id
 
-  useEffect(() => {
-    console.debug(
-      '[QuarryItem] Changed',
-      selectedSettlement?.quarries?.[index],
-      index
-    )
-  }, [selectedSettlement?.quarries, index])
+  // Only update ref when quarry ID actually changes
+  if (quarryIdRef.current !== currentQuarryId) {
+    quarryIdRef.current = currentQuarryId
+    console.debug('[QuarryItem] Quarry ID changed', currentQuarryId, index)
+  }
+
+  const quarryData = currentQuarryId
+    ? QUARRIES[currentQuarryId as keyof typeof QUARRIES]
+    : null
 
   return (
     <div
