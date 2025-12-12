@@ -1,0 +1,992 @@
+{
+  "hunts": [
+    {
+      "id": 1,
+      "monster": {
+        "accuracy": 0,
+        "accuracyTokens": 1,
+        "aiDeckSize": 3,
+        "damage": 0,
+        "damageTokens": 1,
+        "evasion": 0,
+        "evasionTokens": 1,
+        "knockedDown": false,
+        "level": "1",
+        "luck": 0,
+        "luckTokens": 1,
+        "moods": ["Mood #1"],
+        "movement": 8,
+        "movementTokens": 2,
+        "name": "White Lion",
+        "notes": "Hunt monster notes",
+        "speed": 1,
+        "speedTokens": 2,
+        "strength": 0,
+        "strengthTokens": 1,
+        "toughness": 8,
+        "traits": ["Trait #1"],
+        "type": "Quarry",
+        "wounds": 2
+      },
+      "monsterPosition": 9,
+      "scout": 1,
+      "settlementId": 1,
+      "survivorDetails": [
+        {
+          "accuracyTokens": 0,
+          "color": "slate",
+          "evasionTokens": 0,
+          "id": 3,
+          "insanityTokens": 0,
+          "luckTokens": 0,
+          "notes": "",
+          "movementTokens": 0,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        },
+        {
+          "accuracyTokens": 0,
+          "color": "slate",
+          "evasionTokens": 0,
+          "id": 4,
+          "insanityTokens": 0,
+          "luckTokens": 0,
+          "notes": "",
+          "movementTokens": 0,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        },
+        {
+          "accuracyTokens": 0,
+          "color": "slate",
+          "evasionTokens": 0,
+          "id": 2,
+          "insanityTokens": 0,
+          "luckTokens": 0,
+          "notes": "",
+          "movementTokens": 0,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        },
+        {
+          "accuracyTokens": 0,
+          "color": "slate",
+          "evasionTokens": 0,
+          "id": 1,
+          "insanityTokens": 0,
+          "luckTokens": 0,
+          "notes": "",
+          "movementTokens": 0,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        }
+      ],
+      "survivorPosition": 2,
+      "survivors": [3, 4, 2]
+    }
+  ],
+  "selectedHuntId": null,
+  "selectedShowdownId": 1,
+  "selectedSettlementId": 1,
+  "selectedSurvivorId": 3,
+  "selectedTab": "showdown",
+  "settings": {
+    "disableToasts": false
+  },
+  "settlements": [
+    {
+      "arrivalBonuses": ["+3 Insanity"],
+      "campaignType": "People of the Lantern",
+      "deathCount": 0,
+      "departingBonuses": ["+1 Survival"],
+      "gear": ["Cloth Skirt", "Founders Stone"],
+      "innovations": ["Language", "Paint"],
+      "locations": [
+        {
+          "name": "Barber Surgeon",
+          "unlocked": true
+        },
+        {
+          "name": "Blacksmith",
+          "unlocked": true
+        },
+        {
+          "name": "Bone Smith",
+          "unlocked": true
+        },
+        {
+          "name": "Catarium",
+          "unlocked": true
+        },
+        {
+          "name": "Exhausted Lantern Hoard",
+          "unlocked": true
+        },
+        {
+          "name": "Lantern Hoard",
+          "unlocked": true
+        },
+        {
+          "name": "Leather Worker",
+          "unlocked": false
+        },
+        {
+          "name": "Mask Maker",
+          "unlocked": false
+        },
+        {
+          "name": "Organ Grinder",
+          "unlocked": false
+        },
+        {
+          "name": "Plumery",
+          "unlocked": false
+        },
+        {
+          "name": "Skinnery",
+          "unlocked": false
+        },
+        {
+          "name": "Stone Circle",
+          "unlocked": false
+        },
+        {
+          "name": "Weapon Crafter",
+          "unlocked": false
+        }
+      ],
+      "lostSettlements": 2,
+      "milestones": [
+        {
+          "complete": false,
+          "event": "Game Over",
+          "name": "Population reaches 0"
+        },
+        {
+          "complete": true,
+          "event": "Principle: Society",
+          "name": "Population reaches 15"
+        },
+        {
+          "complete": true,
+          "event": "Principle: New Life",
+          "name": "First child is born"
+        },
+        {
+          "complete": true,
+          "event": "Principle: Death",
+          "name": "First time death count is updated"
+        },
+        {
+          "complete": false,
+          "event": "Hooded Knight",
+          "name": "Settlement has 5 innovations"
+        }
+      ],
+      "nemeses": [
+        {
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "name": "Butcher",
+          "level1": false,
+          "level2": false,
+          "level3": false,
+          "unlocked": true
+        },
+        {
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "name": "King's Man",
+          "level1": false,
+          "level2": false,
+          "level3": false,
+          "unlocked": true
+        },
+        {
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "name": "The Hand",
+          "level1": false,
+          "level2": false,
+          "level3": false,
+          "unlocked": false
+        }
+      ],
+      "patterns": ["Knife of Knifing"],
+      "population": 0,
+      "principles": [
+        {
+          "name": "New Life",
+          "option1Name": "Protect the Young",
+          "option1Selected": true,
+          "option2Name": "Survival of the Fittest",
+          "option2Selected": false
+        },
+        {
+          "name": "Death",
+          "option1Name": "Graves",
+          "option1Selected": false,
+          "option2Name": "Cannibalize",
+          "option2Selected": true
+        },
+        {
+          "name": "Society",
+          "option1Name": "Collective Toil",
+          "option1Selected": true,
+          "option2Name": "Accept Darkness",
+          "option2Selected": false
+        },
+        {
+          "name": "Conviction",
+          "option1Name": "Romantic",
+          "option1Selected": false,
+          "option2Name": "Barbaric",
+          "option2Selected": true
+        }
+      ],
+      "quarries": [
+        {
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "ccPrologue": false,
+          "name": "White Lion",
+          "node": "Node 1",
+          "unlocked": true
+        },
+        {
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "ccPrologue": false,
+          "name": "Screaming Antelope",
+          "node": "Node 2",
+          "unlocked": true
+        },
+        {
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "ccPrologue": false,
+          "name": "Phoenix",
+          "node": "Node 3",
+          "unlocked": false
+        }
+      ],
+      "resources": [
+        {
+          "name": "Hide",
+          "category": "Basic",
+          "types": ["Hide"],
+          "amount": 3
+        },
+        {
+          "name": "Perfect Bone",
+          "category": "Basic",
+          "types": ["Bone"],
+          "amount": 2
+        }
+      ],
+      "seedPatterns": ["Axe of Axing"],
+      "survivalLimit": 4,
+      "survivorType": "Core",
+      "usesScouts": true,
+      "timeline": [
+        {
+          "completed": true,
+          "entries": ["White Lion"]
+        },
+        {
+          "completed": true,
+          "entries": ["First Day", "Returning Survivors"]
+        },
+        {
+          "completed": true,
+          "entries": ["Endless Screams"]
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": ["Nemesis Encounter - Butcher Lvl 1"]
+        },
+        {
+          "completed": true,
+          "entries": ["Hands of Heat"]
+        },
+        {
+          "completed": true,
+          "entries": ["Armored Strangers"]
+        },
+        {
+          "completed": true,
+          "entries": ["Phoenix Feather"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - King's Man Lvl 1"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Regal Visit"]
+        },
+        {
+          "completed": false,
+          "entries": ["Principle: Conviction"]
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - The Hand Lvl 1"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - Butcher Lvl 2"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - King's Man Lvl 2"]
+        },
+        {
+          "completed": false,
+          "entries": ["Watched"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - Butcher Lvl 3"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - Watcher"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - King's Man Lvl 3"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Nemesis Encounter - Gold Smoke Knight"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        }
+      ],
+      "ccValue": 0,
+      "knowledges": [],
+      "philosophies": [],
+      "lanternResearchLevel": 0,
+      "monsterVolumes": ["White Lion"],
+      "id": 1,
+      "name": "Knowhere",
+      "notes": "Settlement notes go here..."
+    }
+  ],
+  "survivors": [
+    {
+      "abilitiesAndImpairments": [],
+      "accuracy": 1,
+      "canDash": true,
+      "canDodge": true,
+      "canFistPump": false,
+      "canEncourage": true,
+      "canSpendSurvival": true,
+      "canSurge": true,
+      "canUseFightingArtsOrKnowledges": true,
+      "courage": 6,
+      "cursedGear": [],
+      "dead": true,
+      "disorders": [],
+      "evasion": 1,
+      "fightingArts": [],
+      "hasAnalyze": false,
+      "hasExplore": false,
+      "hasMatchmaker": false,
+      "hasPrepared": false,
+      "hasStalwart": false,
+      "hasTinker": false,
+      "huntXP": 3,
+      "insanity": 1,
+      "luck": 1,
+      "movement": 5,
+      "nextDeparture": [],
+      "oncePerLifetime": [],
+      "rerollUsed": false,
+      "retired": false,
+      "secretFightingArts": [],
+      "skipNextHunt": false,
+      "speed": 1,
+      "strength": 1,
+      "survival": 1,
+      "understanding": 6,
+      "weaponProficiency": 3,
+      "armArmor": 1,
+      "armLightDamage": false,
+      "armHeavyDamage": false,
+      "bodyArmor": 1,
+      "bodyLightDamage": false,
+      "bodyHeavyDamage": false,
+      "brainLightDamage": false,
+      "headArmor": 1,
+      "headHeavyDamage": false,
+      "legArmor": 0,
+      "legLightDamage": false,
+      "legHeavyDamage": false,
+      "waistArmor": 1,
+      "waistLightDamage": false,
+      "waistHeavyDamage": false,
+      "armBroken": 0,
+      "armContracture": 0,
+      "armDismembered": 0,
+      "armRupturedMuscle": false,
+      "bodyBrokenRib": 0,
+      "bodyDestroyedBack": false,
+      "bodyGapingChestWound": 0,
+      "headBlind": 0,
+      "headDeaf": false,
+      "headIntracranialHemorrhage": false,
+      "headShatteredJaw": false,
+      "legBroken": 0,
+      "legDismembered": 0,
+      "legHamstrung": false,
+      "waistBrokenHip": false,
+      "waistDestroyedGenitals": false,
+      "waistIntestinalProlapse": false,
+      "waistWarpedPelvis": 0,
+      "canEndure": true,
+      "knowledge1ObservationRank": 0,
+      "knowledge2ObservationRank": 0,
+      "lumi": 0,
+      "philosophyRank": 0,
+      "systemicPressure": 0,
+      "tenetKnowledgeObservationRank": 0,
+      "torment": 0,
+      "hasAbsoluteReaper": false,
+      "hasAbsoluteRust": false,
+      "hasAbsoluteStorm": false,
+      "hasAbsoluteWitch": false,
+      "hasGamblerReaper": false,
+      "hasGamblerRust": false,
+      "hasGamblerStorm": false,
+      "hasGamblerWitch": false,
+      "hasGoblinReaper": false,
+      "hasGoblinRust": false,
+      "hasGoblinStorm": false,
+      "hasGoblinWitch": false,
+      "hasSculptorReaper": false,
+      "hasSculptorRust": false,
+      "hasSculptorStorm": false,
+      "hasSculptorWitch": false,
+      "gender": "M",
+      "huntXPRankUp": [2, 6, 10, 15],
+      "id": 1,
+      "name": "Allister",
+      "settlementId": 1
+    },
+    {
+      "abilitiesAndImpairments": [],
+      "accuracy": 0,
+      "canDash": false,
+      "canDodge": true,
+      "canFistPump": false,
+      "canEncourage": true,
+      "canSpendSurvival": true,
+      "canSurge": false,
+      "canUseFightingArtsOrKnowledges": true,
+      "courage": 0,
+      "cursedGear": [],
+      "dead": false,
+      "disorders": [],
+      "evasion": 0,
+      "fightingArts": [],
+      "hasAnalyze": false,
+      "hasExplore": false,
+      "hasMatchmaker": false,
+      "hasPrepared": false,
+      "hasStalwart": false,
+      "hasTinker": false,
+      "huntXP": 0,
+      "insanity": 0,
+      "luck": 0,
+      "movement": 5,
+      "nextDeparture": [],
+      "oncePerLifetime": [],
+      "rerollUsed": false,
+      "retired": false,
+      "secretFightingArts": [],
+      "skipNextHunt": false,
+      "speed": 0,
+      "strength": 0,
+      "survival": 1,
+      "understanding": 0,
+      "weaponProficiency": 0,
+      "armArmor": 0,
+      "armLightDamage": false,
+      "armHeavyDamage": false,
+      "bodyArmor": 0,
+      "bodyLightDamage": false,
+      "bodyHeavyDamage": false,
+      "brainLightDamage": false,
+      "headArmor": 0,
+      "headHeavyDamage": false,
+      "legArmor": 0,
+      "legLightDamage": false,
+      "legHeavyDamage": false,
+      "waistArmor": 0,
+      "waistLightDamage": false,
+      "waistHeavyDamage": false,
+      "armBroken": 0,
+      "armContracture": 0,
+      "armDismembered": 0,
+      "armRupturedMuscle": false,
+      "bodyBrokenRib": 0,
+      "bodyDestroyedBack": false,
+      "bodyGapingChestWound": 0,
+      "headBlind": 0,
+      "headDeaf": false,
+      "headIntracranialHemorrhage": false,
+      "headShatteredJaw": false,
+      "legBroken": 0,
+      "legDismembered": 0,
+      "legHamstrung": false,
+      "waistBrokenHip": false,
+      "waistDestroyedGenitals": false,
+      "waistIntestinalProlapse": false,
+      "waistWarpedPelvis": 0,
+      "canEndure": false,
+      "knowledge1ObservationRank": 0,
+      "knowledge2ObservationRank": 0,
+      "lumi": 0,
+      "philosophyRank": 0,
+      "systemicPressure": 0,
+      "tenetKnowledgeObservationRank": 0,
+      "torment": 0,
+      "hasAbsoluteReaper": false,
+      "hasAbsoluteRust": false,
+      "hasAbsoluteStorm": false,
+      "hasAbsoluteWitch": false,
+      "hasGamblerReaper": false,
+      "hasGamblerRust": false,
+      "hasGamblerStorm": false,
+      "hasGamblerWitch": false,
+      "hasGoblinReaper": false,
+      "hasGoblinRust": false,
+      "hasGoblinStorm": false,
+      "hasGoblinWitch": false,
+      "hasSculptorReaper": false,
+      "hasSculptorRust": false,
+      "hasSculptorStorm": false,
+      "hasSculptorWitch": false,
+      "gender": "F",
+      "huntXPRankUp": [2, 6, 10, 15],
+      "id": 2,
+      "name": "Erza",
+      "settlementId": 1
+    },
+    {
+      "abilitiesAndImpairments": [],
+      "accuracy": 0,
+      "canDash": false,
+      "canDodge": true,
+      "canFistPump": false,
+      "canEncourage": true,
+      "canSpendSurvival": true,
+      "canSurge": false,
+      "canUseFightingArtsOrKnowledges": true,
+      "courage": 0,
+      "cursedGear": [],
+      "dead": false,
+      "disorders": [],
+      "evasion": 0,
+      "fightingArts": [],
+      "hasAnalyze": false,
+      "hasExplore": false,
+      "hasMatchmaker": false,
+      "hasPrepared": false,
+      "hasStalwart": false,
+      "hasTinker": false,
+      "huntXP": 0,
+      "insanity": 0,
+      "luck": 0,
+      "movement": 5,
+      "nextDeparture": [],
+      "oncePerLifetime": [],
+      "rerollUsed": false,
+      "retired": false,
+      "secretFightingArts": [],
+      "skipNextHunt": false,
+      "speed": 0,
+      "strength": 0,
+      "survival": 1,
+      "understanding": 0,
+      "weaponProficiency": 0,
+      "armArmor": 0,
+      "armLightDamage": false,
+      "armHeavyDamage": false,
+      "bodyArmor": 0,
+      "bodyLightDamage": false,
+      "bodyHeavyDamage": false,
+      "brainLightDamage": false,
+      "headArmor": 0,
+      "headHeavyDamage": false,
+      "legArmor": 0,
+      "legLightDamage": false,
+      "legHeavyDamage": false,
+      "waistArmor": 0,
+      "waistLightDamage": false,
+      "waistHeavyDamage": false,
+      "armBroken": 0,
+      "armContracture": 0,
+      "armDismembered": 0,
+      "armRupturedMuscle": false,
+      "bodyBrokenRib": 0,
+      "bodyDestroyedBack": false,
+      "bodyGapingChestWound": 0,
+      "headBlind": 0,
+      "headDeaf": false,
+      "headIntracranialHemorrhage": false,
+      "headShatteredJaw": false,
+      "legBroken": 0,
+      "legDismembered": 0,
+      "legHamstrung": false,
+      "waistBrokenHip": false,
+      "waistDestroyedGenitals": false,
+      "waistIntestinalProlapse": false,
+      "waistWarpedPelvis": 0,
+      "canEndure": false,
+      "knowledge1ObservationRank": 0,
+      "knowledge2ObservationRank": 0,
+      "lumi": 0,
+      "philosophyRank": 0,
+      "systemicPressure": 0,
+      "tenetKnowledgeObservationRank": 0,
+      "torment": 0,
+      "hasAbsoluteReaper": false,
+      "hasAbsoluteRust": false,
+      "hasAbsoluteStorm": false,
+      "hasAbsoluteWitch": false,
+      "hasGamblerReaper": false,
+      "hasGamblerRust": false,
+      "hasGamblerStorm": false,
+      "hasGamblerWitch": false,
+      "hasGoblinReaper": false,
+      "hasGoblinRust": false,
+      "hasGoblinStorm": false,
+      "hasGoblinWitch": false,
+      "hasSculptorReaper": false,
+      "hasSculptorRust": false,
+      "hasSculptorStorm": false,
+      "hasSculptorWitch": false,
+      "gender": "M",
+      "huntXPRankUp": [2, 6, 10, 15],
+      "id": 3,
+      "name": "Zachary",
+      "settlementId": 1
+    },
+    {
+      "abilitiesAndImpairments": ["I dunno"],
+      "accuracy": 1,
+      "canDash": true,
+      "canDodge": true,
+      "canFistPump": false,
+      "canEncourage": true,
+      "canSpendSurvival": false,
+      "canSurge": false,
+      "canUseFightingArtsOrKnowledges": true,
+      "courage": 3,
+      "cursedGear": ["King's Mans Helm"],
+      "dead": false,
+      "disorders": ["PTSD"],
+      "evasion": 3,
+      "fightingArts": ["Womp"],
+      "hasAnalyze": false,
+      "hasExplore": true,
+      "hasMatchmaker": false,
+      "hasPrepared": true,
+      "hasStalwart": false,
+      "hasTinker": false,
+      "huntXP": 7,
+      "insanity": 1,
+      "luck": 4,
+      "movement": 5,
+      "nextDeparture": ["+1 Insanity"],
+      "oncePerLifetime": ["+1 Survival"],
+      "rerollUsed": true,
+      "retired": false,
+      "secretFightingArts": [],
+      "skipNextHunt": true,
+      "speed": 4,
+      "strength": 2,
+      "survival": 3,
+      "understanding": 3,
+      "weaponProficiency": 3,
+      "armArmor": 3,
+      "armLightDamage": false,
+      "armHeavyDamage": false,
+      "bodyArmor": 4,
+      "bodyLightDamage": false,
+      "bodyHeavyDamage": false,
+      "brainLightDamage": false,
+      "headArmor": 2,
+      "headHeavyDamage": false,
+      "legArmor": 6,
+      "legLightDamage": false,
+      "legHeavyDamage": false,
+      "waistArmor": 5,
+      "waistLightDamage": false,
+      "waistHeavyDamage": false,
+      "armBroken": 2,
+      "armContracture": 5,
+      "armDismembered": 2,
+      "armRupturedMuscle": true,
+      "bodyBrokenRib": 5,
+      "bodyDestroyedBack": true,
+      "bodyGapingChestWound": 5,
+      "headBlind": 2,
+      "headDeaf": true,
+      "headIntracranialHemorrhage": true,
+      "headShatteredJaw": true,
+      "legBroken": 2,
+      "legDismembered": 2,
+      "legHamstrung": true,
+      "waistBrokenHip": true,
+      "waistDestroyedGenitals": true,
+      "waistIntestinalProlapse": true,
+      "waistWarpedPelvis": 5,
+      "canEndure": false,
+      "knowledge1ObservationRank": 0,
+      "knowledge2ObservationRank": 0,
+      "lumi": 0,
+      "philosophyRank": 0,
+      "systemicPressure": 0,
+      "tenetKnowledgeObservationRank": 0,
+      "torment": 0,
+      "hasAbsoluteReaper": false,
+      "hasAbsoluteRust": false,
+      "hasAbsoluteStorm": false,
+      "hasAbsoluteWitch": false,
+      "hasGamblerReaper": false,
+      "hasGamblerRust": false,
+      "hasGamblerStorm": false,
+      "hasGamblerWitch": false,
+      "hasGoblinReaper": false,
+      "hasGoblinRust": false,
+      "hasGoblinStorm": false,
+      "hasGoblinWitch": false,
+      "hasSculptorReaper": false,
+      "hasSculptorRust": false,
+      "hasSculptorStorm": false,
+      "hasSculptorWitch": false,
+      "gender": "F",
+      "huntXPRankUp": [2, 6, 10, 15],
+      "id": 4,
+      "name": "Lucy",
+      "settlementId": 1,
+      "weaponProficiencyType": "Axe"
+    }
+  ],
+  "showdowns": [
+    {
+      "ambush": "none",
+      "id": 1,
+      "monster": {
+        "accuracy": 0,
+        "accuracyTokens": 1,
+        "aiDeckSize": 3,
+        "damage": 0,
+        "damageTokens": 1,
+        "evasion": 0,
+        "evasionTokens": 1,
+        "knockedDown": false,
+        "level": "1",
+        "luck": 0,
+        "luckTokens": 1,
+        "moods": ["Mood #1"],
+        "movement": 8,
+        "movementTokens": 2,
+        "name": "White Lion",
+        "notes": "Showdown monster notes",
+        "speed": 1,
+        "speedTokens": 2,
+        "strength": 0,
+        "strengthTokens": 1,
+        "toughness": 8,
+        "traits": ["Trait #1"],
+        "type": "Quarry",
+        "wounds": 2
+      },
+      "scout": 1,
+      "settlementId": 1,
+      "survivorDetails": [
+        {
+          "accuracyTokens": 0,
+          "bleedingTokens": 0,
+          "blockTokens": 0,
+          "color": "slate",
+          "deflectTokens": 0,
+          "evasionTokens": 0,
+          "id": 3,
+          "insanityTokens": 0,
+          "knockedDown": false,
+          "luckTokens": 0,
+          "movementTokens": 0,
+          "notes": "",
+          "priorityTarget": false,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        },
+        {
+          "accuracyTokens": 0,
+          "bleedingTokens": 0,
+          "blockTokens": 0,
+          "color": "slate",
+          "deflectTokens": 0,
+          "evasionTokens": 0,
+          "id": 4,
+          "insanityTokens": 0,
+          "knockedDown": false,
+          "luckTokens": 0,
+          "movementTokens": 0,
+          "notes": "",
+          "priorityTarget": false,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        },
+        {
+          "accuracyTokens": 0,
+          "bleedingTokens": 0,
+          "blockTokens": 0,
+          "color": "slate",
+          "deflectTokens": 0,
+          "evasionTokens": 0,
+          "id": 2,
+          "insanityTokens": 0,
+          "knockedDown": false,
+          "luckTokens": 0,
+          "movementTokens": 0,
+          "notes": "",
+          "priorityTarget": false,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        },
+        {
+          "accuracyTokens": 0,
+          "bleedingTokens": 0,
+          "blockTokens": 0,
+          "color": "slate",
+          "deflectTokens": 0,
+          "evasionTokens": 0,
+          "id": 1,
+          "insanityTokens": 0,
+          "knockedDown": false,
+          "luckTokens": 0,
+          "movementTokens": 0,
+          "notes": "",
+          "priorityTarget": false,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        }
+      ],
+      "survivors": [3, 4, 2],
+      "turn": {
+        "currentTurn": "monster",
+        "monsterState": {
+          "aiCardDrawn": false
+        },
+        "survivorStates": []
+      }
+    }
+  ]
+}
