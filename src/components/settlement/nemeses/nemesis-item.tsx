@@ -91,7 +91,6 @@ export function NemesisItem({
   )
   const currentNemesisId = selectedSettlement?.nemeses?.[index]?.id
 
-  // Only update ref when nemesis ID actually changes
   if (nemesisIdRef.current !== currentNemesisId) {
     nemesisIdRef.current = currentNemesisId
     console.debug('[NemesisItem] Nemesis ID changed', currentNemesisId, index)
