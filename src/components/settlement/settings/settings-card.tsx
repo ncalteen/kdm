@@ -20,8 +20,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import {
+  CAMPAIGN_UNLOCK_KILLENIUM_BUTCHER_UPDATED_MESSAGE,
+  CAMPAIGN_UNLOCK_SCREAMING_NUKALOPE_UPDATED_MESSAGE,
+  CAMPAIGN_UNLOCK_WHITE_GIGALION_UPDATED_MESSAGE,
   DISABLE_TOASTS_SETTING_UPDATED_MESSAGE,
   ERROR_MESSAGE,
   HUNT_DELETED_MESSAGE,
@@ -90,6 +94,33 @@ export function SettingsCard({
       return false
     }
   })
+  const [killeniumButcherUnlocked, setKilleniumButcherUnlocked] =
+    useState<boolean>(() => {
+      try {
+        return getCampaign().settings.unlockedMonsters.killeniumButcher ?? false
+      } catch {
+        return false
+      }
+    })
+  const [screamingNukalopeUnlocked, setScreamingNukalopeUnlocked] =
+    useState<boolean>(() => {
+      try {
+        return (
+          getCampaign().settings.unlockedMonsters.screamingNukalope ?? false
+        )
+      } catch {
+        return false
+      }
+    })
+  const [whiteGigalionUnlocked, setWhiteGigalionUnlocked] = useState<boolean>(
+    () => {
+      try {
+        return getCampaign().settings.unlockedMonsters.whiteGigalion ?? false
+      } catch {
+        return false
+      }
+    }
+  )
 
   /**
    * Handles updating the disable toasts setting
@@ -99,21 +130,107 @@ export function SettingsCard({
 
     try {
       const campaign = getCampaign()
+      campaign.settings.disableToasts = newDisableToasts
 
-      saveCampaignToLocalStorage({
-        ...campaign,
-        settings: {
-          ...campaign.settings,
-          disableToasts: newDisableToasts
-        }
-      })
-
+      saveCampaignToLocalStorage(campaign)
       setDisableToasts(newDisableToasts)
 
       // Always show this toast so user knows the setting was changed
       toast.success(DISABLE_TOASTS_SETTING_UPDATED_MESSAGE(newDisableToasts))
     } catch (error) {
       console.error('Disable Toasts Update Error:', error)
+      toast.error(ERROR_MESSAGE())
+    }
+  }
+
+  /**
+   * Handles updating the Killenium Butcher unlocked setting.
+   *
+   * This is set for all campaigns.
+   */
+  const handleKilleniumButcherUnlockedChange = (value: string) => {
+    const unlocked = value === 'true'
+
+    try {
+      const campaign = getCampaign()
+
+      // Ensure unlockedMonsters is defined
+      if (campaign.settings.unlockedMonsters === undefined)
+        campaign.settings.unlockedMonsters = {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
+      campaign.settings.unlockedMonsters.killeniumButcher = unlocked
+
+      saveCampaignToLocalStorage(campaign)
+      setKilleniumButcherUnlocked(unlocked)
+
+      toast.success(CAMPAIGN_UNLOCK_KILLENIUM_BUTCHER_UPDATED_MESSAGE(unlocked))
+    } catch (error) {
+      console.error('Killenium Butcher Unlock Error:', error)
+      toast.error(ERROR_MESSAGE())
+    }
+  }
+
+  /**
+   * Handles updating the Screaming Nukalope unlocked setting.
+   *
+   * This is set for all campaigns.
+   */
+  const handleScreamingNukalopeUnlockedChange = (value: string) => {
+    const unlocked = value === 'true'
+
+    try {
+      const campaign = getCampaign()
+
+      // Ensure unlockedMonsters is defined
+      if (campaign.settings.unlockedMonsters === undefined)
+        campaign.settings.unlockedMonsters = {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
+      campaign.settings.unlockedMonsters.screamingNukalope = unlocked
+
+      saveCampaignToLocalStorage(campaign)
+      setScreamingNukalopeUnlocked(unlocked)
+
+      toast.success(
+        CAMPAIGN_UNLOCK_SCREAMING_NUKALOPE_UPDATED_MESSAGE(unlocked)
+      )
+    } catch (error) {
+      console.error('Screaming Nukalope Unlock Error:', error)
+      toast.error(ERROR_MESSAGE())
+    }
+  }
+
+  /**
+   * Handles updating the White Gigalion unlocked setting.
+   *
+   * This is set for all campaigns.
+   */
+  const handleWhiteGigalionUnlockedChange = (value: string) => {
+    const unlocked = value === 'true'
+
+    try {
+      const campaign = getCampaign()
+
+      // Ensure unlockedMonsters is defined
+      if (campaign.settings.unlockedMonsters === undefined)
+        campaign.settings.unlockedMonsters = {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
+      campaign.settings.unlockedMonsters.whiteGigalion = unlocked
+
+      saveCampaignToLocalStorage(campaign)
+      setWhiteGigalionUnlocked(unlocked)
+
+      toast.success(CAMPAIGN_UNLOCK_WHITE_GIGALION_UPDATED_MESSAGE(unlocked))
+    } catch (error) {
+      console.error('White Gigalion Unlock Error:', error)
       toast.error(ERROR_MESSAGE())
     }
   }
@@ -262,6 +379,82 @@ export function SettingsCard({
               name="disable-toasts"
               aria-label="Disable Notifications">
               <SelectTrigger className="w-24" id="disable-toasts">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="true">Yes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator className="my-2" />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-sm">
+                Unlock Killenium Butcher
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Allows the Killenium Butcher nemesis to appear in showdowns.
+              </div>
+            </div>
+            <Select
+              value={killeniumButcherUnlocked.toString()}
+              onValueChange={handleKilleniumButcherUnlockedChange}
+              name="unlock-killenium-butcher"
+              aria-label="Unlock Killenium Butcher">
+              <SelectTrigger className="w-24" id="unlock-killenium-butcher">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="true">Yes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator className="my-2" />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-sm">
+                Unlock Screaming Nukalope
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Allows the Screaming Nukalope quarry to be hunted.
+              </div>
+            </div>
+            <Select
+              value={screamingNukalopeUnlocked.toString()}
+              onValueChange={handleScreamingNukalopeUnlockedChange}
+              name="unlock-screaming-nukalope"
+              aria-label="Unlock Screaming Nukalope">
+              <SelectTrigger className="w-24" id="unlock-screaming-nukalope">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">No</SelectItem>
+                <SelectItem value="true">Yes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator className="my-2" />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium text-sm">Unlock White Gigalion</div>
+              <div className="text-sm text-muted-foreground">
+                Allows the White Gigalion quarry to be hunted.
+              </div>
+            </div>
+            <Select
+              value={whiteGigalionUnlocked.toString()}
+              onValueChange={handleWhiteGigalionUnlockedChange}
+              name="unlock-white-gigalion"
+              aria-label="Unlock White Gigalion">
+              <SelectTrigger className="w-24" id="unlock-white-gigalion">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

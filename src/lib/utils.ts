@@ -70,7 +70,15 @@ export function getCampaign(): Campaign {
     selectedSurvivorId: storedCampaign.selectedSurvivorId || null,
     selectedTab: storedCampaign.selectedTab || null,
     settings: {
-      disableToasts: storedCampaign.settings?.disableToasts ?? false
+      disableToasts: storedCampaign.settings?.disableToasts ?? false,
+      unlockedMonsters: {
+        killeniumButcher:
+          storedCampaign.settings?.unlockedMonsters?.killeniumButcher ?? false,
+        screamingNukalope:
+          storedCampaign.settings?.unlockedMonsters?.screamingNukalope ?? false,
+        whiteGigalion:
+          storedCampaign.settings?.unlockedMonsters?.whiteGigalion ?? false
+      }
     },
     settlements: storedCampaign.settlements || [],
     survivors: storedCampaign.survivors || [],

@@ -58,6 +58,45 @@ export const ARRIVAL_BONUS_UPDATED_MESSAGE = (index?: number) =>
     : 'A new blessing graces your settlement.'
 
 /**
+ * Campaign Unlocked Killenium Butcher Message
+ *
+ * @param unlocked Campaign Unlocked Killenium Butcher Status
+ * @returns Campaign Unlocked Killenium Butcher Status Updated Message
+ */
+export const CAMPAIGN_UNLOCK_KILLENIUM_BUTCHER_UPDATED_MESSAGE = (
+  unlocked: boolean
+) =>
+  unlocked
+    ? 'Killenium Butcher accepts your challenge.'
+    : 'Killenium Butcher retreats into the darkness.'
+
+/**
+ * Campaign Unlocked Screaming Nukalope Message
+ *
+ * @param unlocked Campaign Unlocked Screaming Nukalope Status
+ * @returns Campaign Unlocked Screaming Nukalope Status Updated Message
+ */
+export const CAMPAIGN_UNLOCK_SCREAMING_NUKALOPE_UPDATED_MESSAGE = (
+  unlocked: boolean
+) =>
+  unlocked
+    ? 'Screaming Nukalope accepts your challenge.'
+    : 'Screaming Nukalope retreats into the darkness.'
+
+/**
+ * Campaign Unlocked White Gigalion Message
+ *
+ * @param unlocked Campaign Unlocked White Gigalion Status
+ * @returns Campaign Unlocked White Gigalion Status Updated Message
+ */
+export const CAMPAIGN_UNLOCK_WHITE_GIGALION_UPDATED_MESSAGE = (
+  unlocked: boolean
+) =>
+  unlocked
+    ? 'White Gigalion accepts your challenge.'
+    : 'White Gigalion retreats into the darkness.'
+
+/**
  * Collective Cognition Reward No Target Error
  *
  * @returns No Target Collective Cognition Reward Error Message
