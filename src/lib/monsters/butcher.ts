@@ -28,7 +28,7 @@ export const BUTCHER: NemesisMonsterData = {
     survivorStatuses: ['Infectious Lunacy'],
     toughness: 9,
     toughnessTokens: 0,
-    traits: ['Berserker', 'Fast Target', 'Dreaded Trophies']
+    traits: ['Berserker', 'Dreaded Trophies', 'Fast Target']
   },
   level2: {
     accuracy: 0,
@@ -50,7 +50,7 @@ export const BUTCHER: NemesisMonsterData = {
     survivorStatuses: ['Infectious Lunacy'],
     toughness: 12,
     toughnessTokens: 0,
-    traits: ['Frenzied Berserker', 'Fast Target', 'Dreaded Trophies']
+    traits: ['Dreaded Trophies', 'Fast Target', 'Frenzied Berserker']
   },
   level3: {
     accuracy: 0,
@@ -73,10 +73,11 @@ export const BUTCHER: NemesisMonsterData = {
     toughness: 15,
     toughnessTokens: 0,
     traits: [
-      'Frenzied Berserker',
-      'Fast Target',
-      'Invincible',
       'Dreaded Trophies',
+      'Fast Target',
+      'Frenzied Berserker',
+      'Invincible',
+
       'Indomitable'
     ]
   },
@@ -140,7 +141,7 @@ export const KILLENIUM_BUTCHER: NemesisMonsterData = {
     survivorStatuses: ['Infectious Lunacy'],
     toughness: 13,
     toughnessTokens: 0,
-    traits: ['Self-Aware', 'Scorn']
+    traits: ['Scorn', 'Self-Aware']
   },
   level3: {
     accuracy: 0,
@@ -162,7 +163,7 @@ export const KILLENIUM_BUTCHER: NemesisMonsterData = {
     survivorStatuses: ['Infectious Lunacy'],
     toughness: 16,
     toughnessTokens: 0,
-    traits: ['Self-Aware', 'Scorn', 'Indomitable', 'Berzerker', 'Invincible']
+    traits: ['Berzerker', 'Invincible', 'Scorn', 'Self-Aware', 'Indomitable']
   },
   timeline: {}
 }

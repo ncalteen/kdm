@@ -56,10 +56,10 @@ export const ATNAS: NemesisMonsterData = {
     toughness: 14,
     toughnessTokens: 0,
     traits: [
-      'Old Battle Scars',
-      "Master's Presence",
-      'Mad Master',
       'Curb Stomp',
+      'Mad Master',
+      "Master's Presence",
+      'Old Battle Scars',
       'Spark of Joy'
     ]
   },
@@ -84,13 +84,14 @@ export const ATNAS: NemesisMonsterData = {
     toughness: 19,
     toughnessTokens: 0,
     traits: [
-      'Old Battle Scars',
-      "Master's Presence",
-      'Indomitable',
-      'Mad Master',
       'Curb Stomp',
+      'Keen Eyes',
+      'Mad Master',
+      "Master's Presence",
+      'Old Battle Scars',
       'Spark of Joy',
-      'Keen Eyes'
+
+      'Indomitable'
     ]
   },
   timeline: {

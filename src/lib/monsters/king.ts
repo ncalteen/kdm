@@ -5,6 +5,13 @@ import { QuarryMonsterData } from '@/lib/types'
  * King Monster Data
  */
 export const KING: QuarryMonsterData = {
+  ccRewards: [
+    {
+      name: 'King Cuisine',
+      cc: 36,
+      unlocked: false
+    }
+  ],
   huntBoard: {
     0: undefined,
     1: HuntEventType.MONSTER,
@@ -46,9 +53,9 @@ export const KING: QuarryMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Audio Synthesis',
-      "King's New Clothes",
+      'Current',
       'Ghost Geometry',
-      'Current'
+      "King's New Clothes"
     ]
   },
   level2: {
@@ -74,10 +81,10 @@ export const KING: QuarryMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Audio Synthesis',
-      "King's New Clothes",
-      'Ghost Geometry',
       'Current',
-      'Half Power'
+      'Ghost Geometry',
+      'Half Power',
+      "King's New Clothes"
     ]
   },
   level3: {
@@ -103,13 +110,15 @@ export const KING: QuarryMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Audio Synthesis',
-      "King's New Clothes",
-      'Ghost Geometry',
       'Current',
       'Full Power',
+      'Ghost Geometry',
+      "King's New Clothes",
       "King's Presence",
+
       'Indomitable'
     ]
   },
+  locations: [{ name: 'Kingsmith', unlocked: false }],
   timeline: { 22: ['The Awaited'] }
 }

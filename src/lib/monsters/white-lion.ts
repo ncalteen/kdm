@@ -5,6 +5,13 @@ import { QuarryMonsterData } from '@/lib/types'
  * White Lion Monster Data
  */
 export const WHITE_LION: QuarryMonsterData = {
+  ccRewards: [
+    {
+      name: 'White Lion Cuisine',
+      cc: 6,
+      unlocked: false
+    }
+  ],
   huntBoard: {
     0: undefined,
     1: HuntEventType.MONSTER,
@@ -90,8 +97,9 @@ export const WHITE_LION: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 14,
     toughnessTokens: 0,
-    traits: ['Cunning', 'Indomitable', 'Merciless']
+    traits: ['Cunning', 'Merciless', 'Indomitable']
   },
+  locations: [{ name: 'Catarium', unlocked: false }],
   timeline: {
     0: ['White Lion']
   }
@@ -101,6 +109,7 @@ export const WHITE_LION: QuarryMonsterData = {
  * White Gigalion Monster Data
  */
 export const WHITE_GIGALION: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -140,7 +149,7 @@ export const WHITE_GIGALION: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
-    traits: ['Vicious', 'Giga Claws', 'Smart Cat']
+    traits: ['Giga Claws', 'Smart Cat', 'Vicious']
   },
   level3: {
     accuracy: 0,
@@ -164,13 +173,15 @@ export const WHITE_GIGALION: QuarryMonsterData = {
     toughness: 16,
     toughnessTokens: 0,
     traits: [
-      'Vicious',
       'Giga Claws',
-      'Smart Cat',
-      'Merciless',
       'Golden Eyes',
+      'Merciless',
+      'Smart Cat',
+      'Vicious',
+
       'Indomitable'
     ]
   },
+  locations: [{ name: 'Giga Catarium', unlocked: false }],
   timeline: {}
 }

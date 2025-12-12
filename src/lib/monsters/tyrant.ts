@@ -28,7 +28,7 @@ export const TYRANT: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
-    traits: ['Crooked Step', 'Spectral Blast', "Destiny's Marrow"]
+    traits: ['Crooked Step', "Destiny's Marrow", 'Spectral Blast']
   },
   level2: {
     accuracy: 0,
@@ -50,7 +50,7 @@ export const TYRANT: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
-    traits: ['Crooked Step', 'Spectral Blast', "Destiny's Marrow", 'Quickened']
+    traits: ['Crooked Step', "Destiny's Marrow", 'Quickened', 'Spectral Blast']
   },
   level3: {
     accuracy: 0,
@@ -74,9 +74,10 @@ export const TYRANT: NemesisMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Crooked Step',
-      'Spectral Blast',
       "Destiny's Marrow",
       'Quickened',
+      'Spectral Blast',
+
       'Indomitable'
     ]
   },

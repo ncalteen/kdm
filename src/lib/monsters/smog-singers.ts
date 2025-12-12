@@ -5,6 +5,13 @@ import { QuarryMonsterData } from '@/lib/types'
  * Smog Singers Monster Data
  */
 export const SMOG_SINGERS: QuarryMonsterData = {
+  ccRewards: [
+    {
+      name: 'Smog Singer Cuisine',
+      cc: 16,
+      unlocked: false
+    }
+  ],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -44,7 +51,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
     survivorStatuses: ['Bloody Hands'],
     toughness: 7,
     toughnessTokens: 0,
-    traits: ['Performing Artists', 'Vibration Damage', 'Song Cards']
+    traits: ['Performing Artists', 'Song Cards', 'Vibration Damage']
   },
   level2: {
     accuracy: 0,
@@ -68,10 +75,10 @@ export const SMOG_SINGERS: QuarryMonsterData = {
     toughness: 9,
     toughnessTokens: 0,
     traits: [
+      'Overtone Singing',
       'Performing Artists',
-      'Vibration Damage',
       'Song Cards',
-      'Overtone Singing'
+      'Vibration Damage'
     ]
   },
   level3: {
@@ -96,14 +103,16 @@ export const SMOG_SINGERS: QuarryMonsterData = {
     toughness: 12,
     toughnessTokens: 0,
     traits: [
-      'Performing Artists',
-      'Vibration Damage',
-      'Song Cards',
       'Overtone Singing',
+      'Performing Artists',
       'Singing Whale',
+      'Song Cards',
+      'Vibration Damage',
+
       'Indomitable'
     ]
   },
+  locations: [{ name: 'Chorusseum', unlocked: false }],
   timeline: {
     2: ['Death of Song']
   }

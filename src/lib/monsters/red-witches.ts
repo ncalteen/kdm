@@ -61,7 +61,7 @@ export const RED_WITCHES_BRAAL: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 11,
     toughnessTokens: 0,
-    traits: ['Discouraging Presence', 'Boiling Blood']
+    traits: ['Boiling Blood', 'Discouraging Presence']
   },
   level2: {
     accuracy: 0,
@@ -140,7 +140,7 @@ export const RED_WITCHES_NICO: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 13,
     toughnessTokens: 0,
-    traits: ['Witching Cloak', 'Red Initiate']
+    traits: ['Red Initiate', 'Witching Cloak']
   },
   level3: {
     accuracy: 0,
@@ -163,7 +163,7 @@ export const RED_WITCHES_NICO: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 13,
     toughnessTokens: 0,
-    traits: ['Witching Cloak', 'Red Initiate', 'Indomitable']
+    traits: ['Red Initiate', 'Witching Cloak', 'Indomitable']
   },
   timeline: {}
 }

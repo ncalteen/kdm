@@ -130,6 +130,8 @@ export type NemesisMonsterData = {
  * Quarry Monster Data
  */
 export type QuarryMonsterData = {
+  /** Collective Cognition Rewards */
+  ccRewards: CollectiveCognitionReward[]
   /** Hunt Board Configuration */
   huntBoard: {
     [key: number]: HuntEventType.BASIC | HuntEventType.MONSTER | undefined
@@ -148,6 +150,8 @@ export type QuarryMonsterData = {
   level3?: QuarryMonsterLevelData
   /** Level 4 Data */
   level4?: QuarryMonsterLevelData
+  /** Locations */
+  locations: Location[]
   /** Timeline Entries */
   timeline: {
     [key: number]: string[] | { title: string; campaigns: CampaignType[] }

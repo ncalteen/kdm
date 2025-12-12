@@ -5,6 +5,7 @@ import { NemesisMonsterData, QuarryMonsterData } from '@/lib/types'
  * Dragon King Monster Data
  */
 export const DRAGON_KING: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.MONSTER,
@@ -90,8 +91,9 @@ export const DRAGON_KING: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 17,
     toughnessTokens: 0,
-    traits: ['Irradiate', 'Unseen Agony', 'Smolder', 'Indomitable']
+    traits: ['Irradiate', 'Smolder', 'Unseen Agony', 'Indomitable']
   },
+  locations: [{ name: 'Dragon Armory', unlocked: false }],
   timeline: {
     8: ['Glowing Crater']
   }
@@ -127,7 +129,7 @@ export const DYING_GOD: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 17,
     toughnessTokens: 0,
-    traits: ['Irradiate', 'Unseen Agony', 'Smolder', 'Trample']
+    traits: ['Irradiate', 'Smolder', 'Trample', 'Unseen Agony']
   },
   timeline: {
     24: ['Nemesis Encounter - Death of the Dragon King']

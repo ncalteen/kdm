@@ -28,7 +28,7 @@ export const KINGS_MAN: NemesisMonsterData = {
     survivorStatuses: ['Battle Tempo'],
     toughness: 12,
     toughnessTokens: 0,
-    traits: ['Weak Spot', "King's Aura", "King's Combat", 'Out-Fighting']
+    traits: ["King's Aura", "King's Combat", 'Out-Fighting', 'Weak Spot']
   },
   level2: {
     accuracy: 0,
@@ -51,11 +51,11 @@ export const KINGS_MAN: NemesisMonsterData = {
     toughness: 15,
     toughnessTokens: 0,
     traits: [
-      'Weak Spot',
       "King's Aura",
       "King's Combat",
       'Out-Fighting',
-      'Silent Hymn'
+      'Silent Hymn',
+      'Weak Spot'
     ]
   },
   level3: {
@@ -79,11 +79,12 @@ export const KINGS_MAN: NemesisMonsterData = {
     toughness: 18,
     toughnessTokens: 0,
     traits: [
-      'Weak Spot',
       "King's Aura",
       "King's Combat",
       'Out-Fighting',
       'Silent Hymn',
+      'Weak Spot',
+
       'Indomitable'
     ]
   },

@@ -29,7 +29,7 @@ export const GODHAND: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 30,
     toughnessTokens: 0,
-    traits: ['True Ghost Step', 'Reinforcements', 'Old Blood', 'Indomitable']
+    traits: ['Old Blood', 'Reinforcements', 'True Ghost Step', 'Indomitable']
   },
   timeline: {
     30: ['Nemesis Encounter - Godhand']

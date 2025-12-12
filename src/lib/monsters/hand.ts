@@ -31,12 +31,12 @@ export const HAND: NemesisMonsterData = {
     toughness: 14,
     toughnessTokens: 0,
     traits: [
-      'Red Lens - Closed',
-      'Blue Lens - Closed',
-      'Green Lens - Closed',
-      'Ghost Step',
       'Applause',
-      'Impossible Eyes'
+      'Blue Lens - Closed',
+      'Ghost Step',
+      'Green Lens - Closed',
+      'Impossible Eyes',
+      'Red Lens - Closed'
     ]
   },
   level2: {
@@ -60,12 +60,12 @@ export const HAND: NemesisMonsterData = {
     toughness: 15,
     toughnessTokens: 0,
     traits: [
-      'Red Lens - Closed',
-      'Blue Lens - Closed',
-      'Green Lens - Closed',
-      'Ghost Step',
       'Applause',
-      'Impossible Eyes'
+      'Blue Lens - Closed',
+      'Ghost Step',
+      'Green Lens - Closed',
+      'Impossible Eyes',
+      'Red Lens - Closed'
     ]
   },
   level3: {
@@ -89,12 +89,13 @@ export const HAND: NemesisMonsterData = {
     toughness: 30,
     toughnessTokens: 0,
     traits: [
-      'Red Lens - Closed',
-      'Blue Lens - Closed',
-      'Green Lens - Closed',
-      'Ghost Step',
       'Applause',
+      'Blue Lens - Closed',
+      'Ghost Step',
+      'Green Lens - Closed',
       'Impossible Eyes',
+      'Red Lens - Closed',
+
       'Indomitable'
     ]
   },

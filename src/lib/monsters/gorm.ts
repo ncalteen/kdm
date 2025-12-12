@@ -5,6 +5,7 @@ import { QuarryMonsterData } from '@/lib/types'
  * Gorm Monster Data
  */
 export const GORM: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.MONSTER,
@@ -101,6 +102,10 @@ export const GORM: QuarryMonsterData = {
       'Indomitable'
     ]
   },
+  locations: [
+    { name: 'Gormchymist', unlocked: false },
+    { name: 'Gormery', unlocked: false }
+  ],
   timeline: {
     1: ['The Approaching Storm']
   }

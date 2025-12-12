@@ -5,6 +5,7 @@ import { QuarryMonsterData } from '@/lib/types'
  * Spidicules Monster Data
  */
 export const SPIDICULES: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.MONSTER,
@@ -44,7 +45,7 @@ export const SPIDICULES: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
-    traits: ['Twitching Leg Pile', 'Spawn', 'Spiderling Action']
+    traits: ['Spawn', 'Spiderling Action', 'Twitching Leg Pile']
   },
   level2: {
     accuracy: 0,
@@ -67,7 +68,7 @@ export const SPIDICULES: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
-    traits: ['Twitching Leg Pile', 'Spawn', 'Spiderling Action', 'Hivemind']
+    traits: ['Hivemind', 'Spiderling Action', 'Spawn', 'Twitching Leg Pile']
   },
   level3: {
     accuracy: 0,
@@ -91,13 +92,14 @@ export const SPIDICULES: QuarryMonsterData = {
     toughness: 12,
     toughnessTokens: 0,
     traits: [
-      'Twitching Leg Pile',
+      '10,000 Teeth',
+      'Hivemind',
       'Spawn',
       'Spiderling Action',
-      'Hivemind',
-      '10,000 Teeth'
+      'Twitching Leg Pile'
     ]
   },
+  locations: [],
   timeline: {
     2: ['Young Rivals']
   }

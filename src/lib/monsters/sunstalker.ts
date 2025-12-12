@@ -5,6 +5,7 @@ import { NemesisMonsterData, QuarryMonsterData } from '@/lib/types'
  * Sunstalker Monster Data
  */
 export const SUNSTALKER: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -45,11 +46,11 @@ export const SUNSTALKER: QuarryMonsterData = {
     toughness: 10,
     toughnessTokens: 0,
     traits: [
-      'Solar Energy',
-      'Sun Dial',
       'Light & Shadow',
       'Shade',
-      'Shadows of Darkness'
+      'Shadows of Darkness',
+      'Solar Energy',
+      'Sun Dial'
     ]
   },
   level2: {
@@ -74,12 +75,12 @@ export const SUNSTALKER: QuarryMonsterData = {
     toughness: 12,
     toughnessTokens: 0,
     traits: [
-      'Solar Energy',
-      'Sun Dial',
       'Light & Shadow',
+      'Living Shadows',
       'Shade',
       'Shadows of Darkness',
-      'Living Shadows'
+      'Solar Energy',
+      'Sun Dial'
     ]
   },
   level3: {
@@ -104,16 +105,18 @@ export const SUNSTALKER: QuarryMonsterData = {
     toughness: 16,
     toughnessTokens: 0,
     traits: [
-      'Solar Energy',
-      'Sun Dial',
       'Light & Shadow',
-      'Shade',
-      'Shadows of Darkness',
       'Living Shadows',
       'Monochrome',
+      'Shade',
+      'Shadows of Darkness',
+      'Solar Energy',
+      'Sun Dial',
+
       'Indomitable'
     ]
   },
+  locations: [{ name: 'Skyreef Sanctuary', unlocked: false }],
   timeline: {
     8: ['Promise Under the Sun']
   }
@@ -156,13 +159,14 @@ export const GREAT_DEVOURER: NemesisMonsterData = {
     toughness: 18,
     toughnessTokens: 0,
     traits: [
-      'Solar Energy',
-      'Sun Dial',
       'Light & Shadow',
-      'Shade',
-      'Shadows of Darkness',
       'Living Shadows',
       'Monochrome',
+      'Shade',
+      'Shadows of Darkness',
+      'Solar Energy',
+      'Sun Dial',
+
       'Indomitable'
     ]
   },

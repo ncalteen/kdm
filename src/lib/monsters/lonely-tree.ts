@@ -55,8 +55,8 @@ export const LONELY_TREE: NemesisMonsterData = {
     traits: [
       'Bear Fruit',
       'Impenetrable Trunk',
-      'Nightmare Fruit',
-      'Moving Ground'
+      'Moving Ground',
+      'Nightmare Fruit'
     ]
   },
   level3: {
@@ -83,8 +83,8 @@ export const LONELY_TREE: NemesisMonsterData = {
     traits: [
       'Bear Fruit',
       'Impenetrable Trunk',
-      'Nightmare Fruit',
-      'Moving Ground'
+      'Moving Ground',
+      'Nightmare Fruit'
     ]
   },
   timeline: {}

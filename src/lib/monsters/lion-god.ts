@@ -5,6 +5,7 @@ import { QuarryMonsterData } from '@/lib/types'
  * Lion God Monster Data
  */
 export const LION_GOD: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -44,7 +45,7 @@ export const LION_GOD: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 14,
     toughnessTokens: 0,
-    traits: ['Whiplash', 'Hollow Earth', 'Heft']
+    traits: ['Heft', 'Hollow Earth', 'Whiplash']
   },
   level2: {
     accuracy: 0,
@@ -67,7 +68,7 @@ export const LION_GOD: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 16,
     toughnessTokens: 0,
-    traits: ['Whiplash', 'Hollow Earth', 'Heft', 'Divine Prowess']
+    traits: ['Divine Prowess', 'Heft', 'Hollow Earth', 'Whiplash']
   },
   level3: {
     accuracy: 0,
@@ -91,14 +92,16 @@ export const LION_GOD: QuarryMonsterData = {
     toughness: 21,
     toughnessTokens: 0,
     traits: [
-      'Whiplash',
-      'Hollow Earth',
-      'Heft',
       'Divine Prowess',
+      'Heft',
+      'Hollow Earth',
       'Immaculate Intuition',
+      'Whiplash',
+
       'Indomitable'
     ]
   },
+  locations: [],
   timeline: {
     13: ['The Silver City']
   }

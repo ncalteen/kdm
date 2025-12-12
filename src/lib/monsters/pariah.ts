@@ -75,10 +75,11 @@ export const PARIAH: NemesisMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Cyclopean Cruelty',
-      'Indomitable',
       'Inverted',
       'Jagged Grotto',
-      'Somatic Empathy'
+      'Somatic Empathy',
+
+      'Indomitable'
     ]
   },
   timeline: {

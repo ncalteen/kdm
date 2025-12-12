@@ -72,7 +72,7 @@ export const LION_KNIGHT: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 15,
     toughnessTokens: 0,
-    traits: ['Drama Lessons', 'Indomitable', 'Last Act', 'Outburst', 'Zeal']
+    traits: ['Drama Lessons', 'Last Act', 'Outburst', 'Zeal', 'Indomitable']
   },
   timeline: {
     6: ['An Uninvited Guest'],

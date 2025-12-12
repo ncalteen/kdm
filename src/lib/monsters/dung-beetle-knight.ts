@@ -5,6 +5,7 @@ import { QuarryMonsterData } from '@/lib/types'
  * Dung Beetle Knight Monster Data
  */
 export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -47,8 +48,8 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     traits: [
       'Baller',
       'Power Forward',
-      'Separation Anxiety',
-      'Prepared Tunnels'
+      'Prepared Tunnels',
+      'Separation Anxiety'
     ]
   },
   level2: {
@@ -74,10 +75,10 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Baller',
+      'Heavy Load',
       'Power Forward',
-      'Separation Anxiety',
       'Prepared Tunnels',
-      'Heavy Load'
+      'Separation Anxiety'
     ]
   },
   level3: {
@@ -102,15 +103,17 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     toughness: 18,
     toughnessTokens: 0,
     traits: [
-      'Baller',
-      'Power Forward',
-      'Separation Anxiety',
-      'Prepared Tunnels',
-      'Heavy Load',
       'Burrow',
+      'Baller',
+      'Heavy Load',
+      'Power Forward',
+      'Prepared Tunnels',
+      'Separation Anxiety',
+
       'Indomitable'
     ]
   },
+  locations: [],
   timeline: {
     8: ['Rumbling in the Dark']
   }

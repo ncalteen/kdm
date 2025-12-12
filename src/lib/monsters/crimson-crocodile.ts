@@ -5,6 +5,13 @@ import { QuarryMonsterData } from '@/lib/types'
  * Crimson Crocodile Monster Data
  */
 export const CRIMSON_CROCODILE: QuarryMonsterData = {
+  ccRewards: [
+    {
+      name: 'Crimson Crocodile Cuisine',
+      cc: 6,
+      unlocked: false
+    }
+  ],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -44,7 +51,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 7,
     toughnessTokens: 0,
-    traits: ['Immortal Presence', 'Adrenal Adept', 'Enchanted Flesh']
+    traits: ['Adrenal Adept', 'Enchanted Flesh', 'Immortal Presence']
   },
   level2: {
     accuracy: 0,
@@ -68,10 +75,10 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     toughness: 9,
     toughnessTokens: 0,
     traits: [
-      'Immortal Presence',
       'Adrenal Adept',
+      'Blood Soaked',
       'Enchanted Flesh',
-      'Blood Soaked'
+      'Immortal Presence'
     ]
   },
   level3: {
@@ -96,14 +103,16 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     toughness: 15,
     toughnessTokens: 0,
     traits: [
-      'Immortal Presence',
       'Adrenal Adept',
-      'Enchanted Flesh',
-      'Blood Soaked',
       'Blood Secret',
+      'Blood Soaked',
+      'Enchanted Flesh',
+      'Immortal Presence',
+
       'Indomitable'
     ]
   },
+  locations: [{ name: 'Crimson Crockery', unlocked: false }],
   timeline: {
     0: ['Crimson Crocodile']
   }

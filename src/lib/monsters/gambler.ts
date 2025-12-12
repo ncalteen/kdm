@@ -30,10 +30,10 @@ export const GAMBLER: NemesisMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Critical Failure',
+      'Dice Bag',
       'Double or Death',
-      'Magister Ludi',
       "Gambler's Dice",
-      'Dice Bag'
+      'Magister Ludi'
     ]
   },
   timeline: {

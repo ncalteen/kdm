@@ -28,7 +28,7 @@ export const BLACK_KNIGHT: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 4,
-    traits: ['Smash', 'Sheer Cliffs', 'Spry', 'Red Preference']
+    traits: ['Red Preference', 'Sheer Cliffs', 'Smash', 'Spry']
   },
   level2: {
     accuracy: 0,
@@ -50,7 +50,7 @@ export const BLACK_KNIGHT: NemesisMonsterData = {
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 6,
-    traits: ['Smash', 'Sheer Cliffs', 'Spry', 'Red Preference', 'Unsteady']
+    traits: ['Red Preference', 'Sheer Cliffs', 'Smash', 'Spry', 'Unsteady']
   },
   level3: {
     accuracy: 0,
@@ -73,12 +73,13 @@ export const BLACK_KNIGHT: NemesisMonsterData = {
     toughness: 10,
     toughnessTokens: 8,
     traits: [
-      'Smash',
-      'Sheer Cliffs',
-      'Spry',
       'Red Preference',
-      'Unsteady',
       'Seasoned Duelist',
+      'Sheer Cliffs',
+      'Smash',
+      'Spry',
+      'Unsteady',
+
       'Indomitable'
     ]
   },

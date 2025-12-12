@@ -5,6 +5,7 @@ import { QuarryMonsterData } from '@/lib/types'
  * Flower Knight Monster Data
  */
 export const FLOWER_KNIGHT: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -69,7 +70,7 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
-    traits: ['Bloom', 'Set Roots', 'Razor Bulbs']
+    traits: ['Bloom', 'Razor Bulbs', 'Set Roots']
   },
   level3: {
     accuracy: 0,
@@ -95,13 +96,15 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
     toughnessTokens: 0,
     traits: [
       'Bloom',
-      'Set Roots',
-      'Razor Bulbs',
-      'Perfect Aim',
       'Heart of the Woods',
+      'Perfect Aim',
+      'Razor Bulbs',
+      'Set Roots',
+
       'Indomitable'
     ]
   },
+  locations: [],
   timeline: {
     5: ["A Crone's Tale"]
   }

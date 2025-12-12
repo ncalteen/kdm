@@ -1,6 +1,10 @@
 'use client'
 
-import { CoreMilestones } from '@/lib/campaigns/common'
+import {
+  CoreCCRewards,
+  CoreMilestones,
+  CorePrinciples
+} from '@/lib/campaigns/common'
 import { BUTCHER } from '@/lib/monsters/butcher'
 import { HAND } from '@/lib/monsters/hand'
 import { KINGS_MAN } from '@/lib/monsters/kings-man'
@@ -14,54 +18,36 @@ import { CampaignData } from '@/lib/types'
  * People of the Stars Campaign Data
  */
 export const PeopleOfTheStarsCampaignData: CampaignData = {
-  ccRewards: [],
+  ccRewards: [
+    {
+      name: 'Facets of Existence',
+      cc: 1,
+      unlocked: false
+    },
+    ...CoreCCRewards
+  ],
   innovations: ['Dragon Speech'],
   locations: [
     { name: 'Barber Surgeon', unlocked: false },
     { name: 'Blacksmith', unlocked: false },
     { name: 'Bone Smith', unlocked: false },
-    { name: 'Catarium', unlocked: false },
     { name: 'Leather Worker', unlocked: false },
     { name: 'Mask Maker', unlocked: false },
     { name: 'Organ Grinder', unlocked: false },
-    { name: 'Plumery', unlocked: false },
     { name: 'Skinnery', unlocked: false },
-    { name: 'Stone Circle', unlocked: false },
     { name: 'Throne', unlocked: true },
     { name: 'Weapon Crafter', unlocked: false }
   ],
-  milestones: CoreMilestones,
-  nemeses: [BUTCHER, KINGS_MAN, HAND, TYRANT],
-  principles: [
+  milestones: [
+    ...CoreMilestones,
     {
-      name: 'New Life',
-      option1Name: 'Protect the Young',
-      option1Selected: false,
-      option2Name: 'Survival of the Fittest',
-      option2Selected: false
-    },
-    {
-      name: 'Death',
-      option1Name: 'Graves',
-      option1Selected: false,
-      option2Name: 'Cannibalize',
-      option2Selected: false
-    },
-    {
-      name: 'Society',
-      option1Name: 'Collective Toil',
-      option1Selected: false,
-      option2Name: 'Accept Darkness',
-      option2Selected: false
-    },
-    {
-      name: 'Conviction',
-      option1Name: 'Romantic',
-      option1Selected: false,
-      option2Name: 'Barbaric',
-      option2Selected: false
+      name: 'First child is born',
+      complete: false,
+      event: 'Principle: New Life'
     }
   ],
+  nemeses: [BUTCHER, KINGS_MAN, HAND, TYRANT],
+  principles: [...CorePrinciples],
   quarries: [WHITE_LION, SCREAMING_ANTELOPE, PHOENIX],
   timeline: [
     // Year 0 (Prologue)

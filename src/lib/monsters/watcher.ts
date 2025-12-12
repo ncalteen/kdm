@@ -33,6 +33,7 @@ export const WATCHER: NemesisMonsterData = {
       'Audience',
       'Lantern Vortex',
       'Vapor of Nothingness',
+
       'Indomitable'
     ]
   },

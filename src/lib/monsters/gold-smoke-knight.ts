@@ -29,11 +29,12 @@ export const GOLD_SMOKE_KNIGHT: NemesisMonsterData = {
     toughness: 27,
     toughnessTokens: 0,
     traits: [
-      'Indomitable',
+      'Blacken',
+      'Frustration',
       'Mauler',
       'Secondary Forge',
-      'Frustration',
-      'Blacken'
+
+      'Indomitable'
     ]
   },
   timeline: {

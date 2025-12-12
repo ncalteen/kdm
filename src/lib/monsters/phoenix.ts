@@ -5,6 +5,13 @@ import { QuarryMonsterData } from '@/lib/types'
  * Phoenix Monster Data
  */
 export const PHOENIX: QuarryMonsterData = {
+  ccRewards: [
+    {
+      name: 'Phoenix Cuisine',
+      cc: 26,
+      unlocked: false
+    }
+  ],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -91,13 +98,15 @@ export const PHOENIX: QuarryMonsterData = {
     toughness: 17,
     toughnessTokens: 0,
     traits: [
-      'Indomitable',
       'Materialize',
       'Spiral Age',
       'Top of the Food Chain',
-      'Zeal'
+      'Zeal',
+
+      'Indomitable'
     ]
   },
+  locations: [{ name: 'Plumery', unlocked: false }],
   timeline: {
     7: ['Phoenix Feather']
   }

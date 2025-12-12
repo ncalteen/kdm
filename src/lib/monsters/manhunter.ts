@@ -76,8 +76,9 @@ export const MANHUNTER: NemesisMonsterData = {
       'Full Stride',
       'Gritty Armament',
       'Gun Action',
-      'Indomitable',
-      'Tombstone'
+      'Tombstone',
+
+      'Indomitable'
     ]
   },
   level4: {
@@ -104,8 +105,9 @@ export const MANHUNTER: NemesisMonsterData = {
       'Full Stride',
       'Gritty Armament',
       'Gun Action',
-      'Indomitable',
-      'Tombstone'
+      'Tombstone',
+
+      'Indomitable'
     ]
   },
   timeline: {

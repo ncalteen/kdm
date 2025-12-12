@@ -5,6 +5,13 @@ import { QuarryMonsterData } from '@/lib/types'
  * Screaming Antelope Monster Data
  */
 export const SCREAMING_ANTELOPE: QuarryMonsterData = {
+  ccRewards: [
+    {
+      name: 'Screaming Antelope Cuisine',
+      cc: 16,
+      unlocked: false
+    }
+  ],
   huntBoard: {
     0: undefined,
     1: HuntEventType.MONSTER,
@@ -67,7 +74,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
-    traits: ['Trample', 'Diabolical']
+    traits: ['Diabolical', 'Trample']
   },
   level3: {
     accuracy: 0,
@@ -91,13 +98,15 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
     toughness: 12,
     toughnessTokens: 0,
     traits: [
-      'Trample',
       'Diabolical',
       'Hypermetabolism',
-      'Indomitable',
-      'Legendary Horns'
+      'Legendary Horns',
+      'Trample',
+
+      'Indomitable'
     ]
   },
+  locations: [{ name: 'Stone Circle', unlocked: false }],
   timeline: {
     2: ['Endless Screams']
   }
@@ -107,6 +116,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
  * Screaming Nukalope Monster Data
  */
 export const SCREAMING_NUKALOPE: QuarryMonsterData = {
+  ccRewards: [],
   huntBoard: {
     0: undefined,
     1: HuntEventType.BASIC,
@@ -176,11 +186,13 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
     traits: [
       'Atomic Vigor - Inert',
       'Critical Mass - Inert',
-      'Prehensile Tail - Inert',
-      'Indomitable',
       'Exponential Yield',
-      'Legendary Horns'
+      'Legendary Horns',
+      'Prehensile Tail - Inert',
+
+      'Indomitable'
     ]
   },
+  locations: [{ name: 'Stone Circle Hot Zone', unlocked: false }],
   timeline: {}
 }
