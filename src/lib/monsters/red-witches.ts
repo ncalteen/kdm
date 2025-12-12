@@ -10,6 +10,7 @@ import { NemesisMonsterData } from '@/lib/types'
  * added in the background when the user selects this monster.
  */
 export const RED_WITCHES: NemesisMonsterData = {
+  id: 22,
   name: 'Red Witches',
   node: MonsterNode.NN2,
   type: MonsterType.NEMESIS,

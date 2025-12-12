@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/lib/types'
  * Tyrant Monster Data
  */
 export const TYRANT: NemesisMonsterData = {
+  id: 28,
   name: 'The Tyrant',
   node: MonsterNode.CO,
   type: MonsterType.NEMESIS,

@@ -106,6 +106,8 @@ export type NemesisMonsterLevelData = BaseMonsterLevelData & {
  * Nemesis Monster Data
  */
 export type NemesisMonsterData = {
+  /** ID */
+  id?: number
   /** Monster Name */
   name: string
   /** Monster Node */
@@ -136,6 +138,8 @@ export type QuarryMonsterData = {
   huntBoard: {
     [key: number]: HuntEventType.BASIC | HuntEventType.MONSTER | undefined
   }
+  /** ID */
+  id?: number
   /** Monster Name */
   name: string
   /** Monster Node */

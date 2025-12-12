@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/lib/types'
  * Atnas the Child Eater Monster Data
  */
 export const ATNAS: NemesisMonsterData = {
+  id: 1,
   name: 'Atnas the Child Eater',
   node: MonsterNode.NN2,
   type: MonsterType.NEMESIS,

@@ -27,6 +27,7 @@ export const PHOENIX: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  id: 21,
   name: 'Phoenix',
   node: MonsterNode.NQ3,
   type: MonsterType.QUARRY,

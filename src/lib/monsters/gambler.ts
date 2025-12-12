@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/lib/types'
  * Gambler Monster Data
  */
 export const GAMBLER: NemesisMonsterData = {
+  id: 9,
   name: 'Gambler',
   node: MonsterNode.CO,
   type: MonsterType.NEMESIS,

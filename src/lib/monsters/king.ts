@@ -27,6 +27,7 @@ export const KING: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  id: 14,
   name: 'King',
   node: MonsterNode.NQ4,
   type: MonsterType.QUARRY,

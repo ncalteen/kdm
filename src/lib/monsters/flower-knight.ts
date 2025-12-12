@@ -21,6 +21,7 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
     11: HuntEventType.MONSTER,
     12: undefined
   },
+  id: 7,
   name: 'Flower Knight',
   node: MonsterNode.NQ2,
   type: MonsterType.QUARRY,
