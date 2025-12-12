@@ -1,13 +1,6 @@
 'use client'
 
-import { CustomCampaignData } from '@/lib/campaigns/custom'
-import { PeopleOfTheDreamKeeperCampaignData } from '@/lib/campaigns/potdk'
-import { PeopleOfTheLanternCampaignData } from '@/lib/campaigns/potl'
-import { PeopleOfTheStarsCampaignData } from '@/lib/campaigns/potstars'
-import { PeopleOfTheSunCampaignData } from '@/lib/campaigns/potsun'
-import { SquiresOfTheCitadelCampaignData } from '@/lib/campaigns/squires'
-import { CampaignType, ColorChoice, MonsterName, TabType } from '@/lib/enums'
-import type { CampaignData } from '@/lib/types'
+import { ColorChoice, MonsterName, TabType } from '@/lib/enums'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Quarry, Settlement, TimelineYear } from '@/schemas/settlement'
@@ -484,29 +477,6 @@ export function bornWithUnderstanding(settlementId: number): boolean {
       innovation.toLowerCase().includes('graves')
     ) !== undefined
   )
-}
-
-/**
- * Get Campaign Data by Type
- *
- * @param campaignType Campaign Type
- * @returns Campaign Data
- */
-export function getCampaignData(campaignType: CampaignType) {
-  const campaignData: CampaignData =
-    campaignType === CampaignType.PEOPLE_OF_THE_LANTERN
-      ? PeopleOfTheLanternCampaignData
-      : campaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
-        ? PeopleOfTheDreamKeeperCampaignData
-        : campaignType === CampaignType.PEOPLE_OF_THE_STARS
-          ? PeopleOfTheStarsCampaignData
-          : campaignType === CampaignType.PEOPLE_OF_THE_SUN
-            ? PeopleOfTheSunCampaignData
-            : campaignType === CampaignType.SQUIRES_OF_THE_CITADEL
-              ? SquiresOfTheCitadelCampaignData
-              : CustomCampaignData
-
-  return campaignData
 }
 
 /**

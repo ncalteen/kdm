@@ -15,9 +15,31 @@ import type {
 } from '@/schemas/settlement'
 
 /**
- * Campaign Data
+ * Campaign Template
  *
- * Data used to generate a new settlement based on the campaign type.
+ * Base information used to create a new settlement using a campaign template.
+ */
+export type CampaignTemplate = {
+  /** Collective Cognition Rewards */
+  ccRewards: CollectiveCognitionReward[]
+  /** Innovations */
+  innovations: string[]
+  /** Locations */
+  locations: Location[]
+  /** Milestones */
+  milestones: Milestone[]
+  /** Nemesis IDs */
+  nemeses: number[]
+  /** Principles */
+  principles: Principle[]
+  /** Quarry IDs */
+  quarries: number[]
+  /** Settlement Timeline */
+  timeline: TimelineYear[]
+}
+
+/**
+ * Campaign Data
  */
 export type CampaignData = {
   /** Collective Cognition Rewards */
@@ -106,8 +128,6 @@ export type NemesisMonsterLevelData = BaseMonsterLevelData & {
  * Nemesis Monster Data
  */
 export type NemesisMonsterData = {
-  /** ID */
-  id?: number
   /** Monster Name */
   name: string
   /** Monster Node */
@@ -124,7 +144,7 @@ export type NemesisMonsterData = {
   level4?: NemesisMonsterLevelData
   /** Timeline Entries */
   timeline: {
-    [key: number]: string[] | { title: string; campaigns: CampaignType[] }
+    [key: number]: (string | { title: string; campaigns: CampaignType[] })[]
   }
 }
 
@@ -138,8 +158,6 @@ export type QuarryMonsterData = {
   huntBoard: {
     [key: number]: HuntEventType.BASIC | HuntEventType.MONSTER | undefined
   }
-  /** ID */
-  id?: number
   /** Monster Name */
   name: string
   /** Monster Node */
@@ -158,6 +176,6 @@ export type QuarryMonsterData = {
   locations: Location[]
   /** Timeline Entries */
   timeline: {
-    [key: number]: string[] | { title: string; campaigns: CampaignType[] }
+    [key: number]: (string | { title: string; campaigns: CampaignType[] })[]
   }
 }

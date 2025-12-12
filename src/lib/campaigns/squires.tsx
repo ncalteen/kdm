@@ -1,12 +1,12 @@
 'use client'
 
-import { CampaignData } from '@/lib/types'
+import { CampaignTemplate } from '@/lib/types'
 import { GrabIcon, ScrollIcon } from 'lucide-react'
 
 /**
- * Squires of the Citadel Campaign Data
+ * Squires of the Citadel Campaign Template
  */
-export const SquiresOfTheCitadelCampaignData: CampaignData = {
+export const SquiresOfTheCitadel: CampaignTemplate = {
   ccRewards: [],
   innovations: [],
   locations: [],

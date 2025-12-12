@@ -1,12 +1,12 @@
 'use client'
 
 import { CoreMilestones } from '@/lib/campaigns/common'
-import { CampaignData } from '@/lib/types'
+import { CampaignTemplate } from '@/lib/types'
 
 /**
- * Custom Campaign Data
+ * Custom Campaign Template
  */
-export const CustomCampaignData: CampaignData = {
+export const CustomCampaign: CampaignTemplate = {
   ccRewards: [],
   innovations: [],
   locations: [],

@@ -78,7 +78,7 @@ export const CorePrinciples: Principle[] = [
     option1Name: 'Protect the Young',
     option1Selected: false,
     option2Name: 'Survival of the Fittest',
-    option2Selected: true
+    option2Selected: false
   },
   {
     name: 'Death',

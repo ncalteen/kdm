@@ -13,22 +13,18 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { DefaultSquiresSuspicion } from '@/lib/campaigns/squires'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import { ERROR_MESSAGE, SETTLEMENT_CREATED_MESSAGE } from '@/lib/messages'
-import {
-  getCampaign,
-  getCampaignData,
-  getNextSettlementId,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
+import { createSettlementFromOptions } from '@/lib/settlements/utils'
+import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import {
   BaseSettlementSchema,
-  Settlement,
-  SettlementSchema
+  NewSettlementInput,
+  NewSettlementInputSchema,
+  Settlement
 } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { Resolver, useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -53,8 +49,10 @@ interface CreateSettlementFormProps {
 export function CreateSettlementForm({
   setSelectedSettlement
 }: CreateSettlementFormProps): ReactElement {
-  const form = useForm<Settlement>({
-    resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
+  const form = useForm<NewSettlementInput>({
+    resolver: zodResolver(
+      NewSettlementInputSchema
+    ) as Resolver<NewSettlementInput>,
     defaultValues: BaseSettlementSchema.parse({})
   })
 
@@ -67,93 +65,26 @@ export function CreateSettlementForm({
     name: 'survivorType'
   })
 
-  // Set the form values when the component mounts.
-  useEffect(() => {
-    console.debug('[CreateSettlementForm] Initializing Form Values')
-
-    // Get campaign data for the campaign type.
-    const campaignData = getCampaignData(
-      watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN
-    )
-
-    form.setValue('id', getNextSettlementId())
-    form.setValue('lostSettlements', 0)
-    form.setValue('innovations', campaignData.innovations)
-    form.setValue('locations', campaignData.locations)
-    form.setValue('milestones', campaignData.milestones)
-    form.setValue('nemeses', campaignData.nemeses)
-    form.setValue('principles', campaignData.principles)
-    form.setValue('quarries', campaignData.quarries)
-    form.setValue('timeline', campaignData.timeline)
-    form.setValue(
-      'campaignType',
-      watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN
-    )
-
-    /** Squires of the Citadel */
-    if (watchedCampaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
-      // Survivor type must be Core.
-      form.setValue('survivorType', SurvivorType.CORE)
-
-    /** People of the Dream Keeper */
-    if (watchedCampaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER)
-      // Survivor type must be Arc.
-      form.setValue('survivorType', SurvivorType.ARC)
-
-    // - For Squires of the Citadel, set it to 6.
-    // - For all other campaigns, set it to 1.
-    form.setValue(
-      'survivalLimit',
-      watchedCampaignType === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
-    )
-
-    // Get current locations
-    const currentLocations = form.getValues('locations') || []
-    const forumLocationIndex = currentLocations.findIndex(
-      (loc) => loc.name === 'Forum'
-    )
-
-    // Changing to Arc survivors...add "Forum" location
-    if (watchedSurvivorType === SurvivorType.ARC && forumLocationIndex === -1)
-      form.setValue('locations', [
-        ...currentLocations,
-        { name: 'Forum', unlocked: false }
-      ])
-    // Changing from Arc survivors...remove "Forum" location
-    else if (forumLocationIndex !== -1)
-      form.setValue(
-        'locations',
-        currentLocations.filter((loc) => loc.name !== 'Forum')
-      )
-  }, [form, watchedCampaignType, watchedSurvivorType])
-
-  function onSubmit(values: Settlement) {
+  function onSubmit(values: NewSettlementInput) {
+    console.log(values)
     try {
       // Get campaign data based on the selected campaign type
-      const campaignData = getCampaignData(values.campaignType)
-
-      // Arc Survivor Settlements
-      if (values.survivorType === SurvivorType.ARC)
-        values.ccRewards = campaignData.ccRewards
-
-      // Squires of the Citadel Campaigns
-      if (values.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
-        values.suspicions = DefaultSquiresSuspicion
+      const settlement = createSettlementFromOptions(values)
 
       // Get existing campaign data from localStorage or initialize new
       const campaign = getCampaign()
 
       // Add the new settlement to the campaign
-      campaign.settlements.push(values)
+      campaign.settlements.push(settlement)
 
       // Set the newly created settlement as selected
-      campaign.selectedSettlementId = values.id
+      campaign.selectedSettlementId = settlement.id
 
       // Save the updated campaign to localStorage
       saveCampaignToLocalStorage(campaign)
 
       // Update the selected settlement in the context
-      setSelectedSettlement(values)
+      setSelectedSettlement(settlement)
 
       // Show success message
       toast.success(SETTLEMENT_CREATED_MESSAGE())
@@ -165,7 +96,8 @@ export function CreateSettlementForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit, () => {
+      onSubmit={form.handleSubmit(onSubmit, (e) => {
+        console.error('Create Settlement Form Error:', e)
         toast.error(ERROR_MESSAGE())
       })}
       className="space-y-6">

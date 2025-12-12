@@ -5,19 +5,12 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
-import { BUTCHER } from '@/lib/monsters/butcher'
-import { HAND } from '@/lib/monsters/hand'
-import { KINGS_MAN } from '@/lib/monsters/kings-man'
-import { PHOENIX } from '@/lib/monsters/phoenix'
-import { SCREAMING_ANTELOPE } from '@/lib/monsters/screaming-antelope'
-import { GREAT_DEVOURER } from '@/lib/monsters/sunstalker'
-import { WHITE_LION } from '@/lib/monsters/white-lion'
-import { CampaignData } from '@/lib/types'
+import { CampaignTemplate } from '@/lib/types'
 
 /**
- * People of the Sun Campaign Data
+ * People of the Sun Campaign Template
  */
-export const PeopleOfTheSunCampaignData: CampaignData = {
+export const PeopleOfTheSun: CampaignTemplate = {
   ccRewards: [
     {
       name: 'Facets of Existence',
@@ -52,9 +45,9 @@ export const PeopleOfTheSunCampaignData: CampaignData = {
       event: 'Game Over'
     }
   ],
-  nemeses: [BUTCHER, GREAT_DEVOURER, HAND, KINGS_MAN],
+  nemeses: [3, 16, 8, 9],
   principles: [...CorePrinciples],
-  quarries: [WHITE_LION, SCREAMING_ANTELOPE, PHOENIX],
+  quarries: [14, 10, 9],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },

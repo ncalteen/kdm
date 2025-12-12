@@ -317,3 +317,27 @@ export enum MonsterNode {
   /** Finale Monster */
   FI = 'Fi'
 }
+
+/**
+ * Monster Nodes Numeric Mapping
+ */
+export enum MonsterNodeNumeric {
+  /** Quarry 1 */
+  NQ1 = 1,
+  /** Quarry 2 */
+  NQ2 = 2,
+  /** Quarry 3 */
+  NQ3 = 3,
+  /** Quarry 4 */
+  NQ4 = 4,
+  /** Nemesis 1 */
+  NN1 = 5,
+  /** Nemesis 2 */
+  NN2 = 6,
+  /** Nemesis 3 */
+  NN3 = 7,
+  /** Core Monster */
+  CO = 8,
+  /** Finale Monster */
+  FI = 9
+}

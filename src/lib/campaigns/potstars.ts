@@ -5,19 +5,12 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
-import { BUTCHER } from '@/lib/monsters/butcher'
-import { HAND } from '@/lib/monsters/hand'
-import { KINGS_MAN } from '@/lib/monsters/kings-man'
-import { PHOENIX } from '@/lib/monsters/phoenix'
-import { SCREAMING_ANTELOPE } from '@/lib/monsters/screaming-antelope'
-import { TYRANT } from '@/lib/monsters/tyrant'
-import { WHITE_LION } from '@/lib/monsters/white-lion'
-import { CampaignData } from '@/lib/types'
+import { CampaignTemplate } from '@/lib/types'
 
 /**
- * People of the Stars Campaign Data
+ * People of the Stars Campaign Template
  */
-export const PeopleOfTheStarsCampaignData: CampaignData = {
+export const PeopleOfTheStars: CampaignTemplate = {
   ccRewards: [
     {
       name: 'Facets of Existence',
@@ -46,9 +39,9 @@ export const PeopleOfTheStarsCampaignData: CampaignData = {
       event: 'Principle: New Life'
     }
   ],
-  nemeses: [BUTCHER, KINGS_MAN, HAND, TYRANT],
+  nemeses: [3, 9, 8, 18],
   principles: [...CorePrinciples],
-  quarries: [WHITE_LION, SCREAMING_ANTELOPE, PHOENIX],
+  quarries: [14, 10, 9],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },

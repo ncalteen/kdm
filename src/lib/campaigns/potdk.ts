@@ -5,21 +5,12 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
-import { ATNAS } from '@/lib/monsters/atnas'
-import { BUTCHER } from '@/lib/monsters/butcher'
-import { CRIMSON_CROCODILE } from '@/lib/monsters/crimson-crocodile'
-import { GAMBLER } from '@/lib/monsters/gambler'
-import { GODHAND } from '@/lib/monsters/godhand'
-import { HAND } from '@/lib/monsters/hand'
-import { KING } from '@/lib/monsters/king'
-import { PHOENIX } from '@/lib/monsters/phoenix'
-import { SMOG_SINGERS } from '@/lib/monsters/smog-singers'
-import { CampaignData } from '@/lib/types'
+import { CampaignTemplate } from '@/lib/types'
 
 /**
- * People of the Dream Keeper Campaign Data
+ * People of the Dream Keeper Campaign Template
  */
-export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
+export const PeopleOfTheDreamKeeper: CampaignTemplate = {
   ccRewards: [
     {
       name: 'Facets of Power',
@@ -54,9 +45,9 @@ export const PeopleOfTheDreamKeeperCampaignData: CampaignData = {
       event: 'Designs & Dandelions'
     }
   ],
-  nemeses: [ATNAS, BUTCHER, GAMBLER, GODHAND, HAND],
+  nemeses: [1, 3, 5, 6, 8],
   principles: [...CorePrinciples],
-  quarries: [CRIMSON_CROCODILE, KING, PHOENIX, SMOG_SINGERS],
+  quarries: [1, 7, 9, 11],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },

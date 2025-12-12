@@ -5,20 +5,12 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
-import { BUTCHER } from '@/lib/monsters/butcher'
-import { GOLD_SMOKE_KNIGHT } from '@/lib/monsters/gold-smoke-knight'
-import { HAND } from '@/lib/monsters/hand'
-import { KINGS_MAN } from '@/lib/monsters/kings-man'
-import { PHOENIX } from '@/lib/monsters/phoenix'
-import { SCREAMING_ANTELOPE } from '@/lib/monsters/screaming-antelope'
-import { WATCHER } from '@/lib/monsters/watcher'
-import { WHITE_LION } from '@/lib/monsters/white-lion'
-import { CampaignData } from '@/lib/types'
+import { CampaignTemplate } from '@/lib/types'
 
 /**
- * People of the Lantern Campaign Data
+ * People of the Lantern Campaign Template
  */
-export const PeopleOfTheLanternCampaignData: CampaignData = {
+export const PeopleOfTheLantern: CampaignTemplate = {
   ccRewards: [
     {
       name: 'Facets of Existence',
@@ -53,9 +45,9 @@ export const PeopleOfTheLanternCampaignData: CampaignData = {
       event: 'Hooded Knight'
     }
   ],
-  nemeses: [BUTCHER, KINGS_MAN, HAND, WATCHER, GOLD_SMOKE_KNIGHT],
+  nemeses: [3, 9, 8, 19, 7],
   principles: [...CorePrinciples],
-  quarries: [WHITE_LION, SCREAMING_ANTELOPE, PHOENIX],
+  quarries: [14, 10, 9],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },
