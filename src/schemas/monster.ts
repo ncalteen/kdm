@@ -1,0 +1,185 @@
+'use client'
+
+import {
+  CampaignType,
+  HuntEventType,
+  MonsterNode,
+  MonsterType
+} from '@/lib/enums'
+import {
+  CollectiveCognitionRewardSchema,
+  LocationSchema
+} from '@/schemas/settlement'
+import { z } from 'zod'
+
+/**
+ * Base Monster Level Schema
+ *
+ * Includes the common attributes for a monster at a particular level.
+ */
+export const BaseMonsterLevelSchema = z.object({
+  /** Accuracy */
+  accuracy: z.number().int().default(0),
+  /** Accuracy Tokens */
+  accuracyTokens: z.number().int().default(0),
+  /** AI Deck Size */
+  aiDeckSize: z.number().int().min(0).default(0),
+  /** Damage */
+  damage: z.number().int().min(0).default(0),
+  /** Damage Tokens */
+  damageTokens: z.number().int().default(0),
+  /** Evasion */
+  evasion: z.number().int().default(0),
+  /** Evasion Tokens */
+  evasionTokens: z.number().int().default(0),
+  /** Luck */
+  luck: z.number().int().default(0),
+  /** Luck Tokens */
+  luckTokens: z.number().int().default(0),
+  /** Moods */
+  moods: z.array(z.string()).default([]),
+  /** Movement */
+  movement: z.number().int().min(1).default(1),
+  /** Movement Tokens */
+  movementTokens: z.number().int().default(0),
+  /** Speed */
+  speed: z.number().int().default(0),
+  /** Speed Tokens */
+  speedTokens: z.number().int().default(0),
+  /** Strength */
+  strength: z.number().int().default(0),
+  /** Strength Tokens */
+  strengthTokens: z.number().int().default(0),
+  /** Survivor Statuses */
+  survivorStatuses: z.array(z.string()).default([]),
+  /** Toughness */
+  toughness: z.number().int().min(0).default(0),
+  /** Toughness Tokens */
+  toughnessTokens: z.number().int().default(0),
+  /** Traits */
+  traits: z.array(z.string()).default([])
+})
+
+/**
+ * Base Monster Level
+ *
+ * Includes the common attributes for a monster at a particular level.
+ */
+export type BaseMonsterLevel = z.infer<typeof BaseMonsterLevelSchema>
+
+/**
+ * Quarry Monster Level Schema
+ */
+export const QuarryMonsterLevelSchema = BaseMonsterLevelSchema.extend({
+  /** Monster Hunt Board Starting Position */
+  huntPos: z.number().int().min(1),
+  /** Survivor Hunt Board Starting Position */
+  survivorHuntPos: z.number().int().min(1).optional()
+})
+
+/**
+ * Quarry Monster Level
+ */
+export type QuarryMonsterLevel = z.infer<typeof QuarryMonsterLevelSchema>
+
+/**
+ * Nemesis Monster Level Schema
+ */
+export const NemesisMonsterLevelSchema = BaseMonsterLevelSchema.extend({
+  /** Life */
+  life: z.number().int().min(1).optional()
+})
+
+/**
+ * Nemesis Monster Level
+ */
+export type NemesisMonsterLevel = z.infer<typeof NemesisMonsterLevelSchema>
+
+/**
+ * Nemesis Monster Data Schema
+ */
+export const NemesisMonsterDataSchema = z.object({
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Node */
+  node: z.enum(MonsterNode),
+  /** Monster Type */
+  type: z.literal(MonsterType.NEMESIS),
+  /** Level 1 Data */
+  level1: NemesisMonsterLevelSchema.optional(),
+  /** Level 2 Data */
+  level2: NemesisMonsterLevelSchema.optional(),
+  /** Level 3 Data */
+  level3: NemesisMonsterLevelSchema.optional(),
+  /** Level 4 Data */
+  level4: NemesisMonsterLevelSchema.optional(),
+  /** Timeline Entries */
+  timeline: z.record(
+    z.number().min(1),
+    z.array(
+      z.union([
+        z.string(),
+        z.object({
+          title: z.string().min(1, 'Title is required.'),
+          campaigns: z.array(z.enum(CampaignType)).default([])
+        })
+      ])
+    )
+  )
+})
+
+/**
+ * Nemesis Monster Data
+ */
+export type NemesisMonsterData = z.infer<typeof NemesisMonsterDataSchema>
+
+/**
+ * Quarry Monster Data Schema
+ */
+export const QuarryMonsterDataSchema = z.object({
+  /** Collective Cognition Rewards */
+  ccRewards: z.array(CollectiveCognitionRewardSchema).default([]),
+  /** Hunt Board Configuration */
+  huntBoard: z.record(
+    z.number().min(0),
+    z.union([
+      z.literal(HuntEventType.BASIC),
+      z.literal(HuntEventType.MONSTER),
+      z.undefined()
+    ])
+  ),
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Node */
+  node: z.enum(MonsterNode),
+  /** Monster Type */
+  type: z.literal(MonsterType.QUARRY),
+  /** Level 1 Data */
+  level1: QuarryMonsterLevelSchema.optional(),
+  /** Level 2 Data */
+  level2: QuarryMonsterLevelSchema.optional(),
+  /** Level 3 Data */
+  level3: QuarryMonsterLevelSchema.optional(),
+  /** Level 4 Data */
+  level4: QuarryMonsterLevelSchema.optional(),
+  /** Locations */
+  locations: z.array(LocationSchema).default([]),
+  /** Timeline Entries */
+  timeline: z.record(
+    z.number().min(0),
+    z.array(
+      z.union([
+        z.string(),
+        z.object({
+          title: z.string().min(1, 'Title is required.'),
+          campaigns: z.array(z.enum(CampaignType)).default([])
+        })
+      ])
+    )
+  )
+})
+
+/**
+ * Quarry Monster Data
+ */
+export type QuarryMonsterData = z.infer<typeof QuarryMonsterDataSchema>

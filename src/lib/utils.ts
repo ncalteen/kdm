@@ -56,6 +56,7 @@ export function getCampaign(): Campaign {
   )
 
   const campaign: Campaign = {
+    customMonsters: storedCampaign.customMonsters || [],
     hunts: storedCampaign.hunts || [],
     selectedHuntId: storedCampaign.selectedHuntId || null,
     selectedShowdownId: storedCampaign.selectedShowdownId || null,

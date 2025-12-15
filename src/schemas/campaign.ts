@@ -4,6 +4,7 @@ import { SettlementSchema } from '@/schemas/settlement'
 import { ShowdownSchema } from '@/schemas/showdown'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { z } from 'zod'
+import { NemesisMonsterDataSchema, QuarryMonsterDataSchema } from './monster'
 
 /**
  * Global Settings Schema
@@ -33,6 +34,11 @@ export type GlobalSettings = z.infer<typeof GlobalSettingsSchema>
  * All of the data stored for all of the settlements and survivors for a player.
  */
 export const CampaignSchema = z.object({
+  /** Custom Monsters */
+  customMonsters: z
+    .array(z.union([NemesisMonsterDataSchema, QuarryMonsterDataSchema]))
+    .nullable()
+    .optional(),
   /** Hunts */
   hunts: z.array(HuntSchema).nullable().optional(),
   /** Selected Hunt ID */
