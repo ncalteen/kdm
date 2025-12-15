@@ -1,6 +1,12 @@
 'use client'
 
-import { ColorChoice, MonsterName, TabType } from '@/lib/enums'
+import {
+  ColorChoice,
+  MonsterName,
+  MonsterNode,
+  MonsterType,
+  TabType
+} from '@/lib/enums'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Quarry, Settlement, TimelineYear } from '@/schemas/settlement'
@@ -865,4 +871,22 @@ export const getCarouselWidth = (isMobile: boolean, sidebarState: string) => {
   if (sidebarState === 'collapsed') return 'calc(100vw - 4rem)'
 
   return '98.5vw' // Fallback to full width
+}
+
+/**
+ * Get Available Monster Nodes
+ *
+ * @param type Monster Type
+ * @returns Available Monster Nodes
+ */
+export const getAvailableNodes = (type: MonsterType): MonsterNode[] => {
+  return type === MonsterType.NEMESIS
+    ? [
+        MonsterNode.NN1,
+        MonsterNode.NN2,
+        MonsterNode.NN3,
+        MonsterNode.CO,
+        MonsterNode.FI
+      ]
+    : [MonsterNode.NQ1, MonsterNode.NQ2, MonsterNode.NQ3, MonsterNode.NQ4]
 }
