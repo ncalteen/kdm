@@ -1,5 +1,7 @@
 'use client'
 
+import { CreateMonsterDialog } from '@/components/monster/create-monster-dialog'
+import { CustomMonstersTable } from '@/components/monster/custom-monsters-table'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -87,6 +89,7 @@ export function SettingsCard({
   const { toast } = useToast()
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+  const [monstersRefreshKey, setMonstersRefreshKey] = useState<number>(0)
   const [disableToasts, setDisableToasts] = useState<boolean>(() => {
     try {
       return getCampaign().settings.disableToasts ?? false
@@ -496,6 +499,34 @@ export function SettingsCard({
                 <SelectItem value="true">Yes</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Custom Monster Settings */}
+      <Card className="p-0">
+        <CardHeader className="px-4 pt-3 pb-0">
+          <CardTitle className="text-lg">Custom Monsters</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Create & Manage</div>
+                <div className="text-sm text-muted-foreground">
+                  Create custom quarry or nemesis monsters for your campaign.
+                </div>
+              </div>
+              <CreateMonsterDialog
+                onMonsterCreated={() =>
+                  setMonstersRefreshKey((prev) => prev + 1)
+                }
+              />
+            </div>
+            <CustomMonstersTable
+              key={monstersRefreshKey}
+              onMonstersChange={() => setMonstersRefreshKey((prev) => prev + 1)}
+            />
           </div>
         </CardContent>
       </Card>
