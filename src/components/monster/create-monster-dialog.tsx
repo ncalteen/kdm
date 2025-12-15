@@ -25,7 +25,6 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/hooks/use-toast'
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { ERROR_MESSAGE } from '@/lib/messages'
@@ -107,7 +106,25 @@ export function CreateMonsterDialog({
     Record<number, HuntEventType.BASIC | HuntEventType.MONSTER | undefined>
   >({})
   const [locations, setLocations] = useState<string[]>([])
-  const [ccRewards, setCcRewards] = useState<string[]>([])
+  const [disabledLocationInputs, setDisabledLocationInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [isAddingNewLocation, setIsAddingNewLocation] = useState<boolean>(false)
+  const [ccRewards, setCcRewards] = useState<
+    Array<{ cc: number; name: string }>
+  >([])
+  const [disabledCcRewardInputs, setDisabledCcRewardInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [isAddingNewCcReward, setIsAddingNewCcReward] = useState<boolean>(false)
+
+  // Array input state (for moods, traits, survivorStatuses)
+  const [arrayInputEditingIndex, setArrayInputEditingIndex] = useState<
+    Record<string, number | null>
+  >({})
+  const [arrayInputAddingNew, setArrayInputAddingNew] = useState<
+    Record<string, boolean>
+  >({})
 
   // Collapsible section state
   const [level1Open, setLevel1Open] = useState(false)
@@ -144,7 +161,13 @@ export function CreateMonsterDialog({
     setIsAddingNewTimeline(false)
     setHuntBoard({})
     setLocations([])
+    setDisabledLocationInputs({})
+    setIsAddingNewLocation(false)
     setCcRewards([])
+    setDisabledCcRewardInputs({})
+    setIsAddingNewCcReward(false)
+    setArrayInputEditingIndex({})
+    setArrayInputAddingNew({})
     setLevel1Open(false)
     setLevel2Open(false)
     setLevel3Open(false)
@@ -185,9 +208,9 @@ export function CreateMonsterDialog({
       if (monsterType === MonsterType.QUARRY) {
         const monsterData = QuarryMonsterDataSchema.parse({
           ...baseData,
-          ccRewards: ccRewards.map((name) => ({
+          ccRewards: ccRewards.map(({ cc, name }) => ({
             name,
-            cc: 0,
+            cc,
             unlocked: false
           })),
           huntBoard,
@@ -301,7 +324,7 @@ export function CreateMonsterDialog({
   }
 
   /**
-   * Renders a text array input for a level field
+   * Renders a text array input for a level field using interactive list
    */
   const renderArrayInput = (
     level: 1 | 2 | 3 | 4,
@@ -310,27 +333,149 @@ export function CreateMonsterDialog({
   ) => {
     const levels = [level1, level2, level3, level4]
     const currentLevel = levels[level - 1] as Partial<BaseMonsterLevel>
-    const value = (currentLevel[field] || []).join(', ')
+    const items = (currentLevel[field] || []) as string[]
+    const fieldKey = `level${level}-${field}`
+    const editingIndex = arrayInputEditingIndex[fieldKey] ?? null
+    const isAddingNew = arrayInputAddingNew[fieldKey] ?? false
+
+    const setEditingIndex = (index: number | null) => {
+      setArrayInputEditingIndex((prev) => ({ ...prev, [fieldKey]: index }))
+    }
+
+    const setIsAddingNew = (adding: boolean) => {
+      setArrayInputAddingNew((prev) => ({ ...prev, [fieldKey]: adding }))
+    }
+
+    const addItem = (value: string) => {
+      if (value.trim()) {
+        updateLevel(level, field, [...items, value.trim()])
+        setIsAddingNew(false)
+      }
+    }
+
+    const updateItem = (index: number, value: string) => {
+      const newItems = [...items]
+      newItems[index] = value.trim()
+      updateLevel(level, field, newItems)
+      setEditingIndex(null)
+    }
+
+    const removeItem = (index: number) => {
+      const newItems = items.filter((_, i) => i !== index)
+      updateLevel(level, field, newItems)
+      if (editingIndex === index) setEditingIndex(null)
+    }
 
     return (
       <div className="space-y-2">
-        <Label htmlFor={`level${level}-${field}`}>{label}</Label>
-        <Textarea
-          id={`level${level}-${field}`}
-          name={`level${level}-${field}`}
-          placeholder="Enter line-separated values..."
-          value={value}
-          onChange={(e) =>
-            updateLevel(
-              level,
-              field,
-              e.target.value
-                .split(/\n/)
-                .map((s) => s.trim())
-                .filter((s) => s)
-            )
-          }
-        />
+        <div className="flex items-center justify-between">
+          <Label>{label}</Label>
+          {!isAddingNew && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              disabled={isAddingNew || editingIndex !== null}>
+              <PlusIcon className="h-4 w-4 mr-2" />
+              Add
+            </Button>
+          )}
+        </div>
+        <div className="space-y-2 max-h-[200px] overflow-y-auto">
+          {items.map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div className="flex-1">
+                {editingIndex === index ? (
+                  <Input
+                    defaultValue={item}
+                    placeholder={label}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        updateItem(index, e.currentTarget.value)
+                      } else if (e.key === 'Escape') {
+                        e.preventDefault()
+                        setEditingIndex(null)
+                      }
+                    }}
+                    onBlur={(e) => updateItem(index, e.target.value)}
+                    autoFocus
+                  />
+                ) : (
+                  <span className="text-sm">{item}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-1">
+                {editingIndex === index ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditingIndex(null)}>
+                    <CheckIcon className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditingIndex(index)}>
+                    <PencilIcon className="h-4 w-4" />
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeItem(index)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+          {isAddingNew && (
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <Input
+                  id={`${fieldKey}-new`}
+                  placeholder={`Add ${label.toLowerCase()}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addItem(e.currentTarget.value)
+                    } else if (e.key === 'Escape') {
+                      e.preventDefault()
+                      setIsAddingNew(false)
+                    }
+                  }}
+                  autoFocus
+                />
+              </div>
+              <div className="flex items-center gap-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    const input = document.getElementById(
+                      `${fieldKey}-new`
+                    ) as HTMLInputElement
+                    if (input) addItem(input.value)
+                  }}>
+                  <CheckIcon className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsAddingNew(false)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
@@ -760,42 +905,64 @@ export function CreateMonsterDialog({
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="hunt-board-input">Hunt Board</Label>
-                    <Textarea
-                      id="hunt-board-input"
-                      name="hunt-board-input"
-                      placeholder="Enter hunt board config (e.g., '0: basic', '5: monster')"
-                      value={Object.entries(huntBoard)
-                        .map(([pos, type]) => `${pos}: ${type || ''}`)
-                        .join('\n')}
-                      onChange={(e) => {
-                        const newBoard: Record<
-                          number,
-                          | HuntEventType.BASIC
-                          | HuntEventType.MONSTER
-                          | undefined
-                        > = {}
-                        e.target.value.split('\n').forEach((line) => {
-                          const match = line.match(/^(\d+):\s*(.*)$/)
-                          if (match) {
-                            const pos = parseInt(match[1])
-                            const type = match[2].trim()
-                            if (
-                              type === HuntEventType.BASIC ||
-                              type === HuntEventType.MONSTER
-                            ) {
-                              newBoard[pos] = type
-                            } else if (type === '') {
-                              newBoard[pos] = undefined
-                            }
-                          }
-                        })
-                        setHuntBoard(newBoard)
-                      }}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Format: position: basic|monster (one per line)
-                    </p>
+                    <Label>Hunt Board Positions</Label>
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((pos) => {
+                        const isFixed = pos === 0 || pos === 6 || pos === 12
+                        const fixedLabel =
+                          pos === 0
+                            ? 'Start'
+                            : pos === 6
+                              ? 'Overwhelming Darkness'
+                              : 'Starvation'
+
+                        return (
+                          <div
+                            key={pos}
+                            className="flex items-center gap-2 p-2 border rounded">
+                            <div className="w-16 font-semibold">
+                              Position {pos}
+                            </div>
+                            <div className="flex-1">
+                              {isFixed ? (
+                                <Input
+                                  value={fixedLabel}
+                                  disabled
+                                  className="bg-muted"
+                                />
+                              ) : (
+                                <Select
+                                  value={huntBoard[pos] || 'none'}
+                                  onValueChange={(value) => {
+                                    const newBoard = { ...huntBoard }
+                                    if (value === 'none') {
+                                      delete newBoard[pos]
+                                    } else {
+                                      newBoard[pos] = value as
+                                        | HuntEventType.BASIC
+                                        | HuntEventType.MONSTER
+                                    }
+                                    setHuntBoard(newBoard)
+                                  }}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select event type" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="none">None</SelectItem>
+                                    <SelectItem value={HuntEventType.BASIC}>
+                                      Basic
+                                    </SelectItem>
+                                    <SelectItem value={HuntEventType.MONSTER}>
+                                      Monster
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 </CollapsibleContent>
               </Collapsible>
@@ -812,38 +979,168 @@ export function CreateMonsterDialog({
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="locations-input">Locations</Label>
-                    <div className="space-y-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Locations</Label>
+                      {!isAddingNewLocation && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setIsAddingNewLocation(true)}
+                          disabled={
+                            isAddingNewLocation ||
+                            Object.values(disabledLocationInputs).some(
+                              (v) => v === false
+                            )
+                          }>
+                          <PlusIcon className="h-4 w-4 mr-2" />
+                          Add Location
+                        </Button>
+                      )}
+                    </div>
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto">
                       {locations.map((location, index) => (
-                        <div key={index} className="flex gap-2">
-                          <Input
-                            value={location}
-                            onChange={(e) => {
-                              const newLocations = [...locations]
-                              newLocations[index] = e.target.value
-                              setLocations(newLocations)
-                            }}
-                            placeholder="Location name"
-                          />
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              setLocations(
-                                locations.filter((_, i) => i !== index)
-                              )
-                            }}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="flex-1">
+                            {disabledLocationInputs[index] ? (
+                              <span className="text-sm">{location}</span>
+                            ) : (
+                              <Input
+                                placeholder="Location name"
+                                defaultValue={location}
+                                onChange={(e) => {
+                                  const newLocations = [...locations]
+                                  newLocations[index] = e.target.value
+                                  setLocations(newLocations)
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    setDisabledLocationInputs((prev) => ({
+                                      ...prev,
+                                      [index]: true
+                                    }))
+                                  }
+                                }}
+                              />
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {disabledLocationInputs[index] ? (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  setDisabledLocationInputs((prev) => ({
+                                    ...prev,
+                                    [index]: false
+                                  }))
+                                }>
+                                <PencilIcon className="h-4 w-4" />
+                              </Button>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  setDisabledLocationInputs((prev) => ({
+                                    ...prev,
+                                    [index]: true
+                                  }))
+                                }>
+                                <CheckIcon className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const newLocations = locations.filter(
+                                  (_, i) => i !== index
+                                )
+                                setLocations(newLocations)
+                                const newDisabled = {
+                                  ...disabledLocationInputs
+                                }
+                                delete newDisabled[index]
+                                Object.keys(newDisabled).forEach((k) => {
+                                  const num = parseInt(k)
+                                  if (num > index) {
+                                    newDisabled[num - 1] = newDisabled[num]
+                                    delete newDisabled[num]
+                                  }
+                                })
+                                setDisabledLocationInputs(newDisabled)
+                              }}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setLocations([...locations, ''])}>
-                        <PlusIcon className="h-4 w-4 mr-2" />
-                        Add Location
-                      </Button>
+                      {isAddingNewLocation && (
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1">
+                            <Input
+                              id="new-location-name"
+                              placeholder="Location name"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault()
+                                  const input = document.getElementById(
+                                    'new-location-name'
+                                  ) as HTMLInputElement
+                                  const name = input?.value || ''
+                                  if (name.trim()) {
+                                    const newLocations = [...locations, name]
+                                    setLocations(newLocations)
+                                    setDisabledLocationInputs((prev) => ({
+                                      ...prev,
+                                      [locations.length]: true
+                                    }))
+                                    setIsAddingNewLocation(false)
+                                  }
+                                } else if (e.key === 'Escape') {
+                                  e.preventDefault()
+                                  setIsAddingNewLocation(false)
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const input = document.getElementById(
+                                  'new-location-name'
+                                ) as HTMLInputElement
+                                const name = input?.value || ''
+                                if (name.trim()) {
+                                  const newLocations = [...locations, name]
+                                  setLocations(newLocations)
+                                  setDisabledLocationInputs((prev) => ({
+                                    ...prev,
+                                    [locations.length]: true
+                                  }))
+                                  setIsAddingNewLocation(false)
+                                }
+                              }}>
+                              <CheckIcon className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setIsAddingNewLocation(false)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CollapsibleContent>
@@ -861,38 +1158,237 @@ export function CreateMonsterDialog({
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-4 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="cc-rewards-input">CC Rewards</Label>
-                    <div className="space-y-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>CC Rewards</Label>
+                      {!isAddingNewCcReward && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setIsAddingNewCcReward(true)}
+                          disabled={
+                            isAddingNewCcReward ||
+                            Object.values(disabledCcRewardInputs).some(
+                              (v) => v === false
+                            )
+                          }>
+                          <PlusIcon className="h-4 w-4 mr-2" />
+                          Add CC Reward
+                        </Button>
+                      )}
+                    </div>
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto">
                       {ccRewards.map((reward, index) => (
-                        <div key={index} className="flex gap-2">
-                          <Input
-                            value={reward}
-                            onChange={(e) => {
-                              const newRewards = [...ccRewards]
-                              newRewards[index] = e.target.value
-                              setCcRewards(newRewards)
-                            }}
-                            placeholder="Reward name"
-                          />
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              setCcRewards(
-                                ccRewards.filter((_, i) => i !== index)
-                              )
-                            }}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="w-20">
+                            {disabledCcRewardInputs[index] ? (
+                              <span className="text-sm">{reward.cc}</span>
+                            ) : (
+                              <NumericInput
+                                label={'CC Reward Target'}
+                                value={reward.cc}
+                                onChange={(value) => {
+                                  const newRewards = [...ccRewards]
+                                  newRewards[index] = {
+                                    ...reward,
+                                    cc: value
+                                  }
+                                  setCcRewards(newRewards)
+                                }}
+                                min={0}
+                                readOnly={false}>
+                                <Input
+                                  id={`cc-reward-${index + 1}-cc`}
+                                  name={`cc-reward-${index + 1}-cc`}
+                                  type="number"
+                                  min="0"
+                                  placeholder="0"
+                                  value={reward.cc}
+                                  readOnly
+                                  onChange={(e) => {
+                                    const newRewards = [...ccRewards]
+                                    newRewards[index] = {
+                                      ...reward,
+                                      cc: parseInt(e.target.value) || 0
+                                    }
+                                    setCcRewards(newRewards)
+                                  }}
+                                  className="text-center no-spinners"
+                                />
+                              </NumericInput>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            {disabledCcRewardInputs[index] ? (
+                              <span className="text-sm">{reward.name}</span>
+                            ) : (
+                              <Input
+                                placeholder="Reward name"
+                                defaultValue={reward.name}
+                                onChange={(e) => {
+                                  const newRewards = [...ccRewards]
+                                  newRewards[index] = {
+                                    ...reward,
+                                    name: e.target.value
+                                  }
+                                  setCcRewards(newRewards)
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    setDisabledCcRewardInputs((prev) => ({
+                                      ...prev,
+                                      [index]: true
+                                    }))
+                                  }
+                                }}
+                              />
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {disabledCcRewardInputs[index] ? (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  setDisabledCcRewardInputs((prev) => ({
+                                    ...prev,
+                                    [index]: false
+                                  }))
+                                }>
+                                <PencilIcon className="h-4 w-4" />
+                              </Button>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  setDisabledCcRewardInputs((prev) => ({
+                                    ...prev,
+                                    [index]: true
+                                  }))
+                                }>
+                                <CheckIcon className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const newRewards = ccRewards.filter(
+                                  (_, i) => i !== index
+                                )
+                                setCcRewards(newRewards)
+                                const newDisabled = {
+                                  ...disabledCcRewardInputs
+                                }
+                                delete newDisabled[index]
+                                Object.keys(newDisabled).forEach((k) => {
+                                  const num = parseInt(k)
+                                  if (num > index) {
+                                    newDisabled[num - 1] = newDisabled[num]
+                                    delete newDisabled[num]
+                                  }
+                                })
+                                setDisabledCcRewardInputs(newDisabled)
+                              }}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCcRewards([...ccRewards, ''])}>
-                        <PlusIcon className="h-4 w-4 mr-2" />
-                        Add CC Reward
-                      </Button>
+                      {isAddingNewCcReward && (
+                        <div className="flex items-center gap-2">
+                          <div className="w-20">
+                            <Input
+                              id="new-cc-reward-cc"
+                              type="number"
+                              min="0"
+                              placeholder="CC"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Escape') {
+                                  e.preventDefault()
+                                  setIsAddingNewCcReward(false)
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <Input
+                              id="new-cc-reward-name"
+                              placeholder="Reward name"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault()
+                                  const ccInput = document.getElementById(
+                                    'new-cc-reward-cc'
+                                  ) as HTMLInputElement
+                                  const nameInput = document.getElementById(
+                                    'new-cc-reward-name'
+                                  ) as HTMLInputElement
+                                  const cc = parseInt(ccInput?.value || '0')
+                                  const name = nameInput?.value || ''
+                                  if (name.trim()) {
+                                    const newRewards = [
+                                      ...ccRewards,
+                                      { cc, name }
+                                    ]
+                                    setCcRewards(newRewards)
+                                    setDisabledCcRewardInputs((prev) => ({
+                                      ...prev,
+                                      [ccRewards.length]: true
+                                    }))
+                                    setIsAddingNewCcReward(false)
+                                  }
+                                } else if (e.key === 'Escape') {
+                                  e.preventDefault()
+                                  setIsAddingNewCcReward(false)
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const ccInput = document.getElementById(
+                                  'new-cc-reward-cc'
+                                ) as HTMLInputElement
+                                const nameInput = document.getElementById(
+                                  'new-cc-reward-name'
+                                ) as HTMLInputElement
+                                const cc = parseInt(ccInput?.value || '0')
+                                const name = nameInput?.value || ''
+                                if (name.trim()) {
+                                  const newRewards = [
+                                    ...ccRewards,
+                                    { cc, name }
+                                  ]
+                                  setCcRewards(newRewards)
+                                  setDisabledCcRewardInputs((prev) => ({
+                                    ...prev,
+                                    [ccRewards.length]: true
+                                  }))
+                                  setIsAddingNewCcReward(false)
+                                }
+                              }}>
+                              <CheckIcon className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setIsAddingNewCcReward(false)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CollapsibleContent>
