@@ -103,8 +103,6 @@ export const NemesisMonsterDataSchema = z.object({
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Node */
   node: z.enum(MonsterNode),
-  /** Monster Type */
-  type: z.literal(MonsterType.NEMESIS),
   /** Level 1 Data */
   level1: NemesisMonsterLevelSchema.optional(),
   /** Level 2 Data */
@@ -125,7 +123,9 @@ export const NemesisMonsterDataSchema = z.object({
         })
       ])
     )
-  )
+  ),
+  /** Monster Type */
+  type: z.literal(MonsterType.NEMESIS)
 })
 
 /**
@@ -152,8 +152,6 @@ export const QuarryMonsterDataSchema = z.object({
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Node */
   node: z.enum(MonsterNode),
-  /** Monster Type */
-  type: z.literal(MonsterType.QUARRY),
   /** Level 1 Data */
   level1: QuarryMonsterLevelSchema.optional(),
   /** Level 2 Data */
@@ -176,7 +174,9 @@ export const QuarryMonsterDataSchema = z.object({
         })
       ])
     )
-  )
+  ),
+  /** Monster Type */
+  type: z.literal(MonsterType.QUARRY)
 })
 
 /**

@@ -174,6 +174,17 @@ export const COMBAT_WAIST_UPDATED_MESSAGE = () =>
   'The core strengthens against the darkness.'
 
 /**
+ * Custom Monster Created
+ *
+ * @param monsterType Monster Type
+ * @returns Custom Monster Created Message
+ */
+export const CUSTOM_MONSTER_CREATED_MESSAGE = (monsterType: MonsterType) =>
+  monsterType === MonsterType.NEMESIS
+    ? 'A new nemesis emerges from the shadows.'
+    : 'A new quarry stalks the land.'
+
+/**
  * Departing Bonus Removed
  *
  * @returns Departing Bonus Removed Message
