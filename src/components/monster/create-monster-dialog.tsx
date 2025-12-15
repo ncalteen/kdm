@@ -41,7 +41,13 @@ import {
   QuarryMonsterDataSchema,
   QuarryMonsterLevel
 } from '@/schemas/monster'
-import { ChevronDown, PlusIcon, Trash2 } from 'lucide-react'
+import {
+  CheckIcon,
+  ChevronDown,
+  PencilIcon,
+  PlusIcon,
+  Trash2
+} from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
 /**
@@ -89,8 +95,12 @@ export function CreateMonsterDialog({
 
   // Timeline
   const [timeline, setTimeline] = useState<
-    Record<number, Array<string | { title: string; campaigns: string[] }>>
-  >({})
+    Array<{ year: number; event: string }>
+  >([])
+  const [disabledTimelineInputs, setDisabledTimelineInputs] = useState<{
+    [key: number]: boolean
+  }>({})
+  const [isAddingNewTimeline, setIsAddingNewTimeline] = useState<boolean>(false)
 
   // Quarry-specific fields
   const [huntBoard, setHuntBoard] = useState<
@@ -129,7 +139,9 @@ export function CreateMonsterDialog({
     setLevel2({})
     setLevel3({})
     setLevel4({})
-    setTimeline({})
+    setTimeline([])
+    setDisabledTimelineInputs({})
+    setIsAddingNewTimeline(false)
     setHuntBoard({})
     setLocations([])
     setCcRewards([])
@@ -162,6 +174,13 @@ export function CreateMonsterDialog({
       const campaign = getCampaign()
       const existingMonsters = campaign.customMonsters || []
 
+      // Convert timeline array to Record format
+      const timelineRecord: Record<number, string[]> = {}
+      timeline.forEach(({ year, event }) => {
+        if (!timelineRecord[year]) timelineRecord[year] = []
+        timelineRecord[year].push(event)
+      })
+
       // Validate based on monster type
       if (monsterType === MonsterType.QUARRY) {
         const monsterData = QuarryMonsterDataSchema.parse({
@@ -173,7 +192,7 @@ export function CreateMonsterDialog({
           })),
           huntBoard,
           locations: locations.map((name) => ({ name, unlocked: false })),
-          timeline,
+          timeline: timelineRecord,
           ...(Object.keys(level1).length > 0 && { level1 }),
           ...(Object.keys(level2).length > 0 && { level2 }),
           ...(Object.keys(level3).length > 0 && { level3 }),
@@ -191,7 +210,7 @@ export function CreateMonsterDialog({
       } else {
         const monsterData = NemesisMonsterDataSchema.parse({
           ...baseData,
-          timeline,
+          timeline: timelineRecord,
           ...(Object.keys(level1).length > 0 && { level1 }),
           ...(Object.keys(level2).length > 0 && { level2 }),
           ...(Object.keys(level3).length > 0 && { level3 }),
@@ -513,35 +532,215 @@ export function CreateMonsterDialog({
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="timeline-input">Timeline</Label>
-                <Textarea
-                  id="timeline-input"
-                  name="timeline-input"
-                  placeholder="Enter timeline entries (e.g., '1: Event name', '5: Another event')"
-                  value={Object.entries(timeline)
-                    .map(([year, entries]) => `${year}: ${entries.join(', ')}`)
-                    .join('\n')}
-                  onChange={(e) => {
-                    const newTimeline: Record<number, string[]> = {}
-                    e.target.value.split('\n').forEach((line) => {
-                      const match = line.match(/^(\d+):\s*(.+)$/)
-                      if (match) {
-                        const year = parseInt(match[1])
-                        const entries = match[2]
-                          .split(',')
-                          .map((s) => s.trim())
-                          .filter((s) => s)
-                        if (entries.length > 0) {
-                          newTimeline[year] = entries
-                        }
-                      }
-                    })
-                    setTimeline(newTimeline)
-                  }}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Format: year: event1, event2 (one per line)
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Timeline Entries</Label>
+                  {!isAddingNewTimeline && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsAddingNewTimeline(true)}
+                      disabled={
+                        isAddingNewTimeline ||
+                        Object.values(disabledTimelineInputs).some(
+                          (v) => v === false
+                        )
+                      }>
+                      <PlusIcon className="h-4 w-4 mr-2" />
+                      Add Entry
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                  {timeline.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="w-20">
+                        {disabledTimelineInputs[index] ? (
+                          <span className="text-sm">{entry.year}</span>
+                        ) : (
+                          <Input
+                            type="number"
+                            min="0"
+                            placeholder="Year"
+                            defaultValue={entry.year}
+                            onChange={(e) => {
+                              const newTimeline = [...timeline]
+                              newTimeline[index] = {
+                                ...entry,
+                                year: parseInt(e.target.value) || 0
+                              }
+                              setTimeline(newTimeline)
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        {disabledTimelineInputs[index] ? (
+                          <span className="text-sm">{entry.event}</span>
+                        ) : (
+                          <Input
+                            placeholder="Event name"
+                            defaultValue={entry.event}
+                            onChange={(e) => {
+                              const newTimeline = [...timeline]
+                              newTimeline[index] = {
+                                ...entry,
+                                event: e.target.value
+                              }
+                              setTimeline(newTimeline)
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                setDisabledTimelineInputs((prev) => ({
+                                  ...prev,
+                                  [index]: true
+                                }))
+                              }
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {disabledTimelineInputs[index] ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              setDisabledTimelineInputs((prev) => ({
+                                ...prev,
+                                [index]: false
+                              }))
+                            }>
+                            <PencilIcon className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              setDisabledTimelineInputs((prev) => ({
+                                ...prev,
+                                [index]: true
+                              }))
+                            }>
+                            <CheckIcon className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            const newTimeline = timeline.filter(
+                              (_, i) => i !== index
+                            )
+                            setTimeline(newTimeline)
+                            const newDisabled = { ...disabledTimelineInputs }
+                            delete newDisabled[index]
+                            Object.keys(newDisabled).forEach((k) => {
+                              const num = parseInt(k)
+                              if (num > index) {
+                                newDisabled[num - 1] = newDisabled[num]
+                                delete newDisabled[num]
+                              }
+                            })
+                            setDisabledTimelineInputs(newDisabled)
+                          }}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {isAddingNewTimeline && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-20">
+                        <Input
+                          id="new-timeline-year"
+                          type="number"
+                          min="0"
+                          placeholder="Year"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                              e.preventDefault()
+                              setIsAddingNewTimeline(false)
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <Input
+                          id="new-timeline-event"
+                          placeholder="Event name"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault()
+                              const yearInput = document.getElementById(
+                                'new-timeline-year'
+                              ) as HTMLInputElement
+                              const eventInput = document.getElementById(
+                                'new-timeline-event'
+                              ) as HTMLInputElement
+                              const year = parseInt(yearInput?.value || '0')
+                              const event = eventInput?.value || ''
+                              if (event.trim()) {
+                                const newTimeline = [
+                                  ...timeline,
+                                  { year, event }
+                                ]
+                                setTimeline(newTimeline)
+                                setDisabledTimelineInputs((prev) => ({
+                                  ...prev,
+                                  [timeline.length]: true
+                                }))
+                                setIsAddingNewTimeline(false)
+                              }
+                            } else if (e.key === 'Escape') {
+                              e.preventDefault()
+                              setIsAddingNewTimeline(false)
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            const yearInput = document.getElementById(
+                              'new-timeline-year'
+                            ) as HTMLInputElement
+                            const eventInput = document.getElementById(
+                              'new-timeline-event'
+                            ) as HTMLInputElement
+                            const year = parseInt(yearInput?.value || '0')
+                            const event = eventInput?.value || ''
+                            if (event.trim()) {
+                              const newTimeline = [...timeline, { year, event }]
+                              setTimeline(newTimeline)
+                              setDisabledTimelineInputs((prev) => ({
+                                ...prev,
+                                [timeline.length]: true
+                              }))
+                              setIsAddingNewTimeline(false)
+                            }
+                          }}>
+                          <CheckIcon className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setIsAddingNewTimeline(false)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </CollapsibleContent>
           </Collapsible>
