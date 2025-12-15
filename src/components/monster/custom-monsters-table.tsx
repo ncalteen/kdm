@@ -1,6 +1,5 @@
 'use client'
 
-import { EditMonsterDialog } from '@/components/monster/edit-monster-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -177,16 +176,6 @@ export function CustomMonstersTable({
           ))}
         </TableBody>
       </Table>
-
-      <EditMonsterDialog
-        monster={editingMonster}
-        isOpen={isEditDialogOpen}
-        onClose={() => {
-          setIsEditDialogOpen(false)
-          setEditingMonster(null)
-        }}
-        onMonsterUpdated={handleMonsterUpdated}
-      />
     </div>
   )
 }
