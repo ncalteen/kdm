@@ -86,7 +86,16 @@ export function NumericInput({
       <>{children}</>
     ) : (
       <Drawer>
-        <DrawerTrigger asChild>{children}</DrawerTrigger>
+        <DrawerTrigger asChild>
+          <div
+            onFocus={(e) => {
+              // Prevent focus on the input when opening the drawer
+              const target = e.target as HTMLElement
+              if (target.tagName === 'INPUT') target.blur()
+            }}>
+            {children}
+          </div>
+        </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader className="text-center">
             <DrawerTitle>{label}</DrawerTitle>
