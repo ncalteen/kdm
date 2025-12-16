@@ -28,7 +28,11 @@ import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_CREATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
-import { getAvailableNodes, getCampaign } from '@/lib/utils'
+import {
+  getAvailableNodes,
+  getCampaign,
+  saveCampaignToLocalStorage
+} from '@/lib/utils'
 import {
   NemesisMonsterDataSchema,
   NemesisMonsterLevel,
