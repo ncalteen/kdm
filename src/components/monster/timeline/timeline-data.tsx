@@ -26,6 +26,8 @@ export interface TimelineDataProps {
   timelineData: Array<{ year: number; event: string }>
   /** Update timeline data callback */
   onTimelineDataChange: (data: Array<{ year: number; event: string }>) => void
+  /** Initial disabled indexes (for editing existing data) */
+  initialDisabledIndexes?: number[]
 }
 
 /**
@@ -38,12 +40,19 @@ export interface TimelineDataProps {
  */
 export function TimelineData({
   timelineData,
-  onTimelineDataChange
+  onTimelineDataChange,
+  initialDisabledIndexes
 }: TimelineDataProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(() => {
+    if (!initialDisabledIndexes) return {}
+    return initialDisabledIndexes.reduce(
+      (acc, idx) => ({ ...acc, [idx]: true }),
+      {}
+    )
+  })
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
   const [newYearValue, setNewYearValue] = useState<number>(0)
   const [newEventValue, setNewEventValue] = useState<string>('')

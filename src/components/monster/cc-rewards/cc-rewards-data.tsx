@@ -26,6 +26,8 @@ export interface CCRewardsDataProps {
   ccRewards: Array<{ cc: number; name: string }>
   /** Update CC Rewards Callback */
   onCCRewardsChange: (rewards: Array<{ cc: number; name: string }>) => void
+  /** Initial disabled indexes (for editing existing data) */
+  initialDisabledIndexes?: number[]
 }
 
 /**
@@ -38,12 +40,19 @@ export interface CCRewardsDataProps {
  */
 export function CCRewardsData({
   ccRewards,
-  onCCRewardsChange
+  onCCRewardsChange,
+  initialDisabledIndexes
 }: CCRewardsDataProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(() => {
+    if (!initialDisabledIndexes) return {}
+    return initialDisabledIndexes.reduce(
+      (acc, idx) => ({ ...acc, [idx]: true }),
+      {}
+    )
+  })
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
   const [newCCValue, setNewCCValue] = useState<number>(0)
   const [newNameValue, setNewNameValue] = useState<string>('')

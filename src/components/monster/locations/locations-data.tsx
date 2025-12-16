@@ -25,6 +25,8 @@ export interface LocationsDataProps {
   locations: string[]
   /** Update locations callback */
   onLocationsChange: (locations: string[]) => void
+  /** Initial disabled indexes (for editing existing data) */
+  initialDisabledIndexes?: number[]
 }
 
 /**
@@ -37,12 +39,19 @@ export interface LocationsDataProps {
  */
 export function LocationsData({
   locations,
-  onLocationsChange
+  onLocationsChange,
+  initialDisabledIndexes
 }: LocationsDataProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(() => {
+    if (!initialDisabledIndexes) return {}
+    return initialDisabledIndexes.reduce(
+      (acc, idx) => ({ ...acc, [idx]: true }),
+      {}
+    )
+  })
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   return (
