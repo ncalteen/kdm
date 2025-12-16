@@ -158,7 +158,7 @@ export function SettlementForm({
       <div className="flex flex-1 flex-col h-full">
         <div className="flex flex-col gap-2 py-2 px-2 flex-1">
           {/* Create Settlement Form */}
-          {!selectedSettlement && (
+          {!selectedSettlement && selectedTab !== 'settings' && (
             <CreateSettlementForm
               setSelectedSettlement={setSelectedSettlement}
             />
@@ -419,7 +419,7 @@ export function SettlementForm({
           )}
 
           {/* Settings Tab */}
-          {selectedSettlement && selectedTab === 'settings' && (
+          {selectedTab === 'settings' && (
             <SettingsCard
               saveSelectedSettlement={saveSelectedSettlement}
               selectedHunt={selectedHunt}

@@ -470,38 +470,40 @@ export function SettingsCard({
       </Card>
 
       {/* Settlement Settings */}
-      <Card className="p-0">
-        <CardHeader className="px-4 pt-3 pb-0">
-          <CardTitle className="text-lg">Settlement Settings</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 pt-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium text-sm">Uses Scouts</div>
-              <div className="text-sm text-muted-foreground">
-                Determines if scouts are required for hunts and showdowns.
+      {selectedSettlement && (
+        <Card className="p-0">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg">Settlement Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Uses Scouts</div>
+                <div className="text-sm text-muted-foreground">
+                  Determines if scouts are required for hunts and showdowns.
+                </div>
               </div>
+              <Select
+                value={
+                  selectedSettlement?.usesScouts !== undefined
+                    ? selectedSettlement.usesScouts.toString()
+                    : 'false'
+                }
+                onValueChange={handleUsesScoutsChange}
+                name="uses-scouts"
+                aria-label="Uses Scouts">
+                <SelectTrigger className="w-24" id="uses-scouts">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="false">No</SelectItem>
+                  <SelectItem value="true">Yes</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Select
-              value={
-                selectedSettlement?.usesScouts !== undefined
-                  ? selectedSettlement.usesScouts.toString()
-                  : 'false'
-              }
-              onValueChange={handleUsesScoutsChange}
-              name="uses-scouts"
-              aria-label="Uses Scouts">
-              <SelectTrigger className="w-24" id="uses-scouts">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="false">No</SelectItem>
-                <SelectItem value="true">Yes</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Custom Monster Settings */}
       <Card className="p-0">
@@ -587,57 +589,59 @@ export function SettingsCard({
       )}
 
       {/* Danger Zone */}
-      <Card className="p-0 border-destructive">
-        <CardHeader className="px-4 pt-3 pb-0">
-          <CardTitle className="text-lg text-destructive">
-            Danger Zone
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 pt-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium text-sm">
-                Permanently delete this settlement
+      {selectedSettlement && (
+        <Card className="p-0 border-destructive">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg text-destructive">
+              Danger Zone
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">
+                  Permanently delete this settlement
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  This action cannot be undone. All survivors will be forgotten.
+                </div>
               </div>
-              <div className="text-sm text-muted-foreground">
-                This action cannot be undone. All survivors will be forgotten.
-              </div>
-            </div>
-            <AlertDialog
-              open={isDeleteDialogOpen}
-              onOpenChange={setIsDeleteDialogOpen}>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => setIsDeleteDialogOpen(true)}>
-                  <Trash2Icon className="h-4 w-4 mr-2" />
-                  Delete {selectedSettlement?.name || 'Settlement'}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Settlement</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    The darkness hungers for {selectedSettlement?.name}.{' '}
-                    <strong>
-                      Once consumed, all who dwelled within will be forgotten.
-                    </strong>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteSettlement}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              <AlertDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setIsDeleteDialogOpen(true)}>
+                    <Trash2Icon className="h-4 w-4 mr-2" />
                     Delete {selectedSettlement?.name || 'Settlement'}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </CardContent>
-      </Card>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Settlement</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      The darkness hungers for {selectedSettlement?.name}.{' '}
+                      <strong>
+                        Once consumed, all who dwelled within will be forgotten.
+                      </strong>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteSettlement}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Delete {selectedSettlement?.name || 'Settlement'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

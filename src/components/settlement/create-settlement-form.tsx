@@ -66,7 +66,6 @@ export function CreateSettlementForm({
   })
 
   function onSubmit(values: NewSettlementInput) {
-    console.log(values)
     try {
       // Get campaign data based on the selected campaign type
       const settlement = createSettlementFromOptions(values)

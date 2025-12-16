@@ -92,11 +92,6 @@ const baseNavPrimary = [
     title: 'Notes',
     tab: TabType.NOTES,
     icon: NotebookPenIcon
-  },
-  {
-    title: 'Settings',
-    tab: TabType.SETTINGS,
-    icon: SettingsIcon
   }
 ]
 
@@ -143,6 +138,14 @@ const navEmbark = [
     title: 'Showdown',
     tab: TabType.SHOWDOWN,
     icon: SkullIcon
+  }
+]
+
+const navSettings = [
+  {
+    title: 'Settings',
+    tab: TabType.SETTINGS,
+    icon: SettingsIcon
   }
 ]
 
@@ -400,6 +403,11 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupLabel>Embark</SidebarGroupLabel>
           <NavMain items={navEmbark} />
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Configuration</SidebarGroupLabel>
+          <NavMain items={navSettings} />
         </SidebarGroup>
       </SidebarContent>
 
