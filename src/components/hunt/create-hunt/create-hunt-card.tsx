@@ -23,6 +23,7 @@ import {
   SCOUT_REQUIRED_MESSAGE,
   SHOWDOWN_ALREADY_ACTIVE_ERROR_MESSAGE
 } from '@/lib/messages'
+import { QUARRIES } from '@/lib/monsters'
 import { getNextHuntId } from '@/lib/utils'
 import { Hunt, SurvivorHuntDetails } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -105,7 +106,7 @@ export function CreateHuntCard({
 
     // Determine if it's a quarry or nemesis
     const isQuarry = availableQuarries.some(
-      (quarry) => quarry.name === monsterName
+      (quarry) => quarry.monsterData.name === monsterName
     )
     setSelectedMonsterType(isQuarry ? MonsterType.QUARRY : MonsterType.NEMESIS)
   }
@@ -135,9 +136,15 @@ export function CreateHuntCard({
     [survivors, selectedSettlement?.id]
   )
 
-  // Get available quarries (unlocked ones)
+  // Get available quarries (unlocked ones) and map to monster data
   const availableQuarries = selectedSettlement?.quarries
-    ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
+    ? selectedSettlement.quarries
+        .filter((quarry) => quarry.unlocked)
+        .map((quarry) => ({
+          ...quarry,
+          monsterData: QUARRIES[quarry.id as keyof typeof QUARRIES]?.main
+        }))
+        .filter((quarry) => quarry.monsterData) // Filter out any missing monster data
     : []
 
   // Create Hunt
@@ -288,8 +295,10 @@ export function CreateHuntCard({
 
             <SelectContent>
               {availableQuarries.map((quarry) => (
-                <SelectItem key={quarry.name} value={quarry.name}>
-                  {quarry.name} ({quarry.node})
+                <SelectItem
+                  key={quarry.monsterData.name}
+                  value={quarry.monsterData.name}>
+                  {quarry.monsterData.name} ({quarry.node})
                 </SelectItem>
               ))}
             </SelectContent>
