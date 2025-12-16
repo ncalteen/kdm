@@ -139,7 +139,7 @@ export function LevelData({
 
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-2 h-8">
           <Label>{label}</Label>
           {!isAddingNew && (
             <Button
@@ -147,9 +147,9 @@ export function LevelData({
               size="sm"
               variant="outline"
               onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
               disabled={isAddingNew || editingIndex !== null}>
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Add
+              <PlusIcon className="h-4 w-4" />
             </Button>
           )}
         </div>
