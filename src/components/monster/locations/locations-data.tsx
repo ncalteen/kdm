@@ -57,7 +57,7 @@ export function LocationsData({
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-1 ml-2">
         <div className="space-y-2">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between h-8">
             <Label>Locations</Label>
             {!isAddingNew && (
               <Button
