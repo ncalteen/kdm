@@ -28,11 +28,7 @@ import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_CREATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
-import {
-  getAvailableNodes,
-  getCampaign,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
+import { getAvailableNodes, getCampaign } from '@/lib/utils'
 import {
   NemesisMonsterDataSchema,
   NemesisMonsterLevel,
@@ -140,6 +136,9 @@ export function CreateMonsterDialog({
       // Validate based on monster type
       if (monsterType === MonsterType.QUARRY) {
         const monsterData = QuarryMonsterDataSchema.parse({
+          name,
+          node,
+          type: MonsterType.QUARRY,
           ccRewards: ccRewardsData.map(({ cc, name }) => ({
             name,
             cc,

@@ -72,9 +72,9 @@ export type BaseMonsterLevel = z.infer<typeof BaseMonsterLevelSchema>
  */
 export const QuarryMonsterLevelSchema = BaseMonsterLevelSchema.extend({
   /** Monster Hunt Board Starting Position */
-  huntPos: z.number().int().min(1),
+  huntPos: z.number().int().min(0).default(12),
   /** Survivor Hunt Board Starting Position */
-  survivorHuntPos: z.number().int().min(1).optional()
+  survivorHuntPos: z.number().int().min(0).default(0)
 })
 
 /**
@@ -112,18 +112,30 @@ export const NemesisMonsterDataSchema = z.object({
   /** Level 4 Data */
   level4: NemesisMonsterLevelSchema.optional(),
   /** Timeline Entries */
-  timeline: z.record(
-    z.number().min(1),
-    z.array(
-      z.union([
-        z.string(),
-        z.object({
-          title: z.string().min(1, 'Title is required.'),
-          campaigns: z.array(z.enum(CampaignType)).default([])
-        })
-      ])
+  timeline: z
+    .record(
+      z.string(),
+      z.array(
+        z.union([
+          z.string(),
+          z.object({
+            title: z.string().min(1, 'Title is required.'),
+            campaigns: z.array(z.enum(CampaignType)).default([])
+          })
+        ])
+      )
     )
-  ),
+    .transform((obj) => {
+      const result: Record<
+        number,
+        Array<string | { title: string; campaigns: CampaignType[] }>
+      > = {}
+      Object.entries(obj).forEach(([key, value]) => {
+        const numKey = Number(key)
+        if (!isNaN(numKey) && numKey >= 1) result[numKey] = value
+      })
+      return result
+    }),
   /** Monster Type */
   type: z.literal(MonsterType.NEMESIS)
 })
@@ -140,14 +152,26 @@ export const QuarryMonsterDataSchema = z.object({
   /** Collective Cognition Rewards */
   ccRewards: z.array(CollectiveCognitionRewardSchema).default([]),
   /** Hunt Board Configuration */
-  huntBoard: z.record(
-    z.number().min(0),
-    z.union([
-      z.literal(HuntEventType.BASIC),
-      z.literal(HuntEventType.MONSTER),
-      z.undefined()
-    ])
-  ),
+  huntBoard: z
+    .record(
+      z.string(),
+      z.union([
+        z.literal(HuntEventType.BASIC),
+        z.literal(HuntEventType.MONSTER),
+        z.undefined()
+      ])
+    )
+    .transform((obj) => {
+      const result: Record<
+        number,
+        HuntEventType.BASIC | HuntEventType.MONSTER | undefined
+      > = {}
+      Object.entries(obj).forEach(([key, value]) => {
+        const numKey = Number(key)
+        if (!isNaN(numKey) && numKey >= 0) result[numKey] = value
+      })
+      return result
+    }),
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Node */
@@ -163,18 +187,30 @@ export const QuarryMonsterDataSchema = z.object({
   /** Locations */
   locations: z.array(LocationSchema).default([]),
   /** Timeline Entries */
-  timeline: z.record(
-    z.number().min(0),
-    z.array(
-      z.union([
-        z.string(),
-        z.object({
-          title: z.string().min(1, 'Title is required.'),
-          campaigns: z.array(z.enum(CampaignType)).default([])
-        })
-      ])
+  timeline: z
+    .record(
+      z.string(),
+      z.array(
+        z.union([
+          z.string(),
+          z.object({
+            title: z.string().min(1, 'Title is required.'),
+            campaigns: z.array(z.enum(CampaignType)).default([])
+          })
+        ])
+      )
     )
-  ),
+    .transform((obj) => {
+      const result: Record<
+        number,
+        Array<string | { title: string; campaigns: CampaignType[] }>
+      > = {}
+      Object.entries(obj).forEach(([key, value]) => {
+        const numKey = Number(key)
+        if (!isNaN(numKey) && numKey >= 0) result[numKey] = value
+      })
+      return result
+    }),
   /** Monster Type */
   type: z.literal(MonsterType.QUARRY)
 })

@@ -73,13 +73,10 @@ export function HuntBoardData({
     const current = huntBoard[pos]
 
     // Cycle: none -> basic -> monster -> none
-    if (!current) {
-      newBoard[pos] = HuntEventType.BASIC
-    } else if (current === HuntEventType.BASIC) {
+    if (!current) newBoard[pos] = HuntEventType.BASIC
+    else if (current === HuntEventType.BASIC)
       newBoard[pos] = HuntEventType.MONSTER
-    } else {
-      delete newBoard[pos]
-    }
+    else delete newBoard[pos]
 
     onHuntBoardChange(newBoard)
   }
