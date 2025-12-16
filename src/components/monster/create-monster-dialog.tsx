@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -228,6 +229,9 @@ export function CreateMonsterDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Custom Monster</DialogTitle>
+          <DialogDescription>
+            Define a custom quarry or nemesis monster for your campaign.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">

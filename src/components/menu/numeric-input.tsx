@@ -5,6 +5,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -89,6 +90,9 @@ export function NumericInput({
         <DrawerContent>
           <DrawerHeader className="text-center">
             <DrawerTitle>{label}</DrawerTitle>
+            <DrawerDescription>
+              Adjust the value using the plus and minus buttons.
+            </DrawerDescription>
           </DrawerHeader>
 
           <div className="px-4 pb-4">
