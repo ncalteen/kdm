@@ -124,7 +124,7 @@ export function NumericInput({
                   type="number"
                   value={value}
                   readOnly
-                  className="w-20 h-12 text-center text-xl font-semibold focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="w-20 h-12 text-center text-xl font-semibold focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   name={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
                   id={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
                 />
