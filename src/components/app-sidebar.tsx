@@ -23,8 +23,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
-  useSidebar
+  SidebarRail
 } from '@/components/ui/sidebar'
 import { CampaignType, SurvivorType, TabType } from '@/lib/enums'
 import {
@@ -185,8 +184,6 @@ export function AppSidebar({
   setSelectedSurvivor,
   ...props
 }: AppSidebarProps): ReactElement {
-  const { state } = useSidebar()
-
   const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -412,18 +409,6 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        {state === 'expanded' && (
-          <p className="text-center text-xs text-gray-500 pb-2">
-            This project is not affiliated with or endorsed by Kingdom Death:
-            Monster or its creators. It is a fan-made project created for
-            personal use and entertainment purposes only. All rights to Kingdom
-            Death: Monster and its associated materials are owned by their
-            respective copyright holders. This project is intended to be a tool
-            for players to enhance their experience with the game and is not
-            intended for commercial use or distribution.
-          </p>
-        )}
-
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
