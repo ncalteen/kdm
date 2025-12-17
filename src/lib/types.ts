@@ -68,8 +68,17 @@ export type BaseMonsterLevelData = {
   accuracy: number
   /** Accuracy Tokens */
   accuracyTokens: number
-  /** AI Deck Size */
-  aiDeckSize: number
+  /** AI Deck */
+  aiDeck: {
+    /** Basic Card Count */
+    basic: number
+    /** Advanced Card Count */
+    advanced: number
+    /** Legendary Card Count */
+    legendary: number
+    /** Overtone Card Count */
+    overtone?: number
+  }
   /** Damage */
   damage: number
   /** Damage Tokens */

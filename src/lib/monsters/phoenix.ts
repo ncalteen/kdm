@@ -33,7 +33,11 @@ export const PHOENIX: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 8,
+      advanced: 3,
+      legendary: 1
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -56,7 +60,11 @@ export const PHOENIX: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 17,
+    aiDeck: {
+      basic: 10,
+      advanced: 6,
+      legendary: 1
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -79,7 +87,11 @@ export const PHOENIX: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 22,
+    aiDeck: {
+      basic: 13,
+      advanced: 7,
+      legendary: 2
+    },
     damage: 3,
     damageTokens: 0,
     evasion: 0,

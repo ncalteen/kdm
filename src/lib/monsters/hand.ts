@@ -13,7 +13,11 @@ export const HAND: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 10,
+    aiDeck: {
+      basic: 10,
+      advanced: 0,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -42,7 +46,11 @@ export const HAND: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 11,
+    aiDeck: {
+      basic: 10,
+      advanced: 1,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -71,7 +79,11 @@ export const HAND: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 10,
+      advanced: 2,
+      legendary: 0
+    },
     damage: 6,
     damageTokens: 0,
     evasion: 0,

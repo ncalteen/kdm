@@ -11,7 +11,11 @@ export const BUTCHER: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 7,
+      advanced: 5,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -33,7 +37,11 @@ export const BUTCHER: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 10,
+      advanced: 5,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -55,7 +63,11 @@ export const BUTCHER: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 2,
-    aiDeckSize: 21,
+    aiDeck: {
+      basic: 11,
+      advanced: 10,
+      legendary: 0
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -134,7 +146,11 @@ export const KILLENIUM_BUTCHER: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 1,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 9,
+      advanced: 6,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -156,7 +172,11 @@ export const KILLENIUM_BUTCHER: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 2,
-    aiDeckSize: 21,
+    aiDeck: {
+      basic: 11,
+      advanced: 10,
+      legendary: 0
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,

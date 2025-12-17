@@ -11,7 +11,11 @@ export const BLACK_KNIGHT: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 8,
+      advanced: 4,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -33,7 +37,11 @@ export const BLACK_KNIGHT: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 1,
-    aiDeckSize: 16,
+    aiDeck: {
+      basic: 9,
+      advanced: 6,
+      legendary: 1
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -55,7 +63,11 @@ export const BLACK_KNIGHT: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 1,
-    aiDeckSize: 22,
+    aiDeck: {
+      basic: 11,
+      advanced: 8,
+      legendary: 3
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,

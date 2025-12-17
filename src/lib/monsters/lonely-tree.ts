@@ -13,7 +13,11 @@ export const LONELY_TREE: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 10,
+    aiDeck: {
+      basic: 6,
+      advanced: 3,
+      legendary: 1
+    },
     damage: -1,
     damageTokens: 0,
     evasion: 0,
@@ -35,7 +39,11 @@ export const LONELY_TREE: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 14,
+    aiDeck: {
+      basic: 8,
+      advanced: 5,
+      legendary: 1
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -62,7 +70,11 @@ export const LONELY_TREE: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 8,
+      advanced: 5,
+      legendary: 2
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,

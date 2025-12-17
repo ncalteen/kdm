@@ -11,7 +11,11 @@ export const WATCHER: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 12,
+      advanced: 0,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,

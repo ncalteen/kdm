@@ -11,7 +11,11 @@ export const GAMBLER: NemesisMonsterData = {
   level4: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 21,
+    aiDeck: {
+      basic: 9,
+      advanced: 9,
+      legendary: 3
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,

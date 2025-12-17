@@ -11,7 +11,11 @@ export const GODHAND: NemesisMonsterData = {
   level4: {
     accuracy: 0,
     accuracyTokens: 2,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 6,
+      advanced: 5,
+      legendary: 1
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,

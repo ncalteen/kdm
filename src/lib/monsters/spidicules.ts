@@ -27,7 +27,11 @@ export const SPIDICULES: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 9,
+    aiDeck: {
+      basic: 5,
+      advanced: 4,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -50,7 +54,11 @@ export const SPIDICULES: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 13,
+    aiDeck: {
+      basic: 8,
+      advanced: 5,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -73,7 +81,11 @@ export const SPIDICULES: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 21,
+    aiDeck: {
+      basic: 12,
+      advanced: 7,
+      legendary: 2
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,

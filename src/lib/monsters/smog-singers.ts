@@ -33,7 +33,11 @@ export const SMOG_SINGERS: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 8,
+      advanced: 4,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -56,7 +60,12 @@ export const SMOG_SINGERS: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 17,
+    aiDeck: {
+      basic: 8,
+      advanced: 4,
+      legendary: 1,
+      overtone: 4
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -84,7 +93,12 @@ export const SMOG_SINGERS: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 25,
+    aiDeck: {
+      basic: 9,
+      advanced: 6,
+      legendary: 2,
+      overtone: 8
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,

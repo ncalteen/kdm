@@ -49,7 +49,11 @@ export const RED_WITCHES_BRAAL: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 7,
+      advanced: 3,
+      legendary: 2
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -72,7 +76,11 @@ export const RED_WITCHES_BRAAL: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 7,
+      advanced: 3,
+      legendary: 2
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -95,7 +103,11 @@ export const RED_WITCHES_BRAAL: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 7,
+      advanced: 3,
+      legendary: 2
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -128,7 +140,11 @@ export const RED_WITCHES_NICO: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 6,
+      advanced: 4,
+      legendary: 2
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -151,7 +167,11 @@ export const RED_WITCHES_NICO: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 6,
+      advanced: 4,
+      legendary: 2
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -184,7 +204,11 @@ export const RED_WITCHES_SEER: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 6,
+      advanced: 2,
+      legendary: 4
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,

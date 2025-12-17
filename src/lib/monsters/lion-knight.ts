@@ -11,7 +11,11 @@ export const LION_KNIGHT: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 10,
+      advanced: 2,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -33,7 +37,11 @@ export const LION_KNIGHT: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 10,
+      advanced: 5,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -55,7 +63,11 @@ export const LION_KNIGHT: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 21,
+    aiDeck: {
+      basic: 12,
+      advanced: 9,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,

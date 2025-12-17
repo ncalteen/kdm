@@ -33,7 +33,11 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 10,
+    aiDeck: {
+      basic: 7,
+      advanced: 3,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -56,7 +60,11 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 10,
+      advanced: 5,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -79,7 +87,11 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 22,
+    aiDeck: {
+      basic: 12,
+      advanced: 8,
+      legendary: 2
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -138,7 +150,11 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 1,
-    aiDeckSize: 16,
+    aiDeck: {
+      basic: 9,
+      advanced: 7,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -165,7 +181,11 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 1,
-    aiDeckSize: 22,
+    aiDeck: {
+      basic: 12,
+      advanced: 8,
+      legendary: 2
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,

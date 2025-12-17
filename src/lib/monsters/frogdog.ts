@@ -27,7 +27,11 @@ export const FROGDOG: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 10,
+    aiDeck: {
+      basic: 8,
+      advanced: 2,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -50,7 +54,11 @@ export const FROGDOG: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 14,
+    aiDeck: {
+      basic: 8,
+      advanced: 6,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -79,7 +87,11 @@ export const FROGDOG: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 2,
-    aiDeckSize: 19,
+    aiDeck: {
+      basic: 9,
+      advanced: 8,
+      legendary: 2
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -139,7 +151,12 @@ export const BULLFROGDOG: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 2,
-    aiDeckSize: 23,
+    aiDeck: {
+      basic: 9,
+      advanced: 7,
+      legendary: 2,
+      overtone: 5
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,

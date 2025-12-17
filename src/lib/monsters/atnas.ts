@@ -11,7 +11,11 @@ export const ATNAS: NemesisMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 12,
+    aiDeck: {
+      basic: 8,
+      advanced: 3,
+      legendary: 1
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -38,7 +42,11 @@ export const ATNAS: NemesisMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 16,
+    aiDeck: {
+      basic: 10,
+      advanced: 4,
+      legendary: 2
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -66,7 +74,11 @@ export const ATNAS: NemesisMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 21,
+    aiDeck: {
+      basic: 13,
+      advanced: 5,
+      legendary: 3
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,

@@ -33,7 +33,11 @@ export const KING: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 19,
+    aiDeck: {
+      basic: 8,
+      advanced: 8,
+      legendary: 3
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -61,7 +65,11 @@ export const KING: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 1,
-    aiDeckSize: 22,
+    aiDeck: {
+      basic: 8,
+      advanced: 8,
+      legendary: 6
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -90,7 +98,11 @@ export const KING: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 2,
-    aiDeckSize: 27,
+    aiDeck: {
+      basic: 8,
+      advanced: 12,
+      legendary: 7
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,

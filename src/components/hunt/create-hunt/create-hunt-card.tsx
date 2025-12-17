@@ -67,7 +67,13 @@ export function CreateHuntCard({
 }: CreateHuntCardProps): ReactElement {
   const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
     useState<number>(0)
-  const [selectedMonsterAIDeckSize, setSelectedMonsterAIDeckSize] =
+  const [selectedMonsterAIDeckACards, setSelectedMonsterAIDeckACards] =
+    useState<number>(0)
+  const [selectedMonsterAIDeckBCards, setSelectedMonsterAIDeckBCards] =
+    useState<number>(0)
+  const [selectedMonsterAIDeckLCards, setSelectedMonsterAIDeckLCards] =
+    useState<number>(0)
+  const [selectedMonsterAIDeckOCards, setSelectedMonsterAIDeckOCards] =
     useState<number>(0)
   const [selectedMonsterDamage, setSelectedMonsterDamage] = useState<number>(0)
   const [selectedMonsterDamageTokens, setSelectedMonsterDamageTokens] =
@@ -212,7 +218,17 @@ export function CreateHuntCard({
       monster: {
         accuracy: 0,
         accuracyTokens: selectedMonsterAccuracyTokens,
-        aiDeckSize: selectedMonsterAIDeckSize,
+        aiDeck: {
+          a: selectedMonsterAIDeckACards,
+          b: selectedMonsterAIDeckBCards,
+          l: selectedMonsterAIDeckLCards,
+          o: selectedMonsterAIDeckOCards
+        },
+        aiDeckRemaining:
+          selectedMonsterAIDeckACards +
+          selectedMonsterAIDeckBCards +
+          selectedMonsterAIDeckLCards +
+          selectedMonsterAIDeckOCards,
         damage: selectedMonsterDamage,
         damageTokens: selectedMonsterDamageTokens,
         evasion: 0,
@@ -247,7 +263,10 @@ export function CreateHuntCard({
 
     // Reset form
     setSelectedMonsterAccuracyTokens(0)
-    setSelectedMonsterAIDeckSize(0)
+    setSelectedMonsterAIDeckACards(0)
+    setSelectedMonsterAIDeckBCards(0)
+    setSelectedMonsterAIDeckLCards(0)
+    setSelectedMonsterAIDeckOCards(0)
     setSelectedMonsterDamage(0)
     setSelectedMonsterDamageTokens(0)
     setSelectedMonsterEvasionTokens(0)
@@ -339,24 +358,78 @@ export function CreateHuntCard({
           </div>
         </div>
 
-        {/* AI Deck Size */}
+        {/* AI Deck */}
         <div className="flex items-center justify-between">
           <Label className="text-left whitespace-nowrap min-w-[90px]">
-            AI Deck Size
+            AI Deck
           </Label>
 
           <NumericInput
-            label="AI Deck Size"
-            value={selectedMonsterAIDeckSize}
-            onChange={setSelectedMonsterAIDeckSize}
+            label="A Cards"
+            value={selectedMonsterAIDeckACards}
+            onChange={setSelectedMonsterAIDeckACards}
             min={0}
             readOnly={false}>
             <Input
-              id="monster-ai-deck-size"
+              id="monster-ai-deck-a"
               type="number"
-              value={selectedMonsterAIDeckSize}
+              value={selectedMonsterAIDeckACards}
               onChange={(e) =>
-                setSelectedMonsterAIDeckSize(parseInt(e.target.value) || 0)
+                setSelectedMonsterAIDeckACards(parseInt(e.target.value) || 0)
+              }
+              min="0"
+              className="text-center no-spinners"
+            />
+          </NumericInput>
+
+          <NumericInput
+            label="B Cards"
+            value={selectedMonsterAIDeckBCards}
+            onChange={setSelectedMonsterAIDeckBCards}
+            min={0}
+            readOnly={false}>
+            <Input
+              id="monster-ai-deck-b"
+              type="number"
+              value={selectedMonsterAIDeckBCards}
+              onChange={(e) =>
+                setSelectedMonsterAIDeckBCards(parseInt(e.target.value) || 0)
+              }
+              min="0"
+              className="text-center no-spinners"
+            />
+          </NumericInput>
+
+          <NumericInput
+            label="L Cards"
+            value={selectedMonsterAIDeckLCards}
+            onChange={setSelectedMonsterAIDeckLCards}
+            min={0}
+            readOnly={false}>
+            <Input
+              id="monster-ai-deck-l"
+              type="number"
+              value={selectedMonsterAIDeckLCards}
+              onChange={(e) =>
+                setSelectedMonsterAIDeckLCards(parseInt(e.target.value) || 0)
+              }
+              min="0"
+              className="text-center no-spinners"
+            />
+          </NumericInput>
+
+          <NumericInput
+            label="O Cards"
+            value={selectedMonsterAIDeckOCards}
+            onChange={setSelectedMonsterAIDeckOCards}
+            min={0}
+            readOnly={false}>
+            <Input
+              id="monster-ai-deck-o"
+              type="number"
+              value={selectedMonsterAIDeckOCards}
+              onChange={(e) =>
+                setSelectedMonsterAIDeckOCards(parseInt(e.target.value) || 0)
               }
               min="0"
               className="text-center no-spinners"

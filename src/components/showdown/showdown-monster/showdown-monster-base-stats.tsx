@@ -42,12 +42,12 @@ export function ShowdownMonsterBaseStats({
         <div className="text-xs text-muted-foreground pb-1">AI Deck</div>
 
         <NumericInput
-          label="AI Deck Size"
-          value={monster.aiDeckSize ?? 0}
+          label="AI Deck Remaining"
+          value={monster.aiDeckRemaining ?? 0}
           onChange={(value) =>
             saveMonsterData(
-              { aiDeckSize: value },
-              MONSTER_AI_DECK_UPDATED_MESSAGE(monster.aiDeckSize, value)
+              { aiDeckRemaining: value },
+              MONSTER_AI_DECK_UPDATED_MESSAGE(monster.aiDeckRemaining, value)
             )
           }
           min={0}
@@ -55,12 +55,12 @@ export function ShowdownMonsterBaseStats({
           <Input
             id="monster-ai-deck"
             type="number"
-            value={monster.aiDeckSize}
+            value={monster.aiDeckRemaining}
             onChange={(e) =>
               saveMonsterData(
-                { aiDeckSize: parseInt(e.target.value) || 0 },
+                { aiDeckRemaining: parseInt(e.target.value) || 0 },
                 MONSTER_AI_DECK_UPDATED_MESSAGE(
-                  monster.aiDeckSize,
+                  monster.aiDeckRemaining,
                   parseInt(e.target.value) || 0
                 )
               )

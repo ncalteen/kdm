@@ -33,7 +33,11 @@ export const WHITE_LION: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 10,
+    aiDeck: {
+      basic: 7,
+      advanced: 3,
+      legendary: 0
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -56,7 +60,11 @@ export const WHITE_LION: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 10,
+      advanced: 5,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -79,7 +87,11 @@ export const WHITE_LION: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 2,
-    aiDeckSize: 21,
+    aiDeck: {
+      basic: 10,
+      advanced: 9,
+      legendary: 2
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -131,7 +143,11 @@ export const WHITE_GIGALION: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 10,
+      advanced: 5,
+      legendary: 0
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -154,7 +170,11 @@ export const WHITE_GIGALION: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 20,
+    aiDeck: {
+      basic: 11,
+      advanced: 8,
+      legendary: 1
+    },
     damage: 2,
     damageTokens: 0,
     evasion: 0,

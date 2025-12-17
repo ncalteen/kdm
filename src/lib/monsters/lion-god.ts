@@ -27,7 +27,11 @@ export const LION_GOD: QuarryMonsterData = {
   level1: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 15,
+    aiDeck: {
+      basic: 7,
+      advanced: 7,
+      legendary: 1
+    },
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -50,7 +54,11 @@ export const LION_GOD: QuarryMonsterData = {
   level2: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 20,
+    aiDeck: {
+      basic: 11,
+      advanced: 8,
+      legendary: 1
+    },
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -73,7 +81,11 @@ export const LION_GOD: QuarryMonsterData = {
   level3: {
     accuracy: 0,
     accuracyTokens: 0,
-    aiDeckSize: 25,
+    aiDeck: {
+      basic: 14,
+      advanced: 9,
+      legendary: 2
+    },
     damage: 3,
     damageTokens: 0,
     evasion: 0,
