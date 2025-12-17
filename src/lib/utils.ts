@@ -8,8 +8,9 @@ import {
   TabType
 } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
-import { Campaign } from '@/schemas/campaign'
+import { Campaign, GlobalSettingsSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
+import { migrateCampaign } from '@/schemas/migrate'
 import { Quarry, Settlement, TimelineYear } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -17,9 +18,32 @@ import { clsx, type ClassValue } from 'clsx'
 import { isNumber } from 'lodash'
 import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
+import * as packageInfo from '../../package.json'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+const newCampaign: Campaign = {
+  customMonsters: {},
+  hunts: [],
+  selectedHuntId: undefined,
+  selectedSettlementId: undefined,
+  selectedShowdownId: undefined,
+  selectedSurvivorId: undefined,
+  selectedTab: undefined,
+  settings: GlobalSettingsSchema.parse({
+    disableToasts: false,
+    unlockedMonsters: {
+      killeniumButcher: false,
+      screamingNukalope: false,
+      whiteGigalion: false
+    }
+  }),
+  settlements: [],
+  showdowns: [],
+  survivors: [],
+  version: packageInfo.version
 }
 
 /**
@@ -32,55 +56,18 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function getCampaign(): Campaign {
   const storedCampaign = JSON.parse(
-    localStorage.getItem('campaign') ||
-      JSON.stringify({
-        customMonsters: {},
-        hunts: [],
-        selectedHuntId: undefined,
-        selectedShowdownId: undefined,
-        selectedSettlementId: undefined,
-        selectedSurvivorId: undefined,
-        selectedTab: undefined,
-        settings: {
-          disableToasts: false,
-          unlockedMonsters: {
-            killeniumButcher: false,
-            screamingNukalope: false,
-            whiteGigalion: false
-          }
-        },
-        settlements: [],
-        showdowns: [],
-        survivors: [],
-        version: packageInfo.version
-      })
+    localStorage.getItem('campaign') || JSON.stringify(newCampaign)
   )
 
-  const campaign: Campaign = {
-    customMonsters: storedCampaign.customMonsters || {},
-    hunts: storedCampaign.hunts || [],
-    selectedHuntId: storedCampaign.selectedHuntId || null,
-    selectedShowdownId: storedCampaign.selectedShowdownId || null,
-    selectedSettlementId: storedCampaign.selectedSettlementId || null,
-    selectedSurvivorId: storedCampaign.selectedSurvivorId || null,
-    selectedTab: storedCampaign.selectedTab || null,
-    settings: {
-      disableToasts: storedCampaign.settings?.disableToasts ?? false,
-      unlockedMonsters: {
-        killeniumButcher:
-          storedCampaign.settings?.unlockedMonsters?.killeniumButcher ?? false,
-        screamingNukalope:
-          storedCampaign.settings?.unlockedMonsters?.screamingNukalope ?? false,
-        whiteGigalion:
-          storedCampaign.settings?.unlockedMonsters?.whiteGigalion ?? false
-      }
-    },
-    settlements: storedCampaign.settlements || [],
-    survivors: storedCampaign.survivors || [],
-    showdowns: storedCampaign.showdowns || []
+  // If the stored campaign version matches the current package version, return
+  // it directly. Otherwise, migrate it to the latest version.
+  if (storedCampaign.version !== packageInfo.version) {
+    const migratedCampaign = migrateCampaign(storedCampaign)
+    saveCampaignToLocalStorage(migratedCampaign)
+    return migratedCampaign
   }
 
-  return campaign
+  return storedCampaign
 }
 
 /**
