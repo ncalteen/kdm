@@ -351,56 +351,46 @@ export type Settlement = z.infer<typeof SettlementSchema>
  * This is used to ensure that when creating a new settlement, the necessary
  * data is included based on the selected campaign type.
  */
-export const NewSettlementInputSchema = z
-  .object({
-    /** Campaign Type */
-    campaignType: z
-      .enum(CampaignType)
-      .default(CampaignType.PEOPLE_OF_THE_LANTERN),
-    /** Settlement Name */
-    name: z.string().min(1, 'A nameless settlement cannot be recorded.'),
-    /** Survivor Type */
-    survivorType: z.enum(SurvivorType).default(SurvivorType.CORE),
-    /** Uses Scouts */
-    usesScouts: z.boolean().default(false),
-    /**
-     * Monster Selection
-     *
-     * It's normally recommended to only have one monster per node, but custom
-     * campaigns allow for more flexibility.
-     */
-    monsters: z
-      .object({
-        /** Node Quarry 1 Monster Selection */
-        NQ1: z.array(z.number().min(1)).default([]),
-        /** Node Quarry 2 Monster Selection */
-        NQ2: z.array(z.number().min(1)).default([]),
-        /** Node Quarry 3 Monster Selection */
-        NQ3: z.array(z.number().min(1)).default([]),
-        /** Node Quarry 4 Monster Selection */
-        NQ4: z.array(z.number().min(1)).default([]),
-        /** Node Nemesis 1 Monster Selection */
-        NN1: z.array(z.number().min(1)).default([]),
-        /** Node Nemesis 2 Monster Selection */
-        NN2: z.array(z.number().min(1)).default([]),
-        /** Node Nemesis 3 Monster Selection */
-        NN3: z.array(z.number().min(1)).default([]),
-        /** Core Monster Selection */
-        CO: z.array(z.number().min(1)).default([]),
-        /** Finale Monster Selection */
-        FI: z.array(z.number().min(1)).default([])
-      })
-      .optional()
-  })
-  .superRefine((data, ctx) => {
-    // Only custom campaigns should specify monster selection.
-    if (data.campaignType !== CampaignType.CUSTOM && data.monsters)
-      ctx.issues.push({
-        code: 'custom',
-        message: 'Monster selection is only allowed for Custom campaigns.',
-        input: data.monsters
-      })
-  })
+export const NewSettlementInputSchema = z.object({
+  /** Campaign Type */
+  campaignType: z
+    .enum(CampaignType)
+    .default(CampaignType.PEOPLE_OF_THE_LANTERN),
+  /** Settlement Name */
+  name: z.string().min(1, 'A nameless settlement cannot be recorded.'),
+  /** Survivor Type */
+  survivorType: z.enum(SurvivorType).default(SurvivorType.CORE),
+  /** Uses Scouts */
+  usesScouts: z.boolean().default(false),
+  /**
+   * Monster Selection
+   *
+   * It's normally recommended to only have one monster per node, but custom
+   * campaigns allow for more flexibility.
+   */
+  monsters: z
+    .object({
+      /** Node Quarry 1 Monster Selection */
+      NQ1: z.array(z.number().min(1)).default([]),
+      /** Node Quarry 2 Monster Selection */
+      NQ2: z.array(z.number().min(1)).default([]),
+      /** Node Quarry 3 Monster Selection */
+      NQ3: z.array(z.number().min(1)).default([]),
+      /** Node Quarry 4 Monster Selection */
+      NQ4: z.array(z.number().min(1)).default([]),
+      /** Node Nemesis 1 Monster Selection */
+      NN1: z.array(z.number().min(1)).default([]),
+      /** Node Nemesis 2 Monster Selection */
+      NN2: z.array(z.number().min(1)).default([]),
+      /** Node Nemesis 3 Monster Selection */
+      NN3: z.array(z.number().min(1)).default([]),
+      /** Core Monster Selection */
+      Co: z.array(z.number().min(1)).default([]),
+      /** Finale Monster Selection */
+      Fi: z.array(z.number().min(1)).default([])
+    })
+    .optional()
+})
 
 /**
  * New Settlement Input Schema
