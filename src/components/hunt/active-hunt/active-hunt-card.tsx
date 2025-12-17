@@ -200,10 +200,10 @@ export function ActiveHuntCard({
           accuracyTokens: selectedHunt.monster.accuracyTokens,
           aiDeck: selectedHunt.monster.aiDeck,
           aiDeckRemaining:
-            selectedHunt.monster.aiDeck.a +
-            selectedHunt.monster.aiDeck.b +
-            selectedHunt.monster.aiDeck.l +
-            (selectedHunt.monster.aiDeck.o || 0),
+            selectedHunt.monster.aiDeck.advanced +
+            selectedHunt.monster.aiDeck.basic +
+            selectedHunt.monster.aiDeck.legendary +
+            (selectedHunt.monster.aiDeck.overtone || 0),
           damage: selectedHunt.monster.damage,
           damageTokens: selectedHunt.monster.damageTokens,
           evasion: selectedHunt.monster.evasion,
