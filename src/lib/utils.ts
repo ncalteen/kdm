@@ -7,6 +7,7 @@ import {
   MonsterType,
   TabType
 } from '@/lib/enums'
+import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Quarry, Settlement, TimelineYear } from '@/schemas/settlement'
@@ -16,33 +17,19 @@ import { clsx, type ClassValue } from 'clsx'
 import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-/**
- * Duration to cache the loaded campaign in milliseconds.
- *
- * This is used to reduce the number of reads from localStorage and improve
- * performance when accessing campaign data frequently.
- */
-const CACHE_DURATION = 5000
-
-let cachedCampaign: Campaign | null = null
-let lastCacheUpdate: number = 0
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 /**
- * Get Cached Campaign from Local Storage
+ * Get Campaign from Local Storage
+ *
+ * This function is used to ensure backwards compatibility with older versions
+ * of the campaign data structures.
  *
  * @returns Campaign
  */
 export function getCampaign(): Campaign {
-  const now = Date.now()
-
-  // Return cached campaign if available and recent
-  if (cachedCampaign && now - lastCacheUpdate < CACHE_DURATION)
-    return cachedCampaign
-
   const storedCampaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
@@ -85,18 +72,7 @@ export function getCampaign(): Campaign {
     showdowns: storedCampaign.showdowns || []
   }
 
-  cachedCampaign = campaign
-  lastCacheUpdate = now
-
   return campaign
-}
-
-/**
- * Invalidate Cached Campaign
- */
-export function invalidateCampaignCache() {
-  cachedCampaign = null
-  lastCacheUpdate = 0
 }
 
 /**
@@ -106,7 +82,6 @@ export function invalidateCampaignCache() {
  */
 export function saveCampaignToLocalStorage(campaign: Campaign) {
   localStorage.setItem('campaign', JSON.stringify(campaign))
-  invalidateCampaignCache()
 
   // Dispatch custom event to notify components of campaign changes
   window.dispatchEvent(new CustomEvent('campaignUpdated'))
