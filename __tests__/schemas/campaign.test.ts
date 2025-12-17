@@ -11,7 +11,12 @@ describe('GlobalSettingsSchema', () => {
   describe('Valid Data', () => {
     it('should validate with disableToasts set to false', () => {
       const result = GlobalSettingsSchema.safeParse({
-        disableToasts: false
+        disableToasts: false,
+        unlockedMonsters: {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
       })
 
       expect(result.success).toBe(true)
@@ -20,7 +25,12 @@ describe('GlobalSettingsSchema', () => {
 
     it('should validate with disableToasts set to true', () => {
       const result = GlobalSettingsSchema.safeParse({
-        disableToasts: true
+        disableToasts: true,
+        unlockedMonsters: {
+          killeniumButcher: true,
+          screamingNukalope: true,
+          whiteGigalion: true
+        }
       })
 
       expect(result.success).toBe(true)
@@ -28,17 +38,78 @@ describe('GlobalSettingsSchema', () => {
     })
 
     it('should default disableToasts to false when not provided', () => {
-      const result = GlobalSettingsSchema.safeParse({})
+      const result = GlobalSettingsSchema.safeParse({
+        unlockedMonsters: {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
+      })
 
       expect(result.success).toBe(true)
       if (result.success) expect(result.data.disableToasts).toBe(false)
+    })
+
+    it('should validate with all unlocked monsters set to false', () => {
+      const result = GlobalSettingsSchema.safeParse({
+        disableToasts: false,
+        unlockedMonsters: {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.unlockedMonsters.killeniumButcher).toBe(false)
+        expect(result.data.unlockedMonsters.screamingNukalope).toBe(false)
+        expect(result.data.unlockedMonsters.whiteGigalion).toBe(false)
+      }
+    })
+
+    it('should validate with all unlocked monsters set to true', () => {
+      const result = GlobalSettingsSchema.safeParse({
+        disableToasts: false,
+        unlockedMonsters: {
+          killeniumButcher: true,
+          screamingNukalope: true,
+          whiteGigalion: true
+        }
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.unlockedMonsters.killeniumButcher).toBe(true)
+        expect(result.data.unlockedMonsters.screamingNukalope).toBe(true)
+        expect(result.data.unlockedMonsters.whiteGigalion).toBe(true)
+      }
+    })
+
+    it('should default all unlocked monsters to false when not provided', () => {
+      const result = GlobalSettingsSchema.safeParse({
+        disableToasts: false,
+        unlockedMonsters: {}
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.unlockedMonsters.killeniumButcher).toBe(false)
+        expect(result.data.unlockedMonsters.screamingNukalope).toBe(false)
+        expect(result.data.unlockedMonsters.whiteGigalion).toBe(false)
+      }
     })
   })
 
   describe('Invalid Data', () => {
     it('should fail validation when disableToasts is not a boolean', () => {
       const result = GlobalSettingsSchema.safeParse({
-        disableToasts: 'true'
+        disableToasts: 'true',
+        unlockedMonsters: {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
       })
 
       expect(result.success).toBe(false)
@@ -47,11 +118,76 @@ describe('GlobalSettingsSchema', () => {
 
     it('should fail validation when disableToasts is null', () => {
       const result = GlobalSettingsSchema.safeParse({
-        disableToasts: null
+        disableToasts: null,
+        unlockedMonsters: {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
       })
 
       expect(result.success).toBe(false)
       if (!result.success) expect(result.error).toBeInstanceOf(ZodError)
+    })
+
+    it('should fail validation when killeniumButcher is not a boolean', () => {
+      const result = GlobalSettingsSchema.safeParse({
+        disableToasts: false,
+        unlockedMonsters: {
+          killeniumButcher: 'true',
+          screamingNukalope: false,
+          whiteGigalion: false
+        }
+      })
+
+      expect(result.success).toBe(false)
+      if (!result.success) expect(result.error).toBeInstanceOf(ZodError)
+    })
+
+    it('should fail validation when screamingNukalope is not a boolean', () => {
+      const result = GlobalSettingsSchema.safeParse({
+        disableToasts: false,
+        unlockedMonsters: {
+          killeniumButcher: false,
+          screamingNukalope: 'true',
+          whiteGigalion: false
+        }
+      })
+
+      expect(result.success).toBe(false)
+      if (!result.success) expect(result.error).toBeInstanceOf(ZodError)
+    })
+
+    it('should fail validation when whiteGigalion is not a boolean', () => {
+      const result = GlobalSettingsSchema.safeParse({
+        disableToasts: false,
+        unlockedMonsters: {
+          killeniumButcher: false,
+          screamingNukalope: false,
+          whiteGigalion: 'true'
+        }
+      })
+
+      expect(result.success).toBe(false)
+      if (!result.success) expect(result.error).toBeInstanceOf(ZodError)
+    })
+
+    it('should fail validation when unlockedMonsters is missing', () => {
+      const result = GlobalSettingsSchema.safeParse({
+        disableToasts: false
+      })
+
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error).toBeInstanceOf(ZodError)
+        expect(result.error.issues).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              path: ['unlockedMonsters']
+            })
+          ])
+        )
+      }
     })
   })
 })
@@ -67,7 +203,12 @@ describe('CampaignSchema', () => {
         selectedSurvivorId: null,
         selectedTab: null,
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         showdowns: null,
@@ -86,7 +227,12 @@ describe('CampaignSchema', () => {
         selectedSurvivorId: 1,
         selectedTab: TabType.TIMELINE,
         settings: {
-          disableToasts: true
+          disableToasts: true,
+          unlockedMonsters: {
+            killeniumButcher: true,
+            screamingNukalope: true,
+            whiteGigalion: true
+          }
         },
         settlements: [],
         showdowns: [],
@@ -101,13 +247,25 @@ describe('CampaignSchema', () => {
         expect(result.data.selectedSurvivorId).toBe(1)
         expect(result.data.selectedTab).toBe(TabType.TIMELINE)
         expect(result.data.settings.disableToasts).toBe(true)
+        expect(result.data.settings.unlockedMonsters.killeniumButcher).toBe(
+          true
+        )
+        expect(result.data.settings.unlockedMonsters.screamingNukalope).toBe(
+          true
+        )
+        expect(result.data.settings.unlockedMonsters.whiteGigalion).toBe(true)
       }
     })
 
     it('should validate with optional fields omitted', () => {
       const result = CampaignSchema.safeParse({
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -145,7 +303,12 @@ describe('CampaignSchema', () => {
         const result = CampaignSchema.safeParse({
           selectedTab: tabType,
           settings: {
-            disableToasts: false
+            disableToasts: false,
+            unlockedMonsters: {
+              killeniumButcher: false,
+              screamingNukalope: false,
+              whiteGigalion: false
+            }
           },
           settlements: [],
           survivors: []
@@ -223,7 +386,12 @@ describe('CampaignSchema', () => {
       const result = CampaignSchema.safeParse({
         selectedTab: 'invalid-tab',
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -246,7 +414,12 @@ describe('CampaignSchema', () => {
       const result = CampaignSchema.safeParse({
         selectedHuntId: 'not-a-number',
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -260,7 +433,12 @@ describe('CampaignSchema', () => {
       const result = CampaignSchema.safeParse({
         selectedShowdownId: 'not-a-number',
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -274,7 +452,12 @@ describe('CampaignSchema', () => {
       const result = CampaignSchema.safeParse({
         selectedSettlementId: 'not-a-number',
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -288,7 +471,12 @@ describe('CampaignSchema', () => {
       const result = CampaignSchema.safeParse({
         selectedSurvivorId: 'not-a-number',
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -301,7 +489,12 @@ describe('CampaignSchema', () => {
     it('should fail validation when settlements is not an array', () => {
       const result = CampaignSchema.safeParse({
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: 'not-an-array',
         survivors: []
@@ -314,7 +507,12 @@ describe('CampaignSchema', () => {
     it('should fail validation when survivors is not an array', () => {
       const result = CampaignSchema.safeParse({
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: 'not-an-array'
@@ -328,7 +526,12 @@ describe('CampaignSchema', () => {
       const result = CampaignSchema.safeParse({
         hunts: 'not-an-array',
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -342,7 +545,12 @@ describe('CampaignSchema', () => {
       const result = CampaignSchema.safeParse({
         showdowns: 'not-an-array',
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -359,7 +567,12 @@ describe('CampaignSchema', () => {
         hunts: [],
         showdowns: [],
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -377,7 +590,12 @@ describe('CampaignSchema', () => {
         selectedSurvivorId: null,
         selectedTab: null,
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         showdowns: null,
@@ -394,7 +612,12 @@ describe('CampaignSchema', () => {
         selectedSettlementId: 0,
         selectedSurvivorId: 0,
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []
@@ -416,7 +639,12 @@ describe('CampaignSchema', () => {
         selectedSettlementId: -1,
         selectedSurvivorId: -1,
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         survivors: []

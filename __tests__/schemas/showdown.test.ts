@@ -84,13 +84,20 @@ describe('ShowdownMonsterSchema', () => {
     it('should validate with minimal required fields', () => {
       const result = ShowdownMonsterSchema.safeParse({
         name: 'White Lion',
-        type: MonsterType.QUARRY
+        type: MonsterType.QUARRY,
+        aiDeck: {
+          basic: 0,
+          advanced: 0,
+          legendary: 0
+        }
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
         expect(result.data.name).toBe('White Lion')
         expect(result.data.knockedDown).toBe(false)
+        expect(result.data.aiDeck.basic).toBe(0)
+        expect(result.data.aiDeckRemaining).toBe(0)
       }
     })
 
@@ -98,7 +105,13 @@ describe('ShowdownMonsterSchema', () => {
       const result = ShowdownMonsterSchema.safeParse({
         accuracy: 2,
         accuracyTokens: 1,
-        aiDeckSize: 8,
+        aiDeck: {
+          basic: 3,
+          advanced: 2,
+          legendary: 2,
+          overtone: 1
+        },
+        aiDeckRemaining: 8,
         damage: 3,
         damageTokens: 2,
         evasion: 1,
@@ -126,6 +139,31 @@ describe('ShowdownMonsterSchema', () => {
       if (result.success) {
         expect(result.data.knockedDown).toBe(true)
         expect(result.data.level).toBe(MonsterLevel.LEVEL_3)
+        expect(result.data.aiDeck.basic).toBe(3)
+        expect(result.data.aiDeck.advanced).toBe(2)
+        expect(result.data.aiDeck.legendary).toBe(2)
+        expect(result.data.aiDeck.overtone).toBe(1)
+        expect(result.data.aiDeckRemaining).toBe(8)
+      }
+    })
+
+    it('should validate aiDeck without optional overtone cards', () => {
+      const result = ShowdownMonsterSchema.safeParse({
+        name: 'White Lion',
+        type: MonsterType.QUARRY,
+        aiDeck: {
+          basic: 2,
+          advanced: 3,
+          legendary: 2
+        }
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.aiDeck.basic).toBe(2)
+        expect(result.data.aiDeck.advanced).toBe(3)
+        expect(result.data.aiDeck.legendary).toBe(2)
+        expect(result.data.aiDeck.overtone).toBe(0)
       }
     })
   })
@@ -134,7 +172,50 @@ describe('ShowdownMonsterSchema', () => {
     it('should fail when name is empty', () => {
       const result = ShowdownMonsterSchema.safeParse({
         name: '',
+        type: MonsterType.QUARRY,
+        aiDeck: {
+          basic: 0,
+          advanced: 0,
+          legendary: 0
+        }
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it('should fail when aiDeck is missing', () => {
+      const result = ShowdownMonsterSchema.safeParse({
+        name: 'Test Monster',
         type: MonsterType.QUARRY
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it('should fail when aiDeck has negative values', () => {
+      const result = ShowdownMonsterSchema.safeParse({
+        name: 'Test Monster',
+        type: MonsterType.QUARRY,
+        aiDeck: {
+          basic: -1,
+          advanced: 0,
+          legendary: 0
+        }
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it('should fail when aiDeckRemaining is negative', () => {
+      const result = ShowdownMonsterSchema.safeParse({
+        name: 'Test Monster',
+        type: MonsterType.QUARRY,
+        aiDeck: {
+          basic: 2,
+          advanced: 2,
+          legendary: 2
+        },
+        aiDeckRemaining: -1
       })
 
       expect(result.success).toBe(false)
@@ -254,7 +335,12 @@ describe('ShowdownSchema', () => {
         id: 1,
         monster: {
           name: 'White Lion',
-          type: MonsterType.QUARRY
+          type: MonsterType.QUARRY,
+          aiDeck: {
+            basic: 2,
+            advanced: 3,
+            legendary: 2
+          }
         },
         settlementId: 1,
         survivors: [1],
@@ -281,7 +367,12 @@ describe('ShowdownSchema', () => {
           id: 1,
           monster: {
             name: 'White Lion',
-            type: MonsterType.QUARRY
+            type: MonsterType.QUARRY,
+            aiDeck: {
+              basic: 2,
+              advanced: 3,
+              legendary: 2
+            }
           },
           settlementId: 1,
           survivors: [1],
@@ -298,7 +389,12 @@ describe('ShowdownSchema', () => {
         id: 1,
         monster: {
           name: 'White Lion',
-          type: MonsterType.QUARRY
+          type: MonsterType.QUARRY,
+          aiDeck: {
+            basic: 2,
+            advanced: 3,
+            legendary: 2
+          }
         },
         scout: 3,
         settlementId: 1,
@@ -318,7 +414,12 @@ describe('ShowdownSchema', () => {
         id: 1,
         monster: {
           name: 'White Lion',
-          type: MonsterType.QUARRY
+          type: MonsterType.QUARRY,
+          aiDeck: {
+            basic: 2,
+            advanced: 3,
+            legendary: 2
+          }
         },
         settlementId: 1,
         survivors: [],
@@ -334,7 +435,12 @@ describe('ShowdownSchema', () => {
         id: 1,
         monster: {
           name: 'White Lion',
-          type: MonsterType.QUARRY
+          type: MonsterType.QUARRY,
+          aiDeck: {
+            basic: 2,
+            advanced: 3,
+            legendary: 2
+          }
         },
         settlementId: 1,
         survivors: [1, 2, 3, 4, 5],
@@ -349,7 +455,12 @@ describe('ShowdownSchema', () => {
         id: 1,
         monster: {
           name: 'White Lion',
-          type: MonsterType.QUARRY
+          type: MonsterType.QUARRY,
+          aiDeck: {
+            basic: 2,
+            advanced: 3,
+            legendary: 2
+          }
         },
         settlementId: 1,
         survivors: [1],
