@@ -23,6 +23,7 @@ export const SUNSTALKER: QuarryMonsterData = {
   },
   name: 'Sunstalker',
   node: MonsterNode.NQ3,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

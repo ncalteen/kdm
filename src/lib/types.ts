@@ -171,6 +171,8 @@ export type QuarryMonsterData = {
   name: string
   /** Monster Node */
   node: MonsterNode
+  /** Prologue Monster */
+  prologue: boolean
   /** Monster Type */
   type: MonsterType.QUARRY
   /** Level 1 Data */

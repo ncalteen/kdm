@@ -29,6 +29,7 @@ export const PHOENIX: QuarryMonsterData = {
   },
   name: 'Phoenix',
   node: MonsterNode.NQ3,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

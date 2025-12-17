@@ -29,6 +29,7 @@ export const KING: QuarryMonsterData = {
   },
   name: 'King',
   node: MonsterNode.NQ4,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

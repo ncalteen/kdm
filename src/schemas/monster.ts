@@ -187,6 +187,8 @@ export const QuarryMonsterDataSchema = z.object({
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Node */
   node: z.enum(MonsterNode),
+  /** Prologue Monster */
+  prologue: z.boolean().default(false),
   /** Level 1 Data */
   level1: QuarryMonsterLevelSchema.optional(),
   /** Level 2 Data */

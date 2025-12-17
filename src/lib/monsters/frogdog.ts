@@ -23,6 +23,7 @@ export const FROGDOG: QuarryMonsterData = {
   },
   name: 'Frogdog',
   node: MonsterNode.NQ1,
+  prologue: true,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,
@@ -147,6 +148,7 @@ export const BULLFROGDOG: QuarryMonsterData = {
   },
   name: 'Bullfrogdog',
   node: MonsterNode.NQ1,
+  prologue: false,
   type: MonsterType.QUARRY,
   level3: {
     accuracy: 0,

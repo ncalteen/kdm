@@ -29,6 +29,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
   },
   name: 'Screaming Antelope',
   node: MonsterNode.NQ2,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,
@@ -146,6 +147,7 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
   },
   name: 'Screaming Nukalope',
   node: MonsterNode.NQ2,
+  prologue: false,
   type: MonsterType.QUARRY,
   level2: {
     accuracy: 0,

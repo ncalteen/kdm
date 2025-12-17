@@ -29,6 +29,7 @@ export const WHITE_LION: QuarryMonsterData = {
   },
   name: 'White Lion',
   node: MonsterNode.NQ1,
+  prologue: true,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,
@@ -139,6 +140,7 @@ export const WHITE_GIGALION: QuarryMonsterData = {
   },
   name: 'White Gigalion',
   node: MonsterNode.NQ1,
+  prologue: false,
   type: MonsterType.QUARRY,
   level2: {
     accuracy: 0,

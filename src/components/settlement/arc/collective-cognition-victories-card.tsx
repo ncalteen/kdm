@@ -93,25 +93,60 @@ export function CollectiveCognitionVictoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(selectedSettlement?.quarries || []).map((quarry, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="text-sm text-left pl-5">
-                      {(() => {
-                        const monsterData = getMonsterData(
-                          quarry.id,
-                          MonsterType.QUARRY
-                        )
+                {(selectedSettlement?.quarries || []).map((quarry, index) => {
+                  const monsterData = getMonsterData(
+                    quarry.id,
+                    MonsterType.QUARRY
+                  )
+                  const isPrologue =
+                    monsterData &&
+                    monsterData.main &&
+                    'prologue' in monsterData.main &&
+                    monsterData.main.prologue
 
-                        return monsterData?.main?.name || 'Unnamed Quarry'
-                      })()}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {index === 0 && (
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="text-sm text-left pl-5">
+                        {monsterData?.main.name || 'Unnamed Quarry'}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {isPrologue && (
+                          <div className="flex justify-center">
+                            <Checkbox
+                              checked={
+                                selectedSettlement?.quarries?.[index]
+                                  ?.ccPrologue || false
+                              }
+                              onCheckedChange={(checked) => {
+                                if (checked !== 'indeterminate') {
+                                  const updatedQuarries = [
+                                    ...(selectedSettlement?.quarries || [])
+                                  ]
+                                  updatedQuarries[index] = {
+                                    ...updatedQuarries[index],
+                                    ccPrologue: checked
+                                  }
+                                  saveToLocalStorage(
+                                    updatedQuarries,
+                                    null,
+                                    COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                      !!checked
+                                    )
+                                  )
+                                }
+                              }}
+                              id={`quarries-${index}-ccPrologue`}
+                              name={`quarries.${index}.ccPrologue`}
+                            />
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
                         <div className="flex justify-center">
                           <Checkbox
                             checked={
-                              selectedSettlement?.quarries?.[index]
-                                ?.ccPrologue || false
+                              selectedSettlement?.quarries?.[index]?.ccLevel1 ||
+                              false
                             }
                             onCheckedChange={(checked) => {
                               if (checked !== 'indeterminate') {
@@ -120,7 +155,7 @@ export function CollectiveCognitionVictoriesCard({
                                 ]
                                 updatedQuarries[index] = {
                                   ...updatedQuarries[index],
-                                  ccPrologue: checked
+                                  ccLevel1: checked
                                 }
                                 saveToLocalStorage(
                                   updatedQuarries,
@@ -131,135 +166,100 @@ export function CollectiveCognitionVictoriesCard({
                                 )
                               }
                             }}
-                            id={`quarries-${index}-ccPrologue`}
-                            name={`quarries.${index}.ccPrologue`}
+                            id={`quarries-${index}-ccLevel1`}
+                            name={`quarries.${index}.ccLevel1`}
                           />
                         </div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center">
-                        <Checkbox
-                          checked={
-                            selectedSettlement?.quarries?.[index]?.ccLevel1 ||
-                            false
-                          }
-                          onCheckedChange={(checked) => {
-                            if (checked !== 'indeterminate') {
-                              const updatedQuarries = [
-                                ...(selectedSettlement?.quarries || [])
-                              ]
-                              updatedQuarries[index] = {
-                                ...updatedQuarries[index],
-                                ccLevel1: checked
-                              }
-                              saveToLocalStorage(
-                                updatedQuarries,
-                                null,
-                                COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
-                                  !!checked
-                                )
-                              )
-                            }
-                          }}
-                          id={`quarries-${index}-ccLevel1`}
-                          name={`quarries.${index}.ccLevel1`}
-                        />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center" colSpan={2}>
-                      <div className="flex flex-row justify-center gap-2">
-                        {(quarry.ccLevel2 || [false, false]).map(
-                          (checked, lvl2Index) => (
-                            <div
-                              className="flex justify-center"
-                              key={`ccLevel2-${lvl2Index}`}>
-                              <Checkbox
-                                checked={
-                                  selectedSettlement?.quarries?.[index]
-                                    ?.ccLevel2?.[lvl2Index] || false
-                                }
-                                onCheckedChange={(checked) => {
-                                  if (checked !== 'indeterminate') {
-                                    const updatedQuarries = [
-                                      ...(selectedSettlement?.quarries || [])
-                                    ]
-                                    const updatedCcLevel2 = [
-                                      ...(updatedQuarries[index]?.ccLevel2 || [
-                                        false,
-                                        false
-                                      ])
-                                    ]
-                                    updatedCcLevel2[lvl2Index] = checked
-                                    updatedQuarries[index] = {
-                                      ...updatedQuarries[index],
-                                      ccLevel2: updatedCcLevel2
-                                    }
-                                    saveToLocalStorage(
-                                      updatedQuarries,
-                                      null,
-                                      COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
-                                        !!checked
-                                      )
-                                    )
+                      </TableCell>
+                      <TableCell className="text-center" colSpan={2}>
+                        <div className="flex flex-row justify-center gap-2">
+                          {(quarry.ccLevel2 || [false, false]).map(
+                            (checked, lvl2Index) => (
+                              <div
+                                className="flex justify-center"
+                                key={`ccLevel2-${lvl2Index}`}>
+                                <Checkbox
+                                  checked={
+                                    selectedSettlement?.quarries?.[index]
+                                      ?.ccLevel2?.[lvl2Index] || false
                                   }
-                                }}
-                                id={`quarries-${index}-ccLevel2-${lvl2Index}`}
-                                name={`quarries.${index}.ccLevel2.${lvl2Index}`}
-                              />
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center" colSpan={3}>
-                      <div className="flex flex-row justify-center gap-2">
-                        {(quarry.ccLevel3 || [false, false, false]).map(
-                          (checked, lvl3Index) => (
-                            <div
-                              key={`ccLevel3-${lvl3Index}`}
-                              className="flex justify-center">
-                              <Checkbox
-                                checked={
-                                  selectedSettlement?.quarries?.[index]
-                                    ?.ccLevel3?.[lvl3Index] || false
-                                }
-                                onCheckedChange={(checked) => {
-                                  if (checked !== 'indeterminate') {
-                                    const updatedQuarries = [
-                                      ...(selectedSettlement?.quarries || [])
-                                    ]
-                                    const updatedCcLevel3 = [
-                                      ...(updatedQuarries[index]?.ccLevel3 || [
-                                        false,
-                                        false,
-                                        false
-                                      ])
-                                    ]
-                                    updatedCcLevel3[lvl3Index] = checked
-                                    updatedQuarries[index] = {
-                                      ...updatedQuarries[index],
-                                      ccLevel3: updatedCcLevel3
-                                    }
-                                    saveToLocalStorage(
-                                      updatedQuarries,
-                                      null,
-                                      COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
-                                        !!checked
+                                  onCheckedChange={(checked) => {
+                                    if (checked !== 'indeterminate') {
+                                      const updatedQuarries = [
+                                        ...(selectedSettlement?.quarries || [])
+                                      ]
+                                      const updatedCcLevel2 = [
+                                        ...(updatedQuarries[index]
+                                          ?.ccLevel2 || [false, false])
+                                      ]
+                                      updatedCcLevel2[lvl2Index] = checked
+                                      updatedQuarries[index] = {
+                                        ...updatedQuarries[index],
+                                        ccLevel2: updatedCcLevel2
+                                      }
+                                      saveToLocalStorage(
+                                        updatedQuarries,
+                                        null,
+                                        COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                          !!checked
+                                        )
                                       )
-                                    )
+                                    }
+                                  }}
+                                  id={`quarries-${index}-ccLevel2-${lvl2Index}`}
+                                  name={`quarries.${index}.ccLevel2.${lvl2Index}`}
+                                />
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center" colSpan={3}>
+                        <div className="flex flex-row justify-center gap-2">
+                          {(quarry.ccLevel3 || [false, false, false]).map(
+                            (checked, lvl3Index) => (
+                              <div
+                                key={`ccLevel3-${lvl3Index}`}
+                                className="flex justify-center">
+                                <Checkbox
+                                  checked={
+                                    selectedSettlement?.quarries?.[index]
+                                      ?.ccLevel3?.[lvl3Index] || false
                                   }
-                                }}
-                                id={`quarries-${index}-ccLevel3-${lvl3Index}`}
-                                name={`quarries.${index}.ccLevel3.${lvl3Index}`}
-                              />
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                                  onCheckedChange={(checked) => {
+                                    if (checked !== 'indeterminate') {
+                                      const updatedQuarries = [
+                                        ...(selectedSettlement?.quarries || [])
+                                      ]
+                                      const updatedCcLevel3 = [
+                                        ...(updatedQuarries[index]
+                                          ?.ccLevel3 || [false, false, false])
+                                      ]
+                                      updatedCcLevel3[lvl3Index] = checked
+                                      updatedQuarries[index] = {
+                                        ...updatedQuarries[index],
+                                        ccLevel3: updatedCcLevel3
+                                      }
+                                      saveToLocalStorage(
+                                        updatedQuarries,
+                                        null,
+                                        COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE(
+                                          !!checked
+                                        )
+                                      )
+                                    }
+                                  }}
+                                  id={`quarries-${index}-ccLevel3-${lvl3Index}`}
+                                  name={`quarries.${index}.ccLevel3.${lvl3Index}`}
+                                />
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </div>

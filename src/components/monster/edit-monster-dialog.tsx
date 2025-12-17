@@ -77,6 +77,7 @@ export function EditMonsterDialog({
   )
   const [name, setName] = useState('')
   const [node, setNode] = useState<MonsterNode>(MonsterNode.NQ1)
+  const [isPrologue, setIsPrologue] = useState(false)
   const [level1Data, setLevel1Data] = useState<
     Partial<QuarryMonsterLevel | NemesisMonsterLevel>
   >({})
@@ -115,6 +116,11 @@ export function EditMonsterDialog({
       setMonsterType(monster.type)
       setName(monster.name)
       setNode(monster.node)
+
+      // Load prologue flag for quarry monsters
+      if (monster.type === MonsterType.QUARRY)
+        setIsPrologue(monster.prologue || false)
+      else setIsPrologue(false)
 
       // Load level data
       setLevel1Data(monster.level1 || {})
@@ -198,6 +204,7 @@ export function EditMonsterDialog({
               name,
               node,
               type: MonsterType.QUARRY,
+              prologue: isPrologue,
               ccRewards: ccRewardsData.map(({ cc, name }) => ({
                 name,
                 cc,
@@ -340,6 +347,22 @@ export function EditMonsterDialog({
           </div>
 
           <Separator />
+
+          {monsterType === MonsterType.QUARRY && (
+            <div className="flex items-center space-x-2 justify-center">
+              <input
+                type="checkbox"
+                id="edit-is-prologue"
+                name="edit-is-prologue"
+                checked={isPrologue}
+                onChange={(e) => setIsPrologue(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <Label htmlFor="edit-is-prologue" className="cursor-pointer">
+                Prologue Monster
+              </Label>
+            </div>
+          )}
 
           {/* Attributes & Tokens (per Level) */}
           {[1, 2, 3, 4].map((level) => {

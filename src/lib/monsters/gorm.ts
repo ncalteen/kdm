@@ -23,6 +23,7 @@ export const GORM: QuarryMonsterData = {
   },
   name: 'Gorm',
   node: MonsterNode.NQ1,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

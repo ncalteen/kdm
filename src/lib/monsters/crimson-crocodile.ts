@@ -29,6 +29,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
   },
   name: 'Crimson Crocodile',
   node: MonsterNode.NQ1,
+  prologue: true,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

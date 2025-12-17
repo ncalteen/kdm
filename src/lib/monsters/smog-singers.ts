@@ -29,6 +29,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
   },
   name: 'Smog Singers',
   node: MonsterNode.NQ2,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

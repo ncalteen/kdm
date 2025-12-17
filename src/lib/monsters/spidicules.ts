@@ -23,6 +23,7 @@ export const SPIDICULES: QuarryMonsterData = {
   },
   name: 'Spidicules',
   node: MonsterNode.NQ2,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

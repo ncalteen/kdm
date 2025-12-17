@@ -23,6 +23,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
   },
   name: 'Dung Beetle Knight',
   node: MonsterNode.NQ4,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

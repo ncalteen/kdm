@@ -23,6 +23,7 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
   },
   name: 'Flower Knight',
   node: MonsterNode.NQ2,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

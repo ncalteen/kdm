@@ -23,6 +23,7 @@ export const LION_GOD: QuarryMonsterData = {
   },
   name: 'Lion God',
   node: MonsterNode.NQ4,
+  prologue: false,
   type: MonsterType.QUARRY,
   level1: {
     accuracy: 0,

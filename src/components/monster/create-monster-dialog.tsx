@@ -70,6 +70,7 @@ export function CreateMonsterDialog({
   )
   const [name, setName] = useState('')
   const [node, setNode] = useState<MonsterNode>(MonsterNode.NQ1)
+  const [isPrologue, setIsPrologue] = useState(false)
   const [level1Data, setLevel1Data] = useState<
     Partial<QuarryMonsterLevel | NemesisMonsterLevel>
   >({})
@@ -108,6 +109,7 @@ export function CreateMonsterDialog({
     setMonsterType(MonsterType.QUARRY)
     setName('')
     setNode(MonsterNode.NQ1)
+    setIsPrologue(false)
     setLevel1Data({})
     setLevel2Data({})
     setLevel3Data({})
@@ -144,6 +146,7 @@ export function CreateMonsterDialog({
               name,
               node,
               type: MonsterType.QUARRY,
+              prologue: isPrologue,
               ccRewards: ccRewardsData.map(({ cc, name }) => ({
                 name,
                 cc,
@@ -301,6 +304,22 @@ export function CreateMonsterDialog({
           </div>
 
           <Separator />
+
+          {monsterType === MonsterType.QUARRY && (
+            <div className="flex items-center space-x-2 justify-center">
+              <input
+                type="checkbox"
+                id="is-prologue"
+                name="is-prologue"
+                checked={isPrologue}
+                onChange={(e) => setIsPrologue(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <Label htmlFor="is-prologue" className="cursor-pointer">
+                Prologue Monster
+              </Label>
+            </div>
+          )}
 
           {/* Attributes & Tokens (per Level) */}
           {[1, 2, 3, 4].map((level) => {
