@@ -14,6 +14,7 @@ import { Quarry, Settlement, TimelineYear } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { clsx, type ClassValue } from 'clsx'
+import { isNumber } from 'lodash'
 import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -49,7 +50,7 @@ export function getCampaign(): Campaign {
   )
 
   const campaign: Campaign = {
-    customMonsters: storedCampaign.customMonsters || [],
+    customMonsters: storedCampaign.customMonsters || {},
     hunts: storedCampaign.hunts || [],
     selectedHuntId: storedCampaign.selectedHuntId || null,
     selectedShowdownId: storedCampaign.selectedShowdownId || null,
@@ -864,4 +865,23 @@ export const getAvailableNodes = (type: MonsterType): MonsterNode[] => {
         MonsterNode.FI
       ]
     : [MonsterNode.NQ1, MonsterNode.NQ2, MonsterNode.NQ3, MonsterNode.NQ4]
+}
+
+/**
+ * Get Monster Data
+ *
+ * @param monsterId Monster ID
+ * @param monsterType Monster Type
+ * @returns Monster Data
+ */
+export const getMonsterData = (monsterId: number, monsterType: MonsterType) => {
+  const campaign = getCampaign()
+
+  // Numeric monster IDs refer to built-in monsters. Strubg IDs refer to custom
+  // ones created by the user.
+  if (isNumber(monsterId))
+    return monsterType === MonsterType.NEMESIS
+      ? NEMESES[monsterId as keyof typeof NEMESES]
+      : QUARRIES[monsterId as keyof typeof QUARRIES]
+  else return campaign.customMonsters?.[monsterId]
 }

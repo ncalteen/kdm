@@ -125,7 +125,7 @@ export function CreateMonsterDialog({
     try {
       // Get existing campaign data
       const campaign = getCampaign()
-      const existingMonsters = campaign.customMonsters || []
+      const customMonsters = campaign.customMonsters || {}
 
       // Generate a unique ID for the monster
       const monsterId = crypto.randomUUID()
@@ -138,50 +138,77 @@ export function CreateMonsterDialog({
       })
 
       // Validate based on monster type
-      if (monsterType === MonsterType.QUARRY) {
-        const monsterData = QuarryMonsterDataSchema.parse({
-          name,
-          node,
-          type: MonsterType.QUARRY,
-          ccRewards: ccRewardsData.map(({ cc, name }) => ({
-            name,
-            cc,
-            unlocked: false
-          })),
-          huntBoard: huntBoardData,
-          locations: locationsData.map((name) => ({ name, unlocked: false })),
-          timeline: timelineRecord,
-          ...(Object.keys(level1Data).length > 0 && { level1: level1Data }),
-          ...(Object.keys(level2Data).length > 0 && { level2: level2Data }),
-          ...(Object.keys(level3Data).length > 0 && { level3: level3Data }),
-          ...(Object.keys(level4Data).length > 0 && { level4: level4Data })
-        })
+      const monsterData =
+        monsterType === MonsterType.QUARRY
+          ? QuarryMonsterDataSchema.parse({
+              name,
+              node,
+              type: MonsterType.QUARRY,
+              ccRewards: ccRewardsData.map(({ cc, name }) => ({
+                name,
+                cc,
+                unlocked: false
+              })),
+              huntBoard: {
+                0: undefined, // Start
+                1: huntBoardData[1],
+                2: huntBoardData[2],
+                3: huntBoardData[3],
+                4: huntBoardData[4],
+                5: huntBoardData[5],
+                6: undefined, // Overwhelming Darkness
+                7: huntBoardData[7],
+                8: huntBoardData[8],
+                9: huntBoardData[9],
+                10: huntBoardData[10],
+                11: huntBoardData[11],
+                12: undefined // Starvation
+              },
+              locations: locationsData.map((name) => ({
+                name,
+                unlocked: false
+              })),
+              timeline: timelineRecord,
+              ...(Object.keys(level1Data).length > 0 && {
+                level1: level1Data
+              }),
+              ...(Object.keys(level2Data).length > 0 && {
+                level2: level2Data
+              }),
+              ...(Object.keys(level3Data).length > 0 && {
+                level3: level3Data
+              }),
+              ...(Object.keys(level4Data).length > 0 && {
+                level4: level4Data
+              })
+            })
+          : NemesisMonsterDataSchema.parse({
+              name,
+              node,
+              timeline: timelineRecord,
+              type: monsterType,
+              ...(Object.keys(level1Data).length > 0 && {
+                level1: level1Data
+              }),
+              ...(Object.keys(level2Data).length > 0 && {
+                level2: level2Data
+              }),
+              ...(Object.keys(level3Data).length > 0 && {
+                level3: level3Data
+              }),
+              ...(Object.keys(level4Data).length > 0 && {
+                level4: level4Data
+              })
+            })
 
-        // Save to localStorage with id field
-        const monsterWithId = { ...monsterData, id: monsterId }
-        saveCampaignToLocalStorage({
-          ...campaign,
-          customMonsters: [...existingMonsters, monsterWithId]
-        })
-      } else {
-        const monsterData = NemesisMonsterDataSchema.parse({
-          name,
-          node,
-          timeline: timelineRecord,
-          type: monsterType,
-          ...(Object.keys(level1Data).length > 0 && { level1: level1Data }),
-          ...(Object.keys(level2Data).length > 0 && { level2: level2Data }),
-          ...(Object.keys(level3Data).length > 0 && { level3: level3Data }),
-          ...(Object.keys(level4Data).length > 0 && { level4: level4Data })
-        })
-
-        // Save to localStorage with id field
-        const monsterWithId = { ...monsterData, id: monsterId }
-        saveCampaignToLocalStorage({
-          ...campaign,
-          customMonsters: [...existingMonsters, monsterWithId]
-        })
+      // Save to localStorage
+      customMonsters[monsterId] = {
+        main: monsterData
       }
+      saveCampaignToLocalStorage({
+        ...campaign,
+        customMonsters
+      })
 
       CUSTOM_MONSTER_CREATED_MESSAGE(monsterType)
 
@@ -201,24 +228,6 @@ export function CreateMonsterDialog({
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open)
     if (!open) resetForm()
-  }
-
-  /**
-   * Updates a level's field
-   */
-  const updateLevel = (
-    level: 1 | 2 | 3 | 4,
-    field: string,
-    value: number | string | string[]
-  ) => {
-    const setter = [setLevel1Data, setLevel2Data, setLevel3Data, setLevel4Data][
-      level - 1
-    ]
-    const currentLevel = [level1Data, level2Data, level3Data, level4Data][
-      level - 1
-    ]
-
-    setter({ ...currentLevel, [field]: value })
   }
 
   return (
@@ -308,8 +317,15 @@ export function CreateMonsterDialog({
                     4: level4Data
                   }[level] as Partial<QuarryMonsterLevel | NemesisMonsterLevel>
                 }
-                onLevelDataChange={(field, value) =>
-                  updateLevel(level as 1 | 2 | 3 | 4, field, value)
+                setLevelData={
+                  {
+                    1: setLevel1Data,
+                    2: setLevel2Data,
+                    3: setLevel3Data,
+                    4: setLevel4Data
+                  }[level] as (
+                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                  ) => void
                 }
               />
             )

@@ -11,11 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { MonsterType } from '@/lib/enums'
-import {
-  BaseMonsterLevel,
-  NemesisMonsterLevel,
-  QuarryMonsterLevel
-} from '@/schemas/monster'
+import { NemesisMonsterLevel, QuarryMonsterLevel } from '@/schemas/monster'
 import {
   CheckIcon,
   ChevronDown,
@@ -35,8 +31,10 @@ export interface LevelDataProps {
   monsterType: MonsterType
   /** Level data */
   levelData: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  /** Update level data callback */
-  onLevelDataChange: (field: string, value: number | string | string[]) => void
+  /** Set level data callback */
+  setLevelData: (
+    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+  ) => void
 }
 
 /**
@@ -51,7 +49,7 @@ export function LevelData({
   level,
   monsterType,
   levelData,
-  onLevelDataChange
+  setLevelData
 }: LevelDataProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -66,29 +64,47 @@ export function LevelData({
   /**
    * Renders a numeric input for a level field
    */
-  const renderNumericInput = (field: keyof BaseMonsterLevel, label: string) => {
-    const currentLevel = levelData as Partial<BaseMonsterLevel>
-    const value = currentLevel[field] ?? ''
+  const renderNumericInput = (
+    accessor: string[],
+    updateFn: (value: number) => void,
+    label: string,
+    colspan: number,
+    extendedLabel?: string
+  ) => {
+    // Access nested value
+    let value: unknown = levelData
+
+    for (const key of accessor)
+      if (value && typeof value === 'object' && key in value)
+        value = (value as Record<string, unknown>)[key]
+      else {
+        value = undefined
+        break
+      }
+
+    // Extract numeric value with proper type narrowing
+    const numericValue = typeof value === 'number' ? value : 0
 
     return (
-      <div className="space-y-2">
-        <Label htmlFor={`level${level}-${field}`}>{label}</Label>
+      <div className={`space-y-2 col-span-${colspan}`}>
+        <Label
+          htmlFor={`level${level}-${accessor.join('-')}`}
+          className="justify-center">
+          {label}
+        </Label>
         <NumericInput
-          label={label}
-          value={typeof value === 'number' ? value : 0}
-          onChange={(value: number) => onLevelDataChange(field, value)}
+          label={extendedLabel || label}
+          value={numericValue}
+          onChange={(val: number) => updateFn(val)}
           min={0}
           readOnly={false}>
           <Input
-            id={`level${level}-${field}`}
-            name={`level${level}-${field}`}
+            id={`level${level}-${accessor.join('-')}`}
             type="number"
             min="0"
             placeholder="0"
-            value={value}
-            onChange={(e) =>
-              onLevelDataChange(field, parseInt(e.target.value) || 0)
-            }
+            value={numericValue}
+            onChange={(e) => updateFn(parseInt(e.target.value) || 0)}
             className="text-center no-spinners"
           />
         </NumericInput>
@@ -100,12 +116,25 @@ export function LevelData({
    * Renders a text array input for a level field using interactive list
    */
   const renderArrayInput = (
-    field: 'moods' | 'traits' | 'survivorStatuses',
+    accessor: string[],
+    updateFn: (items: string[]) => void,
     label: string
   ) => {
-    const currentLevel = levelData as Partial<BaseMonsterLevel>
-    const items = (currentLevel[field] || []) as string[]
-    const fieldKey = `level${level}-${field}`
+    // Access nested value
+    let value: unknown = levelData
+
+    for (const key of accessor)
+      if (value && typeof value === 'object' && key in value)
+        value = (value as Record<string, unknown>)[key]
+      else {
+        value = undefined
+        break
+      }
+
+    // Extract array value with proper type narrowing
+    const items = Array.isArray(value) ? value : []
+
+    const fieldKey = `level${level}-${accessor.join('-')}`
     const editingIndex = arrayInputEditingIndex[fieldKey] ?? null
     const isAddingNew = arrayInputAddingNew[fieldKey] ?? false
 
@@ -119,7 +148,7 @@ export function LevelData({
 
     const addItem = (value: string) => {
       if (value.trim()) {
-        onLevelDataChange(field, [...items, value.trim()])
+        updateFn([...items, value.trim()])
         setIsAddingNew(false)
       }
     }
@@ -127,13 +156,13 @@ export function LevelData({
     const updateItem = (index: number, value: string) => {
       const newItems = [...items]
       newItems[index] = value.trim()
-      onLevelDataChange(field, newItems)
+      updateFn(newItems)
       setEditingIndex(null)
     }
 
     const removeItem = (index: number) => {
       const newItems = items.filter((_, i) => i !== index)
-      onLevelDataChange(field, newItems)
+      updateFn(newItems)
       if (editingIndex === index) setEditingIndex(null)
     }
 
@@ -263,50 +292,314 @@ export function LevelData({
       </CollapsibleTrigger>
       <CollapsibleContent className="space-y-4 mt-4">
         <div className="space-y-4 border rounded-lg p-4">
-          <div className="grid grid-cols-2 gap-4">
-            {renderNumericInput('aiDeckSize', 'AI Deck Size')}
-            {renderNumericInput('toughness', 'Toughness')}
-            {renderNumericInput('movement', 'Movement')}
-            {renderNumericInput('movementTokens', 'Movement Tokens')}
+          <div className="grid grid-cols-4 gap-4">
+            {/* AI Deck */}
+            <Label className="col-span-4 justify-center">AI Deck</Label>
+            {renderNumericInput(
+              ['aiDeck', 'basic'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  aiDeck: {
+                    basic: value,
+                    advanced: levelData.aiDeck?.advanced ?? 0,
+                    legendary: levelData.aiDeck?.legendary ?? 0,
+                    overtone: levelData.aiDeck?.overtone
+                  }
+                }),
+              'B',
+              1,
+              'AI Deck: Basic'
+            )}
+            {renderNumericInput(
+              ['aiDeck', 'advanced'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  aiDeck: {
+                    basic: levelData.aiDeck?.basic ?? 0,
+                    advanced: value,
+                    legendary: levelData.aiDeck?.legendary ?? 0,
+                    overtone: levelData.aiDeck?.overtone
+                  }
+                }),
+              'A',
+              1,
+              'AI Deck: Advanced'
+            )}
+            {renderNumericInput(
+              ['aiDeck', 'legendary'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  aiDeck: {
+                    basic: levelData.aiDeck?.basic ?? 0,
+                    advanced: levelData.aiDeck?.advanced ?? 0,
+                    legendary: value,
+                    overtone: levelData.aiDeck?.overtone
+                  }
+                }),
+              'L',
+              1,
+              'AI Deck: Legendary'
+            )}
+            {renderNumericInput(
+              ['aiDeck', 'overtone'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  aiDeck: {
+                    basic: levelData.aiDeck?.basic ?? 0,
+                    advanced: levelData.aiDeck?.advanced ?? 0,
+                    legendary: levelData.aiDeck?.legendary ?? 0,
+                    overtone: value
+                  }
+                }),
+              'O',
+              1,
+              'AI Deck: Overtone'
+            )}
 
-            <Separator className="col-span-2" />
+            <Separator className="col-span-4" />
 
+            {/* Life or Hunt Position */}
             {monsterType === MonsterType.QUARRY ? (
               <>
                 {renderNumericInput(
-                  'huntPos' as keyof BaseMonsterLevel,
-                  'Hunt Position'
+                  ['huntPos'],
+                  (value) =>
+                    setLevelData({
+                      ...levelData,
+                      huntPos: value
+                    }),
+                  'Hunt Position',
+                  2
                 )}
                 {renderNumericInput(
-                  'survivorHuntPos' as keyof BaseMonsterLevel,
-                  'Survivor Hunt Position'
+                  ['survivorHuntPos'],
+                  (value) =>
+                    setLevelData({
+                      ...levelData,
+                      survivorHuntPos: value
+                    }),
+                  'Survivor Hunt Position',
+                  2
                 )}
               </>
             ) : (
-              renderNumericInput('life' as keyof BaseMonsterLevel, 'Life')
+              renderNumericInput(
+                ['life'],
+                (value) =>
+                  setLevelData({
+                    ...levelData,
+                    life: value
+                  }),
+                'Life',
+                4
+              )
             )}
 
-            <Separator className="col-span-2" />
+            <Separator className="col-span-4" />
 
-            {renderNumericInput('accuracy', 'Accuracy')}
-            {renderNumericInput('accuracyTokens', 'Accuracy Tokens')}
-            {renderNumericInput('speed', 'Speed')}
-            {renderNumericInput('speedTokens', 'Speed Tokens')}
-            {renderNumericInput('evasion', 'Evasion')}
-            {renderNumericInput('evasionTokens', 'Evasion Tokens')}
-            {renderNumericInput('luck', 'Luck')}
-            {renderNumericInput('luckTokens', 'Luck Tokens')}
-            {renderNumericInput('strength', 'Strength')}
-            {renderNumericInput('strengthTokens', 'Strength Tokens')}
-            {renderNumericInput('damage', 'Damage')}
-            {renderNumericInput('damageTokens', 'Damage Tokens')}
+            {/* Attributes and Tokens */}
+            {renderNumericInput(
+              ['accuracy'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  accuracy: value
+                }),
+              'Accuracy',
+              2
+            )}
+            {renderNumericInput(
+              ['accuracyTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  accuracyTokens: value
+                }),
+              'Accuracy Tokens',
+              2
+            )}
+
+            {renderNumericInput(
+              ['damage'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  damage: value
+                }),
+              'Damage',
+              2
+            )}
+            {renderNumericInput(
+              ['damageTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  damageTokens: value
+                }),
+              'Damage Tokens',
+              2
+            )}
+
+            {renderNumericInput(
+              ['evasion'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  evasion: value
+                }),
+              'Evasion',
+              2
+            )}
+            {renderNumericInput(
+              ['evasionTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  evasionTokens: value
+                }),
+              'Evasion Tokens',
+              2
+            )}
+
+            {renderNumericInput(
+              ['luck'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  luck: value
+                }),
+              'Luck',
+              2
+            )}
+            {renderNumericInput(
+              ['luckTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  luckTokens: value
+                }),
+              'Luck Tokens',
+              2
+            )}
+
+            {renderNumericInput(
+              ['movement'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  movement: value
+                }),
+              'Movement',
+              2
+            )}
+            {renderNumericInput(
+              ['movementTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  movementTokens: value
+                }),
+              'Movement Tokens',
+              2
+            )}
+
+            {renderNumericInput(
+              ['speed'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  speed: value
+                }),
+              'Speed',
+              2
+            )}
+            {renderNumericInput(
+              ['speedTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  speedTokens: value
+                }),
+              'Speed Tokens',
+              2
+            )}
+
+            {renderNumericInput(
+              ['strength'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  strength: value
+                }),
+              'Strength',
+              2
+            )}
+            {renderNumericInput(
+              ['strengthTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  strengthTokens: value
+                }),
+              'Strength Tokens',
+              2
+            )}
+
+            {renderNumericInput(
+              ['toughness'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  toughness: value
+                }),
+              'Toughness',
+              2
+            )}
+            {renderNumericInput(
+              ['toughnessTokens'],
+              (value) =>
+                setLevelData({
+                  ...levelData,
+                  toughnessTokens: value
+                }),
+              'Toughness Tokens',
+              2
+            )}
           </div>
 
-          <Separator className="col-span-2" />
+          <Separator className="col-span-4" />
 
-          {renderArrayInput('moods', 'Moods')}
-          {renderArrayInput('traits', 'Traits')}
-          {renderArrayInput('survivorStatuses', 'Survivor Statuses')}
+          {renderArrayInput(
+            ['moods'],
+            (items) =>
+              setLevelData({
+                ...levelData,
+                moods: items
+              }),
+            'Moods'
+          )}
+          {renderArrayInput(
+            ['traits'],
+            (items) =>
+              setLevelData({
+                ...levelData,
+                traits: items
+              }),
+            'Traits'
+          )}
+          {renderArrayInput(
+            ['survivorStatuses'],
+            (items) =>
+              setLevelData({
+                ...levelData,
+                survivorStatuses: items
+              }),
+            'Survivor Statuses'
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>

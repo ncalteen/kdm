@@ -10,7 +10,9 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { MonsterType } from '@/lib/enums'
 import { COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE } from '@/lib/messages'
+import { getMonsterData } from '@/lib/utils'
 import { Nemesis, Quarry, Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
@@ -94,7 +96,14 @@ export function CollectiveCognitionVictoriesCard({
                 {(selectedSettlement?.quarries || []).map((quarry, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-sm text-left pl-5">
-                      {quarry.name}
+                      {(() => {
+                        const monsterData = getMonsterData(
+                          quarry.id,
+                          MonsterType.QUARRY
+                        )
+
+                        return monsterData?.main?.name || 'Unnamed Quarry'
+                      })()}
                     </TableCell>
                     <TableCell className="text-center">
                       {index === 0 && (
@@ -276,7 +285,14 @@ export function CollectiveCognitionVictoriesCard({
                 {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-sm text-left pl-5">
-                      {nemesis.name || 'Unnamed Nemesis'}
+                      {(() => {
+                        const monsterData = getMonsterData(
+                          nemesis.id,
+                          MonsterType.NEMESIS
+                        )
+
+                        return monsterData?.main?.name || 'Unnamed Nemesis'
+                      })()}
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex justify-center">

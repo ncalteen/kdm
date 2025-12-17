@@ -39,7 +39,15 @@ export type GlobalSettings = z.infer<typeof GlobalSettingsSchema>
 export const CampaignSchema = z.object({
   /** Custom Monsters */
   customMonsters: z
-    .array(z.union([NemesisMonsterDataSchema, QuarryMonsterDataSchema]))
+    .record(
+      /** Monster ID */
+      z.string(),
+      /** Monster Data */
+      z.record(
+        z.literal('main'),
+        z.union([NemesisMonsterDataSchema, QuarryMonsterDataSchema])
+      )
+    )
     .nullable()
     .optional(),
   /** Hunts */

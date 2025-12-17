@@ -33,7 +33,6 @@ import {
   saveCampaignToLocalStorage
 } from '@/lib/utils'
 import {
-  NemesisMonsterData,
   NemesisMonsterDataSchema,
   NemesisMonsterLevel,
   QuarryMonsterData,
@@ -44,16 +43,11 @@ import { TimelineYear } from '@/schemas/settlement'
 import { ReactElement, useEffect, useState } from 'react'
 
 /**
- * Custom Monster (Quarry or Nemesis)
- */
-type CustomMonster = (QuarryMonsterData | NemesisMonsterData) & { id: string }
-
-/**
  * Edit Monster Dialog Properties
  */
 export interface EditMonsterDialogProps {
-  /** Monster to Edit */
-  monster: CustomMonster | null
+  /** Monster ID to Edit */
+  monsterId: string | null
   /** Dialog Open State */
   isOpen: boolean
   /** Dialog Open State Change Callback */
@@ -71,7 +65,7 @@ export interface EditMonsterDialogProps {
  * @returns Edit Monster Dialog Component
  */
 export function EditMonsterDialog({
-  monster,
+  monsterId,
   isOpen,
   onOpenChange,
   onMonsterUpdated
@@ -107,12 +101,17 @@ export function EditMonsterDialog({
   >([])
 
   /**
-   * Load monster data when dialog opens or monster changes
+   * Load monster data when dialog opens or monster ID changes
    */
   useEffect(() => {
-    if (!monster || !isOpen) return
+    if (!monsterId || !isOpen) return
 
     const loadMonsterData = () => {
+      const campaign = getCampaign()
+      const monster = campaign.customMonsters?.[monsterId]?.main
+
+      if (!monster) return
+
       setMonsterType(monster.type)
       setName(monster.name)
       setNode(monster.node)
@@ -137,7 +136,7 @@ export function EditMonsterDialog({
 
       // Load quarry-specific data
       if (monster.type === MonsterType.QUARRY) {
-        const quarryMonster = monster as QuarryMonsterData & { id: string }
+        const quarryMonster = monster as QuarryMonsterData
 
         // Load hunt board
         setHuntBoardData(quarryMonster.huntBoard || {})
@@ -161,7 +160,7 @@ export function EditMonsterDialog({
     }
 
     loadMonsterData()
-  }, [monster, isOpen])
+  }, [monsterId, isOpen])
 
   /**
    * Handles monster type change to restrict allowed nodes.
@@ -178,13 +177,12 @@ export function EditMonsterDialog({
    * Handles updating the monster
    */
   const handleUpdateMonster = () => {
-    if (!monster) return
+    if (!monsterId) return
 
     try {
       // Get existing campaign data
       const campaign = getCampaign()
-      const existingMonsters = (campaign.customMonsters ||
-        []) as CustomMonster[]
+      const customMonsters = campaign.customMonsters || {}
 
       // Convert timeline array to correct format
       const timelineRecord: { [key: number]: TimelineYear['entries'] } = {}
@@ -194,56 +192,77 @@ export function EditMonsterDialog({
       })
 
       // Validate based on monster type
-      if (monsterType === MonsterType.QUARRY) {
-        const monsterData = QuarryMonsterDataSchema.parse({
-          name,
-          node,
-          type: MonsterType.QUARRY,
-          ccRewards: ccRewardsData.map(({ cc, name }) => ({
-            name,
-            cc,
-            unlocked: false
-          })),
-          huntBoard: huntBoardData,
-          locations: locationsData.map((name) => ({ name, unlocked: false })),
-          timeline: timelineRecord,
-          ...(Object.keys(level1Data).length > 0 && { level1: level1Data }),
-          ...(Object.keys(level2Data).length > 0 && { level2: level2Data }),
-          ...(Object.keys(level3Data).length > 0 && { level3: level3Data }),
-          ...(Object.keys(level4Data).length > 0 && { level4: level4Data })
-        })
+      const monsterData =
+        monsterType === MonsterType.QUARRY
+          ? QuarryMonsterDataSchema.parse({
+              name,
+              node,
+              type: MonsterType.QUARRY,
+              ccRewards: ccRewardsData.map(({ cc, name }) => ({
+                name,
+                cc,
+                unlocked: false
+              })),
+              huntBoard: {
+                0: undefined, // Start
+                1: huntBoardData[1],
+                2: huntBoardData[2],
+                3: huntBoardData[3],
+                4: huntBoardData[4],
+                5: huntBoardData[5],
+                6: undefined, // Overwhelming Darkness
+                7: huntBoardData[7],
+                8: huntBoardData[8],
+                9: huntBoardData[9],
+                10: huntBoardData[10],
+                11: huntBoardData[11],
+                12: undefined // Starvation
+              },
+              locations: locationsData.map((name) => ({
+                name,
+                unlocked: false
+              })),
+              timeline: timelineRecord,
+              ...(Object.keys(level1Data).length > 0 && {
+                level1: level1Data
+              }),
+              ...(Object.keys(level2Data).length > 0 && {
+                level2: level2Data
+              }),
+              ...(Object.keys(level3Data).length > 0 && {
+                level3: level3Data
+              }),
+              ...(Object.keys(level4Data).length > 0 && {
+                level4: level4Data
+              })
+            })
+          : NemesisMonsterDataSchema.parse({
+              name,
+              node,
+              timeline: timelineRecord,
+              type: monsterType,
+              ...(Object.keys(level1Data).length > 0 && {
+                level1: level1Data
+              }),
+              ...(Object.keys(level2Data).length > 0 && {
+                level2: level2Data
+              }),
+              ...(Object.keys(level3Data).length > 0 && {
+                level3: level3Data
+              }),
+              ...(Object.keys(level4Data).length > 0 && {
+                level4: level4Data
+              })
+            })
 
-        // Update monster in the list
-        const updatedMonsters = existingMonsters.map((m) =>
-          m.id === monster.id ? { ...monsterData, id: monster.id } : m
-        )
-
-        saveCampaignToLocalStorage({
-          ...campaign,
-          customMonsters: updatedMonsters
-        })
-      } else {
-        const monsterData = NemesisMonsterDataSchema.parse({
-          name,
-          node,
-          timeline: timelineRecord,
-          type: monsterType,
-          ...(Object.keys(level1Data).length > 0 && { level1: level1Data }),
-          ...(Object.keys(level2Data).length > 0 && { level2: level2Data }),
-          ...(Object.keys(level3Data).length > 0 && { level3: level3Data }),
-          ...(Object.keys(level4Data).length > 0 && { level4: level4Data })
-        })
-
-        // Update monster in the list
-        const updatedMonsters = existingMonsters.map((m) =>
-          m.id === monster.id ? { ...monsterData, id: monster.id } : m
-        )
-
-        saveCampaignToLocalStorage({
-          ...campaign,
-          customMonsters: updatedMonsters
-        })
+      // Update in localStorage
+      customMonsters[monsterId] = {
+        main: monsterData
       }
+      saveCampaignToLocalStorage({
+        ...campaign,
+        customMonsters
+      })
 
       toast.success(
         monsterType === MonsterType.NEMESIS
@@ -258,24 +277,6 @@ export function EditMonsterDialog({
       console.error('Update Monster Error:', error)
       toast.error(ERROR_MESSAGE())
     }
-  }
-
-  /**
-   * Updates a level's field
-   */
-  const updateLevel = (
-    level: 1 | 2 | 3 | 4,
-    field: string,
-    value: number | string | string[]
-  ) => {
-    const setter = [setLevel1Data, setLevel2Data, setLevel3Data, setLevel4Data][
-      level - 1
-    ]
-    const currentLevel = [level1Data, level2Data, level3Data, level4Data][
-      level - 1
-    ]
-
-    setter({ ...currentLevel, [field]: value })
   }
 
   return (
@@ -359,8 +360,15 @@ export function EditMonsterDialog({
                     4: level4Data
                   }[level] as Partial<QuarryMonsterLevel | NemesisMonsterLevel>
                 }
-                onLevelDataChange={(field, value) =>
-                  updateLevel(level as 1 | 2 | 3 | 4, field, value)
+                setLevelData={
+                  {
+                    1: setLevel1Data,
+                    2: setLevel2Data,
+                    3: setLevel3Data,
+                    4: setLevel4Data
+                  }[level] as (
+                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                  ) => void
                 }
               />
             )
@@ -370,9 +378,6 @@ export function EditMonsterDialog({
           <TimelineData
             timelineData={timelineData}
             onTimelineDataChange={setTimelineData}
-            initialDisabledIndexes={
-              monster ? Array.from({ length: timelineData.length }, (_, i) => i) : undefined
-            }
           />
 
           {/* Quarry-Specific Fields */}
@@ -388,18 +393,12 @@ export function EditMonsterDialog({
               <LocationsData
                 locations={locationsData}
                 onLocationsChange={setLocationsData}
-                initialDisabledIndexes={
-                  monster ? Array.from({ length: locationsData.length }, (_, i) => i) : undefined
-                }
               />
 
               {/* Collective Cognition Rewards (Arc) */}
               <CCRewardsData
                 ccRewards={ccRewardsData}
                 onCCRewardsChange={setCcRewardsData}
-                initialDisabledIndexes={
-                  monster ? Array.from({ length: ccRewardsData.length }, (_, i) => i) : undefined
-                }
               />
             </>
           )}
