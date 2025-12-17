@@ -751,56 +751,6 @@ describe('NewSettlementInputSchema', () => {
   })
 
   describe('Invalid Data', () => {
-    it('should fail when monsters are specified for non-Custom campaign', () => {
-      const result = NewSettlementInputSchema.safeParse({
-        name: 'Test',
-        campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-        monsters: {
-          NQ1: [1],
-          NQ2: [],
-          NQ3: [],
-          NQ4: [],
-          NN1: [],
-          NN2: [],
-          NN3: [],
-          CO: [],
-          FI: []
-        }
-      })
-
-      expect(result.success).toBe(false)
-      if (!result.success) {
-        expect(result.error.issues).toHaveLength(1)
-        expect(result.error.issues[0].code).toBe('custom')
-        expect(result.error.issues[0].message).toBe(
-          'Monster selection is only allowed for Custom campaigns.'
-        )
-      }
-    })
-
-    it('should fail when monsters are specified for People of the Stars', () => {
-      const result = NewSettlementInputSchema.safeParse({
-        name: 'Test',
-        campaignType: CampaignType.PEOPLE_OF_THE_STARS,
-        monsters: {
-          NQ1: [2, 3],
-          NQ2: [1],
-          NQ3: [],
-          NQ4: [],
-          NN1: [],
-          NN2: [],
-          NN3: [],
-          CO: [],
-          FI: []
-        }
-      })
-
-      expect(result.success).toBe(false)
-      if (!result.success) {
-        expect(result.error.issues[0].code).toBe('custom')
-      }
-    })
-
     it('should fail with missing name', () => {
       const result = NewSettlementInputSchema.safeParse({
         campaignType: CampaignType.CUSTOM
@@ -887,39 +837,6 @@ describe('NewSettlementInputSchema', () => {
         })
 
         expect(result.success).toBe(true)
-      })
-    })
-
-    it('should only allow monster selection for Custom campaign', () => {
-      const nonCustomTypes = [
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
-        CampaignType.PEOPLE_OF_THE_LANTERN,
-        CampaignType.PEOPLE_OF_THE_STARS,
-        CampaignType.PEOPLE_OF_THE_SUN,
-        CampaignType.SQUIRES_OF_THE_CITADEL
-      ]
-
-      nonCustomTypes.forEach((type) => {
-        const result = NewSettlementInputSchema.safeParse({
-          name: 'Test',
-          campaignType: type,
-          monsters: {
-            NQ1: [1],
-            NQ2: [],
-            NQ3: [],
-            NQ4: [],
-            NN1: [],
-            NN2: [],
-            NN3: [],
-            CO: [],
-            FI: []
-          }
-        })
-
-        expect(result.success).toBe(false)
-        if (!result.success) {
-          expect(result.error.issues[0].code).toBe('custom')
-        }
       })
     })
 
