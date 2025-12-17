@@ -374,6 +374,11 @@ export function EditMonsterDialog({
           <TimelineData
             timelineData={timelineData}
             onTimelineDataChange={setTimelineData}
+            initialDisabledIndexes={
+              monsterId && timelineData.length > 0
+                ? Array.from({ length: timelineData.length }, (_, i) => i)
+                : undefined
+            }
           />
 
           {/* Quarry-Specific Fields */}
@@ -389,12 +394,22 @@ export function EditMonsterDialog({
               <LocationsData
                 locations={locationsData}
                 onLocationsChange={setLocationsData}
+                initialDisabledIndexes={
+                  monsterId && locationsData.length > 0
+                    ? Array.from({ length: locationsData.length }, (_, i) => i)
+                    : undefined
+                }
               />
 
               {/* Collective Cognition Rewards (Arc) */}
               <CCRewardsData
                 ccRewards={ccRewardsData}
                 onCCRewardsChange={setCcRewardsData}
+                initialDisabledIndexes={
+                  monsterId && ccRewardsData.length > 0
+                    ? Array.from({ length: ccRewardsData.length }, (_, i) => i)
+                    : undefined
+                }
               />
             </>
           )}
