@@ -215,7 +215,9 @@ export function QuarriesCard({
   const onUpdateQuarry = (index: number, id: number) => {
     const quarryData = QUARRIES[id as keyof typeof QUARRIES]
     const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
-      i === index ? { ...q, id, node: quarryData?.main.node || MonsterNode.NQ1 } : q
+      i === index
+        ? { ...q, id, node: quarryData?.main.node || MonsterNode.NQ1 }
+        : q
     )
 
     saveSelectedSettlement({ quarries: updatedQuarries })
