@@ -43,8 +43,7 @@ export interface NemesisItemProps {
       | 'level4'
       | 'ccLevel1'
       | 'ccLevel2'
-      | 'ccLevel3'
-      | 'ccLevel4',
+      | 'ccLevel3',
     checked: boolean
   ) => void
   /** OnToggleUnlocked Handler */

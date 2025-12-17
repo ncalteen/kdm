@@ -69,7 +69,9 @@ export const CampaignSchema = z.object({
   /** Showdowns */
   showdowns: z.array(ShowdownSchema).nullable().optional(),
   /** Survivors */
-  survivors: z.array(SurvivorSchema)
+  survivors: z.array(SurvivorSchema),
+  /** Version */
+  version: z.string().optional()
 })
 
 /**

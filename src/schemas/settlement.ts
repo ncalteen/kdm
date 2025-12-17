@@ -35,8 +35,6 @@ export const QuarrySchema = z.object({
   ccLevel2: z.array(z.boolean()).min(2).max(2).optional(),
   /** Collective Cognition (Level 3) */
   ccLevel3: z.array(z.boolean()).min(3).max(3).optional(),
-  // TODO: /** Collective Cognition (Level 4) */
-  // ccLevel4: z.array(z.boolean()).min(3).max(3).optional(),
   /** Collective Cognition (Prologue) */
   ccPrologue: z.boolean().optional(),
   /** Quarry ID */
@@ -62,8 +60,6 @@ export const NemesisSchema = z.object({
   ccLevel2: z.boolean().optional(),
   /** Collective Cognition (Level 3) */
   ccLevel3: z.boolean().optional(),
-  /** Collective Cognition (Level 4) */
-  ccLevel4: z.boolean().optional(),
   /** Nemesis ID */
   id: z.number().min(0, 'Nemesis ID must be a positive integer.'),
   /** Completed (Level 1) */

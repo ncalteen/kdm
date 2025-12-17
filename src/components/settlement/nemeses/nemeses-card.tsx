@@ -138,8 +138,7 @@ export function NemesesCard({
       level4: false,
       ccLevel1: false,
       ccLevel2: false,
-      ccLevel3: false,
-      ccLevel4: false
+      ccLevel3: false
     }
 
     const updatedNemeses = [...(selectedSettlement?.nemeses || [])]
@@ -232,8 +231,7 @@ export function NemesesCard({
       | 'level4'
       | 'ccLevel1'
       | 'ccLevel2'
-      | 'ccLevel3'
-      | 'ccLevel4',
+      | 'ccLevel3',
     checked: boolean
   ) => {
     const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
