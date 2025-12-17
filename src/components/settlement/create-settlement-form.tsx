@@ -117,6 +117,9 @@ export function CreateSettlementForm({
       // Update the selected settlement in the context
       setSelectedSettlement(settlement)
 
+      // Reset the form
+      form.reset()
+
       // Show success message
       toast.success(SETTLEMENT_CREATED_MESSAGE())
     } catch (error) {
