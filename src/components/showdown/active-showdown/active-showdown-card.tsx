@@ -14,7 +14,7 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import { ERROR_MESSAGE, SHOWDOWN_DELETED_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -100,9 +100,7 @@ export function ActiveShowdownCard({
 
       setSelectedShowdown(null)
 
-      toast.success(
-        'The showdown ends. Survivors return to the relative safety of the settlement.'
-      )
+      toast.success(SHOWDOWN_DELETED_MESSAGE())
 
       setIsCancelDialogOpen(false)
     } catch (error) {

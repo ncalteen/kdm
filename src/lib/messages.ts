@@ -185,6 +185,26 @@ export const CUSTOM_MONSTER_CREATED_MESSAGE = (monsterType: MonsterType) =>
     : 'A new quarry stalks the land.'
 
 /**
+ * Custom Monster Deleted
+ *
+ * @param monsterName Monster Name
+ * @returns Custom Monster Deleted Message
+ */
+export const CUSTOM_MONSTER_DELETED_MESSAGE = (monsterName?: string) =>
+  `${monsterName || 'Monster'} fades back into the darkness.`
+
+/**
+ * Custom Monster Updated
+ *
+ * @param monsterType Monster Type
+ * @returns Custom Monster Updated Message
+ */
+export const CUSTOM_MONSTER_UPDATED_MESSAGE = (monsterType: MonsterType) =>
+  monsterType === MonsterType.NEMESIS
+    ? 'The nemesis adapts to your will.'
+    : 'The quarry shifts in the darkness.'
+
+/**
  * Departing Bonus Removed
  *
  * @returns Departing Bonus Removed Message
@@ -1090,7 +1110,7 @@ export const SHOWDOWN_CREATED_MESSAGE = (
  * @returns Showdown Deleted Message
  */
 export const SHOWDOWN_DELETED_MESSAGE = () =>
-  'The showdown ends. Survivors catch their breath.'
+  'The showdown ends. Survivors return to the relative safety of the settlement.'
 
 /**
  * Showdown Monster Knocked Down

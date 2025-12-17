@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
 import { MonsterType } from '@/lib/enums'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import { CUSTOM_MONSTER_DELETED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
 import { PencilIcon, Trash2Icon } from 'lucide-react'
@@ -95,9 +95,7 @@ export function CustomMonstersTable({
 
       setMonsters(updatedMonsters)
 
-      toast.success(
-        `${monsterToDelete?.main.name || 'Monster'} fades back into the darkness.`
-      )
+      toast.success(CUSTOM_MONSTER_DELETED_MESSAGE(monsterToDelete?.main.name))
 
       if (onMonstersChange) onMonstersChange()
     } catch (error) {

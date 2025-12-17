@@ -26,7 +26,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { ERROR_MESSAGE } from '@/lib/messages'
+import { CUSTOM_MONSTER_UPDATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
 import {
   getAvailableNodes,
   getCampaign,
@@ -264,11 +264,7 @@ export function EditMonsterDialog({
         customMonsters
       })
 
-      toast.success(
-        monsterType === MonsterType.NEMESIS
-          ? 'The nemesis adapts to your will.'
-          : 'The quarry shifts in the darkness.'
-      )
+      toast.success(CUSTOM_MONSTER_UPDATED_MESSAGE(monsterType))
 
       onOpenChange(false)
 

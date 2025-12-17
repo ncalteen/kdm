@@ -28,6 +28,8 @@ import {
   ERROR_MESSAGE,
   HUNT_ALREADY_ACTIVE_ERROR_MESSAGE,
   NAMELESS_OBJECT_ERROR_MESSAGE,
+  SCOUT_CONFLICT_MESSAGE,
+  SCOUT_REQUIRED_MESSAGE,
   SHOWDOWN_CREATED_MESSAGE
 } from '@/lib/messages'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
@@ -338,7 +340,7 @@ export function CreateShowdownCard({
 
     // Validate scout selection if settlement uses scouts
     if (selectedSettlement.usesScouts && !selectedScout)
-      return toast.error('A scout must be selected for the showdown.')
+      return toast.error(SCOUT_REQUIRED_MESSAGE('showdown'))
 
     // Validate that scout is not also a selected survivor
     if (
@@ -346,9 +348,7 @@ export function CreateShowdownCard({
       selectedScout &&
       selectedSurvivors.includes(selectedScout)
     )
-      return toast.error(
-        'The selected scout cannot also be one of the selected survivors for the showdown.'
-      )
+      return toast.error(SCOUT_CONFLICT_MESSAGE())
 
     const survivorDetails: SurvivorShowdownDetails[] = selectedSurvivors.map(
       (survivorId) => ({
