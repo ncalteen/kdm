@@ -381,6 +381,7 @@ export function AppSidebar({
       {...props}>
       <SidebarHeader>
         <SettlementSwitcher
+          campaign={campaign}
           selectedHunt={selectedHunt}
           selectedSettlement={selectedSettlement}
           selectedShowdown={selectedShowdown}

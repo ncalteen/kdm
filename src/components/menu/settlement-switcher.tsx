@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { getCampaign } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -25,6 +25,8 @@ import { ComponentProps, ReactElement } from 'react'
  * Settlement Switcher Properties
  */
 interface SettlementSwitcherProps extends ComponentProps<typeof Sidebar> {
+  /** Campaign */
+  campaign: Campaign
   /** Selected Hunt */
   selectedHunt: Hunt | null
   /** Selected Settlement */
@@ -55,6 +57,7 @@ interface SettlementSwitcherProps extends ComponentProps<typeof Sidebar> {
  * @returns Settlement Switcher Component
  */
 export function SettlementSwitcher({
+  campaign,
   selectedHunt,
   selectedSettlement,
   selectedShowdown,
@@ -119,7 +122,6 @@ export function SettlementSwitcher({
               <DropdownMenuItem
                 key={s.id}
                 onSelect={() => {
-                  const campaign = getCampaign()
                   const settlementHunt =
                     campaign.hunts?.find(
                       (hunt) => hunt.settlementId === s.id
