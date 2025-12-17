@@ -7,7 +7,12 @@ import {
   DefaultSquiresSuspicion,
   SquiresOfTheCitadel
 } from '@/lib/campaigns/squires'
-import { CampaignType, MonsterNodeNumeric, SurvivorType } from '@/lib/enums'
+import {
+  CampaignType,
+  MonsterNode,
+  MonsterNodeNumeric,
+  SurvivorType
+} from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { getNextSettlementId } from '@/lib/utils'
 import {
@@ -16,6 +21,76 @@ import {
   Quarry,
   Settlement
 } from '@/schemas/settlement'
+
+/**
+ * Get Monster Node Mapping for a Campaign Type
+ *
+ * This function takes a campaign type and returns a mapping of monster nodes to
+ * monster IDs for that campaign.
+ *
+ * @param campaignType Campaign Type
+ * @returns Monster node mapping
+ */
+export function getMonsterNodeMapping(campaignType: CampaignType): {
+  NQ1: number[]
+  NQ2: number[]
+  NQ3: number[]
+  NQ4: number[]
+  NN1: number[]
+  NN2: number[]
+  NN3: number[]
+  Co: number[]
+  Fi: number[]
+} {
+  const template = {
+    [CampaignType.CUSTOM]: CustomCampaign,
+    [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]: PeopleOfTheDreamKeeper,
+    [CampaignType.PEOPLE_OF_THE_LANTERN]: PeopleOfTheLantern,
+    [CampaignType.PEOPLE_OF_THE_STARS]: PeopleOfTheStars,
+    [CampaignType.PEOPLE_OF_THE_SUN]: PeopleOfTheSun,
+    [CampaignType.SQUIRES_OF_THE_CITADEL]: SquiresOfTheCitadel
+  }[campaignType]
+
+  const mapping: {
+    NQ1: number[]
+    NQ2: number[]
+    NQ3: number[]
+    NQ4: number[]
+    NN1: number[]
+    NN2: number[]
+    NN3: number[]
+    Co: number[]
+    Fi: number[]
+  } = {
+    NQ1: [],
+    NQ2: [],
+    NQ3: [],
+    NQ4: [],
+    NN1: [],
+    NN2: [],
+    NN3: [],
+    Co: [],
+    Fi: []
+  }
+
+  // Map quarries to their nodes
+  for (const quarryId of template.quarries) {
+    const data = QUARRIES[quarryId as keyof typeof QUARRIES]
+    const node = data.main.node
+
+    mapping[node].push(quarryId)
+  }
+
+  // Map nemeses to their nodes
+  for (const nemesisId of template.nemeses) {
+    const data = NEMESES[nemesisId as keyof typeof NEMESES]
+    const node = data.main.node
+
+    mapping[node].push(nemesisId)
+  }
+
+  return mapping
+}
 
 /**
  * Settlement Creator Function
@@ -36,6 +111,23 @@ export function createSettlementFromOptions(
     [CampaignType.PEOPLE_OF_THE_SUN]: PeopleOfTheSun,
     [CampaignType.SQUIRES_OF_THE_CITADEL]: SquiresOfTheCitadel
   }[options.campaignType]
+
+  // Get monster selections - either from options (custom campaign) or from template
+  const monsterSelections =
+    options.monsters || getMonsterNodeMapping(options.campaignType)
+  const quarryIds = [
+    ...(monsterSelections.NQ1 || monsterSelections[MonsterNode.NQ1] || []),
+    ...(monsterSelections.NQ2 || monsterSelections[MonsterNode.NQ2] || []),
+    ...(monsterSelections.NQ3 || monsterSelections[MonsterNode.NQ3] || []),
+    ...(monsterSelections.NQ4 || monsterSelections[MonsterNode.NQ4] || [])
+  ]
+  const nemesisIds = [
+    ...(monsterSelections.NN1 || monsterSelections[MonsterNode.NN1] || []),
+    ...(monsterSelections.NN2 || monsterSelections[MonsterNode.NN2] || []),
+    ...(monsterSelections.NN3 || monsterSelections[MonsterNode.NN3] || []),
+    ...(monsterSelections.Co || monsterSelections[MonsterNode.CO] || []),
+    ...(monsterSelections.Fi || monsterSelections[MonsterNode.FI] || [])
+  ]
 
   // Insantiate the base settlement object.
   const settlement: Settlement = {
@@ -85,7 +177,7 @@ export function createSettlementFromOptions(
     settlement.suspicions = DefaultSquiresSuspicion
 
   // Nemeses
-  for (const nemesisId of template.nemeses) {
+  for (const nemesisId of nemesisIds) {
     const data = NEMESES[nemesisId as keyof typeof NEMESES]
 
     const nemesis: Nemesis = {
@@ -119,7 +211,7 @@ export function createSettlementFromOptions(
   }
 
   // Quarries
-  for (const quarryId of template.quarries) {
+  for (const quarryId of quarryIds) {
     const data = QUARRIES[quarryId as keyof typeof QUARRIES]
 
     const quarry: Quarry = {
