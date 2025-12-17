@@ -313,9 +313,9 @@ export enum MonsterNode {
   /** Nemesis 3 */
   NN3 = 'NN3',
   /** Core Monster */
-  CO = 'Co',
+  CO = 'CO',
   /** Finale Monster */
-  FI = 'Fi'
+  FI = 'FI'
 }
 
 /**

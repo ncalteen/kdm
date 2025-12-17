@@ -1,6 +1,7 @@
 'use client'
 
 import { SelectCampaignType } from '@/components/menu/select-campaign-type'
+import { SelectMonsterNode } from '@/components/menu/select-monster-node'
 import { SelectSurvivorType } from '@/components/menu/select-survivor-type'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -13,9 +14,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { CampaignType, SurvivorType } from '@/lib/enums'
+import { CampaignType, MonsterNode, SurvivorType } from '@/lib/enums'
 import { ERROR_MESSAGE, SETTLEMENT_CREATED_MESSAGE } from '@/lib/messages'
-import { createSettlementFromOptions } from '@/lib/settlements/utils'
+import {
+  createSettlementFromOptions,
+  getMonsterNodeMapping
+} from '@/lib/settlements/utils'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import {
   BaseSettlementSchema,
@@ -24,7 +28,7 @@ import {
   Settlement
 } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { Resolver, useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -53,7 +57,20 @@ export function CreateSettlementForm({
     resolver: zodResolver(
       NewSettlementInputSchema
     ) as Resolver<NewSettlementInput>,
-    defaultValues: BaseSettlementSchema.parse({})
+    defaultValues: {
+      ...BaseSettlementSchema.parse({}),
+      monsters: {
+        NQ1: [],
+        NQ2: [],
+        NQ3: [],
+        NQ4: [],
+        NN1: [],
+        NN2: [],
+        NN3: [],
+        CO: [],
+        FI: []
+      }
+    }
   })
 
   const watchedCampaignType = useWatch({
@@ -64,6 +81,21 @@ export function CreateSettlementForm({
     control: form.control,
     name: 'survivorType'
   })
+
+  const isCustomCampaign = useMemo(
+    () => watchedCampaignType === CampaignType.CUSTOM,
+    [watchedCampaignType]
+  )
+
+  /**
+   * Auto-populate monster selections when campaign type changes.
+   */
+  useEffect(() => {
+    if (!watchedCampaignType || isCustomCampaign) return
+
+    const monsterMapping = getMonsterNodeMapping(watchedCampaignType)
+    form.setValue('monsters', monsterMapping)
+  }, [watchedCampaignType, isCustomCampaign, form])
 
   function onSubmit(values: NewSettlementInput) {
     try {

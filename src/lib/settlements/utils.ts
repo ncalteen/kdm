@@ -39,8 +39,8 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
   NN1: number[]
   NN2: number[]
   NN3: number[]
-  Co: number[]
-  Fi: number[]
+  CO: number[]
+  FI: number[]
 } {
   const template = {
     [CampaignType.CUSTOM]: CustomCampaign,
@@ -59,8 +59,8 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
     NN1: number[]
     NN2: number[]
     NN3: number[]
-    Co: number[]
-    Fi: number[]
+    CO: number[]
+    FI: number[]
   } = {
     NQ1: [],
     NQ2: [],
@@ -69,8 +69,8 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
     NN1: [],
     NN2: [],
     NN3: [],
-    Co: [],
-    Fi: []
+    CO: [],
+    FI: []
   }
 
   // Map quarries to their nodes
@@ -125,8 +125,8 @@ export function createSettlementFromOptions(
     ...(monsterSelections.NN1 || monsterSelections[MonsterNode.NN1] || []),
     ...(monsterSelections.NN2 || monsterSelections[MonsterNode.NN2] || []),
     ...(monsterSelections.NN3 || monsterSelections[MonsterNode.NN3] || []),
-    ...(monsterSelections.Co || monsterSelections[MonsterNode.CO] || []),
-    ...(monsterSelections.Fi || monsterSelections[MonsterNode.FI] || [])
+    ...(monsterSelections.CO || monsterSelections[MonsterNode.CO] || []),
+    ...(monsterSelections.FI || monsterSelections[MonsterNode.FI] || [])
   ]
 
   // Insantiate the base settlement object.

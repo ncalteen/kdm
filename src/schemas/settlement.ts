@@ -385,9 +385,9 @@ export const NewSettlementInputSchema = z.object({
       /** Node Nemesis 3 Monster Selection */
       NN3: z.array(z.number().min(1)).default([]),
       /** Core Monster Selection */
-      Co: z.array(z.number().min(1)).default([]),
+      CO: z.array(z.number().min(1)).default([]),
       /** Finale Monster Selection */
-      Fi: z.array(z.number().min(1)).default([])
+      FI: z.array(z.number().min(1)).default([])
     })
     .optional()
 })
