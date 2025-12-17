@@ -1,10 +1,13 @@
 import { TabType } from '@/lib/enums'
 import { HuntSchema } from '@/schemas/hunt'
+import {
+  NemesisMonsterDataSchema,
+  QuarryMonsterDataSchema
+} from '@/schemas/monster'
 import { SettlementSchema } from '@/schemas/settlement'
 import { ShowdownSchema } from '@/schemas/showdown'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { z } from 'zod'
-import { NemesisMonsterDataSchema, QuarryMonsterDataSchema } from './monster'
 
 /**
  * Global Settings Schema
