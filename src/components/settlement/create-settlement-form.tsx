@@ -243,6 +243,203 @@ export function CreateSettlementForm({
             />
           </CardContent>
         </Card>
+
+        {/* Monster Node Selection */}
+        <Card className="max-w-[500px] mx-auto pt-0">
+          <CardContent className="flex flex-col gap-6 w-full pt-6">
+            {/* Quarry Nodes Row */}
+            <div className="grid grid-cols-4 gap-2">
+              <FormField
+                control={form.control}
+                name="monsters.NQ1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>1</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.NQ1}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NQ2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>2</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.NQ2}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NQ3"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>3</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.NQ3}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NQ4"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>4</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.NQ4}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Nemesis Nodes Row */}
+            <div className="grid grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="monsters.NN1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>N</sub>
+                      <sup>1</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.NN1}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NN2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>N</sub>
+                      <sup>2</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.NN2}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NN3"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>N</sub>
+                      <sup>3</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.NN3}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Core and Finale Nodes Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="monsters.CO"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">Co</FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.CO}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.FI"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">Fi</FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        nodeType={MonsterNode.FI}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </Form>
 
       <Button type="submit" className="mx-auto block">
