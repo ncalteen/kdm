@@ -219,14 +219,14 @@ export function CreateHuntCard({
         accuracy: 0,
         accuracyTokens: selectedMonsterAccuracyTokens,
         aiDeck: {
-          a: selectedMonsterAIDeckACards,
-          b: selectedMonsterAIDeckBCards,
-          l: selectedMonsterAIDeckLCards,
-          o: selectedMonsterAIDeckOCards
+          basic: selectedMonsterAIDeckBCards,
+          advanced: selectedMonsterAIDeckACards,
+          legendary: selectedMonsterAIDeckLCards,
+          overtone: selectedMonsterAIDeckOCards
         },
         aiDeckRemaining:
-          selectedMonsterAIDeckACards +
           selectedMonsterAIDeckBCards +
+          selectedMonsterAIDeckACards +
           selectedMonsterAIDeckLCards +
           selectedMonsterAIDeckOCards,
         damage: selectedMonsterDamage,
