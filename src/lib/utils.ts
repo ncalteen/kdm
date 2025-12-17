@@ -34,6 +34,7 @@ export function getCampaign(): Campaign {
   const storedCampaign = JSON.parse(
     localStorage.getItem('campaign') ||
       JSON.stringify({
+        customMonsters: {},
         hunts: [],
         selectedHuntId: undefined,
         selectedShowdownId: undefined,
@@ -41,11 +42,17 @@ export function getCampaign(): Campaign {
         selectedSurvivorId: undefined,
         selectedTab: undefined,
         settings: {
-          disableToasts: false
+          disableToasts: false,
+          unlockedMonsters: {
+            killeniumButcher: false,
+            screamingNukalope: false,
+            whiteGigalion: false
+          }
         },
         settlements: [],
         showdowns: [],
-        survivors: []
+        survivors: [],
+        version: packageInfo.version
       })
   )
 
