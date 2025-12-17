@@ -34,6 +34,7 @@ import {
 import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
+import { migrateCampaign } from '@/schemas/migrate'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -299,7 +300,7 @@ export function AppSidebar({
     reader.onload = (e) => {
       try {
         const jsonData = JSON.parse(e.target?.result as string)
-        const result = CampaignSchema.safeParse(jsonData)
+        const result = CampaignSchema.safeParse(migrateCampaign(jsonData))
 
         if (result.success) {
           // Data is valid
