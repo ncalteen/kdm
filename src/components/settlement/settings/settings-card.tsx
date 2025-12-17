@@ -35,12 +35,13 @@ import {
   SETTLEMENT_USES_SCOUTS_SETTING_UPDATED_MESSAGE,
   SHOWDOWN_DELETED_MESSAGE
 } from '@/lib/messages'
+import { generateSeedData } from '@/lib/seed'
 import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
-import { Trash2Icon, XIcon } from 'lucide-react'
+import { DatabaseIcon, Trash2Icon, XIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
 /**
@@ -361,8 +362,76 @@ export function SettingsCard({
     }
   }
 
+  /**
+   * Generates seed data for testing
+   *
+   * Only available in development mode
+   */
+  const handleGenerateSeedData = () => {
+    try {
+      generateSeedData()
+
+      // Refresh the page to load the new data
+      window.location.reload()
+    } catch (error) {
+      console.error('Seed Data Generation Error:', error)
+      toast.error(ERROR_MESSAGE())
+    }
+  }
+
+  const isDevelopment = process.env.NODE_ENV === 'development'
+
   return (
     <div className="flex flex-col gap-4">
+      {/* Development Tools */}
+      {isDevelopment && (
+        <Card className="p-0 border-blue-500">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg text-blue-600">
+              Development Tools
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Generate Seed Data</div>
+                <div className="text-sm text-muted-foreground">
+                  Creates multiple test campaigns with settlements, survivors,
+                  hunts, and showdowns. This will replace all existing data.
+                </div>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <DatabaseIcon className="h-4 w-4 mr-2" />
+                    Seed Data
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Generate Seed Data</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will replace all existing campaigns, settlements,
+                      survivors, hunts, and showdowns with comprehensive test
+                      data. This action cannot be undone. Are you sure you want
+                      to proceed?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleGenerateSeedData}
+                      className="bg-blue-600 text-white hover:bg-blue-700">
+                      Generate Test Data
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Global Settings */}
       <Card className="p-0">
         <CardHeader className="px-4 pt-3 pb-0">
