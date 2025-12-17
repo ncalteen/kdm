@@ -39,7 +39,7 @@ export const PeopleOfTheStars: CampaignTemplate = {
       event: 'Principle: New Life'
     }
   ],
-  nemeses: [3, 9, 8, 18],
+  nemeses: [3, 9, 8, 18, 4],
   principles: [...CorePrinciples],
   quarries: [14, 10, 9],
   timeline: [
