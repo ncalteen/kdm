@@ -1,3 +1,4 @@
+import '@/app/globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { SelectedHuntProvider } from '@/contexts/selected-hunt-context'
@@ -10,7 +11,6 @@ import { TabType } from '@/lib/enums'
 import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { ReactElement, ReactNode } from 'react'
-import './globals.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
