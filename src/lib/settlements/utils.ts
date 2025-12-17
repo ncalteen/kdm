@@ -129,7 +129,8 @@ export function createSettlementFromOptions(
     ...(monsterSelections.FI || monsterSelections[MonsterNode.FI] || [])
   ]
 
-  // Insantiate the base settlement object.
+  // Insantiate the base settlement object. Deep copies are made of arrays and
+  // objects to prevent reference issues.
   const settlement: Settlement = {
     arrivalBonuses: [],
     campaignType: options.campaignType,
@@ -137,29 +138,32 @@ export function createSettlementFromOptions(
     departingBonuses: [],
     gear: [],
     id: getNextSettlementId(),
-    innovations: template.innovations,
+    innovations: [...template.innovations],
     lanternResearchLevel: 0,
-    locations: template.locations,
+    locations: template.locations.map((loc) => ({ ...loc })),
     lostSettlements: 0,
-    milestones: template.milestones.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    ),
+    milestones: template.milestones
+      .map((m) => ({ ...m }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
     monsterVolumes: [],
     name: options.name,
     nemeses: [],
     notes: '',
     patterns: [],
     population: 0,
-    principles: template.principles.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    ),
+    principles: template.principles
+      .map((p) => ({ ...p }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
     quarries: [],
     resources: [],
     seedPatterns: [],
     survivalLimit: 1,
     survivorType: options.survivorType,
     usesScouts: options.usesScouts,
-    timeline: template.timeline
+    timeline: template.timeline.map((year) => ({
+      ...year,
+      entries: [...year.entries]
+    }))
   }
 
   // Arc survivor data.

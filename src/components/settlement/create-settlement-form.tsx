@@ -117,8 +117,21 @@ export function CreateSettlementForm({
       // Update the selected settlement in the context
       setSelectedSettlement(settlement)
 
-      // Reset the form
-      form.reset()
+      // Reset the form to initial default values
+      form.reset({
+        ...BaseSettlementSchema.parse({}),
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
+      })
 
       // Show success message
       toast.success(SETTLEMENT_CREATED_MESSAGE())
