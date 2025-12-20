@@ -237,6 +237,15 @@ cutting-edge frontend architecture.
 - ShadCN reusable components can be found in the `src/components/ui` directory.
 - Where applicable, components should include `name` and `id` attributes for
   accessibility and testing purposes.
+- Follow React's naming conventions (PascalCase for components, camelCase for
+  functions)
+- Use meaningful commit messages and maintain clean git history
+- Implement proper code splitting and lazy loading strategies
+- Document complex components and custom hooks with JSDoc
+- Use ESLint and Prettier for consistent code formatting
+- Keep dependencies up to date and audit for security vulnerabilities
+- Implement proper environment configuration for different deployment stages
+- Use React Developer Tools for debugging and performance analysis
 
 ## Performance Guidelines
 
@@ -341,18 +350,6 @@ cutting-edge frontend architecture.
 1. Optimize performance and bundle size
 1. Ensure accessibility compliance
 1. Add documentation and code comments
-
-## Additional Guidelines
-
-- Follow React's naming conventions (PascalCase for components, camelCase for
-  functions)
-- Use meaningful commit messages and maintain clean git history
-- Implement proper code splitting and lazy loading strategies
-- Document complex components and custom hooks with JSDoc
-- Use ESLint and Prettier for consistent code formatting
-- Keep dependencies up to date and audit for security vulnerabilities
-- Implement proper environment configuration for different deployment stages
-- Use React Developer Tools for debugging and performance analysis
 
 ## Common Patterns
 
@@ -574,7 +571,7 @@ export function ChatRoom({ roomId, theme }: ChatProps) {
 }
 ```
 
-### Using <Activity> Component (React 19.2)
+### Using `<Activity>` Component (React 19.2)
 
 ```typescript
 import { Activity, useState } from 'react'
