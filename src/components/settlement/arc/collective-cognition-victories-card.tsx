@@ -13,6 +13,7 @@ import {
 import { MonsterType } from '@/lib/enums'
 import { COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE } from '@/lib/messages'
 import { getMonsterData } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Nemesis, Quarry, Settlement } from '@/schemas/settlement'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
@@ -21,6 +22,8 @@ import { ReactElement } from 'react'
  * Collective Cognition Victories Card Properties
  */
 interface CollectiveCognitionVictoriesCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -40,6 +43,7 @@ interface CollectiveCognitionVictoriesCardProps {
  * @returns Collective Cognition Victories Card Component
  */
 export function CollectiveCognitionVictoriesCard({
+  campaign,
   saveSelectedSettlement,
   selectedSettlement
 }: CollectiveCognitionVictoriesCardProps): ReactElement {
@@ -95,6 +99,7 @@ export function CollectiveCognitionVictoriesCard({
               <TableBody>
                 {(selectedSettlement?.quarries || []).map((quarry, index) => {
                   const monsterData = getMonsterData(
+                    campaign,
                     quarry.id,
                     MonsterType.QUARRY
                   )
@@ -287,6 +292,7 @@ export function CollectiveCognitionVictoriesCard({
                     <TableCell className="text-sm text-left pl-5">
                       {(() => {
                         const monsterData = getMonsterData(
+                          campaign,
                           nemesis.id,
                           MonsterType.NEMESIS
                         )
