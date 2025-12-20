@@ -11,10 +11,12 @@ import {
   CampaignType,
   MonsterNode,
   MonsterNodeNumeric,
+  MonsterType,
   SurvivorType
 } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { getNextSettlementId } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import {
   Nemesis,
   NewSettlementInput,
@@ -75,16 +77,14 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
 
   // Map quarries to their nodes
   for (const quarryId of template.quarries) {
-    const data = QUARRIES[quarryId as keyof typeof QUARRIES]
-    const node = data.main.node
+    const node = QUARRIES[quarryId as keyof typeof QUARRIES].main.node
 
     mapping[node].push(quarryId)
   }
 
   // Map nemeses to their nodes
   for (const nemesisId of template.nemeses) {
-    const data = NEMESES[nemesisId as keyof typeof NEMESES]
-    const node = data.main.node
+    const node = NEMESES[nemesisId as keyof typeof NEMESES].main.node
 
     mapping[node].push(nemesisId)
   }
@@ -99,8 +99,13 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
  * data and uses it to create a new settlement. Preselected campaigns are
  * defined in src/lib/campaigns. Custom campaigns require a user provide the
  * specific monster(s) they wish to include.
+ *
+ * @param campaign Campaign Data
+ * @param options New Settlement Input Options
+ * @returns Newly Created Settlement
  */
 export function createSettlementFromOptions(
+  campaign: Campaign,
   options: NewSettlementInput
 ): Settlement {
   const template = {
@@ -137,7 +142,7 @@ export function createSettlementFromOptions(
     deathCount: 0,
     departingBonuses: [],
     gear: [],
-    id: getNextSettlementId(),
+    id: getNextSettlementId(campaign),
     innovations: [...template.innovations],
     lanternResearchLevel: 0,
     locations: template.locations.map((loc) => ({ ...loc })),
@@ -182,6 +187,9 @@ export function createSettlementFromOptions(
 
   // Nemeses
   for (const nemesisId of nemesisIds) {
+    // Skip string IDs (custom monsters) - they'll be handled separately
+    if (typeof nemesisId === 'string') continue
+
     const data = NEMESES[nemesisId as keyof typeof NEMESES]
 
     const nemesis: Nemesis = {
@@ -214,13 +222,51 @@ export function createSettlementFromOptions(
     }
   }
 
+  // Custom nemeses
+  for (const nemesisId of nemesisIds) {
+    // Only process string IDs (custom monsters)
+    if (typeof nemesisId !== 'string') continue
+
+    const customMonster = campaign.customMonsters?.[nemesisId]
+    if (!customMonster || customMonster.main.type !== MonsterType.NEMESIS)
+      continue
+
+    const nemesis: Nemesis = {
+      id: nemesisId,
+      level1: false,
+      level2: false,
+      level3: false,
+      unlocked: false
+    }
+
+    if (options.survivorType === SurvivorType.ARC) {
+      nemesis.ccLevel1 = false
+      nemesis.ccLevel2 = false
+      nemesis.ccLevel3 = false
+    }
+
+    settlement.nemeses.push(nemesis)
+
+    // Add timeline events for custom nemeses if they exist
+    for (let year = 0; year < settlement.timeline.length; year++) {
+      const timelineYear = settlement.timeline[year]
+
+      for (const entry of customMonster.main.timeline[year] || [])
+        if (typeof entry === 'string') timelineYear.entries.push(entry)
+        else if (entry.campaigns.includes(options.campaignType))
+          timelineYear.entries.push(entry.title)
+    }
+  }
+
   // Quarries
   for (const quarryId of quarryIds) {
+    // Skip string IDs (custom monsters) - they'll be handled separately
+    if (typeof quarryId === 'string') continue
+
     const data = QUARRIES[quarryId as keyof typeof QUARRIES]
 
     const quarry: Quarry = {
       id: quarryId,
-      node: data.main.node,
       unlocked: false
     }
 
@@ -256,6 +302,47 @@ export function createSettlementFromOptions(
       settlement.ccRewards!.push(...data.main.ccRewards)
   }
 
+  // Custom quarries
+  for (const quarryId of quarryIds) {
+    // Only process string IDs (custom monsters)
+    if (typeof quarryId !== 'string') continue
+
+    const customMonster = campaign.customMonsters?.[quarryId]
+    if (!customMonster || customMonster.main.type !== MonsterType.QUARRY)
+      continue
+
+    const quarry: Quarry = {
+      id: quarryId,
+      unlocked: false
+    }
+
+    if (options.survivorType === SurvivorType.ARC) {
+      quarry.ccLevel1 = false
+      quarry.ccLevel2 = [false, false]
+      quarry.ccLevel3 = [false, false, false]
+      quarry.ccPrologue = false
+    }
+
+    settlement.quarries.push(quarry)
+
+    // Add timeline events for custom quarries if they exist
+    for (let year = 0; year < settlement.timeline.length; year++) {
+      const timelineYear = settlement.timeline[year]
+
+      for (const entry of customMonster.main.timeline[year] || [])
+        if (typeof entry === 'string') timelineYear.entries.push(entry)
+        else if (entry.campaigns.includes(options.campaignType))
+          timelineYear.entries.push(entry.title)
+    }
+
+    // Add settlement locations for custom quarries
+    settlement.locations.push(...customMonster.main.locations)
+
+    // Add CC rewards for custom quarries
+    if (options.survivorType === SurvivorType.ARC)
+      settlement.ccRewards!.push(...customMonster.main.ccRewards)
+  }
+
   // Sort various settlement arrays for consistency.
   if (settlement.ccRewards)
     settlement.ccRewards = settlement.ccRewards.sort((a, b) =>
@@ -265,8 +352,16 @@ export function createSettlementFromOptions(
     a.name.localeCompare(b.name)
   )
   settlement.nemeses = settlement.nemeses.sort((a, b) => {
-    const nemesisA = NEMESES[a.id as keyof typeof NEMESES].main
-    const nemesisB = NEMESES[b.id as keyof typeof NEMESES].main
+    const nemesisA =
+      typeof a.id === 'number'
+        ? NEMESES[a.id as keyof typeof NEMESES].main
+        : campaign.customMonsters?.[a.id]?.main
+    const nemesisB =
+      typeof b.id === 'number'
+        ? NEMESES[b.id as keyof typeof NEMESES].main
+        : campaign.customMonsters?.[b.id]?.main
+
+    if (!nemesisA || !nemesisB) return 0
 
     return (
       MonsterNodeNumeric[nemesisA.node as keyof typeof MonsterNodeNumeric] -
@@ -274,8 +369,16 @@ export function createSettlementFromOptions(
     )
   })
   settlement.quarries = settlement.quarries.sort((a, b) => {
-    const quarryA = QUARRIES[a.id as keyof typeof QUARRIES].main
-    const quarryB = QUARRIES[b.id as keyof typeof QUARRIES].main
+    const quarryA =
+      typeof a.id === 'number'
+        ? QUARRIES[a.id as keyof typeof QUARRIES].main
+        : campaign.customMonsters?.[a.id]?.main
+    const quarryB =
+      typeof b.id === 'number'
+        ? QUARRIES[b.id as keyof typeof QUARRIES].main
+        : campaign.customMonsters?.[b.id]?.main
+
+    if (!quarryA || !quarryB) return 0
 
     return (
       MonsterNodeNumeric[quarryA.node as keyof typeof MonsterNodeNumeric] -
