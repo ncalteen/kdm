@@ -2,9 +2,8 @@
 
 import { useToast } from '@/hooks/use-toast'
 import { ERROR_MESSAGE } from '@/lib/messages'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Showdown, ShowdownSchema } from '@/schemas/showdown'
-import { useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { ZodError } from 'zod'
 
@@ -14,12 +13,19 @@ import { ZodError } from 'zod'
  * This hook provides a save function that automatically updates the selected
  * showdown context after saving data to localStorage, ensuring that the UI is
  * refreshed when active showdown data changes.
+ *
+ * @param campaign Campaign
+ * @param form React Hook Form Instance for Showdown
+ * @param updateSelectedShowdown Function to Update Selected Showdown Context
+ * @param updateCampaign Function to Update Campaign in Context
  */
 export function useSelectedShowdownSave(
+  campaign: Campaign,
   form: UseFormReturn<Showdown>,
-  updateSelectedShowdown: () => void
+  updateSelectedShowdown: () => void,
+  updateCampaign: (campaign: Campaign) => void
 ) {
-  const { toast } = useToast()
+  const { toast } = useToast(campaign)
 
   /**
    * Save Selected Showdown Data
@@ -27,49 +33,46 @@ export function useSelectedShowdownSave(
    * @param updateData Partial Selected Showdown Data
    * @param successMsg Optional Success Message
    */
-  const saveSelectedShowdown = useCallback(
-    (updateData: Partial<Showdown>, successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const existingShowdown = campaign.showdowns?.find(
-          (h) => h.id === campaign.selectedShowdownId
+  const saveSelectedShowdown = (
+    updateData: Partial<Showdown>,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const existingShowdown = campaign.showdowns?.find(
+        (h) => h.id === campaign.selectedShowdownId
+      )
+
+      const updatedShowdown = existingShowdown
+        ? {
+            ...existingShowdown,
+            ...updateData
+          }
+        : { ...formValues, ...updateData }
+
+      // Validate the updated showdown data
+      ShowdownSchema.parse(updatedShowdown)
+
+      // If this is a new showdown, add them to the campaign
+      if (!existingShowdown) campaign.showdowns?.push(updatedShowdown)
+
+      updateCampaign({
+        ...campaign,
+        showdowns: campaign.showdowns?.map((h) =>
+          h.id === formValues.id ? updatedShowdown : h
         )
+      })
+      updateSelectedShowdown()
 
-        const updatedShowdown = existingShowdown
-          ? {
-              ...existingShowdown,
-              ...updateData
-            }
-          : { ...formValues, ...updateData }
+      if (successMsg) toast.success(successMsg)
+    } catch (error) {
+      console.error('Showdown Save Error:', error)
 
-        // Validate the updated showdown data
-        ShowdownSchema.parse(updatedShowdown)
-
-        // If this is a new showdown, add them to the campaign
-        if (!existingShowdown) campaign.showdowns?.push(updatedShowdown)
-
-        saveCampaignToLocalStorage({
-          ...campaign,
-          showdowns: campaign.showdowns?.map((h) =>
-            h.id === formValues.id ? updatedShowdown : h
-          )
-        })
-
-        // Update the context to refresh the settlements list
-        updateSelectedShowdown()
-
-        if (successMsg) toast.success(successMsg)
-      } catch (error) {
-        console.error('Showdown Save Error:', error)
-
-        if (error instanceof ZodError && error.issues[0]?.message)
-          toast.error(error.issues[0].message)
-        else toast.error(ERROR_MESSAGE())
-      }
-    },
-    [form, toast, updateSelectedShowdown]
-  )
+      if (error instanceof ZodError && error.issues[0]?.message)
+        toast.error(error.issues[0].message)
+      else toast.error(ERROR_MESSAGE())
+    }
+  }
 
   return { saveSelectedShowdown }
 }

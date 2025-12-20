@@ -1,6 +1,6 @@
 'use client'
 
-import { getCampaign } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { useCallback, useMemo } from 'react'
 import { ExternalToast, toast as sonnerToast } from 'sonner'
 
@@ -11,22 +11,19 @@ import { ExternalToast, toast as sonnerToast } from 'sonner'
  * from the campaign configuration. Success/info/warning messages are suppressed
  * when toasts are disabled, but error messages are always shown.
  *
+ * @param campaign Campaign
  * @returns Wrapped Toast Functions
  */
-export function useToast() {
+export function useToast(campaign: Campaign) {
   /**
    * Check if Toasts are Disabled
    *
    * @returns Toasts Disabled Status
    */
-  const areToastsDisabled = useCallback(() => {
-    // Safety check in case campaign settings data is unavailable
-    try {
-      return getCampaign().settings.disableToasts === true
-    } catch {
-      return false
-    }
-  }, [])
+  const areToastsDisabled = useCallback(
+    () => campaign.settings.disableToasts === true,
+    [campaign.settings.disableToasts]
+  )
 
   /**
    * Success Toast
