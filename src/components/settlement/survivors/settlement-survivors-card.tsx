@@ -4,16 +4,13 @@ import { createColumns } from '@/components/settlement/survivors/columns'
 import { SurvivorDataTable } from '@/components/settlement/survivors/data-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { useSelectedTab } from '@/contexts/selected-tab-context'
-import { useCampaignSave } from '@/hooks/use-campaign-save'
-import { SurvivorType } from '@/lib/enums'
+import { SurvivorType, TabType } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
   SURVIVOR_ON_HUNT_ERROR_MESSAGE,
-  SURVIVOR_ON_SHOWDOWN_ERROR_MESSAGE,
-  SURVIVOR_REMOVED_MESSAGE
+  SURVIVOR_ON_SHOWDOWN_ERROR_MESSAGE
 } from '@/lib/messages'
-import { getCampaign, getSurvivors } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -26,6 +23,8 @@ import { toast } from 'sonner'
  * Settlement Survivors Card Properties
  */
 interface SettlementSurvivorsCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Selected Hunt */
   selectedHunt: Hunt | null
   /** Selected Settlement */
@@ -38,18 +37,10 @@ interface SettlementSurvivorsCardProps {
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
-  /** Update Selected Hunt */
-  updateSelectedHunt: (hunt: Hunt | null) => void
-  /** Update Selected Settlement */
-  updateSelectedSettlement: () => void
-  /** Update Selected Showdown */
-  updateSelectedShowdown: () => void
-  /** Update Selected Survivor */
-  updateSelectedSurvivor: () => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -64,32 +55,16 @@ interface SettlementSurvivorsCardProps {
  * @returns Settlement Survivors Card Component
  */
 export function SettlementSurvivorsCard({
+  campaign,
   selectedHunt,
   selectedSettlement,
   selectedShowdown,
   selectedSurvivor,
   setIsCreatingNewSurvivor,
   setSelectedSurvivor,
-  setSurvivors,
-  survivors,
-  updateSelectedHunt,
-  updateSelectedSettlement,
-  updateSelectedShowdown,
-  updateSelectedSurvivor
+  setSelectedTab,
+  updateCampaign
 }: SettlementSurvivorsCardProps): ReactElement {
-  // This component uses the campaign and tab contexts directly. They are not
-  // passed down as props to avoid unnecessary re-renders and to keep the
-  // component focused on survivor management.
-  const { saveCampaign } = useCampaignSave(
-    setSurvivors,
-    survivors,
-    updateSelectedHunt,
-    updateSelectedSettlement,
-    updateSelectedShowdown,
-    updateSelectedSurvivor
-  )
-  const { setSelectedTab } = useSelectedTab()
-
   const [deleteId, setDeleteId] = useState<number | undefined>(undefined)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
 
@@ -111,8 +86,6 @@ export function SettlementSurvivorsCard({
    */
   const handleDeleteSurvivor = useCallback(
     (survivorId: number) => {
-      if (!selectedSettlement) return
-
       try {
         // Check if survivor is currently on an active hunt or showdown
         if (selectedShowdown?.survivors?.includes(survivorId))
@@ -120,25 +93,19 @@ export function SettlementSurvivorsCard({
         if (selectedHunt?.survivors?.includes(survivorId))
           return toast.error(SURVIVOR_ON_HUNT_ERROR_MESSAGE())
 
-        const campaign = getCampaign()
         const survivorIndex = campaign.survivors.findIndex(
           (s) => s.id === survivorId
         )
 
         if (survivorIndex === -1) return toast.error(ERROR_MESSAGE())
 
-        const survivorName = campaign.survivors[survivorIndex].name
         const updatedSurvivors = [...campaign.survivors]
         updatedSurvivors.splice(survivorIndex, 1)
 
         // Clear selected survivor if the deleted survivor is currently selected
         if (selectedSurvivor?.id === survivorId) setSelectedSurvivor(null)
 
-        saveCampaign(
-          { survivors: updatedSurvivors },
-          SURVIVOR_REMOVED_MESSAGE(survivorName)
-        )
-        setSurvivors(getSurvivors(selectedSettlement.id))
+        updateCampaign({ ...campaign, survivors: updatedSurvivors })
 
         setDeleteId(undefined)
         setIsDeleteDialogOpen(false)
@@ -148,13 +115,12 @@ export function SettlementSurvivorsCard({
       }
     },
     [
-      saveCampaign,
-      selectedSettlement,
+      campaign,
+      updateCampaign,
       selectedHunt,
       selectedSurvivor,
       selectedShowdown,
-      setSelectedSurvivor,
-      setSurvivors
+      setSelectedSurvivor
     ]
   )
 
@@ -195,7 +161,7 @@ export function SettlementSurvivorsCard({
   return (
     <Card className="p-0 pb-2 mt-2 border-0">
       <CardContent className="p-0">
-        {survivors?.length === 0 ? (
+        {campaign.survivors.length === 0 ? (
           <div className="flex flex-col gap-2 justify-center items-center p-4">
             <div className="text-center text-muted-foreground py-4">
               Silence echoes through the darkness. No survivors present.
@@ -214,8 +180,8 @@ export function SettlementSurvivorsCard({
           <SurvivorDataTable
             columns={columns}
             data={
-              survivors?.filter(
-                (s) => s.settlementId === selectedSettlement?.id
+              campaign.survivors.filter(
+                (survivor) => survivor.settlementId === selectedSettlement?.id
               ) || []
             }
             initialColumnVisibility={columnVisibility}

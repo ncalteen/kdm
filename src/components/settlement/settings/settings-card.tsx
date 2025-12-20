@@ -36,7 +36,7 @@ import {
   SHOWDOWN_DELETED_MESSAGE
 } from '@/lib/messages'
 import { generateSeedData } from '@/lib/seed'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -48,6 +48,8 @@ import { ReactElement, useState } from 'react'
  * Settings Card Properties
  */
 interface SettingsCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -67,6 +69,8 @@ interface SettingsCardProps {
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -78,6 +82,7 @@ interface SettingsCardProps {
  * @returns Settings Card Component
  */
 export function SettingsCard({
+  campaign,
   saveSelectedSettlement,
   selectedHunt,
   selectedSettlement,
@@ -85,15 +90,16 @@ export function SettingsCard({
   setSelectedHunt,
   setSelectedSettlement,
   setSelectedShowdown,
-  setSelectedSurvivor
+  setSelectedSurvivor,
+  updateCampaign
 }: SettingsCardProps): ReactElement {
-  const { toast } = useToast()
+  const { toast } = useToast(campaign)
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
   const [monstersRefreshKey, setMonstersRefreshKey] = useState<number>(0)
   const [disableToasts, setDisableToasts] = useState<boolean>(() => {
     try {
-      return getCampaign().settings.disableToasts ?? false
+      return campaign.settings.disableToasts ?? false
     } catch {
       return false
     }
@@ -101,7 +107,7 @@ export function SettingsCard({
   const [killeniumButcherUnlocked, setKilleniumButcherUnlocked] =
     useState<boolean>(() => {
       try {
-        return getCampaign().settings.unlockedMonsters.killeniumButcher ?? false
+        return campaign.settings.unlockedMonsters.killeniumButcher ?? false
       } catch {
         return false
       }
@@ -109,9 +115,7 @@ export function SettingsCard({
   const [screamingNukalopeUnlocked, setScreamingNukalopeUnlocked] =
     useState<boolean>(() => {
       try {
-        return (
-          getCampaign().settings.unlockedMonsters.screamingNukalope ?? false
-        )
+        return campaign.settings.unlockedMonsters.screamingNukalope ?? false
       } catch {
         return false
       }
@@ -119,7 +123,7 @@ export function SettingsCard({
   const [whiteGigalionUnlocked, setWhiteGigalionUnlocked] = useState<boolean>(
     () => {
       try {
-        return getCampaign().settings.unlockedMonsters.whiteGigalion ?? false
+        return campaign.settings.unlockedMonsters.whiteGigalion ?? false
       } catch {
         return false
       }
@@ -133,10 +137,10 @@ export function SettingsCard({
     const newDisableToasts = value === 'true'
 
     try {
-      const campaign = getCampaign()
-      campaign.settings.disableToasts = newDisableToasts
-
-      saveCampaignToLocalStorage(campaign)
+      updateCampaign({
+        ...campaign,
+        settings: { ...campaign.settings, disableToasts: newDisableToasts }
+      })
       setDisableToasts(newDisableToasts)
 
       // Always show this toast so user knows the setting was changed
@@ -156,18 +160,16 @@ export function SettingsCard({
     const unlocked = value === 'true'
 
     try {
-      const campaign = getCampaign()
-
-      // Ensure unlockedMonsters is defined
-      if (campaign.settings.unlockedMonsters === undefined)
-        campaign.settings.unlockedMonsters = {
-          killeniumButcher: false,
-          screamingNukalope: false,
-          whiteGigalion: false
+      updateCampaign({
+        ...campaign,
+        settings: {
+          ...campaign.settings,
+          unlockedMonsters: {
+            ...campaign.settings.unlockedMonsters,
+            killeniumButcher: unlocked
+          }
         }
-      campaign.settings.unlockedMonsters.killeniumButcher = unlocked
-
-      saveCampaignToLocalStorage(campaign)
+      })
       setKilleniumButcherUnlocked(unlocked)
 
       toast.success(CAMPAIGN_UNLOCK_KILLENIUM_BUTCHER_UPDATED_MESSAGE(unlocked))
@@ -186,18 +188,16 @@ export function SettingsCard({
     const unlocked = value === 'true'
 
     try {
-      const campaign = getCampaign()
-
-      // Ensure unlockedMonsters is defined
-      if (campaign.settings.unlockedMonsters === undefined)
-        campaign.settings.unlockedMonsters = {
-          killeniumButcher: false,
-          screamingNukalope: false,
-          whiteGigalion: false
+      updateCampaign({
+        ...campaign,
+        settings: {
+          ...campaign.settings,
+          unlockedMonsters: {
+            ...campaign.settings.unlockedMonsters,
+            screamingNukalope: unlocked
+          }
         }
-      campaign.settings.unlockedMonsters.screamingNukalope = unlocked
-
-      saveCampaignToLocalStorage(campaign)
+      })
       setScreamingNukalopeUnlocked(unlocked)
 
       toast.success(
@@ -218,18 +218,16 @@ export function SettingsCard({
     const unlocked = value === 'true'
 
     try {
-      const campaign = getCampaign()
-
-      // Ensure unlockedMonsters is defined
-      if (campaign.settings.unlockedMonsters === undefined)
-        campaign.settings.unlockedMonsters = {
-          killeniumButcher: false,
-          screamingNukalope: false,
-          whiteGigalion: false
+      updateCampaign({
+        ...campaign,
+        settings: {
+          ...campaign.settings,
+          unlockedMonsters: {
+            ...campaign.settings.unlockedMonsters,
+            whiteGigalion: unlocked
+          }
         }
-      campaign.settings.unlockedMonsters.whiteGigalion = unlocked
-
-      saveCampaignToLocalStorage(campaign)
+      })
       setWhiteGigalionUnlocked(unlocked)
 
       toast.success(CAMPAIGN_UNLOCK_WHITE_GIGALION_UPDATED_MESSAGE(unlocked))
@@ -262,17 +260,14 @@ export function SettingsCard({
     if (!selectedSettlement?.id) return
 
     try {
-      const campaign = getCampaign()
-
       const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.id !== selectedHunt?.id
       )
 
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
         hunts: updatedHunts
       })
-
       setSelectedHunt(null)
 
       toast.success(HUNT_DELETED_MESSAGE())
@@ -289,17 +284,14 @@ export function SettingsCard({
     if (!selectedSettlement?.id) return
 
     try {
-      const campaign = getCampaign()
-
       const updatedShowdowns = campaign.showdowns?.filter(
         (hunt) => hunt.id !== selectedHunt?.id
       )
 
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
         showdowns: updatedShowdowns
       })
-
       setSelectedShowdown(null)
 
       toast.success(SHOWDOWN_DELETED_MESSAGE())
@@ -316,7 +308,6 @@ export function SettingsCard({
     if (!selectedSettlement?.id) return
 
     try {
-      const campaign = getCampaign()
       const settlementName = selectedSettlement?.name || 'this settlement'
 
       const updatedSettlements = campaign.settlements.filter(
@@ -335,16 +326,16 @@ export function SettingsCard({
         (showdown) => showdown.settlementId !== selectedSettlement?.id
       )
 
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
         hunts: updatedHunts,
         settlements: updatedSettlements,
         showdowns: updatedShowdowns,
         survivors: updatedSurvivors,
-        selectedHuntId: undefined,
-        selectedSettlementId: undefined,
-        selectedShowdownId: undefined,
-        selectedSurvivorId: undefined
+        selectedHuntId: null,
+        selectedSettlementId: null,
+        selectedShowdownId: null,
+        selectedSurvivorId: null
       })
 
       // Clear the selected settlement and survivor
@@ -427,6 +418,42 @@ export function SettingsCard({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Settlement Settings */}
+      {selectedSettlement && (
+        <Card className="p-0">
+          <CardHeader className="px-4 pt-3 pb-0">
+            <CardTitle className="text-lg">Settlement Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">Uses Scouts</div>
+                <div className="text-sm text-muted-foreground">
+                  Determines if scouts are required for hunts and showdowns.
+                </div>
+              </div>
+              <Select
+                value={
+                  selectedSettlement?.usesScouts !== undefined
+                    ? selectedSettlement.usesScouts.toString()
+                    : 'false'
+                }
+                onValueChange={handleUsesScoutsChange}
+                name="uses-scouts"
+                aria-label="Uses Scouts">
+                <SelectTrigger className="w-24" id="uses-scouts">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="false">No</SelectItem>
+                  <SelectItem value="true">Yes</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -538,42 +565,6 @@ export function SettingsCard({
         </CardContent>
       </Card>
 
-      {/* Settlement Settings */}
-      {selectedSettlement && (
-        <Card className="p-0">
-          <CardHeader className="px-4 pt-3 pb-0">
-            <CardTitle className="text-lg">Settlement Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-sm">Uses Scouts</div>
-                <div className="text-sm text-muted-foreground">
-                  Determines if scouts are required for hunts and showdowns.
-                </div>
-              </div>
-              <Select
-                value={
-                  selectedSettlement?.usesScouts !== undefined
-                    ? selectedSettlement.usesScouts.toString()
-                    : 'false'
-                }
-                onValueChange={handleUsesScoutsChange}
-                name="uses-scouts"
-                aria-label="Uses Scouts">
-                <SelectTrigger className="w-24" id="uses-scouts">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="false">No</SelectItem>
-                  <SelectItem value="true">Yes</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Custom Monster Settings */}
       <Card className="p-0">
         <CardHeader className="px-4 pt-3 pb-0">
@@ -589,14 +580,18 @@ export function SettingsCard({
                 </div>
               </div>
               <CreateMonsterDialog
+                campaign={campaign}
                 onMonsterCreated={() =>
                   setMonstersRefreshKey((prev) => prev + 1)
                 }
+                updateCampaign={updateCampaign}
               />
             </div>
             <CustomMonstersTable
+              campaign={campaign}
               key={monstersRefreshKey}
               onMonstersChange={() => setMonstersRefreshKey((prev) => prev + 1)}
+              updateCampaign={updateCampaign}
             />
           </div>
         </CardContent>
