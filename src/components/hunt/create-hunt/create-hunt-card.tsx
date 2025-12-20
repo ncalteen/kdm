@@ -91,6 +91,9 @@ export function CreateHuntCard({
   const [selectedMonsterMovementTokens, setSelectedMonsterMovementTokens] =
     useState<number>(0)
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('')
+  const [selectedMonsterQuarryId, setSelectedMonsterQuarryId] = useState<
+    number | null
+  >(null)
   const [selectedMonsterSpeed, setSelectedMonsterSpeed] = useState<number>(0)
   const [selectedMonsterSpeedTokens, setSelectedMonsterSpeedTokens] =
     useState<number>(0)
@@ -104,19 +107,12 @@ export function CreateHuntCard({
   const [selectedMonsterType, setSelectedMonsterType] = useState<MonsterType>()
   const [selectedMonsterWounds, setSelectedMonsterWounds] = useState<number>(0)
 
+  const [monsterHuntPosition, setMonsterHuntPosition] = useState<number>(12)
+  const [survivorHuntPosition, setSurvivorHuntPosition] = useState<number>(0)
+  const [availableLevels, setAvailableLevels] = useState<MonsterLevel[]>([])
+
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
-
-  // Handle monster selection and auto-set type
-  const handleMonsterSelection = (monsterName: string) => {
-    setSelectedMonsterName(monsterName)
-
-    // Determine if it's a quarry or nemesis
-    const isQuarry = availableQuarries.some(
-      (quarry) => quarry.monsterData.name === monsterName
-    )
-    setSelectedMonsterType(isQuarry ? MonsterType.QUARRY : MonsterType.NEMESIS)
-  }
 
   // Get available survivors for this settlement (exclude dead/retired)
   const availableSurvivors = useMemo(
@@ -144,17 +140,120 @@ export function CreateHuntCard({
   )
 
   // Get available quarries (unlocked ones) and map to monster data
-  const availableQuarries = selectedSettlement?.quarries
-    ? selectedSettlement.quarries
-        .filter((quarry) => quarry.unlocked)
-        .map((quarry) => ({
-          ...quarry,
-          monsterData: QUARRIES[quarry.id as keyof typeof QUARRIES]?.main
-        }))
-        .filter((quarry) => quarry.monsterData) // Filter out any missing monster data
-    : []
+  const availableQuarries = useMemo(
+    () =>
+      selectedSettlement?.quarries
+        ? selectedSettlement.quarries
+            .filter((quarry) => quarry.unlocked)
+            .map((quarry) => ({
+              ...quarry,
+              monsterData: QUARRIES[quarry.id as keyof typeof QUARRIES]?.main
+            }))
+            .filter((quarry) => quarry.monsterData) // Filter out any missing monster data
+        : [],
+    [selectedSettlement]
+  )
 
-  // Create Hunt
+  // Handle monster selection and auto-populate form
+  const handleMonsterSelection = (quarryIdStr: string) => {
+    const quarryId = parseInt(quarryIdStr)
+    setSelectedMonsterQuarryId(quarryId)
+
+    // Look up monster data from QUARRIES using the ID
+    const monsterData = QUARRIES[quarryId as keyof typeof QUARRIES]?.main
+
+    if (!monsterData) return
+
+    setSelectedMonsterName(monsterData.name)
+
+    // Determine which levels are available for this monster
+    const levels: MonsterLevel[] = []
+    if (monsterData.level1) levels.push(MonsterLevel.LEVEL_1)
+    if (monsterData.level2) levels.push(MonsterLevel.LEVEL_2)
+    if (monsterData.level3) levels.push(MonsterLevel.LEVEL_3)
+    if (monsterData.level4) levels.push(MonsterLevel.LEVEL_4)
+    setAvailableLevels(levels)
+
+    // Set to first available level or keep current if valid
+    const currentLevelValid = levels.includes(selectedMonsterLevel)
+    const levelToUse = currentLevelValid ? selectedMonsterLevel : levels[0]
+
+    if (!levelToUse) return
+
+    setSelectedMonsterLevel(levelToUse)
+    const levelData = monsterData[`level${levelToUse}`]
+
+    if (levelData) {
+      // Auto-populate all form fields with monster data
+      setSelectedMonsterAccuracyTokens(levelData.accuracyTokens ?? 0)
+      setSelectedMonsterAIDeckACards(levelData.aiDeck?.advanced ?? 0)
+      setSelectedMonsterAIDeckBCards(levelData.aiDeck?.basic ?? 0)
+      setSelectedMonsterAIDeckLCards(levelData.aiDeck?.legendary ?? 0)
+      setSelectedMonsterAIDeckOCards(levelData.aiDeck?.overtone ?? 0)
+      setSelectedMonsterDamage(levelData.damage ?? 0)
+      setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
+      setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
+      setSelectedMonsterMoods(levelData.moods ?? [])
+      setSelectedMonsterMovement(levelData.movement ?? 6)
+      setSelectedMonsterMovementTokens(levelData.movementTokens ?? 0)
+      setSelectedMonsterSpeed(levelData.speed ?? 0)
+      setSelectedMonsterSpeedTokens(levelData.speedTokens ?? 0)
+      setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
+      setSelectedMonsterToughness(levelData.toughness ?? 6)
+      setSelectedMonsterType(MonsterType.QUARRY)
+      setSelectedMonsterTraits(levelData.traits ?? [])
+      setSelectedMonsterWounds(0)
+
+      // Set hunt board positions
+      setMonsterHuntPosition(levelData.huntPos ?? 12)
+      setSurvivorHuntPosition(levelData.survivorHuntPos ?? 0)
+    }
+  }
+
+  // Handle level change and auto-populate form
+  const handleLevelChange = (level: MonsterLevel) => {
+    if (!selectedMonsterQuarryId) return
+
+    // Look up monster data from QUARRIES using the ID
+    const monsterData =
+      QUARRIES[selectedMonsterQuarryId as keyof typeof QUARRIES]?.main
+
+    if (!monsterData) return
+    if (!level) return
+
+    const levelData = monsterData[`level${level}`]
+
+    if (levelData) {
+      // Auto-populate all form fields with monster data
+      setSelectedMonsterAccuracyTokens(levelData.accuracyTokens ?? 0)
+      setSelectedMonsterAIDeckACards(levelData.aiDeck?.advanced ?? 0)
+      setSelectedMonsterAIDeckBCards(levelData.aiDeck?.basic ?? 0)
+      setSelectedMonsterAIDeckLCards(levelData.aiDeck?.legendary ?? 0)
+      setSelectedMonsterAIDeckOCards(levelData.aiDeck?.overtone ?? 0)
+      setSelectedMonsterDamage(levelData.damage ?? 0)
+      setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
+      setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterLevel(level)
+      setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
+      setSelectedMonsterMoods(levelData.moods ?? [])
+      setSelectedMonsterMovement(levelData.movement ?? 6)
+      setSelectedMonsterMovementTokens(levelData.movementTokens ?? 0)
+      setSelectedMonsterSpeed(levelData.speed ?? 0)
+      setSelectedMonsterSpeedTokens(levelData.speedTokens ?? 0)
+      setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
+      setSelectedMonsterToughness(levelData.toughness ?? 6)
+      setSelectedMonsterType(MonsterType.QUARRY)
+      setSelectedMonsterTraits(levelData.traits ?? [])
+      setSelectedMonsterWounds(0)
+
+      // Set hunt board positions
+      setMonsterHuntPosition(levelData.huntPos ?? 12)
+      setSurvivorHuntPosition(levelData.survivorHuntPos ?? 0)
+    }
+  }
+
+  // Handle monster selection and auto-populate form
   const handleCreateHunt = () => {
     if (
       selectedShowdown &&
@@ -252,11 +351,11 @@ export function CreateHuntCard({
         type: selectedMonsterType,
         wounds: selectedMonsterWounds
       },
-      monsterPosition: 12,
+      monsterPosition: monsterHuntPosition,
       scout: selectedScout || undefined,
       settlementId: selectedSettlement.id,
       survivorDetails,
-      survivorPosition: 0,
+      survivorPosition: survivorHuntPosition,
       survivors: selectedSurvivors
     }
 
@@ -277,6 +376,7 @@ export function CreateHuntCard({
     setSelectedMonsterMovement(6)
     setSelectedMonsterMovementTokens(0)
     setSelectedMonsterName('')
+    setSelectedMonsterQuarryId(null)
     setSelectedMonsterSpeed(0)
     setSelectedMonsterSpeedTokens(0)
     setSelectedMonsterStrengthTokens(0)
@@ -284,6 +384,9 @@ export function CreateHuntCard({
     setSelectedMonsterTraits([])
     setSelectedMonsterType(undefined)
     setSelectedMonsterWounds(0)
+    setMonsterHuntPosition(12)
+    setSurvivorHuntPosition(0)
+    setAvailableLevels([])
     setSelectedSurvivors([])
     setSelectedSurvivor(null)
     setSelectedScout(null)
@@ -307,7 +410,7 @@ export function CreateHuntCard({
           </Label>
 
           <Select
-            value={selectedMonsterName}
+            value={selectedMonsterQuarryId?.toString() || ''}
             onValueChange={handleMonsterSelection}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose a quarry..." />
@@ -315,9 +418,7 @@ export function CreateHuntCard({
 
             <SelectContent>
               {availableQuarries.map((quarry) => (
-                <SelectItem
-                  key={quarry.monsterData.name}
-                  value={quarry.monsterData.name}>
+                <SelectItem key={quarry.id} value={quarry.id.toString()}>
                   {quarry.monsterData.name} ({quarry.monsterData.node})
                 </SelectItem>
               ))}
@@ -333,18 +434,18 @@ export function CreateHuntCard({
 
           <Select
             value={selectedMonsterLevel}
-            onValueChange={(value: MonsterLevel) =>
-              setSelectedMonsterLevel(value)
-            }>
+            onValueChange={handleLevelChange}
+            disabled={availableLevels.length === 0}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose level..." />
             </SelectTrigger>
 
             <SelectContent>
-              <SelectItem value="1">Level 1</SelectItem>
-              <SelectItem value="2">Level 2</SelectItem>
-              <SelectItem value="3">Level 3</SelectItem>
-              <SelectItem value="4">Level 4</SelectItem>
+              {availableLevels.map((level) => (
+                <SelectItem key={level} value={level}>
+                  Level {level}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -365,77 +466,115 @@ export function CreateHuntCard({
             AI Deck
           </Label>
 
-          <NumericInput
-            label="A Cards"
-            value={selectedMonsterAIDeckACards}
-            onChange={setSelectedMonsterAIDeckACards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-a"
-              type="number"
-              value={selectedMonsterAIDeckACards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckACards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+          <div className="flex gap-2 w-full">
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-a"
+                className="text-xs text-center block">
+                A Cards
+              </Label>
+              <NumericInput
+                label="A Cards"
+                value={selectedMonsterAIDeckACards}
+                onChange={setSelectedMonsterAIDeckACards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-a"
+                  type="number"
+                  value={selectedMonsterAIDeckACards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckACards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
 
-          <NumericInput
-            label="B Cards"
-            value={selectedMonsterAIDeckBCards}
-            onChange={setSelectedMonsterAIDeckBCards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-b"
-              type="number"
-              value={selectedMonsterAIDeckBCards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckBCards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-b"
+                className="text-xs text-center block">
+                B Cards
+              </Label>
+              <NumericInput
+                label="B Cards"
+                value={selectedMonsterAIDeckBCards}
+                onChange={setSelectedMonsterAIDeckBCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-b"
+                  type="number"
+                  value={selectedMonsterAIDeckBCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckBCards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
 
-          <NumericInput
-            label="L Cards"
-            value={selectedMonsterAIDeckLCards}
-            onChange={setSelectedMonsterAIDeckLCards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-l"
-              type="number"
-              value={selectedMonsterAIDeckLCards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckLCards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-l"
+                className="text-xs text-center block">
+                L Cards
+              </Label>
+              <NumericInput
+                label="L Cards"
+                value={selectedMonsterAIDeckLCards}
+                onChange={setSelectedMonsterAIDeckLCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-l"
+                  type="number"
+                  value={selectedMonsterAIDeckLCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckLCards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
 
-          <NumericInput
-            label="O Cards"
-            value={selectedMonsterAIDeckOCards}
-            onChange={setSelectedMonsterAIDeckOCards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-o"
-              type="number"
-              value={selectedMonsterAIDeckOCards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckOCards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-o"
+                className="text-xs text-center block">
+                O Cards
+              </Label>
+              <NumericInput
+                label="O Cards"
+                value={selectedMonsterAIDeckOCards}
+                onChange={setSelectedMonsterAIDeckOCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-o"
+                  type="number"
+                  value={selectedMonsterAIDeckOCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckOCards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
+          </div>
         </div>
 
         <Separator className="my-2" />
