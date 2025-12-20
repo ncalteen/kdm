@@ -5,13 +5,8 @@ import {
   NewNemesisItem
 } from '@/components/settlement/nemeses/nemesis-item'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MonsterNode, MonsterType } from '@/lib/enums'
 import {
   NAMELESS_OBJECT_ERROR_MESSAGE,
   NEMESIS_REMOVED_MESSAGE,
@@ -19,6 +14,7 @@ import {
   NEMESIS_UPDATED_MESSAGE
 } from '@/lib/messages'
 import { NEMESES } from '@/lib/monsters'
+import { Campaign } from '@/schemas/campaign'
 import { Nemesis, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -43,6 +39,8 @@ import { toast } from 'sonner'
  * Nemeses Card Props
  */
 interface NemesesCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -59,6 +57,7 @@ interface NemesesCardProps {
  * @returns Nemeses Card Component
  */
 export function NemesesCard({
+  campaign,
   saveSelectedSettlement,
   selectedSettlement
 }: NemesesCardProps): ReactElement {
@@ -66,8 +65,19 @@ export function NemesesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.nemeses || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -80,25 +90,13 @@ export function NemesesCard({
   }
 
   /**
-   * Add Nemesis
-   */
-  const addNemesis = () => setIsAddingNew(true)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  /**
-   * Handles the removal of a nemesis.
+   * Remove a Nemesis
    *
    * @param index Nemesis Index
    */
   const onRemove = (index: number) => {
-    const currentNemeses = [...(selectedSettlement?.nemeses || [])]
-    currentNemeses.splice(index, 1)
+    const current = [...(selectedSettlement?.nemeses || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -112,24 +110,21 @@ export function NemesesCard({
       return next
     })
 
-    saveSelectedSettlement(
-      { nemeses: currentNemeses },
-      NEMESIS_REMOVED_MESSAGE()
-    )
+    saveSelectedSettlement({ nemeses: current }, NEMESIS_REMOVED_MESSAGE())
   }
 
   /**
-   * Handles saving a new nemesis.
+   * Save a Quarry
    *
-   * @param id Nemesis ID
+   * @param id Nemesis ID (number for built-in, string for custom)
    * @param unlocked Nemesis Unlocked Status
    * @param index Nemesis Index (When Updating Only)
    */
-  const onSave = (id?: number, unlocked?: boolean, index?: number) => {
+  const onSave = (id?: number | string, unlocked?: boolean, index?: number) => {
     if (id === undefined)
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('nemesis'))
 
-    const nemesisWithCc: Nemesis = {
+    const value: Nemesis = {
       id,
       unlocked: unlocked || false,
       level1: false,
@@ -141,12 +136,12 @@ export function NemesesCard({
       ccLevel3: false
     }
 
-    const updatedNemeses = [...(selectedSettlement?.nemeses || [])]
+    const updated = [...(selectedSettlement?.nemeses || [])]
 
     if (index !== undefined) {
-      // Updating an existing value - preserve existing properties
-      updatedNemeses[index] = {
-        ...updatedNemeses[index],
+      // Updating an existing value
+      updated[index] = {
+        ...updated[index],
         id,
         unlocked: unlocked || false
       }
@@ -156,28 +151,16 @@ export function NemesesCard({
       }))
     } else {
       // Adding a new value
-      updatedNemeses.push(nemesisWithCc)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedNemeses.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveSelectedSettlement(
-      { nemeses: updatedNemeses },
-      NEMESIS_UPDATED_MESSAGE(index)
-    )
-
+    saveSelectedSettlement({ nemeses: updated }, NEMESIS_UPDATED_MESSAGE(index))
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a nemesis.
-   *
-   * @param index Nemesis Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles toggling nemesis unlocked status.
@@ -192,7 +175,9 @@ export function NemesesCard({
 
     const nemesisId = selectedSettlement?.nemeses![index].id
     const nemesisName = nemesisId
-      ? NEMESES[nemesisId as keyof typeof NEMESES]?.main.name || ''
+      ? typeof nemesisId === 'number'
+        ? NEMESES[nemesisId as keyof typeof NEMESES]?.main.name || ''
+        : campaign.customMonsters?.[nemesisId]?.main.name || ''
       : ''
 
     saveSelectedSettlement(
@@ -202,14 +187,26 @@ export function NemesesCard({
   }
 
   /**
-   * Update the Nemesis ID
+   * Update the Nemesis ID and automatically set the node from NEMESES data
    *
    * @param index Nemesis Index
-   * @param id Nemesis ID
+   * @param id Nemesis ID (number for built-in, string for custom)
    */
-  const onUpdateNemesis = (index: number, id: number) => {
+  const onUpdateNemesis = (index: number, id: number | string) => {
+    let node: MonsterNode = MonsterNode.NQ1
+
+    if (typeof id === 'number') {
+      const nemesisData = NEMESES[id as keyof typeof NEMESES]
+      node = nemesisData?.main.node || MonsterNode.NN1
+    } else {
+      const customMonster = campaign.customMonsters?.[id]
+      if (customMonster?.main.type === MonsterType.NEMESIS) {
+        node = customMonster.main.node as MonsterNode
+      }
+    }
+
     const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
-      i === index ? { ...n, id } : n
+      i === index ? { ...n, id, node } : n
     )
 
     saveSelectedSettlement({ nemeses: updatedNemeses })
@@ -242,7 +239,7 @@ export function NemesesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering nemeses.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -283,25 +280,20 @@ export function NemesesCard({
           <SkullIcon className="h-4 w-4" />
           Nemesis Monsters
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addNemesis}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
-        <CardDescription className="text-left text-xs text-muted-foreground">
-          The nemesis monsters your settlement can encounter.
-        </CardDescription>
       </CardHeader>
 
       {/* Nemeses List */}
@@ -320,13 +312,19 @@ export function NemesesCard({
                   strategy={verticalListSortingStrategy}>
                   {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
                     <NemesisItem
+                      campaign={campaign}
                       key={index}
                       id={index.toString()}
                       index={index}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(id, unlocked, i) => onSave(id, unlocked, i)}
-                      onEdit={onEdit}
+                      onEdit={() =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [index]: false
+                        }))
+                      }
                       onToggleUnlocked={onToggleUnlocked}
                       onToggleLevel={onToggleLevel}
                       onUpdateNemesis={onUpdateNemesis}
@@ -338,7 +336,8 @@ export function NemesesCard({
             )}
             {isAddingNew && (
               <NewNemesisItem
-                onSave={(id, unlocked) => onSave(id, unlocked)}
+                campaign={campaign}
+                onSave={onSave}
                 onCancel={() => setIsAddingNew(false)}
               />
             )}

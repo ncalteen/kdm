@@ -10,7 +10,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { MonsterType } from '@/lib/enums'
 import { NEMESES } from '@/lib/monsters'
+import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -21,19 +23,21 @@ import { ReactElement, useRef } from 'react'
  * Nemesis Item Properties
  */
 export interface NemesisItemProps {
+  /** Campaign */
+  campaign: Campaign
   /** Nemesis ID */
   id: string
   /** Index */
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Handler */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Handler */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Handler */
-  onSave: (id?: number, unlocked?: boolean, index?: number) => void
-  /** OnToggleLevel Handler */
+  /** On Save Handler */
+  onSave: (id?: number | string, unlocked?: boolean, index?: number) => void
+  /** On Toggle Level Handler */
   onToggleLevel: (
     index: number,
     level:
@@ -46,10 +50,10 @@ export interface NemesisItemProps {
       | 'ccLevel3',
     checked: boolean
   ) => void
-  /** OnToggleUnlocked Handler */
+  /** On Toggle Unlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
-  /** OnUpdateNemesis Handler */
-  onUpdateNemesis: (index: number, id: number) => void
+  /** On Update Nemesis Handler */
+  onUpdateNemesis: (index: number, id: number | string) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
 }
@@ -58,10 +62,12 @@ export interface NemesisItemProps {
  * New Nemesis Item Component Properties
  */
 export interface NewNemesisItemProps {
-  /** OnCancel Handler */
+  /** Campaign */
+  campaign: Campaign
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Handler */
-  onSave: (id?: number, unlocked?: boolean) => void
+  /** On Save Handler */
+  onSave: (id?: number | string, unlocked?: boolean) => void
 }
 
 /**
@@ -71,6 +77,7 @@ export interface NewNemesisItemProps {
  * @returns Nemesis Item Component
  */
 export function NemesisItem({
+  campaign,
   id,
   index,
   isDisabled,
@@ -85,7 +92,7 @@ export function NemesisItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const nemesisIdRef = useRef<number | undefined>(
+  const nemesisIdRef = useRef<number | string | undefined>(
     selectedSettlement?.nemeses?.[index]?.id
   )
   const currentNemesisId = selectedSettlement?.nemeses?.[index]?.id
@@ -96,7 +103,12 @@ export function NemesisItem({
   }
 
   const nemesisData = currentNemesisId
-    ? NEMESES[currentNemesisId as keyof typeof NEMESES]
+    ? typeof currentNemesisId === 'number'
+      ? NEMESES[currentNemesisId as keyof typeof NEMESES]?.main
+      : campaign.customMonsters?.[currentNemesisId]?.main.type ===
+          MonsterType.NEMESIS
+        ? campaign.customMonsters[currentNemesisId].main
+        : null
     : null
 
   return (
@@ -114,24 +126,32 @@ export function NemesisItem({
 
       {/* Unlocked Checkbox */}
       <Checkbox
+        id={`nemesis-unlocked-${index}`}
         checked={selectedSettlement?.nemeses?.[index].unlocked}
         onCheckedChange={(checked) => {
-          if (checked !== 'indeterminate') onToggleUnlocked(index, !!checked)
+          if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
-        id={`nemesis-${index}-unlocked`}
       />
 
       {/* Nemesis Selection */}
       {isDisabled ? (
-        <div className="flex flex-1 ml-1">
-          <Label className="text-sm" htmlFor={`nemesis-${index}-unlocked`}>
-            {nemesisData?.main.name || 'Unknown Nemesis'}
+        <div className="flex ml-1">
+          <Label className="text-sm" htmlFor={`nemesis-unlocked-${index}`}>
+            {nemesisData?.name || 'Unknown Nemesis'}
           </Label>
         </div>
       ) : (
         <Select
           value={selectedSettlement?.nemeses?.[index].id.toString()}
-          onValueChange={(value) => onUpdateNemesis(index, parseInt(value))}
+          onValueChange={(value) => {
+            const numValue = parseInt(value)
+            const isBuiltIn =
+              !isNaN(numValue) && NEMESES[numValue as keyof typeof NEMESES]
+            onUpdateNemesis(
+              index,
+              isBuiltIn ? numValue : (value as unknown as number)
+            )
+          }}
           disabled={isDisabled}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder="Select nemesis" />
@@ -142,6 +162,15 @@ export function NemesisItem({
                 {nemesis.main.name}
               </SelectItem>
             ))}
+            {Object.entries(campaign.customMonsters || {})
+              .filter(
+                ([, monster]) => monster.main.type === MonsterType.NEMESIS
+              )
+              .map(([id, monster]) => (
+                <SelectItem key={id} value={id}>
+                  {monster.main.name} (Custom)
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
       )}
@@ -153,7 +182,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.main.level1 ? 'visible' : 'hidden'
+                visibility: nemesisData?.level1 ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level1}
@@ -162,7 +191,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level1', !!checked)
                 }}
                 id={`nemesis-${index}-level1`}
-                disabled={!nemesisData?.main.level1}
+                disabled={!nemesisData?.level1}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
                 Lvl 1
@@ -172,7 +201,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.main.level2 ? 'visible' : 'hidden'
+                visibility: nemesisData?.level2 ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level2}
@@ -181,7 +210,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level2', !!checked)
                 }}
                 id={`nemesis-${index}-level2`}
-                disabled={!nemesisData?.main.level2}
+                disabled={!nemesisData?.level2}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
                 Lvl 2
@@ -191,7 +220,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.main.level3 ? 'visible' : 'hidden'
+                visibility: nemesisData?.level3 ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level3}
@@ -200,7 +229,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level3', !!checked)
                 }}
                 id={`nemesis-${index}-level3`}
-                disabled={!nemesisData?.main.level3}
+                disabled={!nemesisData?.level3}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
                 Lvl 3
@@ -210,7 +239,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.main.level4 ? 'visible' : 'hidden'
+                visibility: nemesisData?.level4 ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level4}
@@ -219,7 +248,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level4', !!checked)
                 }}
                 id={`nemesis-${index}-level4`}
-                disabled={!nemesisData?.main.level4}
+                disabled={!nemesisData?.level4}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level4`}>
                 Lvl 4
@@ -243,13 +272,16 @@ export function NemesisItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() =>
+            onClick={() => {
+              const nemesisId = selectedSettlement?.nemeses?.[index].id
               onSave(
-                selectedSettlement?.nemeses?.[index].id,
+                typeof nemesisId === 'number'
+                  ? nemesisId
+                  : (nemesisId as unknown as number),
                 selectedSettlement?.nemeses?.[index].unlocked,
                 index
               )
-            }
+            }}
             title="Save nemesis">
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -272,12 +304,17 @@ export function NemesisItem({
  * @param props New Nemesis Item Component Props
  */
 export function NewNemesisItem({
+  campaign,
   onCancel,
   onSave
 }: NewNemesisItemProps): ReactElement {
-  const nemesisIdRef = useRef<number>(1)
+  const nemesisIdRef = useRef<number | string>(1)
 
-  const handleSave = () => onSave(nemesisIdRef.current, false)
+  const handleSave = () => {
+    if (typeof nemesisIdRef.current === 'number')
+      onSave(nemesisIdRef.current, false)
+    else onSave(nemesisIdRef.current as unknown as number, false)
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -292,7 +329,12 @@ export function NewNemesisItem({
       {/* Nemesis Selector */}
       <Select
         defaultValue="1"
-        onValueChange={(value) => (nemesisIdRef.current = parseInt(value))}>
+        onValueChange={(value) => {
+          const numValue = parseInt(value)
+          const isBuiltIn =
+            !isNaN(numValue) && NEMESES[numValue as keyof typeof NEMESES]
+          nemesisIdRef.current = isBuiltIn ? numValue : value
+        }}>
         <SelectTrigger className="flex-1">
           <SelectValue placeholder="Select nemesis" />
         </SelectTrigger>
@@ -302,6 +344,13 @@ export function NewNemesisItem({
               {nemesis.main.name}
             </SelectItem>
           ))}
+          {Object.entries(campaign.customMonsters || {})
+            .filter(([, monster]) => monster.main.type === MonsterType.NEMESIS)
+            .map(([id, monster]) => (
+              <SelectItem key={id} value={id}>
+                {monster.main.name} (Custom)
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
 
