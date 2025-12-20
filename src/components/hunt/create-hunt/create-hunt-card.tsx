@@ -25,6 +25,7 @@ import {
 } from '@/lib/messages'
 import { QUARRIES } from '@/lib/monsters'
 import { getNextHuntId } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt, SurvivorHuntDetails } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -37,6 +38,8 @@ import { toast } from 'sonner'
  * Create Hunt Card Properties
  */
 interface CreateHuntCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Settlement */
@@ -47,8 +50,6 @@ interface CreateHuntCardProps {
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Survivors */
-  survivors: Survivor[] | null
 }
 
 /**
@@ -58,12 +59,12 @@ interface CreateHuntCardProps {
  * @returns Create Hunt Card Component
  */
 export function CreateHuntCard({
+  campaign,
   saveSelectedHunt,
   selectedSettlement,
   selectedShowdown,
   setSelectedHunt,
-  setSelectedSurvivor,
-  survivors
+  setSelectedSurvivor
 }: CreateHuntCardProps): ReactElement {
   const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
     useState<number>(0)
@@ -120,26 +121,26 @@ export function CreateHuntCard({
   // Get available survivors for this settlement (exclude dead/retired)
   const availableSurvivors = useMemo(
     () =>
-      survivors
-        ? survivors.filter(
+      campaign.survivors
+        ? campaign.survivors.filter(
             (survivor) =>
               survivor.settlementId === selectedSettlement?.id &&
               !survivor.dead &&
               !survivor.retired
           )
         : [],
-    [survivors, selectedSettlement?.id]
+    [campaign.survivors, selectedSettlement?.id]
   )
 
   // Get all survivors for this settlement (including dead ones) for messaging
   const allSettlementSurvivors = useMemo(
     () =>
-      survivors
-        ? survivors.filter(
+      campaign.survivors
+        ? campaign.survivors.filter(
             (survivor) => survivor.settlementId === selectedSettlement?.id
           )
         : [],
-    [survivors, selectedSettlement?.id]
+    [campaign.survivors, selectedSettlement?.id]
   )
 
   // Get available quarries (unlocked ones) and map to monster data
@@ -214,7 +215,7 @@ export function CreateHuntCard({
 
     // Save as partial data that will be merged by the hook
     const huntData: Hunt = {
-      id: getNextHuntId(),
+      id: getNextHuntId(campaign),
       monster: {
         accuracy: 0,
         accuracyTokens: selectedMonsterAccuracyTokens,
@@ -317,7 +318,7 @@ export function CreateHuntCard({
                 <SelectItem
                   key={quarry.monsterData.name}
                   value={quarry.monsterData.name}>
-                  {quarry.monsterData.name} ({quarry.node})
+                  {quarry.monsterData.name} ({quarry.monsterData.node})
                 </SelectItem>
               ))}
             </SelectContent>

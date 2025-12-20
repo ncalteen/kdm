@@ -4,6 +4,7 @@ import { HuntSurvivorCard } from '@/components/hunt/hunt-survivors/hunt-survivor
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { getColorStyle, getSurvivorColorChoice } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
@@ -14,6 +15,8 @@ import { ReactElement, useMemo } from 'react'
  * Hunt Survivors Card Properties
  */
 interface HuntSurvivorsCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Survivor */
@@ -29,10 +32,6 @@ interface HuntSurvivorsCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
 }
 
 /**
@@ -42,14 +41,13 @@ interface HuntSurvivorsCardProps {
  * @returns Hunt Survivors Card Component
  */
 export function HuntSurvivorsCard({
+  campaign,
   saveSelectedHunt,
   saveSelectedSurvivor,
   selectedHunt,
   selectedSettlement,
   selectedSurvivor,
-  setSelectedSurvivor,
-  setSurvivors,
-  survivors
+  setSelectedSurvivor
 }: HuntSurvivorsCardProps): ReactElement {
   const huntSurvivors = useMemo(() => {
     let s: number[] = []
@@ -61,7 +59,7 @@ export function HuntSurvivorsCard({
   }, [selectedHunt])
 
   // Get filtered survivors for mapping
-  const filteredSurvivors = survivors?.filter((s) =>
+  const filteredSurvivors = campaign.survivors.filter((s) =>
     huntSurvivors.includes(s.id)
   )
 
@@ -151,8 +149,6 @@ export function HuntSurvivorsCard({
         selectedHunt={selectedHunt}
         selectedSettlement={selectedSettlement}
         selectedSurvivor={selectedSurvivor}
-        setSurvivors={setSurvivors}
-        survivors={survivors}
       />
     </div>
   )

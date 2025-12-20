@@ -2,7 +2,7 @@
 
 import { HuntMonsterAttributes } from '@/components/hunt/hunt-monster/hunt-monster-attributes'
 import { HuntMonsterBaseStats } from '@/components/hunt/hunt-monster/hunt-monster-base-stats'
-import { MonsterTraitsMoods } from '@/components/monster/monster-traits-moods'
+import { TraitsMoods } from '@/components/monster/traits-moods/traits-moods'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -344,7 +344,7 @@ export function HuntMonsterCard({
 
           {/* Column: Traits, Moods, and Notes */}
           <div className="flex flex-col flex-1">
-            <MonsterTraitsMoods
+            <TraitsMoods
               monster={selectedHunt.monster}
               disabledTraits={disabledTraits}
               disabledMoods={disabledMoods}
