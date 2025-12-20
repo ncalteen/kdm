@@ -198,7 +198,6 @@ export function NewDepartingBonusItem({
           type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
           onClick={() => onSave(inputRef.current?.value)}
           title="Save bonus">
           <CheckIcon className="h-4 w-4" />
