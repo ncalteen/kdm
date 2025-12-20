@@ -20,7 +20,7 @@ import {
   createSettlementFromOptions,
   getMonsterNodeMapping
 } from '@/lib/settlements/utils'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import {
   BaseSettlementSchema,
   NewSettlementInput,
@@ -36,8 +36,12 @@ import { toast } from 'sonner'
  * Create Settlement Form Properties
  */
 interface CreateSettlementFormProps {
+  /** Campaign */
+  campaign: Campaign
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -51,7 +55,9 @@ interface CreateSettlementFormProps {
  * @returns Create Settlement Form Component
  */
 export function CreateSettlementForm({
-  setSelectedSettlement
+  campaign,
+  setSelectedSettlement,
+  updateCampaign
 }: CreateSettlementFormProps): ReactElement {
   const form = useForm<NewSettlementInput>({
     resolver: zodResolver(
@@ -100,21 +106,14 @@ export function CreateSettlementForm({
   function onSubmit(values: NewSettlementInput) {
     try {
       // Get campaign data based on the selected campaign type
-      const settlement = createSettlementFromOptions(values)
+      const settlement = createSettlementFromOptions(campaign, values)
 
-      // Get existing campaign data from localStorage or initialize new
-      const campaign = getCampaign()
+      updateCampaign({
+        ...campaign,
+        selectedSettlementId: settlement.id,
+        settlements: [...campaign.settlements, settlement]
+      })
 
-      // Add the new settlement to the campaign
-      campaign.settlements.push(settlement)
-
-      // Set the newly created settlement as selected
-      campaign.selectedSettlementId = settlement.id
-
-      // Save the updated campaign to localStorage
-      saveCampaignToLocalStorage(campaign)
-
-      // Update the selected settlement in the context
       setSelectedSettlement(settlement)
 
       // Reset the form to initial default values
@@ -276,6 +275,7 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.NQ1}
                         value={field.value}
                         onChange={field.onChange}
@@ -297,6 +297,7 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.NQ2}
                         value={field.value}
                         onChange={field.onChange}
@@ -318,6 +319,7 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.NQ3}
                         value={field.value}
                         onChange={field.onChange}
@@ -339,6 +341,7 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.NQ4}
                         value={field.value}
                         onChange={field.onChange}
@@ -363,6 +366,7 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.NN1}
                         value={field.value}
                         onChange={field.onChange}
@@ -384,6 +388,7 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.NN2}
                         value={field.value}
                         onChange={field.onChange}
@@ -405,6 +410,7 @@ export function CreateSettlementForm({
                     </FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.NN3}
                         value={field.value}
                         onChange={field.onChange}
@@ -426,6 +432,7 @@ export function CreateSettlementForm({
                     <FormLabel className="text-center block mb-2">Co</FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.CO}
                         value={field.value}
                         onChange={field.onChange}
@@ -444,6 +451,7 @@ export function CreateSettlementForm({
                     <FormLabel className="text-center block mb-2">Fi</FormLabel>
                     <FormControl>
                       <SelectMonsterNode
+                        campaign={campaign}
                         nodeType={MonsterNode.FI}
                         value={field.value}
                         onChange={field.onChange}
