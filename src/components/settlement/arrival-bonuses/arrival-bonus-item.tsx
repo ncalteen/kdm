@@ -69,7 +69,7 @@ export function ArrivalBonusItem({
   }, [selectedSettlement?.arrivalBonuses, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
