@@ -1,6 +1,6 @@
 'use client'
 
-import { MonsterTraitsMoods } from '@/components/monster/monster-traits-moods'
+import { TraitsMoods } from '@/components/monster/traits-moods/traits-moods'
 import { ShowdownMonsterAttributes } from '@/components/showdown/showdown-monster/showdown-monster-attributes'
 import { ShowdownMonsterBaseStats } from '@/components/showdown/showdown-monster/showdown-monster-base-stats'
 import { Badge } from '@/components/ui/badge'
@@ -357,7 +357,7 @@ export function ShowdownMonsterCard({
 
           {/* Column: Traits, Moods, and Notes */}
           <div className="flex flex-col flex-1">
-            <MonsterTraitsMoods
+            <TraitsMoods
               monster={selectedShowdown.monster}
               disabledTraits={disabledTraits}
               disabledMoods={disabledMoods}

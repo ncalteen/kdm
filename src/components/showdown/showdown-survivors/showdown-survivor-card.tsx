@@ -47,10 +47,6 @@ interface ShowdownSurvivorCardProps {
   selectedShowdown: Showdown | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
 }
 
 /**
@@ -63,9 +59,7 @@ export function ShowdownSurvivorCard({
   saveSelectedSurvivor,
   selectedSettlement,
   selectedShowdown,
-  selectedSurvivor,
-  setSurvivors,
-  survivors
+  selectedSurvivor
 }: ShowdownSurvivorCardProps): ReactElement {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
@@ -234,8 +228,6 @@ export function ShowdownSurvivorCard({
           selectedSettlement={selectedSettlement}
           selectedShowdown={selectedShowdown}
           selectedSurvivor={selectedSurvivor}
-          setSurvivors={setSurvivors}
-          survivors={survivors}
         />
 
         <Separator className="my-2" />

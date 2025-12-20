@@ -1,7 +1,7 @@
 'use client'
 
 import { NumericInput } from '@/components/menu/numeric-input'
-import { MonsterTraitsMoods } from '@/components/monster/monster-traits-moods'
+import { TraitsMoods } from '@/components/monster/traits-moods/traits-moods'
 import { ScoutSelectionDrawer } from '@/components/survivor/scout-selection/scout-selection-drawer'
 import { SurvivorSelectionDrawer } from '@/components/survivor/survivor-selection/survivor-selection-drawer'
 import { Button } from '@/components/ui/button'
@@ -33,11 +33,11 @@ import {
   SHOWDOWN_CREATED_MESSAGE
 } from '@/lib/messages'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
-import { getCampaign, getNextShowdownId } from '@/lib/utils'
+import { getNextShowdownId } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown, SurvivorShowdownDetails } from '@/schemas/showdown'
-import { Survivor } from '@/schemas/survivor'
 import { SkullIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -46,6 +46,8 @@ import { toast } from 'sonner'
  * Create Showdown Card Properties
  */
 interface CreateShowdownCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -57,8 +59,6 @@ interface CreateShowdownCardProps {
   selectedSettlement: Settlement | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
-  /** Survivors */
-  survivors: Survivor[] | null
 }
 
 /**
@@ -68,11 +68,11 @@ interface CreateShowdownCardProps {
  * @returns Create Showdown Card Component
  */
 export function CreateShowdownCard({
+  campaign,
   saveSelectedShowdown,
   selectedHunt,
   selectedSettlement,
-  setSelectedShowdown,
-  survivors
+  setSelectedShowdown
 }: CreateShowdownCardProps): ReactElement {
   const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
     useState<number>(0)
@@ -149,26 +149,26 @@ export function CreateShowdownCard({
   // Get available survivors for this settlement (exclude dead/retired)
   const availableSurvivors = useMemo(
     () =>
-      survivors
-        ? survivors.filter(
+      campaign.survivors
+        ? campaign.survivors.filter(
             (survivor) =>
               survivor.settlementId === selectedSettlement?.id &&
               !survivor.dead &&
               !survivor.retired
           )
         : [],
-    [survivors, selectedSettlement?.id]
+    [campaign.survivors, selectedSettlement?.id]
   )
 
   // Get all survivors for this settlement (including dead ones) for messaging
   const allSettlementSurvivors = useMemo(
     () =>
-      survivors
-        ? survivors.filter(
+      campaign.survivors
+        ? campaign.survivors.filter(
             (survivor) => survivor.settlementId === selectedSettlement?.id
           )
         : [],
-    [survivors, selectedSettlement?.id]
+    [campaign.survivors, selectedSettlement?.id]
   )
 
   // Get available monsters (quarries, nemeses, and custom monsters)
@@ -216,7 +216,6 @@ export function CreateShowdownCard({
 
   // Add custom monsters
   try {
-    const campaign = getCampaign()
     if (campaign.customMonsters)
       Object.entries(campaign.customMonsters).forEach(
         ([id, monsterWrapper]) => {
@@ -394,7 +393,7 @@ export function CreateShowdownCard({
     // Save as partial data that will be merged by the hook
     const showdownData: Showdown = {
       ambush: AmbushType.NONE,
-      id: getNextShowdownId(),
+      id: getNextShowdownId(campaign),
       monster: {
         accuracy: 0,
         accuracyTokens: selectedMonsterAccuracyTokens,
@@ -940,7 +939,7 @@ export function CreateShowdownCard({
         <Separator className="my-2" />
 
         {/* Monster Traits and Moods */}
-        <MonsterTraitsMoods
+        <TraitsMoods
           monster={{
             accuracy: 0,
             accuracyTokens: selectedMonsterAccuracyTokens,

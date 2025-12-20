@@ -4,16 +4,19 @@ import { ShowdownSurvivorCard } from '@/components/showdown/showdown-survivors/s
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { getColorStyle, getSurvivorColorChoice } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 
 /**
  * Showdown Survivors Card Properties
  */
 interface ShowdownSurvivorsCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -32,10 +35,8 @@ interface ShowdownSurvivorsCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -45,14 +46,13 @@ interface ShowdownSurvivorsCardProps {
  * @returns Showdown Survivors Card Component
  */
 export function ShowdownSurvivorsCard({
+  campaign,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedShowdown,
   selectedSettlement,
   selectedSurvivor,
-  setSelectedSurvivor,
-  setSurvivors,
-  survivors
+  setSelectedSurvivor
 }: ShowdownSurvivorsCardProps): ReactElement {
   const showdownSurvivors = useMemo(() => {
     let s: number[] = []
@@ -64,16 +64,17 @@ export function ShowdownSurvivorsCard({
   }, [selectedShowdown])
 
   // Get filtered survivors for mapping
-  const filteredSurvivors = survivors?.filter((s) =>
+  const filteredSurvivors = campaign.survivors.filter((s) =>
     showdownSurvivors.includes(s.id)
   )
 
   // When the selected survivor changes, set the carousel to that survivor (if
   // they exist in the filtered survivors). If not, set the selected survivor to
   // the first survivor in the filtered list.
-  useMemo(() => {
-    if (!selectedSurvivor) setSelectedSurvivor(filteredSurvivors?.[0] || null)
-  }, [filteredSurvivors, setSelectedSurvivor, selectedSurvivor])
+  useEffect(() => {
+    if (!selectedSurvivor && filteredSurvivors?.[0])
+      setSelectedSurvivor(filteredSurvivors[0])
+  }, [filteredSurvivors, selectedSurvivor, setSelectedSurvivor])
 
   // Get current survivor index
   const currentIndex =
@@ -161,8 +162,6 @@ export function ShowdownSurvivorsCard({
         selectedSettlement={selectedSettlement}
         selectedShowdown={selectedShowdown}
         selectedSurvivor={selectedSurvivor}
-        setSurvivors={setSurvivors}
-        survivors={survivors}
       />
     </div>
   )
