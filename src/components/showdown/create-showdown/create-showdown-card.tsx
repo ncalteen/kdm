@@ -672,7 +672,9 @@ export function CreateShowdownCard({
 
           <div className="flex gap-2 w-full">
             <div className="flex-1 space-y-1">
-              <Label htmlFor="monster-ai-deck-a" className="text-xs text-center block">
+              <Label
+                htmlFor="monster-ai-deck-a"
+                className="text-xs text-center block">
                 A Cards
               </Label>
               <NumericInput
@@ -686,7 +688,9 @@ export function CreateShowdownCard({
                   type="number"
                   value={selectedMonsterAIDeckACards}
                   onChange={(e) =>
-                    setSelectedMonsterAIDeckACards(parseInt(e.target.value) || 0)
+                    setSelectedMonsterAIDeckACards(
+                      parseInt(e.target.value) || 0
+                    )
                   }
                   min="0"
                   className="text-center no-spinners"
@@ -695,7 +699,9 @@ export function CreateShowdownCard({
             </div>
 
             <div className="flex-1 space-y-1">
-              <Label htmlFor="monster-ai-deck-b" className="text-xs text-center block">
+              <Label
+                htmlFor="monster-ai-deck-b"
+                className="text-xs text-center block">
                 B Cards
               </Label>
               <NumericInput
@@ -709,7 +715,9 @@ export function CreateShowdownCard({
                   type="number"
                   value={selectedMonsterAIDeckBCards}
                   onChange={(e) =>
-                    setSelectedMonsterAIDeckBCards(parseInt(e.target.value) || 0)
+                    setSelectedMonsterAIDeckBCards(
+                      parseInt(e.target.value) || 0
+                    )
                   }
                   min="0"
                   className="text-center no-spinners"
@@ -718,7 +726,9 @@ export function CreateShowdownCard({
             </div>
 
             <div className="flex-1 space-y-1">
-              <Label htmlFor="monster-ai-deck-l" className="text-xs text-center block">
+              <Label
+                htmlFor="monster-ai-deck-l"
+                className="text-xs text-center block">
                 L Cards
               </Label>
               <NumericInput
@@ -732,7 +742,9 @@ export function CreateShowdownCard({
                   type="number"
                   value={selectedMonsterAIDeckLCards}
                   onChange={(e) =>
-                    setSelectedMonsterAIDeckLCards(parseInt(e.target.value) || 0)
+                    setSelectedMonsterAIDeckLCards(
+                      parseInt(e.target.value) || 0
+                    )
                   }
                   min="0"
                   className="text-center no-spinners"
@@ -741,7 +753,9 @@ export function CreateShowdownCard({
             </div>
 
             <div className="flex-1 space-y-1">
-              <Label htmlFor="monster-ai-deck-o" className="text-xs text-center block">
+              <Label
+                htmlFor="monster-ai-deck-o"
+                className="text-xs text-center block">
                 O Cards
               </Label>
               <NumericInput
@@ -755,7 +769,9 @@ export function CreateShowdownCard({
                   type="number"
                   value={selectedMonsterAIDeckOCards}
                   onChange={(e) =>
-                    setSelectedMonsterAIDeckOCards(parseInt(e.target.value) || 0)
+                    setSelectedMonsterAIDeckOCards(
+                      parseInt(e.target.value) || 0
+                    )
                   }
                   min="0"
                   className="text-center no-spinners"
