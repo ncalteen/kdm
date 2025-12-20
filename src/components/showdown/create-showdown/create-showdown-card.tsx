@@ -114,6 +114,7 @@ export function CreateShowdownCard({
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
   const [startingTurn, setStartingTurn] = useState<TurnType>(TurnType.MONSTER)
+  const [availableLevels, setAvailableLevels] = useState<MonsterLevel[]>([])
 
   // State for managing trait and mood editing
   const [disabledTraits, setDisabledTraits] = useState<{
@@ -137,12 +138,106 @@ export function CreateShowdownCard({
       (monster) => monster.id === monsterId && monster.source === 'nemesis'
     )
 
-    if (isQuarry) setSelectedMonsterType(MonsterType.QUARRY)
-    else if (isNemesis) setSelectedMonsterType(MonsterType.NEMESIS)
-    else {
+    let monsterData = null
+    let monsterType: MonsterType | undefined
+
+    if (isQuarry) {
+      monsterType = MonsterType.QUARRY
+      const quarryId = parseInt(monsterId.replace('quarry-', ''))
+      monsterData = QUARRIES[quarryId as keyof typeof QUARRIES]?.main
+    } else if (isNemesis) {
+      monsterType = MonsterType.NEMESIS
+      const nemesisId = parseInt(monsterId.replace('nemesis-', ''))
+      monsterData = NEMESES[nemesisId as keyof typeof NEMESES]?.main
+    } else {
       // Custom monster - look up type
       const customMonster = availableMonsters.find((m) => m.id === monsterId)
-      if (customMonster) setSelectedMonsterType(customMonster.type)
+      if (customMonster) monsterType = customMonster.type
+    }
+
+    if (monsterType) setSelectedMonsterType(monsterType)
+
+    if (!monsterData) return
+
+    // Determine which levels are available for this monster
+    const levels: MonsterLevel[] = []
+    if (monsterData.level1) levels.push(MonsterLevel.LEVEL_1)
+    if (monsterData.level2) levels.push(MonsterLevel.LEVEL_2)
+    if (monsterData.level3) levels.push(MonsterLevel.LEVEL_3)
+    if (monsterData.level4) levels.push(MonsterLevel.LEVEL_4)
+    setAvailableLevels(levels)
+
+    // Set to first available level or keep current if valid
+    const currentLevelValid = levels.includes(selectedMonsterLevel)
+    const levelToUse = currentLevelValid ? selectedMonsterLevel : levels[0]
+
+    if (!levelToUse) return
+
+    setSelectedMonsterLevel(levelToUse)
+    const levelData = monsterData[`level${levelToUse}`]
+
+    if (levelData) {
+      // Auto-populate all form fields with monster data
+      setSelectedMonsterAccuracyTokens(levelData.accuracyTokens ?? 0)
+      setSelectedMonsterAIDeckACards(levelData.aiDeck?.advanced ?? 0)
+      setSelectedMonsterAIDeckBCards(levelData.aiDeck?.basic ?? 0)
+      setSelectedMonsterAIDeckLCards(levelData.aiDeck?.legendary ?? 0)
+      setSelectedMonsterAIDeckOCards(levelData.aiDeck?.overtone ?? 0)
+      setSelectedMonsterDamage(levelData.damage ?? 0)
+      setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
+      setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
+      setSelectedMonsterMoods(levelData.moods ?? [])
+      setSelectedMonsterMovement(levelData.movement ?? 6)
+      setSelectedMonsterMovementTokens(levelData.movementTokens ?? 0)
+      setSelectedMonsterSpeed(levelData.speed ?? 0)
+      setSelectedMonsterSpeedTokens(levelData.speedTokens ?? 0)
+      setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
+      setSelectedMonsterToughness(levelData.toughness ?? 6)
+      setSelectedMonsterTraits(levelData.traits ?? [])
+    }
+  }
+
+  // Handle level change and auto-populate form
+  const handleLevelChange = (level: MonsterLevel) => {
+    if (!selectedMonsterId) return
+
+    let monsterData = null
+
+    // Determine monster source and get data
+    if (selectedMonsterId.startsWith('quarry-')) {
+      const quarryId = parseInt(selectedMonsterId.replace('quarry-', ''))
+      monsterData = QUARRIES[quarryId as keyof typeof QUARRIES]?.main
+    } else if (selectedMonsterId.startsWith('nemesis-')) {
+      const nemesisId = parseInt(selectedMonsterId.replace('nemesis-', ''))
+      monsterData = NEMESES[nemesisId as keyof typeof NEMESES]?.main
+    }
+
+    if (!monsterData) return
+    if (!level) return
+
+    const levelData = monsterData[`level${level}`]
+
+    if (levelData) {
+      // Auto-populate all form fields with monster data
+      setSelectedMonsterAccuracyTokens(levelData.accuracyTokens ?? 0)
+      setSelectedMonsterAIDeckACards(levelData.aiDeck?.advanced ?? 0)
+      setSelectedMonsterAIDeckBCards(levelData.aiDeck?.basic ?? 0)
+      setSelectedMonsterAIDeckLCards(levelData.aiDeck?.legendary ?? 0)
+      setSelectedMonsterAIDeckOCards(levelData.aiDeck?.overtone ?? 0)
+      setSelectedMonsterDamage(levelData.damage ?? 0)
+      setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
+      setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterLevel(level)
+      setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
+      setSelectedMonsterMoods(levelData.moods ?? [])
+      setSelectedMonsterMovement(levelData.movement ?? 6)
+      setSelectedMonsterMovementTokens(levelData.movementTokens ?? 0)
+      setSelectedMonsterSpeed(levelData.speed ?? 0)
+      setSelectedMonsterSpeedTokens(levelData.speedTokens ?? 0)
+      setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
+      setSelectedMonsterToughness(levelData.toughness ?? 6)
+      setSelectedMonsterTraits(levelData.traits ?? [])
     }
   }
 
@@ -472,6 +567,7 @@ export function CreateShowdownCard({
     setSelectedSurvivors([])
     setSelectedScout(null)
     setStartingTurn(TurnType.MONSTER)
+    setAvailableLevels([])
     setDisabledTraits({})
     setDisabledMoods({})
     setIsAddingTrait(false)
@@ -517,17 +613,17 @@ export function CreateShowdownCard({
           </Label>
           <Select
             value={selectedMonsterLevel}
-            onValueChange={(value: MonsterLevel) =>
-              setSelectedMonsterLevel(value)
-            }>
+            onValueChange={handleLevelChange}
+            disabled={availableLevels.length === 0}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose level..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">Level 1</SelectItem>
-              <SelectItem value="2">Level 2</SelectItem>
-              <SelectItem value="3">Level 3</SelectItem>
-              <SelectItem value="4">Level 4</SelectItem>
+              {availableLevels.map((level) => (
+                <SelectItem key={level} value={level}>
+                  Level {level}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -548,77 +644,99 @@ export function CreateShowdownCard({
             AI Deck
           </Label>
 
-          <NumericInput
-            label="A Cards"
-            value={selectedMonsterAIDeckACards}
-            onChange={setSelectedMonsterAIDeckACards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-a"
-              type="number"
-              value={selectedMonsterAIDeckACards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckACards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+          <div className="flex gap-2 w-full">
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="monster-ai-deck-a" className="text-xs text-center block">
+                A Cards
+              </Label>
+              <NumericInput
+                label="A Cards"
+                value={selectedMonsterAIDeckACards}
+                onChange={setSelectedMonsterAIDeckACards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-a"
+                  type="number"
+                  value={selectedMonsterAIDeckACards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckACards(parseInt(e.target.value) || 0)
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
 
-          <NumericInput
-            label="B Cards"
-            value={selectedMonsterAIDeckBCards}
-            onChange={setSelectedMonsterAIDeckBCards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-b"
-              type="number"
-              value={selectedMonsterAIDeckBCards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckBCards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="monster-ai-deck-b" className="text-xs text-center block">
+                B Cards
+              </Label>
+              <NumericInput
+                label="B Cards"
+                value={selectedMonsterAIDeckBCards}
+                onChange={setSelectedMonsterAIDeckBCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-b"
+                  type="number"
+                  value={selectedMonsterAIDeckBCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckBCards(parseInt(e.target.value) || 0)
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
 
-          <NumericInput
-            label="L Cards"
-            value={selectedMonsterAIDeckLCards}
-            onChange={setSelectedMonsterAIDeckLCards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-l"
-              type="number"
-              value={selectedMonsterAIDeckLCards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckLCards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="monster-ai-deck-l" className="text-xs text-center block">
+                L Cards
+              </Label>
+              <NumericInput
+                label="L Cards"
+                value={selectedMonsterAIDeckLCards}
+                onChange={setSelectedMonsterAIDeckLCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-l"
+                  type="number"
+                  value={selectedMonsterAIDeckLCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckLCards(parseInt(e.target.value) || 0)
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
 
-          <NumericInput
-            label="O Cards"
-            value={selectedMonsterAIDeckOCards}
-            onChange={setSelectedMonsterAIDeckOCards}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-o"
-              type="number"
-              value={selectedMonsterAIDeckOCards}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckOCards(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="monster-ai-deck-o" className="text-xs text-center block">
+                O Cards
+              </Label>
+              <NumericInput
+                label="O Cards"
+                value={selectedMonsterAIDeckOCards}
+                onChange={setSelectedMonsterAIDeckOCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-o"
+                  type="number"
+                  value={selectedMonsterAIDeckOCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckOCards(parseInt(e.target.value) || 0)
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
+          </div>
         </div>
 
         <Separator className="my-2" />
