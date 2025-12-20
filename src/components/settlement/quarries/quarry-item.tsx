@@ -11,18 +11,21 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { MonsterNode } from '@/lib/enums'
+import { MonsterType } from '@/lib/enums'
 import { QUARRIES } from '@/lib/monsters'
+import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useRef } from 'react'
 
 /**
  * Quarry Item Properties
  */
 export interface QuarryItemProps {
+  /** Campaign */
+  campaign: Campaign
   /** Quarry ID */
   id: string
   /** Index */
@@ -34,16 +37,11 @@ export interface QuarryItemProps {
   /** On Remove Handler */
   onRemove: (index: number) => void
   /** On Save Handler */
-  onSave: (
-    id?: number,
-    node?: MonsterNode,
-    unlocked?: boolean,
-    index?: number
-  ) => void
+  onSave: (id?: number | string, unlocked?: boolean, index?: number) => void
   /** On Toggle Unlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
   /** On Update Quarry Handler */
-  onUpdateQuarry: (index: number, id: number) => void
+  onUpdateQuarry: (index: number, id: number | string) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
 }
@@ -52,10 +50,12 @@ export interface QuarryItemProps {
  * New Quarry Item Component Properties
  */
 export interface NewQuarryItemProps {
+  /** Campaign */
+  campaign: Campaign
   /** On Cancel Handler */
   onCancel: () => void
   /** On Save Handler */
-  onSave: (id?: number, node?: MonsterNode, unlocked?: boolean) => void
+  onSave: (id?: number | string, unlocked?: boolean) => void
 }
 
 /**
@@ -65,6 +65,7 @@ export interface NewQuarryItemProps {
  * @returns Quarry Item Component
  */
 export function QuarryItem({
+  campaign,
   id,
   index,
   isDisabled,
@@ -78,19 +79,23 @@ export function QuarryItem({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
-  const quarryIdRef = useRef<number | undefined>(
+  const quarryIdRef = useRef<number | string | undefined>(
     selectedSettlement?.quarries?.[index]?.id
   )
   const currentQuarryId = selectedSettlement?.quarries?.[index]?.id
 
-  // Only update ref when quarry ID actually changes
   if (quarryIdRef.current !== currentQuarryId) {
     quarryIdRef.current = currentQuarryId
     console.debug('[QuarryItem] Quarry ID changed', currentQuarryId, index)
   }
 
   const quarryData = currentQuarryId
-    ? QUARRIES[currentQuarryId as keyof typeof QUARRIES]
+    ? typeof currentQuarryId === 'number'
+      ? QUARRIES[currentQuarryId as keyof typeof QUARRIES]?.main
+      : campaign.customMonsters?.[currentQuarryId]?.main.type ===
+          MonsterType.QUARRY
+        ? campaign.customMonsters[currentQuarryId].main
+        : null
     : null
 
   return (
@@ -119,13 +124,21 @@ export function QuarryItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <Label className="text-sm" htmlFor={`quarry-unlocked-${index}`}>
-            {quarryData?.main.name || 'Unknown Quarry'}
+            {quarryData?.name || 'Unknown Quarry'}
           </Label>
         </div>
       ) : (
         <Select
           value={selectedSettlement?.quarries?.[index].id.toString()}
-          onValueChange={(value) => onUpdateQuarry(index, parseInt(value))}
+          onValueChange={(value) => {
+            const numValue = parseInt(value)
+            const isBuiltIn =
+              !isNaN(numValue) && QUARRIES[numValue as keyof typeof QUARRIES]
+            onUpdateQuarry(
+              index,
+              isBuiltIn ? numValue : (value as unknown as number)
+            )
+          }}
           disabled={isDisabled}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder="Select quarry" />
@@ -136,6 +149,13 @@ export function QuarryItem({
                 {quarry.main.name}
               </SelectItem>
             ))}
+            {Object.entries(campaign.customMonsters || {})
+              .filter(([, monster]) => monster.main.type === MonsterType.QUARRY)
+              .map(([id, monster]) => (
+                <SelectItem key={id} value={id}>
+                  {monster.main.name} (Custom)
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
       )}
@@ -143,7 +163,7 @@ export function QuarryItem({
       {/* Node Badge */}
       <div className="flex items-center gap-1 ml-auto">
         <Badge variant="secondary" className="h-8 w-20">
-          {quarryData?.main.node || 'N/A'}
+          {quarryData?.node || 'N/A'}
         </Badge>
 
         {/* Interaction Buttons */}
@@ -161,14 +181,16 @@ export function QuarryItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() =>
+            onClick={() => {
+              const quarryId = selectedSettlement?.quarries?.[index].id
               onSave(
-                selectedSettlement?.quarries?.[index].id,
-                quarryData?.main.node,
+                typeof quarryId === 'number'
+                  ? quarryId
+                  : (quarryId as unknown as number),
                 selectedSettlement?.quarries?.[index].unlocked,
                 index
               )
-            }
+            }}
             title="Save quarry">
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -191,15 +213,16 @@ export function QuarryItem({
  * @param props New Quarry Item Component Props
  */
 export function NewQuarryItem({
+  campaign,
   onCancel,
   onSave
 }: NewQuarryItemProps): ReactElement {
-  const quarryIdRef = useRef<number>(1)
-  const [selectedQuarryId, setSelectedQuarryId] = useState<number>(1)
+  const quarryIdRef = useRef<number | string>(1)
 
   const handleSave = () => {
-    const quarryData = QUARRIES[quarryIdRef.current as keyof typeof QUARRIES]
-    onSave(quarryIdRef.current, quarryData?.main.node, false)
+    if (typeof quarryIdRef.current === 'number')
+      onSave(quarryIdRef.current, false)
+    else onSave(quarryIdRef.current as unknown as number, false)
   }
 
   return (
@@ -210,15 +233,16 @@ export function NewQuarryItem({
       </div>
 
       {/* Unlocked Checkbox */}
-      <Checkbox checked={false} disabled />
+      <Checkbox checked={false} disabled={true} id="quarry-new-unlocked" />
 
       {/* Quarry Selector */}
       <Select
         defaultValue="1"
         onValueChange={(value) => {
-          const id = parseInt(value)
-          quarryIdRef.current = id
-          setSelectedQuarryId(id)
+          const numValue = parseInt(value)
+          const isBuiltIn =
+            !isNaN(numValue) && QUARRIES[numValue as keyof typeof QUARRIES]
+          quarryIdRef.current = isBuiltIn ? numValue : value
         }}>
         <SelectTrigger className="flex-1">
           <SelectValue placeholder="Select quarry" />
@@ -229,17 +253,17 @@ export function NewQuarryItem({
               {quarry.main.name}
             </SelectItem>
           ))}
+          {Object.entries(campaign.customMonsters || {})
+            .filter(([, monster]) => monster.main.type === MonsterType.QUARRY)
+            .map(([id, monster]) => (
+              <SelectItem key={id} value={id}>
+                {monster.main.name} (Custom)
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
 
       <div className="flex items-center gap-1 ml-auto">
-        {/* Node Badge */}
-        <Badge variant="secondary" className="h-8 w-20">
-          {QUARRIES[selectedQuarryId as keyof typeof QUARRIES]?.main.node ||
-            'N/A'}
-        </Badge>
-
-        {/* Interaction Buttons */}
         <Button
           type="button"
           variant="ghost"
