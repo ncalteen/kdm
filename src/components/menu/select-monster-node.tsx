@@ -14,9 +14,10 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { MonsterNode } from '@/lib/enums'
+import { MonsterNode, MonsterType } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { cn } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { type ReactElement, useMemo, useState } from 'react'
 
@@ -24,14 +25,16 @@ import { type ReactElement, useMemo, useState } from 'react'
  * Select Monster Node Component Properties
  */
 export interface SelectMonsterNodeProps {
+  /** Campaign */
+  campaign: Campaign
   /** Component ID */
   id?: string
   /** Monster Node Type */
   nodeType: MonsterNode
   /** OnChange Callback */
-  onChange?: (value: number[]) => void
-  /** Selected Monster IDs */
-  value?: number[]
+  onChange?: (value: (number | string)[]) => void
+  /** Selected Monster IDs (numbers for built-in, strings for custom) */
+  value?: (number | string)[]
   /** Whether the input is disabled */
   disabled?: boolean
 }
@@ -47,6 +50,7 @@ export interface SelectMonsterNodeProps {
  * @returns Select Monster Node Component
  */
 export function SelectMonsterNode({
+  campaign,
   id,
   nodeType,
   onChange,
@@ -58,8 +62,13 @@ export function SelectMonsterNode({
   const monsterOptions = useMemo(() => {
     const isQuarryNode = nodeType.startsWith('NQ')
     const monsterList = isQuarryNode ? QUARRIES : NEMESES
-    const options: Array<{ id: number; name: string; node: MonsterNode }> = []
+    const options: Array<{
+      id: number | string
+      name: string
+      node: MonsterNode
+    }> = []
 
+    // Add built-in monsters
     Object.entries(monsterList).forEach(([id, monsterData]) => {
       const monster = monsterData.main
       if (monster.node === nodeType)
@@ -70,15 +79,39 @@ export function SelectMonsterNode({
         })
     })
 
+    // Add custom monsters when not disabled (custom campaign)
+    if (!disabled) {
+      try {
+        const customMonsters = campaign.customMonsters || {}
+
+        Object.entries(customMonsters).forEach(([id, monsterData]) => {
+          const monster = monsterData.main
+          const isQuarry = monster.type === MonsterType.QUARRY
+
+          // Only include if monster type matches node type and node matches
+          if (isQuarry === isQuarryNode && monster.node === nodeType) {
+            options.push({
+              id,
+              name: monster.name,
+              node: monster.node
+            })
+          }
+        })
+      } catch (error) {
+        // Silently fail if campaign data is not available
+        console.error('Failed to load custom monsters:', error)
+      }
+    }
+
     return options.sort((a, b) => a.name.localeCompare(b.name))
-  }, [nodeType])
+  }, [campaign.customMonsters, nodeType, disabled])
 
   /**
    * Toggle a monster selection.
    *
-   * @param monsterId Monster ID to toggle
+   * @param monsterId Monster ID to toggle (number or string)
    */
-  const handleToggle = (monsterId: number) => {
+  const handleToggle = (monsterId: number | string) => {
     if (!onChange) return
 
     const newSelection = propValue.includes(monsterId)
@@ -91,9 +124,9 @@ export function SelectMonsterNode({
   /**
    * Remove a monster from selection.
    *
-   * @param monsterId Monster ID to remove
+   * @param monsterId Monster ID to remove (number or string)
    */
-  const handleRemove = (monsterId: number) => {
+  const handleRemove = (monsterId: number | string) => {
     if (!onChange) return
 
     const newSelection = propValue.filter((id) => id !== monsterId)
@@ -107,7 +140,7 @@ export function SelectMonsterNode({
     return propValue
       .map((id) => monsterOptions.find((m) => m.id === id))
       .filter(
-        (m): m is { id: number; name: string; node: MonsterNode } =>
+        (m): m is { id: number | string; name: string; node: MonsterNode } =>
           m !== undefined
       )
   }, [propValue, monsterOptions])

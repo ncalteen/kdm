@@ -13,7 +13,7 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_DELETED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
 import { PencilIcon, Trash2Icon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
@@ -22,8 +22,12 @@ import { ReactElement, useState } from 'react'
  * Custom Monsters Table Component Properties
  */
 export interface CustomMonstersTableProps {
+  /** Campaign */
+  campaign: Campaign
   /** Monster List Change Callback */
   onMonstersChange?: () => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -35,15 +39,16 @@ export interface CustomMonstersTableProps {
  * @returns Custom Monsters Table Component
  */
 export function CustomMonstersTable({
-  onMonstersChange
+  campaign,
+  onMonstersChange,
+  updateCampaign
 }: CustomMonstersTableProps): ReactElement {
-  const { toast } = useToast()
+  const { toast } = useToast(campaign)
 
   const [monsters, setMonsters] = useState<
     Record<string, Record<'main', NemesisMonsterData | QuarryMonsterData>>
   >(() => {
     try {
-      const campaign = getCampaign()
       return campaign.customMonsters || {}
     } catch (error) {
       console.error('Load Custom Monsters Error:', error)
@@ -67,9 +72,7 @@ export function CustomMonstersTable({
    */
   const handleMonsterUpdated = () => {
     try {
-      const campaign = getCampaign()
-      const updatedMonsters = campaign.customMonsters || {}
-      setMonsters(updatedMonsters)
+      setMonsters(campaign.customMonsters || {})
 
       if (onMonstersChange) onMonstersChange()
     } catch (error) {
@@ -82,17 +85,15 @@ export function CustomMonstersTable({
    */
   const handleDeleteMonster = (id: string) => {
     try {
-      const campaign = getCampaign()
       const monsterToDelete = monsters[id as keyof typeof monsters]
 
       const updatedMonsters = { ...campaign.customMonsters }
       delete updatedMonsters[id]
 
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
         customMonsters: updatedMonsters
       })
-
       setMonsters(updatedMonsters)
 
       toast.success(CUSTOM_MONSTER_DELETED_MESSAGE(monsterToDelete?.main.name))
@@ -180,10 +181,12 @@ export function CustomMonstersTable({
       </Table>
 
       <EditMonsterDialog
+        campaign={campaign}
         monsterId={editingMonsterId}
         isOpen={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         onMonsterUpdated={handleMonsterUpdated}
+        updateCampaign={updateCampaign}
       />
     </div>
   )

@@ -27,11 +27,8 @@ import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_UPDATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
-import {
-  getAvailableNodes,
-  getCampaign,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
+import { getAvailableNodes } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import {
   NemesisMonsterDataSchema,
   NemesisMonsterLevel,
@@ -46,6 +43,8 @@ import { ReactElement, useEffect, useState } from 'react'
  * Edit Monster Dialog Properties
  */
 export interface EditMonsterDialogProps {
+  /** Campaign */
+  campaign: Campaign
   /** Monster ID to Edit */
   monsterId: string | null
   /** Dialog Open State */
@@ -54,6 +53,8 @@ export interface EditMonsterDialogProps {
   onOpenChange: (open: boolean) => void
   /** Monster Update Callback */
   onMonsterUpdated?: () => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -65,12 +66,14 @@ export interface EditMonsterDialogProps {
  * @returns Edit Monster Dialog Component
  */
 export function EditMonsterDialog({
+  campaign,
   monsterId,
   isOpen,
   onOpenChange,
-  onMonsterUpdated
+  onMonsterUpdated,
+  updateCampaign
 }: EditMonsterDialogProps): ReactElement {
-  const { toast } = useToast()
+  const { toast } = useToast(campaign)
 
   const [monsterType, setMonsterType] = useState<MonsterType>(
     MonsterType.QUARRY
@@ -108,7 +111,6 @@ export function EditMonsterDialog({
     if (!monsterId || !isOpen) return
 
     const loadMonsterData = () => {
-      const campaign = getCampaign()
       const monster = campaign.customMonsters?.[monsterId]?.main
 
       if (!monster) return
@@ -166,7 +168,7 @@ export function EditMonsterDialog({
     }
 
     loadMonsterData()
-  }, [monsterId, isOpen])
+  }, [campaign.customMonsters, monsterId, isOpen])
 
   /**
    * Handles monster type change to restrict allowed nodes.
@@ -187,7 +189,6 @@ export function EditMonsterDialog({
 
     try {
       // Get existing campaign data
-      const campaign = getCampaign()
       const customMonsters = campaign.customMonsters || {}
 
       // Convert timeline array to correct format
@@ -262,13 +263,14 @@ export function EditMonsterDialog({
               })
             })
 
-      // Update in localStorage
-      customMonsters[monsterId] = {
-        main: monsterData
-      }
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
-        customMonsters
+        customMonsters: {
+          ...customMonsters,
+          [monsterId]: {
+            main: monsterData
+          }
+        }
       })
 
       toast.success(CUSTOM_MONSTER_UPDATED_MESSAGE(monsterType))

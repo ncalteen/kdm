@@ -28,11 +28,8 @@ import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_CREATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
-import {
-  getAvailableNodes,
-  getCampaign,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
+import { getAvailableNodes } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import {
   NemesisMonsterDataSchema,
   NemesisMonsterLevel,
@@ -47,8 +44,12 @@ import { ReactElement, useState } from 'react'
  * Create Monster Dialog Properties
  */
 export interface CreateMonsterDialogProps {
+  /** Campaign */
+  campaign: Campaign
   /** Monster Create Callback */
   onMonsterCreated?: () => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -60,9 +61,11 @@ export interface CreateMonsterDialogProps {
  * @returns Create Monster Dialog Component
  */
 export function CreateMonsterDialog({
-  onMonsterCreated
+  campaign,
+  onMonsterCreated,
+  updateCampaign
 }: CreateMonsterDialogProps): ReactElement {
-  const { toast } = useToast()
+  const { toast } = useToast(campaign)
 
   const [isOpen, setIsOpen] = useState(false)
   const [monsterType, setMonsterType] = useState<MonsterType>(
@@ -126,7 +129,6 @@ export function CreateMonsterDialog({
   const handleCreateMonster = () => {
     try {
       // Get existing campaign data
-      const campaign = getCampaign()
       const customMonsters = campaign.customMonsters || {}
 
       // Generate a unique ID for the monster
@@ -204,13 +206,12 @@ export function CreateMonsterDialog({
               })
             })
 
-      // Save to localStorage
-      customMonsters[monsterId] = {
-        main: monsterData
-      }
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
-        customMonsters
+        customMonsters: {
+          ...customMonsters,
+          [monsterId]: { main: monsterData }
+        }
       })
 
       CUSTOM_MONSTER_CREATED_MESSAGE(monsterType)
