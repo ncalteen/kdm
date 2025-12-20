@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { Input } from '@/components/ui/input'
 import {
   Sidebar,
   SidebarContent,
@@ -31,7 +32,6 @@ import {
   SETTLEMENT_LOADED_MESSAGE,
   SETTLEMENT_SAVED_MESSAGE
 } from '@/lib/messages'
-import { getCampaign } from '@/lib/utils'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { migrateCampaign } from '@/schemas/migrate'
@@ -62,6 +62,9 @@ import {
 } from 'react'
 import { toast } from 'sonner'
 
+/**
+ * Primary Navigation Items
+ */
 const baseNavPrimary = [
   {
     title: 'Timeline',
@@ -95,6 +98,9 @@ const baseNavPrimary = [
   }
 ]
 
+/**
+ * Squires of the Citadel Navigation Items
+ */
 const navSquires = [
   {
     title: 'Timeline',
@@ -128,6 +134,9 @@ const navSquires = [
   }
 ]
 
+/**
+ * Embark Navigation Items
+ */
 const navEmbark = [
   {
     title: 'Hunt',
@@ -141,6 +150,9 @@ const navEmbark = [
   }
 ]
 
+/**
+ * Settings Navigation Items
+ */
 const navSettings = [
   {
     title: 'Settings',
@@ -153,12 +165,18 @@ const navSettings = [
  * Application Sidebar Properties
  */
 interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
+  /** Campaign */
+  campaign: Campaign
   /** Selected Hunt */
   selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Tab */
+  selectedTab: TabType
+  /** Set Is Creating New Settlement */
+  setIsCreatingNewSettlement: (isCreating: boolean) => void
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
@@ -167,6 +185,10 @@ interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -176,16 +198,20 @@ interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
  * @returns Application Sidebar Component
  */
 export function AppSidebar({
+  campaign,
   selectedHunt,
   selectedSettlement,
   selectedShowdown,
+  selectedTab,
   setSelectedHunt,
+  setIsCreatingNewSettlement,
   setSelectedSettlement,
   setSelectedShowdown,
   setSelectedSurvivor,
+  setSelectedTab,
+  updateCampaign,
   ...props
 }: AppSidebarProps): ReactElement {
-  const [campaign, setCampaign] = useState<Campaign>(() => getCampaign())
   const [isDownloading, setIsDownloading] = useState<boolean>(false)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
@@ -236,28 +262,16 @@ export function AppSidebar({
     isMounted
   ])
 
-  // Listen for campaign changes and update the local state
-  useEffect(() => {
-    const handleStorageChange = () => setCampaign(getCampaign())
-
-    // Listen for storage events (when localStorage changes from other tabs)
-    window.addEventListener('storage', handleStorageChange)
-
-    // Listen for custom events when localStorage is updated from the same tab
-    window.addEventListener('campaignUpdated', handleStorageChange)
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('campaignUpdated', handleStorageChange)
-    }
-  }, [])
-
+  /**
+   * Handles campaign data download.
+   */
   const handleDownload = () => {
     try {
       setIsDownloading(true)
 
-      const campaignJson = JSON.stringify(getCampaign(), null, 2)
-      const blob = new Blob([campaignJson], { type: 'application/json' })
+      const blob = new Blob([JSON.stringify(campaign, null, 2)], {
+        type: 'application/json'
+      })
       const url = URL.createObjectURL(blob)
 
       // Create a link element to trigger the download
@@ -344,7 +358,7 @@ export function AppSidebar({
 
     try {
       // Replace existing campaign data
-      localStorage.setItem('campaign', JSON.stringify(uploadedData))
+      updateCampaign(uploadedData)
       toast.success(SETTLEMENT_LOADED_MESSAGE())
 
       // Reset state
@@ -385,7 +399,7 @@ export function AppSidebar({
           selectedHunt={selectedHunt}
           selectedSettlement={selectedSettlement}
           selectedShowdown={selectedShowdown}
-          settlements={campaign.settlements || []}
+          setIsCreatingNewSettlement={setIsCreatingNewSettlement}
           setSelectedHunt={setSelectedHunt}
           setSelectedSettlement={setSelectedSettlement}
           setSelectedShowdown={setSelectedShowdown}
@@ -396,17 +410,29 @@ export function AppSidebar({
       <SidebarContent className="group-data-[collapsible=icon]:justify-center">
         <SidebarGroup className="group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:flex-1">
           <SidebarGroupLabel>Settlement</SidebarGroupLabel>
-          <NavMain items={navItems} />
+          <NavMain
+            items={navItems}
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+          />
         </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel>Embark</SidebarGroupLabel>
-          <NavMain items={navEmbark} />
+          <NavMain
+            items={navEmbark}
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+          />
         </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel>Configuration</SidebarGroupLabel>
-          <NavMain items={navSettings} />
+          <NavMain
+            items={navSettings}
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+          />
         </SidebarGroup>
       </SidebarContent>
 
@@ -486,6 +512,14 @@ export function AppSidebar({
                           {campaign.survivors.length} survivor
                           {campaign.survivors.length !== 1 ? 's' : ''}
                         </li>
+                        <li>
+                          {Object.keys(campaign.customMonsters || {}).length}{' '}
+                          custom monster
+                          {Object.keys(campaign.customMonsters || {}).length !==
+                          1
+                            ? 's'
+                            : ''}
+                        </li>
                       </ul>
                       <p>The records you seek to restore contain:</p>
                       <ul className="list-disc pl-5 space-y-1">
@@ -496,6 +530,17 @@ export function AppSidebar({
                         <li>
                           {uploadedData?.survivors?.length} survivor
                           {uploadedData?.survivors?.length !== 1 ? 's' : ''}
+                        </li>
+                        <li>
+                          {
+                            Object.keys(uploadedData?.customMonsters || {})
+                              .length
+                          }{' '}
+                          custom monster
+                          {Object.keys(uploadedData?.customMonsters || {})
+                            .length !== 1
+                            ? 's'
+                            : ''}
                         </li>
                       </ul>
                       <p>Do you wish to continue?</p>
@@ -529,7 +574,7 @@ export function AppSidebar({
                         </strong>
                       </p>
                       <div className="pt-2">
-                        <input
+                        <Input
                           type="file"
                           ref={fileInputRef}
                           accept=".json,application/json"

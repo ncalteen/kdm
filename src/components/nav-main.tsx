@@ -7,10 +7,25 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { useSelectedTab } from '@/contexts/selected-tab-context'
 import { TabType } from '@/lib/enums'
 import { LucideIcon } from 'lucide-react'
 import { ReactElement } from 'react'
+
+/**
+ * Nav Main Properties
+ */
+interface NavMainProps {
+  /** Navigation Items */
+  items: {
+    title: string
+    tab: TabType
+    icon?: LucideIcon
+  }[]
+  /** Selected Tab */
+  selectedTab: TabType
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
+}
 
 /**
  * Main Navigation Component
@@ -19,16 +34,10 @@ import { ReactElement } from 'react'
  * @returns Main Navigation Component
  */
 export function NavMain({
-  items
-}: {
-  items: {
-    title: string
-    tab: TabType
-    icon?: LucideIcon
-  }[]
-}): ReactElement {
-  const { selectedTab, setSelectedTab } = useSelectedTab()
-
+  items,
+  selectedTab,
+  setSelectedTab
+}: NavMainProps): ReactElement {
   return (
     <SidebarGroup>
       <SidebarMenu className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:items-center">
