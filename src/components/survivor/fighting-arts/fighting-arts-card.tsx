@@ -139,34 +139,14 @@ export function FightingArtsCard({
   }
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedFightingArts Updated Fighting Arts
-   * @param updatedSecretFightingArts Updated Secret Fighting Arts
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedFightingArts: string[],
-    updatedSecretFightingArts: string[],
-    successMsg?: string
-  ) =>
-    saveSelectedSurvivor(
-      {
-        fightingArts: updatedFightingArts,
-        secretFightingArts: updatedSecretFightingArts
-      },
-      successMsg
-    )
-
-  /**
    * Handles the removal of a fighting art.
    *
    * @param art Fighting Art to Remove
    */
   const onRemove = (art: CombinedFightingArt) => {
     if (art.type === 'regular') {
-      const currentArts = [...(selectedSurvivor?.fightingArts || [])]
-      currentArts.splice(art.originalIndex, 1)
+      const updated = [...(selectedSurvivor?.fightingArts || [])]
+      updated.splice(art.originalIndex, 1)
 
       setDisabledInputs((prev) => {
         const next: { [key: string]: boolean } = {}
@@ -185,14 +165,16 @@ export function FightingArtsCard({
         return next
       })
 
-      saveToLocalStorage(
-        currentArts,
-        selectedSurvivor?.secretFightingArts || [],
+      saveSelectedSurvivor(
+        {
+          fightingArts: updated,
+          secretFightingArts: selectedSurvivor?.secretFightingArts || []
+        },
         SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(false)
       )
     } else {
-      const currentArts = [...(selectedSurvivor?.secretFightingArts || [])]
-      currentArts.splice(art.originalIndex, 1)
+      const updated = [...(selectedSurvivor?.secretFightingArts || [])]
+      updated.splice(art.originalIndex, 1)
 
       setDisabledInputs((prev) => {
         const next: { [key: string]: boolean } = {}
@@ -211,9 +193,11 @@ export function FightingArtsCard({
         return next
       })
 
-      saveToLocalStorage(
-        selectedSurvivor?.fightingArts || [],
-        currentArts,
+      saveSelectedSurvivor(
+        {
+          fightingArts: selectedSurvivor?.fightingArts || [],
+          secretFightingArts: updated
+        },
         SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(true)
       )
     }
@@ -238,9 +222,11 @@ export function FightingArtsCard({
         updated[art.originalIndex] = value
 
         setDisabledInputs((prev) => ({ ...prev, [key]: true }))
-        saveToLocalStorage(
-          updated,
-          selectedSurvivor?.secretFightingArts || [],
+        saveSelectedSurvivor(
+          {
+            fightingArts: updated,
+            secretFightingArts: selectedSurvivor?.secretFightingArts || []
+          },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, false)
         )
       } else {
@@ -248,9 +234,11 @@ export function FightingArtsCard({
         updated[art.originalIndex] = value
 
         setDisabledInputs((prev) => ({ ...prev, [key]: true }))
-        saveToLocalStorage(
-          selectedSurvivor?.fightingArts || [],
-          updated,
+        saveSelectedSurvivor(
+          {
+            fightingArts: selectedSurvivor?.fightingArts || [],
+            secretFightingArts: updated
+          },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, false)
         )
       }
@@ -269,9 +257,11 @@ export function FightingArtsCard({
           [`regular-${newArts.length - 1}`]: true
         }))
 
-        saveToLocalStorage(
-          newArts,
-          selectedSurvivor?.secretFightingArts || [],
+        saveSelectedSurvivor(
+          {
+            fightingArts: newArts,
+            secretFightingArts: selectedSurvivor?.secretFightingArts || []
+          },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, true)
         )
       } else {
@@ -287,9 +277,11 @@ export function FightingArtsCard({
           [`secret-${newArts.length - 1}`]: true
         }))
 
-        saveToLocalStorage(
-          selectedSurvivor?.fightingArts || [],
-          newArts,
+        saveSelectedSurvivor(
+          {
+            fightingArts: selectedSurvivor?.fightingArts || [],
+            secretFightingArts: newArts
+          },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, true)
         )
       }
@@ -366,7 +358,10 @@ export function FightingArtsCard({
           oldIndex,
           newIndex
         )
-        saveToLocalStorage(newOrder, selectedSurvivor?.secretFightingArts || [])
+        saveSelectedSurvivor({
+          fightingArts: newOrder,
+          secretFightingArts: selectedSurvivor?.secretFightingArts || []
+        })
 
         setDisabledInputs((prev) => {
           const next: { [key: string]: boolean } = {}
@@ -393,7 +388,10 @@ export function FightingArtsCard({
           oldIndex,
           newIndex
         )
-        saveToLocalStorage(selectedSurvivor?.fightingArts || [], newOrder)
+        saveSelectedSurvivor({
+          fightingArts: selectedSurvivor?.fightingArts || [],
+          secretFightingArts: newOrder
+        })
 
         setDisabledInputs((prev) => {
           const next: { [key: string]: boolean } = {}

@@ -86,37 +86,13 @@ export function AbilitiesAndImpairmentsCard({
   )
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedAbilitiesAndImpairments Updated Abilities/Impairments
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedAbilitiesAndImpairments?: string[],
-    updatedSkipNextHunt?: boolean,
-    successMsg?: string
-  ) => {
-    const updateData: Partial<Survivor> = {}
-
-    if (updatedAbilitiesAndImpairments !== undefined)
-      updateData.abilitiesAndImpairments = updatedAbilitiesAndImpairments
-    if (updatedSkipNextHunt !== undefined)
-      updateData.skipNextHunt = updatedSkipNextHunt
-
-    saveSelectedSurvivor(updateData, successMsg)
-    setIsAddingNew(false)
-  }
-
-  /**
    * Handles the removal of an ability or impairment.
    *
    * @param index Ability Index
    */
   const onRemove = (index: number) => {
-    const updatedAbilitiesAndImpairments = [
-      ...(selectedSurvivor?.abilitiesAndImpairments || [])
-    ]
-    updatedAbilitiesAndImpairments.splice(index, 1)
+    const updated = [...(selectedSurvivor?.abilitiesAndImpairments || [])]
+    updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -130,11 +106,13 @@ export function AbilitiesAndImpairmentsCard({
       return next
     })
 
-    saveToLocalStorage(
-      updatedAbilitiesAndImpairments,
-      undefined,
+    saveSelectedSurvivor(
+      {
+        abilitiesAndImpairments: updated
+      },
       ABILITY_IMPAIRMENT_REMOVED_MESSAGE()
     )
+    setIsAddingNew(false)
   }
 
   /**
@@ -143,33 +121,30 @@ export function AbilitiesAndImpairmentsCard({
    * @param value Ability/Impairment Value
    * @param i Ability/Impairment Index (When Updating Only)
    */
-  const onSaveAbilityOrImpairment = (value?: string, i?: number) => {
+  const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('ability/impairment'))
 
-    const updatedAbilitiesAndImpairments = [
-      ...(selectedSurvivor?.abilitiesAndImpairments || [])
-    ]
+    const updated = [...(selectedSurvivor?.abilitiesAndImpairments || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedAbilitiesAndImpairments[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedAbilitiesAndImpairments.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedAbilitiesAndImpairments.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveToLocalStorage(
-      updatedAbilitiesAndImpairments,
-      undefined,
+    saveSelectedSurvivor(
+      { abilitiesAndImpairments: updated },
       ABILITY_IMPAIRMENT_UPDATED_MESSAGE(i === undefined)
     )
   }
@@ -191,7 +166,7 @@ export function AbilitiesAndImpairmentsCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
+      saveSelectedSurvivor({ abilitiesAndImpairments: newOrder })
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -215,20 +190,18 @@ export function AbilitiesAndImpairmentsCard({
         <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
           Abilities & Impairments
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => setIsAddingNew(true)}
-                className="h-6 w-6"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="h-6 w-6"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
@@ -236,48 +209,44 @@ export function AbilitiesAndImpairmentsCard({
       {/* Abilities/Impairments List */}
       <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex-1 overflow-y-auto">
-            {selectedSurvivor?.abilitiesAndImpairments?.length !== 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}>
-                <SortableContext
-                  items={(selectedSurvivor?.abilitiesAndImpairments || []).map(
-                    (_, index) => index.toString()
-                  )}
-                  strategy={verticalListSortingStrategy}>
-                  {selectedSurvivor?.abilitiesAndImpairments?.map(
-                    (ability, index) => (
-                      <AbilityImpairmentItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) =>
-                          onSaveAbilityOrImpairment(value, i)
-                        }
-                        onEdit={(index: number) =>
-                          setDisabledInputs((prev) => ({
-                            ...prev,
-                            [index]: false
-                          }))
-                        }
-                        selectedSurvivor={selectedSurvivor}
-                      />
-                    )
-                  )}
-                </SortableContext>
-              </DndContext>
-            )}
-            {isAddingNew && (
-              <NewAbilityImpairmentItem
-                onSave={onSaveAbilityOrImpairment}
-                onCancel={() => setIsAddingNew(false)}
-              />
-            )}
-          </div>
+          {selectedSurvivor?.abilitiesAndImpairments?.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={(selectedSurvivor?.abilitiesAndImpairments || []).map(
+                  (_, index) => index.toString()
+                )}
+                strategy={verticalListSortingStrategy}>
+                {selectedSurvivor?.abilitiesAndImpairments?.map(
+                  (ability, index) => (
+                    <AbilityImpairmentItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={(index: number) =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [index]: false
+                        }))
+                      }
+                      selectedSurvivor={selectedSurvivor}
+                    />
+                  )
+                )}
+              </SortableContext>
+            </DndContext>
+          )}
+          {isAddingNew && (
+            <NewAbilityImpairmentItem
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
 
           {/* Skip Next Hunt */}
           <div className="flex justify-end mt-2 pr-2">
@@ -286,9 +255,10 @@ export function AbilitiesAndImpairmentsCard({
                 id="skipNextHunt"
                 checked={!!selectedSurvivor?.skipNextHunt}
                 onCheckedChange={(checked) =>
-                  saveToLocalStorage(
-                    undefined,
-                    !!checked,
+                  saveSelectedSurvivor(
+                    {
+                      skipNextHunt: !!checked
+                    },
                     SURVIVOR_SKIP_NEXT_HUNT_UPDATED_MESSAGE(!!checked)
                   )
                 }

@@ -46,6 +46,9 @@ interface DisordersCardProps {
 
 /**
  * Disorders Card Component
+ *
+ * @param props Disorders Card Properties
+ * @returns Disorders Card Component
  */
 export function DisordersCard({
   saveSelectedSurvivor,
@@ -80,32 +83,13 @@ export function DisordersCard({
   )
 
   /**
-   * Save to Local Storage
-   *
-   * @param updatedDisorders Updated Disorders
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedDisorders: string[],
-    successMsg?: string
-  ) => {
-    saveSelectedSurvivor(
-      {
-        disorders: updatedDisorders
-      },
-      successMsg
-    )
-
-    setIsAddingNew(false)
-  }
-
-  /**
    * Handles the removal of a disorder.
    *
    * @param index Disorder Index
-   */ const onRemove = (index: number) => {
-    const currentDisorders = [...(selectedSurvivor?.disorders || [])]
-    currentDisorders.splice(index, 1)
+   */
+  const onRemove = (index: number) => {
+    const updated = [...(selectedSurvivor?.disorders || [])]
+    updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -119,7 +103,11 @@ export function DisordersCard({
       return next
     })
 
-    saveToLocalStorage(currentDisorders, SURVIVOR_DISORDER_REMOVED_MESSAGE())
+    saveSelectedSurvivor(
+      { disorders: updated },
+      SURVIVOR_DISORDER_REMOVED_MESSAGE()
+    )
+    setIsAddingNew(false)
   }
 
   /**
@@ -138,28 +126,29 @@ export function DisordersCard({
     )
       return toast.error(SURVIVOR_DISORDER_LIMIT_EXCEEDED_ERROR_MESSAGE())
 
-    const updatedDisorders = [...(selectedSurvivor?.disorders || [])]
+    const updated = [...(selectedSurvivor?.disorders || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedDisorders[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedDisorders.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedDisorders.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveToLocalStorage(
-      updatedDisorders,
+    saveSelectedSurvivor(
+      { disorders: updated },
       SURVIVOR_DISORDER_UPDATED_MESSAGE(i === undefined)
     )
+    setIsAddingNew(false)
   }
 
   /**
@@ -179,8 +168,7 @@ export function DisordersCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
-
+      saveSelectedSurvivor({ disorders: newOrder })
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 

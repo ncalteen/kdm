@@ -85,8 +85,8 @@ export function NextDepartureCard({
    * @param index Next Departure Index
    */
   const onRemove = (index: number) => {
-    const currentNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
-    currentNextDeparture.splice(index, 1)
+    const updated = [...(selectedSurvivor?.nextDeparture || [])]
+    updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -101,7 +101,7 @@ export function NextDepartureCard({
     })
 
     saveSelectedSurvivor(
-      { nextDeparture: currentNextDeparture },
+      { nextDeparture: updated },
       SURVIVOR_NEXT_DEPARTURE_BONUS_REMOVED_MESSAGE()
     )
   }
@@ -116,29 +116,28 @@ export function NextDepartureCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('next departure bonus'))
 
-    const updatedNextDeparture = [...(selectedSurvivor?.nextDeparture || [])]
+    const updated = [...(selectedSurvivor?.nextDeparture || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedNextDeparture[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedNextDeparture.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedNextDeparture.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveSelectedSurvivor(
-      { nextDeparture: updatedNextDeparture },
+      { nextDeparture: updated },
       SURVIVOR_NEXT_DEPARTURE_BONUS_UPDATED_MESSAGE(i === undefined)
     )
-
     setIsAddingNew(false)
   }
 
@@ -160,7 +159,6 @@ export function NextDepartureCard({
       )
 
       saveSelectedSurvivor({ nextDeparture: newOrder })
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -203,46 +201,42 @@ export function NextDepartureCard({
       {/* Next Departure List */}
       <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex-1">
-            {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}>
-                <SortableContext
-                  items={(selectedSurvivor?.nextDeparture || []).map(
-                    (_, index) => index.toString()
-                  )}
-                  strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.nextDeparture || []).map(
-                    (item, index) => (
-                      <NextDepartureItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={(index: number) =>
-                          setDisabledInputs((prev) => ({
-                            ...prev,
-                            [index]: false
-                          }))
-                        }
-                        selectedSurvivor={selectedSurvivor}
-                      />
-                    )
-                  )}
-                </SortableContext>
-              </DndContext>
-            )}
-            {isAddingNew && (
-              <NewNextDepartureItem
-                onSave={onSave}
-                onCancel={() => setIsAddingNew(false)}
-              />
-            )}
-          </div>
+          {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={(selectedSurvivor?.nextDeparture || []).map((_, index) =>
+                  index.toString()
+                )}
+                strategy={verticalListSortingStrategy}>
+                {(selectedSurvivor?.nextDeparture || []).map((item, index) => (
+                  <NextDepartureItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={(index: number) =>
+                      setDisabledInputs((prev) => ({
+                        ...prev,
+                        [index]: false
+                      }))
+                    }
+                    selectedSurvivor={selectedSurvivor}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
+          {isAddingNew && (
+            <NewNextDepartureItem
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
         </div>
       </CardContent>
     </Card>

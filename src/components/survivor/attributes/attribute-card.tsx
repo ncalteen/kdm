@@ -69,43 +69,6 @@ export function AttributeCard({
   const isMobile = useIsMobile()
 
   /**
-   * Save to Local Storage
-   *
-   * @param attrName Attribute name
-   * @param value New value
-   */
-  const saveToLocalStorage = (
-    attrName:
-      | 'movement'
-      | 'accuracy'
-      | 'strength'
-      | 'evasion'
-      | 'luck'
-      | 'speed'
-      | 'lumi',
-    value: number
-  ) => {
-    if (!saveSelectedSurvivor) return
-
-    // Thematic success messages for each attribute
-    const attributeMessages: Record<string, () => string> = {
-      movement: SURVIVOR_MOVEMENT_UPDATED_MESSAGE,
-      accuracy: SURVIVOR_ACCURACY_UPDATED_MESSAGE,
-      strength: SURVIVOR_STRENGTH_UPDATED_MESSAGE,
-      evasion: SURVIVOR_EVASION_UPDATED_MESSAGE,
-      luck: SURVIVOR_LUCK_UPDATED_MESSAGE,
-      speed: SURVIVOR_SPEED_UPDATED_MESSAGE,
-      lumi: SURVIVOR_LUMI_UPDATED_MESSAGE
-    }
-
-    const updateData: Partial<Survivor> = {
-      [attrName]: value
-    }
-
-    saveSelectedSurvivor(updateData, attributeMessages[attrName]())
-  }
-
-  /**
    * Save Tokens
    *
    * Saves to either hunt or showdown based on mode
@@ -295,7 +258,15 @@ export function AttributeCard({
             value={selectedSurvivor?.movement ?? 1}
             min={0}
             label="Movement"
-            onChange={(value) => saveToLocalStorage('movement', value)}
+            onChange={(value) => {
+              if (saveSelectedSurvivor)
+                saveSelectedSurvivor(
+                  {
+                    movement: value
+                  },
+                  SURVIVOR_MOVEMENT_UPDATED_MESSAGE()
+                )
+            }}
             readOnly={readOnly}>
             <Input
               placeholder="1"
@@ -303,15 +274,15 @@ export function AttributeCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSurvivor?.movement ?? 1}
               readOnly={isMobile || readOnly}
-              onChange={
-                !isMobile && !readOnly
-                  ? (e) =>
-                      saveToLocalStorage(
-                        'movement',
-                        parseInt(e.target.value, 10)
-                      )
-                  : undefined
-              }
+              onChange={(e) => {
+                if (!isMobile && !readOnly && saveSelectedSurvivor)
+                  saveSelectedSurvivor(
+                    {
+                      movement: parseInt(e.target.value, 10)
+                    },
+                    SURVIVOR_MOVEMENT_UPDATED_MESSAGE()
+                  )
+              }}
               name="movement"
               id="movement"
             />
@@ -323,7 +294,15 @@ export function AttributeCard({
           <NumericInput
             value={selectedSurvivor?.accuracy ?? 0}
             label="Accuracy"
-            onChange={(value) => saveToLocalStorage('accuracy', value)}
+            onChange={(value) => {
+              if (saveSelectedSurvivor)
+                saveSelectedSurvivor(
+                  {
+                    accuracy: value
+                  },
+                  SURVIVOR_ACCURACY_UPDATED_MESSAGE()
+                )
+            }}
             readOnly={readOnly}>
             <Input
               placeholder="0"
@@ -331,15 +310,15 @@ export function AttributeCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSurvivor?.accuracy ?? 0}
               readOnly={isMobile || readOnly}
-              onChange={
-                !isMobile && !readOnly
-                  ? (e) =>
-                      saveToLocalStorage(
-                        'accuracy',
-                        parseInt(e.target.value, 10)
-                      )
-                  : undefined
-              }
+              onChange={(e) => {
+                if (!isMobile && !readOnly && saveSelectedSurvivor)
+                  saveSelectedSurvivor(
+                    {
+                      accuracy: parseInt(e.target.value, 10)
+                    },
+                    SURVIVOR_ACCURACY_UPDATED_MESSAGE()
+                  )
+              }}
               name="accuracy"
               id="accuracy"
             />
@@ -351,7 +330,15 @@ export function AttributeCard({
           <NumericInput
             value={selectedSurvivor?.strength ?? 0}
             label="Strength"
-            onChange={(value) => saveToLocalStorage('strength', value)}
+            onChange={(value) => {
+              if (saveSelectedSurvivor)
+                saveSelectedSurvivor(
+                  {
+                    strength: value
+                  },
+                  SURVIVOR_STRENGTH_UPDATED_MESSAGE()
+                )
+            }}
             readOnly={readOnly}>
             <Input
               placeholder="0"
@@ -359,15 +346,15 @@ export function AttributeCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSurvivor?.strength ?? 0}
               readOnly={isMobile || readOnly}
-              onChange={
-                !isMobile && !readOnly
-                  ? (e) =>
-                      saveToLocalStorage(
-                        'strength',
-                        parseInt(e.target.value, 10)
-                      )
-                  : undefined
-              }
+              onChange={(e) => {
+                if (!isMobile && !readOnly && saveSelectedSurvivor)
+                  saveSelectedSurvivor(
+                    {
+                      strength: parseInt(e.target.value, 10)
+                    },
+                    SURVIVOR_STRENGTH_UPDATED_MESSAGE()
+                  )
+              }}
               name="strength"
               id="strength"
             />
@@ -379,7 +366,15 @@ export function AttributeCard({
           <NumericInput
             value={selectedSurvivor?.evasion ?? 0}
             label="Evasion"
-            onChange={(value) => saveToLocalStorage('evasion', value)}
+            onChange={(value) => {
+              if (saveSelectedSurvivor)
+                saveSelectedSurvivor(
+                  {
+                    evasion: value
+                  },
+                  SURVIVOR_EVASION_UPDATED_MESSAGE()
+                )
+            }}
             readOnly={readOnly}>
             <Input
               placeholder="0"
@@ -387,15 +382,15 @@ export function AttributeCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSurvivor?.evasion ?? 0}
               readOnly={isMobile || readOnly}
-              onChange={
-                !isMobile && !readOnly
-                  ? (e) =>
-                      saveToLocalStorage(
-                        'evasion',
-                        parseInt(e.target.value, 10)
-                      )
-                  : undefined
-              }
+              onChange={(e) => {
+                if (!isMobile && !readOnly && saveSelectedSurvivor)
+                  saveSelectedSurvivor(
+                    {
+                      evasion: parseInt(e.target.value, 10)
+                    },
+                    SURVIVOR_EVASION_UPDATED_MESSAGE()
+                  )
+              }}
               name="evasion"
               id="evasion"
             />
@@ -407,7 +402,15 @@ export function AttributeCard({
           <NumericInput
             value={selectedSurvivor?.luck ?? 0}
             label="Luck"
-            onChange={(value) => saveToLocalStorage('luck', value)}
+            onChange={(value) => {
+              if (saveSelectedSurvivor)
+                saveSelectedSurvivor(
+                  {
+                    luck: value
+                  },
+                  SURVIVOR_LUCK_UPDATED_MESSAGE()
+                )
+            }}
             readOnly={readOnly}>
             <Input
               placeholder="0"
@@ -415,12 +418,15 @@ export function AttributeCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSurvivor?.luck ?? 0}
               readOnly={isMobile || readOnly}
-              onChange={
-                !isMobile && !readOnly
-                  ? (e) =>
-                      saveToLocalStorage('luck', parseInt(e.target.value, 10))
-                  : undefined
-              }
+              onChange={(e) => {
+                if (!isMobile && !readOnly && saveSelectedSurvivor)
+                  saveSelectedSurvivor(
+                    {
+                      luck: parseInt(e.target.value, 10)
+                    },
+                    SURVIVOR_LUCK_UPDATED_MESSAGE()
+                  )
+              }}
               name="luck"
               id="luck"
             />
@@ -432,7 +438,15 @@ export function AttributeCard({
           <NumericInput
             value={selectedSurvivor?.speed ?? 0}
             label="Speed"
-            onChange={(value) => saveToLocalStorage('speed', value)}
+            onChange={(value) => {
+              if (saveSelectedSurvivor)
+                saveSelectedSurvivor(
+                  {
+                    speed: value
+                  },
+                  SURVIVOR_SPEED_UPDATED_MESSAGE()
+                )
+            }}
             readOnly={readOnly}>
             <Input
               placeholder="0"
@@ -440,12 +454,15 @@ export function AttributeCard({
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               value={selectedSurvivor?.speed ?? 0}
               readOnly={isMobile || readOnly}
-              onChange={
-                !isMobile && !readOnly
-                  ? (e) =>
-                      saveToLocalStorage('speed', parseInt(e.target.value, 10))
-                  : undefined
-              }
+              onChange={(e) => {
+                if (!isMobile && !readOnly && saveSelectedSurvivor)
+                  saveSelectedSurvivor(
+                    {
+                      speed: parseInt(e.target.value, 10)
+                    },
+                    SURVIVOR_SPEED_UPDATED_MESSAGE()
+                  )
+              }}
               name="speed"
               id="speed"
             />
@@ -459,7 +476,15 @@ export function AttributeCard({
               value={selectedSurvivor?.lumi ?? 0}
               min={0}
               label="Lumi"
-              onChange={(value) => saveToLocalStorage('lumi', value)}
+              onChange={(value) => {
+                if (saveSelectedSurvivor)
+                  saveSelectedSurvivor(
+                    {
+                      lumi: value
+                    },
+                    SURVIVOR_LUMI_UPDATED_MESSAGE()
+                  )
+              }}
               readOnly={readOnly}>
               <Input
                 placeholder="0"
@@ -467,12 +492,15 @@ export function AttributeCard({
                 className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 value={selectedSurvivor?.lumi ?? 0}
                 readOnly={isMobile || readOnly}
-                onChange={
-                  !isMobile && !readOnly
-                    ? (e) =>
-                        saveToLocalStorage('lumi', parseInt(e.target.value, 10))
-                    : undefined
-                }
+                onChange={(e) => {
+                  if (!isMobile && !readOnly && saveSelectedSurvivor)
+                    saveSelectedSurvivor(
+                      {
+                        lumi: parseInt(e.target.value, 10)
+                      },
+                      SURVIVOR_LUMI_UPDATED_MESSAGE()
+                    )
+                }}
                 name="lumi"
                 id="lumi"
               />

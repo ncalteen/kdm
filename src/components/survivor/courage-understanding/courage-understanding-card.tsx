@@ -43,43 +43,6 @@ export function CourageUnderstandingCard({
   selectedSettlement,
   selectedSurvivor
 }: CourageUnderstandingCardProps): ReactElement {
-  /**
-   * Save to Local Storage
-   *
-   * @param attrName Attribute name
-   * @param value New value
-   */
-  const saveToLocalStorage = (
-    attrName: 'courage' | 'understanding',
-    value: number
-  ) =>
-    saveSelectedSurvivor(
-      {
-        [attrName]: value
-      },
-      attrName === 'courage'
-        ? SURVIVOR_COURAGE_UPDATED_MESSAGE()
-        : SURVIVOR_UNDERSTANDING_UPDATED_MESSAGE()
-    )
-
-  /**
-   * Update Courage
-   *
-   * @param index Index
-   * @param checked Checked
-   */
-  const updateCourage = (index: number, checked: boolean) =>
-    saveToLocalStorage('courage', checked ? index + 1 : index)
-
-  /**
-   * Update Understanding
-   *
-   * @param index Index
-   * @param checked Checked
-   */
-  const updateUnderstanding = (index: number, checked: boolean) =>
-    saveToLocalStorage('understanding', checked ? index + 1 : index)
-
   // Determine the label texts based on campaign type. Currently only People of
   // the Stars has different labels.
   const courageMilestoneText =
@@ -103,7 +66,14 @@ export function CourageUnderstandingCard({
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
                     checked={(selectedSurvivor?.courage || 0) > i}
-                    onCheckedChange={(checked) => updateCourage(i, !!checked)}
+                    onCheckedChange={(checked) =>
+                      saveSelectedSurvivor(
+                        {
+                          courage: !!checked ? i + 1 : i
+                        },
+                        SURVIVOR_COURAGE_UPDATED_MESSAGE()
+                      )
+                    }
                     className={
                       'h-4 w-4 rounded-sm' +
                       (i === 2 || i === 8 ? ' border-2 border-primary' : '')
@@ -149,7 +119,12 @@ export function CourageUnderstandingCard({
                   <Checkbox
                     checked={(selectedSurvivor?.understanding || 0) > i}
                     onCheckedChange={(checked) =>
-                      updateUnderstanding(i, !!checked)
+                      saveSelectedSurvivor(
+                        {
+                          understanding: !!checked ? i + 1 : i
+                        },
+                        SURVIVOR_UNDERSTANDING_UPDATED_MESSAGE()
+                      )
                     }
                     className={
                       'h-4 w-4 rounded-sm' +

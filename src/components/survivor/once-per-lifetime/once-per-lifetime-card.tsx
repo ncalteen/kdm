@@ -110,10 +110,8 @@ export function OncePerLifetimeCard({
    * @param index Event Index
    */
   const onRemove = (index: number) => {
-    const currentOncePerLifetime = [
-      ...(selectedSurvivor?.oncePerLifetime || [])
-    ]
-    currentOncePerLifetime.splice(index, 1)
+    const updated = [...(selectedSurvivor?.oncePerLifetime || [])]
+    updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -128,7 +126,7 @@ export function OncePerLifetimeCard({
     })
 
     saveToLocalStorage(
-      currentOncePerLifetime,
+      updated,
       undefined,
       SURVIVOR_ONCE_PER_LIFETIME_EVENT_REMOVED_MESSAGE()
     )
@@ -146,28 +144,26 @@ export function OncePerLifetimeCard({
         NAMELESS_OBJECT_ERROR_MESSAGE('once per lifetime event')
       )
 
-    const updatedOncePerLifetime = [
-      ...(selectedSurvivor?.oncePerLifetime || [])
-    ]
+    const updated = [...(selectedSurvivor?.oncePerLifetime || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedOncePerLifetime[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedOncePerLifetime.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedOncePerLifetime.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveToLocalStorage(
-      updatedOncePerLifetime,
+      updated,
       undefined,
       SURVIVOR_ONCE_PER_LIFETIME_EVENT_UPDATED_MESSAGE()
     )
@@ -191,7 +187,6 @@ export function OncePerLifetimeCard({
       )
 
       saveToLocalStorage(newOrder)
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -225,20 +220,18 @@ export function OncePerLifetimeCard({
         <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
           Once Per Lifetime
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => setIsAddingNew(true)}
-                className="h-6 w-6"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="h-6 w-6"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
@@ -246,59 +239,57 @@ export function OncePerLifetimeCard({
       {/* Once Per Lifetime List */}
       <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex-1">
-            {selectedSurvivor?.oncePerLifetime?.length !== 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}>
-                <SortableContext
-                  items={(selectedSurvivor?.oncePerLifetime || []).map(
-                    (_, index) => index.toString()
-                  )}
-                  strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.oncePerLifetime || []).map(
-                    (event, index) => (
-                      <OncePerLifetimeItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(value, i) => onSave(value, i)}
-                        onEdit={(index: number) =>
-                          setDisabledInputs((prev) => ({
-                            ...prev,
-                            [index]: false
-                          }))
-                        }
-                        selectedSurvivor={selectedSurvivor}
-                      />
-                    )
-                  )}
-                </SortableContext>
-              </DndContext>
-            )}
-            {isAddingNew && (
-              <NewOncePerLifetimeItem
-                onSave={onSave}
-                onCancel={() => setIsAddingNew(false)}
-              />
-            )}
-          </div>
+          {selectedSurvivor?.oncePerLifetime?.length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={(selectedSurvivor?.oncePerLifetime || []).map(
+                  (_, index) => index.toString()
+                )}
+                strategy={verticalListSortingStrategy}>
+                {(selectedSurvivor?.oncePerLifetime || []).map(
+                  (event, index) => (
+                    <OncePerLifetimeItem
+                      key={index}
+                      id={index.toString()}
+                      index={index}
+                      onRemove={onRemove}
+                      isDisabled={!!disabledInputs[index]}
+                      onSave={(value, i) => onSave(value, i)}
+                      onEdit={(index: number) =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [index]: false
+                        }))
+                      }
+                      selectedSurvivor={selectedSurvivor}
+                    />
+                  )
+                )}
+              </SortableContext>
+            </DndContext>
+          )}
+          {isAddingNew && (
+            <NewOncePerLifetimeItem
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
+        </div>
 
-          {/* Reroll Used - Bottom Right */}
-          <div className="flex justify-end mt-2 pr-2">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="rerollUsed"
-                checked={!!selectedSurvivor?.rerollUsed}
-                onCheckedChange={handleRerollUsedToggle}
-              />
-              <Label htmlFor="rerollUsed" className="text-xs cursor-pointer">
-                Reroll Used
-              </Label>
-            </div>
+        {/* Reroll Used - Bottom Right */}
+        <div className="flex justify-end mt-2 pr-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="rerollUsed"
+              checked={!!selectedSurvivor?.rerollUsed}
+              onCheckedChange={handleRerollUsedToggle}
+            />
+            <Label htmlFor="rerollUsed" className="text-xs cursor-pointer">
+              Reroll Used
+            </Label>
           </div>
         </div>
       </CardContent>

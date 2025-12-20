@@ -38,20 +38,6 @@ export function FacesInTheSky({
   saveSelectedSurvivor,
   selectedSurvivor
 }: FacesInTheSkyProps): ReactElement {
-  /**
-   * Handles toggling a cell in the table
-   *
-   * @param property The property to toggle
-   * @param currentValue The current value of the property
-   */
-  const handleToggleCell = (property: keyof Survivor, currentValue: boolean) =>
-    saveSelectedSurvivor(
-      {
-        [property]: !currentValue
-      },
-      SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
-    )
-
   return (
     <div>
       <Table>
@@ -81,9 +67,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGamblerWitch',
-                  selectedSurvivor?.hasGamblerWitch || false
+                saveSelectedSurvivor(
+                  {
+                    hasGamblerWitch: !selectedSurvivor?.hasGamblerWitch || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               9+ UND
@@ -91,9 +79,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGamblerRust',
-                  selectedSurvivor?.hasGamblerRust || false
+                saveSelectedSurvivor(
+                  {
+                    hasGamblerRust: !selectedSurvivor?.hasGamblerRust || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Destined Disorder
@@ -101,9 +91,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGamblerStorm',
-                  selectedSurvivor?.hasGamblerStorm || false
+                saveSelectedSurvivor(
+                  {
+                    hasGamblerStorm: !selectedSurvivor?.hasGamblerStorm || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Fated Blow FA
@@ -111,9 +103,12 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGamblerReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGamblerReaper',
-                  selectedSurvivor?.hasGamblerReaper || false
+                saveSelectedSurvivor(
+                  {
+                    hasGamblerReaper:
+                      !selectedSurvivor?.hasGamblerReaper || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Pristine Ability
@@ -128,9 +123,12 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasAbsoluteWitch',
-                  selectedSurvivor?.hasAbsoluteWitch || false
+                saveSelectedSurvivor(
+                  {
+                    hasAbsoluteWitch:
+                      !selectedSurvivor?.hasAbsoluteWitch || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Reincarnated
@@ -138,9 +136,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasAbsoluteRust',
-                  selectedSurvivor?.hasAbsoluteRust || false
+                saveSelectedSurvivor(
+                  {
+                    hasAbsoluteRust: !selectedSurvivor?.hasAbsoluteRust || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Frozen Star FA
@@ -148,9 +148,12 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasAbsoluteStorm',
-                  selectedSurvivor?.hasAbsoluteStorm || false
+                saveSelectedSurvivor(
+                  {
+                    hasAbsoluteStorm:
+                      !selectedSurvivor?.hasAbsoluteStorm || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Irid. Hide Abil.
@@ -158,9 +161,12 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasAbsoluteReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasAbsoluteReaper',
-                  selectedSurvivor?.hasAbsoluteReaper || false
+                saveSelectedSurvivor(
+                  {
+                    hasAbsoluteReaper:
+                      !selectedSurvivor?.hasAbsoluteReaper || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Champion&apos;s Rite FA
@@ -175,9 +181,12 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasSculptorWitch',
-                  selectedSurvivor?.hasSculptorWitch || false
+                saveSelectedSurvivor(
+                  {
+                    hasSculptorWitch:
+                      !selectedSurvivor?.hasSculptorWitch || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Scar
@@ -185,9 +194,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasSculptorRust',
-                  selectedSurvivor?.hasSculptorRust || false
+                saveSelectedSurvivor(
+                  {
+                    hasSculptorRust: !selectedSurvivor?.hasSculptorRust || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Noble
@@ -195,9 +206,12 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasSculptorStorm',
-                  selectedSurvivor?.hasSculptorStorm || false
+                saveSelectedSurvivor(
+                  {
+                    hasSculptorStorm:
+                      !selectedSurvivor?.hasSculptorStorm || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Weapon Master
@@ -205,9 +219,12 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasSculptorReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasSculptorReaper',
-                  selectedSurvivor?.hasSculptorReaper || false
+                saveSelectedSurvivor(
+                  {
+                    hasSculptorReaper:
+                      !selectedSurvivor?.hasSculptorReaper || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               1+ Base ACC
@@ -222,9 +239,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinWitch ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGoblinWitch',
-                  selectedSurvivor?.hasGoblinWitch || false
+                saveSelectedSurvivor(
+                  {
+                    hasGoblinWitch: !selectedSurvivor?.hasGoblinWitch || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Oracle&apos;s Eye
@@ -232,9 +251,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinRust ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGoblinRust',
-                  selectedSurvivor?.hasGoblinRust || false
+                saveSelectedSurvivor(
+                  {
+                    hasGoblinRust: !selectedSurvivor?.hasGoblinRust || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               Unbreakable FA
@@ -242,9 +263,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinStorm ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGoblinStorm',
-                  selectedSurvivor?.hasGoblinStorm || false
+                saveSelectedSurvivor(
+                  {
+                    hasGoblinStorm: !selectedSurvivor?.hasGoblinStorm || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               3+ Base STR
@@ -252,9 +275,11 @@ export function FacesInTheSky({
             <TableCell
               className={`py-1 text-xs text-left cursor-pointer ${selectedSurvivor?.hasGoblinReaper ? 'bg-gray-200 text-gray-700' : ''}`}
               onClick={() =>
-                handleToggleCell(
-                  'hasGoblinReaper',
-                  selectedSurvivor?.hasGoblinReaper || false
+                saveSelectedSurvivor(
+                  {
+                    hasGoblinReaper: !selectedSurvivor?.hasGoblinReaper || false
+                  },
+                  SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
               }>
               9+ COU

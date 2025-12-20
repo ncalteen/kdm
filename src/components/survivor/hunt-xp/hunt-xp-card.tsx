@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import { BookOpenIcon } from 'lucide-react'
-import { MouseEvent, ReactElement, useCallback } from 'react'
+import { MouseEvent, ReactElement } from 'react'
 
 /**
  * Hunt XP Card Properties
@@ -45,39 +45,16 @@ export function HuntXPCard({
   selectedSurvivor
 }: HuntXPCardProps): ReactElement {
   /**
-   * Save to Local Storage
-   *
-   * @param updatedHuntXP Updated Hunt XP value
-   * @param updatedHuntXPRankUp Updated Hunt XP rank up milestones
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = useCallback(
-    (
-      updatedHuntXP?: number,
-      updatedHuntXPRankUp?: number[],
-      successMsg?: string
-    ) => {
-      const updateData: Partial<Survivor> = {}
-
-      if (updatedHuntXP !== undefined) updateData.huntXP = updatedHuntXP
-      if (updatedHuntXPRankUp !== undefined)
-        updateData.huntXPRankUp = updatedHuntXPRankUp
-
-      saveSelectedSurvivor(updateData, successMsg)
-    },
-    [saveSelectedSurvivor]
-  )
-
-  /**
    * Update Hunt XP
    *
    * @param index The index of the checkbox (0-based)
    * @param checked Whether the checkbox is checked
    */
   const updateHuntXP = (index: number, checked: boolean) => {
-    saveToLocalStorage(
-      checked ? index + 1 : index,
-      undefined,
+    saveSelectedSurvivor(
+      {
+        huntXP: checked ? index + 1 : index
+      },
       checked && selectedSurvivor?.huntXPRankUp?.includes(index)
         ? HUNT_XP_RANK_UP_ACHIEVED_MESSAGE()
         : HUNT_XP_UPDATED_MESSAGE()
@@ -99,18 +76,20 @@ export function HuntXPCard({
     if (rankUpIndex >= 0) {
       // Remove from rank up milestones
       currentRankUps.splice(rankUpIndex, 1)
-      saveToLocalStorage(
-        undefined,
-        currentRankUps,
+      saveSelectedSurvivor(
+        {
+          huntXPRankUp: currentRankUps
+        },
         HUNT_XP_RANK_UP_MILESTONE_REMOVED_MESSAGE()
       )
     } else {
       // Add to rank up milestones
       currentRankUps.push(index)
       currentRankUps.sort((a, b) => a - b) // Keep sorted
-      saveToLocalStorage(
-        undefined,
-        currentRankUps,
+      saveSelectedSurvivor(
+        {
+          huntXPRankUp: currentRankUps
+        },
         HUNT_XP_RANK_UP_MILESTONE_ADDED_MESSAGE()
       )
     }

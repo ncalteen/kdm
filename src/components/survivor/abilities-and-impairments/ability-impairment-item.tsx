@@ -59,7 +59,10 @@ export function AbilityImpairmentItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug('[AbilityImpairmentItem] Changed', index)
+    console.debug(
+      '[AbilityImpairmentItem] Changed',
+      selectedSurvivor?.abilitiesAndImpairments
+    )
 
     if (inputRef.current)
       inputRef.current.value =
@@ -97,7 +100,7 @@ export function AbilityImpairmentItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-md">
+          <span className="text-sm">
             {selectedSurvivor?.abilitiesAndImpairments?.[index]}
           </span>
         </div>

@@ -85,8 +85,8 @@ export function CursedGearCard({
    * @param index Cursed Gear Index
    */
   const onRemove = (index: number) => {
-    const currentCursedGear = [...(selectedSurvivor?.cursedGear || [])]
-    currentCursedGear.splice(index, 1)
+    const updated = [...(selectedSurvivor?.cursedGear || [])]
+    updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -101,7 +101,7 @@ export function CursedGearCard({
     })
 
     saveSelectedSurvivor(
-      { cursedGear: currentCursedGear },
+      { cursedGear: updated },
       SURVIVOR_CURSED_GEAR_REMOVED_MESSAGE(selectedSurvivor?.name)
     )
   }
@@ -116,32 +116,31 @@ export function CursedGearCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('cursed gear'))
 
-    const updatedCursedGear = [...(selectedSurvivor?.cursedGear || [])]
+    const updated = [...(selectedSurvivor?.cursedGear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedCursedGear[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedCursedGear.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedCursedGear.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveSelectedSurvivor(
-      { cursedGear: updatedCursedGear },
+      { cursedGear: updated },
       SURVIVOR_CURSED_GEAR_UPDATED_MESSAGE(
         selectedSurvivor?.name,
         i === undefined
       )
     )
-
     setIsAddingNew(false)
   }
 
@@ -163,7 +162,6 @@ export function CursedGearCard({
       )
 
       saveSelectedSurvivor({ cursedGear: newOrder })
-
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -206,44 +204,42 @@ export function CursedGearCard({
       {/* Cursed Gear List */}
       <CardContent className="p-0">
         <div className="flex flex-col">
-          <div className="flex-1 overflow-y-auto">
-            {(selectedSurvivor?.cursedGear || []).length !== 0 && (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}>
-                <SortableContext
-                  items={(selectedSurvivor?.cursedGear || []).map((_, index) =>
-                    index.toString()
-                  )}
-                  strategy={verticalListSortingStrategy}>
-                  {(selectedSurvivor?.cursedGear || []).map((item, index) => (
-                    <CursedGearItem
-                      key={index}
-                      id={index.toString()}
-                      index={index}
-                      onRemove={onRemove}
-                      isDisabled={!!disabledInputs[index]}
-                      onSave={(value, i) => onSave(value, i)}
-                      onEdit={(index: number) =>
-                        setDisabledInputs((prev) => ({
-                          ...prev,
-                          [index]: false
-                        }))
-                      }
-                      selectedSurvivor={selectedSurvivor}
-                    />
-                  ))}
-                </SortableContext>
-              </DndContext>
-            )}
-            {isAddingNew && (
-              <NewCursedGearItem
-                onSave={onSave}
-                onCancel={() => setIsAddingNew(false)}
-              />
-            )}
-          </div>
+          {(selectedSurvivor?.cursedGear || []).length !== 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}>
+              <SortableContext
+                items={(selectedSurvivor?.cursedGear || []).map((_, index) =>
+                  index.toString()
+                )}
+                strategy={verticalListSortingStrategy}>
+                {(selectedSurvivor?.cursedGear || []).map((item, index) => (
+                  <CursedGearItem
+                    key={index}
+                    id={index.toString()}
+                    index={index}
+                    onRemove={onRemove}
+                    isDisabled={!!disabledInputs[index]}
+                    onSave={(value, i) => onSave(value, i)}
+                    onEdit={(index: number) =>
+                      setDisabledInputs((prev) => ({
+                        ...prev,
+                        [index]: false
+                      }))
+                    }
+                    selectedSurvivor={selectedSurvivor}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
+          {isAddingNew && (
+            <NewCursedGearItem
+              onSave={onSave}
+              onCancel={() => setIsAddingNew(false)}
+            />
+          )}
         </div>
       </CardContent>
     </Card>
