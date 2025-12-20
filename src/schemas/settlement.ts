@@ -2,7 +2,6 @@
 
 import {
   CampaignType,
-  MonsterNode,
   Philosophy,
   ResourceCategory,
   ResourceType,
@@ -37,10 +36,8 @@ export const QuarrySchema = z.object({
   ccLevel3: z.array(z.boolean()).min(3).max(3).optional(),
   /** Collective Cognition (Prologue) */
   ccPrologue: z.boolean().optional(),
-  /** Quarry ID */
-  id: z.number().min(0, 'Quarry ID must be a positive integer.'),
-  /** Node Level */
-  node: z.enum(MonsterNode),
+  /** Quarry ID (Built-In -> Number / Custom -> String) */
+  id: z.union([z.number().min(0), z.string()]),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -60,8 +57,8 @@ export const NemesisSchema = z.object({
   ccLevel2: z.boolean().optional(),
   /** Collective Cognition (Level 3) */
   ccLevel3: z.boolean().optional(),
-  /** Nemesis ID */
-  id: z.number().min(0, 'Nemesis ID must be a positive integer.'),
+  /** Nemesis ID (Built-In -> Number / Custom -> String) */
+  id: z.union([z.number().min(0), z.string()]),
   /** Completed (Level 1) */
   level1: z.boolean(),
   /** Completed (Level 2) */
@@ -271,10 +268,10 @@ export const BaseSettlementSchema = z.object({
   survivalLimit: z.number().min(1).default(1),
   /** Survivor Type */
   survivorType: z.enum(SurvivorType).default(SurvivorType.CORE),
-  /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
-  usesScouts: z.boolean().default(false),
   /** Settlment Timeline */
   timeline: z.array(TimelineYearSchema).default([]),
+  /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
+  usesScouts: z.boolean().default(false),
 
   /*
    * Arc Survivor Settlements
@@ -347,7 +344,7 @@ export type Settlement = z.infer<typeof SettlementSchema>
  * This is used to ensure that when creating a new settlement, the necessary
  * data is included based on the selected campaign type.
  */
-export const NewSettlementInputSchema = z.object({
+export const NewSettlementInputSchema = BaseSettlementSchema.extend({
   /** Campaign Type */
   campaignType: z
     .enum(CampaignType)
@@ -362,30 +359,29 @@ export const NewSettlementInputSchema = z.object({
    * Monster Selection
    *
    * It's normally recommended to only have one monster per node, but custom
-   * campaigns allow for more flexibility.
+   * campaigns allow for more flexibility. Values can be numbers (built-in
+   * monsters) or strings (custom monster strings).
    */
-  monsters: z
-    .object({
-      /** Node Quarry 1 Monster Selection */
-      NQ1: z.array(z.number().min(1)).default([]),
-      /** Node Quarry 2 Monster Selection */
-      NQ2: z.array(z.number().min(1)).default([]),
-      /** Node Quarry 3 Monster Selection */
-      NQ3: z.array(z.number().min(1)).default([]),
-      /** Node Quarry 4 Monster Selection */
-      NQ4: z.array(z.number().min(1)).default([]),
-      /** Node Nemesis 1 Monster Selection */
-      NN1: z.array(z.number().min(1)).default([]),
-      /** Node Nemesis 2 Monster Selection */
-      NN2: z.array(z.number().min(1)).default([]),
-      /** Node Nemesis 3 Monster Selection */
-      NN3: z.array(z.number().min(1)).default([]),
-      /** Core Monster Selection */
-      CO: z.array(z.number().min(1)).default([]),
-      /** Finale Monster Selection */
-      FI: z.array(z.number().min(1)).default([])
-    })
-    .optional()
+  monsters: z.object({
+    /** Node Quarry 1 Monster Selection */
+    NQ1: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Quarry 2 Monster Selection */
+    NQ2: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Quarry 3 Monster Selection */
+    NQ3: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Quarry 4 Monster Selection */
+    NQ4: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Nemesis 1 Monster Selection */
+    NN1: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Nemesis 2 Monster Selection */
+    NN2: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Nemesis 3 Monster Selection */
+    NN3: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Core Monster Selection */
+    CO: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Finale Monster Selection */
+    FI: z.array(z.union([z.number().min(1), z.string()])).default([])
+  })
 })
 
 /**
