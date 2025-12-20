@@ -18,7 +18,7 @@ import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
-import { Check, ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react'
+import { Check, ChevronsUpDown, House, Plus } from 'lucide-react'
 import { ComponentProps, ReactElement } from 'react'
 
 /**
@@ -105,14 +105,14 @@ export function SettlementSwitcher({
                     : ''
               }`}>
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <GalleryVerticalEnd className="size-4" />
+                <House className="size-4" />
               </div>
 
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-medium">
+                <span className="font-sm">
                   {selectedSettlement?.name ?? 'Create a Settlement'}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   {selectedSettlement?.campaignType ?? 'Choose your destiny'}
                 </span>
               </div>
@@ -147,8 +147,8 @@ export function SettlementSwitcher({
                 key={settlement.id}
                 onSelect={() => handleSettlementSelect(settlement)}>
                 <div className="flex flex-col">
-                  <span>{settlement.name}</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm">{settlement.name}</span>
+                  <span className="text-xs text-muted-foreground">
                     {settlement.campaignType}
                   </span>
                 </div>

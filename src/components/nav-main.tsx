@@ -57,8 +57,8 @@ export function NavMain({
                     ? 'bg-accent text-accent-foreground'
                     : ''
                 }>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
+                {item.icon && <item.icon className="h-2 w-2" />}
+                <span className="text-xs">{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </Collapsible>
