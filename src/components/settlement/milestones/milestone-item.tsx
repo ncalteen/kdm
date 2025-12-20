@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Milestone } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -29,13 +28,13 @@ export interface MilestoneItemProps {
   isDisabled: boolean
   /** Milestone */
   milestone: Milestone
-  /** OnEdit Callback */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Callback */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Callback */
+  /** On Save Handler */
   onSave: (index: number, name: string, event: string) => void
-  /** OnToggleComplete Callback */
+  /** On Toggle Complete Handler */
   onToggleComplete: (index: number, checked: boolean) => void
 }
 
@@ -43,9 +42,9 @@ export interface MilestoneItemProps {
  * New Milestone Item Component Properties
  */
 export interface NewMilestoneItemProps {
-  /** OnCancel Callback */
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Callback */
+  /** On Save Handler */
   onSave: (name: string, event: string) => void
 }
 
@@ -112,12 +111,10 @@ export function MilestoneItem({
         }}
       />
 
-      {/* Name Display/Input Field */}
+      {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <Label className="text-sm" htmlFor={`milestone-${index}-complete`}>
-            {milestone.name}
-          </Label>
+          <span className="text-sm">{milestone.name}</span>
         </div>
       ) : (
         <Input
@@ -130,7 +127,6 @@ export function MilestoneItem({
       )}
 
       <div className="flex items-center gap-1 ml-auto">
-        {/* Event Display/Input Field */}
         {isDisabled ? (
           <Badge variant="secondary" className="h-8 w-40">
             <BookOpenIcon className="h-4 w-4" />
@@ -148,7 +144,6 @@ export function MilestoneItem({
         )}
 
         <div className="flex items-center gap-1 ml-auto">
-          {/* Interaction Buttons */}
           {isDisabled ? (
             <Button
               type="button"
@@ -199,6 +194,14 @@ export function NewMilestoneItem({
   const nameRef = useRef<HTMLInputElement>(null)
   const eventRef = useRef<HTMLInputElement>(null)
 
+  /**
+   * Handles the key down event for the input field.
+   *
+   * If the Enter key is pressed, calls the onSave function with the current
+   * value. If the Escape key is pressed, it calls the onCancel function.
+   *
+   * @param e Key Down Event
+   */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
@@ -228,7 +231,7 @@ export function NewMilestoneItem({
         className="flex-1"
       />
 
-      {/* Event Input Field */}
+      {/* Input Field */}
       <Input
         ref={eventRef}
         placeholder="Event description"

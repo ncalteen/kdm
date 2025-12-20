@@ -18,11 +18,11 @@ export interface DepartingBonusItemProps {
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Handler */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Handler */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
@@ -32,9 +32,9 @@ export interface DepartingBonusItemProps {
  * New Departing Bonus Item Component Properties
  */
 export interface NewDepartingBonusItemProps {
-  /** OnCancel Handler */
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (value?: string) => void
 }
 

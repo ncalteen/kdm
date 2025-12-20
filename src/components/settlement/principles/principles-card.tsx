@@ -62,8 +62,19 @@ export function PrinciplesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.principles || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -76,25 +87,13 @@ export function PrinciplesCard({
   }
 
   /**
-   * Add Principle
-   */
-  const addPrinciple = () => setIsAddingNew(true)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  /**
    * Handles the removal of a principle.
    *
    * @param index Principle Index
    */
   const onRemove = (index: number) => {
-    const currentPrinciples = [...(selectedSettlement?.principles || [])]
-    currentPrinciples.splice(index, 1)
+    const current = [...(selectedSettlement?.principles || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -108,12 +107,7 @@ export function PrinciplesCard({
       return next
     })
 
-    saveSelectedSettlement(
-      {
-        principles: currentPrinciples
-      },
-      PRINCIPLE_REMOVED_MESSAGE()
-    )
+    saveSelectedSettlement({ principles: current }, PRINCIPLE_REMOVED_MESSAGE())
   }
 
   /**
@@ -133,12 +127,12 @@ export function PrinciplesCard({
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
-    const updatedPrinciples = [...(selectedSettlement?.principles || [])]
+    const updated = [...(selectedSettlement?.principles || [])]
 
-    if (index < updatedPrinciples.length) {
+    if (index < updated.length) {
       // Updating an existing principle
-      updatedPrinciples[index] = {
-        ...updatedPrinciples[index],
+      updated[index] = {
+        ...updated[index],
         name,
         option1Name,
         option2Name
@@ -151,7 +145,7 @@ export function PrinciplesCard({
 
       saveSelectedSettlement(
         {
-          principles: updatedPrinciples
+          principles: updated
         },
         PRINCIPLE_UPDATED_MESSAGE(true)
       )
@@ -160,37 +154,27 @@ export function PrinciplesCard({
   }
 
   /**
-   * Enables editing a principle.
-   *
-   * @param index Principle Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-
-  /**
    * Handles selecting an option for a principle. Only one option can be selected at a time.
    *
    * @param index Principle Index
    * @param option Which option (1 or 2)
    */
   const handleOptionSelect = (index: number, option: 1 | 2) => {
-    const updatedPrinciples = [...(selectedSettlement?.principles || [])]
+    const updated = [...(selectedSettlement?.principles || [])]
 
     // Update the option selected, ensuring only one is selected at a time
-    updatedPrinciples[index] = {
-      ...updatedPrinciples[index],
+    updated[index] = {
+      ...updated[index],
       option1Selected: option === 1,
       option2Selected: option === 2
     }
 
     saveSelectedSettlement(
       {
-        principles: updatedPrinciples
+        principles: updated
       },
       PRINCIPLE_OPTION_SELECTED_MESSAGE(
-        option === 1
-          ? updatedPrinciples[index].option1Name
-          : updatedPrinciples[index].option2Name
+        option === 1 ? updated[index].option1Name : updated[index].option2Name
       )
     )
   }
@@ -210,7 +194,7 @@ export function PrinciplesCard({
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
-    const updatedPrinciples = [
+    const updated = [
       ...(selectedSettlement?.principles || []),
       {
         name,
@@ -223,16 +207,15 @@ export function PrinciplesCard({
 
     setDisabledInputs((prev) => ({
       ...prev,
-      [updatedPrinciples.length - 1]: true
+      [updated.length - 1]: true
     }))
 
     saveSelectedSettlement(
       {
-        principles: updatedPrinciples
+        principles: updated
       },
       PRINCIPLE_UPDATED_MESSAGE(false)
     )
-
     setIsAddingNew(false)
   }
 
@@ -253,9 +236,7 @@ export function PrinciplesCard({
         newIndex
       )
 
-      saveSelectedSettlement({
-        principles: newOrder
-      })
+      saveSelectedSettlement({ principles: newOrder })
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -274,32 +255,30 @@ export function PrinciplesCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <StampIcon className="h-4 w-4" />
           Principles
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="icon"
-                variant="outline"
-                onClick={addPrinciple}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
 
       {/* Principles List */}
-      <CardContent className="p-1 pb-2">
+      <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.principles?.length !== 0 && (
@@ -322,7 +301,12 @@ export function PrinciplesCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={onSave}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         handleOptionSelect={handleOptionSelect}
                       />
                     )

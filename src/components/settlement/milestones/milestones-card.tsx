@@ -60,8 +60,19 @@ export function MilestonesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.milestones || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -74,26 +85,13 @@ export function MilestonesCard({
   }
 
   /**
-   * Add Milestone
-   */
-  const addMilestone = () => setIsAddingNew(true)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  /**
    * Handles the removal of a milestone.
    *
    * @param index Milestone Index
    */
   const onRemove = (index: number) => {
-    const currentMilestones = [...(selectedSettlement?.milestones || [])]
-
-    currentMilestones.splice(index, 1)
+    const current = [...(selectedSettlement?.milestones || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -107,10 +105,7 @@ export function MilestonesCard({
       return next
     })
 
-    saveSelectedSettlement(
-      { milestones: currentMilestones },
-      MILESTONE_REMOVED_MESSAGE()
-    )
+    saveSelectedSettlement({ milestones: current }, MILESTONE_REMOVED_MESSAGE())
   }
 
   /**
@@ -127,39 +122,30 @@ export function MilestonesCard({
     if (!event || event.trim() === '')
       return toast.error(MILESTONE_MISSING_EVENT_ERROR())
 
-    const updatedMilestones = [...(selectedSettlement?.milestones || [])]
+    const updated = [...(selectedSettlement?.milestones || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedMilestones[i] = { ...updatedMilestones[i], name, event }
+      updated[i] = { ...updated[i], name, event }
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedMilestones.push({ name, event, complete: false })
+      updated.push({ name, event, complete: false })
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedMilestones.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveSelectedSettlement(
-      { milestones: updatedMilestones },
+      { milestones: updated },
       MILESTONE_UPDATED_MESSAGE(i)
     )
-
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a milestone.
-   *
-   * @param index Milestone Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering milestones.
@@ -203,45 +189,43 @@ export function MilestonesCard({
    * @param checked Completion Status
    */
   const onToggleComplete = (index: number, checked: boolean) => {
-    const updatedMilestones = [...(selectedSettlement?.milestones || [])]
-    updatedMilestones[index] = {
-      ...updatedMilestones[index],
+    const updated = [...(selectedSettlement?.milestones || [])]
+    updated[index] = {
+      ...updated[index],
       complete: checked
     }
 
     saveSelectedSettlement(
-      { milestones: updatedMilestones },
+      { milestones: updated },
       MILESTONE_COMPLETED_MESSAGE(checked)
     )
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <BadgeCheckIcon className="h-4 w-4" />
           Milestones
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addMilestone}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
 
       {/* Milestones List */}
-      <CardContent className="p-1 pb-2">
+      <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.milestones?.length !== 0 && (
@@ -264,7 +248,12 @@ export function MilestonesCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(i, name, event) => onSave(name, event, i)}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         onToggleComplete={onToggleComplete}
                       />
                     )

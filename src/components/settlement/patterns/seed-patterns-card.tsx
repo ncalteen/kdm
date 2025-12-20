@@ -58,8 +58,19 @@ export function SeedPatternsCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.seedPatterns || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -71,23 +82,14 @@ export function SeedPatternsCard({
     )
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  const addSeedPattern = () => setIsAddingNew(true)
-
   /**
    * Handles the removal of a seed pattern.
    *
    * @param index Seed Pattern Index
    */
   const onRemove = (index: number) => {
-    const currentSeedPatterns = [...(selectedSettlement?.seedPatterns || [])]
-    currentSeedPatterns.splice(index, 1)
+    const current = [...(selectedSettlement?.seedPatterns || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -102,7 +104,7 @@ export function SeedPatternsCard({
     })
 
     saveSelectedSettlement(
-      { seedPatterns: currentSeedPatterns },
+      { seedPatterns: current },
       SEED_PATTERN_REMOVED_MESSAGE()
     )
   }
@@ -117,39 +119,30 @@ export function SeedPatternsCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('seed pattern'))
 
-    const updatedSeedPatterns = [...(selectedSettlement?.seedPatterns || [])]
+    const updated = [...(selectedSettlement?.seedPatterns || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedSeedPatterns[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedSeedPatterns.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedSeedPatterns.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveSelectedSettlement(
-      { seedPatterns: updatedSeedPatterns },
+      { seedPatterns: updated },
       SEED_PATTERN_UPDATED_MESSAGE(i)
     )
-
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a value.
-   *
-   * @param index Seed Pattern Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
@@ -187,8 +180,8 @@ export function SeedPatternsCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <BeanIcon className="h-4 w-4" />
           Seed Patterns
@@ -197,7 +190,7 @@ export function SeedPatternsCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addSeedPattern}
+              onClick={() => setIsAddingNew(true)}
               className="border-0 h-8 w-8"
               disabled={
                 isAddingNew ||
@@ -210,7 +203,7 @@ export function SeedPatternsCard({
       </CardHeader>
 
       {/* Seed Patterns List */}
-      <CardContent className="p-1 pb-2 pt-0">
+      <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.seedPatterns?.length !== 0 && (
@@ -232,7 +225,12 @@ export function SeedPatternsCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )

@@ -18,11 +18,11 @@ export interface SeedPatternItemProps {
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnEdit Handler */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Handler */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (value?: string, index?: number) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
@@ -32,9 +32,9 @@ export interface SeedPatternItemProps {
  * New Seed Pattern Item Component Properties
  */
 export interface NewSeedPatternItemProps {
-  /** OnCancel Handler */
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (value?: string) => void
 }
 
@@ -61,8 +61,7 @@ export function SeedPatternItem({
   useEffect(() => {
     console.debug(
       '[SeedPatternItem] Changed',
-      selectedSettlement?.seedPatterns?.[index],
-      index
+      selectedSettlement?.seedPatterns?.[index]
     )
 
     if (inputRef.current)
@@ -70,7 +69,7 @@ export function SeedPatternItem({
   }, [selectedSettlement?.seedPatterns, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.

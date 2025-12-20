@@ -58,7 +58,11 @@ export function AbilitiesAndImpairmentsCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSurvivor?.abilitiesAndImpairments || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (survivorIdRef.current !== selectedSurvivor?.id) {
@@ -80,8 +84,6 @@ export function AbilitiesAndImpairmentsCard({
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addAbility = () => setIsAddingNew(true)
 
   /**
    * Save to Local Storage
@@ -173,14 +175,6 @@ export function AbilitiesAndImpairmentsCard({
   }
 
   /**
-   * Enables editing a value.
-   *
-   * @param index Ability Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-
-  /**
    * Handles the end of a drag event for reordering values.
    *
    * @param event Drag End Event
@@ -226,7 +220,7 @@ export function AbilitiesAndImpairmentsCard({
                 type="button"
                 size="sm"
                 variant="outline"
-                onClick={addAbility}
+                onClick={() => setIsAddingNew(true)}
                 className="h-6 w-6"
                 disabled={
                   isAddingNew ||
@@ -264,7 +258,12 @@ export function AbilitiesAndImpairmentsCard({
                         onSave={(value, i) =>
                           onSaveAbilityOrImpairment(value, i)
                         }
-                        onEdit={onEdit}
+                        onEdit={(index: number) =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSurvivor={selectedSurvivor}
                       />
                     )

@@ -182,9 +182,9 @@ export function RewardItem({
           </Button>
         )}
         <Button
-          type="button"
           variant="ghost"
           size="icon"
+          type="button"
           onClick={() => onRemove(index)}
           title="Remove reward">
           <TrashIcon className="h-4 w-4" />
@@ -286,10 +286,11 @@ export function NewRewardItem({
           variant="ghost"
           size="icon"
           onClick={() => {
-            if (nameInputRef.current && ccInputRef.current) {
-              const ccValue = parseInt(ccInputRef.current.value, 10) || 1
-              onSave(nameInputRef.current.value, ccValue)
-            }
+            if (nameInputRef.current && ccInputRef.current)
+              onSave(
+                nameInputRef.current.value,
+                parseInt(ccInputRef.current.value, 10) || 1
+              )
           }}
           title="Save reward">
           <CheckIcon className="h-4 w-4" />

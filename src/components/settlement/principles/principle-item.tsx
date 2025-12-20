@@ -8,7 +8,7 @@ import { Principle } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { KeyboardEvent, ReactElement, useState, useRef } from 'react'
+import { KeyboardEvent, ReactElement, useRef, useState } from 'react'
 
 /**
  * Principle Item Component Properties
@@ -22,11 +22,11 @@ export interface PrincipleItemProps {
   index: number
   /** Disabled State */
   isDisabled: boolean
-  /** OnEdit Handler */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Handler */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (
     index: number,
     name: string,
@@ -41,9 +41,9 @@ export interface PrincipleItemProps {
  * New Principle Item Component Properties
  */
 export interface NewPrincipleItemProps {
-  /** OnCancel Handler */
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (name: string, option1Name: string, option2Name: string) => void
 }
 
@@ -71,7 +71,7 @@ export function PrincipleItem({
   const option2InputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input fields.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * values.

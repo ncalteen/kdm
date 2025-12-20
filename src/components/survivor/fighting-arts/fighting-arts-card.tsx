@@ -90,7 +90,15 @@ export function FightingArtsCard({
   // Track state for input editing
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSurvivor?.fightingArts || [])
+        .map((_, i) => [i, true])
+        .concat(
+          (selectedSurvivor?.secretFightingArts || []).map((_, i) => [i, true])
+        )
+    )
+  )
 
   // Track which type we're currently adding
   const [newArtType, setNewArtType] = useState<'regular' | 'secret'>('regular')

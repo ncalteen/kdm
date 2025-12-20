@@ -60,7 +60,11 @@ export function PhilosophiesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
@@ -79,8 +83,6 @@ export function PhilosophiesCard({
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addPhilosophy = () => setIsAddingNew(true)
 
   /**
    * Handles the removal of a philosophy.
@@ -152,14 +154,6 @@ export function PhilosophiesCard({
   }
 
   /**
-   * Enables editing a value.
-   *
-   * @param index Philosophy Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-
-  /**
    * Handles the end of a drag event for reordering values.
    *
    * @param event Drag End Event
@@ -208,7 +202,7 @@ export function PhilosophiesCard({
                 type="button"
                 size="sm"
                 variant="outline"
-                onClick={addPhilosophy}
+                onClick={() => setIsAddingNew(true)}
                 className="border-0 h-8 w-8"
                 disabled={
                   isAddingNew ||
@@ -244,7 +238,12 @@ export function PhilosophiesCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
+                        onEdit={(index: number) =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )

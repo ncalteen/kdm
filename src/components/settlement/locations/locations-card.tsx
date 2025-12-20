@@ -59,8 +59,19 @@ export function LocationsCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.locations || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -72,23 +83,14 @@ export function LocationsCard({
     )
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  const addLocation = () => setIsAddingNew(true)
-
   /**
    * Handles the removal of a location.
    *
    * @param index Location Index
    */
   const onRemove = (index: number) => {
-    const currentLocations = [...(selectedSettlement?.locations || [])]
-    currentLocations.splice(index, 1)
+    const current = [...(selectedSettlement?.locations || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -102,10 +104,7 @@ export function LocationsCard({
       return next
     })
 
-    saveSelectedSettlement(
-      { locations: currentLocations },
-      LOCATION_REMOVED_MESSAGE()
-    )
+    saveSelectedSettlement({ locations: current }, LOCATION_REMOVED_MESSAGE())
   }
 
   /**
@@ -120,30 +119,25 @@ export function LocationsCard({
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('location'))
 
     const locationData = { name: name.trim(), unlocked: unlocked || false }
-
-    const updatedLocations = [...(selectedSettlement?.locations || [])]
+    const updated = [...(selectedSettlement?.locations || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedLocations[i] = locationData
+      updated[i] = locationData
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedLocations.push(locationData)
+      updated.push(locationData)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedLocations.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveSelectedSettlement(
-      { locations: updatedLocations },
-      LOCATION_UPDATED_MESSAGE(i)
-    )
-
+    saveSelectedSettlement({ locations: updated }, LOCATION_UPDATED_MESSAGE(i))
     setIsAddingNew(false)
   }
 
@@ -154,22 +148,14 @@ export function LocationsCard({
    * @param unlocked New Unlocked State
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const currentLocations = [...(selectedSettlement?.locations || [])]
-    currentLocations[index] = { ...currentLocations[index], unlocked }
+    const current = [...(selectedSettlement?.locations || [])]
+    current[index] = { ...current[index], unlocked }
 
     saveSelectedSettlement(
-      { locations: currentLocations },
+      { locations: current },
       LOCATION_UNLOCKED_MESSAGE(unlocked)
     )
   }
-
-  /**
-   * Enables editing a value.
-   *
-   * @param index Location Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
@@ -207,8 +193,8 @@ export function LocationsCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <HouseIcon className="h-4 w-4" />
           Locations
@@ -217,7 +203,7 @@ export function LocationsCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addLocation}
+              onClick={() => setIsAddingNew(true)}
               className="border-0 h-8 w-8"
               disabled={
                 isAddingNew ||
@@ -230,7 +216,7 @@ export function LocationsCard({
       </CardHeader>
 
       {/* Locations List */}
-      <CardContent className="p-1 pb-2 pt-0">
+      <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[400px]">
           <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.locations?.length !== 0 && (
@@ -255,7 +241,12 @@ export function LocationsCard({
                           onSave(name, unlocked, i)
                         }
                         onToggleUnlocked={onToggleUnlocked}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )

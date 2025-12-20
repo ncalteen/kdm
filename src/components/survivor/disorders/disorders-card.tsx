@@ -55,7 +55,11 @@ export function DisordersCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSurvivor?.disorders || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (survivorIdRef.current !== selectedSurvivor?.id) {
@@ -74,8 +78,6 @@ export function DisordersCard({
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addDisorder = () => setIsAddingNew(true)
 
   /**
    * Save to Local Storage
@@ -161,14 +163,6 @@ export function DisordersCard({
   }
 
   /**
-   * Enables editing a value.
-   *
-   * @param index Disorder Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-
-  /**
    * Handles the end of a drag event for reordering values.
    *
    * @param event Drag End Event
@@ -214,7 +208,7 @@ export function DisordersCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addDisorder}
+              onClick={() => setIsAddingNew(true)}
               className="h-6 w-6"
               disabled={
                 isAddingNew ||
@@ -248,7 +242,9 @@ export function DisordersCard({
                     onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
                     onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
+                    onEdit={(index: number) =>
+                      setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+                    }
                     selectedSurvivor={selectedSurvivor}
                   />
                 ))}

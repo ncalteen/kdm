@@ -55,8 +55,19 @@ export function GearCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
-  const [isAddingNew, setIsAddingNew] = useState(false)
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.gear || []).map((_, i) => [i, true])
+    )
+  )
+  const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -68,23 +79,14 @@ export function GearCard({
     )
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  const addGear = () => setIsAddingNew(true)
-
   /**
    * Handles the removal of gear.
    *
    * @param index Gear Index
    */
   const onRemove = (index: number) => {
-    const currentGear = [...(selectedSettlement?.gear || [])]
-    currentGear.splice(index, 1)
+    const current = [...(selectedSettlement?.gear || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -98,7 +100,7 @@ export function GearCard({
       return next
     })
 
-    saveSelectedSettlement({ gear: currentGear }, GEAR_REMOVED_MESSAGE())
+    saveSelectedSettlement({ gear: current }, GEAR_REMOVED_MESSAGE())
   }
 
   /**
@@ -111,36 +113,28 @@ export function GearCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('gear'))
 
-    const updatedGear = [...(selectedSettlement?.gear || [])]
+    const updated = [...(selectedSettlement?.gear || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedGear[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedGear.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedGear.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveSelectedSettlement({ gear: updatedGear }, GEAR_UPDATED_MESSAGE(i))
+    saveSelectedSettlement({ gear: updated }, GEAR_UPDATED_MESSAGE(i))
 
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing gear.
-   *
-   * @param index Gear Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering gear.
@@ -178,34 +172,32 @@ export function GearCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <WrenchIcon className="h-4 w-4" />
           Gear Storage
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addGear}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
 
       {/* Gear List */}
-      <CardContent className="p-1 pb-2 pt-0">
-        <div className="h-[200px] overflow-y-auto">
-          <div className="space-y-1">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col h-[240px]">
+          <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.gear?.length !== 0 && (
               <DndContext
                 sensors={sensors}
@@ -224,7 +216,12 @@ export function GearCard({
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
+                      onEdit={() =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [index]: false
+                        }))
+                      }
                       selectedSettlement={selectedSettlement}
                     />
                   ))}

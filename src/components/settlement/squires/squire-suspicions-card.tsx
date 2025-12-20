@@ -67,40 +67,38 @@ export function SquireSuspicionsCard({
     level: number,
     checked: boolean
   ) => {
-    const updatedSuspicions = (selectedSettlement?.suspicions || []).map(
-      (suspicion) => {
-        if (suspicion.name === squireName) {
-          // Make a copy of the suspicion
-          const updatedSuspicion = { ...suspicion }
+    const updated = (selectedSettlement?.suspicions || []).map((suspicion) => {
+      if (suspicion.name === squireName) {
+        // Make a copy of the suspicion
+        const updatedSuspicion = { ...suspicion }
 
-          // Update the specified level
-          if (level === 1) updatedSuspicion.level1 = checked
-          if (level === 2) updatedSuspicion.level2 = checked
-          if (level === 3) updatedSuspicion.level3 = checked
-          if (level === 4) updatedSuspicion.level4 = checked
+        // Update the specified level
+        if (level === 1) updatedSuspicion.level1 = checked
+        if (level === 2) updatedSuspicion.level2 = checked
+        if (level === 3) updatedSuspicion.level3 = checked
+        if (level === 4) updatedSuspicion.level4 = checked
 
-          // If checking a higher level, also check all lower levels
-          if (checked) {
-            if (level >= 2) updatedSuspicion.level1 = true
-            if (level >= 3) updatedSuspicion.level2 = true
-            if (level >= 4) updatedSuspicion.level3 = true
-          }
-
-          // If unchecking a lower level, also uncheck all higher levels
-          if (!checked) {
-            if (level <= 1) updatedSuspicion.level2 = false
-            if (level <= 2) updatedSuspicion.level3 = false
-            if (level <= 3) updatedSuspicion.level4 = false
-          }
-
-          return updatedSuspicion
+        // If checking a higher level, also check all lower levels
+        if (checked) {
+          if (level >= 2) updatedSuspicion.level1 = true
+          if (level >= 3) updatedSuspicion.level2 = true
+          if (level >= 4) updatedSuspicion.level3 = true
         }
-        return suspicion
+
+        // If unchecking a lower level, also uncheck all higher levels
+        if (!checked) {
+          if (level <= 1) updatedSuspicion.level2 = false
+          if (level <= 2) updatedSuspicion.level3 = false
+          if (level <= 3) updatedSuspicion.level4 = false
+        }
+
+        return updatedSuspicion
       }
-    )
+      return suspicion
+    })
 
     saveSelectedSettlement(
-      { suspicions: updatedSuspicions },
+      { suspicions: updated },
       SQUIRE_SUSPICION_UPDATED_MESSAGE(squireName)
     )
   }

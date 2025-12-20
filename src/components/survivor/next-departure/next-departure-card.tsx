@@ -55,7 +55,11 @@ export function NextDepartureCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSurvivor?.nextDeparture || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (survivorIdRef.current !== selectedSurvivor?.id) {
@@ -74,8 +78,6 @@ export function NextDepartureCard({
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addItem = () => setIsAddingNew(true)
 
   /**
    * Handles the removal of a next departure.
@@ -141,14 +143,6 @@ export function NextDepartureCard({
   }
 
   /**
-   * Enables editing a value.
-   *
-   * @param index Next Departure Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-
-  /**
    * Handles the end of a drag event for reordering values.
    *
    * @param event Drag End Event
@@ -194,7 +188,7 @@ export function NextDepartureCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addItem}
+              onClick={() => setIsAddingNew(true)}
               className="h-6 w-6"
               disabled={
                 isAddingNew ||
@@ -229,7 +223,12 @@ export function NextDepartureCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
+                        onEdit={(index: number) =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSurvivor={selectedSurvivor}
                       />
                     )

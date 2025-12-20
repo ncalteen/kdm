@@ -55,7 +55,11 @@ export function CursedGearCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSurvivor?.cursedGear || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (survivorIdRef.current !== selectedSurvivor?.id) {
@@ -74,8 +78,6 @@ export function CursedGearCard({
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const addItem = () => setIsAddingNew(true)
 
   /**
    * Handles the removal of a cursed gear.
@@ -144,14 +146,6 @@ export function CursedGearCard({
   }
 
   /**
-   * Enables editing a value.
-   *
-   * @param index Cursed Gear Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-
-  /**
    * Handles the end of a drag event for reordering values.
    *
    * @param event Drag End Event
@@ -197,7 +191,7 @@ export function CursedGearCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addItem}
+              onClick={() => setIsAddingNew(true)}
               className="h-6 w-6"
               disabled={
                 isAddingNew ||
@@ -231,7 +225,12 @@ export function CursedGearCard({
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
                       onSave={(value, i) => onSave(value, i)}
-                      onEdit={onEdit}
+                      onEdit={(index: number) =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [index]: false
+                        }))
+                      }
                       selectedSurvivor={selectedSurvivor}
                     />
                   ))}

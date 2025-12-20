@@ -65,8 +65,7 @@ export function KnowledgeItem({
   useEffect(() => {
     console.debug(
       '[KnowledgeItem] Changed',
-      selectedSettlement?.knowledges?.[index],
-      index
+      selectedSettlement?.knowledges?.[index]
     )
 
     if (inputRef.current)

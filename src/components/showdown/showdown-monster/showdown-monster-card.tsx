@@ -216,9 +216,6 @@ export function ShowdownMonsterCard({
     setIsAddingTrait(false)
   }
 
-  const onEditTrait = (index: number) =>
-    setDisabledTraits((prev) => ({ ...prev, [index]: false }))
-
   /**
    * Mood Operations
    */
@@ -264,9 +261,6 @@ export function ShowdownMonsterCard({
     )
     setIsAddingMood(false)
   }
-
-  const onEditMood = (index: number) =>
-    setDisabledMoods((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handle Save Notes
@@ -365,10 +359,14 @@ export function ShowdownMonsterCard({
               isAddingMood={isAddingMood}
               setIsAddingTrait={setIsAddingTrait}
               setIsAddingMood={setIsAddingMood}
-              onEditTrait={onEditTrait}
+              onEditTrait={(index: number) =>
+                setDisabledTraits((prev) => ({ ...prev, [index]: false }))
+              }
               onSaveTrait={onSaveTrait}
               onRemoveTrait={onRemoveTrait}
-              onEditMood={onEditMood}
+              onEditMood={(index: number) =>
+                setDisabledMoods((prev) => ({ ...prev, [index]: false }))
+              }
               onSaveMood={onSaveMood}
               onRemoveMood={onRemoveMood}
             />

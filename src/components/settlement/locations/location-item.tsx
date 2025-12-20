@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -66,8 +65,7 @@ export function LocationItem({
   useEffect(() => {
     console.debug(
       '[LocationItem] Changed',
-      selectedSettlement?.locations?.[index],
-      index
+      selectedSettlement?.locations?.[index]
     )
 
     if (inputRef.current)
@@ -75,7 +73,7 @@ export function LocationItem({
   }, [selectedSettlement?.locations, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -118,9 +116,9 @@ export function LocationItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <Label className="text-sm" htmlFor={`location-unlocked-${index}`}>
+          <span className="text-sm">
             {selectedSettlement?.locations?.[index].name || ''}
-          </Label>
+          </span>
         </div>
       ) : (
         <Input

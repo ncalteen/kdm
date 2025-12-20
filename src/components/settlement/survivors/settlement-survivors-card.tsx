@@ -124,31 +124,17 @@ export function SettlementSurvivorsCard({
     ]
   )
 
-  const columns = useMemo(
-    () =>
-      createColumns({
-        deleteId,
-        handleDeleteSurvivor,
-        isDeleteDialogOpen,
-        selectedHunt,
-        selectedShowdown,
-        setDeleteId,
-        setIsDeleteDialogOpen,
-        setSelectedSurvivor,
-        setSelectedTab
-      }),
-    [
-      deleteId,
-      handleDeleteSurvivor,
-      isDeleteDialogOpen,
-      selectedHunt,
-      selectedShowdown,
-      setDeleteId,
-      setIsDeleteDialogOpen,
-      setSelectedSurvivor,
-      setSelectedTab
-    ]
-  )
+  const columns = createColumns({
+    deleteId,
+    handleDeleteSurvivor,
+    isDeleteDialogOpen,
+    selectedHunt,
+    selectedShowdown,
+    setDeleteId,
+    setIsDeleteDialogOpen,
+    setSelectedSurvivor,
+    setSelectedTab
+  })
 
   // Only show the philosophy column if the settlement uses Arc survivors
   const columnVisibility = useMemo(
