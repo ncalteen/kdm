@@ -195,6 +195,19 @@ export function CreateShowdownCard({
       setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
       setSelectedMonsterToughness(levelData.toughness ?? 6)
       setSelectedMonsterTraits(levelData.traits ?? [])
+
+      // Set disabled state for auto-populated traits and moods
+      const traitsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.traits ?? []).forEach((_, index) => {
+        traitsDisabled[index] = true
+      })
+      setDisabledTraits(traitsDisabled)
+
+      const moodsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.moods ?? []).forEach((_, index) => {
+        moodsDisabled[index] = true
+      })
+      setDisabledMoods(moodsDisabled)
     }
   }
 
@@ -238,6 +251,19 @@ export function CreateShowdownCard({
       setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
       setSelectedMonsterToughness(levelData.toughness ?? 6)
       setSelectedMonsterTraits(levelData.traits ?? [])
+
+      // Set disabled state for auto-populated traits and moods
+      const traitsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.traits ?? []).forEach((_, index) => {
+        traitsDisabled[index] = true
+      })
+      setDisabledTraits(traitsDisabled)
+
+      const moodsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.moods ?? []).forEach((_, index) => {
+        moodsDisabled[index] = true
+      })
+      setDisabledMoods(moodsDisabled)
     }
   }
 
