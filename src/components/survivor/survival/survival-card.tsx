@@ -359,7 +359,7 @@ export function SurvivalCard({
                       placeholder="1"
                       type="number"
                       className={cn(
-                        'w-12 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+                        'w-16 h-12 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
                       )}
                       value={selectedSurvivor?.survival ?? '1'}
                       readOnly={isMobile}
