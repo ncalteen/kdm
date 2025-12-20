@@ -384,6 +384,23 @@ export const LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR = () =>
   'Lantern research level cannot be reduced below 0.'
 
 /**
+ * Lantern Research Level Updated
+ *
+ * @param oldValue Old Lantern Research Level
+ * @param newValue New Lantern Research Level
+ * @returns Lantern Research Level Updated Message
+ */
+export const LANTERN_RESEARCH_LEVEL_UPDATED_MESSAGE = (
+  oldValue: number,
+  newValue: number
+) =>
+  oldValue < newValue
+    ? "The lantern's glow illuminates new knowledge."
+    : oldValue > newValue
+      ? 'The lantern dims, losing some of its knowledge.'
+      : "The lantern's knowledge remains unchanged."
+
+/**
  * Location Removed
  *
  * @returns Location Removed Message
