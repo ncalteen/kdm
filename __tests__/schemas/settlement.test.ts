@@ -1,6 +1,5 @@
 import {
   CampaignType,
-  MonsterNode,
   Philosophy,
   ResourceCategory,
   ResourceType,
@@ -69,7 +68,6 @@ describe('QuarrySchema', () => {
         ccLevel3: [true, false, true],
         ccPrologue: false,
         id: 1,
-        node: MonsterNode.NQ1,
         unlocked: true
       })
 
@@ -80,17 +78,63 @@ describe('QuarrySchema', () => {
         expect(result.data.ccLevel3).toHaveLength(3)
       }
     })
+
+    it('should validate with numeric ID', () => {
+      const result = QuarrySchema.safeParse({
+        ccLevel1: false,
+        ccLevel2: [false, false],
+        ccLevel3: [false, false, false],
+        ccPrologue: false,
+        id: 42,
+        unlocked: true
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.id).toBe(42)
+      }
+    })
+
+    it('should validate with string ID for custom monsters', () => {
+      const result = QuarrySchema.safeParse({
+        ccLevel1: false,
+        ccLevel2: [false, false],
+        ccLevel3: [false, false, false],
+        ccPrologue: false,
+        id: 'custom-monster-uuid',
+        unlocked: true
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.id).toBe('custom-monster-uuid')
+      }
+    })
+
+    it('should validate with minimal required fields', () => {
+      const result = QuarrySchema.safeParse({
+        id: 1,
+        unlocked: false
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.ccLevel1).toBeUndefined()
+        expect(result.data.ccLevel2).toBeUndefined()
+        expect(result.data.ccLevel3).toBeUndefined()
+        expect(result.data.ccPrologue).toBeUndefined()
+      }
+    })
   })
 
   describe('Invalid Data', () => {
-    it('should fail when id is negative', () => {
+    it('should fail when id is negative number', () => {
       const result = QuarrySchema.safeParse({
         ccLevel1: false,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
         ccPrologue: false,
         id: -1,
-        node: MonsterNode.NQ1,
         unlocked: false
       })
 
@@ -103,8 +147,19 @@ describe('QuarrySchema', () => {
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
         ccPrologue: false,
-        node: MonsterNode.NQ1,
         unlocked: false
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it('should fail when unlocked is missing', () => {
+      const result = QuarrySchema.safeParse({
+        ccLevel1: false,
+        ccLevel2: [false, false],
+        ccLevel3: [false, false, false],
+        ccPrologue: false,
+        id: 1
       })
 
       expect(result.success).toBe(false)
@@ -117,7 +172,6 @@ describe('QuarrySchema', () => {
         ccLevel3: [false, false, false],
         ccPrologue: false,
         id: 1,
-        node: MonsterNode.NQ1,
         unlocked: false
       })
 
@@ -131,7 +185,6 @@ describe('QuarrySchema', () => {
         ccLevel3: [false, false],
         ccPrologue: false,
         id: 1,
-        node: MonsterNode.NQ1,
         unlocked: false
       })
 
@@ -142,7 +195,7 @@ describe('QuarrySchema', () => {
 
 describe('NemesisSchema', () => {
   describe('Valid Data', () => {
-    it('should validate with all fields', () => {
+    it('should validate with all fields including level4', () => {
       const result = NemesisSchema.safeParse({
         ccLevel1: true,
         ccLevel2: false,
@@ -151,6 +204,7 @@ describe('NemesisSchema', () => {
         level1: true,
         level2: false,
         level3: false,
+        level4: false,
         unlocked: true
       })
 
@@ -158,12 +212,65 @@ describe('NemesisSchema', () => {
       if (result.success) {
         expect(result.data.id).toBe(2)
         expect(result.data.level1).toBe(true)
+        expect(result.data.level4).toBe(false)
+      }
+    })
+
+    it('should validate with numeric ID', () => {
+      const result = NemesisSchema.safeParse({
+        ccLevel1: false,
+        ccLevel2: false,
+        ccLevel3: false,
+        id: 10,
+        level1: false,
+        level2: false,
+        level3: false,
+        unlocked: false
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.id).toBe(10)
+      }
+    })
+
+    it('should validate with string ID for custom nemeses', () => {
+      const result = NemesisSchema.safeParse({
+        ccLevel1: false,
+        ccLevel2: false,
+        ccLevel3: false,
+        id: 'custom-nemesis-uuid',
+        level1: false,
+        level2: false,
+        level3: false,
+        unlocked: false
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.id).toBe('custom-nemesis-uuid')
+      }
+    })
+
+    it('should validate without optional cc and level4 fields', () => {
+      const result = NemesisSchema.safeParse({
+        id: 5,
+        level1: true,
+        level2: false,
+        level3: false,
+        unlocked: true
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.ccLevel1).toBeUndefined()
+        expect(result.data.level4).toBeUndefined()
       }
     })
   })
 
   describe('Invalid Data', () => {
-    it('should fail when id is negative', () => {
+    it('should fail when id is negative number', () => {
       const result = NemesisSchema.safeParse({
         ccLevel1: false,
         ccLevel2: false,
@@ -187,6 +294,27 @@ describe('NemesisSchema', () => {
         level2: false,
         level3: false,
         unlocked: false
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it('should fail when required level fields are missing', () => {
+      const result = NemesisSchema.safeParse({
+        id: 1,
+        level1: true,
+        unlocked: true
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it('should fail when unlocked is missing', () => {
+      const result = NemesisSchema.safeParse({
+        id: 1,
+        level1: false,
+        level2: false,
+        level3: false
       })
 
       expect(result.success).toBe(false)
@@ -476,6 +604,42 @@ describe('BaseSettlementSchema', () => {
     })
   })
 
+  describe('Valid Data with Arc Features', () => {
+    it('should validate with ccRewards', () => {
+      const result = BaseSettlementSchema.safeParse({
+        survivorType: SurvivorType.ARC,
+        ccValue: 15,
+        ccRewards: [
+          { cc: 5, name: 'Reward 1', unlocked: true },
+          { cc: 10, name: 'Reward 2', unlocked: false }
+        ]
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.ccRewards).toHaveLength(2)
+        expect(result.data.ccValue).toBe(15)
+      }
+    })
+
+    it('should validate with knowledges and philosophies', () => {
+      const result = BaseSettlementSchema.safeParse({
+        survivorType: SurvivorType.ARC,
+        knowledges: [
+          { name: 'Knowledge 1', philosophy: Philosophy.AMBITIONISM },
+          { name: 'Knowledge 2' }
+        ],
+        philosophies: [Philosophy.COLLECTIVISM, Philosophy.AMBITIONISM]
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.knowledges).toHaveLength(2)
+        expect(result.data.philosophies).toHaveLength(2)
+      }
+    })
+  })
+
   describe('Invalid Data', () => {
     it('should fail when population is negative', () => {
       const result = BaseSettlementSchema.safeParse({
@@ -701,14 +865,75 @@ describe('NewSettlementInputSchema', () => {
         expect(result.data.name).toBe('Test Settlement')
         expect(result.data.campaignType).toBe(CampaignType.CUSTOM)
         expect(result.data.monsters).toBeDefined()
-        expect(result.data.monsters?.NQ1).toEqual([1, 2])
+        expect(result.data.monsters.NQ1).toEqual([1, 2])
       }
     })
 
-    it('should validate non-custom campaign without monster selection', () => {
+    it('should validate custom campaign with string monster IDs', () => {
       const result = NewSettlementInputSchema.safeParse({
         name: 'Test Settlement',
-        campaignType: CampaignType.PEOPLE_OF_THE_LANTERN
+        campaignType: CampaignType.CUSTOM,
+        monsters: {
+          NQ1: ['custom-uuid-1', 'custom-uuid-2'],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: ['custom-finale-uuid']
+        }
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.monsters.NQ1).toEqual([
+          'custom-uuid-1',
+          'custom-uuid-2'
+        ])
+        expect(result.data.monsters.FI).toEqual(['custom-finale-uuid'])
+      }
+    })
+
+    it('should validate custom campaign with mixed numeric and string IDs', () => {
+      const result = NewSettlementInputSchema.safeParse({
+        name: 'Test Settlement',
+        campaignType: CampaignType.CUSTOM,
+        monsters: {
+          NQ1: [1, 'custom-monster'],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.monsters.NQ1).toEqual([1, 'custom-monster'])
+      }
+    })
+
+    it('should validate non-custom campaign with empty monster arrays', () => {
+      const result = NewSettlementInputSchema.safeParse({
+        name: 'Test Settlement',
+        campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
       })
 
       expect(result.success).toBe(true)
@@ -716,14 +941,25 @@ describe('NewSettlementInputSchema', () => {
         expect(result.data.campaignType).toBe(
           CampaignType.PEOPLE_OF_THE_LANTERN
         )
-        expect(result.data.monsters).toBeUndefined()
+        expect(result.data.monsters).toBeDefined()
       }
     })
 
     it('should validate with minimum required fields', () => {
       const result = NewSettlementInputSchema.safeParse({
         name: 'Minimal',
-        campaignType: CampaignType.PEOPLE_OF_THE_STARS
+        campaignType: CampaignType.PEOPLE_OF_THE_STARS,
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
       })
 
       expect(result.success).toBe(true)
@@ -753,7 +989,18 @@ describe('NewSettlementInputSchema', () => {
   describe('Invalid Data', () => {
     it('should fail with missing name', () => {
       const result = NewSettlementInputSchema.safeParse({
-        campaignType: CampaignType.CUSTOM
+        campaignType: CampaignType.CUSTOM,
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
       })
 
       expect(result.success).toBe(false)
@@ -805,13 +1052,38 @@ describe('NewSettlementInputSchema', () => {
 
       expect(result.success).toBe(false)
     })
+
+    it('should fail when monsters field is completely missing', () => {
+      const result = NewSettlementInputSchema.safeParse({
+        name: 'Test',
+        campaignType: CampaignType.CUSTOM
+      })
+
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(
+          result.error.issues.some((i) => i.path.includes('monsters'))
+        ).toBe(true)
+      }
+    })
   })
 
   describe('Edge Cases', () => {
     it('should handle empty name string', () => {
       const result = NewSettlementInputSchema.safeParse({
         name: '',
-        campaignType: CampaignType.CUSTOM
+        campaignType: CampaignType.CUSTOM,
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
       })
 
       expect(result.success).toBe(false)
@@ -833,7 +1105,18 @@ describe('NewSettlementInputSchema', () => {
       campaignTypes.forEach((type) => {
         const result = NewSettlementInputSchema.safeParse({
           name: 'Test',
-          campaignType: type
+          campaignType: type,
+          monsters: {
+            NQ1: [],
+            NQ2: [],
+            NQ3: [],
+            NQ4: [],
+            NN1: [],
+            NN2: [],
+            NN3: [],
+            CO: [],
+            FI: []
+          }
         })
 
         expect(result.success).toBe(true)
