@@ -57,7 +57,7 @@ export function NavMain({
                     ? 'bg-accent text-accent-foreground'
                     : ''
                 }>
-                {item.icon && <item.icon className="h-2 w-2" />}
+                {item.icon && <item.icon className="h-4 w-4" />}
                 <span className="text-xs">{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
