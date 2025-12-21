@@ -2,7 +2,7 @@
 
 import { HuntMonsterAttributes } from '@/components/hunt/hunt-monster/hunt-monster-attributes'
 import { HuntMonsterBaseStats } from '@/components/hunt/hunt-monster/hunt-monster-base-stats'
-import { MonsterTraitsMoods } from '@/components/monster/monster-traits-moods'
+import { TraitsMoods } from '@/components/monster/traits-moods/traits-moods'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -203,9 +203,6 @@ export function HuntMonsterCard({
     setIsAddingTrait(false)
   }
 
-  const onEditTrait = (index: number) =>
-    setDisabledTraits((prev) => ({ ...prev, [index]: false }))
-
   /**
    * Mood Operations
    */
@@ -251,9 +248,6 @@ export function HuntMonsterCard({
     )
     setIsAddingMood(false)
   }
-
-  const onEditMood = (index: number) =>
-    setDisabledMoods((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handle Save Notes
@@ -344,7 +338,7 @@ export function HuntMonsterCard({
 
           {/* Column: Traits, Moods, and Notes */}
           <div className="flex flex-col flex-1">
-            <MonsterTraitsMoods
+            <TraitsMoods
               monster={selectedHunt.monster}
               disabledTraits={disabledTraits}
               disabledMoods={disabledMoods}
@@ -352,10 +346,14 @@ export function HuntMonsterCard({
               isAddingMood={isAddingMood}
               setIsAddingTrait={setIsAddingTrait}
               setIsAddingMood={setIsAddingMood}
-              onEditTrait={onEditTrait}
+              onEditTrait={(index: number) =>
+                setDisabledTraits((prev) => ({ ...prev, [index]: false }))
+              }
               onSaveTrait={onSaveTrait}
               onRemoveTrait={onRemoveTrait}
-              onEditMood={onEditMood}
+              onEditMood={(index: number) =>
+                setDisabledMoods((prev) => ({ ...prev, [index]: false }))
+              }
               onSaveMood={onSaveMood}
               onRemoveMood={onRemoveMood}
             />

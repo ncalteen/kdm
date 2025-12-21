@@ -3,6 +3,7 @@
 import { ActiveHuntCard } from '@/components/hunt/active-hunt/active-hunt-card'
 import { CreateHuntCard } from '@/components/hunt/create-hunt/create-hunt-card'
 import { TabType } from '@/lib/enums'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -13,6 +14,8 @@ import { ReactElement } from 'react'
  * Hunt Card Properties
  */
 interface HuntCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Survivor */
@@ -36,10 +39,8 @@ interface HuntCardProps {
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
   setSelectedTab: (tab: TabType) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -49,6 +50,7 @@ interface HuntCardProps {
  * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
  */
 export function HuntCard({
+  campaign,
   saveSelectedHunt,
   saveSelectedSurvivor,
   selectedHunt,
@@ -59,11 +61,11 @@ export function HuntCard({
   setSelectedShowdown,
   setSelectedSurvivor,
   setSelectedTab,
-  setSurvivors,
-  survivors
+  updateCampaign
 }: HuntCardProps): ReactElement {
   return selectedHunt ? (
     <ActiveHuntCard
+      campaign={campaign}
       saveSelectedHunt={saveSelectedHunt}
       saveSelectedSurvivor={saveSelectedSurvivor}
       selectedHunt={selectedHunt}
@@ -73,17 +75,16 @@ export function HuntCard({
       setSelectedShowdown={setSelectedShowdown}
       setSelectedSurvivor={setSelectedSurvivor}
       setSelectedTab={setSelectedTab}
-      setSurvivors={setSurvivors}
-      survivors={survivors}
+      updateCampaign={updateCampaign}
     />
   ) : (
     <CreateHuntCard
+      campaign={campaign}
       saveSelectedHunt={saveSelectedHunt}
       selectedSettlement={selectedSettlement}
       selectedShowdown={selectedShowdown}
       setSelectedHunt={setSelectedHunt}
       setSelectedSurvivor={setSelectedSurvivor}
-      survivors={survivors}
     />
   )
 }

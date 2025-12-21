@@ -17,8 +17,19 @@ export const ShowdownMonsterSchema = z.object({
   accuracy: z.number().int().default(0),
   /** Accuracy Tokens */
   accuracyTokens: z.number().int().default(0),
-  /** AI Deck Size */
-  aiDeckSize: z.number().int().min(0).default(0),
+  /** AI Deck */
+  aiDeck: z.object({
+    /** Basic Cards */
+    basic: z.number().int().min(0).default(0),
+    /** Advanced Cards */
+    advanced: z.number().int().min(0).default(0),
+    /** Legendary Cards */
+    legendary: z.number().int().min(0).default(0),
+    /** Overtone Cards */
+    overtone: z.number().int().min(0).default(0).optional()
+  }),
+  /** AI Deck Remaining */
+  aiDeckRemaining: z.number().int().min(0).default(0),
   /** Damage */
   damage: z.number().int().min(0).default(0),
   /** Damage Tokens */

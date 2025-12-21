@@ -2,7 +2,6 @@
 
 import {
   CampaignType,
-  NodeLevel,
   Philosophy,
   ResourceCategory,
   ResourceType,
@@ -30,17 +29,15 @@ export type TimelineYear = z.infer<typeof TimelineYearSchema>
  */
 export const QuarrySchema = z.object({
   /** Collective Cognition (Level 1) */
-  ccLevel1: z.boolean(),
+  ccLevel1: z.boolean().optional(),
   /** Collective Cognition (Level 2) */
-  ccLevel2: z.array(z.boolean()).min(2).max(2),
+  ccLevel2: z.array(z.boolean()).min(2).max(2).optional(),
   /** Collective Cognition (Level 3) */
-  ccLevel3: z.array(z.boolean()).min(3).max(3),
+  ccLevel3: z.array(z.boolean()).min(3).max(3).optional(),
   /** Collective Cognition (Prologue) */
-  ccPrologue: z.boolean(),
-  /** Quarry Name */
-  name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
-  /** Node Level */
-  node: z.enum(NodeLevel),
+  ccPrologue: z.boolean().optional(),
+  /** Quarry ID (Built-In -> Number / Custom -> String) */
+  id: z.union([z.number().min(0), z.string()]),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -55,19 +52,21 @@ export type Quarry = z.infer<typeof QuarrySchema>
  */
 export const NemesisSchema = z.object({
   /** Collective Cognition (Level 1) */
-  ccLevel1: z.boolean(),
+  ccLevel1: z.boolean().optional(),
   /** Collective Cognition (Level 2) */
-  ccLevel2: z.boolean(),
+  ccLevel2: z.boolean().optional(),
   /** Collective Cognition (Level 3) */
-  ccLevel3: z.boolean(),
-  /** Nemesis Name */
-  name: z.string().min(1, 'A nameless nemesis cannot be recorded.'),
+  ccLevel3: z.boolean().optional(),
+  /** Nemesis ID (Built-In -> Number / Custom -> String) */
+  id: z.union([z.number().min(0), z.string()]),
   /** Completed (Level 1) */
   level1: z.boolean(),
   /** Completed (Level 2) */
   level2: z.boolean(),
   /** Completed (Level 3) */
   level3: z.boolean(),
+  /** Completed (Level 4) */
+  level4: z.boolean().optional(),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -269,10 +268,10 @@ export const BaseSettlementSchema = z.object({
   survivalLimit: z.number().min(1).default(1),
   /** Survivor Type */
   survivorType: z.enum(SurvivorType).default(SurvivorType.CORE),
-  /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
-  usesScouts: z.boolean().default(false),
   /** Settlment Timeline */
   timeline: z.array(TimelineYearSchema).default([]),
+  /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
+  usesScouts: z.boolean().default(false),
 
   /*
    * Arc Survivor Settlements
@@ -281,22 +280,23 @@ export const BaseSettlementSchema = z.object({
   /** Collective Cognition Rewards */
   ccRewards: z.array(CollectiveCognitionRewardSchema).optional(),
   /** Collective Cognition Value */
-  ccValue: z.number().min(0).default(0),
+  ccValue: z.number().min(0).default(0).optional(),
   /** Settlement Knowledges */
-  knowledges: z.array(KnowledgeSchema).default([]),
+  knowledges: z.array(KnowledgeSchema).default([]).optional(),
   /** Settlement Philosophies */
-  philosophies: z.array(z.enum(Philosophy)).default([]),
+  philosophies: z.array(z.enum(Philosophy)).default([]).optional(),
 
   /*
    * People of the Lantern/Sun Campaigns
    */
 
   /** Lantern Research Level */
-  lanternResearchLevel: z.number().min(0).default(0),
+  lanternResearchLevel: z.number().min(0).default(0).optional(),
   /** Monster Volumes */
   monsterVolumes: z
     .array(z.string().min(1, 'A nameless monster volume cannot be recorded.'))
-    .default([]),
+    .default([])
+    .optional(),
 
   /*
    * Squires of the Citadel Campaigns
@@ -337,3 +337,57 @@ export const SettlementSchema = BaseSettlementSchema.extend({
  * chooses a campaign type and creates a new settlement.
  */
 export type Settlement = z.infer<typeof SettlementSchema>
+
+/**
+ * New Settlement Input Schema
+ *
+ * This is used to ensure that when creating a new settlement, the necessary
+ * data is included based on the selected campaign type.
+ */
+export const NewSettlementInputSchema = BaseSettlementSchema.extend({
+  /** Campaign Type */
+  campaignType: z
+    .enum(CampaignType)
+    .default(CampaignType.PEOPLE_OF_THE_LANTERN),
+  /** Settlement Name */
+  name: z.string().min(1, 'A nameless settlement cannot be recorded.'),
+  /** Survivor Type */
+  survivorType: z.enum(SurvivorType).default(SurvivorType.CORE),
+  /** Uses Scouts */
+  usesScouts: z.boolean().default(false),
+  /**
+   * Monster Selection
+   *
+   * It's normally recommended to only have one monster per node, but custom
+   * campaigns allow for more flexibility. Values can be numbers (built-in
+   * monsters) or strings (custom monster strings).
+   */
+  monsters: z.object({
+    /** Node Quarry 1 Monster Selection */
+    NQ1: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Quarry 2 Monster Selection */
+    NQ2: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Quarry 3 Monster Selection */
+    NQ3: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Quarry 4 Monster Selection */
+    NQ4: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Nemesis 1 Monster Selection */
+    NN1: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Nemesis 2 Monster Selection */
+    NN2: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Node Nemesis 3 Monster Selection */
+    NN3: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Core Monster Selection */
+    CO: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    /** Finale Monster Selection */
+    FI: z.array(z.union([z.number().min(1), z.string()])).default([])
+  })
+})
+
+/**
+ * New Settlement Input Schema
+ *
+ * This is used to ensure that when creating a new settlement, the necessary
+ * data is included based on the selected campaign type.
+ */
+export type NewSettlementInput = z.infer<typeof NewSettlementInputSchema>

@@ -30,13 +30,13 @@ export interface ResourceItemProps {
   index: number
   /** Is Disabled */
   isDisabled: boolean
-  /** OnAmountChange Handler */
+  /** On Amount Change Handler */
   onAmountChange?: (index: number, amount: number) => void
-  /** OnEdit Handler */
+  /** On Edit Handler */
   onEdit: (index: number) => void
-  /** OnRemove Handler */
+  /** On Remove Handler */
   onRemove: (index: number) => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (
     index: number,
     name: string,
@@ -52,9 +52,9 @@ export interface ResourceItemProps {
  * New Resource Item Component Properties
  */
 export interface NewResourceItemProps {
-  /** OnCancel Handler */
+  /** On Cancel Handler */
   onCancel: () => void
-  /** OnSave Handler */
+  /** On Save Handler */
   onSave: (
     name: string,
     category: ResourceCategory,
@@ -95,7 +95,7 @@ export function ResourceItem({
   )
 
   /**
-   * Handles the key down event for the name input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and values.

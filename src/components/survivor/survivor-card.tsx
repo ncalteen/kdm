@@ -48,10 +48,6 @@ interface SurvivorCardProps extends Partial<Survivor> {
   selectedShowdown: Showdown | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
 }
 
 /**
@@ -67,9 +63,7 @@ export function SurvivorCard({
   selectedHunt,
   selectedSettlement,
   selectedShowdown,
-  selectedSurvivor,
-  setSurvivors,
-  survivors
+  selectedSurvivor
 }: SurvivorCardProps): ReactElement {
   return (
     <Card className="w-full py-2 border-0 bg-secondary">
@@ -81,8 +75,6 @@ export function SurvivorCard({
               <StatusCard
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
-                setSurvivors={setSurvivors}
-                survivors={survivors}
               />
             )}
             <HuntXPCard
@@ -190,8 +182,6 @@ export function SurvivorCard({
               <PhilosophyCard
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
-                setSurvivors={setSurvivors}
-                survivors={survivors}
               />
               <KnowledgeCard
                 saveSelectedSurvivor={saveSelectedSurvivor}

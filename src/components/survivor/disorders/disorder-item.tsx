@@ -59,11 +59,7 @@ export function DisorderItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug(
-      '[DisorderItem] Changed',
-      selectedSurvivor?.disorders?.[index],
-      index
-    )
+    console.debug('[DisorderItem] Changed', selectedSurvivor?.disorders)
 
     if (inputRef.current)
       inputRef.current.value = selectedSurvivor?.disorders?.[index] || ''

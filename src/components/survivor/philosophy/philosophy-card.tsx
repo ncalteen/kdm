@@ -33,10 +33,6 @@ interface PhilosophyCardProps {
   saveSelectedSurvivor: (data: Partial<Survivor>, successMsg?: string) => void
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
 }
 
 /**
@@ -47,9 +43,7 @@ interface PhilosophyCardProps {
  */
 export function PhilosophyCard({
   saveSelectedSurvivor,
-  selectedSurvivor,
-  setSurvivors,
-  survivors
+  selectedSurvivor
 }: PhilosophyCardProps): ReactElement {
   const isMobile = useIsMobile()
 
@@ -96,16 +90,8 @@ export function PhilosophyCard({
         updateData,
         SURVIVOR_PHILOSOPHY_SELECTED_MESSAGE(value)
       )
-
-      // Update the survivors context to trigger re-renders in settlement table
-      if (survivors && selectedSurvivor?.id)
-        setSurvivors(
-          survivors.map((s) =>
-            s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
-          )
-        )
     },
-    [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
+    [saveSelectedSurvivor]
   )
 
   /**
@@ -145,16 +131,8 @@ export function PhilosophyCard({
         updateData,
         SURVIVOR_PHILOSOPHY_RANK_UPDATED_MESSAGE()
       )
-
-      // Update the survivors context to trigger re-renders in settlement table
-      if (survivors && selectedSurvivor?.id)
-        setSurvivors(
-          survivors.map((s) =>
-            s.id === selectedSurvivor?.id ? { ...s, ...updateData } : s
-          )
-        )
     },
-    [saveSelectedSurvivor, survivors, selectedSurvivor?.id, setSurvivors]
+    [saveSelectedSurvivor]
   )
 
   /**

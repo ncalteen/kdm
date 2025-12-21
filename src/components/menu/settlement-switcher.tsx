@@ -13,26 +13,28 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { getCampaign } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
-import { Check, ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react'
+import { Check, ChevronsUpDown, House, Plus } from 'lucide-react'
 import { ComponentProps, ReactElement } from 'react'
 
 /**
  * Settlement Switcher Properties
  */
 interface SettlementSwitcherProps extends ComponentProps<typeof Sidebar> {
+  /** Campaign */
+  campaign: Campaign
   /** Selected Hunt */
   selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
-  /** Settlements */
-  settlements: Settlement[]
+  /** Set Is Creating New Settlement */
+  setIsCreatingNewSettlement: (isCreating: boolean) => void
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
@@ -55,15 +57,39 @@ interface SettlementSwitcherProps extends ComponentProps<typeof Sidebar> {
  * @returns Settlement Switcher Component
  */
 export function SettlementSwitcher({
+  campaign,
   selectedHunt,
   selectedSettlement,
   selectedShowdown,
-  settlements,
+  setIsCreatingNewSettlement,
   setSelectedHunt,
   setSelectedSettlement,
   setSelectedShowdown,
   setSelectedSurvivor
 }: SettlementSwitcherProps): ReactElement {
+  /**
+   * Handle Settlement Selection
+   *
+   * Selects a settlement and loads its associated hunt and showdown.
+   *
+   * @param settlement Settlement to select
+   */
+  const handleSettlementSelect = (settlement: Settlement) => {
+    const settlementHunt =
+      campaign.hunts?.find((hunt) => hunt.settlementId === settlement.id) ||
+      null
+    const settlementShowdown =
+      campaign.showdowns?.find(
+        (showdown) => showdown.settlementId === settlement.id
+      ) || null
+
+    setIsCreatingNewSettlement(false)
+    setSelectedSettlement(settlement)
+    setSelectedHunt(settlementHunt)
+    setSelectedShowdown(settlementShowdown)
+    setSelectedSurvivor(null)
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -79,14 +105,14 @@ export function SettlementSwitcher({
                     : ''
               }`}>
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <GalleryVerticalEnd className="size-4" />
+                <House className="size-4" />
               </div>
 
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-medium">
+                <span className="font-sm">
                   {selectedSettlement?.name ?? 'Create a Settlement'}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   {selectedSettlement?.campaignType ?? 'Choose your destiny'}
                 </span>
               </div>
@@ -101,6 +127,7 @@ export function SettlementSwitcher({
             {/* Always display the create settlement option */}
             <DropdownMenuItem
               onSelect={() => {
+                setIsCreatingNewSettlement(true)
                 setSelectedSettlement(null)
                 setSelectedHunt(null)
                 setSelectedShowdown(null)
@@ -115,32 +142,17 @@ export function SettlementSwitcher({
             <DropdownMenuSeparator />
 
             {/* Display existing settlements */}
-            {settlements.map((s) => (
+            {campaign.settlements.map((settlement) => (
               <DropdownMenuItem
-                key={s.id}
-                onSelect={() => {
-                  const campaign = getCampaign()
-                  const settlementHunt =
-                    campaign.hunts?.find(
-                      (hunt) => hunt.settlementId === s.id
-                    ) || null
-                  const settlmentShowdown =
-                    campaign.showdowns?.find(
-                      (showdown) => showdown.settlementId === s.id
-                    ) || null
-
-                  setSelectedSettlement(s)
-                  setSelectedHunt(settlementHunt)
-                  setSelectedShowdown(settlmentShowdown)
-                  setSelectedSurvivor(null)
-                }}>
+                key={settlement.id}
+                onSelect={() => handleSettlementSelect(settlement)}>
                 <div className="flex flex-col">
-                  <span>{s.name}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {s.campaignType}
+                  <span className="text-sm">{settlement.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {settlement.campaignType}
                   </span>
                 </div>
-                {s && s.name === selectedSettlement?.name && (
+                {settlement.name === selectedSettlement?.name && (
                   <Check className="ml-auto" />
                 )}
               </DropdownMenuItem>

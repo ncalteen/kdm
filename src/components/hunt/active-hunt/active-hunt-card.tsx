@@ -35,11 +35,8 @@ import {
   MONSTER_MOVED_MESSAGE,
   SURVIVORS_MOVED_MESSAGE
 } from '@/lib/messages'
-import {
-  getCampaign,
-  getNextShowdownId,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
+import { getNextShowdownId } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -52,6 +49,8 @@ import { toast } from 'sonner'
  * Active Hunt Card Properties
  */
 interface ActiveHuntCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Survivor */
@@ -73,10 +72,8 @@ interface ActiveHuntCardProps {
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
   setSelectedTab: (tab: TabType) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -86,6 +83,7 @@ interface ActiveHuntCardProps {
  * @returns Active Hunt Card Component
  */
 export function ActiveHuntCard({
+  campaign,
   saveSelectedHunt,
   saveSelectedSurvivor,
   selectedHunt,
@@ -95,8 +93,7 @@ export function ActiveHuntCard({
   setSelectedShowdown,
   setSelectedSurvivor,
   setSelectedTab,
-  setSurvivors,
-  survivors
+  updateCampaign
 }: ActiveHuntCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
   const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
@@ -112,13 +109,13 @@ export function ActiveHuntCard({
    */
   const rollHuntEvent = useCallback((eventType: HuntEventType) => {
     const maxValue =
-      eventType === HuntEventType.BASIC
+      eventType === HuntEventType.BASIC || eventType === HuntEventType.MONSTER
         ? HuntEventCount.BASIC
         : HuntEventCount.ARC_SCOUT
     const randomEvent = Math.floor(Math.random() * maxValue) + 1
 
     toast.success(
-      `${eventType === HuntEventType.BASIC ? 'Basic' : eventType === HuntEventType.ARC ? 'Arc' : 'Scout'} Hunt Event: ${randomEvent}`
+      `${eventType === HuntEventType.BASIC ? 'Basic' : eventType === HuntEventType.ARC ? 'Arc' : eventType === HuntEventType.SCOUT ? 'Scout' : 'Monster'} Hunt Event: ${randomEvent}`
     )
     setHuntEventPopoverOpen(false)
   }, [])
@@ -147,12 +144,11 @@ export function ActiveHuntCard({
    */
   const handleDeleteHunt = useCallback(() => {
     try {
-      const campaign = getCampaign()
       const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.id !== selectedHunt?.id
       )
 
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
         hunts: updatedHunts
       })
@@ -164,7 +160,7 @@ export function ActiveHuntCard({
       console.error('Delete Hunt Error:', error)
       toast.error(ERROR_MESSAGE())
     }
-  }, [selectedHunt?.id, setSelectedHunt])
+  }, [campaign, selectedHunt?.id, setSelectedHunt, updateCampaign])
 
   /**
    * Handle Showdown
@@ -183,7 +179,6 @@ export function ActiveHuntCard({
       return
 
     try {
-      const campaign = getCampaign()
       const ambush =
         {
           0: AmbushType.SURVIVORS,
@@ -194,11 +189,16 @@ export function ActiveHuntCard({
       // Create showdown from current hunt
       const showdown: Showdown = {
         ambush,
-        id: getNextShowdownId(),
+        id: getNextShowdownId(campaign),
         monster: {
           accuracy: selectedHunt.monster.accuracy,
           accuracyTokens: selectedHunt.monster.accuracyTokens,
-          aiDeckSize: selectedHunt.monster.aiDeckSize,
+          aiDeck: selectedHunt.monster.aiDeck,
+          aiDeckRemaining:
+            selectedHunt.monster.aiDeck.advanced +
+            selectedHunt.monster.aiDeck.basic +
+            selectedHunt.monster.aiDeck.legendary +
+            (selectedHunt.monster.aiDeck.overtone || 0),
           damage: selectedHunt.monster.damage,
           damageTokens: selectedHunt.monster.damageTokens,
           evasion: selectedHunt.monster.evasion,
@@ -260,7 +260,7 @@ export function ActiveHuntCard({
       )
       const updatedShowdowns = [...(campaign.showdowns || []), showdown]
 
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
         hunts: updatedHunts,
         showdowns: updatedShowdowns
@@ -277,12 +277,14 @@ export function ActiveHuntCard({
       toast.error(ERROR_MESSAGE())
     }
   }, [
+    campaign,
     selectedSettlement?.id,
     selectedHunt,
     ambushType,
     setSelectedHunt,
     setSelectedShowdown,
-    setSelectedTab
+    setSelectedTab,
+    updateCampaign
   ])
 
   return (
@@ -377,14 +379,13 @@ export function ActiveHuntCard({
 
       {/* Hunt Party Survivors */}
       <HuntSurvivorsCard
+        campaign={campaign}
         saveSelectedHunt={saveSelectedHunt}
         saveSelectedSurvivor={saveSelectedSurvivor}
         selectedHunt={selectedHunt}
         selectedSettlement={selectedSettlement}
         selectedSurvivor={selectedSurvivor}
         setSelectedSurvivor={setSelectedSurvivor}
-        setSurvivors={setSurvivors}
-        survivors={survivors}
       />
 
       {/* Cancel Hunt Confirmation Dialog */}

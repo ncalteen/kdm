@@ -184,18 +184,6 @@ export enum MonsterType {
   QUARRY = 'Quarry'
 }
 
-/** Node Level */
-export enum NodeLevel {
-  /** Node 1 */
-  NODE_1 = 'Node 1',
-  /** Node 2 */
-  NODE_2 = 'Node 2',
-  /** Node 3 */
-  NODE_3 = 'Node 3',
-  /** Node 4 */
-  NODE_4 = 'Node 4'
-}
-
 /** Color Choices */
 export enum ColorChoice {
   /** Neutral */
@@ -284,6 +272,8 @@ export enum HuntEventType {
   ARC = 'arc',
   /** Basic Hunt Event */
   BASIC = 'basic',
+  /** Monster Hunt Event */
+  MONSTER = 'monster',
   /** Scout Hunt Event */
   SCOUT = 'scout'
 }
@@ -302,4 +292,52 @@ export enum HuntEventCount {
   ARC_SCOUT = 10,
   /** Basic Hunt Events (100) */
   BASIC = 100
+}
+
+/**
+ * Monster Nodes
+ */
+export enum MonsterNode {
+  /** Quarry 1 */
+  NQ1 = 'NQ1',
+  /** Quarry 2 */
+  NQ2 = 'NQ2',
+  /** Quarry 3 */
+  NQ3 = 'NQ3',
+  /** Quarry 4 */
+  NQ4 = 'NQ4',
+  /** Nemesis 1 */
+  NN1 = 'NN1',
+  /** Nemesis 2 */
+  NN2 = 'NN2',
+  /** Nemesis 3 */
+  NN3 = 'NN3',
+  /** Core Monster */
+  CO = 'CO',
+  /** Finale Monster */
+  FI = 'FI'
+}
+
+/**
+ * Monster Nodes Numeric Mapping
+ */
+export enum MonsterNodeNumeric {
+  /** Quarry 1 */
+  NQ1 = 1,
+  /** Quarry 2 */
+  NQ2 = 2,
+  /** Quarry 3 */
+  NQ3 = 3,
+  /** Quarry 4 */
+  NQ4 = 4,
+  /** Nemesis 1 */
+  NN1 = 5,
+  /** Nemesis 2 */
+  NN2 = 6,
+  /** Nemesis 3 */
+  NN3 = 7,
+  /** Core Monster */
+  CO = 8,
+  /** Finale Monster */
+  FI = 9
 }

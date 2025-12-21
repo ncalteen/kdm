@@ -50,9 +50,9 @@ export function HuntMonsterAttributes({
         {/* Header */}
         <div className="flex flex-row items-center gap-2">
           <div className="w-20"></div>
-          <Label className="text-xs flex-1 text-center">Base</Label>
-          <Label className="text-xs flex-1 text-center">Tokens</Label>
-          <Label className="text-xs flex-1 text-center">Total</Label>
+          <Label className="text-xs w-24 justify-center">Base</Label>
+          <Label className="text-xs w-24 justify-center">Tokens</Label>
+          <Label className="text-xs w-24 justify-center">Total</Label>
         </div>
 
         {/* Damage */}
@@ -62,7 +62,7 @@ export function HuntMonsterAttributes({
             id="monster-damage"
             type="number"
             value={monster.damage ?? 0}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-damage"
             readOnly={true}
             disabled={true}
@@ -93,7 +93,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
+              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-damage-tokens"
             />
           </NumericInput>
@@ -101,7 +101,7 @@ export function HuntMonsterAttributes({
             id="monster-damage-total"
             type="number"
             value={(monster.damage ?? 0) + (monster.damageTokens ?? 0)}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-damage-total"
             readOnly={true}
             disabled={true}
@@ -137,7 +137,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl"
+              className="w-24 h-12 text-center no-spinners text-xl"
               min="1"
               name="monster-movement"
             />
@@ -168,7 +168,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
+              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-movement-tokens"
             />
           </NumericInput>
@@ -176,7 +176,7 @@ export function HuntMonsterAttributes({
             id="monster-movement-total"
             type="number"
             value={(monster.movementTokens ?? 0) + (monster.movement ?? 0)}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-movement-total"
             readOnly={true}
             disabled={true}
@@ -190,7 +190,7 @@ export function HuntMonsterAttributes({
             id="monster-accuracy"
             type="number"
             value={monster.accuracy ?? 0}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-accuracy"
             readOnly={true}
             disabled={true}
@@ -221,7 +221,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
+              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-accuracy-tokens"
             />
           </NumericInput>
@@ -229,7 +229,7 @@ export function HuntMonsterAttributes({
             id="monster-accuracy-total"
             type="number"
             value={(monster.accuracy ?? 0) + (monster.accuracyTokens ?? 0)}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-accuracy-total"
             readOnly={true}
             disabled={true}
@@ -243,7 +243,7 @@ export function HuntMonsterAttributes({
             id="monster-strength"
             type="number"
             value={monster.strength ?? 0}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-strength"
             readOnly={true}
             disabled={true}
@@ -274,7 +274,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }}
-              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
+              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-strength-tokens"
             />
           </NumericInput>
@@ -282,7 +282,7 @@ export function HuntMonsterAttributes({
             id="monster-strength-total"
             type="number"
             value={(monster.strength ?? 0) + (monster.strengthTokens ?? 0)}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-strength-total"
             readOnly={true}
             disabled={true}
@@ -296,7 +296,7 @@ export function HuntMonsterAttributes({
             id="monster-evasion"
             type="number"
             value={monster.evasion ?? 0}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-evasion"
             readOnly={true}
             disabled={true}
@@ -327,7 +327,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
+              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-evasion-tokens"
             />
           </NumericInput>
@@ -335,7 +335,7 @@ export function HuntMonsterAttributes({
             id="monster-evasion-total"
             type="number"
             value={(monster.evasion ?? 0) + (monster.evasionTokens ?? 0)}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-evasion-total"
             readOnly={true}
             disabled={true}
@@ -349,7 +349,7 @@ export function HuntMonsterAttributes({
             id="monster-luck"
             type="number"
             value={monster.luck ?? 0}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-luck"
             readOnly={true}
             disabled={true}
@@ -377,7 +377,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
+              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-luck-tokens"
             />
           </NumericInput>
@@ -385,7 +385,7 @@ export function HuntMonsterAttributes({
             id="monster-luck-total"
             type="number"
             value={(monster.luck ?? 0) + (monster.luckTokens ?? 0)}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-luck-total"
             readOnly={true}
             disabled={true}
@@ -418,7 +418,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="w-24 h-12 text-center no-spinners text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               name="monster-speed"
             />
           </NumericInput>
@@ -445,7 +445,7 @@ export function HuntMonsterAttributes({
                   )
                 )
               }
-              className="flex-1 h-12 text-center no-spinners text-xl bg-muted!"
+              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
               name="monster-speed-tokens"
             />
           </NumericInput>
@@ -453,7 +453,7 @@ export function HuntMonsterAttributes({
             id="monster-speed-total"
             type="number"
             value={(monster.speed ?? 0) + (monster.speedTokens ?? 0)}
-            className="flex-1 h-12 text-center no-spinners text-xl"
+            className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-speed-total"
             readOnly={true}
             disabled={true}

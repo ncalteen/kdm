@@ -69,7 +69,7 @@ export function ArrivalBonusItem({
   }, [selectedSettlement?.arrivalBonuses, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -197,7 +197,6 @@ export function NewArrivalBonusItem({
           type="button"
           variant="ghost"
           size="icon"
-          className="ml-2"
           onClick={() => onSave(inputRef.current?.value)}
           title="Save bonus">
           <CheckIcon className="h-4 w-4" />

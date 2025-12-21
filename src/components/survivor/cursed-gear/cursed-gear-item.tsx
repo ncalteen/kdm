@@ -59,11 +59,7 @@ export function CursedGearItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug(
-      '[CursedGearItem] Changed',
-      selectedSurvivor?.cursedGear?.[index],
-      index
-    )
+    console.debug('[CursedGearItem] Changed', selectedSurvivor?.cursedGear)
 
     if (inputRef.current)
       inputRef.current.value = selectedSurvivor?.cursedGear?.[index] || ''

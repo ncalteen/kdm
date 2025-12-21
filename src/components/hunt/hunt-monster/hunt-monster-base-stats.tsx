@@ -43,11 +43,11 @@ export function HuntMonsterBaseStats({
 
         <NumericInput
           label="AI Deck Size"
-          value={monster.aiDeckSize ?? 0}
+          value={monster.aiDeckRemaining ?? 0}
           onChange={(value) =>
             saveMonsterData(
-              { aiDeckSize: value },
-              MONSTER_AI_DECK_UPDATED_MESSAGE(monster.aiDeckSize, value)
+              { aiDeckRemaining: value },
+              MONSTER_AI_DECK_UPDATED_MESSAGE(monster.aiDeckRemaining, value)
             )
           }
           min={0}
@@ -55,12 +55,12 @@ export function HuntMonsterBaseStats({
           <Input
             id="monster-ai-deck"
             type="number"
-            value={monster.aiDeckSize}
+            value={monster.aiDeckRemaining}
             onChange={(e) =>
               saveMonsterData(
-                { aiDeckSize: parseInt(e.target.value) || 0 },
+                { aiDeckRemaining: parseInt(e.target.value) || 0 },
                 MONSTER_AI_DECK_UPDATED_MESSAGE(
-                  monster.aiDeckSize,
+                  monster.aiDeckRemaining,
                   parseInt(e.target.value) || 0
                 )
               )

@@ -30,25 +30,22 @@ export function SurvivorDetailsPanel({
   survivor,
   survivors
 }: SurvivorDetailsPanelProps): ReactElement {
-  if (!survivor)
-    return (
-      <div className="w-[450px] h-full flex items-center justify-center text-muted-foreground">
-        <div className="text-center">
-          {survivors && survivors.length > 0 ? (
-            <>
-              <p className="text-lg font-medium">Hover over a survivor</p>
-              <p className="text-sm">to view their details</p>
-            </>
-          ) : (
-            <>
-              <p className="text-lg font-medium">No survivors available</p>
-            </>
-          )}
-        </div>
+  return survivor === null ? (
+    <div className="w-[450px] h-full flex items-center justify-center text-muted-foreground">
+      <div className="text-center">
+        {survivors && survivors.length > 0 ? (
+          <>
+            <p className="text-lg font-medium">Hover over a survivor</p>
+            <p className="text-sm">to view their details</p>
+          </>
+        ) : (
+          <>
+            <p className="text-lg font-medium">No survivors available</p>
+          </>
+        )}
       </div>
-    )
-
-  return (
+    </div>
+  ) : (
     <div className="w-[450px] h-full bg-gradient-to-br from-background to-background/95 border-2 border-border rounded-lg">
       {/* Header */}
       <div className="bg-muted/30 border-b border-border/30 p-4">

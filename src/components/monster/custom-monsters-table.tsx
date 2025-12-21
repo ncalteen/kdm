@@ -1,0 +1,193 @@
+'use client'
+
+import { EditMonsterDialog } from '@/components/monster/edit-monster-dialog'
+import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { useToast } from '@/hooks/use-toast'
+import { MonsterType } from '@/lib/enums'
+import { CUSTOM_MONSTER_DELETED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
+import { Campaign } from '@/schemas/campaign'
+import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
+import { PencilIcon, Trash2Icon } from 'lucide-react'
+import { ReactElement, useState } from 'react'
+
+/**
+ * Custom Monsters Table Component Properties
+ */
+export interface CustomMonstersTableProps {
+  /** Campaign */
+  campaign: Campaign
+  /** Monster List Change Callback */
+  onMonstersChange?: () => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
+}
+
+/**
+ * Custom Monsters Table Component
+ *
+ * Displays a scrollable table of custom monsters saved in localStorage.
+ *
+ * @param props Custom Monsters Table Component Properties
+ * @returns Custom Monsters Table Component
+ */
+export function CustomMonstersTable({
+  campaign,
+  onMonstersChange,
+  updateCampaign
+}: CustomMonstersTableProps): ReactElement {
+  const { toast } = useToast(campaign)
+
+  const [monsters, setMonsters] = useState<
+    Record<string, Record<'main', NemesisMonsterData | QuarryMonsterData>>
+  >(() => {
+    try {
+      return campaign.customMonsters || {}
+    } catch (error) {
+      console.error('Load Custom Monsters Error:', error)
+      return {}
+    }
+  })
+
+  const [editingMonsterId, setEditingMonsterId] = useState<string | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+  /**
+   * Opens edit dialog for a monster
+   */
+  const handleEditMonster = (monsterId: string) => {
+    setEditingMonsterId(monsterId)
+    setIsEditDialogOpen(true)
+  }
+
+  /**
+   * Handles monster update completion
+   */
+  const handleMonsterUpdated = () => {
+    try {
+      setMonsters(campaign.customMonsters || {})
+
+      if (onMonstersChange) onMonstersChange()
+    } catch (error) {
+      console.error('Refresh Monsters Error:', error)
+    }
+  }
+
+  /**
+   * Deletes a custom monster
+   */
+  const handleDeleteMonster = (id: string) => {
+    try {
+      const monsterToDelete = monsters[id as keyof typeof monsters]
+
+      const updatedMonsters = { ...campaign.customMonsters }
+      delete updatedMonsters[id]
+
+      updateCampaign({
+        ...campaign,
+        customMonsters: updatedMonsters
+      })
+      setMonsters(updatedMonsters)
+
+      toast.success(CUSTOM_MONSTER_DELETED_MESSAGE(monsterToDelete?.main.name))
+
+      if (onMonstersChange) onMonstersChange()
+    } catch (error) {
+      console.error('Delete Custom Monster Error:', error)
+      toast.error(ERROR_MESSAGE())
+    }
+  }
+
+  if (Object.keys(monsters).length === 0)
+    return (
+      <div className="flex items-center justify-center p-8 text-center">
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            No custom monsters have been forged yet.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Create a custom monster to see it appear here.
+          </p>
+        </div>
+      </div>
+    )
+
+  return (
+    <div className="max-h-[400px] overflow-y-auto rounded-md border">
+      <Table>
+        <TableHeader className="sticky top-0 bg-background z-10">
+          <TableRow>
+            <TableHead className="w-[40%]">Name</TableHead>
+            <TableHead className="w-[20%]">Type</TableHead>
+            <TableHead className="w-[20%]">Node</TableHead>
+            <TableHead className="w-[20%] text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Object.keys(monsters).map((monsterId: string) => {
+            const monster = monsters[monsterId as keyof typeof monsters]
+
+            return (
+              <TableRow key={monsterId}>
+                <TableCell className="font-medium">
+                  {monster.main.name}
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                      monster.main.type === MonsterType.QUARRY
+                        ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                        : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    }`}>
+                    {monster.main.type === MonsterType.QUARRY
+                      ? 'Quarry'
+                      : 'Nemesis'}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                    {monster.main.node}
+                  </code>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditMonster(monsterId)}
+                      title={`Edit ${monster.main.name}`}>
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteMonster(monsterId)}
+                      title={`Delete ${monster.main.name}`}>
+                      <Trash2Icon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
+
+      <EditMonsterDialog
+        campaign={campaign}
+        monsterId={editingMonsterId}
+        isOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onMonsterUpdated={handleMonsterUpdated}
+        updateCampaign={updateCampaign}
+      />
+    </div>
+  )
+}

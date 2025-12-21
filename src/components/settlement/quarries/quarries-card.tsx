@@ -5,20 +5,16 @@ import {
   QuarryItem
 } from '@/components/settlement/quarries/quarry-item'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
-import { NodeLevel } from '@/lib/enums'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MonsterNode, MonsterType } from '@/lib/enums'
 import {
   NAMELESS_OBJECT_ERROR_MESSAGE,
   QUARRY_REMOVED_MESSAGE,
   QUARRY_UNLOCKED_MESSAGE,
   QUARRY_UPDATED_MESSAGE
 } from '@/lib/messages'
+import { QUARRIES } from '@/lib/monsters'
+import { Campaign } from '@/schemas/campaign'
 import { Quarry, Settlement } from '@/schemas/settlement'
 import {
   DndContext,
@@ -43,6 +39,8 @@ import { toast } from 'sonner'
  * Quarries Card Properties
  */
 interface QuarriesCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -59,6 +57,7 @@ interface QuarriesCardProps {
  * @returns Quarries Card Component
  */
 export function QuarriesCard({
+  campaign,
   saveSelectedSettlement,
   selectedSettlement
 }: QuarriesCardProps): ReactElement {
@@ -66,8 +65,19 @@ export function QuarriesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.quarries || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -80,25 +90,13 @@ export function QuarriesCard({
   }
 
   /**
-   * Add Quarry
-   */
-  const addQuarry = () => setIsAddingNew(true)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  /**
    * Remove a Quarry
    *
    * @param index Quarry Index
    */
   const onRemove = (index: number) => {
-    const currentQuarries = [...(selectedSettlement?.quarries || [])]
-    currentQuarries.splice(index, 1)
+    const current = [...(selectedSettlement?.quarries || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -112,32 +110,22 @@ export function QuarriesCard({
       return next
     })
 
-    saveSelectedSettlement(
-      { quarries: currentQuarries },
-      QUARRY_REMOVED_MESSAGE()
-    )
+    saveSelectedSettlement({ quarries: current }, QUARRY_REMOVED_MESSAGE())
   }
 
   /**
    * Save a Quarry
    *
-   * @param value Quarry Name
-   * @param node Quarry Node
+   * @param id Quarry ID (number for built-in, string for custom)
    * @param unlocked Quarry Unlocked Status
    * @param index Quarry Index (When Updating Only)
    */
-  const onSave = (
-    value?: string,
-    node?: NodeLevel,
-    unlocked?: boolean,
-    index?: number
-  ) => {
-    if (!value || value.trim() === '')
+  const onSave = (id?: number | string, unlocked?: boolean, index?: number) => {
+    if (id === undefined)
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('quarry'))
 
-    const quarryWithCc: Quarry = {
-      name: value,
-      node: node || NodeLevel.NODE_1,
+    const value: Quarry = {
+      id,
       unlocked: unlocked || false,
       ccPrologue: false,
       ccLevel1: false,
@@ -145,14 +133,13 @@ export function QuarriesCard({
       ccLevel3: [false, false, false]
     }
 
-    const updatedQuarries = [...(selectedSettlement?.quarries || [])]
+    const updated = [...(selectedSettlement?.quarries || [])]
 
     if (index !== undefined) {
-      // Updating an existing value - preserve existing CC properties
-      updatedQuarries[index] = {
-        ...updatedQuarries[index],
-        name: value,
-        node: node || NodeLevel.NODE_1,
+      // Updating an existing value
+      updated[index] = {
+        ...updated[index],
+        id,
         unlocked: unlocked || false
       }
       setDisabledInputs((prev) => ({
@@ -161,27 +148,16 @@ export function QuarriesCard({
       }))
     } else {
       // Adding a new value
-      updatedQuarries.push(quarryWithCc)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedQuarries.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveSelectedSettlement(
-      { quarries: updatedQuarries },
-      QUARRY_UPDATED_MESSAGE(index)
-    )
+    saveSelectedSettlement({ quarries: updated }, QUARRY_UPDATED_MESSAGE(index))
     setIsAddingNew(false)
   }
-
-  /**
-   * Edit a Quarry
-   *
-   * @param index Quarry Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Toggle Unlocked Status of a Quarry
@@ -194,24 +170,40 @@ export function QuarriesCard({
       i === index ? { ...q, unlocked } : q
     )
 
+    const quarryId = selectedSettlement?.quarries![index].id
+    const quarryName = quarryId
+      ? typeof quarryId === 'number'
+        ? QUARRIES[quarryId as keyof typeof QUARRIES]?.main.name || ''
+        : campaign.customMonsters?.[quarryId]?.main.name || ''
+      : ''
+
     saveSelectedSettlement(
       { quarries: updatedQuarries },
-      QUARRY_UNLOCKED_MESSAGE(
-        selectedSettlement?.quarries![index].name || '',
-        unlocked
-      )
+      QUARRY_UNLOCKED_MESSAGE(quarryName, unlocked)
     )
   }
 
   /**
-   * Update the Node of a Quarry
+   * Update the Quarry ID and automatically set the node from QUARRIES data
    *
    * @param index Quarry Index
-   * @param node Node Value
+   * @param id Quarry ID (number for built-in, string for custom)
    */
-  const onUpdateNode = (index: number, node: NodeLevel) => {
+  const onUpdateQuarry = (index: number, id: number | string) => {
+    let node: MonsterNode = MonsterNode.NQ1
+
+    if (typeof id === 'number') {
+      const quarryData = QUARRIES[id as keyof typeof QUARRIES]
+      node = quarryData?.main.node || MonsterNode.NQ1
+    } else {
+      const customMonster = campaign.customMonsters?.[id]
+      if (customMonster?.main.type === MonsterType.QUARRY) {
+        node = customMonster.main.node as MonsterNode
+      }
+    }
+
     const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
-      i === index ? { ...q, node } : q
+      i === index ? { ...q, id, node } : q
     )
 
     saveSelectedSettlement({ quarries: updatedQuarries })
@@ -263,7 +255,7 @@ export function QuarriesCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addQuarry}
+              onClick={() => setIsAddingNew(true)}
               className="border-0 h-8 w-8"
               disabled={
                 isAddingNew ||
@@ -273,9 +265,6 @@ export function QuarriesCard({
             </Button>
           )}
         </CardTitle>
-        <CardDescription className="text-left text-xs text-muted-foreground">
-          The monsters your settlement can select to hunt.
-        </CardDescription>
       </CardHeader>
 
       {/* Quarries List */}
@@ -294,17 +283,21 @@ export function QuarriesCard({
                   strategy={verticalListSortingStrategy}>
                   {(selectedSettlement?.quarries || []).map((quarry, index) => (
                     <QuarryItem
+                      campaign={campaign}
                       key={index}
                       id={index.toString()}
                       index={index}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
-                      onSave={(name, node, unlocked, i) =>
-                        onSave(name, node, unlocked, i)
+                      onSave={(id, unlocked, i) => onSave(id, unlocked, i)}
+                      onEdit={() =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [index]: false
+                        }))
                       }
-                      onEdit={onEdit}
                       onToggleUnlocked={onToggleUnlocked}
-                      onUpdateNode={onUpdateNode}
+                      onUpdateQuarry={onUpdateQuarry}
                       selectedSettlement={selectedSettlement}
                     />
                   ))}
@@ -313,7 +306,8 @@ export function QuarriesCard({
             )}
             {isAddingNew && (
               <NewQuarryItem
-                onSave={(name, node, unlocked) => onSave(name, node, unlocked)}
+                campaign={campaign}
+                onSave={onSave}
                 onCancel={() => setIsAddingNew(false)}
               />
             )}

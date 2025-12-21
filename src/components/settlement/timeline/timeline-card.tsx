@@ -19,7 +19,6 @@ import {
   ReactElement,
   startTransition,
   useCallback,
-  useMemo,
   useRef,
   useState
 } from 'react'
@@ -30,10 +29,7 @@ import { toast } from 'sonner'
  */
 interface TimelineCardProps {
   /** Save Selected Settlement */
-  saveSelectedSettlement: (
-    updateData: Partial<Settlement>,
-    successMsg?: string
-  ) => void
+  saveSelectedSettlement: (settlement: Settlement) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
 }
@@ -60,45 +56,24 @@ export function TimelineCard({
     [key: string]: HTMLInputElement | null
   }>({})
 
-  const {
-    isSquiresCampaign,
-    isStarsCampaign,
-    isSunCampaign,
-    isCustomCampaign
-  } = useMemo(
-    () => ({
-      isSquiresCampaign:
-        selectedSettlement?.campaignType ===
-        CampaignType.SQUIRES_OF_THE_CITADEL,
-      isStarsCampaign:
-        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_STARS,
-      isSunCampaign:
-        selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_SUN,
-      isCustomCampaign: selectedSettlement?.campaignType === CampaignType.CUSTOM
-    }),
-    [selectedSettlement?.campaignType]
-  )
-
   // Check if the campaign uses normal numbering (no Prologue). Prologue is
   // only used in the People of the Lantern and People of the Dream Keeper
   // campaigns (as well as custom campaigns).
-  const usesNormalNumbering = useMemo(
-    () =>
-      isSquiresCampaign || isStarsCampaign || isSunCampaign || isCustomCampaign,
-    [isSquiresCampaign, isStarsCampaign, isSunCampaign, isCustomCampaign]
-  )
+  const usesNormalNumbering = [
+    CampaignType.SQUIRES_OF_THE_CITADEL,
+    CampaignType.PEOPLE_OF_THE_STARS,
+    CampaignType.PEOPLE_OF_THE_SUN,
+    CampaignType.CUSTOM
+  ].includes(selectedSettlement?.campaignType as CampaignType)
 
   // Check if this campaign type should show the scroll icon. This is used to
   // indicate that a story event card should be drawn when updating the
   // settlement's timeline.
-  const showStoryEventIcon = useMemo(
-    () =>
-      selectedSettlement?.campaignType === CampaignType.PEOPLE_OF_THE_LANTERN ||
-      selectedSettlement?.campaignType ===
-        CampaignType.PEOPLE_OF_THE_DREAM_KEEPER ||
-      selectedSettlement?.campaignType === CampaignType.CUSTOM,
-    [selectedSettlement?.campaignType]
-  )
+  const showStoryEventIcon = [
+    CampaignType.PEOPLE_OF_THE_LANTERN,
+    CampaignType.PEOPLE_OF_THE_DREAM_KEEPER,
+    CampaignType.CUSTOM
+  ].includes(selectedSettlement?.campaignType as CampaignType)
 
   /**
    * Is Event Being Edited
@@ -153,7 +128,7 @@ export function TimelineCard({
       // string which would fail Zod validation. We only save when the user
       // actually enters content in the saveEvent function.
     },
-    [selectedSettlement?.timeline, editingEvents]
+    [editingEvents, selectedSettlement?.timeline]
   )
 
   /**
@@ -164,6 +139,8 @@ export function TimelineCard({
    */
   const removeEventFromYear = useCallback(
     (yearIndex: number, eventIndex: number) => {
+      if (!selectedSettlement) return
+
       const currentEntries =
         selectedSettlement?.timeline?.[yearIndex].entries || []
       const inputKey = `${yearIndex}-${eventIndex}`
@@ -193,14 +170,13 @@ export function TimelineCard({
         completed: boolean
       }
 
-      saveSelectedSettlement(
-        {
-          timeline: updatedTimeline
-        },
-        TIMELINE_EVENT_REMOVED_MESSAGE()
-      )
+      saveSelectedSettlement({
+        ...selectedSettlement,
+        timeline: updatedTimeline
+      })
+      toast.success(TIMELINE_EVENT_REMOVED_MESSAGE())
     },
-    [selectedSettlement?.timeline, saveSelectedSettlement]
+    [saveSelectedSettlement, selectedSettlement]
   )
 
   /**
@@ -211,6 +187,8 @@ export function TimelineCard({
    */
   const saveEvent = useCallback(
     (yearIndex: number, entryIndex: number) => {
+      if (!selectedSettlement) return
+
       const inputKey = `${yearIndex}-${entryIndex}`
       const inputElement = inputRefs.current[inputKey]
 
@@ -239,14 +217,13 @@ export function TimelineCard({
         entries: currentEntries
       }
 
-      saveSelectedSettlement(
-        {
-          timeline: updatedTimeline
-        },
-        TIMELINE_EVENT_SAVED_MESSAGE()
-      )
+      saveSelectedSettlement({
+        ...selectedSettlement,
+        timeline: updatedTimeline
+      })
+      toast.success(TIMELINE_EVENT_SAVED_MESSAGE())
     },
-    [selectedSettlement?.timeline, inputRefs, saveSelectedSettlement]
+    [inputRefs, saveSelectedSettlement, selectedSettlement]
   )
 
   /**
@@ -257,6 +234,8 @@ export function TimelineCard({
    */
   const handleYearCompletionChange = useCallback(
     (yearIndex: number, completed: boolean) => {
+      if (!selectedSettlement) return
+
       // Save to localStorage with the updated timeline
       const updatedTimeline = [...(selectedSettlement?.timeline || [])]
       updatedTimeline[yearIndex] = {
@@ -264,15 +243,33 @@ export function TimelineCard({
         completed
       }
 
-      saveSelectedSettlement(
-        {
-          timeline: updatedTimeline
-        },
-        TIMELINE_YEAR_COMPLETED_MESSAGE(completed)
-      )
+      saveSelectedSettlement({
+        ...selectedSettlement,
+        timeline: updatedTimeline
+      })
+      toast.success(TIMELINE_YEAR_COMPLETED_MESSAGE(completed))
     },
-    [selectedSettlement?.timeline, saveSelectedSettlement]
+    [saveSelectedSettlement, selectedSettlement]
   )
+
+  /**
+   * Handles adding a new lantern year to the timeline.
+   */
+  const handleAddLanternYear = useCallback(() => {
+    if (!selectedSettlement) return
+
+    const currentTimeline = selectedSettlement?.timeline || []
+    const updatedTimeline = [
+      ...currentTimeline,
+      { completed: false, entries: [] }
+    ]
+
+    saveSelectedSettlement({
+      ...selectedSettlement,
+      timeline: updatedTimeline
+    })
+    toast.success(TIMELINE_YEAR_ADDED_MESSAGE())
+  }, [saveSelectedSettlement, selectedSettlement])
 
   /**
    * Edits an Event in the Timeline
@@ -362,28 +359,14 @@ export function TimelineCard({
         />
 
         {/* Add Lantern Year Button */}
-        {!isSquiresCampaign && (
+        {selectedSettlement?.campaignType !==
+          CampaignType.SQUIRES_OF_THE_CITADEL && (
           <Button
             type="button"
             variant="outline"
             className="mt-2 w-full"
             size="lg"
-            onClick={() => {
-              startTransition(() => {
-                const currentTimeline = selectedSettlement?.timeline || []
-                const newTimeline = [
-                  ...currentTimeline,
-                  { completed: false, entries: [] }
-                ]
-
-                saveSelectedSettlement(
-                  {
-                    timeline: newTimeline
-                  },
-                  TIMELINE_YEAR_ADDED_MESSAGE()
-                )
-              })
-            }}>
+            onClick={() => startTransition(() => handleAddLanternYear())}>
             <PlusCircleIcon className="h-4 w-4" /> Add Lantern Year
           </Button>
         )}

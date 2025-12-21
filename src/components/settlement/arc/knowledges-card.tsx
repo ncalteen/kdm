@@ -56,7 +56,11 @@ export function KnowledgesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
@@ -100,9 +104,7 @@ export function KnowledgesCard({
     })
 
     saveSelectedSettlement(
-      {
-        knowledges: currentKnowledges
-      },
+      { knowledges: currentKnowledges },
       KNOWLEDGE_REMOVED_MESSAGE()
     )
   }
@@ -145,9 +147,7 @@ export function KnowledgesCard({
     }
 
     saveSelectedSettlement(
-      {
-        knowledges: updatedKnowledges
-      },
+      { knowledges: updatedKnowledges },
       i !== undefined
         ? KNOWLEDGE_UPDATED_MESSAGE()
         : KNOWLEDGE_CREATED_MESSAGE()
@@ -155,14 +155,6 @@ export function KnowledgesCard({
 
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a value.
-   *
-   * @param index Knowledge Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
@@ -250,7 +242,12 @@ export function KnowledgesCard({
                       onSave={(name, philosophy, i) =>
                         onSave(name, philosophy, i)
                       }
-                      onEdit={onEdit}
+                      onEdit={() =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [index]: false
+                        }))
+                      }
                       selectedSettlement={selectedSettlement}
                     />
                   )

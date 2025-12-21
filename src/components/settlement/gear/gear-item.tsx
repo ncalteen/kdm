@@ -59,18 +59,14 @@ export function GearItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    console.debug(
-      '[GearItem] Changed',
-      selectedSettlement?.gear?.[index],
-      index
-    )
+    console.debug('[GearItem] Changed', selectedSettlement?.gear)
 
     if (inputRef.current)
       inputRef.current.value = selectedSettlement?.gear?.[index] || ''
   }, [selectedSettlement?.gear, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -100,7 +96,7 @@ export function GearItem({
       {/* Input Field */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-md">{selectedSettlement?.gear?.[index]}</span>
+          <span className="text-sm">{selectedSettlement?.gear?.[index]}</span>
         </div>
       ) : (
         <Input
@@ -113,7 +109,6 @@ export function GearItem({
       )}
 
       <div className="flex items-center gap-1 ml-auto">
-        {/* Interaction Buttons */}
         {isDisabled ? (
           <Button
             type="button"

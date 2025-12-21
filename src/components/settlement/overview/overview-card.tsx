@@ -8,29 +8,27 @@ import { Separator } from '@/components/ui/separator'
 import { CampaignType, SurvivorType } from '@/lib/enums'
 import {
   LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR,
+  LANTERN_RESEARCH_LEVEL_UPDATED_MESSAGE,
   LOST_SETTLEMENT_COUNT_MINIMUM_ERROR,
   LOST_SETTLEMENT_COUNT_UPDATED_MESSAGE,
   SURVIVAL_LIMIT_MINIMUM_ERROR_MESSAGE,
   SURVIVAL_LIMIT_UPDATED_MESSAGE
 } from '@/lib/messages'
+import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
-import { Survivor } from '@/schemas/survivor'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ReactElement, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 
 /**
  * Overview Card Properties
  */
 interface OverviewCardProps {
-  /** Save Selected Settlement */
-  saveSelectedSettlement: (
-    updateData: Partial<Settlement>,
-    successMsg?: string
-  ) => void
+  /** Campaign */
+  campaign: Campaign
   /** Selected Settlement */
   selectedSettlement: Settlement | null
-  /** Survivors */
-  survivors: Survivor[] | null
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -43,40 +41,28 @@ interface OverviewCardProps {
  * @returns Overview Card Component
  */
 export function OverviewCard({
-  saveSelectedSettlement,
+  campaign,
   selectedSettlement,
-  survivors
+  updateCampaign
 }: OverviewCardProps): ReactElement {
   // Calculate current population from living survivors
   const currentPopulation = useMemo(() => {
-    return survivors?.filter(
+    return campaign.survivors.filter(
       (survivor) =>
         !survivor.dead && survivor.settlementId === selectedSettlement?.id
     ).length
-  }, [survivors, selectedSettlement?.id])
+  }, [campaign.survivors, selectedSettlement?.id])
 
   // Calculate death count from dead survivors
   const currentDeathCount = useMemo(() => {
-    return survivors?.filter(
+    return campaign.survivors.filter(
       (survivor) =>
         survivor.dead && survivor.settlementId === selectedSettlement?.id
     ).length
-  }, [survivors, selectedSettlement?.id])
+  }, [campaign.survivors, selectedSettlement?.id])
 
-  // Calculate collective cognition for ARC campaigns
-  useEffect(() => {
-    if (selectedSettlement?.survivorType !== SurvivorType.ARC) return
-    if (!selectedSettlement?.id) return
-
-    console.debug(
-      '[OverviewCard] Calculating Collective Cognition',
-      selectedSettlement?.id,
-      selectedSettlement?.survivorType,
-      selectedSettlement?.ccValue,
-      selectedSettlement?.nemeses,
-      selectedSettlement?.quarries
-    )
-
+  // Calculate current population from living survivors
+  const currentCCValue = useMemo(() => {
     let totalCc = 0
 
     // Calculate CC from nemesis victories. Each nemesis victory gives 3 CC.
@@ -103,17 +89,8 @@ export function OverviewCard({
         if (level3Victory) totalCc += 3
     }
 
-    // Update form value and save if different
-    if (selectedSettlement.ccValue !== totalCc)
-      saveSelectedSettlement({ ccValue: totalCc })
-  }, [
-    saveSelectedSettlement,
-    selectedSettlement?.id,
-    selectedSettlement?.survivorType,
-    selectedSettlement?.ccValue,
-    selectedSettlement?.nemeses,
-    selectedSettlement?.quarries
-  ])
+    return totalCc
+  }, [selectedSettlement?.nemeses, selectedSettlement?.quarries])
 
   /**
    * Handle Survival Limit Change
@@ -121,16 +98,29 @@ export function OverviewCard({
    * @param oldValue Old Survival Limit
    * @param newValue New Survival Limit
    */
-  const handleSurvivalLimitChange = (oldValue: number, newValue: number) => {
-    if (isNaN(oldValue) || isNaN(newValue)) return
+  const handleSurvivalLimitChange = useCallback(
+    (oldValue: number, newValue: number) => {
+      if (isNaN(oldValue) || isNaN(newValue)) return
+      if (oldValue === newValue) return
 
-    if (newValue < 1) return toast.error(SURVIVAL_LIMIT_MINIMUM_ERROR_MESSAGE())
+      if (newValue < 1)
+        return toast.error(SURVIVAL_LIMIT_MINIMUM_ERROR_MESSAGE())
 
-    saveSelectedSettlement(
-      { survivalLimit: newValue },
-      SURVIVAL_LIMIT_UPDATED_MESSAGE(oldValue, newValue)
-    )
-  }
+      updateCampaign({
+        ...campaign,
+        settlements: campaign.settlements.map((settlement) =>
+          settlement.id === selectedSettlement?.id
+            ? {
+                ...settlement,
+                survivalLimit: newValue
+              }
+            : settlement
+        )
+      })
+      toast.success(SURVIVAL_LIMIT_UPDATED_MESSAGE(oldValue, newValue))
+    },
+    [campaign, selectedSettlement?.id, updateCampaign]
+  )
 
   /**
    * Handle Lost Settlement Count Change
@@ -138,38 +128,59 @@ export function OverviewCard({
    * @param oldValue Old Lost Settlement Count
    * @param newValue New Lost Settlement Count
    */
-  const handleLostSettlementCountChange = (
-    oldValue: number,
-    newValue: number
-  ) => {
-    if (isNaN(oldValue) || isNaN(newValue)) return
+  const handleLostSettlementCountChange = useCallback(
+    (oldValue: number, newValue: number) => {
+      if (isNaN(oldValue) || isNaN(newValue)) return
+      if (oldValue === newValue) return
 
-    if (newValue < 0) return toast.error(LOST_SETTLEMENT_COUNT_MINIMUM_ERROR())
+      if (newValue < 0)
+        return toast.error(LOST_SETTLEMENT_COUNT_MINIMUM_ERROR())
 
-    saveSelectedSettlement(
-      { lostSettlements: newValue },
-      LOST_SETTLEMENT_COUNT_UPDATED_MESSAGE(oldValue, newValue)
-    )
-  }
+      updateCampaign({
+        ...campaign,
+        settlements: campaign.settlements.map((settlement) =>
+          settlement.id === selectedSettlement?.id
+            ? {
+                ...settlement,
+                lostSettlements: newValue
+              }
+            : settlement
+        )
+      })
+      toast.success(LOST_SETTLEMENT_COUNT_UPDATED_MESSAGE(oldValue, newValue))
+    },
+    [campaign, selectedSettlement?.id, updateCampaign]
+  )
 
   /**
    * Handle Lantern Research Level Change
    *
-   * @param value Lantern Research Level
+   * @param oldValue Old Lantern Research Level
+   * @param newValue New Lantern Research Level
    */
-  const handleLanternResearchLevelChange = (value: string) => {
-    const numericValue = parseInt(value, 10)
+  const handleLanternResearchLevelChange = useCallback(
+    (oldValue: number, newValue: number) => {
+      if (isNaN(oldValue) || isNaN(newValue)) return
+      if (oldValue === newValue) return
 
-    if (isNaN(numericValue)) return
+      if (newValue < 0)
+        return toast.error(LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR())
 
-    if (numericValue < 0)
-      return toast.error(LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR())
-
-    saveSelectedSettlement(
-      { lanternResearchLevel: numericValue },
-      "The lantern's glow illuminates new knowledge."
-    )
-  }
+      updateCampaign({
+        ...campaign,
+        settlements: campaign.settlements.map((settlement) =>
+          settlement.id === selectedSettlement?.id
+            ? {
+                ...settlement,
+                lanternResearchLevel: newValue
+              }
+            : settlement
+        )
+      })
+      toast.success(LANTERN_RESEARCH_LEVEL_UPDATED_MESSAGE(oldValue, newValue))
+    },
+    [campaign, selectedSettlement?.id, updateCampaign]
+  )
 
   return (
     <Card className="border-0 p-0 py-2">
@@ -183,8 +194,9 @@ export function OverviewCard({
               min="1"
               placeholder="1"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSettlement?.survivalLimit ?? 1}
-              onChange={(e) =>
+              defaultValue={selectedSettlement?.survivalLimit ?? 1}
+              key={`survival-limit-${selectedSettlement?.id}-${selectedSettlement?.survivalLimit}`}
+              onBlur={(e) =>
                 handleSurvivalLimitChange(
                   selectedSettlement?.survivalLimit ?? 1,
                   parseInt(e.target.value, 10)
@@ -245,8 +257,9 @@ export function OverviewCard({
               min="0"
               placeholder="0"
               className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSettlement?.lostSettlements ?? 0}
-              onChange={(e) =>
+              defaultValue={selectedSettlement?.lostSettlements ?? 0}
+              key={`lost-settlements-${selectedSettlement?.id}-${selectedSettlement?.lostSettlements}`}
+              onBlur={(e) =>
                 handleLostSettlementCountChange(
                   selectedSettlement?.lostSettlements ?? 0,
                   parseInt(e.target.value, 10)
@@ -271,7 +284,7 @@ export function OverviewCard({
                 <Input
                   type="number"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={selectedSettlement?.ccValue ?? 0}
+                  value={currentCCValue}
                   disabled
                   name="collective-cognition-desktop"
                   id="collective-cognition-desktop"
@@ -300,10 +313,14 @@ export function OverviewCard({
                   min="0"
                   placeholder="0"
                   className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={selectedSettlement?.lanternResearchLevel ?? 0}
-                  onChange={(e) => {
-                    handleLanternResearchLevelChange(e.target.value)
-                  }}
+                  defaultValue={selectedSettlement?.lanternResearchLevel ?? 0}
+                  key={`lantern-research-${selectedSettlement?.id}-${selectedSettlement?.lanternResearchLevel}`}
+                  onBlur={(e) =>
+                    handleLanternResearchLevelChange(
+                      selectedSettlement?.lanternResearchLevel ?? 0,
+                      parseInt(e.target.value, 10)
+                    )
+                  }
                   name="lantern-research-desktop"
                   id="lantern-research-desktop"
                 />
@@ -406,7 +423,7 @@ export function OverviewCard({
               <Input
                 type="number"
                 className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSettlement?.ccValue ?? 0}
+                value={currentCCValue}
                 disabled
                 name="collective-cognition-mobile"
                 id="collective-cognition-mobile"
@@ -426,7 +443,10 @@ export function OverviewCard({
                 min={0}
                 label="Lantern Research"
                 onChange={(value) =>
-                  handleLanternResearchLevelChange(value.toString())
+                  handleLanternResearchLevelChange(
+                    selectedSettlement?.lanternResearchLevel ?? 0,
+                    value
+                  )
                 }
                 readOnly={false}>
                 <Input

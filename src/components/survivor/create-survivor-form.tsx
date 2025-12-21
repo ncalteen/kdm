@@ -23,6 +23,7 @@ import {
   canSurge,
   getNextSurvivorId
 } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
 import {
   BaseSurvivorSchema,
@@ -30,7 +31,7 @@ import {
   SurvivorSchema
 } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -38,6 +39,8 @@ import { toast } from 'sonner'
  * Create Survivor Form Properties
  */
 interface CreateSurvivorFormProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Survivor */
   saveSelectedSurvivor: (survivor: Survivor, successMsg?: string) => void
   /** Selected Settlement */
@@ -60,6 +63,7 @@ interface CreateSurvivorFormProps {
  * @returns Create Survivor Form
  */
 export function CreateSurvivorForm({
+  campaign,
   saveSelectedSurvivor,
   selectedSettlement,
   setIsCreatingNewSurvivor,
@@ -80,17 +84,19 @@ export function CreateSurvivorForm({
 
     const updatedValues = {
       settlementId: selectedSettlement.id,
-      canDash: canDash(selectedSettlement.id),
-      canFistPump: canFistPump(selectedSettlement.id),
-      canEncourage: canEncourage(selectedSettlement.id),
-      canEndure: canEndure(selectedSettlement.id),
-      canSurge: canSurge(selectedSettlement.id),
+      canDash: canDash(campaign, selectedSettlement.id),
+      canFistPump: canFistPump(campaign, selectedSettlement.id),
+      canEncourage: canEncourage(campaign, selectedSettlement.id),
+      canEndure: canEndure(campaign, selectedSettlement.id),
+      canSurge: canSurge(campaign, selectedSettlement.id),
       huntXPRankUp:
         selectedSettlement?.survivorType !== SurvivorType.ARC
           ? [2, 6, 10, 15] // Core
           : [2], // Arc
-      id: getNextSurvivorId(),
-      understanding: bornWithUnderstanding(selectedSettlement.id) ? 1 : 0
+      id: getNextSurvivorId(campaign),
+      understanding: bornWithUnderstanding(campaign, selectedSettlement.id)
+        ? 1
+        : 0
     }
 
     // Reset form with updated values while preserving user-entered fields
@@ -98,7 +104,7 @@ export function CreateSurvivorForm({
       ...form.getValues(),
       ...updatedValues
     })
-  }, [form, selectedSettlement])
+  }, [campaign, form, selectedSettlement])
 
   /**
    * Handles form submission
@@ -110,14 +116,6 @@ export function CreateSurvivorForm({
     setSelectedSurvivor(values)
     setIsCreatingNewSurvivor(false)
   }
-
-  /**
-   * Handles back navigation to settlement
-   */
-  const handleBackToSettlement = useCallback(
-    () => setIsCreatingNewSurvivor(false),
-    [setIsCreatingNewSurvivor]
-  )
 
   return (
     <form
@@ -203,7 +201,7 @@ export function CreateSurvivorForm({
         <Button
           type="button"
           variant="outline"
-          onClick={handleBackToSettlement}>
+          onClick={() => setIsCreatingNewSurvivor(false)}>
           Cancel
         </Button>
         <Button type="submit">Create Survivor</Button>

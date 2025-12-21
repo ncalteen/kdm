@@ -71,7 +71,11 @@ export function ResourcesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.resources || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   // Filter states
@@ -153,8 +157,6 @@ export function ResourcesCard({
     })
   )
 
-  const addResource = () => setIsAddingNew(true)
-
   /**
    * Handles the amount change for a resource.
    *
@@ -174,8 +176,8 @@ export function ResourcesCard({
    * @param index Resource Index
    */
   const onRemove = (index: number) => {
-    const currentResources = [...(selectedSettlement?.resources || [])]
-    currentResources.splice(index, 1)
+    const current = [...(selectedSettlement?.resources || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -189,10 +191,7 @@ export function ResourcesCard({
       return next
     })
 
-    saveSelectedSettlement(
-      { resources: currentResources },
-      RESOURCE_REMOVED_MESSAGE()
-    )
+    saveSelectedSettlement({ resources: current }, RESOURCE_REMOVED_MESSAGE())
   }
 
   /**
@@ -214,11 +213,11 @@ export function ResourcesCard({
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('resource'))
 
-    const updatedResources = [...(selectedSettlement?.resources || [])]
+    const updated = [...(selectedSettlement?.resources || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedResources[i] = {
+      updated[i] = {
         name,
         category: category!,
         types: types!,
@@ -230,7 +229,7 @@ export function ResourcesCard({
       }))
     } else {
       // Adding a new value
-      updatedResources.push({
+      updated.push({
         name,
         category: category!,
         types: types!,
@@ -238,25 +237,13 @@ export function ResourcesCard({
       })
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedResources.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveSelectedSettlement(
-      { resources: updatedResources },
-      RESOURCE_UPDATED_MESSAGE(i)
-    )
-
+    saveSelectedSettlement({ resources: updated }, RESOURCE_UPDATED_MESSAGE(i))
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a resource.
-   *
-   * @param index Resource Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering resources.
@@ -294,26 +281,24 @@ export function ResourcesCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <BeefIcon className="h-4 w-4" />
           Resource Storage
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="icon"
-                variant="outline"
-                onClick={addResource}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
 
@@ -422,7 +407,7 @@ export function ResourcesCard({
       </CardHeader>
 
       {/* Resources List */}
-      <CardContent className={`p-1 pb-2 pt-0 ${isMobile ? 'px-2' : ''}`}>
+      <CardContent className={`p-1 pb-2 pt-1 ${isMobile ? 'px-2' : ''}`}>
         <div
           className={`${isMobile ? 'h-auto max-h-[400px]' : 'h-[200px]'} overflow-y-auto`}>
           <div className={`${isMobile ? 'space-y-3' : 'space-y-1'}`}>
@@ -446,7 +431,12 @@ export function ResourcesCard({
                       onSave={(i, name, category, types, amount) =>
                         onSave(name, category, types, amount, i)
                       }
-                      onEdit={onEdit}
+                      onEdit={() =>
+                        setDisabledInputs((prev) => ({
+                          ...prev,
+                          [item.originalIndex]: false
+                        }))
+                      }
                       onAmountChange={onAmountChange}
                       selectedSettlement={selectedSettlement}
                     />

@@ -34,40 +34,6 @@ export function CourageUnderstandingAbilities({
   saveSelectedSurvivor,
   selectedSurvivor
 }: CourageUnderstandingAbilitiesProps): ReactElement {
-  /**
-   * Handles the change of the ability in the courage group.
-   *
-   * @param value Value
-   */
-  const handleCourageGroupChange = (
-    value: 'stalwart' | 'prepared' | 'matchmaker'
-  ) =>
-    saveSelectedSurvivor(
-      {
-        hasStalwart: value === 'stalwart',
-        hasPrepared: value === 'prepared',
-        hasMatchmaker: value === 'matchmaker'
-      },
-      SURVIVOR_COURAGE_UNDERSTANDING_ABILITY_UPDATED_MESSAGE()
-    )
-
-  /**
-   * Handles the change of the ability in the understanding group.
-   *
-   * @param value Value
-   */
-  const handleUnderstandingGroupChange = (
-    value: 'analyze' | 'explore' | 'tinker'
-  ) =>
-    saveSelectedSurvivor(
-      {
-        hasAnalyze: value === 'analyze',
-        hasExplore: value === 'explore',
-        hasTinker: value === 'tinker'
-      },
-      SURVIVOR_COURAGE_UNDERSTANDING_ABILITY_UPDATED_MESSAGE()
-    )
-
   // Ability descriptions
   const courageAbilities = {
     stalwart: "Can't be knocked down by brain trauma or intimidate.",
@@ -96,7 +62,16 @@ export function CourageUnderstandingAbilities({
                     ? 'matchmaker'
                     : ''
             }
-            onValueChange={handleCourageGroupChange}>
+            onValueChange={(value) =>
+              saveSelectedSurvivor(
+                {
+                  hasStalwart: value === 'stalwart',
+                  hasPrepared: value === 'prepared',
+                  hasMatchmaker: value === 'matchmaker'
+                },
+                SURVIVOR_COURAGE_UNDERSTANDING_ABILITY_UPDATED_MESSAGE()
+              )
+            }>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a courage ability" />
             </SelectTrigger>
@@ -141,7 +116,16 @@ export function CourageUnderstandingAbilities({
                     ? 'tinker'
                     : ''
             }
-            onValueChange={handleUnderstandingGroupChange}>
+            onValueChange={(value) =>
+              saveSelectedSurvivor(
+                {
+                  hasAnalyze: value === 'analyze',
+                  hasExplore: value === 'explore',
+                  hasTinker: value === 'tinker'
+                },
+                SURVIVOR_COURAGE_UNDERSTANDING_ABILITY_UPDATED_MESSAGE()
+              )
+            }>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select an understanding ability" />
             </SelectTrigger>

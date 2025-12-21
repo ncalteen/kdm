@@ -58,8 +58,19 @@ export function InnovationsCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.innovations || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -71,23 +82,14 @@ export function InnovationsCard({
     )
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  const addInnovation = () => setIsAddingNew(true)
-
   /**
    * Handles the removal of an innovation.
    *
    * @param index Innovation Index
    */
   const onRemove = (index: number) => {
-    const currentInnovations = [...(selectedSettlement?.innovations || [])]
-    currentInnovations.splice(index, 1)
+    const current = [...(selectedSettlement?.innovations || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -102,7 +104,7 @@ export function InnovationsCard({
     })
 
     saveSelectedSettlement(
-      { innovations: currentInnovations },
+      { innovations: current },
       INNOVATION_REMOVED_MESSAGE()
     )
   }
@@ -117,39 +119,30 @@ export function InnovationsCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('innovation'))
 
-    const updatedInnovations = [...(selectedSettlement?.innovations || [])]
+    const updated = [...(selectedSettlement?.innovations || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedInnovations[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedInnovations.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedInnovations.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveSelectedSettlement(
-      { innovations: updatedInnovations },
+      { innovations: updated },
       INNOVATION_UPDATED_MESSAGE(i)
     )
-
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a value.
-   *
-   * @param index Innovation Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
@@ -187,8 +180,8 @@ export function InnovationsCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <LightbulbIcon className="h-4 w-4" />
           Innovations
@@ -197,7 +190,7 @@ export function InnovationsCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addInnovation}
+              onClick={() => setIsAddingNew(true)}
               className="border-0 h-8 w-8"
               disabled={
                 isAddingNew ||
@@ -210,7 +203,7 @@ export function InnovationsCard({
       </CardHeader>
 
       {/* Innovations List */}
-      <CardContent className="p-1 pb-2 pt-0">
+      <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[400px]">
           <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.innovations?.length !== 0 && (
@@ -232,7 +225,12 @@ export function InnovationsCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )

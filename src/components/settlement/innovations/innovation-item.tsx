@@ -61,8 +61,7 @@ export function InnovationItem({
   useEffect(() => {
     console.debug(
       '[InnovationItem] Changed',
-      selectedSettlement?.innovations?.[index],
-      index
+      selectedSettlement?.innovations?.[index]
     )
 
     if (inputRef.current)
@@ -70,7 +69,7 @@ export function InnovationItem({
   }, [selectedSettlement?.innovations, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.

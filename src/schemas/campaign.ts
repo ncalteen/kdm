@@ -1,5 +1,9 @@
 import { TabType } from '@/lib/enums'
 import { HuntSchema } from '@/schemas/hunt'
+import {
+  NemesisMonsterDataSchema,
+  QuarryMonsterDataSchema
+} from '@/schemas/monster'
 import { SettlementSchema } from '@/schemas/settlement'
 import { ShowdownSchema } from '@/schemas/showdown'
 import { SurvivorSchema } from '@/schemas/survivor'
@@ -10,7 +14,16 @@ import { z } from 'zod'
  */
 export const GlobalSettingsSchema = z.object({
   /** Disable Toast Notifications */
-  disableToasts: z.boolean().default(false)
+  disableToasts: z.boolean().default(false),
+  /** Unlocked Special Monsters */
+  unlockedMonsters: z.object({
+    /** Killenium Butcher Nemesis */
+    killeniumButcher: z.boolean().default(false),
+    /** Screaming Nukalope Quarry */
+    screamingNukalope: z.boolean().default(false),
+    /** White Gigalion Quarry */
+    whiteGigalion: z.boolean().default(false)
+  })
 })
 
 /**
@@ -24,6 +37,19 @@ export type GlobalSettings = z.infer<typeof GlobalSettingsSchema>
  * All of the data stored for all of the settlements and survivors for a player.
  */
 export const CampaignSchema = z.object({
+  /** Custom Monsters */
+  customMonsters: z
+    .record(
+      /** Monster ID */
+      z.string(),
+      /** Monster Data */
+      z.record(
+        z.literal('main'),
+        z.union([NemesisMonsterDataSchema, QuarryMonsterDataSchema])
+      )
+    )
+    .nullable()
+    .optional(),
   /** Hunts */
   hunts: z.array(HuntSchema).nullable().optional(),
   /** Selected Hunt ID */
@@ -43,7 +69,9 @@ export const CampaignSchema = z.object({
   /** Showdowns */
   showdowns: z.array(ShowdownSchema).nullable().optional(),
   /** Survivors */
-  survivors: z.array(SurvivorSchema)
+  survivors: z.array(SurvivorSchema),
+  /** Version */
+  version: z.string().optional()
 })
 
 /**

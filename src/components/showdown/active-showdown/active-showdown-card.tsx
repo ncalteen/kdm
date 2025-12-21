@@ -14,8 +14,8 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { ERROR_MESSAGE } from '@/lib/messages'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { ERROR_MESSAGE, SHOWDOWN_DELETED_MESSAGE } from '@/lib/messages'
+import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -27,6 +27,8 @@ import { toast } from 'sonner'
  * Active Showdown Card Properties
  */
 interface ActiveShowdownCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -47,10 +49,8 @@ interface ActiveShowdownCardProps {
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -60,6 +60,7 @@ interface ActiveShowdownCardProps {
  * @returns Active Showdown Card Component
  */
 export function ActiveShowdownCard({
+  campaign,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedShowdown,
@@ -67,8 +68,7 @@ export function ActiveShowdownCard({
   selectedSurvivor,
   setSelectedShowdown,
   setSelectedSurvivor,
-  setSurvivors,
-  survivors
+  updateCampaign
 }: ActiveShowdownCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
 
@@ -87,29 +87,31 @@ export function ActiveShowdownCard({
     if (!selectedSettlement?.id) return
 
     try {
-      const campaign = getCampaign()
-
       const updatedShowdowns = campaign.showdowns?.filter(
         (showdown) => showdown.id !== selectedShowdown?.id
       )
 
-      saveCampaignToLocalStorage({
+      updateCampaign({
         ...campaign,
         showdowns: updatedShowdowns
       })
 
       setSelectedShowdown(null)
 
-      toast.success(
-        'The showdown ends. Survivors return to the relative safety of the settlement.'
-      )
+      toast.success(SHOWDOWN_DELETED_MESSAGE())
 
       setIsCancelDialogOpen(false)
     } catch (error) {
       console.error('Delete Showdown Error:', error)
       toast.error(ERROR_MESSAGE())
     }
-  }, [selectedSettlement?.id, selectedShowdown?.id, setSelectedShowdown])
+  }, [
+    campaign,
+    selectedSettlement?.id,
+    selectedShowdown?.id,
+    setSelectedShowdown,
+    updateCampaign
+  ])
 
   /**
    * Handle Settlement Phase Transition
@@ -157,14 +159,14 @@ export function ActiveShowdownCard({
         </div>
 
         <ShowdownSurvivorsCard
+          campaign={campaign}
           saveSelectedShowdown={saveSelectedShowdown}
           saveSelectedSurvivor={saveSelectedSurvivor}
           selectedShowdown={selectedShowdown}
           selectedSettlement={selectedSettlement}
           selectedSurvivor={selectedSurvivor}
           setSelectedSurvivor={setSelectedSurvivor}
-          setSurvivors={setSurvivors}
-          survivors={survivors}
+          updateCampaign={updateCampaign}
         />
       </div>
 

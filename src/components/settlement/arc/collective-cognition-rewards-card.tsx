@@ -63,7 +63,11 @@ export function CollectiveCognitionRewardsCard({
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.ccRewards || []).map((_, i) => [i, true])
+    )
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -175,14 +179,6 @@ export function CollectiveCognitionRewardsCard({
   }
 
   /**
-   * Enables editing a reward.
-   *
-   * @param index Reward Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
-
-  /**
    * Handles the drag end event.
    *
    * @param event Event
@@ -271,7 +267,12 @@ export function CollectiveCognitionRewardsCard({
                         onToggleUnlocked={handleToggleUnlocked}
                         onRemove={onRemove}
                         onSave={(name, cc, i) => onSave(name, cc, i)}
-                        onEdit={onEdit}
+                        onEdit={(index: number) =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                       />
                     )
                   )}

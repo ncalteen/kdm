@@ -2,9 +2,8 @@
 
 import { useToast } from '@/hooks/use-toast'
 import { ERROR_MESSAGE } from '@/lib/messages'
-import { getCampaign, saveCampaignToLocalStorage } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
-import { useCallback } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { ZodError } from 'zod'
 
@@ -14,12 +13,19 @@ import { ZodError } from 'zod'
  * This hook provides a save function that automatically updates the settlement
  * context after saving data to localStorage, ensuring that the UI is
  * refreshed when settlement data changes.
+ *
+ * @param campaign Campaign
+ * @param form Settlement Form
+ * @param updateSelectedSettlement Function to Update Selected Settlement in Context
+ * @param updateCampaign Function to Update Campaign in Context
  */
 export function useSelectedSettlementSave(
+  campaign: Campaign,
   form: UseFormReturn<Settlement>,
-  updateSelectedSettlement: () => void
+  updateSelectedSettlement: () => void,
+  updateCampaign: (campaign: Campaign) => void
 ) {
-  const { toast } = useToast()
+  const { toast } = useToast(campaign)
 
   /**
    * Save Selected Settlement Data
@@ -27,49 +33,46 @@ export function useSelectedSettlementSave(
    * @param updateData Partial Settlement Data
    * @param successMsg Optional Success Message
    */
-  const saveSelectedSettlement = useCallback(
-    (updateData: Partial<Settlement>, successMsg?: string) => {
-      try {
-        const formValues = form.getValues()
-        const campaign = getCampaign()
-        const existingSettlement = campaign.settlements.find(
-          (s) => s.id === formValues.id
+  const saveSelectedSettlement = (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => {
+    try {
+      const formValues = form.getValues()
+      const existingSettlement = campaign.settlements.find(
+        (s) => s.id === formValues.id
+      )
+
+      const updatedSettlement = existingSettlement
+        ? {
+            ...existingSettlement,
+            ...updateData
+          }
+        : { ...formValues, ...updateData }
+
+      // Validate the updated settlement data
+      SettlementSchema.parse(updatedSettlement)
+
+      // If this is a new settlement, add them to the campaign
+      if (!existingSettlement) campaign.settlements.push(updatedSettlement)
+
+      updateCampaign({
+        ...campaign,
+        settlements: campaign.settlements.map((s) =>
+          s.id === formValues.id ? updatedSettlement : s
         )
+      })
+      updateSelectedSettlement()
 
-        const updatedSettlement = existingSettlement
-          ? {
-              ...existingSettlement,
-              ...updateData
-            }
-          : { ...formValues, ...updateData }
+      if (successMsg) toast.success(successMsg)
+    } catch (error) {
+      console.error('Settlement Save Error:', error)
 
-        // Validate the updated settlement data
-        SettlementSchema.parse(updatedSettlement)
-
-        // If this is a new settlement, add them to the campaign
-        if (!existingSettlement) campaign.settlements.push(updatedSettlement)
-
-        saveCampaignToLocalStorage({
-          ...campaign,
-          settlements: campaign.settlements.map((s) =>
-            s.id === formValues.id ? updatedSettlement : s
-          )
-        })
-
-        // Update the context to refresh the settlements list
-        updateSelectedSettlement()
-
-        if (successMsg) toast.success(successMsg)
-      } catch (error) {
-        console.error('Settlement Save Error:', error)
-
-        if (error instanceof ZodError && error.issues[0]?.message)
-          toast.error(error.issues[0].message)
-        else toast.error(ERROR_MESSAGE())
-      }
-    },
-    [form, toast, updateSelectedSettlement]
-  )
+      if (error instanceof ZodError && error.issues[0]?.message)
+        toast.error(error.issues[0].message)
+      else toast.error(ERROR_MESSAGE())
+    }
+  }
 
   return { saveSelectedSettlement }
 }

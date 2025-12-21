@@ -58,8 +58,19 @@ export function MonsterVolumesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.monsterVolumes || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -72,27 +83,13 @@ export function MonsterVolumesCard({
   }
 
   /**
-   * Add Monster Volume
-   */
-  const addMonsterVolume = () => setIsAddingNew(true)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  /**
    * Handles the removal of a monster volume.
    *
    * @param index Monster Volume Index
    */
   const onRemove = (index: number) => {
-    const currentMonsterVolumes = [
-      ...(selectedSettlement?.monsterVolumes || [])
-    ]
-    currentMonsterVolumes.splice(index, 1)
+    const current = [...(selectedSettlement?.monsterVolumes || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -107,9 +104,7 @@ export function MonsterVolumesCard({
     })
 
     saveSelectedSettlement(
-      {
-        monsterVolumes: currentMonsterVolumes
-      },
+      { monsterVolumes: current },
       MONSTER_VOLUME_REMOVED_MESSAGE()
     )
   }
@@ -124,43 +119,30 @@ export function MonsterVolumesCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('monster volume'))
 
-    const updatedMonsterVolumes = [
-      ...(selectedSettlement?.monsterVolumes || [])
-    ]
+    const updated = [...(selectedSettlement?.monsterVolumes || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedMonsterVolumes[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedMonsterVolumes.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedMonsterVolumes.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveSelectedSettlement(
-      {
-        monsterVolumes: updatedMonsterVolumes
-      },
+      { monsterVolumes: updated },
       MONSTER_VOLUME_UPDATED_MESSAGE(i)
     )
-
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a value.
-   *
-   * @param index Monster Volume Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
@@ -179,9 +161,7 @@ export function MonsterVolumesCard({
         newIndex
       )
 
-      saveSelectedSettlement({
-        monsterVolumes: newOrder
-      })
+      saveSelectedSettlement({ monsterVolumes: newOrder })
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -200,8 +180,8 @@ export function MonsterVolumesCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <BookOpenIcon className="h-4 w-4" />
           Monster Volumes
@@ -210,7 +190,7 @@ export function MonsterVolumesCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addMonsterVolume}
+              onClick={() => setIsAddingNew(true)}
               className="border-0 h-8 w-8"
               disabled={
                 isAddingNew ||
@@ -223,8 +203,8 @@ export function MonsterVolumesCard({
       </CardHeader>
 
       {/* Monster Volumes List */}
-      <CardContent className="p-1 pb-2 pt-0">
-        <div className="flex flex-col h-[200px]">
+      <CardContent className="p-1 pb-0">
+        <div className="flex flex-col h-[240px]">
           <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.monsterVolumes?.length !== 0 && (
               <DndContext
@@ -245,7 +225,12 @@ export function MonsterVolumesCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )

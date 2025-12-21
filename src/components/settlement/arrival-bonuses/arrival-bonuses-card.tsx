@@ -28,7 +28,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { HousePlusIcon, PlusIcon } from 'lucide-react'
-import { ReactElement, useCallback, useRef, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
@@ -46,6 +46,9 @@ interface ArrivalBonusesCardProps {
 
 /**
  * Arrival Bonuses Card Component
+ *
+ * @param props Arrival Bonuses Card Card Properties
+ * @returns Arrival Bonuses Card Component
  */
 export function ArrivalBonusesCard({
   saveSelectedSettlement,
@@ -55,8 +58,19 @@ export function ArrivalBonusesCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.arrivalBonuses || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -69,50 +83,31 @@ export function ArrivalBonusesCard({
   }
 
   /**
-   * Add Arrival Bonus
-   */
-  const addBonus = useCallback(() => setIsAddingNew(true), [])
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  /**
    * Handles the removal of a arrival bonus.
    *
    * @param index Arrival Bonus Index
    */
-  const onRemove = useCallback(
-    (index: number) => {
-      const currentArrivalBonuses = [
-        ...(selectedSettlement?.arrivalBonuses || [])
-      ]
-      currentArrivalBonuses.splice(index, 1)
+  const onRemove = (index: number) => {
+    const current = [...(selectedSettlement?.arrivalBonuses || [])]
+    current.splice(index, 1)
 
-      setDisabledInputs((prev) => {
-        const next: { [key: number]: boolean } = {}
+    setDisabledInputs((prev) => {
+      const next: { [key: number]: boolean } = {}
 
-        Object.keys(prev).forEach((k) => {
-          const num = parseInt(k)
-          if (num < index) next[num] = prev[num]
-          else if (num > index) next[num - 1] = prev[num]
-        })
-
-        return next
+      Object.keys(prev).forEach((k) => {
+        const num = parseInt(k)
+        if (num < index) next[num] = prev[num]
+        else if (num > index) next[num - 1] = prev[num]
       })
 
-      saveSelectedSettlement(
-        {
-          arrivalBonuses: currentArrivalBonuses
-        },
-        ARRIVAL_BONUS_REMOVED_MESSAGE()
-      )
-    },
-    [selectedSettlement?.arrivalBonuses, saveSelectedSettlement]
-  )
+      return next
+    })
+
+    saveSelectedSettlement(
+      { arrivalBonuses: current },
+      ARRIVAL_BONUS_REMOVED_MESSAGE()
+    )
+  }
 
   /**
    * Handles saving arrival bonus.
@@ -120,124 +115,89 @@ export function ArrivalBonusesCard({
    * @param value Arrival Bonus Value
    * @param i Arrival Bonus Index (When Updating Only)
    */
-  const onSave = useCallback(
-    (value?: string, i?: number) => {
-      if (!value || value.trim() === '')
-        return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('arrival bonus'))
+  const onSave = (value?: string, i?: number) => {
+    if (!value || value.trim() === '')
+      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('arrival bonus'))
 
-      const updatedArrivalBonuses = [
-        ...(selectedSettlement?.arrivalBonuses || [])
-      ]
+    const updated = [...(selectedSettlement?.arrivalBonuses || [])]
 
-      if (i !== undefined) {
-        // Updating an existing value
-        updatedArrivalBonuses[i] = value
-        setDisabledInputs((prev) => ({
-          ...prev,
-          [i]: true
-        }))
-      } else {
-        // Adding a new value
-        updatedArrivalBonuses.push(value)
-        setDisabledInputs((prev) => ({
-          ...prev,
-          [updatedArrivalBonuses.length - 1]: true
-        }))
-      }
+    if (i !== undefined) {
+      // Updating an existing value
+      updated[i] = value
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [i]: true
+      }))
+    } else {
+      // Adding a new value
+      updated.push(value)
+      setDisabledInputs((prev) => ({
+        ...prev,
+        [updated.length - 1]: true
+      }))
+    }
 
-      saveSelectedSettlement(
-        {
-          arrivalBonuses: updatedArrivalBonuses
-        },
-        ARRIVAL_BONUS_UPDATED_MESSAGE(i)
-      )
-      setIsAddingNew(false)
-    },
-    [selectedSettlement?.arrivalBonuses, saveSelectedSettlement]
-  )
-
-  /**
-   * Enables editing a arrival bonus.
-   *
-   * @param index Arrival Bonus Index
-   */
-  const onEdit = useCallback(
-    (index: number) =>
-      setDisabledInputs((prev) => ({ ...prev, [index]: false })),
-    []
-  )
+    saveSelectedSettlement(
+      { arrivalBonuses: updated },
+      ARRIVAL_BONUS_UPDATED_MESSAGE(i)
+    )
+    setIsAddingNew(false)
+  }
 
   /**
    * Handles the end of a drag event for reordering arrival bonuses.
    *
    * @param event Drag End Event
    */
-  const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      const { active, over } = event
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
 
-      if (over && active.id !== over.id) {
-        const oldIndex = parseInt(active.id.toString())
-        const newIndex = parseInt(over.id.toString())
-        const newOrder = arrayMove(
-          selectedSettlement?.arrivalBonuses || [],
-          oldIndex,
-          newIndex
-        )
+    if (over && active.id !== over.id) {
+      const oldIndex = parseInt(active.id.toString())
+      const newIndex = parseInt(over.id.toString())
+      const newOrder = arrayMove(
+        selectedSettlement?.arrivalBonuses || [],
+        oldIndex,
+        newIndex
+      )
 
-        saveSelectedSettlement({
-          arrivalBonuses: newOrder
+      saveSelectedSettlement({ arrivalBonuses: newOrder })
+
+      setDisabledInputs((prev) => {
+        const next: { [key: number]: boolean } = {}
+
+        Object.keys(prev).forEach((k) => {
+          const num = parseInt(k)
+          if (num === oldIndex) next[newIndex] = prev[num]
+          else if (num >= newIndex && num < oldIndex) next[num + 1] = prev[num]
+          else if (num <= newIndex && num > oldIndex) next[num - 1] = prev[num]
+          else next[num] = prev[num]
         })
 
-        setDisabledInputs((prev) => {
-          const next: { [key: number]: boolean } = {}
-
-          Object.keys(prev).forEach((k) => {
-            const num = parseInt(k)
-            if (num === oldIndex) next[newIndex] = prev[num]
-            else if (num >= newIndex && num < oldIndex)
-              next[num + 1] = prev[num]
-            else if (num <= newIndex && num > oldIndex)
-              next[num - 1] = prev[num]
-            else next[num] = prev[num]
-          })
-
-          return next
-        })
-      }
-    },
-    [selectedSettlement?.arrivalBonuses, saveSelectedSettlement]
-  )
-
-  /**
-   * Handles canceling the addition of a new arrival bonus.
-   */
-  const handleCancelNew = useCallback(() => setIsAddingNew(false), [])
+        return next
+      })
+    }
+  }
 
   return (
-    <Card className="p-0 pb-1 border-1 w-full gap-0">
+    <Card className="p-0 border-1 gap-0">
       <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
-          <HousePlusIcon className="h-4 w-4" aria-hidden="true" />
+          <HousePlusIcon className="h-4 w-4" />
           Arrival Bonuses
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addBonus}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }
-                aria-label="Add new arrival bonus"
-                name="add-arrival-bonus"
-                id="add-arrival-bonus">
-                <PlusIcon className="h-4 w-4" aria-hidden="true" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
@@ -245,10 +205,7 @@ export function ArrivalBonusesCard({
       {/* Arrival Bonuses List */}
       <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[240px]">
-          <div
-            className="flex-1 overflow-y-auto"
-            role="list"
-            aria-label="Arrival bonuses list">
+          <div className="flex-1 overflow-y-auto">
             {(selectedSettlement?.arrivalBonuses || []).length !== 0 && (
               <DndContext
                 sensors={sensors}
@@ -267,8 +224,13 @@ export function ArrivalBonusesCard({
                         index={index}
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
-                        onSave={onSave}
-                        onEdit={onEdit}
+                        onSave={(value, i) => onSave(value, i)}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )
@@ -277,7 +239,10 @@ export function ArrivalBonusesCard({
               </DndContext>
             )}
             {isAddingNew && (
-              <NewArrivalBonusItem onSave={onSave} onCancel={handleCancelNew} />
+              <NewArrivalBonusItem
+                onSave={onSave}
+                onCancel={() => setIsAddingNew(false)}
+              />
             )}
           </div>
         </div>

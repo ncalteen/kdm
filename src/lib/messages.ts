@@ -58,6 +58,45 @@ export const ARRIVAL_BONUS_UPDATED_MESSAGE = (index?: number) =>
     : 'A new blessing graces your settlement.'
 
 /**
+ * Campaign Unlocked Killenium Butcher Message
+ *
+ * @param unlocked Campaign Unlocked Killenium Butcher Status
+ * @returns Campaign Unlocked Killenium Butcher Status Updated Message
+ */
+export const CAMPAIGN_UNLOCK_KILLENIUM_BUTCHER_UPDATED_MESSAGE = (
+  unlocked: boolean
+) =>
+  unlocked
+    ? 'Killenium Butcher accepts your challenge.'
+    : 'Killenium Butcher retreats into the darkness.'
+
+/**
+ * Campaign Unlocked Screaming Nukalope Message
+ *
+ * @param unlocked Campaign Unlocked Screaming Nukalope Status
+ * @returns Campaign Unlocked Screaming Nukalope Status Updated Message
+ */
+export const CAMPAIGN_UNLOCK_SCREAMING_NUKALOPE_UPDATED_MESSAGE = (
+  unlocked: boolean
+) =>
+  unlocked
+    ? 'Screaming Nukalope accepts your challenge.'
+    : 'Screaming Nukalope retreats into the darkness.'
+
+/**
+ * Campaign Unlocked White Gigalion Message
+ *
+ * @param unlocked Campaign Unlocked White Gigalion Status
+ * @returns Campaign Unlocked White Gigalion Status Updated Message
+ */
+export const CAMPAIGN_UNLOCK_WHITE_GIGALION_UPDATED_MESSAGE = (
+  unlocked: boolean
+) =>
+  unlocked
+    ? 'White Gigalion accepts your challenge.'
+    : 'White Gigalion retreats into the darkness.'
+
+/**
  * Collective Cognition Reward No Target Error
  *
  * @returns No Target Collective Cognition Reward Error Message
@@ -133,6 +172,37 @@ export const COMBAT_LEGS_UPDATED_MESSAGE = () =>
  */
 export const COMBAT_WAIST_UPDATED_MESSAGE = () =>
   'The core strengthens against the darkness.'
+
+/**
+ * Custom Monster Created
+ *
+ * @param monsterType Monster Type
+ * @returns Custom Monster Created Message
+ */
+export const CUSTOM_MONSTER_CREATED_MESSAGE = (monsterType: MonsterType) =>
+  monsterType === MonsterType.NEMESIS
+    ? 'A new nemesis emerges from the shadows.'
+    : 'A new quarry stalks the land.'
+
+/**
+ * Custom Monster Deleted
+ *
+ * @param monsterName Monster Name
+ * @returns Custom Monster Deleted Message
+ */
+export const CUSTOM_MONSTER_DELETED_MESSAGE = (monsterName?: string) =>
+  `${monsterName || 'Monster'} fades back into the darkness.`
+
+/**
+ * Custom Monster Updated
+ *
+ * @param monsterType Monster Type
+ * @returns Custom Monster Updated Message
+ */
+export const CUSTOM_MONSTER_UPDATED_MESSAGE = (monsterType: MonsterType) =>
+  monsterType === MonsterType.NEMESIS
+    ? 'The nemesis adapts to your will.'
+    : 'The quarry shifts in the darkness.'
 
 /**
  * Departing Bonus Removed
@@ -312,6 +382,23 @@ export const KNOWLEDGE_UPDATED_MESSAGE = () => 'Knowledge carved into memory.'
  */
 export const LANTERN_RESEARCH_LEVEL_MINIMUM_ERROR = () =>
   'Lantern research level cannot be reduced below 0.'
+
+/**
+ * Lantern Research Level Updated
+ *
+ * @param oldValue Old Lantern Research Level
+ * @param newValue New Lantern Research Level
+ * @returns Lantern Research Level Updated Message
+ */
+export const LANTERN_RESEARCH_LEVEL_UPDATED_MESSAGE = (
+  oldValue: number,
+  newValue: number
+) =>
+  oldValue < newValue
+    ? "The lantern's glow illuminates new knowledge."
+    : oldValue > newValue
+      ? 'The lantern dims, losing some of its knowledge.'
+      : "The lantern's knowledge remains unchanged."
 
 /**
  * Location Removed
@@ -1040,7 +1127,7 @@ export const SHOWDOWN_CREATED_MESSAGE = (
  * @returns Showdown Deleted Message
  */
 export const SHOWDOWN_DELETED_MESSAGE = () =>
-  'The showdown ends. Survivors catch their breath.'
+  'The showdown ends. Survivors return to the relative safety of the settlement.'
 
 /**
  * Showdown Monster Knocked Down

@@ -1,7 +1,7 @@
 'use client'
 
 import { NumericInput } from '@/components/menu/numeric-input'
-import { MonsterTraitsMoods } from '@/components/monster/monster-traits-moods'
+import { TraitsMoods } from '@/components/monster/traits-moods/traits-moods'
 import { ScoutSelectionDrawer } from '@/components/survivor/scout-selection/scout-selection-drawer'
 import { SurvivorSelectionDrawer } from '@/components/survivor/survivor-selection/survivor-selection-drawer'
 import { Button } from '@/components/ui/button'
@@ -28,13 +28,16 @@ import {
   ERROR_MESSAGE,
   HUNT_ALREADY_ACTIVE_ERROR_MESSAGE,
   NAMELESS_OBJECT_ERROR_MESSAGE,
+  SCOUT_CONFLICT_MESSAGE,
+  SCOUT_REQUIRED_MESSAGE,
   SHOWDOWN_CREATED_MESSAGE
 } from '@/lib/messages'
+import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { getNextShowdownId } from '@/lib/utils'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown, SurvivorShowdownDetails } from '@/schemas/showdown'
-import { Survivor } from '@/schemas/survivor'
 import { SkullIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -43,6 +46,8 @@ import { toast } from 'sonner'
  * Create Showdown Card Properties
  */
 interface CreateShowdownCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -54,8 +59,6 @@ interface CreateShowdownCardProps {
   selectedSettlement: Settlement | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
-  /** Survivors */
-  survivors: Survivor[] | null
 }
 
 /**
@@ -65,15 +68,21 @@ interface CreateShowdownCardProps {
  * @returns Create Showdown Card Component
  */
 export function CreateShowdownCard({
+  campaign,
   saveSelectedShowdown,
   selectedHunt,
   selectedSettlement,
-  setSelectedShowdown,
-  survivors
+  setSelectedShowdown
 }: CreateShowdownCardProps): ReactElement {
   const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
     useState<number>(0)
-  const [selectedMonsterAIDeckSize, setSelectedMonsterAIDeckSize] =
+  const [selectedMonsterAIDeckACards, setSelectedMonsterAIDeckACards] =
+    useState<number>(0)
+  const [selectedMonsterAIDeckBCards, setSelectedMonsterAIDeckBCards] =
+    useState<number>(0)
+  const [selectedMonsterAIDeckLCards, setSelectedMonsterAIDeckLCards] =
+    useState<number>(0)
+  const [selectedMonsterAIDeckOCards, setSelectedMonsterAIDeckOCards] =
     useState<number>(0)
   const [selectedMonsterDamage, setSelectedMonsterDamage] = useState<number>(0)
   const [selectedMonsterDamageTokens, setSelectedMonsterDamageTokens] =
@@ -89,7 +98,7 @@ export function CreateShowdownCard({
     useState<number>(6)
   const [selectedMonsterMovementTokens, setSelectedMonsterMovementTokens] =
     useState<number>(0)
-  const [selectedMonsterName, setSelectedMonsterName] = useState<string>('')
+  const [selectedMonsterId, setSelectedMonsterId] = useState<string>('')
   const [selectedMonsterSpeed, setSelectedMonsterSpeed] = useState<number>(0)
   const [selectedMonsterSpeedTokens, setSelectedMonsterSpeedTokens] =
     useState<number>(0)
@@ -105,6 +114,7 @@ export function CreateShowdownCard({
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
   const [startingTurn, setStartingTurn] = useState<TurnType>(TurnType.MONSTER)
+  const [availableLevels, setAvailableLevels] = useState<MonsterLevel[]>([])
 
   // State for managing trait and mood editing
   const [disabledTraits, setDisabledTraits] = useState<{
@@ -117,50 +127,232 @@ export function CreateShowdownCard({
   const [isAddingMood, setIsAddingMood] = useState<boolean>(false)
 
   // Handle monster selection and auto-set type
-  const handleMonsterSelection = (monsterName: string) => {
-    setSelectedMonsterName(monsterName)
+  const handleMonsterSelection = (monsterId: string) => {
+    setSelectedMonsterId(monsterId)
 
-    // Determine if it's a quarry or nemesis
-    const isQuarry = availableQuarries.some(
-      (quarry) => quarry.name === monsterName
+    // Determine if it's a quarry, nemesis, or custom monster
+    const isQuarry = availableMonsters.some(
+      (monster) => monster.id === monsterId && monster.source === 'quarry'
     )
-    setSelectedMonsterType(isQuarry ? MonsterType.QUARRY : MonsterType.NEMESIS)
+    const isNemesis = availableMonsters.some(
+      (monster) => monster.id === monsterId && monster.source === 'nemesis'
+    )
+
+    let monsterData = null
+    let monsterType: MonsterType | undefined
+
+    if (isQuarry) {
+      monsterType = MonsterType.QUARRY
+      const quarryId = parseInt(monsterId.replace('quarry-', ''))
+      monsterData = QUARRIES[quarryId as keyof typeof QUARRIES]?.main
+    } else if (isNemesis) {
+      monsterType = MonsterType.NEMESIS
+      const nemesisId = parseInt(monsterId.replace('nemesis-', ''))
+      monsterData = NEMESES[nemesisId as keyof typeof NEMESES]?.main
+    } else {
+      // Custom monster - look up type
+      const customMonster = availableMonsters.find((m) => m.id === monsterId)
+      if (customMonster) monsterType = customMonster.type
+    }
+
+    if (monsterType) setSelectedMonsterType(monsterType)
+
+    if (!monsterData) return
+
+    // Determine which levels are available for this monster
+    const levels: MonsterLevel[] = []
+    if (monsterData.level1) levels.push(MonsterLevel.LEVEL_1)
+    if (monsterData.level2) levels.push(MonsterLevel.LEVEL_2)
+    if (monsterData.level3) levels.push(MonsterLevel.LEVEL_3)
+    if (monsterData.level4) levels.push(MonsterLevel.LEVEL_4)
+    setAvailableLevels(levels)
+
+    // Set to first available level or keep current if valid
+    const currentLevelValid = levels.includes(selectedMonsterLevel)
+    const levelToUse = currentLevelValid ? selectedMonsterLevel : levels[0]
+
+    if (!levelToUse) return
+
+    setSelectedMonsterLevel(levelToUse)
+    const levelData = monsterData[`level${levelToUse}`]
+
+    if (levelData) {
+      // Auto-populate all form fields with monster data
+      setSelectedMonsterAccuracyTokens(levelData.accuracyTokens ?? 0)
+      setSelectedMonsterAIDeckACards(levelData.aiDeck?.advanced ?? 0)
+      setSelectedMonsterAIDeckBCards(levelData.aiDeck?.basic ?? 0)
+      setSelectedMonsterAIDeckLCards(levelData.aiDeck?.legendary ?? 0)
+      setSelectedMonsterAIDeckOCards(levelData.aiDeck?.overtone ?? 0)
+      setSelectedMonsterDamage(levelData.damage ?? 0)
+      setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
+      setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
+      setSelectedMonsterMoods(levelData.moods ?? [])
+      setSelectedMonsterMovement(levelData.movement ?? 6)
+      setSelectedMonsterMovementTokens(levelData.movementTokens ?? 0)
+      setSelectedMonsterSpeed(levelData.speed ?? 0)
+      setSelectedMonsterSpeedTokens(levelData.speedTokens ?? 0)
+      setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
+      setSelectedMonsterToughness(levelData.toughness ?? 6)
+      setSelectedMonsterTraits(levelData.traits ?? [])
+
+      // Set disabled state for auto-populated traits and moods
+      const traitsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.traits ?? []).forEach((_, index) => {
+        traitsDisabled[index] = true
+      })
+      setDisabledTraits(traitsDisabled)
+
+      const moodsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.moods ?? []).forEach((_, index) => {
+        moodsDisabled[index] = true
+      })
+      setDisabledMoods(moodsDisabled)
+    }
+  }
+
+  // Handle level change and auto-populate form
+  const handleLevelChange = (level: MonsterLevel) => {
+    if (!selectedMonsterId) return
+
+    let monsterData = null
+
+    // Determine monster source and get data
+    if (selectedMonsterId.startsWith('quarry-')) {
+      const quarryId = parseInt(selectedMonsterId.replace('quarry-', ''))
+      monsterData = QUARRIES[quarryId as keyof typeof QUARRIES]?.main
+    } else if (selectedMonsterId.startsWith('nemesis-')) {
+      const nemesisId = parseInt(selectedMonsterId.replace('nemesis-', ''))
+      monsterData = NEMESES[nemesisId as keyof typeof NEMESES]?.main
+    }
+
+    if (!monsterData) return
+    if (!level) return
+
+    const levelData = monsterData[`level${level}`]
+
+    if (levelData) {
+      // Auto-populate all form fields with monster data
+      setSelectedMonsterAccuracyTokens(levelData.accuracyTokens ?? 0)
+      setSelectedMonsterAIDeckACards(levelData.aiDeck?.advanced ?? 0)
+      setSelectedMonsterAIDeckBCards(levelData.aiDeck?.basic ?? 0)
+      setSelectedMonsterAIDeckLCards(levelData.aiDeck?.legendary ?? 0)
+      setSelectedMonsterAIDeckOCards(levelData.aiDeck?.overtone ?? 0)
+      setSelectedMonsterDamage(levelData.damage ?? 0)
+      setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
+      setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterLevel(level)
+      setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
+      setSelectedMonsterMoods(levelData.moods ?? [])
+      setSelectedMonsterMovement(levelData.movement ?? 6)
+      setSelectedMonsterMovementTokens(levelData.movementTokens ?? 0)
+      setSelectedMonsterSpeed(levelData.speed ?? 0)
+      setSelectedMonsterSpeedTokens(levelData.speedTokens ?? 0)
+      setSelectedMonsterStrengthTokens(levelData.strengthTokens ?? 0)
+      setSelectedMonsterToughness(levelData.toughness ?? 6)
+      setSelectedMonsterTraits(levelData.traits ?? [])
+
+      // Set disabled state for auto-populated traits and moods
+      const traitsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.traits ?? []).forEach((_, index) => {
+        traitsDisabled[index] = true
+      })
+      setDisabledTraits(traitsDisabled)
+
+      const moodsDisabled: { [key: number]: boolean } = {}
+      ;(levelData.moods ?? []).forEach((_, index) => {
+        moodsDisabled[index] = true
+      })
+      setDisabledMoods(moodsDisabled)
+    }
   }
 
   // Get available survivors for this settlement (exclude dead/retired)
   const availableSurvivors = useMemo(
     () =>
-      survivors
-        ? survivors.filter(
+      campaign.survivors
+        ? campaign.survivors.filter(
             (survivor) =>
               survivor.settlementId === selectedSettlement?.id &&
               !survivor.dead &&
               !survivor.retired
           )
         : [],
-    [survivors, selectedSettlement?.id]
+    [campaign.survivors, selectedSettlement?.id]
   )
 
   // Get all survivors for this settlement (including dead ones) for messaging
   const allSettlementSurvivors = useMemo(
     () =>
-      survivors
-        ? survivors.filter(
+      campaign.survivors
+        ? campaign.survivors.filter(
             (survivor) => survivor.settlementId === selectedSettlement?.id
           )
         : [],
-    [survivors, selectedSettlement?.id]
+    [campaign.survivors, selectedSettlement?.id]
   )
 
-  // Get available quarries (unlocked ones)
-  const availableQuarries = selectedSettlement?.quarries
-    ? selectedSettlement.quarries.filter((quarry) => quarry.unlocked)
-    : []
+  // Get available monsters (quarries, nemeses, and custom monsters)
+  const availableMonsters: Array<{
+    id: string
+    name: string
+    node?: string
+    type: MonsterType
+    source: 'quarry' | 'nemesis' | 'custom'
+  }> = []
 
-  // Get available nemeses (unlocked ones)
-  const availableNemeses = selectedSettlement?.nemeses
-    ? selectedSettlement.nemeses.filter((nemesis) => nemesis.unlocked)
-    : []
+  // Add unlocked quarries
+  if (selectedSettlement?.quarries)
+    selectedSettlement.quarries
+      .filter((q) => q.unlocked)
+      .forEach((quarry) => {
+        const quarryData = QUARRIES[quarry.id as keyof typeof QUARRIES]?.main
+        if (quarryData) {
+          availableMonsters.push({
+            id: `quarry-${quarry.id}`,
+            name: quarryData.name,
+            node: quarryData.node,
+            type: MonsterType.QUARRY,
+            source: 'quarry'
+          })
+        }
+      })
+
+  // Add unlocked nemeses
+  if (selectedSettlement?.nemeses)
+    selectedSettlement.nemeses
+      .filter((n) => n.unlocked)
+      .forEach((nemesis) => {
+        const nemesisData = NEMESES[nemesis.id as keyof typeof NEMESES]?.main
+        if (nemesisData) {
+          availableMonsters.push({
+            id: `nemesis-${nemesis.id}`,
+            name: nemesisData.name,
+            node: nemesisData.node,
+            type: MonsterType.NEMESIS,
+            source: 'nemesis'
+          })
+        }
+      })
+
+  // Add custom monsters
+  try {
+    if (campaign.customMonsters)
+      Object.entries(campaign.customMonsters).forEach(
+        ([id, monsterWrapper]) => {
+          const monsterData = monsterWrapper.main
+          availableMonsters.push({
+            id: `custom-${id}`,
+            name: monsterData.name,
+            node: monsterData.node,
+            type: monsterData.type,
+            source: 'custom'
+          })
+        }
+      )
+  } catch (error) {
+    console.error('Failed to load custom monsters:', error)
+  }
 
   /**
    * Trait Operations
@@ -204,9 +396,6 @@ export function CreateShowdownCard({
     setIsAddingTrait(false)
   }
 
-  const onEditTrait = (index: number) =>
-    setDisabledTraits((prev) => ({ ...prev, [index]: false }))
-
   /**
    * Mood Operations
    */
@@ -249,9 +438,6 @@ export function CreateShowdownCard({
     setIsAddingMood(false)
   }
 
-  const onEditMood = (index: number) =>
-    setDisabledMoods((prev) => ({ ...prev, [index]: false }))
-
   // Create Showdown
   const handleCreateShowdown = () => {
     // Check if there's already an active hunt for this settlement
@@ -260,7 +446,7 @@ export function CreateShowdownCard({
 
     if (
       !selectedSettlement ||
-      !selectedMonsterName ||
+      !selectedMonsterId ||
       !selectedMonsterType ||
       selectedSurvivors.length === 0
     )
@@ -268,7 +454,7 @@ export function CreateShowdownCard({
 
     // Validate scout selection if settlement uses scouts
     if (selectedSettlement.usesScouts && !selectedScout)
-      return toast.error('A scout must be selected for the showdown.')
+      return toast.error(SCOUT_REQUIRED_MESSAGE('showdown'))
 
     // Validate that scout is not also a selected survivor
     if (
@@ -276,9 +462,7 @@ export function CreateShowdownCard({
       selectedScout &&
       selectedSurvivors.includes(selectedScout)
     )
-      return toast.error(
-        'The selected scout cannot also be one of the selected survivors for the showdown.'
-      )
+      return toast.error(SCOUT_CONFLICT_MESSAGE())
 
     const survivorDetails: SurvivorShowdownDetails[] = selectedSurvivors.map(
       (survivorId) => ({
@@ -324,11 +508,21 @@ export function CreateShowdownCard({
     // Save as partial data that will be merged by the hook
     const showdownData: Showdown = {
       ambush: AmbushType.NONE,
-      id: getNextShowdownId(),
+      id: getNextShowdownId(campaign),
       monster: {
         accuracy: 0,
         accuracyTokens: selectedMonsterAccuracyTokens,
-        aiDeckSize: selectedMonsterAIDeckSize,
+        aiDeck: {
+          basic: selectedMonsterAIDeckBCards,
+          advanced: selectedMonsterAIDeckACards,
+          legendary: selectedMonsterAIDeckLCards,
+          overtone: selectedMonsterAIDeckOCards
+        },
+        aiDeckRemaining:
+          selectedMonsterAIDeckACards +
+          selectedMonsterAIDeckBCards +
+          selectedMonsterAIDeckLCards +
+          selectedMonsterAIDeckOCards,
         damage: selectedMonsterDamage,
         damageTokens: selectedMonsterDamageTokens,
         evasion: 0,
@@ -340,7 +534,8 @@ export function CreateShowdownCard({
         moods: selectedMonsterMoods,
         movement: selectedMonsterMovement,
         movementTokens: selectedMonsterMovementTokens,
-        name: selectedMonsterName,
+        name:
+          availableMonsters.find((m) => m.id === selectedMonsterId)?.name || '',
         notes: '',
         speed: selectedMonsterSpeed,
         speedTokens: selectedMonsterSpeedTokens,
@@ -366,14 +561,20 @@ export function CreateShowdownCard({
       }
     }
 
+    const monsterName =
+      availableMonsters.find((m) => m.id === selectedMonsterId)?.name || ''
+
     saveSelectedShowdown(
       showdownData,
-      SHOWDOWN_CREATED_MESSAGE(selectedMonsterName, selectedMonsterType)
+      SHOWDOWN_CREATED_MESSAGE(monsterName, selectedMonsterType)
     )
 
     // Reset form
     setSelectedMonsterAccuracyTokens(0)
-    setSelectedMonsterAIDeckSize(0)
+    setSelectedMonsterAIDeckACards(0)
+    setSelectedMonsterAIDeckBCards(0)
+    setSelectedMonsterAIDeckLCards(0)
+    setSelectedMonsterAIDeckOCards(0)
     setSelectedMonsterDamage(0)
     setSelectedMonsterDamageTokens(0)
     setSelectedMonsterEvasionTokens(0)
@@ -382,7 +583,7 @@ export function CreateShowdownCard({
     setSelectedMonsterMoods([])
     setSelectedMonsterMovement(6)
     setSelectedMonsterMovementTokens(0)
-    setSelectedMonsterName('')
+    setSelectedMonsterId('')
     setSelectedMonsterSpeed(0)
     setSelectedMonsterSpeedTokens(0)
     setSelectedMonsterStrengthTokens(0)
@@ -392,6 +593,7 @@ export function CreateShowdownCard({
     setSelectedSurvivors([])
     setSelectedScout(null)
     setStartingTurn(TurnType.MONSTER)
+    setAvailableLevels([])
     setDisabledTraits({})
     setDisabledMoods({})
     setIsAddingTrait(false)
@@ -414,16 +616,16 @@ export function CreateShowdownCard({
             Monster
           </Label>
           <Select
-            value={selectedMonsterName}
+            value={selectedMonsterId}
             onValueChange={handleMonsterSelection}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose a monster..." />
             </SelectTrigger>
             <SelectContent>
-              {[...availableQuarries, ...availableNemeses].map((monster) => (
-                <SelectItem key={monster.name} value={monster.name}>
+              {availableMonsters.map((monster) => (
+                <SelectItem key={monster.id} value={monster.id}>
                   {monster.name}
-                  {'node' in monster && ` (${monster.node})`}
+                  {monster.node && ` (${monster.node})`}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -437,17 +639,17 @@ export function CreateShowdownCard({
           </Label>
           <Select
             value={selectedMonsterLevel}
-            onValueChange={(value: MonsterLevel) =>
-              setSelectedMonsterLevel(value)
-            }>
+            onValueChange={handleLevelChange}
+            disabled={availableLevels.length === 0}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose level..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">Level 1</SelectItem>
-              <SelectItem value="2">Level 2</SelectItem>
-              <SelectItem value="3">Level 3</SelectItem>
-              <SelectItem value="4">Level 4</SelectItem>
+              {availableLevels.map((level) => (
+                <SelectItem key={level} value={level}>
+                  Level {level}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -462,28 +664,121 @@ export function CreateShowdownCard({
           </div>
         </div>
 
-        {/* AI Deck Size */}
+        {/* AI Deck */}
         <div className="flex items-center justify-between">
           <Label className="text-left whitespace-nowrap min-w-[90px]">
-            AI Deck Size
+            AI Deck
           </Label>
-          <NumericInput
-            label="AI Deck Size"
-            value={selectedMonsterAIDeckSize}
-            onChange={setSelectedMonsterAIDeckSize}
-            min={0}
-            readOnly={false}>
-            <Input
-              id="monster-ai-deck-size"
-              type="number"
-              value={selectedMonsterAIDeckSize}
-              onChange={(e) =>
-                setSelectedMonsterAIDeckSize(parseInt(e.target.value) || 0)
-              }
-              min="0"
-              className="text-center no-spinners"
-            />
-          </NumericInput>
+
+          <div className="flex gap-2 w-full">
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-a"
+                className="text-xs text-center block">
+                A Cards
+              </Label>
+              <NumericInput
+                label="A Cards"
+                value={selectedMonsterAIDeckACards}
+                onChange={setSelectedMonsterAIDeckACards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-a"
+                  type="number"
+                  value={selectedMonsterAIDeckACards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckACards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
+
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-b"
+                className="text-xs text-center block">
+                B Cards
+              </Label>
+              <NumericInput
+                label="B Cards"
+                value={selectedMonsterAIDeckBCards}
+                onChange={setSelectedMonsterAIDeckBCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-b"
+                  type="number"
+                  value={selectedMonsterAIDeckBCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckBCards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
+
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-l"
+                className="text-xs text-center block">
+                L Cards
+              </Label>
+              <NumericInput
+                label="L Cards"
+                value={selectedMonsterAIDeckLCards}
+                onChange={setSelectedMonsterAIDeckLCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-l"
+                  type="number"
+                  value={selectedMonsterAIDeckLCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckLCards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
+
+            <div className="flex-1 space-y-1">
+              <Label
+                htmlFor="monster-ai-deck-o"
+                className="text-xs text-center block">
+                O Cards
+              </Label>
+              <NumericInput
+                label="O Cards"
+                value={selectedMonsterAIDeckOCards}
+                onChange={setSelectedMonsterAIDeckOCards}
+                min={0}
+                readOnly={false}>
+                <Input
+                  id="monster-ai-deck-o"
+                  type="number"
+                  value={selectedMonsterAIDeckOCards}
+                  onChange={(e) =>
+                    setSelectedMonsterAIDeckOCards(
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                  min="0"
+                  className="text-center no-spinners"
+                />
+              </NumericInput>
+            </div>
+          </div>
         </div>
 
         <Separator className="my-2" />
@@ -798,11 +1093,21 @@ export function CreateShowdownCard({
         <Separator className="my-2" />
 
         {/* Monster Traits and Moods */}
-        <MonsterTraitsMoods
+        <TraitsMoods
           monster={{
             accuracy: 0,
             accuracyTokens: selectedMonsterAccuracyTokens,
-            aiDeckSize: selectedMonsterAIDeckSize,
+            aiDeck: {
+              basic: selectedMonsterAIDeckBCards,
+              advanced: selectedMonsterAIDeckACards,
+              legendary: selectedMonsterAIDeckLCards,
+              overtone: selectedMonsterAIDeckOCards
+            },
+            aiDeckRemaining:
+              selectedMonsterAIDeckACards +
+              selectedMonsterAIDeckBCards +
+              selectedMonsterAIDeckLCards +
+              selectedMonsterAIDeckOCards,
             damage: selectedMonsterDamage,
             damageTokens: selectedMonsterDamageTokens,
             evasion: 0,
@@ -814,7 +1119,9 @@ export function CreateShowdownCard({
             moods: selectedMonsterMoods,
             movement: selectedMonsterMovement,
             movementTokens: selectedMonsterMovementTokens,
-            name: selectedMonsterName,
+            name:
+              availableMonsters.find((m) => m.id === selectedMonsterId)?.name ||
+              '',
             notes: '',
             speed: selectedMonsterSpeed,
             speedTokens: selectedMonsterSpeedTokens,
@@ -831,10 +1138,14 @@ export function CreateShowdownCard({
           isAddingMood={isAddingMood}
           setIsAddingTrait={setIsAddingTrait}
           setIsAddingMood={setIsAddingMood}
-          onEditTrait={onEditTrait}
+          onEditTrait={(index: number) =>
+            setDisabledTraits((prev) => ({ ...prev, [index]: false }))
+          }
           onSaveTrait={onSaveTrait}
           onRemoveTrait={onRemoveTrait}
-          onEditMood={onEditMood}
+          onEditMood={(index: number) =>
+            setDisabledMoods((prev) => ({ ...prev, [index]: false }))
+          }
           onSaveMood={onSaveMood}
           onRemoveMood={onRemoveMood}
         />
@@ -909,7 +1220,7 @@ export function CreateShowdownCard({
         <Button
           onClick={handleCreateShowdown}
           disabled={
-            !selectedMonsterName ||
+            !selectedMonsterId ||
             !selectedMonsterType ||
             availableSurvivors.length === 0 ||
             selectedSurvivors.length === 0 ||

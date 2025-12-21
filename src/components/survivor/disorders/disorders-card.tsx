@@ -46,6 +46,9 @@ interface DisordersCardProps {
 
 /**
  * Disorders Card Component
+ *
+ * @param props Disorders Card Properties
+ * @returns Disorders Card Component
  */
 export function DisordersCard({
   saveSelectedSurvivor,
@@ -55,7 +58,11 @@ export function DisordersCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSurvivor?.disorders || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
 
   if (survivorIdRef.current !== selectedSurvivor?.id) {
@@ -75,35 +82,14 @@ export function DisordersCard({
     })
   )
 
-  const addDisorder = () => setIsAddingNew(true)
-
-  /**
-   * Save to Local Storage
-   *
-   * @param updatedDisorders Updated Disorders
-   * @param successMsg Success Message
-   */
-  const saveToLocalStorage = (
-    updatedDisorders: string[],
-    successMsg?: string
-  ) => {
-    saveSelectedSurvivor(
-      {
-        disorders: updatedDisorders
-      },
-      successMsg
-    )
-
-    setIsAddingNew(false)
-  }
-
   /**
    * Handles the removal of a disorder.
    *
    * @param index Disorder Index
-   */ const onRemove = (index: number) => {
-    const currentDisorders = [...(selectedSurvivor?.disorders || [])]
-    currentDisorders.splice(index, 1)
+   */
+  const onRemove = (index: number) => {
+    const updated = [...(selectedSurvivor?.disorders || [])]
+    updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -117,7 +103,11 @@ export function DisordersCard({
       return next
     })
 
-    saveToLocalStorage(currentDisorders, SURVIVOR_DISORDER_REMOVED_MESSAGE())
+    saveSelectedSurvivor(
+      { disorders: updated },
+      SURVIVOR_DISORDER_REMOVED_MESSAGE()
+    )
+    setIsAddingNew(false)
   }
 
   /**
@@ -136,37 +126,30 @@ export function DisordersCard({
     )
       return toast.error(SURVIVOR_DISORDER_LIMIT_EXCEEDED_ERROR_MESSAGE())
 
-    const updatedDisorders = [...(selectedSurvivor?.disorders || [])]
+    const updated = [...(selectedSurvivor?.disorders || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedDisorders[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedDisorders.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedDisorders.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveToLocalStorage(
-      updatedDisorders,
+    saveSelectedSurvivor(
+      { disorders: updated },
       SURVIVOR_DISORDER_UPDATED_MESSAGE(i === undefined)
     )
+    setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a value.
-   *
-   * @param index Disorder Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
@@ -185,8 +168,7 @@ export function DisordersCard({
         newIndex
       )
 
-      saveToLocalStorage(newOrder)
-
+      saveSelectedSurvivor({ disorders: newOrder })
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
 
@@ -214,7 +196,7 @@ export function DisordersCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addDisorder}
+              onClick={() => setIsAddingNew(true)}
               className="h-6 w-6"
               disabled={
                 isAddingNew ||
@@ -248,7 +230,9 @@ export function DisordersCard({
                     onRemove={onRemove}
                     isDisabled={!!disabledInputs[index]}
                     onSave={(value, i) => onSave(value, i)}
-                    onEdit={onEdit}
+                    onEdit={(index: number) =>
+                      setDisabledInputs((prev) => ({ ...prev, [index]: false }))
+                    }
                     selectedSurvivor={selectedSurvivor}
                   />
                 ))}

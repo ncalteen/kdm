@@ -62,8 +62,19 @@ export function PatternsCard({
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.patterns || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -75,23 +86,14 @@ export function PatternsCard({
     )
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  const addPattern = () => setIsAddingNew(true)
-
   /**
    * Handles the removal of a pattern.
    *
    * @param index Pattern Index
    */
   const onRemove = (index: number) => {
-    const currentPatterns = [...(selectedSettlement?.patterns || [])]
-    currentPatterns.splice(index, 1)
+    const current = [...(selectedSettlement?.patterns || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -105,16 +107,11 @@ export function PatternsCard({
       return next
     })
 
-    saveSelectedSettlement(
-      {
-        patterns: currentPatterns
-      },
-      PATTERN_REMOVED_MESSAGE()
-    )
+    saveSelectedSettlement({ patterns: current }, PATTERN_REMOVED_MESSAGE())
   }
 
   /**
-   * Handles saving a new pattern or impairment.
+   * Handles saving a new pattern.
    *
    * @param value Pattern Value
    * @param i Pattern Index (When Updating Only)
@@ -123,41 +120,27 @@ export function PatternsCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('pattern'))
 
-    const updatedPatterns = [...(selectedSettlement?.patterns || [])]
+    const updated = [...(selectedSettlement?.patterns || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedPatterns[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedPatterns.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedPatterns.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
-    saveSelectedSettlement(
-      {
-        patterns: updatedPatterns
-      },
-      PATTERN_UPDATED_MESSAGE(i)
-    )
-
+    saveSelectedSettlement({ patterns: updated }, PATTERN_UPDATED_MESSAGE(i))
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a value.
-   *
-   * @param index Pattern Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering values.
@@ -176,9 +159,7 @@ export function PatternsCard({
         newIndex
       )
 
-      saveSelectedSettlement({
-        patterns: newOrder
-      })
+      saveSelectedSettlement({ patterns: newOrder })
 
       setDisabledInputs((prev) => {
         const next: { [key: number]: boolean } = {}
@@ -197,8 +178,8 @@ export function PatternsCard({
   }
 
   return (
-    <Card className="p-0 border-1 gap-2">
-      <CardHeader className="px-2 pt-1 pb-0">
+    <Card className="p-0 border-1 gap-0">
+      <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <ScissorsLineDashedIcon className="h-4 w-4" />
           Patterns
@@ -207,7 +188,7 @@ export function PatternsCard({
               type="button"
               size="sm"
               variant="outline"
-              onClick={addPattern}
+              onClick={() => setIsAddingNew(true)}
               className="border-0 h-8 w-8"
               disabled={
                 isAddingNew ||
@@ -220,7 +201,7 @@ export function PatternsCard({
       </CardHeader>
 
       {/* Patterns List */}
-      <CardContent className="p-1 pb-2 pt-0">
+      <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[200px]">
           <div className="flex-1 overflow-y-auto">
             {selectedSettlement?.patterns?.length !== 0 && (
@@ -242,7 +223,12 @@ export function PatternsCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )

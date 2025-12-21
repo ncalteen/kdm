@@ -11,20 +11,24 @@ import { type LucideIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
 /**
- * Navigation Footer Component
- *
- * @param props Navigation Footer Properties
- * @returns Navigation Footer Component
+ * Nav Footer Props
  */
-export function NavFooter({
-  projects
-}: {
+interface NavFooterProps {
+  /** Projects */
   projects: {
     name: string
     url: string
     icon: LucideIcon
   }[]
-}): ReactElement {
+}
+
+/**
+ * Navigation Footer Component
+ *
+ * @param props Navigation Footer Properties
+ * @returns Navigation Footer Component
+ */
+export function NavFooter({ projects }: NavFooterProps): ReactElement {
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>GitHub</SidebarGroupLabel>

@@ -51,15 +51,26 @@ interface DepartingBonusesCardProps {
  * @returns Departing Bonuses Card Component
  */
 export function DepartingBonusesCard({
-  selectedSettlement,
-  saveSelectedSettlement
+  saveSelectedSettlement,
+  selectedSettlement
 }: DepartingBonusesCardProps): ReactElement {
   const settlementIdRef = useRef<number | undefined>(undefined)
 
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: number]: boolean
-  }>({})
+  }>(
+    Object.fromEntries(
+      (selectedSettlement?.departingBonuses || []).map((_, i) => [i, true])
+    )
+  )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -72,27 +83,13 @@ export function DepartingBonusesCard({
   }
 
   /**
-   * Add Departing Bonus
-   */
-  const addBonus = () => setIsAddingNew(true)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
-    })
-  )
-
-  /**
    * Handles the removal of a departing bonus.
    *
    * @param index Departing Bonus Index
    */
   const onRemove = (index: number) => {
-    const currentDepartingBonuses = [
-      ...(selectedSettlement?.departingBonuses || [])
-    ]
-    currentDepartingBonuses.splice(index, 1)
+    const current = [...(selectedSettlement?.departingBonuses || [])]
+    current.splice(index, 1)
 
     setDisabledInputs((prev) => {
       const next: { [key: number]: boolean } = {}
@@ -107,7 +104,7 @@ export function DepartingBonusesCard({
     })
 
     saveSelectedSettlement(
-      { departingBonuses: currentDepartingBonuses },
+      { departingBonuses: current },
       DEPARTING_BONUS_REMOVED_MESSAGE()
     )
   }
@@ -122,40 +119,30 @@ export function DepartingBonusesCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('departing bonus'))
 
-    const updatedDepartingBonuses = [
-      ...(selectedSettlement?.departingBonuses || [])
-    ]
+    const updated = [...(selectedSettlement?.departingBonuses || [])]
 
     if (i !== undefined) {
       // Updating an existing value
-      updatedDepartingBonuses[i] = value
+      updated[i] = value
       setDisabledInputs((prev) => ({
         ...prev,
         [i]: true
       }))
     } else {
       // Adding a new value
-      updatedDepartingBonuses.push(value)
+      updated.push(value)
       setDisabledInputs((prev) => ({
         ...prev,
-        [updatedDepartingBonuses.length - 1]: true
+        [updated.length - 1]: true
       }))
     }
 
     saveSelectedSettlement(
-      { departingBonuses: updatedDepartingBonuses },
+      { departingBonuses: updated },
       DEPARTING_BONUS_UPDATED_MESSAGE(i)
     )
     setIsAddingNew(false)
   }
-
-  /**
-   * Enables editing a departing bonus.
-   *
-   * @param index Departing Bonus Index
-   */
-  const onEdit = (index: number) =>
-    setDisabledInputs((prev) => ({ ...prev, [index]: false }))
 
   /**
    * Handles the end of a drag event for reordering departing bonuses.
@@ -193,26 +180,24 @@ export function DepartingBonusesCard({
   }
 
   return (
-    <Card className="p-0 pb-1 border-1 w-full gap-0">
+    <Card className="p-0 border-1 gap-0">
       <CardHeader className="px-2 pt-2 pb-0">
         <CardTitle className="text-md flex flex-row items-center gap-1 h-8">
           <MapPinPlusIcon className="h-4 w-4" />
           Departure Bonuses
           {!isAddingNew && (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={addBonus}
-                className="border-0 h-8 w-8"
-                disabled={
-                  isAddingNew ||
-                  Object.values(disabledInputs).some((v) => v === false)
-                }>
-                <PlusIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setIsAddingNew(true)}
+              className="border-0 h-8 w-8"
+              disabled={
+                isAddingNew ||
+                Object.values(disabledInputs).some((v) => v === false)
+              }>
+              <PlusIcon className="h-4 w-4" />
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
@@ -240,7 +225,12 @@ export function DepartingBonusesCard({
                         onRemove={onRemove}
                         isDisabled={!!disabledInputs[index]}
                         onSave={(value, i) => onSave(value, i)}
-                        onEdit={onEdit}
+                        onEdit={() =>
+                          setDisabledInputs((prev) => ({
+                            ...prev,
+                            [index]: false
+                          }))
+                        }
                         selectedSettlement={selectedSettlement}
                       />
                     )

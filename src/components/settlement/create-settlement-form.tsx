@@ -1,6 +1,7 @@
 'use client'
 
 import { SelectCampaignType } from '@/components/menu/select-campaign-type'
+import { SelectMonsterNode } from '@/components/menu/select-monster-node'
 import { SelectSurvivorType } from '@/components/menu/select-survivor-type'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -13,22 +14,21 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { DefaultSquiresSuspicion } from '@/lib/common'
-import { CampaignType, SurvivorType } from '@/lib/enums'
+import { CampaignType, MonsterNode, SurvivorType } from '@/lib/enums'
 import { ERROR_MESSAGE, SETTLEMENT_CREATED_MESSAGE } from '@/lib/messages'
 import {
-  getCampaign,
-  getCampaignData,
-  getNextSettlementId,
-  saveCampaignToLocalStorage
-} from '@/lib/utils'
+  createSettlementFromOptions,
+  getMonsterNodeMapping
+} from '@/lib/settlements/utils'
+import { Campaign } from '@/schemas/campaign'
 import {
   BaseSettlementSchema,
-  Settlement,
-  SettlementSchema
+  NewSettlementInput,
+  NewSettlementInputSchema,
+  Settlement
 } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { Resolver, useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -36,8 +36,12 @@ import { toast } from 'sonner'
  * Create Settlement Form Properties
  */
 interface CreateSettlementFormProps {
+  /** Campaign */
+  campaign: Campaign
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -51,11 +55,28 @@ interface CreateSettlementFormProps {
  * @returns Create Settlement Form Component
  */
 export function CreateSettlementForm({
-  setSelectedSettlement
+  campaign,
+  setSelectedSettlement,
+  updateCampaign
 }: CreateSettlementFormProps): ReactElement {
-  const form = useForm<Settlement>({
-    resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
-    defaultValues: BaseSettlementSchema.parse({})
+  const form = useForm<NewSettlementInput>({
+    resolver: zodResolver(
+      NewSettlementInputSchema
+    ) as Resolver<NewSettlementInput>,
+    defaultValues: {
+      ...BaseSettlementSchema.parse({}),
+      monsters: {
+        NQ1: [],
+        NQ2: [],
+        NQ3: [],
+        NQ4: [],
+        NN1: [],
+        NN2: [],
+        NN3: [],
+        CO: [],
+        FI: []
+      }
+    }
   })
 
   const watchedCampaignType = useWatch({
@@ -67,93 +88,49 @@ export function CreateSettlementForm({
     name: 'survivorType'
   })
 
-  // Set the form values when the component mounts.
+  const isCustomCampaign = useMemo(
+    () => watchedCampaignType === CampaignType.CUSTOM,
+    [watchedCampaignType]
+  )
+
+  /**
+   * Auto-populate monster selections when campaign type changes.
+   */
   useEffect(() => {
-    console.debug('[CreateSettlementForm] Initializing Form Values')
+    if (!watchedCampaignType || isCustomCampaign) return
 
-    // Get campaign data for the campaign type.
-    const campaignData = getCampaignData(
-      watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN
-    )
+    const monsterMapping = getMonsterNodeMapping(watchedCampaignType)
+    form.setValue('monsters', monsterMapping)
+  }, [watchedCampaignType, isCustomCampaign, form])
 
-    form.setValue('id', getNextSettlementId())
-    form.setValue('lostSettlements', 0)
-    form.setValue('innovations', campaignData.innovations)
-    form.setValue('locations', campaignData.locations)
-    form.setValue('milestones', campaignData.milestones)
-    form.setValue('nemeses', campaignData.nemeses)
-    form.setValue('principles', campaignData.principles)
-    form.setValue('quarries', campaignData.quarries)
-    form.setValue('timeline', campaignData.timeline)
-    form.setValue(
-      'campaignType',
-      watchedCampaignType || CampaignType.PEOPLE_OF_THE_LANTERN
-    )
-
-    /** Squires of the Citadel */
-    if (watchedCampaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
-      // Survivor type must be Core.
-      form.setValue('survivorType', SurvivorType.CORE)
-
-    /** People of the Dream Keeper */
-    if (watchedCampaignType === CampaignType.PEOPLE_OF_THE_DREAM_KEEPER)
-      // Survivor type must be Arc.
-      form.setValue('survivorType', SurvivorType.ARC)
-
-    // - For Squires of the Citadel, set it to 6.
-    // - For all other campaigns, set it to 1.
-    form.setValue(
-      'survivalLimit',
-      watchedCampaignType === CampaignType.SQUIRES_OF_THE_CITADEL ? 6 : 1
-    )
-
-    // Get current locations
-    const currentLocations = form.getValues('locations') || []
-    const forumLocationIndex = currentLocations.findIndex(
-      (loc) => loc.name === 'Forum'
-    )
-
-    // Changing to Arc survivors...add "Forum" location
-    if (watchedSurvivorType === SurvivorType.ARC && forumLocationIndex === -1)
-      form.setValue('locations', [
-        ...currentLocations,
-        { name: 'Forum', unlocked: false }
-      ])
-    // Changing from Arc survivors...remove "Forum" location
-    else if (forumLocationIndex !== -1)
-      form.setValue(
-        'locations',
-        currentLocations.filter((loc) => loc.name !== 'Forum')
-      )
-  }, [form, watchedCampaignType, watchedSurvivorType])
-
-  function onSubmit(values: Settlement) {
+  function onSubmit(values: NewSettlementInput) {
     try {
       // Get campaign data based on the selected campaign type
-      const campaignData = getCampaignData(values.campaignType)
+      const settlement = createSettlementFromOptions(campaign, values)
 
-      // Arc Survivor Settlements
-      if (values.survivorType === SurvivorType.ARC)
-        values.ccRewards = campaignData.ccRewards
+      updateCampaign({
+        ...campaign,
+        selectedSettlementId: settlement.id,
+        settlements: [...campaign.settlements, settlement]
+      })
 
-      // Squires of the Citadel Campaigns
-      if (values.campaignType === CampaignType.SQUIRES_OF_THE_CITADEL)
-        values.suspicions = DefaultSquiresSuspicion
+      setSelectedSettlement(settlement)
 
-      // Get existing campaign data from localStorage or initialize new
-      const campaign = getCampaign()
-
-      // Add the new settlement to the campaign
-      campaign.settlements.push(values)
-
-      // Set the newly created settlement as selected
-      campaign.selectedSettlementId = values.id
-
-      // Save the updated campaign to localStorage
-      saveCampaignToLocalStorage(campaign)
-
-      // Update the selected settlement in the context
-      setSelectedSettlement(values)
+      // Reset the form to initial default values
+      form.reset({
+        ...BaseSettlementSchema.parse({}),
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
+      })
 
       // Show success message
       toast.success(SETTLEMENT_CREATED_MESSAGE())
@@ -165,7 +142,8 @@ export function CreateSettlementForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit, () => {
+      onSubmit={form.handleSubmit(onSubmit, (e) => {
+        console.error('Create Settlement Form Error:', e)
         toast.error(ERROR_MESSAGE())
       })}
       className="space-y-6">
@@ -278,6 +256,212 @@ export function CreateSettlementForm({
                 </FormItem>
               )}
             />
+          </CardContent>
+        </Card>
+
+        {/* Monster Node Selection */}
+        <Card className="max-w-[500px] mx-auto pt-0">
+          <CardContent className="flex flex-col gap-6 w-full pt-6">
+            {/* Quarry Nodes Row */}
+            <div className="grid grid-cols-4 gap-2">
+              <FormField
+                control={form.control}
+                name="monsters.NQ1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>1</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.NQ1}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NQ2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>2</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.NQ2}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NQ3"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>3</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.NQ3}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NQ4"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>Q</sub>
+                      <sup>4</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.NQ4}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Nemesis Nodes Row */}
+            <div className="grid grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="monsters.NN1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>N</sub>
+                      <sup>1</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.NN1}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NN2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>N</sub>
+                      <sup>2</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.NN2}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.NN3"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">
+                      N<sub>N</sub>
+                      <sup>3</sup>
+                    </FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.NN3}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Core and Finale Nodes Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="monsters.CO"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">Co</FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.CO}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="monsters.FI"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-center block mb-2">Fi</FormLabel>
+                    <FormControl>
+                      <SelectMonsterNode
+                        campaign={campaign}
+                        nodeType={MonsterNode.FI}
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={!isCustomCampaign}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
           </CardContent>
         </Card>
       </Form>

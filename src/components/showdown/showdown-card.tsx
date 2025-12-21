@@ -2,6 +2,7 @@
 
 import { ActiveShowdownCard } from '@/components/showdown/active-showdown/active-showdown-card'
 import { CreateShowdownCard } from '@/components/showdown/create-showdown/create-showdown-card'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -12,6 +13,8 @@ import { ReactElement } from 'react'
  * Showdown Card Properties
  */
 interface ShowdownCardProps {
+  /** Campaign */
+  campaign: Campaign
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -34,10 +37,8 @@ interface ShowdownCardProps {
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Survivors */
-  survivors: Survivor[] | null
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -47,6 +48,7 @@ interface ShowdownCardProps {
  * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
  */
 export function ShowdownCard({
+  campaign,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
@@ -55,11 +57,11 @@ export function ShowdownCard({
   selectedSurvivor,
   setSelectedShowdown,
   setSelectedSurvivor,
-  setSurvivors,
-  survivors
+  updateCampaign
 }: ShowdownCardProps): ReactElement {
   return selectedShowdown ? (
     <ActiveShowdownCard
+      campaign={campaign}
       saveSelectedShowdown={saveSelectedShowdown}
       saveSelectedSurvivor={saveSelectedSurvivor}
       selectedShowdown={selectedShowdown}
@@ -67,16 +69,15 @@ export function ShowdownCard({
       selectedSurvivor={selectedSurvivor}
       setSelectedShowdown={setSelectedShowdown}
       setSelectedSurvivor={setSelectedSurvivor}
-      setSurvivors={setSurvivors}
-      survivors={survivors}
+      updateCampaign={updateCampaign}
     />
   ) : (
     <CreateShowdownCard
+      campaign={campaign}
       saveSelectedShowdown={saveSelectedShowdown}
       selectedHunt={selectedHunt}
       selectedSettlement={selectedSettlement}
       setSelectedShowdown={setSelectedShowdown}
-      survivors={survivors}
     />
   )
 }

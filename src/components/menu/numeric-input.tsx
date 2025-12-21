@@ -5,6 +5,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -85,10 +86,22 @@ export function NumericInput({
       <>{children}</>
     ) : (
       <Drawer>
-        <DrawerTrigger asChild>{children}</DrawerTrigger>
+        <DrawerTrigger asChild>
+          <div
+            onFocus={(e) => {
+              // Prevent focus on the input when opening the drawer
+              const target = e.target as HTMLElement
+              if (target.tagName === 'INPUT') target.blur()
+            }}>
+            {children}
+          </div>
+        </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader className="text-center">
             <DrawerTitle>{label}</DrawerTitle>
+            <DrawerDescription>
+              Adjust the value using the plus and minus buttons.
+            </DrawerDescription>
           </DrawerHeader>
 
           <div className="px-4 pb-4">
@@ -111,7 +124,7 @@ export function NumericInput({
                   type="number"
                   value={value}
                   readOnly
-                  className="w-20 h-12 text-center text-xl font-semibold focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="w-20 h-12 text-center text-xl font-semibold focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   name={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
                   id={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
                 />

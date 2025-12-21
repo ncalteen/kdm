@@ -35,19 +35,23 @@ import {
   SurvivorType,
   TabType
 } from '@/lib/enums'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
-import { UseFormReturn } from 'react-hook-form'
 
 /**
  * Settlement Form Props
  */
 interface SettlementFormProps {
+  /** Campaign */
+  campaign: Campaign
   /** New Hunt Being Created */
   isCreatingNewHunt: boolean
+  /** New Settlement Being Created */
+  isCreatingNewSettlement: boolean
   /** New Showdown Being Created */
   isCreatingNewShowdown: boolean
   /** New Survivor Being Created */
@@ -81,6 +85,8 @@ interface SettlementFormProps {
   selectedTab: string
   /** Set New Hunt Being Created */
   setIsCreatingNewHunt: (isCreating: boolean) => void
+  /** Set New Settlement Being Created */
+  setIsCreatingNewSettlement: (isCreating: boolean) => void
   /** Set New Showdown Being Created */
   setIsCreatingNewShowdown: (isCreating: boolean) => void
   /** Set New Survivor Being Created */
@@ -95,20 +101,8 @@ interface SettlementFormProps {
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
   setSelectedTab: (tab: TabType) => void
-  /** Set Survivors */
-  setSurvivors: (survivors: Survivor[]) => void
-  /** Settlement Form */
-  settlementForm: UseFormReturn<Settlement>
-  /** Survivors */
-  survivors: Survivor[] | null
-  /** Update Selected Hunt */
-  updateSelectedHunt: (hunt: Hunt | null) => void
-  /** Update Selected Settlement */
-  updateSelectedSettlement: () => void
-  /** Update Selected Showdown */
-  updateSelectedShowdown: () => void
-  /** Update Selected Survivor */
-  updateSelectedSurvivor: () => void
+  /** Update Campaign */
+  updateCampaign: (campaign: Campaign) => void
 }
 
 /**
@@ -117,8 +111,10 @@ interface SettlementFormProps {
  * @returns Main Page Component
  */
 export function SettlementForm({
-  // isCreatingNewHunt,
-  // isCreatingNewShowdown,
+  campaign,
+  isCreatingNewHunt,
+  isCreatingNewSettlement,
+  isCreatingNewShowdown,
   isCreatingNewSurvivor,
   saveSelectedHunt,
   saveSelectedSettlement,
@@ -129,28 +125,23 @@ export function SettlementForm({
   selectedShowdown,
   selectedSurvivor,
   selectedTab,
-  // setIsCreatingNewHunt,
-  // setIsCreatingNewShowdown,
+  setIsCreatingNewHunt,
+  setIsCreatingNewSettlement,
+  setIsCreatingNewShowdown,
   setIsCreatingNewSurvivor,
   setSelectedHunt,
   setSelectedSettlement,
   setSelectedShowdown,
   setSelectedSurvivor,
   setSelectedTab,
-  setSurvivors,
-  // settlementForm,
-  survivors,
-  updateSelectedHunt,
-  updateSelectedSettlement,
-  updateSelectedShowdown,
-  updateSelectedSurvivor
+  updateCampaign
 }: SettlementFormProps): ReactElement {
   return (
     <>
       <OverviewCard
-        saveSelectedSettlement={saveSelectedSettlement}
+        campaign={campaign}
         selectedSettlement={selectedSettlement}
-        survivors={survivors}
+        updateCampaign={updateCampaign}
       />
 
       <hr className="pt-2" />
@@ -158,9 +149,11 @@ export function SettlementForm({
       <div className="flex flex-1 flex-col h-full">
         <div className="flex flex-col gap-2 py-2 px-2 flex-1">
           {/* Create Settlement Form */}
-          {!selectedSettlement && (
+          {!selectedSettlement && selectedTab !== 'settings' && (
             <CreateSettlementForm
+              campaign={campaign}
               setSelectedSettlement={setSelectedSettlement}
+              updateCampaign={updateCampaign}
             />
           )}
 
@@ -202,6 +195,7 @@ export function SettlementForm({
                 {/* Quarries */}
                 <div className="flex-1">
                   <QuarriesCard
+                    campaign={campaign}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -209,6 +203,7 @@ export function SettlementForm({
                 {/* Nemeses */}
                 <div className="flex-1">
                   <NemesesCard
+                    campaign={campaign}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -250,18 +245,15 @@ export function SettlementForm({
               <div className="pl-2">
                 {/* Survivors Table */}
                 <SettlementSurvivorsCard
+                  campaign={campaign}
                   selectedHunt={selectedHunt}
                   selectedSettlement={selectedSettlement}
                   selectedShowdown={selectedShowdown}
                   selectedSurvivor={selectedSurvivor}
                   setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                   setSelectedSurvivor={setSelectedSurvivor}
-                  setSurvivors={setSurvivors}
-                  survivors={survivors}
-                  updateSelectedHunt={updateSelectedHunt}
-                  updateSelectedSettlement={updateSelectedSettlement}
-                  updateSelectedShowdown={updateSelectedShowdown}
-                  updateSelectedSurvivor={updateSelectedSurvivor}
+                  setSelectedTab={setSelectedTab}
+                  updateCampaign={updateCampaign}
                 />
                 {/* Selected Survivor */}
                 {selectedSurvivor && !isCreatingNewSurvivor && (
@@ -273,13 +265,12 @@ export function SettlementForm({
                     selectedSettlement={selectedSettlement}
                     selectedShowdown={selectedShowdown}
                     selectedSurvivor={selectedSurvivor}
-                    setSurvivors={setSurvivors}
-                    survivors={survivors}
                   />
                 )}
                 {/* Create Survivor */}
                 {isCreatingNewSurvivor && (
                   <CreateSurvivorForm
+                    campaign={campaign}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedSettlement={selectedSettlement}
                     setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
@@ -385,6 +376,7 @@ export function SettlementForm({
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                   {/* Collective Cognition Victories */}
                   <CollectiveCognitionVictoriesCard
+                    campaign={campaign}
                     saveSelectedSettlement={saveSelectedSettlement}
                     selectedSettlement={selectedSettlement}
                   />
@@ -419,8 +411,9 @@ export function SettlementForm({
           )}
 
           {/* Settings Tab */}
-          {selectedSettlement && selectedTab === 'settings' && (
+          {selectedTab === 'settings' && (
             <SettingsCard
+              campaign={campaign}
               saveSelectedSettlement={saveSelectedSettlement}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
@@ -429,12 +422,14 @@ export function SettlementForm({
               setSelectedSettlement={setSelectedSettlement}
               setSelectedShowdown={() => {}}
               setSelectedSurvivor={setSelectedSurvivor}
+              updateCampaign={updateCampaign}
             />
           )}
 
           {/* Hunt Tab */}
           {selectedSettlement && selectedTab === 'hunt' && (
             <HuntCard
+              campaign={campaign}
               saveSelectedHunt={saveSelectedHunt}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
@@ -445,14 +440,14 @@ export function SettlementForm({
               setSelectedShowdown={setSelectedShowdown}
               setSelectedSurvivor={setSelectedSurvivor}
               setSelectedTab={setSelectedTab}
-              setSurvivors={setSurvivors}
-              survivors={survivors}
+              updateCampaign={updateCampaign}
             />
           )}
 
           {/* Showdown Tab */}
           {selectedSettlement && selectedTab === 'showdown' && (
             <ShowdownCard
+              campaign={campaign}
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
@@ -461,8 +456,7 @@ export function SettlementForm({
               selectedSurvivor={selectedSurvivor}
               setSelectedShowdown={setSelectedShowdown}
               setSelectedSurvivor={setSelectedSurvivor}
-              setSurvivors={setSurvivors}
-              survivors={survivors}
+              updateCampaign={updateCampaign}
             />
           )}
         </div>

@@ -1,0 +1,124 @@
+import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
+import { QuarryMonsterData } from '@/lib/types'
+
+/**
+ * Flower Knight Monster Data
+ */
+export const FLOWER_KNIGHT: QuarryMonsterData = {
+  ccRewards: [],
+  huntBoard: {
+    0: undefined,
+    1: HuntEventType.BASIC,
+    2: HuntEventType.BASIC,
+    3: HuntEventType.BASIC,
+    4: HuntEventType.BASIC,
+    5: HuntEventType.BASIC,
+    6: undefined,
+    7: HuntEventType.MONSTER,
+    8: HuntEventType.MONSTER,
+    9: HuntEventType.MONSTER,
+    10: HuntEventType.MONSTER,
+    11: HuntEventType.MONSTER,
+    12: undefined
+  },
+  name: 'Flower Knight',
+  node: MonsterNode.NQ2,
+  prologue: false,
+  type: MonsterType.QUARRY,
+  level1: {
+    accuracy: 0,
+    accuracyTokens: 0,
+    aiDeck: {
+      basic: 7,
+      advanced: 4,
+      legendary: 0
+    },
+    damage: 0,
+    damageTokens: 0,
+    evasion: 0,
+    evasionTokens: 0,
+    huntPos: 0,
+    luck: 0,
+    luckTokens: 0,
+    moods: [],
+    movement: 7,
+    movementTokens: 0,
+    speed: 0,
+    speedTokens: 0,
+    strength: 0,
+    strengthTokens: 0,
+    survivorHuntPos: 2,
+    survivorStatuses: [],
+    toughness: 6,
+    toughnessTokens: 0,
+    traits: ['Bloom', 'Set Roots']
+  },
+  level2: {
+    accuracy: 0,
+    accuracyTokens: 0,
+    aiDeck: {
+      basic: 8,
+      advanced: 4,
+      legendary: 1
+    },
+    damage: 1,
+    damageTokens: 0,
+    evasion: 0,
+    evasionTokens: 0,
+    huntPos: 0,
+    luck: 0,
+    luckTokens: 0,
+    moods: [],
+    movement: 8,
+    movementTokens: 0,
+    speed: 0,
+    speedTokens: 0,
+    strength: 0,
+    strengthTokens: 0,
+    survivorHuntPos: 1,
+    survivorStatuses: [],
+    toughness: 8,
+    toughnessTokens: 0,
+    traits: ['Bloom', 'Razor Bulbs', 'Set Roots']
+  },
+  level3: {
+    accuracy: 0,
+    accuracyTokens: 0,
+    aiDeck: {
+      basic: 9,
+      advanced: 5,
+      legendary: 2
+    },
+    damage: 2,
+    damageTokens: 0,
+    evasion: 0,
+    evasionTokens: 0,
+    huntPos: 0,
+    luck: 0,
+    luckTokens: 0,
+    moods: [],
+    movement: 9,
+    movementTokens: 0,
+    speed: 1,
+    speedTokens: 0,
+    strength: 0,
+    strengthTokens: 0,
+    survivorHuntPos: 0,
+    survivorStatuses: [],
+    toughness: 11,
+    toughnessTokens: 0,
+    traits: [
+      'Bloom',
+      'Heart of the Woods',
+      'Perfect Aim',
+      'Razor Bulbs',
+      'Set Roots',
+
+      'Indomitable'
+    ]
+  },
+  locations: [],
+  timeline: {
+    5: ["A Crone's Tale"]
+  }
+}
