@@ -162,7 +162,16 @@ export function CreateHuntCard({
     // Look up monster data from QUARRIES using the ID
     const monsterData = QUARRIES[quarryId as keyof typeof QUARRIES]?.main
 
-    if (!monsterData) return
+    if (!monsterData) {
+      console.error(
+        'CreateHuntCard: Monster data not found for quarry ID:',
+        quarryId
+      )
+      toast.error(
+        'The darkness swallows this quarry. Its details cannot be found — check your custom monster data and try again.'
+      )
+      return
+    }
 
     setSelectedMonsterName(monsterData.name)
 
