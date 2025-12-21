@@ -214,7 +214,7 @@ export function CreateMonsterDialog({
         }
       })
 
-      CUSTOM_MONSTER_CREATED_MESSAGE(monsterType)
+      toast.success(CUSTOM_MONSTER_CREATED_MESSAGE(monsterType))
 
       resetForm()
       setIsOpen(false)
