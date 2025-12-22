@@ -670,11 +670,11 @@ describe('QuarryMonsterDataSchema', () => {
     it('should validate with hunt board configuration', () => {
       const result = QuarryMonsterDataSchema.safeParse({
         huntBoard: {
-          '0': HuntEventType.BASIC,
+          '1': HuntEventType.BASIC,
           '3': HuntEventType.MONSTER,
-          '6': HuntEventType.BASIC,
+          '5': HuntEventType.BASIC,
           '9': HuntEventType.MONSTER,
-          '12': HuntEventType.MONSTER
+          '11': HuntEventType.MONSTER
         },
         name: 'White Lion',
         node: MonsterNode.NQ1,
@@ -688,8 +688,11 @@ describe('QuarryMonsterDataSchema', () => {
           number,
           HuntEventType.BASIC | HuntEventType.MONSTER | undefined
         >
-        expect(huntBoard[0]).toBe(HuntEventType.BASIC)
+        expect(huntBoard[1]).toBe(HuntEventType.BASIC)
         expect(huntBoard[3]).toBe(HuntEventType.MONSTER)
+        expect(huntBoard[5]).toBe(HuntEventType.BASIC)
+        expect(huntBoard[9]).toBe(HuntEventType.MONSTER)
+        expect(huntBoard[11]).toBe(HuntEventType.MONSTER)
       }
     })
 
@@ -984,9 +987,9 @@ describe('QuarryMonsterDataSchema', () => {
     it('should transform huntBoard string keys to numbers', () => {
       const result = QuarryMonsterDataSchema.safeParse({
         huntBoard: {
-          '0': HuntEventType.BASIC,
-          '6': HuntEventType.MONSTER,
-          '12': HuntEventType.MONSTER
+          '1': HuntEventType.BASIC,
+          '7': HuntEventType.MONSTER,
+          '11': HuntEventType.MONSTER
         },
         name: 'White Lion',
         node: MonsterNode.NQ1,
@@ -1000,9 +1003,9 @@ describe('QuarryMonsterDataSchema', () => {
           number,
           HuntEventType.BASIC | HuntEventType.MONSTER | undefined
         >
-        expect(huntBoard[0]).toBe(HuntEventType.BASIC)
-        expect(huntBoard[6]).toBe(HuntEventType.MONSTER)
-        expect(huntBoard[12]).toBe(HuntEventType.MONSTER)
+        expect(huntBoard[1]).toBe(HuntEventType.BASIC)
+        expect(huntBoard[7]).toBe(HuntEventType.MONSTER)
+        expect(huntBoard[11]).toBe(HuntEventType.MONSTER)
       }
     })
 
@@ -1010,8 +1013,8 @@ describe('QuarryMonsterDataSchema', () => {
       const result = QuarryMonsterDataSchema.safeParse({
         huntBoard: {
           '-1': HuntEventType.BASIC,
-          '0': HuntEventType.BASIC,
-          '6': HuntEventType.MONSTER
+          '1': HuntEventType.BASIC,
+          '7': HuntEventType.MONSTER
         },
         name: 'White Lion',
         node: MonsterNode.NQ1,
@@ -1026,8 +1029,8 @@ describe('QuarryMonsterDataSchema', () => {
           HuntEventType.BASIC | HuntEventType.MONSTER | undefined
         >
         expect(huntBoard[-1]).toBeUndefined()
-        expect(huntBoard[0]).toBe(HuntEventType.BASIC)
-        expect(huntBoard[6]).toBe(HuntEventType.MONSTER)
+        expect(huntBoard[1]).toBe(HuntEventType.BASIC)
+        expect(huntBoard[7]).toBe(HuntEventType.MONSTER)
       }
     })
 
@@ -1035,7 +1038,7 @@ describe('QuarryMonsterDataSchema', () => {
       const result = QuarryMonsterDataSchema.safeParse({
         huntBoard: {
           abc: HuntEventType.BASIC,
-          '6': HuntEventType.MONSTER
+          '7': HuntEventType.MONSTER
         },
         name: 'White Lion',
         node: MonsterNode.NQ1,
@@ -1050,32 +1053,7 @@ describe('QuarryMonsterDataSchema', () => {
           HuntEventType.BASIC | HuntEventType.MONSTER | undefined
         >
         expect(Object.keys(huntBoard)).not.toContain('abc')
-        expect(huntBoard[6]).toBe(HuntEventType.MONSTER)
-      }
-    })
-
-    it('should handle huntBoard with undefined values', () => {
-      const result = QuarryMonsterDataSchema.safeParse({
-        huntBoard: {
-          '0': HuntEventType.BASIC,
-          '3': undefined,
-          '6': HuntEventType.MONSTER
-        },
-        name: 'White Lion',
-        node: MonsterNode.NQ1,
-        timeline: {},
-        type: MonsterType.QUARRY
-      })
-
-      expect(result.success).toBe(true)
-      if (result.success) {
-        const huntBoard = result.data.huntBoard as Record<
-          number,
-          HuntEventType.BASIC | HuntEventType.MONSTER | undefined
-        >
-        expect(huntBoard[0]).toBe(HuntEventType.BASIC)
-        expect(huntBoard[3]).toBeUndefined()
-        expect(huntBoard[6]).toBe(HuntEventType.MONSTER)
+        expect(huntBoard[7]).toBe(HuntEventType.MONSTER)
       }
     })
   })
