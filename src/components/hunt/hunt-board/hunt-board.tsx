@@ -7,12 +7,7 @@ import { HuntEventType } from '@/lib/enums'
 import { getOverwhelmingDarknessLabel } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import {
-  BadgeIcon,
-  BadgeInfoIcon,
-  BadgeQuestionMark,
-  BadgeXIcon
-} from 'lucide-react'
+import { BadgeIcon, BadgeInfoIcon, BrainIcon, SkullIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
 /**
@@ -115,11 +110,11 @@ export function HuntBoard({
       case 'Starvation':
         return 'Starvation'
       case HuntEventType.ARC:
-        return <BadgeQuestionMark className="size-6" />
+        return <BrainIcon className="size-6" />
       case HuntEventType.BASIC:
         return <BadgeIcon className="size-6" />
       case HuntEventType.MONSTER:
-        return <BadgeXIcon className="size-6" />
+        return <SkullIcon className="size-6" />
       case HuntEventType.SCOUT:
         return <BadgeInfoIcon className="size-6" />
       default:
