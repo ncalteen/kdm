@@ -108,7 +108,7 @@ export function HuntBoard({
    * @param label - The label of the space
    * @returns ReactElement or label string
    */
-  const getLabelOrIcon = (label: string | null) => {
+  const getLabelOrIcon = (label: HuntEventType | string | null | undefined) => {
     switch (label) {
       case 'Start':
         return 'Start'

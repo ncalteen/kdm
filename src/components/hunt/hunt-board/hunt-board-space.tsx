@@ -13,7 +13,7 @@ interface HuntBoardSpaceProps {
   /** Space Index (0-12) */
   index: number
   /** Space Label */
-  label: string | ReactElement | null
+  label: string | ReactElement | null | undefined
   /** Is Start Space */
   isStart?: boolean
   /** Is Starvation Space */
