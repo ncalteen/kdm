@@ -83,14 +83,9 @@ export function HuntBoard({
   /**
    * Handle Space Click - Cycles through event types
    */
-  const handleSpaceClick = (pos: number, e: React.MouseEvent) => {
+  const handleSpaceClick = (pos: number) => {
     // Skip fixed positions
     if (pos === 0 || pos === 6 || pos === 12) return
-
-    // Prevent click if clicking on a token (they have pointer-events-none but
-    // check anyway)
-    const target = e.target as HTMLElement
-    if (target.closest('[data-token]')) return
 
     const current =
       selectedHunt?.monster?.huntBoard?.[
@@ -143,7 +138,7 @@ export function HuntBoard({
                 key={space.index}
                 className="relative w-[75px] sm:w-[85px] md:w-[90px] h-[75px] sm:h-[85px] md:h-[90px] flex-shrink-0 flex items-center justify-center">
                 <HuntBoardSpace
-                  onClick={(e) => handleSpaceClick(space.index, e)}
+                  onClick={() => handleSpaceClick(space.index)}
                   className={
                     space.isStart || space.isStarvation || space.index === 6
                       ? ''
@@ -157,7 +152,6 @@ export function HuntBoard({
 
                 {selectedHunt?.survivorPosition === space.index && (
                   <HuntBoardToken
-                    data-token
                     overlap={
                       selectedHunt?.survivorPosition ===
                       selectedHunt?.monsterPosition
@@ -168,7 +162,6 @@ export function HuntBoard({
 
                 {selectedHunt?.monsterPosition === space.index && (
                   <HuntBoardToken
-                    data-token
                     overlap={
                       selectedHunt?.survivorPosition ===
                       selectedHunt?.monsterPosition
