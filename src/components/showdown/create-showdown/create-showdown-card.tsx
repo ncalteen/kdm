@@ -335,24 +335,27 @@ export function CreateShowdownCard({
         }
       })
 
-  // Add custom monsters
-  try {
-    if (campaign.customMonsters)
-      Object.entries(campaign.customMonsters).forEach(
-        ([id, monsterWrapper]) => {
-          const monsterData = monsterWrapper.main
-          availableMonsters.push({
-            id: `custom-${id}`,
-            name: monsterData.name,
-            node: monsterData.node,
-            type: monsterData.type,
-            source: 'custom'
-          })
-        }
-      )
-  } catch (error) {
-    console.error('Failed to load custom monsters:', error)
-  }
+  // Add custom monsters (quarries or nemeses that are unlocked)
+  if (campaign.customMonsters)
+    Object.entries(campaign.customMonsters).forEach(([id, monsterWrapper]) => {
+      const monsterData = monsterWrapper.main
+
+      // Check if the custom monster is unlocked based on its type
+      const isUnlocked =
+        selectedSettlement?.quarries?.some((q) => q.id === id && q.unlocked) ||
+        selectedSettlement?.nemeses?.some((n) => n.id === id && n.unlocked)
+
+      // Only add if unlocked
+      if (isUnlocked) {
+        availableMonsters.push({
+          id,
+          name: monsterData.name,
+          node: monsterData.node,
+          type: monsterData.type,
+          source: 'custom'
+        })
+      }
+    })
 
   /**
    * Trait Operations
