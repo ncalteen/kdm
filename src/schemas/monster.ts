@@ -1,11 +1,7 @@
 'use client'
 
-import {
-  CampaignType,
-  HuntEventType,
-  MonsterNode,
-  MonsterType
-} from '@/lib/enums'
+import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
+import { HuntBoardSchema } from '@/schemas/hunt'
 import {
   CollectiveCognitionRewardSchema,
   LocationSchema
@@ -163,26 +159,7 @@ export const QuarryMonsterDataSchema = z.object({
   /** Collective Cognition Rewards */
   ccRewards: z.array(CollectiveCognitionRewardSchema).default([]),
   /** Hunt Board Configuration */
-  huntBoard: z
-    .record(
-      z.string(),
-      z.union([
-        z.literal(HuntEventType.BASIC),
-        z.literal(HuntEventType.MONSTER),
-        z.undefined()
-      ])
-    )
-    .transform((obj) => {
-      const result: Record<
-        number,
-        HuntEventType.BASIC | HuntEventType.MONSTER | undefined
-      > = {}
-      Object.entries(obj).forEach(([key, value]) => {
-        const numKey = Number(key)
-        if (!isNaN(numKey) && numKey >= 0) result[numKey] = value
-      })
-      return result
-    }),
+  huntBoard: HuntBoardSchema,
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Node */

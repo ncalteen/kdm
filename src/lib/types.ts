@@ -1,11 +1,7 @@
 'use client'
 
-import {
-  CampaignType,
-  HuntEventType,
-  MonsterNode,
-  MonsterType
-} from '@/lib/enums'
+import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
+import { HuntBoard } from '@/schemas/hunt'
 import type {
   CollectiveCognitionReward,
   Location,
@@ -164,9 +160,7 @@ export type QuarryMonsterData = {
   /** Collective Cognition Rewards */
   ccRewards: CollectiveCognitionReward[]
   /** Hunt Board Configuration */
-  huntBoard: {
-    [key: number]: HuntEventType.BASIC | HuntEventType.MONSTER | undefined
-  }
+  huntBoard: HuntBoard
   /** Monster Name */
   name: string
   /** Monster Node */

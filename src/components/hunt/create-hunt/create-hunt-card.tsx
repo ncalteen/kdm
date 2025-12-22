@@ -15,7 +15,12 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
+import {
+  ColorChoice,
+  HuntEventType,
+  MonsterLevel,
+  MonsterType
+} from '@/lib/enums'
 import {
   ERROR_MESSAGE,
   HUNT_BEGINS_MESSAGE,
@@ -26,13 +31,29 @@ import {
 import { QUARRIES } from '@/lib/monsters'
 import { getNextHuntId } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { Hunt, SurvivorHuntDetails } from '@/schemas/hunt'
+import { Hunt, HuntBoard, SurvivorHuntDetails } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { PawPrintIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { toast } from 'sonner'
+
+const basicHuntBoard: HuntBoard = {
+  0: undefined,
+  1: HuntEventType.BASIC,
+  2: HuntEventType.BASIC,
+  3: HuntEventType.BASIC,
+  4: HuntEventType.BASIC,
+  5: HuntEventType.BASIC,
+  6: undefined,
+  7: HuntEventType.BASIC,
+  8: HuntEventType.BASIC,
+  9: HuntEventType.BASIC,
+  10: HuntEventType.BASIC,
+  11: HuntEventType.BASIC,
+  12: undefined
+}
 
 /**
  * Create Hunt Card Properties
@@ -81,6 +102,8 @@ export function CreateHuntCard({
     useState<number>(0)
   const [selectedMonsterEvasionTokens, setSelectedMonsterEvasionTokens] =
     useState<number>(0)
+  const [selectedMonsterHuntBoard, setSelectedMonsterHuntBoard] =
+    useState<HuntBoard>(basicHuntBoard)
   const [selectedMonsterLevel, setSelectedMonsterLevel] =
     useState<MonsterLevel>(MonsterLevel.LEVEL_1)
   const [selectedMonsterLuckTokens, setSelectedMonsterLuckTokens] =
@@ -202,6 +225,7 @@ export function CreateHuntCard({
       setSelectedMonsterDamage(levelData.damage ?? 0)
       setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
       setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterHuntBoard(monsterData.huntBoard ?? basicHuntBoard)
       setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
       setSelectedMonsterMoods(levelData.moods ?? [])
       setSelectedMonsterMovement(levelData.movement ?? 6)
@@ -243,6 +267,7 @@ export function CreateHuntCard({
       setSelectedMonsterDamage(levelData.damage ?? 0)
       setSelectedMonsterDamageTokens(levelData.damageTokens ?? 0)
       setSelectedMonsterEvasionTokens(levelData.evasionTokens ?? 0)
+      setSelectedMonsterHuntBoard(monsterData.huntBoard ?? basicHuntBoard)
       setSelectedMonsterLevel(level)
       setSelectedMonsterLuckTokens(levelData.luckTokens ?? 0)
       setSelectedMonsterMoods(levelData.moods ?? [])
@@ -342,6 +367,7 @@ export function CreateHuntCard({
         damageTokens: selectedMonsterDamageTokens,
         evasion: 0,
         evasionTokens: selectedMonsterEvasionTokens,
+        huntBoard: selectedMonsterHuntBoard,
         knockedDown: false,
         level: selectedMonsterLevel,
         luck: 0,
@@ -379,6 +405,7 @@ export function CreateHuntCard({
     setSelectedMonsterDamage(0)
     setSelectedMonsterDamageTokens(0)
     setSelectedMonsterEvasionTokens(0)
+    setSelectedMonsterHuntBoard(basicHuntBoard)
     setSelectedMonsterLevel(MonsterLevel.LEVEL_1)
     setSelectedMonsterLuckTokens(0)
     setSelectedMonsterMoods([])

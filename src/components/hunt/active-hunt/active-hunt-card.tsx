@@ -135,6 +135,27 @@ export function ActiveHuntCard({
   )
 
   /**
+   * Handle Hunt Board Update
+   */
+  const handleHuntBoardUpdate = useCallback(
+    (position: number, eventType: HuntEventType | undefined) => {
+      if (!selectedHunt?.monster?.huntBoard) return
+
+      const updatedHuntBoard = { ...selectedHunt.monster.huntBoard }
+      updatedHuntBoard[position as 1 | 2 | 3 | 4 | 5 | 7 | 8 | 9 | 10 | 11] =
+        eventType
+
+      saveSelectedHunt({
+        monster: {
+          ...selectedHunt.monster,
+          huntBoard: updatedHuntBoard
+        }
+      })
+    },
+    [selectedHunt, saveSelectedHunt]
+  )
+
+  /**
    * Handle Cancel Hunt
    */
   const handleCancelHunt = useCallback(() => setIsCancelDialogOpen(true), [])
@@ -367,6 +388,7 @@ export function ActiveHuntCard({
 
       {/* Hunt Board */}
       <HuntBoard
+        onHuntBoardUpdate={handleHuntBoardUpdate}
         onPositionUpdate={handlePositionUpdate}
         selectedHunt={selectedHunt}
       />
