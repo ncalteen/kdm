@@ -10,6 +10,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { HuntEventType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
+import { HuntBoard } from '@/schemas/hunt'
 import { ChevronDown } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
@@ -18,17 +19,9 @@ import { ReactElement, useState } from 'react'
  */
 export interface HuntBoardDataProps {
   /** Hunt board positions */
-  huntBoard: Record<
-    number,
-    HuntEventType.BASIC | HuntEventType.MONSTER | undefined
-  >
+  huntBoard: HuntBoard
   /** Update hunt board callback */
-  onHuntBoardChange: (
-    board: Record<
-      number,
-      HuntEventType.BASIC | HuntEventType.MONSTER | undefined
-    >
-  ) => void
+  onHuntBoardChange: (board: HuntBoard) => void
 }
 
 /**
@@ -70,13 +63,16 @@ export function HuntBoardData({
     if (pos === 0 || pos === 6 || pos === 12) return
 
     const newBoard = { ...huntBoard }
-    const current = huntBoard[pos]
+    const current = huntBoard[pos as keyof HuntBoard]
 
     // Cycle: none -> basic -> monster -> none
-    if (!current) newBoard[pos] = HuntEventType.BASIC
+    if (!current)
+      newBoard[pos as 1 | 2 | 3 | 4 | 5 | 7 | 8 | 9 | 10 | 11] =
+        HuntEventType.BASIC
     else if (current === HuntEventType.BASIC)
-      newBoard[pos] = HuntEventType.MONSTER
-    else delete newBoard[pos]
+      newBoard[pos as 1 | 2 | 3 | 4 | 5 | 7 | 8 | 9 | 10 | 11] =
+        HuntEventType.MONSTER
+    else delete newBoard[pos as keyof HuntBoard]
 
     onHuntBoardChange(newBoard)
   }
@@ -86,7 +82,7 @@ export function HuntBoardData({
    */
   const getSpaceClass = (space: (typeof spaces)[0]) => {
     const { index, isStart, isOverwhelming, isStarvation } = space
-    const eventType = huntBoard[index]
+    const eventType = huntBoard[index as keyof HuntBoard]
 
     return cn(
       'relative flex flex-col items-center justify-center w-full h-full border-2 rounded-lg transition-colors cursor-pointer',
@@ -112,7 +108,7 @@ export function HuntBoardData({
    */
   const getSpaceLabel = (space: (typeof spaces)[0]) => {
     const { index, label } = space
-    const eventType = huntBoard[index]
+    const eventType = huntBoard[index as keyof HuntBoard]
 
     if (label) return label
 
