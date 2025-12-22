@@ -26,10 +26,12 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
-import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
+import { basicHuntBoard } from '@/lib/common'
+import { MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_CREATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
 import { getAvailableNodes } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
+import { HuntBoard } from '@/schemas/hunt'
 import {
   NemesisMonsterDataSchema,
   NemesisMonsterLevel,
@@ -89,9 +91,7 @@ export function CreateMonsterDialog({
   const [timelineData, setTimelineData] = useState<
     Array<{ year: number; event: string }>
   >([])
-  const [huntBoardData, setHuntBoardData] = useState<
-    Record<number, HuntEventType.BASIC | HuntEventType.MONSTER | undefined>
-  >({})
+  const [huntBoardData, setHuntBoardData] = useState<HuntBoard>(basicHuntBoard)
   const [locationsData, setLocationsData] = useState<string[]>([])
   const [ccRewardsData, setCcRewardsData] = useState<
     Array<{ cc: number; name: string }>
@@ -118,7 +118,7 @@ export function CreateMonsterDialog({
     setLevel3Data({})
     setLevel4Data({})
     setTimelineData([])
-    setHuntBoardData({})
+    setHuntBoardData(basicHuntBoard)
     setLocationsData([])
     setCcRewardsData([])
   }
