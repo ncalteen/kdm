@@ -1,4 +1,5 @@
-import { HuntEventType, MonsterNode } from '@/lib/enums'
+import { basicHuntBoard } from '@/lib/common'
+import { MonsterNode } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { Campaign } from '@/schemas/campaign'
 import * as packageInfo from '../../package.json'
@@ -171,22 +172,7 @@ function migrate0_13_0(campaign: Campaign) {
     if (quarry) hunt.monster.huntBoard = quarry.main.huntBoard
     else if (custom && 'huntBoard' in custom.main)
       hunt.monster.huntBoard = custom.main.huntBoard
-    else
-      hunt.monster.huntBoard = {
-        0: undefined,
-        1: HuntEventType.BASIC,
-        2: HuntEventType.BASIC,
-        3: HuntEventType.BASIC,
-        4: HuntEventType.BASIC,
-        5: HuntEventType.BASIC,
-        6: undefined,
-        7: HuntEventType.BASIC,
-        8: HuntEventType.BASIC,
-        9: HuntEventType.BASIC,
-        10: HuntEventType.BASIC,
-        11: HuntEventType.BASIC,
-        12: undefined
-      }
+    else hunt.monster.huntBoard = basicHuntBoard
 
     return hunt
   })

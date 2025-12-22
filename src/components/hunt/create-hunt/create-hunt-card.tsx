@@ -15,12 +15,8 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import {
-  ColorChoice,
-  HuntEventType,
-  MonsterLevel,
-  MonsterType
-} from '@/lib/enums'
+import { basicHuntBoard } from '@/lib/common'
+import { ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
   HUNT_BEGINS_MESSAGE,
@@ -38,22 +34,6 @@ import { Survivor } from '@/schemas/survivor'
 import { PawPrintIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-
-const basicHuntBoard: HuntBoard = {
-  0: undefined,
-  1: HuntEventType.BASIC,
-  2: HuntEventType.BASIC,
-  3: HuntEventType.BASIC,
-  4: HuntEventType.BASIC,
-  5: HuntEventType.BASIC,
-  6: undefined,
-  7: HuntEventType.BASIC,
-  8: HuntEventType.BASIC,
-  9: HuntEventType.BASIC,
-  10: HuntEventType.BASIC,
-  11: HuntEventType.BASIC,
-  12: undefined
-}
 
 /**
  * Create Hunt Card Properties
