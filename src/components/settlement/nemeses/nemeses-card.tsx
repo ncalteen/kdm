@@ -114,7 +114,7 @@ export function NemesesCard({
   }
 
   /**
-   * Save a Quarry
+   * Save a Nemesis
    *
    * @param id Nemesis ID (number for built-in, string for custom)
    * @param unlocked Nemesis Unlocked Status
