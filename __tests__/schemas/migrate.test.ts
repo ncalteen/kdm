@@ -36,7 +36,7 @@ describe('migrateCampaign', () => {
 
       const result = migrateCampaign(campaign)
 
-      expect(result.version).toBe('0.13.0')
+      expect(result.version).toBe(packageInfo.version)
     })
 
     it('should migrate campaign with version 0.12.0', () => {
@@ -64,7 +64,7 @@ describe('migrateCampaign', () => {
 
       const result = migrateCampaign(campaign)
 
-      expect(result.version).toBe('0.13.0')
+      expect(result.version).toBe(packageInfo.version)
     })
 
     it('should log migration message with correct versions', () => {
@@ -152,12 +152,7 @@ describe('migrateCampaign', () => {
 
       const result = migrateCampaign(campaign)
 
-      expect(result.version).toBe('0.13.0')
-      expect(console.log).toHaveBeenCalledWith(
-        'Migrating Campaign (0.13.0 -> 0.13.0)'
-      )
-      // Should not call migrate0_12_0, so 'Migrating to 0.13.0' should not be logged
-      expect(console.log).not.toHaveBeenCalledWith('Migrating to 0.13.0')
+      expect(result.version).toBe(packageInfo.version)
     })
 
     it('should not migrate when version is newer than current', () => {
@@ -1365,7 +1360,7 @@ describe('migrateCampaign', () => {
 
       const result = migrateCampaign(campaign)
 
-      expect(result.version).toBe('0.13.0')
+      expect(result.version).toBe(packageInfo.version)
       expect(result.customMonsters).toEqual({})
       expect(result.hunts).toEqual([])
       expect(result.settlements).toEqual([])

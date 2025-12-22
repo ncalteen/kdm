@@ -1,3 +1,4 @@
+import { basicHuntBoard } from '@/lib/common'
 import { MonsterNode } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { Campaign } from '@/schemas/campaign'
@@ -17,6 +18,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
   // Add version migration steps here...
   if (campaign.version === undefined || campaign.version === '0.12.0')
     migrate0_12_0(campaign)
+  if (campaign.version === '0.13.0') migrate0_13_0(campaign)
 
   return campaign
 }
@@ -140,4 +142,41 @@ function migrate0_12_0(campaign: Campaign) {
 
   // Migration complete. Update version.
   campaign.version = '0.13.0'
+}
+
+/**
+ * Migration logic from version 0.13.0 to 0.13.1
+ *
+ * @param campaign Campaign to Migrate
+ */
+function migrate0_13_0(campaign: Campaign) {
+  console.log('Migrating to 0.13.1')
+
+  // Hunts should include the hunt board layout.
+  campaign.hunts = (campaign.hunts || []).map((hunt) => {
+    // If hunt board already exists, skip
+    if (hunt.monster.huntBoard) return hunt
+
+    // Check if there is a quarry or custom monster to determine hunt board.
+    // Otherwise, default to basic hunt board.
+    const quarry = Object.values(QUARRIES).find(
+      (quarry) =>
+        quarry.main.name.toLowerCase() === hunt.monster.name.toLowerCase()
+    )
+
+    const custom = Object.values(campaign.customMonsters || {}).find(
+      (monster) =>
+        monster.main.name.toLowerCase() === hunt.monster.name.toLowerCase()
+    )
+
+    if (quarry) hunt.monster.huntBoard = quarry.main.huntBoard
+    else if (custom && 'huntBoard' in custom.main)
+      hunt.monster.huntBoard = custom.main.huntBoard
+    else hunt.monster.huntBoard = basicHuntBoard
+
+    return hunt
+  })
+
+  // Migration complete. Update version.
+  campaign.version = '0.13.1'
 }
