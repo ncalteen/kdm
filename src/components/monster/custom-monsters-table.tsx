@@ -49,7 +49,7 @@ export function CustomMonstersTable({
     Record<string, Record<'main', NemesisMonsterData | QuarryMonsterData>>
   >(() => {
     try {
-      return campaign.customMonsters || {}
+      return campaign.customMonsters ?? {}
     } catch (error) {
       console.error('Load Custom Monsters Error:', error)
       return {}
@@ -72,7 +72,7 @@ export function CustomMonstersTable({
    */
   const handleMonsterUpdated = () => {
     try {
-      setMonsters(campaign.customMonsters || {})
+      setMonsters(campaign.customMonsters ?? {})
 
       if (onMonstersChange) onMonstersChange()
     } catch (error) {
@@ -96,7 +96,7 @@ export function CustomMonstersTable({
       })
       setMonsters(updatedMonsters)
 
-      toast.success(CUSTOM_MONSTER_DELETED_MESSAGE(monsterToDelete?.main.name))
+      toast.success(CUSTOM_MONSTER_DELETED_MESSAGE(monsterToDelete.main.name))
 
       if (onMonstersChange) onMonstersChange()
     } catch (error) {

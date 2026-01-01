@@ -67,7 +67,7 @@ export function NemesesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.nemeses || []).map((_, i) => [i, true])
+      (selectedSettlement?.nemeses ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -84,7 +84,7 @@ export function NemesesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.nemeses || []).map((_, i) => [i, true])
+        (selectedSettlement?.nemeses ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -95,7 +95,7 @@ export function NemesesCard({
    * @param index Nemesis Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.nemeses || [])]
+    const current = [...(selectedSettlement?.nemeses ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -126,7 +126,7 @@ export function NemesesCard({
 
     const value: Nemesis = {
       id,
-      unlocked: unlocked || false,
+      unlocked: unlocked ?? false,
       level1: false,
       level2: false,
       level3: false,
@@ -136,14 +136,14 @@ export function NemesesCard({
       ccLevel3: false
     }
 
-    const updated = [...(selectedSettlement?.nemeses || [])]
+    const updated = [...(selectedSettlement?.nemeses ?? [])]
 
     if (index !== undefined) {
       // Updating an existing value
       updated[index] = {
         ...updated[index],
         id,
-        unlocked: unlocked || false
+        unlocked: unlocked ?? false
       }
       setDisabledInputs((prev) => ({
         ...prev,
@@ -169,15 +169,15 @@ export function NemesesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
+    const updatedNemeses = (selectedSettlement?.nemeses ?? []).map((n, i) =>
       i === index ? { ...n, unlocked } : n
     )
 
     const nemesisId = selectedSettlement?.nemeses![index].id
     const nemesisName = nemesisId
       ? typeof nemesisId === 'number'
-        ? NEMESES[nemesisId as keyof typeof NEMESES]?.main.name || ''
-        : campaign.customMonsters?.[nemesisId]?.main.name || ''
+        ? (NEMESES[nemesisId as keyof typeof NEMESES]?.main.name ?? '')
+        : (campaign.customMonsters?.[nemesisId]?.main.name ?? '')
       : ''
 
     saveSelectedSettlement(
@@ -196,8 +196,7 @@ export function NemesesCard({
     let node: MonsterNode = MonsterNode.NQ1
 
     if (typeof id === 'number') {
-      const nemesisData = NEMESES[id as keyof typeof NEMESES]
-      node = nemesisData?.main.node || MonsterNode.NN1
+      node = NEMESES[id as keyof typeof NEMESES].main.node ?? MonsterNode.NN1
     } else {
       const customMonster = campaign.customMonsters?.[id]
       if (customMonster?.main.type === MonsterType.NEMESIS) {
@@ -205,7 +204,7 @@ export function NemesesCard({
       }
     }
 
-    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
+    const updatedNemeses = (selectedSettlement?.nemeses ?? []).map((n, i) =>
       i === index ? { ...n, id, node } : n
     )
 
@@ -231,7 +230,7 @@ export function NemesesCard({
       | 'ccLevel3',
     checked: boolean
   ) => {
-    const updatedNemeses = (selectedSettlement?.nemeses || []).map((n, i) =>
+    const updatedNemeses = (selectedSettlement?.nemeses ?? []).map((n, i) =>
       i === index ? { ...n, [level]: checked } : n
     )
 
@@ -250,7 +249,7 @@ export function NemesesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.nemeses || [],
+        selectedSettlement?.nemeses ?? [],
         oldIndex,
         newIndex
       )
@@ -306,11 +305,11 @@ export function NemesesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.nemeses || []).map((_, index) =>
+                  items={(selectedSettlement?.nemeses ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
+                  {(selectedSettlement?.nemeses ?? []).map((nemesis, index) => (
                     <NemesisItem
                       campaign={campaign}
                       key={index}

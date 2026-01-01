@@ -67,7 +67,7 @@ export function QuarriesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.quarries || []).map((_, i) => [i, true])
+      (selectedSettlement?.quarries ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -84,7 +84,7 @@ export function QuarriesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.quarries || []).map((_, i) => [i, true])
+        (selectedSettlement?.quarries ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -95,7 +95,7 @@ export function QuarriesCard({
    * @param index Quarry Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.quarries || [])]
+    const current = [...(selectedSettlement?.quarries ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -126,21 +126,21 @@ export function QuarriesCard({
 
     const value: Quarry = {
       id,
-      unlocked: unlocked || false,
+      unlocked: unlocked ?? false,
       ccPrologue: false,
       ccLevel1: false,
       ccLevel2: [false, false],
       ccLevel3: [false, false, false]
     }
 
-    const updated = [...(selectedSettlement?.quarries || [])]
+    const updated = [...(selectedSettlement?.quarries ?? [])]
 
     if (index !== undefined) {
       // Updating an existing value
       updated[index] = {
         ...updated[index],
         id,
-        unlocked: unlocked || false
+        unlocked: unlocked ?? false
       }
       setDisabledInputs((prev) => ({
         ...prev,
@@ -166,15 +166,15 @@ export function QuarriesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
+    const updatedQuarries = (selectedSettlement?.quarries ?? []).map((q, i) =>
       i === index ? { ...q, unlocked } : q
     )
 
     const quarryId = selectedSettlement?.quarries![index].id
     const quarryName = quarryId
       ? typeof quarryId === 'number'
-        ? QUARRIES[quarryId as keyof typeof QUARRIES]?.main.name || ''
-        : campaign.customMonsters?.[quarryId]?.main.name || ''
+        ? (QUARRIES[quarryId as keyof typeof QUARRIES].main.name ?? '')
+        : (campaign.customMonsters?.[quarryId].main.name ?? '')
       : ''
 
     saveSelectedSettlement(
@@ -193,8 +193,7 @@ export function QuarriesCard({
     let node: MonsterNode = MonsterNode.NQ1
 
     if (typeof id === 'number') {
-      const quarryData = QUARRIES[id as keyof typeof QUARRIES]
-      node = quarryData?.main.node || MonsterNode.NQ1
+      node = QUARRIES[id as keyof typeof QUARRIES].main.node ?? MonsterNode.NQ1
     } else {
       const customMonster = campaign.customMonsters?.[id]
       if (customMonster?.main.type === MonsterType.QUARRY) {
@@ -202,7 +201,7 @@ export function QuarriesCard({
       }
     }
 
-    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
+    const updatedQuarries = (selectedSettlement?.quarries ?? []).map((q, i) =>
       i === index ? { ...q, id, node } : q
     )
 
@@ -221,7 +220,7 @@ export function QuarriesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.quarries || [],
+        selectedSettlement?.quarries ?? [],
         oldIndex,
         newIndex
       )
@@ -277,11 +276,11 @@ export function QuarriesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.quarries || []).map((_, index) =>
+                  items={(selectedSettlement?.quarries ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.quarries || []).map((quarry, index) => (
+                  {(selectedSettlement?.quarries ?? []).map((quarry, index) => (
                     <QuarryItem
                       campaign={campaign}
                       key={index}

@@ -82,7 +82,7 @@ export function SelectMonsterNode({
     // Add custom monsters when not disabled (custom campaign)
     if (!disabled) {
       try {
-        const customMonsters = campaign.customMonsters || {}
+        const customMonsters = campaign.customMonsters ?? {}
 
         Object.entries(customMonsters).forEach(([id, monsterData]) => {
           const monster = monsterData.main

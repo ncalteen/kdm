@@ -111,7 +111,7 @@ export function EditMonsterDialog({
     if (!monsterId || !isOpen) return
 
     const loadMonsterData = () => {
-      const monster = campaign.customMonsters?.[monsterId]?.main
+      const monster = campaign.customMonsters?.[monsterId].main
 
       if (!monster) return
 
@@ -121,14 +121,14 @@ export function EditMonsterDialog({
 
       // Load prologue flag for quarry monsters
       if (monster.type === MonsterType.QUARRY)
-        setIsPrologue(monster.prologue || false)
+        setIsPrologue(monster.prologue ?? false)
       else setIsPrologue(false)
 
       // Load level data
-      setLevel1Data(monster.level1 || {})
-      setLevel2Data(monster.level2 || {})
-      setLevel3Data(monster.level3 || {})
-      setLevel4Data(monster.level4 || {})
+      setLevel1Data(monster.level1 ?? {})
+      setLevel2Data(monster.level2 ?? {})
+      setLevel3Data(monster.level3 ?? {})
+      setLevel4Data(monster.level4 ?? {})
 
       // Load timeline data
       const timelineArray: Array<{ year: number; event: string }> = []
@@ -147,17 +147,17 @@ export function EditMonsterDialog({
         const quarryMonster = monster as QuarryMonsterData
 
         // Load hunt board
-        setHuntBoardData(quarryMonster.huntBoard || {})
+        setHuntBoardData(quarryMonster.huntBoard ?? {})
 
         // Load locations
-        setLocationsData(quarryMonster.locations?.map((loc) => loc.name) || [])
+        setLocationsData(quarryMonster.locations.map((loc) => loc.name))
 
         // Load CC rewards
         setCcRewardsData(
-          quarryMonster.ccRewards?.map((reward) => ({
+          quarryMonster.ccRewards.map((reward) => ({
             cc: reward.cc,
             name: reward.name
-          })) || []
+          }))
         )
       } else {
         // Reset quarry-specific data for nemesis
@@ -189,7 +189,7 @@ export function EditMonsterDialog({
 
     try {
       // Get existing campaign data
-      const customMonsters = campaign.customMonsters || {}
+      const customMonsters = campaign.customMonsters ?? {}
 
       // Convert timeline array to correct format
       const timelineRecord: { [key: number]: TimelineYear['entries'] } = {}

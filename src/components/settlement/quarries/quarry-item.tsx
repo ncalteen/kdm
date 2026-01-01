@@ -123,7 +123,7 @@ export function QuarryItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-sm">
-            {quarryData?.name || 'Unknown Quarry'}
+            {quarryData?.main.name ?? 'Unknown Quarry'}
           </span>
         </div>
       ) : (
@@ -148,7 +148,7 @@ export function QuarryItem({
                 {quarry.main.name}
               </SelectItem>
             ))}
-            {Object.entries(campaign.customMonsters || {})
+            {Object.entries(campaign.customMonsters ?? {})
               .filter(([, monster]) => monster.main.type === MonsterType.QUARRY)
               .map(([id, monster]) => (
                 <SelectItem key={id} value={id}>
@@ -162,7 +162,7 @@ export function QuarryItem({
       {/* Node Badge */}
       <div className="flex items-center gap-1 ml-auto">
         <Badge variant="secondary" className="h-8 w-20">
-          {quarryData?.node || 'N/A'}
+          {quarryData?.main.node ?? 'N/A'}
         </Badge>
 
         {/* Interaction Buttons */}
@@ -252,7 +252,7 @@ export function NewQuarryItem({
               {quarry.main.name}
             </SelectItem>
           ))}
-          {Object.entries(campaign.customMonsters || {})
+          {Object.entries(campaign.customMonsters ?? {})
             .filter(([, monster]) => monster.main.type === MonsterType.QUARRY)
             .map(([id, monster]) => (
               <SelectItem key={id} value={id}>

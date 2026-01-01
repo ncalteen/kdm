@@ -367,7 +367,7 @@ export function CreateHuntCard({
         wounds: selectedMonsterWounds
       },
       monsterPosition: monsterHuntPosition,
-      scout: selectedScout || undefined,
+      scout: selectedScout ?? undefined,
       settlementId: selectedSettlement.id,
       survivorDetails,
       survivorPosition: survivorHuntPosition,
@@ -426,7 +426,7 @@ export function CreateHuntCard({
           </Label>
 
           <Select
-            value={selectedMonsterQuarryId?.toString() || ''}
+            value={selectedMonsterQuarryId?.toString() ?? ''}
             onValueChange={handleMonsterSelection}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Choose a quarry..." />
@@ -472,7 +472,7 @@ export function CreateHuntCard({
             Type
           </Label>
           <div className="w-full px-3 py-2 text-sm border rounded-md bg-muted">
-            {selectedMonsterType || 'Select a monster'}
+            {selectedMonsterType ?? 'Select a monster'}
           </div>
         </div>
 
@@ -501,7 +501,7 @@ export function CreateHuntCard({
                   value={selectedMonsterAIDeckACards}
                   onChange={(e) =>
                     setSelectedMonsterAIDeckACards(
-                      parseInt(e.target.value) || 0
+                      parseInt(e.target.value) ?? 0
                     )
                   }
                   min="0"
@@ -528,7 +528,7 @@ export function CreateHuntCard({
                   value={selectedMonsterAIDeckBCards}
                   onChange={(e) =>
                     setSelectedMonsterAIDeckBCards(
-                      parseInt(e.target.value) || 0
+                      parseInt(e.target.value) ?? 0
                     )
                   }
                   min="0"
@@ -555,7 +555,7 @@ export function CreateHuntCard({
                   value={selectedMonsterAIDeckLCards}
                   onChange={(e) =>
                     setSelectedMonsterAIDeckLCards(
-                      parseInt(e.target.value) || 0
+                      parseInt(e.target.value) ?? 0
                     )
                   }
                   min="0"
@@ -582,7 +582,7 @@ export function CreateHuntCard({
                   value={selectedMonsterAIDeckOCards}
                   onChange={(e) =>
                     setSelectedMonsterAIDeckOCards(
-                      parseInt(e.target.value) || 0
+                      parseInt(e.target.value) ?? 0
                     )
                   }
                   min="0"
@@ -622,7 +622,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterMovement}
                 onChange={(e) =>
-                  setSelectedMonsterMovement(parseInt(e.target.value) || 0)
+                  setSelectedMonsterMovement(parseInt(e.target.value) ?? 0)
                 }
                 min="0"
                 className="text-center no-spinners"
@@ -649,7 +649,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterToughness}
                 onChange={(e) =>
-                  setSelectedMonsterToughness(parseInt(e.target.value) || 0)
+                  setSelectedMonsterToughness(parseInt(e.target.value) ?? 0)
                 }
                 min="0"
                 className="text-center no-spinners"
@@ -674,7 +674,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterSpeed}
                 onChange={(e) =>
-                  setSelectedMonsterSpeed(parseInt(e.target.value) || 0)
+                  setSelectedMonsterSpeed(parseInt(e.target.value) ?? 0)
                 }
                 min="0"
                 className="text-center no-spinners"
@@ -699,7 +699,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterDamage}
                 onChange={(e) =>
-                  setSelectedMonsterDamage(parseInt(e.target.value) || 0)
+                  setSelectedMonsterDamage(parseInt(e.target.value) ?? 0)
                 }
                 min="0"
                 className="text-center no-spinners"
@@ -737,7 +737,7 @@ export function CreateHuntCard({
                 value={selectedMonsterMovementTokens}
                 onChange={(e) =>
                   setSelectedMonsterMovementTokens(
-                    parseInt(e.target.value) || 0
+                    parseInt(e.target.value) ?? 0
                   )
                 }
                 className="text-center no-spinners"
@@ -763,7 +763,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterSpeedTokens}
                 onChange={(e) =>
-                  setSelectedMonsterSpeedTokens(parseInt(e.target.value) || 0)
+                  setSelectedMonsterSpeedTokens(parseInt(e.target.value) ?? 0)
                 }
                 className="text-center no-spinners"
               />
@@ -788,7 +788,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterDamageTokens}
                 onChange={(e) =>
-                  setSelectedMonsterDamageTokens(parseInt(e.target.value) || 0)
+                  setSelectedMonsterDamageTokens(parseInt(e.target.value) ?? 0)
                 }
                 className="text-center no-spinners"
               />
@@ -816,7 +816,7 @@ export function CreateHuntCard({
                 value={selectedMonsterAccuracyTokens}
                 onChange={(e) =>
                   setSelectedMonsterAccuracyTokens(
-                    parseInt(e.target.value) || 0
+                    parseInt(e.target.value) ?? 0
                   )
                 }
                 className="text-center no-spinners"
@@ -843,7 +843,7 @@ export function CreateHuntCard({
                 value={selectedMonsterStrengthTokens}
                 onChange={(e) =>
                   setSelectedMonsterStrengthTokens(
-                    parseInt(e.target.value) || 0
+                    parseInt(e.target.value) ?? 0
                   )
                 }
                 className="text-center no-spinners"
@@ -869,7 +869,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterEvasionTokens}
                 onChange={(e) =>
-                  setSelectedMonsterEvasionTokens(parseInt(e.target.value) || 0)
+                  setSelectedMonsterEvasionTokens(parseInt(e.target.value) ?? 0)
                 }
                 className="text-center no-spinners"
               />
@@ -894,7 +894,7 @@ export function CreateHuntCard({
                 type="number"
                 value={selectedMonsterLuckTokens}
                 onChange={(e) =>
-                  setSelectedMonsterLuckTokens(parseInt(e.target.value) || 0)
+                  setSelectedMonsterLuckTokens(parseInt(e.target.value) ?? 0)
                 }
                 className="text-center no-spinners"
               />

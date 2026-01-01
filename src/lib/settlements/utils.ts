@@ -215,7 +215,7 @@ export function createSettlementFromOptions(
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
 
-      for (const entry of data.main.timeline[year] || [])
+      for (const entry of data.main.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)
         else if (entry.campaigns.includes(options.campaignType))
           timelineYear.entries.push(entry.title)
@@ -251,7 +251,7 @@ export function createSettlementFromOptions(
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
 
-      for (const entry of customMonster.main.timeline[year] || [])
+      for (const entry of customMonster.main.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)
         else if (entry.campaigns.includes(options.campaignType))
           timelineYear.entries.push(entry.title)
@@ -286,7 +286,7 @@ export function createSettlementFromOptions(
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
 
-      for (const entry of data.main.timeline[year] || [])
+      for (const entry of data.main.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)
         else if (entry.campaigns.includes(options.campaignType))
           timelineYear.entries.push(entry.title)
@@ -329,7 +329,7 @@ export function createSettlementFromOptions(
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
 
-      for (const entry of customMonster.main.timeline[year] || [])
+      for (const entry of customMonster.main.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)
         else if (entry.campaigns.includes(options.campaignType))
           timelineYear.entries.push(entry.title)

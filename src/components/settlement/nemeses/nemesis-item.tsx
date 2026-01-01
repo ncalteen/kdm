@@ -137,7 +137,7 @@ export function NemesisItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <Label className="text-sm" htmlFor={`nemesis-unlocked-${index}`}>
-            {nemesisData?.name || 'Unknown Nemesis'}
+            {nemesisData?.main.name ?? 'Unknown Nemesis'}
           </Label>
         </div>
       ) : (
@@ -162,7 +162,7 @@ export function NemesisItem({
                 {nemesis.main.name}
               </SelectItem>
             ))}
-            {Object.entries(campaign.customMonsters || {})
+            {Object.entries(campaign.customMonsters ?? {})
               .filter(
                 ([, monster]) => monster.main.type === MonsterType.NEMESIS
               )
@@ -344,7 +344,7 @@ export function NewNemesisItem({
               {nemesis.main.name}
             </SelectItem>
           ))}
-          {Object.entries(campaign.customMonsters || {})
+          {Object.entries(campaign.customMonsters ?? {})
             .filter(([, monster]) => monster.main.type === MonsterType.NEMESIS)
             .map(([id, monster]) => (
               <SelectItem key={id} value={id}>
