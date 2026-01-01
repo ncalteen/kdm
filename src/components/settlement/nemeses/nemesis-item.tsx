@@ -104,12 +104,28 @@ export function NemesisItem({
 
   const nemesisData = currentNemesisId
     ? typeof currentNemesisId === 'number'
-      ? NEMESES[currentNemesisId as keyof typeof NEMESES]?.main
-      : campaign.customMonsters?.[currentNemesisId]?.main.type ===
+      ? NEMESES[currentNemesisId as keyof typeof NEMESES]
+      : campaign.customMonsters?.[currentNemesisId].main.type ===
           MonsterType.NEMESIS
-        ? campaign.customMonsters[currentNemesisId].main
+        ? campaign.customMonsters[currentNemesisId]
         : null
     : null
+
+  // Level availability can be determined two ways:
+  // 1. Nemesis data has that level defined
+  // 2. NEMESES object contains a level key (multi-monster)
+  const level1Available =
+    'level1' in (nemesisData?.main ?? {}) ||
+    'level1' in (NEMESES[currentNemesisId as keyof typeof NEMESES] ?? {})
+  const level2Available =
+    'level2' in (nemesisData?.main ?? {}) ||
+    'level2' in (NEMESES[currentNemesisId as keyof typeof NEMESES] ?? {})
+  const level3Available =
+    'level3' in (nemesisData?.main ?? {}) ||
+    'level3' in (NEMESES[currentNemesisId as keyof typeof NEMESES] ?? {})
+  const level4Available =
+    'level4' in (nemesisData?.main ?? {}) ||
+    'level4' in (NEMESES[currentNemesisId as keyof typeof NEMESES] ?? {})
 
   return (
     <div
@@ -182,7 +198,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.level1 ? 'visible' : 'hidden'
+                visibility: level1Available ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level1}
@@ -191,7 +207,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level1', !!checked)
                 }}
                 id={`nemesis-${index}-level1`}
-                disabled={!nemesisData?.level1}
+                disabled={!level1Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
                 Lvl 1
@@ -201,7 +217,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.level2 ? 'visible' : 'hidden'
+                visibility: level2Available ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level2}
@@ -210,7 +226,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level2', !!checked)
                 }}
                 id={`nemesis-${index}-level2`}
-                disabled={!nemesisData?.level2}
+                disabled={!level2Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
                 Lvl 2
@@ -220,7 +236,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.level3 ? 'visible' : 'hidden'
+                visibility: level3Available ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level3}
@@ -229,7 +245,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level3', !!checked)
                 }}
                 id={`nemesis-${index}-level3`}
-                disabled={!nemesisData?.level3}
+                disabled={!level3Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
                 Lvl 3
@@ -239,7 +255,7 @@ export function NemesisItem({
             <div
               className="flex items-center space-x-1"
               style={{
-                visibility: nemesisData?.level4 ? 'visible' : 'hidden'
+                visibility: level4Available ? 'visible' : 'hidden'
               }}>
               <Checkbox
                 checked={selectedSettlement?.nemeses?.[index].level4}
@@ -248,7 +264,7 @@ export function NemesisItem({
                     onToggleLevel(index, 'level4', !!checked)
                 }}
                 id={`nemesis-${index}-level4`}
-                disabled={!nemesisData?.level4}
+                disabled={!level4Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level4`}>
                 Lvl 4
