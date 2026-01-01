@@ -3,6 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -90,10 +91,10 @@ export function QuarryItem({
 
   const quarryData = currentQuarryId
     ? typeof currentQuarryId === 'number'
-      ? QUARRIES[currentQuarryId as keyof typeof QUARRIES]?.main
-      : campaign.customMonsters?.[currentQuarryId]?.main.type ===
+      ? QUARRIES[currentQuarryId as keyof typeof QUARRIES]
+      : campaign.customMonsters?.[currentQuarryId].main.type ===
           MonsterType.QUARRY
-        ? campaign.customMonsters[currentQuarryId].main
+        ? campaign.customMonsters[currentQuarryId]
         : null
     : null
 
@@ -122,9 +123,9 @@ export function QuarryItem({
       {/* Quarry Selection */}
       {isDisabled ? (
         <div className="flex ml-1">
-          <span className="text-sm">
+          <Label className="text-sm" htmlFor={`quarry-unlocked-${index}`}>
             {quarryData?.main.name ?? 'Unknown Quarry'}
-          </span>
+          </Label>
         </div>
       ) : (
         <Select
