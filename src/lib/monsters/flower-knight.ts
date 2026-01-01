@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Flower Knight Monster Data
@@ -33,6 +33,7 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
       advanced: 4,
       legendary: 0
     },
+    aiDeckRemaining: 11,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -61,6 +62,7 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
       advanced: 4,
       legendary: 1
     },
+    aiDeckRemaining: 13,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -89,6 +91,7 @@ export const FLOWER_KNIGHT: QuarryMonsterData = {
       advanced: 5,
       legendary: 2
     },
+    aiDeckRemaining: 16,
     damage: 2,
     damageTokens: 0,
     evasion: 0,

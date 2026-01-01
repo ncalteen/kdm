@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * King Monster Data
@@ -39,6 +39,7 @@ export const KING: QuarryMonsterData = {
       advanced: 8,
       legendary: 3
     },
+    aiDeckRemaining: 19,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -53,6 +54,7 @@ export const KING: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 19,
     toughnessTokens: 0,
@@ -71,6 +73,7 @@ export const KING: QuarryMonsterData = {
       advanced: 8,
       legendary: 6
     },
+    aiDeckRemaining: 22,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -85,6 +88,7 @@ export const KING: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 22,
     toughnessTokens: 0,
@@ -104,6 +108,7 @@ export const KING: QuarryMonsterData = {
       advanced: 12,
       legendary: 7
     },
+    aiDeckRemaining: 27,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -118,6 +123,7 @@ export const KING: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 25,
     toughnessTokens: 0,

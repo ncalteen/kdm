@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData, QuarryMonsterData } from '@/lib/types'
+import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Dragon King Monster Data
@@ -33,6 +33,7 @@ export const DRAGON_KING: QuarryMonsterData = {
       advanced: 4,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -47,6 +48,7 @@ export const DRAGON_KING: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 13,
     toughnessTokens: 0,
@@ -60,6 +62,7 @@ export const DRAGON_KING: QuarryMonsterData = {
       advanced: 7,
       legendary: 1
     },
+    aiDeckRemaining: 16,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -74,6 +77,7 @@ export const DRAGON_KING: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 15,
     toughnessTokens: 0,
@@ -87,6 +91,7 @@ export const DRAGON_KING: QuarryMonsterData = {
       advanced: 8,
       legendary: 2
     },
+    aiDeckRemaining: 19,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -101,6 +106,7 @@ export const DRAGON_KING: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 17,
     toughnessTokens: 0,
@@ -129,6 +135,7 @@ export const DYING_GOD: NemesisMonsterData = {
       advanced: 5,
       legendary: 1
     },
+    aiDeckRemaining: 11,
     damage: 3,
     damageTokens: 0,
     evasion: 0,

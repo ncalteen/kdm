@@ -1,5 +1,5 @@
 import { MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Gambler Monster Data
@@ -16,6 +16,7 @@ export const GAMBLER: NemesisMonsterData = {
       advanced: 9,
       legendary: 3
     },
+    aiDeckRemaining: 21,
     damage: 0,
     damageTokens: 0,
     evasion: 0,

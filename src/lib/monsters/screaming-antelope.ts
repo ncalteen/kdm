@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Screaming Antelope Monster Data
@@ -39,6 +39,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
       advanced: 3,
       legendary: 0
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -53,6 +54,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
@@ -66,6 +68,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 15,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -80,6 +83,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
@@ -93,6 +97,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
       advanced: 8,
       legendary: 2
     },
+    aiDeckRemaining: 22,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -107,6 +112,7 @@ export const SCREAMING_ANTELOPE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 12,
     toughnessTokens: 0,
@@ -157,6 +163,7 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
       advanced: 7,
       legendary: 0
     },
+    aiDeckRemaining: 16,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -171,6 +178,7 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 11,
     toughnessTokens: 0,
@@ -188,6 +196,7 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
       advanced: 8,
       legendary: 2
     },
+    aiDeckRemaining: 22,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -202,6 +211,7 @@ export const SCREAMING_NUKALOPE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 12,
     toughnessTokens: 0,

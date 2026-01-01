@@ -1,5 +1,5 @@
 import { MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Lion Knight Monster Data
@@ -16,6 +16,7 @@ export const LION_KNIGHT: NemesisMonsterData = {
       advanced: 2,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -42,6 +43,7 @@ export const LION_KNIGHT: NemesisMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 15,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -68,6 +70,7 @@ export const LION_KNIGHT: NemesisMonsterData = {
       advanced: 9,
       legendary: 0
     },
+    aiDeckRemaining: 21,
     damage: 1,
     damageTokens: 0,
     evasion: 0,

@@ -1,5 +1,5 @@
 import { MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Watcher Monster Data
@@ -16,6 +16,7 @@ export const WATCHER: NemesisMonsterData = {
       advanced: 0,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,

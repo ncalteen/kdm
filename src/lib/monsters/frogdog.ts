@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Frogdog Monster Data
@@ -33,6 +33,7 @@ export const FROGDOG: QuarryMonsterData = {
       advanced: 2,
       legendary: 0
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -47,6 +48,7 @@ export const FROGDOG: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
@@ -60,6 +62,7 @@ export const FROGDOG: QuarryMonsterData = {
       advanced: 6,
       legendary: 0
     },
+    aiDeckRemaining: 14,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -74,6 +77,7 @@ export const FROGDOG: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 11,
     toughnessTokens: 0,
@@ -93,6 +97,7 @@ export const FROGDOG: QuarryMonsterData = {
       advanced: 8,
       legendary: 2
     },
+    aiDeckRemaining: 19,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -107,6 +112,7 @@ export const FROGDOG: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 17,
     toughnessTokens: 0,
@@ -159,6 +165,7 @@ export const BULLFROGDOG: QuarryMonsterData = {
       legendary: 2,
       overtone: 5
     },
+    aiDeckRemaining: 23,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -173,6 +180,7 @@ export const BULLFROGDOG: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 17,
     toughnessTokens: 0,

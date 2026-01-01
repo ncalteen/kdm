@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Lion God Monster Data
@@ -33,6 +33,7 @@ export const LION_GOD: QuarryMonsterData = {
       advanced: 7,
       legendary: 1
     },
+    aiDeckRemaining: 15,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -47,6 +48,7 @@ export const LION_GOD: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 14,
     toughnessTokens: 0,
@@ -60,6 +62,7 @@ export const LION_GOD: QuarryMonsterData = {
       advanced: 8,
       legendary: 1
     },
+    aiDeckRemaining: 20,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -74,6 +77,7 @@ export const LION_GOD: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 16,
     toughnessTokens: 0,
@@ -87,6 +91,7 @@ export const LION_GOD: QuarryMonsterData = {
       advanced: 9,
       legendary: 2
     },
+    aiDeckRemaining: 25,
     damage: 3,
     damageTokens: 0,
     evasion: 0,
@@ -101,6 +106,7 @@ export const LION_GOD: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 21,
     toughnessTokens: 0,

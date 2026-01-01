@@ -1,5 +1,5 @@
 import { MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Slenderman Monster Data
@@ -16,6 +16,7 @@ export const SLENDERMAN: NemesisMonsterData = {
       advanced: 4,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -42,6 +43,7 @@ export const SLENDERMAN: NemesisMonsterData = {
       advanced: 6,
       legendary: 1
     },
+    aiDeckRemaining: 15,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -68,6 +70,7 @@ export const SLENDERMAN: NemesisMonsterData = {
       advanced: 8,
       legendary: 2
     },
+    aiDeckRemaining: 20,
     damage: 2,
     damageTokens: 0,
     evasion: 0,

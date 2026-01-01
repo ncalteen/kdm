@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Dung Beetle Knight Monster Data
@@ -33,6 +33,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
       advanced: 3,
       legendary: 0
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -47,6 +48,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 12,
     toughnessTokens: 0,
@@ -65,6 +67,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
       advanced: 6,
       legendary: 1
     },
+    aiDeckRemaining: 14,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -79,6 +82,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 14,
     toughnessTokens: 0,
@@ -98,6 +102,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
       advanced: 9,
       legendary: 2
     },
+    aiDeckRemaining: 19,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -112,6 +117,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 18,
     toughnessTokens: 0,

@@ -1,5 +1,5 @@
 import { MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Gold Smoke Knight Monster Data
@@ -16,6 +16,7 @@ export const GOLD_SMOKE_KNIGHT: NemesisMonsterData = {
       advanced: 7,
       legendary: 2
     },
+    aiDeckRemaining: 18,
     damage: 0,
     damageTokens: 0,
     evasion: 0,

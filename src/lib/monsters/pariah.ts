@@ -1,5 +1,5 @@
 import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Pariah Monster Data
@@ -16,6 +16,7 @@ export const PARIAH: NemesisMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -42,6 +43,7 @@ export const PARIAH: NemesisMonsterData = {
       advanced: 7,
       legendary: 1
     },
+    aiDeckRemaining: 16,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -69,6 +71,7 @@ export const PARIAH: NemesisMonsterData = {
       advanced: 10,
       legendary: 2
     },
+    aiDeckRemaining: 18,
     damage: 2,
     damageTokens: 0,
     evasion: 0,

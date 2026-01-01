@@ -1,5 +1,5 @@
 import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * King's Man Monster Data
@@ -16,6 +16,7 @@ export const KINGS_MAN: NemesisMonsterData = {
       advanced: 2,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -42,6 +43,7 @@ export const KINGS_MAN: NemesisMonsterData = {
       advanced: 4,
       legendary: 1
     },
+    aiDeckRemaining: 16,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -74,6 +76,7 @@ export const KINGS_MAN: NemesisMonsterData = {
       advanced: 6,
       legendary: 1
     },
+    aiDeckRemaining: 19,
     damage: 2,
     damageTokens: 0,
     evasion: 0,

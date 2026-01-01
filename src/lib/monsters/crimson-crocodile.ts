@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Crimson Crocodile Monster Data
@@ -39,6 +39,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
       advanced: 3,
       legendary: 0
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -53,6 +54,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 7,
     toughnessTokens: 0,
@@ -66,6 +68,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
       advanced: 5,
       legendary: 1
     },
+    aiDeckRemaining: 15,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -80,6 +83,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 9,
     toughnessTokens: 0,
@@ -98,6 +102,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
       advanced: 6,
       legendary: 2
     },
+    aiDeckRemaining: 20,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -112,6 +117,7 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 15,
     toughnessTokens: 0,

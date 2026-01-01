@@ -1,5 +1,5 @@
 import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * The Hand Monster Data
@@ -18,6 +18,7 @@ export const HAND: NemesisMonsterData = {
       advanced: 0,
       legendary: 0
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -51,6 +52,7 @@ export const HAND: NemesisMonsterData = {
       advanced: 1,
       legendary: 0
     },
+    aiDeckRemaining: 11,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -84,6 +86,7 @@ export const HAND: NemesisMonsterData = {
       advanced: 2,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 6,
     damageTokens: 0,
     evasion: 0,

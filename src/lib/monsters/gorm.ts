@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Gorm Monster Data
@@ -33,6 +33,7 @@ export const GORM: QuarryMonsterData = {
       advanced: 2,
       legendary: 0
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -47,6 +48,7 @@ export const GORM: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
@@ -60,6 +62,7 @@ export const GORM: QuarryMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 14,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -74,6 +77,7 @@ export const GORM: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 11,
     toughnessTokens: 0,
@@ -91,6 +95,7 @@ export const GORM: QuarryMonsterData = {
       advanced: 8,
       legendary: 2
     },
+    aiDeckRemaining: 20,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -105,6 +110,7 @@ export const GORM: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 15,
     toughnessTokens: 0,

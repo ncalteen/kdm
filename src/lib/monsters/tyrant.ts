@@ -1,5 +1,5 @@
 import { MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Tyrant Monster Data
@@ -16,6 +16,7 @@ export const TYRANT: NemesisMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 11,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -42,6 +43,7 @@ export const TYRANT: NemesisMonsterData = {
       advanced: 6,
       legendary: 0
     },
+    aiDeckRemaining: 14,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -68,6 +70,7 @@ export const TYRANT: NemesisMonsterData = {
       advanced: 8,
       legendary: 2
     },
+    aiDeckRemaining: 22,
     damage: 2,
     damageTokens: 0,
     evasion: 0,

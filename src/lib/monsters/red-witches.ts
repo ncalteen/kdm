@@ -1,5 +1,5 @@
 import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Red Witches Monster Data
@@ -54,6 +54,7 @@ export const RED_WITCHES_BRAAL: NemesisMonsterData = {
       advanced: 3,
       legendary: 2
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -81,6 +82,7 @@ export const RED_WITCHES_BRAAL: NemesisMonsterData = {
       advanced: 3,
       legendary: 2
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -108,6 +110,7 @@ export const RED_WITCHES_BRAAL: NemesisMonsterData = {
       advanced: 3,
       legendary: 2
     },
+    aiDeckRemaining: 12,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -145,6 +148,7 @@ export const RED_WITCHES_NICO: NemesisMonsterData = {
       advanced: 4,
       legendary: 2
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -172,6 +176,7 @@ export const RED_WITCHES_NICO: NemesisMonsterData = {
       advanced: 4,
       legendary: 2
     },
+    aiDeckRemaining: 12,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -209,6 +214,7 @@ export const RED_WITCHES_SEER: NemesisMonsterData = {
       advanced: 2,
       legendary: 4
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,

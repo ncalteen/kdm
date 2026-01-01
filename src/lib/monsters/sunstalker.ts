@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData, QuarryMonsterData } from '@/lib/types'
+import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Sunstalker Monster Data
@@ -33,6 +33,7 @@ export const SUNSTALKER: QuarryMonsterData = {
       advanced: 2,
       legendary: 1
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -47,6 +48,7 @@ export const SUNSTALKER: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
@@ -66,6 +68,7 @@ export const SUNSTALKER: QuarryMonsterData = {
       advanced: 5,
       legendary: 1
     },
+    aiDeckRemaining: 15,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -80,6 +83,7 @@ export const SUNSTALKER: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 12,
     toughnessTokens: 0,
@@ -100,6 +104,7 @@ export const SUNSTALKER: QuarryMonsterData = {
       advanced: 6,
       legendary: 2
     },
+    aiDeckRemaining: 20,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -114,6 +119,7 @@ export const SUNSTALKER: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 16,
     toughnessTokens: 0,
@@ -159,6 +165,7 @@ export const GREAT_DEVOURER: NemesisMonsterData = {
       advanced: 6,
       legendary: 2
     },
+    aiDeckRemaining: 20,
     damage: 2,
     damageTokens: 0,
     evasion: 0,

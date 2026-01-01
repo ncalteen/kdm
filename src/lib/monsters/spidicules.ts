@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Spidicules Monster Data
@@ -33,6 +33,7 @@ export const SPIDICULES: QuarryMonsterData = {
       advanced: 4,
       legendary: 0
     },
+    aiDeckRemaining: 9,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -47,6 +48,7 @@ export const SPIDICULES: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
@@ -60,6 +62,7 @@ export const SPIDICULES: QuarryMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 13,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -74,6 +77,7 @@ export const SPIDICULES: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
@@ -87,6 +91,7 @@ export const SPIDICULES: QuarryMonsterData = {
       advanced: 7,
       legendary: 2
     },
+    aiDeckRemaining: 21,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -101,6 +106,7 @@ export const SPIDICULES: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 12,
     toughnessTokens: 0,

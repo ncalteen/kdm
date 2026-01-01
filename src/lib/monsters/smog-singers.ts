@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Smog Singers Monster Data
@@ -39,6 +39,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
       advanced: 4,
       legendary: 0
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -53,6 +54,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: ['Bloody Hands'],
     toughness: 7,
     toughnessTokens: 0,
@@ -67,6 +69,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
       legendary: 1,
       overtone: 4
     },
+    aiDeckRemaining: 17,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -81,6 +84,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: ['Bloody Hands'],
     toughness: 9,
     toughnessTokens: 0,
@@ -100,6 +104,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
       legendary: 2,
       overtone: 8
     },
+    aiDeckRemaining: 25,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -114,6 +119,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: ['Bloody Hands'],
     toughness: 12,
     toughnessTokens: 0,

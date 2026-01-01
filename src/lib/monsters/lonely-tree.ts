@@ -1,5 +1,5 @@
 import { MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/monster'
 
 /**
  * Lonely Tree Monster Data
@@ -18,6 +18,7 @@ export const LONELY_TREE: NemesisMonsterData = {
       advanced: 3,
       legendary: 1
     },
+    aiDeckRemaining: 10,
     damage: -1,
     damageTokens: 0,
     evasion: 0,
@@ -44,6 +45,7 @@ export const LONELY_TREE: NemesisMonsterData = {
       advanced: 5,
       legendary: 1
     },
+    aiDeckRemaining: 14,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -75,6 +77,7 @@ export const LONELY_TREE: NemesisMonsterData = {
       advanced: 5,
       legendary: 2
     },
+    aiDeckRemaining: 15,
     damage: 1,
     damageTokens: 0,
     evasion: 0,

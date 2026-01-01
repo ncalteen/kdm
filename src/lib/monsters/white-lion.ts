@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * White Lion Monster Data
@@ -39,6 +39,7 @@ export const WHITE_LION: QuarryMonsterData = {
       advanced: 3,
       legendary: 0
     },
+    aiDeckRemaining: 10,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -53,6 +54,7 @@ export const WHITE_LION: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 8,
     toughnessTokens: 0,
@@ -66,6 +68,7 @@ export const WHITE_LION: QuarryMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 15,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -80,6 +83,7 @@ export const WHITE_LION: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
@@ -93,6 +97,7 @@ export const WHITE_LION: QuarryMonsterData = {
       advanced: 9,
       legendary: 2
     },
+    aiDeckRemaining: 21,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -107,6 +112,7 @@ export const WHITE_LION: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 14,
     toughnessTokens: 0,
@@ -150,6 +156,7 @@ export const WHITE_GIGALION: QuarryMonsterData = {
       advanced: 5,
       legendary: 0
     },
+    aiDeckRemaining: 15,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -164,6 +171,7 @@ export const WHITE_GIGALION: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 10,
     toughnessTokens: 0,
@@ -177,6 +185,7 @@ export const WHITE_GIGALION: QuarryMonsterData = {
       advanced: 8,
       legendary: 1
     },
+    aiDeckRemaining: 20,
     damage: 2,
     damageTokens: 0,
     evasion: 0,
@@ -191,6 +200,7 @@ export const WHITE_GIGALION: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: [],
     toughness: 16,
     toughnessTokens: 0,

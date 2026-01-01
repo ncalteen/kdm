@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Phoenix Monster Data
@@ -39,6 +39,7 @@ export const PHOENIX: QuarryMonsterData = {
       advanced: 3,
       legendary: 1
     },
+    aiDeckRemaining: 12,
     damage: 0,
     damageTokens: 0,
     evasion: 0,
@@ -53,6 +54,7 @@ export const PHOENIX: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: ['Dreaded Decade'],
     toughness: 10,
     toughnessTokens: 0,
@@ -66,6 +68,7 @@ export const PHOENIX: QuarryMonsterData = {
       advanced: 6,
       legendary: 1
     },
+    aiDeckRemaining: 17,
     damage: 1,
     damageTokens: 0,
     evasion: 0,
@@ -80,6 +83,7 @@ export const PHOENIX: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: ['Dreaded Decade'],
     toughness: 12,
     toughnessTokens: 0,
@@ -93,6 +97,7 @@ export const PHOENIX: QuarryMonsterData = {
       advanced: 7,
       legendary: 2
     },
+    aiDeckRemaining: 22,
     damage: 3,
     damageTokens: 0,
     evasion: 0,
@@ -107,6 +112,7 @@ export const PHOENIX: QuarryMonsterData = {
     speedTokens: 0,
     strength: 0,
     strengthTokens: 0,
+    survivorHuntPos: 0,
     survivorStatuses: ['Dreaded Decade'],
     toughness: 17,
     toughnessTokens: 0,
