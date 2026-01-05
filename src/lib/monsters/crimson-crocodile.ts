@@ -31,106 +31,112 @@ export const CRIMSON_CROCODILE: QuarryMonsterData = {
   node: MonsterNode.NQ1,
   prologue: true,
   type: MonsterType.QUARRY,
-  level1: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 7,
-      advanced: 3,
-      legendary: 0
-    },
-    aiDeckRemaining: 10,
-    damage: 0,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 4,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 6,
-    movementTokens: 0,
-    speed: 0,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorHuntPos: 0,
-    survivorStatuses: [],
-    toughness: 7,
-    toughnessTokens: 0,
-    traits: ['Adrenal Adept', 'Enchanted Flesh', 'Immortal Presence']
-  },
-  level2: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 9,
-      advanced: 5,
-      legendary: 1
-    },
-    aiDeckRemaining: 15,
-    damage: 1,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 8,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 7,
-    movementTokens: 0,
-    speed: 1,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorHuntPos: 0,
-    survivorStatuses: [],
-    toughness: 9,
-    toughnessTokens: 0,
-    traits: [
-      'Adrenal Adept',
-      'Blood Soaked',
-      'Enchanted Flesh',
-      'Immortal Presence'
-    ]
-  },
-  level3: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 12,
-      advanced: 6,
-      legendary: 2
-    },
-    aiDeckRemaining: 20,
-    damage: 2,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 11,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 8,
-    movementTokens: 0,
-    speed: 2,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorHuntPos: 0,
-    survivorStatuses: [],
-    toughness: 15,
-    toughnessTokens: 0,
-    traits: [
-      'Adrenal Adept',
-      'Blood Secret',
-      'Blood Soaked',
-      'Enchanted Flesh',
-      'Immortal Presence',
+  level1: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 7,
+        advanced: 3,
+        legendary: 0
+      },
+      aiDeckRemaining: 10,
+      damage: 0,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 4,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 6,
+      movementTokens: 0,
+      speed: 0,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 7,
+      toughnessTokens: 0,
+      traits: ['Adrenal Adept', 'Enchanted Flesh', 'Immortal Presence']
+    }
+  ],
+  level2: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 9,
+        advanced: 5,
+        legendary: 1
+      },
+      aiDeckRemaining: 15,
+      damage: 1,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 8,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 7,
+      movementTokens: 0,
+      speed: 1,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 9,
+      toughnessTokens: 0,
+      traits: [
+        'Adrenal Adept',
+        'Blood Soaked',
+        'Enchanted Flesh',
+        'Immortal Presence'
+      ]
+    }
+  ],
+  level3: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 12,
+        advanced: 6,
+        legendary: 2
+      },
+      aiDeckRemaining: 20,
+      damage: 2,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 11,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 8,
+      movementTokens: 0,
+      speed: 2,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 15,
+      toughnessTokens: 0,
+      traits: [
+        'Adrenal Adept',
+        'Blood Secret',
+        'Blood Soaked',
+        'Enchanted Flesh',
+        'Immortal Presence',
 
-      'Indomitable'
-    ]
-  },
+        'Indomitable'
+      ]
+    }
+  ],
   locations: [{ name: 'Crimson Crockery', unlocked: false }],
   timeline: {
     0: ['Crimson Crocodile']
