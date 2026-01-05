@@ -5,6 +5,7 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
+import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { CampaignTemplate } from '@/lib/types'
 
 /**
@@ -39,9 +40,19 @@ export const PeopleOfTheStars: CampaignTemplate = {
       event: 'Principle: New Life'
     }
   ],
-  nemeses: [3, 9, 8, 18, 4],
+  nemeses: [
+    NEMESES.BUTCHER,
+    NEMESES.KINGS_MAN,
+    NEMESES.HAND,
+    NEMESES.TYRANT,
+    NEMESES.DYING_GOD
+  ],
   principles: [...CorePrinciples],
-  quarries: [14, 10, 9],
+  quarries: [
+    QUARRIES.WHITE_LION,
+    QUARRIES.SCREAMING_ANTELOPE,
+    QUARRIES.PHOENIX
+  ],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },

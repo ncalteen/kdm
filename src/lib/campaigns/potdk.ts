@@ -5,6 +5,7 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
+import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { CampaignTemplate } from '@/lib/types'
 
 /**
@@ -45,9 +46,20 @@ export const PeopleOfTheDreamKeeper: CampaignTemplate = {
       event: 'Designs & Dandelions'
     }
   ],
-  nemeses: [1, 3, 5, 6, 8],
+  nemeses: [
+    NEMESES.ATNAS,
+    NEMESES.BUTCHER,
+    NEMESES.GAMBLER,
+    NEMESES.GODHAND,
+    NEMESES.HAND
+  ],
   principles: [...CorePrinciples],
-  quarries: [1, 7, 9, 11],
+  quarries: [
+    QUARRIES.CRIMSON_CROCODILE,
+    QUARRIES.KING,
+    QUARRIES.PHOENIX,
+    QUARRIES.SMOG_SINGERS
+  ],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },

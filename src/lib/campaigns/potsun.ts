@@ -5,6 +5,7 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
+import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { CampaignTemplate } from '@/lib/types'
 
 /**
@@ -45,9 +46,18 @@ export const PeopleOfTheSun: CampaignTemplate = {
       event: 'Game Over'
     }
   ],
-  nemeses: [3, 16, 8, 9],
+  nemeses: [
+    NEMESES.BUTCHER,
+    NEMESES.GREAT_DEVOURER,
+    NEMESES.HAND,
+    NEMESES.KINGS_MAN
+  ],
   principles: [...CorePrinciples],
-  quarries: [14, 10, 9],
+  quarries: [
+    QUARRIES.WHITE_LION,
+    QUARRIES.SCREAMING_ANTELOPE,
+    QUARRIES.PHOENIX
+  ],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },
