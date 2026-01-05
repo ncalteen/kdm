@@ -190,7 +190,7 @@ export const ShowdownSchema = z.object({
   /** Showdown ID */
   id: z.number(),
   /** Showdown Monster */
-  monster: ShowdownMonsterSchema,
+  monster: z.array(ShowdownMonsterSchema),
   /** Selected Scout (Required if Settlement uses Scouts) */
   scout: z.number().optional(),
   /** Settlement ID */
