@@ -2,11 +2,19 @@
 
 import {
   CampaignType,
+  MonsterNode,
   Philosophy,
   ResourceCategory,
   ResourceType,
   SurvivorType
 } from '@/lib/enums'
+import { HuntBoardSchema } from '@/schemas/hunt'
+import {
+  NemesisMonsterDataSchema,
+  NemesisMonsterLevelSchema,
+  QuarryMonsterDataSchema,
+  QuarryMonsterLevelSchema
+} from '@/schemas/monster'
 import { z } from 'zod'
 
 /**
@@ -36,8 +44,18 @@ export const QuarrySchema = z.object({
   ccLevel3: z.array(z.boolean()).min(3).max(3).optional(),
   /** Collective Cognition (Prologue) */
   ccPrologue: z.boolean().optional(),
-  /** Quarry ID (Built-In -> Number / Custom -> String) */
-  id: z.union([z.number().min(0), z.string()]),
+  /** Hunt Board Layout */
+  huntBoard: HuntBoardSchema,
+  /** Name */
+  name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
+  /** Node */
+  node: z.enum(MonsterNode),
+  /** Level 1 Data */
+  level1: z.array(QuarryMonsterLevelSchema).optional(),
+  /** Level 2 Data */
+  level2: z.array(QuarryMonsterLevelSchema).optional(),
+  /** Level 3 Data */
+  level3: z.array(QuarryMonsterLevelSchema).optional(),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -57,16 +75,26 @@ export const NemesisSchema = z.object({
   ccLevel2: z.boolean().optional(),
   /** Collective Cognition (Level 3) */
   ccLevel3: z.boolean().optional(),
-  /** Nemesis ID (Built-In -> Number / Custom -> String) */
-  id: z.union([z.number().min(0), z.string()]),
-  /** Completed (Level 1) */
-  level1: z.boolean(),
-  /** Completed (Level 2) */
-  level2: z.boolean(),
-  /** Completed (Level 3) */
-  level3: z.boolean(),
-  /** Completed (Level 4) */
-  level4: z.boolean().optional(),
+  /** Defeated (Level 1) */
+  level1Defeated: z.boolean(),
+  /** Defeated (Level 2) */
+  level2Defeated: z.boolean(),
+  /** Defeated (Level 3) */
+  level3Defeated: z.boolean(),
+  /** Defeated (Level 4) */
+  level4Defeated: z.boolean().optional(),
+  /** Name */
+  name: z.string().min(1, 'A nameless nemesis cannot be recorded.'),
+  /** Node */
+  node: z.enum(MonsterNode),
+  /** Level 1 Data */
+  level1: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Level 2 Data */
+  level2: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Level 3 Data */
+  level3: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Level 4 Data */
+  level4: z.array(NemesisMonsterLevelSchema).optional(),
   /** Unlocked */
   unlocked: z.boolean()
 })
@@ -364,23 +392,23 @@ export const NewSettlementInputSchema = BaseSettlementSchema.extend({
    */
   monsters: z.object({
     /** Node Quarry 1 Monster Selection */
-    NQ1: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    NQ1: z.array(QuarryMonsterDataSchema).default([]),
     /** Node Quarry 2 Monster Selection */
-    NQ2: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    NQ2: z.array(QuarryMonsterDataSchema).default([]),
     /** Node Quarry 3 Monster Selection */
-    NQ3: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    NQ3: z.array(QuarryMonsterDataSchema).default([]),
     /** Node Quarry 4 Monster Selection */
-    NQ4: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    NQ4: z.array(QuarryMonsterDataSchema).default([]),
     /** Node Nemesis 1 Monster Selection */
-    NN1: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    NN1: z.array(NemesisMonsterDataSchema).default([]),
     /** Node Nemesis 2 Monster Selection */
-    NN2: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    NN2: z.array(NemesisMonsterDataSchema).default([]),
     /** Node Nemesis 3 Monster Selection */
-    NN3: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    NN3: z.array(NemesisMonsterDataSchema).default([]),
     /** Core Monster Selection */
-    CO: z.array(z.union([z.number().min(1), z.string()])).default([]),
+    CO: z.array(NemesisMonsterDataSchema).default([]),
     /** Finale Monster Selection */
-    FI: z.array(z.union([z.number().min(1), z.string()])).default([])
+    FI: z.array(NemesisMonsterDataSchema).default([])
   })
 })
 
