@@ -1,35 +1,14 @@
+'use client'
+
 import { TabType } from '@/lib/enums'
+import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { HuntSchema } from '@/schemas/hunt'
-import {
-  NemesisMonsterDataSchema,
-  QuarryMonsterDataSchema
-} from '@/schemas/monster'
+import { NemesisMonsterDataSchema } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterDataSchema } from '@/schemas/quarry-monster-data'
 import { SettlementSchema } from '@/schemas/settlement'
 import { ShowdownSchema } from '@/schemas/showdown'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { z } from 'zod'
-
-/**
- * Global Settings Schema
- */
-export const GlobalSettingsSchema = z.object({
-  /** Disable Toast Notifications */
-  disableToasts: z.boolean().default(false),
-  /** Unlocked Special Monsters */
-  unlockedMonsters: z.object({
-    /** Killenium Butcher Nemesis */
-    killeniumButcher: z.boolean().default(false),
-    /** Screaming Nukalope Quarry */
-    screamingNukalope: z.boolean().default(false),
-    /** White Gigalion Quarry */
-    whiteGigalion: z.boolean().default(false)
-  })
-})
-
-/**
- * Global Settings
- */
-export type GlobalSettings = z.infer<typeof GlobalSettingsSchema>
 
 /**
  * Campaign Schema
