@@ -142,68 +142,6 @@ export const NemesisMonsterLevelSchema = BaseMonsterLevelSchema.extend({
 export type NemesisMonsterLevel = z.infer<typeof NemesisMonsterLevelSchema>
 
 /**
- * Nemesis Monster Data Schema
- */
-export const NemesisMonsterDataSchema = z.object({
-  /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
-  /** Monster Node */
-  node: z.enum(MonsterNode),
-  /** Level 1 Data */
-  level1: z.array(NemesisMonsterLevelSchema).optional(),
-  /** Level 2 Data */
-  level2: z.array(NemesisMonsterLevelSchema).optional(),
-  /** Level 3 Data */
-  level3: z.array(NemesisMonsterLevelSchema).optional(),
-  /** Level 4 Data */
-  level4: z.array(NemesisMonsterLevelSchema).optional(),
-  /** Timeline Entries */
-  timeline: MonsterTimelineEntrySchema,
-  /** Monster Type */
-  type: z.literal(MonsterType.NEMESIS)
-})
-
-/**
- * Nemesis Monster Data
- */
-export type NemesisMonsterData = z.infer<typeof NemesisMonsterDataSchema>
-
-/**
- * Quarry Monster Data Schema
- */
-export const QuarryMonsterDataSchema = z.object({
-  /** Collective Cognition Rewards */
-  ccRewards: z.array(CollectiveCognitionRewardSchema).default([]),
-  /** Hunt Board Configuration */
-  huntBoard: HuntBoardSchema,
-  /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
-  /** Monster Node */
-  node: z.enum(MonsterNode),
-  /** Prologue Monster */
-  prologue: z.boolean().default(false),
-  /** Level 1 Data */
-  level1: z.array(QuarryMonsterLevelSchema).optional(),
-  /** Level 2 Data */
-  level2: z.array(QuarryMonsterLevelSchema).optional(),
-  /** Level 3 Data */
-  level3: z.array(QuarryMonsterLevelSchema).optional(),
-  /** Level 4 Data */
-  level4: z.array(QuarryMonsterLevelSchema).optional(),
-  /** Locations */
-  locations: z.array(LocationSchema).default([]),
-  /** Timeline Entries */
-  timeline: MonsterTimelineEntrySchema,
-  /** Monster Type */
-  type: z.literal(MonsterType.QUARRY)
-})
-
-/**
- * Quarry Monster Data
- */
-export type QuarryMonsterData = z.infer<typeof QuarryMonsterDataSchema>
-
-/**
  * Vignette Monster Data Schema
  */
 export const VignetteMonsterDataSchema = z.object({
@@ -274,3 +212,71 @@ export const AlternateMonsterDataSchema = z.object({
  * Alternate Monster Data
  */
 export type AlternateMonsterData = z.infer<typeof AlternateMonsterDataSchema>
+
+/**
+ * Nemesis Monster Data Schema
+ */
+export const NemesisMonsterDataSchema = z.object({
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Node */
+  node: z.enum(MonsterNode),
+  /** Level 1 Data */
+  level1: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Level 2 Data */
+  level2: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Level 3 Data */
+  level3: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Level 4 Data */
+  level4: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Timeline Entries */
+  timeline: MonsterTimelineEntrySchema,
+  /** Monster Type */
+  type: z.literal(MonsterType.NEMESIS),
+  /** Vignette Monster Data */
+  vignette: VignetteMonsterDataSchema.optional()
+})
+
+/**
+ * Nemesis Monster Data
+ */
+export type NemesisMonsterData = z.infer<typeof NemesisMonsterDataSchema>
+
+/**
+ * Quarry Monster Data Schema
+ */
+export const QuarryMonsterDataSchema = z.object({
+  /** Alternate Monster Data */
+  alternate: AlternateMonsterDataSchema.optional(),
+  /** Collective Cognition Rewards */
+  ccRewards: z.array(CollectiveCognitionRewardSchema).default([]),
+  /** Hunt Board Configuration */
+  huntBoard: HuntBoardSchema,
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Node */
+  node: z.enum(MonsterNode),
+  /** Prologue Monster */
+  prologue: z.boolean().default(false),
+  /** Level 1 Data */
+  level1: z.array(QuarryMonsterLevelSchema).optional(),
+  /** Level 2 Data */
+  level2: z.array(QuarryMonsterLevelSchema).optional(),
+  /** Level 3 Data */
+  level3: z.array(QuarryMonsterLevelSchema).optional(),
+  /** Level 4 Data */
+  level4: z.array(QuarryMonsterLevelSchema).optional(),
+  /** Locations */
+  locations: z.array(LocationSchema).default([]),
+  /** Timeline Entries */
+  timeline: MonsterTimelineEntrySchema,
+  /** Monster Type */
+  type: z.literal(MonsterType.QUARRY),
+  /** Vignette Monster Data */
+  vignette: VignetteMonsterDataSchema.optional()
+})
+
+/**
+ * Quarry Monster Data
+ */
+export type QuarryMonsterData = z.infer<typeof QuarryMonsterDataSchema>
