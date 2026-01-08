@@ -2,14 +2,16 @@ import { ATNAS } from '@/lib/monsters/atnas'
 import { BLACK_KNIGHT } from '@/lib/monsters/black-knight'
 import { BUTCHER, KILLENIUM_BUTCHER } from '@/lib/monsters/butcher'
 import { CRIMSON_CROCODILE } from '@/lib/monsters/crimson-crocodile'
-import { DRAGON_KING, DYING_GOD } from '@/lib/monsters/dragon-king'
+import { DRAGON_KING } from '@/lib/monsters/dragon-king'
 import { DUNG_BEETLE_KNIGHT } from '@/lib/monsters/dung-beetle-knight'
+import { DYING_GOD } from '@/lib/monsters/dying-god'
 import { FLOWER_KNIGHT } from '@/lib/monsters/flower-knight'
-import { BULLFROGDOG, FROGDOG } from '@/lib/monsters/frogdog'
+import { FROGDOG } from '@/lib/monsters/frogdog'
 import { GAMBLER } from '@/lib/monsters/gambler'
 import { GODHAND } from '@/lib/monsters/godhand'
 import { GOLD_SMOKE_KNIGHT } from '@/lib/monsters/gold-smoke-knight'
 import { GORM } from '@/lib/monsters/gorm'
+import { GREAT_DEVOURER } from '@/lib/monsters/great-devourer'
 import { HAND } from '@/lib/monsters/hand'
 import { KING } from '@/lib/monsters/king'
 import { KINGS_MAN } from '@/lib/monsters/kings-man'
@@ -20,23 +22,20 @@ import { MANHUNTER } from '@/lib/monsters/manhunter'
 import { PARIAH } from '@/lib/monsters/pariah'
 import { PHOENIX } from '@/lib/monsters/phoenix'
 import { RED_WITCHES } from '@/lib/monsters/red-witches'
-import {
-  SCREAMING_ANTELOPE,
-  SCREAMING_NUKALOPE
-} from '@/lib/monsters/screaming-antelope'
+import { SCREAMING_ANTELOPE } from '@/lib/monsters/screaming-antelope'
 import { SLENDERMAN } from '@/lib/monsters/slenderman'
 import { SMOG_SINGERS } from '@/lib/monsters/smog-singers'
 import { SPIDICULES } from '@/lib/monsters/spidicules'
-import { GREAT_DEVOURER, SUNSTALKER } from '@/lib/monsters/sunstalker'
+import { SUNSTALKER } from '@/lib/monsters/sunstalker'
 import { TYRANT } from '@/lib/monsters/tyrant'
 import { WATCHER } from '@/lib/monsters/watcher'
-import { WHITE_GIGALION, WHITE_LION } from '@/lib/monsters/white-lion'
-import { MonsterMap } from '@/lib/types'
+import { WHITE_LION } from '@/lib/monsters/white-lion'
+import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
 
 /**
  * Nemesis Monsters
  */
-export const NEMESES: MonsterMap = {
+export const NEMESES: { [key: string]: NemesisMonsterData } = {
   /** Atnas the Childeater */
   ATNAS,
   /** Black Knight */
@@ -78,7 +77,7 @@ export const NEMESES: MonsterMap = {
 /**
  * Quarry Monsters
  */
-export const QUARRIES: MonsterMap = {
+export const QUARRIES: { [key: string]: QuarryMonsterData } = {
   /** Crimson Crocodile */
   CRIMSON_CROCODILE,
   /** Dragon King */
@@ -88,7 +87,7 @@ export const QUARRIES: MonsterMap = {
   /** Flower Knight */
   FLOWER_KNIGHT,
   /** Frogdog */
-  FROGDOG: { ...FROGDOG, alternate: BULLFROGDOG },
+  FROGDOG,
   /** Gorm */
   GORM,
   /** King */
@@ -98,7 +97,7 @@ export const QUARRIES: MonsterMap = {
   /** Phoenix */
   PHOENIX,
   /** Screaming Antelope */
-  SCREAMING_ANTELOPE: { ...SCREAMING_ANTELOPE, vignette: SCREAMING_NUKALOPE },
+  SCREAMING_ANTELOPE,
   /** Smog Singers */
   SMOG_SINGERS,
   /** Spidicules */
@@ -106,5 +105,5 @@ export const QUARRIES: MonsterMap = {
   /** Sunstalker */
   SUNSTALKER,
   /** White Lion */
-  WHITE_LION: { ...WHITE_LION, vignette: WHITE_GIGALION }
+  WHITE_LION
 }
