@@ -18,15 +18,15 @@ export const SettlementNemesisSchema = z.object({
   /** Level 1 Data */
   level1: z.array(NemesisMonsterLevelSchema).optional(),
   /** Defeated (Level 1) */
-  level1Defeated: z.boolean(),
+  level1Defeated: z.boolean().optional(),
   /** Level 2 Data */
   level2: z.array(NemesisMonsterLevelSchema).optional(),
   /** Defeated (Level 2) */
-  level2Defeated: z.boolean(),
+  level2Defeated: z.boolean().optional(),
   /** Level 3 Data */
   level3: z.array(NemesisMonsterLevelSchema).optional(),
   /** Defeated (Level 3) */
-  level3Defeated: z.boolean(),
+  level3Defeated: z.boolean().optional(),
   /** Level 4 Data */
   level4: z.array(NemesisMonsterLevelSchema).optional(),
   /** Defeated (Level 4) */
