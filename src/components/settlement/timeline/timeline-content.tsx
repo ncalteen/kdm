@@ -1,7 +1,8 @@
 'use client'
 
 import { TimelineYearRow } from '@/components/settlement/timeline/timeline-year-row'
-import { Settlement, TimelineYear } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
+import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
 import { KeyboardEvent } from 'react'
 
 /**
@@ -67,7 +68,7 @@ export const TimelineContent = ({
       </div>
       <div className="flex-1 overflow-y-auto">
         {selectedSettlement?.timeline.map(
-          (yearData: TimelineYear, index: number) => (
+          (yearData: SettlementTimelineYear, index: number) => (
             <TimelineYearRow
               key={index}
               index={index}

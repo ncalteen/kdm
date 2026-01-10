@@ -15,7 +15,7 @@ import {
   MONSTER_SPEED_UPDATED_MESSAGE,
   MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE
 } from '@/lib/messages'
-import { HuntMonster } from '@/schemas/hunt'
+import { HuntMonster } from '@/schemas/hunt-monster'
 import { ReactElement } from 'react'
 
 /**

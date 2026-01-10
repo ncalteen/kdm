@@ -30,15 +30,14 @@ import { MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_UPDATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
 import { getAvailableNodes } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { HuntBoard } from '@/schemas/hunt'
+import { HuntBoard } from '@/schemas/hunt-board'
 import {
-  NemesisMonsterDataSchema,
   NemesisMonsterLevel,
-  QuarryMonsterData,
-  QuarryMonsterDataSchema,
   QuarryMonsterLevel
-} from '@/schemas/monster'
-import { TimelineYear } from '@/schemas/settlement'
+} from '@/schemas/monster-level'
+import { NemesisMonsterDataSchema } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterDataSchema } from '@/schemas/quarry-monster-data'
+import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
 import { ReactElement, useEffect, useState } from 'react'
 
 /**

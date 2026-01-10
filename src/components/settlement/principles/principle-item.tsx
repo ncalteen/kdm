@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Principle } from '@/schemas/settlement'
+import { SettlementPrinciple } from '@/schemas/settlement-principle'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
@@ -34,7 +34,7 @@ export interface PrincipleItemProps {
     option2Name: string
   ) => void
   /** Principle */
-  principle: Principle
+  principle: SettlementPrinciple
 }
 
 /**

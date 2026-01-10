@@ -2,13 +2,17 @@
 
 import { ColorChoice, MonsterName, MonsterNode, MonsterType } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
-import { Campaign, GlobalSettingsSchema } from '@/schemas/campaign'
+import { Campaign } from '@/schemas/campaign'
+import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { Hunt } from '@/schemas/hunt'
 import { migrateCampaign } from '@/schemas/migrate'
-import { TimelineYear } from '@/schemas/settlement'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
+import { SettlementNemesis } from '@/schemas/settlement-nemesis'
+import { SettlementQuarry } from '@/schemas/settlement-quarry'
+import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
 import { Showdown } from '@/schemas/showdown'
 import { clsx, type ClassValue } from 'clsx'
-import { isNumber } from 'lodash'
 import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
 import * as packageInfo from '../../package.json'
@@ -18,7 +22,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const newCampaign: Campaign = {
-  customMonsters: {},
+  customNemeses: {},
+  customQuarries: {},
   hunts: [],
   selectedHuntId: undefined,
   selectedSettlementId: undefined,
@@ -140,7 +145,7 @@ export function getNextShowdownId(campaign: Campaign): number {
  * @param timeline Timeline
  * @returns Current Year
  */
-export function getCurrentYear(timeline: TimelineYear[]): number {
+export function getCurrentYear(timeline: SettlementTimelineYear[]): number {
   return timeline.filter((entry) => entry.completed).length + 1
 }
 
@@ -626,24 +631,112 @@ export const getAvailableNodes = (type: MonsterType): MonsterNode[] => {
 }
 
 /**
- * Get Monster Data
- *
- * Numeric monster IDs refer to built-in monsters. Strings refer to custom ones
- * created by the user.
+ * Get Nemesis by Name
  *
  * @param campaign Campaign
- * @param monsterId Monster ID
- * @param monsterType Monster Type
- * @returns Monster Data
+ * @param name Nemesis Name
+ * @returns Nemesis Data
  */
-export const getMonsterData = (
+export const getNemesisDataByName = (
   campaign: Campaign,
-  monsterId: string | number,
-  monsterType: MonsterType
+  name: string | undefined
 ) => {
-  if (isNumber(monsterId))
-    return monsterType === MonsterType.NEMESIS
-      ? NEMESES[monsterId as keyof typeof NEMESES]
-      : QUARRIES[monsterId as keyof typeof QUARRIES]
-  else return campaign.customMonsters?.[monsterId]
+  if (name === undefined || name.trim() === '') return undefined
+
+  return (
+    Object.values(NEMESES).find((nemesis) => nemesis.name === name) ||
+    Object.values(campaign.customNemeses || {}).find(
+      (nemesis) => nemesis.name === name
+    )
+  )
+}
+
+/**
+ * Get Quarry by Name
+ *
+ * @param campaign Campaign
+ * @param name Nemesis Name
+ * @returns Nemesis Data
+ */
+export const getQuarryDataByName = (
+  campaign: Campaign,
+  name: string | undefined
+) => {
+  if (name === undefined || name.trim() === '') return undefined
+
+  return (
+    Object.values(QUARRIES).find((quarry) => quarry.name === name) ||
+    Object.values(campaign.customQuarries || {}).find(
+      (quarry) => quarry.name === name
+    )
+  )
+}
+
+/**
+ * Create Settlement Nemesis from Nemesis Data
+ *
+ * @param data Nemesis Data
+ * @returns Settlement Nemesis
+ */
+export const createSettlementNemesisFromData = (
+  data: NemesisMonsterData
+): SettlementNemesis => {
+  const nemesis: SettlementNemesis = {
+    ccLevel1: false,
+    ccLevel2: false,
+    ccLevel3: false,
+    name: data.name,
+    node: data.node,
+    unlocked: false
+  }
+
+  if (data.level1) {
+    nemesis.level1 = data.level1
+    nemesis.level1Defeated = false
+  }
+  if (data.level2) {
+    nemesis.level2 = data.level2
+    nemesis.level2Defeated = false
+  }
+  if (data.level3) {
+    nemesis.level3 = data.level3
+    nemesis.level3Defeated = false
+  }
+  if (data.level4) {
+    nemesis.level4 = data.level4
+    nemesis.level4Defeated = false
+  }
+  if (data.vignette) nemesis.vignette = data.vignette
+
+  return nemesis
+}
+
+/**
+ * Create Settlement Quarry from Quarry Data
+ *
+ * @param data Quarry Data
+ * @returns Settlement Quarry
+ */
+export const createSettlementQuarryFromData = (
+  data: QuarryMonsterData
+): SettlementQuarry => {
+  const quarry: SettlementQuarry = {
+    ccLevel1: false,
+    ccLevel2: [false, false],
+    ccLevel3: [false, false, false],
+    ccPrologue: false,
+    huntBoard: data.huntBoard,
+    name: data.name,
+    node: data.node,
+    unlocked: false
+  }
+
+  if (data.alternate) quarry.alternate = data.alternate
+  if (data.level1) quarry.level1 = data.level1
+  if (data.level2) quarry.level2 = data.level2
+  if (data.level3) quarry.level3 = data.level3
+  if (data.level4) quarry.level4 = data.level4
+  if (data.vignette) quarry.vignette = data.vignette
+
+  return quarry
 }

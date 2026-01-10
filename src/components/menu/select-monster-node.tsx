@@ -69,8 +69,7 @@ export function SelectMonsterNode({
     }> = []
 
     // Add built-in monsters
-    Object.entries(monsterList).forEach(([id, monsterData]) => {
-      const monster = monsterData.main
+    Object.entries(monsterList).forEach(([id, monster]) => {
       if (monster.node === nodeType)
         options.push({
           id: parseInt(id),
@@ -82,10 +81,12 @@ export function SelectMonsterNode({
     // Add custom monsters when not disabled (custom campaign)
     if (!disabled) {
       try {
-        const customMonsters = campaign.customMonsters ?? {}
+        const customMonsters = {
+          ...(campaign.customNemeses ?? {}),
+          ...(campaign.customQuarries ?? {})
+        }
 
-        Object.entries(customMonsters).forEach(([id, monsterData]) => {
-          const monster = monsterData.main
+        Object.entries(customMonsters).forEach(([id, monster]) => {
           const isQuarry = monster.type === MonsterType.QUARRY
 
           // Only include if monster type matches node type and node matches
@@ -104,7 +105,7 @@ export function SelectMonsterNode({
     }
 
     return options.sort((a, b) => a.name.localeCompare(b.name))
-  }, [campaign.customMonsters, nodeType, disabled])
+  }, [campaign.customNemeses, campaign.customQuarries, nodeType, disabled])
 
   /**
    * Toggle a monster selection.

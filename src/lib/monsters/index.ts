@@ -30,7 +30,8 @@ import { SUNSTALKER } from '@/lib/monsters/sunstalker'
 import { TYRANT } from '@/lib/monsters/tyrant'
 import { WATCHER } from '@/lib/monsters/watcher'
 import { WHITE_LION } from '@/lib/monsters/white-lion'
-import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
  * Nemesis Monsters

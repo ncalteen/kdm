@@ -21,11 +21,9 @@ import {
   getColorStyle,
   getSurvivorColorChoice
 } from '@/lib/utils'
-import {
-  MonsterTurnState,
-  Showdown,
-  SurvivorTurnState
-} from '@/schemas/showdown'
+import { Showdown } from '@/schemas/showdown'
+import { ShowdownMonsterTurnState } from '@/schemas/showdown-monster-turn-state'
+import { ShowdownSurvivorTurnState } from '@/schemas/showdown-survivor-turn-state'
 import { Survivor } from '@/schemas/survivor'
 import { CheckCircleIcon, SkullIcon, UsersIcon, ZapIcon } from 'lucide-react'
 import { MouseEvent, ReactElement, useCallback, useMemo } from 'react'
@@ -125,7 +123,7 @@ export function TurnCard({
    * Update Survivor Turn State
    */
   const updateSurvivorTurnState = useCallback(
-    (survivorId: number, updates: Partial<SurvivorTurnState>) => {
+    (survivorId: number, updates: Partial<ShowdownSurvivorTurnState>) => {
       if (!selectedShowdown) return
 
       const currentStates = selectedShowdown.turn?.survivorStates || []
@@ -160,7 +158,7 @@ export function TurnCard({
    * Update Monster Turn State
    */
   const updateMonsterTurnState = useCallback(
-    (updates: Partial<MonsterTurnState>) => {
+    (updates: Partial<ShowdownMonsterTurnState>) => {
       if (!selectedShowdown) return
 
       const currentState = selectedShowdown.turn?.monsterState || {}

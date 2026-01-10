@@ -10,7 +10,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { HuntEventType } from '@/lib/enums'
 import { cn } from '@/lib/utils'
-import { HuntBoard } from '@/schemas/hunt'
+import { HuntBoard } from '@/schemas/hunt-board'
 import { ChevronDown } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 

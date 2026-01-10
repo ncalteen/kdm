@@ -11,7 +11,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { MonsterType } from '@/lib/enums'
-import { NemesisMonsterLevel, QuarryMonsterLevel } from '@/schemas/monster'
+import {
+  NemesisMonsterLevel,
+  QuarryMonsterLevel
+} from '@/schemas/monster-level'
 import {
   CheckIcon,
   ChevronDown,

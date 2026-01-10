@@ -10,8 +10,8 @@ import {
 } from '@/components/monster/traits-moods/traits/trait-item'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { HuntMonster } from '@/schemas/hunt'
-import { ShowdownMonster } from '@/schemas/showdown'
+import { HuntMonster } from '@/schemas/hunt-monster'
+import { ShowdownMonster } from '@/schemas/showdown-monster'
 import { PlusIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
