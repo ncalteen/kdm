@@ -16,16 +16,23 @@ import { z } from 'zod'
  * All of the data stored for all of the settlements and survivors for a player.
  */
 export const CampaignSchema = z.object({
-  /** Custom Monsters */
-  customMonsters: z
+  /** Custom Nemeses */
+  customNemeses: z
     .record(
-      /** Monster ID */
+      /** Nemesis ID */
       z.string(),
-      /** Monster Data */
-      z.record(
-        z.literal('main'),
-        z.union([NemesisMonsterDataSchema, QuarryMonsterDataSchema])
-      )
+      /** Nemesis Data */
+      NemesisMonsterDataSchema
+    )
+    .nullable()
+    .optional(),
+  /** Custom Quarries */
+  customQuarries: z
+    .record(
+      /** Quarry ID */
+      z.string(),
+      /** Quarry Data */
+      QuarryMonsterDataSchema
     )
     .nullable()
     .optional(),
