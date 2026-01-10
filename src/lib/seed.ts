@@ -28,9 +28,8 @@ import type { Campaign } from '@/schemas/campaign'
 import type { Hunt } from '@/schemas/hunt'
 import {
   NemesisMonsterLevel,
-  QuarryMonsterData,
   QuarryMonsterLevel
-} from '@/schemas/monster'
+} from '@/schemas/monster-level'
 import type { Settlement } from '@/schemas/settlement'
 import type { Showdown } from '@/schemas/showdown'
 import type { Survivor } from '@/schemas/survivor'
@@ -286,7 +285,8 @@ export function generateSeedData(): void {
 
   // Create campaign object
   const campaign: Campaign = {
-    customMonsters: createCustomMonsters(),
+    customNemeses: createCustomNemeses(),
+    customQuarries: createCustomQuarries(),
     hunts,
     selectedHuntId: null,
     selectedShowdownId: null,
@@ -1370,9 +1370,7 @@ function createHunt(
 
   if (usesScouts) survivors.push(startSurvivorId + 4)
 
-  const monsterData = quarryMap[
-    campaignType as keyof typeof quarryMap
-  ] as QuarryMonsterData
+  const monsterData = quarryMap[campaignType as keyof typeof quarryMap]
   const level1Data = monsterData.level1 as QuarryMonsterLevel[]
 
   return {
@@ -1487,786 +1485,782 @@ function createShowdown(
 }
 
 /**
- * Create Custom Monsters
+ * Create Custom Nemeses
  *
- * Creates sample custom monsters for testing, including both nemesis and quarry
- * types with varying levels of complexity and configuration.
+ * Creates sample custom nemeses for testing.
  */
-function createCustomMonsters(): Campaign['customMonsters'] {
+function createCustomNemeses(): Campaign['customNemeses'] {
   return {
     // Custom Nemesis: Shadow Weaver
     'custom-nemesis-1': {
-      main: {
-        name: 'Shadow Weaver',
-        node: MonsterNode.NN1,
-        type: MonsterType.NEMESIS,
-        level1: [
-          {
-            accuracy: 1,
-            accuracyTokens: 0,
-            aiDeck: { basic: 5, advanced: 3, legendary: 0 },
-            aiDeckRemaining: 8,
-            damage: 2,
-            damageTokens: 0,
-            evasion: 0,
-            evasionTokens: 0,
-            life: 10,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Calculating', 'Silent'],
-            movement: 6,
-            movementTokens: 0,
-            speed: 2,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorStatuses: ['Darkness'],
-            toughness: 8,
-            toughnessTokens: 0,
-            traits: ['Shadow Step', 'Incorporeal']
-          }
-        ],
-        level2: [
-          {
-            accuracy: 2,
-            accuracyTokens: 0,
-            aiDeck: { basic: 4, advanced: 4, legendary: 2 },
-            aiDeckRemaining: 10,
-            damage: 3,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            life: 15,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Calculating', 'Silent', 'Vengeful'],
-            movement: 7,
-            movementTokens: 0,
-            speed: 3,
-            speedTokens: 0,
-            strength: 1,
-            strengthTokens: 0,
-            survivorStatuses: ['Darkness', 'Nightmare'],
-            toughness: 10,
-            toughnessTokens: 0,
-            traits: ['Shadow Step', 'Incorporeal', 'Dark Aura']
-          }
-        ],
-        level3: [
-          {
-            accuracy: 3,
-            accuracyTokens: 0,
-            aiDeck: { basic: 3, advanced: 5, legendary: 3 },
-            aiDeckRemaining: 11,
-            damage: 4,
-            damageTokens: 0,
-            evasion: 2,
-            evasionTokens: 0,
-            life: 20,
-            luck: 1,
-            luckTokens: 0,
-            moods: ['Calculating', 'Silent', 'Vengeful', 'Frenzied'],
-            movement: 8,
-            movementTokens: 0,
-            speed: 4,
-            speedTokens: 0,
-            strength: 2,
-            strengthTokens: 0,
-            survivorStatuses: ['Darkness', 'Nightmare', 'Doomed'],
-            toughness: 12,
-            toughnessTokens: 0,
-            traits: ['Shadow Step', 'Incorporeal', 'Dark Aura', 'Soul Drain']
-          }
-        ],
-        timeline: {
-          8: ['Nemesis Encounter - Shadow Weaver Lvl 1'],
-          16: ['Nemesis Encounter - Shadow Weaver Lvl 2'],
-          24: ['Nemesis Encounter - Shadow Weaver Lvl 3']
+      name: 'Shadow Weaver',
+      node: MonsterNode.NN1,
+      type: MonsterType.NEMESIS,
+      level1: [
+        {
+          accuracy: 1,
+          accuracyTokens: 0,
+          aiDeck: { basic: 5, advanced: 3, legendary: 0 },
+          aiDeckRemaining: 8,
+          damage: 2,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          life: 10,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Calculating', 'Silent'],
+          movement: 6,
+          movementTokens: 0,
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorStatuses: ['Darkness'],
+          toughness: 8,
+          toughnessTokens: 0,
+          traits: ['Shadow Step', 'Incorporeal']
         }
+      ],
+      level2: [
+        {
+          accuracy: 2,
+          accuracyTokens: 0,
+          aiDeck: { basic: 4, advanced: 4, legendary: 2 },
+          aiDeckRemaining: 10,
+          damage: 3,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          life: 15,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Calculating', 'Silent', 'Vengeful'],
+          movement: 7,
+          movementTokens: 0,
+          speed: 3,
+          speedTokens: 0,
+          strength: 1,
+          strengthTokens: 0,
+          survivorStatuses: ['Darkness', 'Nightmare'],
+          toughness: 10,
+          toughnessTokens: 0,
+          traits: ['Shadow Step', 'Incorporeal', 'Dark Aura']
+        }
+      ],
+      level3: [
+        {
+          accuracy: 3,
+          accuracyTokens: 0,
+          aiDeck: { basic: 3, advanced: 5, legendary: 3 },
+          aiDeckRemaining: 11,
+          damage: 4,
+          damageTokens: 0,
+          evasion: 2,
+          evasionTokens: 0,
+          life: 20,
+          luck: 1,
+          luckTokens: 0,
+          moods: ['Calculating', 'Silent', 'Vengeful', 'Frenzied'],
+          movement: 8,
+          movementTokens: 0,
+          speed: 4,
+          speedTokens: 0,
+          strength: 2,
+          strengthTokens: 0,
+          survivorStatuses: ['Darkness', 'Nightmare', 'Doomed'],
+          toughness: 12,
+          toughnessTokens: 0,
+          traits: ['Shadow Step', 'Incorporeal', 'Dark Aura', 'Soul Drain']
+        }
+      ],
+      timeline: {
+        8: ['Nemesis Encounter - Shadow Weaver Lvl 1'],
+        16: ['Nemesis Encounter - Shadow Weaver Lvl 2'],
+        24: ['Nemesis Encounter - Shadow Weaver Lvl 3']
       }
     },
 
     // Custom Nemesis: Void Caller (simpler configuration)
     'custom-nemesis-2': {
-      main: {
-        name: 'Void Caller',
-        node: MonsterNode.NN2,
-        type: MonsterType.NEMESIS,
-        level1: [
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 6, advanced: 2, legendary: 0 },
-            aiDeckRemaining: 8,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 0,
-            evasionTokens: 0,
-            life: 12,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Ethereal'],
-            movement: 5,
-            movementTokens: 0,
-            speed: 1,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorStatuses: [],
-            toughness: 6,
-            toughnessTokens: 0,
-            traits: ['Void Touch']
-          }
-        ],
-        level2: [
-          {
-            accuracy: 1,
-            accuracyTokens: 0,
-            aiDeck: { basic: 5, advanced: 4, legendary: 1 },
-            aiDeckRemaining: 10,
-            damage: 2,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            life: 18,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Ethereal', 'Consuming'],
-            movement: 6,
-            movementTokens: 0,
-            speed: 2,
-            speedTokens: 0,
-            strength: 1,
-            strengthTokens: 0,
-            survivorStatuses: ['Void Touched'],
-            toughness: 8,
-            toughnessTokens: 0,
-            traits: ['Void Touch', 'Reality Warp']
-          }
-        ],
-        timeline: {
-          10: ['Nemesis Encounter - Void Caller Lvl 1'],
-          20: ['Nemesis Encounter - Void Caller Lvl 2']
+      name: 'Void Caller',
+      node: MonsterNode.NN2,
+      type: MonsterType.NEMESIS,
+      level1: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 6, advanced: 2, legendary: 0 },
+          aiDeckRemaining: 8,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          life: 12,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Ethereal'],
+          movement: 5,
+          movementTokens: 0,
+          speed: 1,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorStatuses: [],
+          toughness: 6,
+          toughnessTokens: 0,
+          traits: ['Void Touch']
         }
+      ],
+      level2: [
+        {
+          accuracy: 1,
+          accuracyTokens: 0,
+          aiDeck: { basic: 5, advanced: 4, legendary: 1 },
+          aiDeckRemaining: 10,
+          damage: 2,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          life: 18,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Ethereal', 'Consuming'],
+          movement: 6,
+          movementTokens: 0,
+          speed: 2,
+          speedTokens: 0,
+          strength: 1,
+          strengthTokens: 0,
+          survivorStatuses: ['Void Touched'],
+          toughness: 8,
+          toughnessTokens: 0,
+          traits: ['Void Touch', 'Reality Warp']
+        }
+      ],
+      timeline: {
+        10: ['Nemesis Encounter - Void Caller Lvl 1'],
+        20: ['Nemesis Encounter - Void Caller Lvl 2']
       }
-    },
+    }
+  }
+}
 
+/**
+ * Create Custom Quarries
+ *
+ * Creates sample custom quarries for testing.
+ */
+function createCustomQuarries(): Campaign['customQuarries'] {
+  return {
     // Custom Quarry: Iron Wyrm (prologue available)
     'custom-quarry-1': {
-      main: {
-        name: 'Iron Wyrm',
-        node: MonsterNode.NQ1,
-        type: MonsterType.QUARRY,
-        prologue: true,
-        level1: [
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 8, advanced: 0, legendary: 0 },
-            aiDeckRemaining: 8,
-            damage: 2,
-            damageTokens: 0,
-            evasion: -1,
-            evasionTokens: 0,
-            huntPos: 10,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Aggressive', 'Territorial'],
-            movement: 4,
-            movementTokens: 0,
-            speed: 1,
-            speedTokens: 0,
-            strength: 2,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 10,
-            toughnessTokens: 0,
-            traits: ['Armored', 'Slow']
-          }
-        ],
-        level2: [
-          {
-            accuracy: 1,
-            accuracyTokens: 0,
-            aiDeck: { basic: 6, advanced: 3, legendary: 0 },
-            aiDeckRemaining: 9,
-            damage: 3,
-            damageTokens: 0,
-            evasion: 0,
-            evasionTokens: 0,
-            huntPos: 12,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Aggressive', 'Territorial', 'Enraged'],
-            movement: 5,
-            movementTokens: 0,
-            speed: 2,
-            speedTokens: 0,
-            strength: 3,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: ['Bleeding'],
-            toughness: 12,
-            toughnessTokens: 0,
-            traits: ['Armored', 'Slow', 'Metal Rend']
-          }
-        ],
-        huntBoard: {
-          0: undefined,
-          1: HuntEventType.BASIC,
-          2: HuntEventType.BASIC,
-          3: HuntEventType.MONSTER,
-          4: HuntEventType.BASIC,
-          5: HuntEventType.BASIC,
-          6: undefined,
-          7: HuntEventType.BASIC,
-          8: HuntEventType.BASIC,
-          9: HuntEventType.BASIC,
-          10: HuntEventType.MONSTER,
-          11: HuntEventType.BASIC,
-          12: undefined
-        },
-        locations: [
-          {
-            name: 'Forge',
-            unlocked: false
-          }
-        ],
-        ccRewards: [
-          {
-            cc: 0,
-            name: 'Metalworking',
-            unlocked: false
-          }
-        ],
-        timeline: {
-          1: [
-            {
-              title: 'Iron Wyrm Prologue',
-              campaigns: [CampaignType.CUSTOM]
-            }
-          ],
-          6: ['Iron Wyrm Lvl 1'],
-          14: ['Iron Wyrm Lvl 2']
+      name: 'Iron Wyrm',
+      node: MonsterNode.NQ1,
+      type: MonsterType.QUARRY,
+      prologue: true,
+      level1: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 8, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 8,
+          damage: 2,
+          damageTokens: 0,
+          evasion: -1,
+          evasionTokens: 0,
+          huntPos: 10,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Aggressive', 'Territorial'],
+          movement: 4,
+          movementTokens: 0,
+          speed: 1,
+          speedTokens: 0,
+          strength: 2,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 10,
+          toughnessTokens: 0,
+          traits: ['Armored', 'Slow']
         }
+      ],
+      level2: [
+        {
+          accuracy: 1,
+          accuracyTokens: 0,
+          aiDeck: { basic: 6, advanced: 3, legendary: 0 },
+          aiDeckRemaining: 9,
+          damage: 3,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          huntPos: 12,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Aggressive', 'Territorial', 'Enraged'],
+          movement: 5,
+          movementTokens: 0,
+          speed: 2,
+          speedTokens: 0,
+          strength: 3,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: ['Bleeding'],
+          toughness: 12,
+          toughnessTokens: 0,
+          traits: ['Armored', 'Slow', 'Metal Rend']
+        }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Forge',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Metalworking',
+          unlocked: false
+        }
+      ],
+      timeline: {
+        1: [
+          {
+            title: 'Iron Wyrm Prologue',
+            campaigns: [CampaignType.CUSTOM]
+          }
+        ],
+        6: ['Iron Wyrm Lvl 1'],
+        14: ['Iron Wyrm Lvl 2']
       }
     },
 
     // Custom Quarry: Crystal Stag
     'custom-quarry-2': {
-      main: {
-        name: 'Crystal Stag',
-        node: MonsterNode.NQ2,
-        type: MonsterType.QUARRY,
-        prologue: false,
-        level1: [
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 7, advanced: 0, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 0,
-            evasionTokens: 0,
-            huntPos: 12,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Skittish', 'Graceful'],
-            movement: 7,
-            movementTokens: 0,
-            speed: 2,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 6,
-            toughnessTokens: 0,
-            traits: ['Crystalline Hide', 'Swift']
-          }
-        ],
-        level2: [
-          {
-            accuracy: 1,
-            accuracyTokens: 0,
-            aiDeck: { basic: 5, advanced: 3, legendary: 0 },
-            aiDeckRemaining: 8,
-            damage: 2,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            huntPos: 14,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Skittish', 'Graceful', 'Radiant'],
-            movement: 8,
-            movementTokens: 0,
-            speed: 3,
-            speedTokens: 0,
-            strength: 1,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: ['Dazzled'],
-            toughness: 8,
-            toughnessTokens: 0,
-            traits: ['Crystalline Hide', 'Swift', 'Light Burst']
-          }
-        ],
-        level3: [
-          {
-            accuracy: 2,
-            accuracyTokens: 0,
-            aiDeck: { basic: 4, advanced: 4, legendary: 2 },
-            aiDeckRemaining: 10,
-            damage: 3,
-            damageTokens: 0,
-            evasion: 2,
-            evasionTokens: 0,
-            huntPos: 16,
-            luck: 1,
-            luckTokens: 0,
-            moods: ['Skittish', 'Graceful', 'Radiant', 'Majestic'],
-            movement: 9,
-            movementTokens: 0,
-            speed: 4,
-            speedTokens: 0,
-            strength: 2,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: ['Dazzled', 'Blinded'],
-            toughness: 10,
-            toughnessTokens: 0,
-            traits: ['Crystalline Hide', 'Swift', 'Light Burst', 'Prismatic']
-          }
-        ],
-        huntBoard: {
-          0: undefined,
-          1: HuntEventType.BASIC,
-          2: HuntEventType.BASIC,
-          3: HuntEventType.MONSTER,
-          4: HuntEventType.BASIC,
-          5: HuntEventType.BASIC,
-          6: undefined,
-          7: HuntEventType.BASIC,
-          8: HuntEventType.BASIC,
-          9: HuntEventType.BASIC,
-          10: HuntEventType.MONSTER,
-          11: HuntEventType.BASIC,
-          12: undefined
+      name: 'Crystal Stag',
+      node: MonsterNode.NQ2,
+      type: MonsterType.QUARRY,
+      prologue: false,
+      level1: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          huntPos: 12,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Skittish', 'Graceful'],
+          movement: 7,
+          movementTokens: 0,
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 6,
+          toughnessTokens: 0,
+          traits: ['Crystalline Hide', 'Swift']
+        }
+      ],
+      level2: [
+        {
+          accuracy: 1,
+          accuracyTokens: 0,
+          aiDeck: { basic: 5, advanced: 3, legendary: 0 },
+          aiDeckRemaining: 8,
+          damage: 2,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 14,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Skittish', 'Graceful', 'Radiant'],
+          movement: 8,
+          movementTokens: 0,
+          speed: 3,
+          speedTokens: 0,
+          strength: 1,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: ['Dazzled'],
+          toughness: 8,
+          toughnessTokens: 0,
+          traits: ['Crystalline Hide', 'Swift', 'Light Burst']
+        }
+      ],
+      level3: [
+        {
+          accuracy: 2,
+          accuracyTokens: 0,
+          aiDeck: { basic: 4, advanced: 4, legendary: 2 },
+          aiDeckRemaining: 10,
+          damage: 3,
+          damageTokens: 0,
+          evasion: 2,
+          evasionTokens: 0,
+          huntPos: 16,
+          luck: 1,
+          luckTokens: 0,
+          moods: ['Skittish', 'Graceful', 'Radiant', 'Majestic'],
+          movement: 9,
+          movementTokens: 0,
+          speed: 4,
+          speedTokens: 0,
+          strength: 2,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: ['Dazzled', 'Blinded'],
+          toughness: 10,
+          toughnessTokens: 0,
+          traits: ['Crystalline Hide', 'Swift', 'Light Burst', 'Prismatic']
+        }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Crystal Workshop',
+          unlocked: false
         },
-        locations: [
-          {
-            name: 'Crystal Workshop',
-            unlocked: false
-          },
-          {
-            name: 'Prism Shrine',
-            unlocked: false
-          }
-        ],
-        ccRewards: [
-          {
-            cc: 0,
-            name: 'Crystalline Insight',
-            unlocked: false
-          },
-          {
-            cc: 1,
-            name: 'Refraction Mastery',
-            unlocked: false
-          },
-          {
-            cc: 2,
-            name: 'Prismatic Understanding',
-            unlocked: false
-          }
-        ],
-        timeline: {}
-      }
+        {
+          name: 'Prism Shrine',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Crystalline Insight',
+          unlocked: false
+        },
+        {
+          cc: 1,
+          name: 'Refraction Mastery',
+          unlocked: false
+        },
+        {
+          cc: 2,
+          name: 'Prismatic Understanding',
+          unlocked: false
+        }
+      ],
+      timeline: {}
     },
 
     // Custom Quarry: Twilight Serpent (full four levels)
     'custom-quarry-3': {
-      main: {
-        name: 'Twilight Serpent',
-        node: MonsterNode.NQ3,
-        type: MonsterType.QUARRY,
-        prologue: false,
-        level1: [
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 7, advanced: 0, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            huntPos: 11,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Cunning'],
-            movement: 6,
-            movementTokens: 0,
-            speed: 2,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 7,
-            toughnessTokens: 0,
-            traits: ['Venomous', 'Camouflage']
-          }
-        ],
-        level2: [
-          {
-            accuracy: 1,
-            accuracyTokens: 0,
-            aiDeck: { basic: 6, advanced: 2, legendary: 0 },
-            aiDeckRemaining: 8,
-            damage: 2,
-            damageTokens: 0,
-            evasion: 2,
-            evasionTokens: 0,
-            huntPos: 13,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Cunning', 'Patient'],
-            movement: 7,
-            movementTokens: 0,
-            speed: 3,
-            speedTokens: 0,
-            strength: 1,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: ['Poisoned'],
-            toughness: 9,
-            toughnessTokens: 0,
-            traits: ['Venomous', 'Camouflage', 'Constrictor']
-          }
-        ],
-        level3: [
-          {
-            accuracy: 2,
-            accuracyTokens: 0,
-            aiDeck: { basic: 5, advanced: 3, legendary: 1 },
-            aiDeckRemaining: 9,
-            damage: 3,
-            damageTokens: 0,
-            evasion: 3,
-            evasionTokens: 0,
-            huntPos: 15,
-            luck: 1,
-            luckTokens: 0,
-            moods: ['Cunning', 'Patient', 'Deadly'],
-            movement: 8,
-            movementTokens: 0,
-            speed: 4,
-            speedTokens: 0,
-            strength: 2,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: ['Poisoned', 'Bleeding'],
-            toughness: 11,
-            toughnessTokens: 0,
-            traits: ['Venomous', 'Camouflage', 'Constrictor', 'Shadow Strike']
-          }
-        ],
-        level4: [
-          {
-            accuracy: 3,
-            accuracyTokens: 0,
-            aiDeck: { basic: 4, advanced: 4, legendary: 2 },
-            aiDeckRemaining: 10,
-            damage: 4,
-            damageTokens: 0,
-            evasion: 4,
-            evasionTokens: 0,
-            huntPos: 17,
-            luck: 2,
-            luckTokens: 0,
-            moods: ['Cunning', 'Patient', 'Deadly', 'Ancient'],
-            movement: 9,
-            movementTokens: 0,
-            speed: 5,
-            speedTokens: 0,
-            strength: 3,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: ['Poisoned', 'Bleeding', 'Doomed'],
-            toughness: 13,
-            toughnessTokens: 0,
-            traits: [
-              'Venomous',
-              'Camouflage',
-              'Constrictor',
-              'Shadow Strike',
-              'Apex Predator'
-            ]
-          }
-        ],
-        huntBoard: {
-          0: undefined,
-          1: HuntEventType.BASIC,
-          2: HuntEventType.BASIC,
-          3: HuntEventType.MONSTER,
-          4: HuntEventType.BASIC,
-          5: HuntEventType.BASIC,
-          6: undefined,
-          7: HuntEventType.BASIC,
-          8: HuntEventType.BASIC,
-          9: HuntEventType.BASIC,
-          10: HuntEventType.MONSTER,
-          11: HuntEventType.BASIC,
-          12: undefined
+      name: 'Twilight Serpent',
+      node: MonsterNode.NQ3,
+      type: MonsterType.QUARRY,
+      prologue: false,
+      level1: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 11,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning'],
+          movement: 6,
+          movementTokens: 0,
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 7,
+          toughnessTokens: 0,
+          traits: ['Venomous', 'Camouflage']
+        }
+      ],
+      level2: [
+        {
+          accuracy: 1,
+          accuracyTokens: 0,
+          aiDeck: { basic: 6, advanced: 2, legendary: 0 },
+          aiDeckRemaining: 8,
+          damage: 2,
+          damageTokens: 0,
+          evasion: 2,
+          evasionTokens: 0,
+          huntPos: 13,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning', 'Patient'],
+          movement: 7,
+          movementTokens: 0,
+          speed: 3,
+          speedTokens: 0,
+          strength: 1,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: ['Poisoned'],
+          toughness: 9,
+          toughnessTokens: 0,
+          traits: ['Venomous', 'Camouflage', 'Constrictor']
+        }
+      ],
+      level3: [
+        {
+          accuracy: 2,
+          accuracyTokens: 0,
+          aiDeck: { basic: 5, advanced: 3, legendary: 1 },
+          aiDeckRemaining: 9,
+          damage: 3,
+          damageTokens: 0,
+          evasion: 3,
+          evasionTokens: 0,
+          huntPos: 15,
+          luck: 1,
+          luckTokens: 0,
+          moods: ['Cunning', 'Patient', 'Deadly'],
+          movement: 8,
+          movementTokens: 0,
+          speed: 4,
+          speedTokens: 0,
+          strength: 2,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: ['Poisoned', 'Bleeding'],
+          toughness: 11,
+          toughnessTokens: 0,
+          traits: ['Venomous', 'Camouflage', 'Constrictor', 'Shadow Strike']
+        }
+      ],
+      level4: [
+        {
+          accuracy: 3,
+          accuracyTokens: 0,
+          aiDeck: { basic: 4, advanced: 4, legendary: 2 },
+          aiDeckRemaining: 10,
+          damage: 4,
+          damageTokens: 0,
+          evasion: 4,
+          evasionTokens: 0,
+          huntPos: 17,
+          luck: 2,
+          luckTokens: 0,
+          moods: ['Cunning', 'Patient', 'Deadly', 'Ancient'],
+          movement: 9,
+          movementTokens: 0,
+          speed: 5,
+          speedTokens: 0,
+          strength: 3,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: ['Poisoned', 'Bleeding', 'Doomed'],
+          toughness: 13,
+          toughnessTokens: 0,
+          traits: [
+            'Venomous',
+            'Camouflage',
+            'Constrictor',
+            'Shadow Strike',
+            'Apex Predator'
+          ]
+        }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Serpent Den',
+          unlocked: false
         },
-        locations: [
-          {
-            name: 'Serpent Den',
-            unlocked: false
-          },
-          {
-            name: 'Twilight Grove',
-            unlocked: false
-          }
-        ],
-        ccRewards: [
-          {
-            cc: 0,
-            name: 'Venom Study',
-            unlocked: false
-          },
-          {
-            cc: 1,
-            name: 'Serpent Wisdom',
-            unlocked: false
-          },
-          {
-            cc: 2,
-            name: 'Twilight Secrets',
-            unlocked: false
-          }
-        ],
-        timeline: {}
-      }
+        {
+          name: 'Twilight Grove',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Venom Study',
+          unlocked: false
+        },
+        {
+          cc: 1,
+          name: 'Serpent Wisdom',
+          unlocked: false
+        },
+        {
+          cc: 2,
+          name: 'Twilight Secrets',
+          unlocked: false
+        }
+      ],
+      timeline: {}
     },
 
     // Custom Quarry: Dark Horses (multi-monster quarry)
     'custom-quarry-4': {
-      main: {
-        name: 'Dark Horses',
-        node: MonsterNode.NQ4,
-        type: MonsterType.QUARRY,
-        prologue: false,
-        level1: [
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 7, advanced: 0, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            huntPos: 11,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Cunning'],
-            movement: 6,
-            movementTokens: 0,
-            name: 'Dark Horse Alpha',
-            speed: 2,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 7,
-            toughnessTokens: 0,
-            traits: ['Stampede']
-          }
-        ],
-        level2: [
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 7, advanced: 0, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            huntPos: 11,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Cunning'],
-            movement: 6,
-            movementTokens: 0,
-            name: 'Dark Horse Alpha',
-            speed: 2,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 7,
-            toughnessTokens: 0,
-            traits: ['Stampede']
-          },
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 6, advanced: 1, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 0,
-            evasionTokens: 0,
-            huntPos: 10,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Skittish'],
-            movement: 5,
-            movementTokens: 0,
-            name: 'Dark Horse Beta',
-            speed: 1,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 6,
-            toughnessTokens: 0,
-            traits: ['Flee']
-          }
-        ],
-        level3: [
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 7, advanced: 0, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            huntPos: 11,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Cunning'],
-            movement: 6,
-            movementTokens: 0,
-            name: 'Dark Horse Alpha',
-            speed: 2,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 7,
-            toughnessTokens: 0,
-            traits: ['Stampede']
-          },
-          {
-            accuracy: 0,
-            accuracyTokens: 0,
-            aiDeck: { basic: 6, advanced: 1, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 1,
-            damageTokens: 0,
-            evasion: 0,
-            evasionTokens: 0,
-            huntPos: 10,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Skittish'],
-            movement: 5,
-            movementTokens: 0,
-            name: 'Dark Horse Beta',
-            speed: 1,
-            speedTokens: 0,
-            strength: 0,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 6,
-            toughnessTokens: 0,
-            traits: ['Flee']
-          },
-          {
-            accuracy: 1,
-            accuracyTokens: 0,
-            aiDeck: { basic: 5, advanced: 2, legendary: 0 },
-            aiDeckRemaining: 7,
-            damage: 2,
-            damageTokens: 0,
-            evasion: 1,
-            evasionTokens: 0,
-            huntPos: 12,
-            luck: 0,
-            luckTokens: 0,
-            moods: ['Wild'],
-            movement: 7,
-            movementTokens: 0,
-            name: 'Dark Horse Gamma',
-            speed: 3,
-            speedTokens: 0,
-            strength: 1,
-            strengthTokens: 0,
-            survivorHuntPos: 0,
-            survivorStatuses: [],
-            toughness: 8,
-            toughnessTokens: 0,
-            traits: ['Rampage']
-          }
-        ],
-        huntBoard: {
-          0: undefined,
-          1: HuntEventType.BASIC,
-          2: HuntEventType.BASIC,
-          3: HuntEventType.MONSTER,
-          4: HuntEventType.BASIC,
-          5: HuntEventType.BASIC,
-          6: undefined,
-          7: HuntEventType.BASIC,
-          8: HuntEventType.BASIC,
-          9: HuntEventType.BASIC,
-          10: HuntEventType.MONSTER,
-          11: HuntEventType.BASIC,
-          12: undefined
+      name: 'Dark Horses',
+      node: MonsterNode.NQ4,
+      type: MonsterType.QUARRY,
+      prologue: false,
+      level1: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 11,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning'],
+          movement: 6,
+          movementTokens: 0,
+          name: 'Dark Horse Alpha',
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 7,
+          toughnessTokens: 0,
+          traits: ['Stampede']
+        }
+      ],
+      level2: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 11,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning'],
+          movement: 6,
+          movementTokens: 0,
+          name: 'Dark Horse Alpha',
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 7,
+          toughnessTokens: 0,
+          traits: ['Stampede']
         },
-        locations: [
-          {
-            name: 'Serpent Den',
-            unlocked: false
-          },
-          {
-            name: 'Twilight Grove',
-            unlocked: false
-          }
-        ],
-        ccRewards: [
-          {
-            cc: 0,
-            name: 'Venom Study',
-            unlocked: false
-          },
-          {
-            cc: 1,
-            name: 'Serpent Wisdom',
-            unlocked: false
-          },
-          {
-            cc: 2,
-            name: 'Twilight Secrets',
-            unlocked: false
-          }
-        ],
-        timeline: {}
-      }
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 6, advanced: 1, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          huntPos: 10,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Skittish'],
+          movement: 5,
+          movementTokens: 0,
+          name: 'Dark Horse Beta',
+          speed: 1,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 6,
+          toughnessTokens: 0,
+          traits: ['Flee']
+        }
+      ],
+      level3: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 11,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning'],
+          movement: 6,
+          movementTokens: 0,
+          name: 'Dark Horse Alpha',
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 7,
+          toughnessTokens: 0,
+          traits: ['Stampede']
+        },
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 6, advanced: 1, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          huntPos: 10,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Skittish'],
+          movement: 5,
+          movementTokens: 0,
+          name: 'Dark Horse Beta',
+          speed: 1,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 6,
+          toughnessTokens: 0,
+          traits: ['Flee']
+        },
+        {
+          accuracy: 1,
+          accuracyTokens: 0,
+          aiDeck: { basic: 5, advanced: 2, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 2,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 12,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Wild'],
+          movement: 7,
+          movementTokens: 0,
+          name: 'Dark Horse Gamma',
+          speed: 3,
+          speedTokens: 0,
+          strength: 1,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 8,
+          toughnessTokens: 0,
+          traits: ['Rampage']
+        }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Serpent Den',
+          unlocked: false
+        },
+        {
+          name: 'Twilight Grove',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Venom Study',
+          unlocked: false
+        },
+        {
+          cc: 1,
+          name: 'Serpent Wisdom',
+          unlocked: false
+        },
+        {
+          cc: 2,
+          name: 'Twilight Secrets',
+          unlocked: false
+        }
+      ],
+      timeline: {}
     }
   }
 }
