@@ -39,8 +39,11 @@ export const MonsterLevelSchema = z.object({
   luckTokens: z.number().int().default(0),
   /** Moods */
   moods: z.array(z.string()).default([]),
-  /** Movement */
-  movement: z.number().int().min(1).default(1),
+  /** Movement
+   *
+   * Negative values indicate infinite movement.
+   */
+  movement: z.number().int().default(1),
   /** Movement Tokens */
   movementTokens: z.number().int().default(0),
   /**
