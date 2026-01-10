@@ -832,6 +832,14 @@ export const MOOD_UPDATED_MESSAGE = () => 'The mood has been updated.'
  */
 export const NAMELESS_OBJECT_ERROR_MESSAGE = (objType: string) =>
   `A nameless ${objType} cannot be recorded.`
+
+/**
+ * Nemesis Added
+ *
+ * @returns Nemesis Added Message
+ */
+export const NEMESIS_ADDED_MESSAGE = () => 'A new nemesis emerges.'
+
 /**
  * Nemesis Removed
  *
@@ -853,13 +861,10 @@ export const NEMESIS_UNLOCKED_MESSAGE = (name: string, unlocked: boolean) =>
 /**
  * Nemesis Updated
  *
- * @param index Nemesis Index
  * @returns Nemesis Updated Message
  */
-export const NEMESIS_UPDATED_MESSAGE = (index?: number) =>
-  index !== undefined
-    ? 'The nemesis waits outside your settlement.'
-    : 'A new nemesis emerges.'
+export const NEMESIS_UPDATED_MESSAGE = () =>
+  'The nemesis waits outside your settlement.'
 
 /**
  * Pattern Removed
@@ -938,6 +943,13 @@ export const PRINCIPLE_UPDATED_MESSAGE = (isNew: boolean) =>
     : 'The principle has been inscribed.'
 
 /**
+ * Quarry Added
+ *
+ * @returns Quarry Added Message
+ */
+export const QUARRY_ADDED_MESSAGE = () => 'A new quarry has been discovered.'
+
+/**
  * Quarry Removed
  *
  * @returns Quarry Removed Message
@@ -960,13 +972,9 @@ export const QUARRY_UNLOCKED_MESSAGE = (
 /**
  * Quarry Updated
  *
- * @param index Quarry Index
  * @returns Quarry Updated Message
  */
-export const QUARRY_UPDATED_MESSAGE = (index?: number) =>
-  index !== undefined
-    ? 'The quarry has been tracked.'
-    : 'A new quarry has been discovered.'
+export const QUARRY_UPDATED_MESSAGE = () => 'The quarry has been tracked.'
 
 /**
  * Resource Removed

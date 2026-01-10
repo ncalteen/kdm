@@ -11,14 +11,13 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { MonsterType } from '@/lib/enums'
 import { QUARRIES } from '@/lib/monsters'
 import { Campaign } from '@/schemas/campaign'
-import { Settlement } from '@/schemas/settlement'
+import { SettlementQuarry } from '@/schemas/settlement-quarry'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import { ReactElement, useRef } from 'react'
+import { ReactElement, useState } from 'react'
 
 /**
  * Quarry Item Properties
@@ -26,8 +25,6 @@ import { ReactElement, useRef } from 'react'
 export interface QuarryItemProps {
   /** Campaign */
   campaign: Campaign
-  /** Quarry ID */
-  id: string
   /** Index */
   index: number
   /** Is Disabled */
@@ -37,13 +34,11 @@ export interface QuarryItemProps {
   /** On Remove Handler */
   onRemove: (index: number) => void
   /** On Save Handler */
-  onSave: (id?: number | string, unlocked?: boolean, index?: number) => void
+  onSave: (name: string | undefined, index?: number) => void
   /** On Toggle Unlocked Handler */
   onToggleUnlocked: (index: number, unlocked: boolean) => void
-  /** On Update Quarry Handler */
-  onUpdateQuarry: (index: number, id: number | string) => void
-  /** Selected Settlement */
-  selectedSettlement: Settlement | null
+  /** Quarry Data */
+  quarry: SettlementQuarry
 }
 
 /**
@@ -55,7 +50,7 @@ export interface NewQuarryItemProps {
   /** On Cancel Handler */
   onCancel: () => void
   /** On Save Handler */
-  onSave: (id?: number | string, unlocked?: boolean) => void
+  onSave: (name: string | undefined, index?: number) => void
 }
 
 /**
@@ -66,37 +61,20 @@ export interface NewQuarryItemProps {
  */
 export function QuarryItem({
   campaign,
-  id,
   index,
   isDisabled,
   onEdit,
   onRemove,
   onSave,
   onToggleUnlocked,
-  onUpdateQuarry,
-  selectedSettlement
+  quarry
 }: QuarryItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
+    useSortable({ id: index.toString() })
 
-  const quarryIdRef = useRef<number | string | undefined>(
-    selectedSettlement?.quarries?.[index]?.id
-  )
-  const currentQuarryId = selectedSettlement?.quarries?.[index]?.id
-
-  if (quarryIdRef.current !== currentQuarryId) {
-    quarryIdRef.current = currentQuarryId
-    console.debug('[QuarryItem] Quarry ID changed', currentQuarryId, index)
-  }
-
-  const quarryData = currentQuarryId
-    ? typeof currentQuarryId === 'number'
-      ? QUARRIES[currentQuarryId as keyof typeof QUARRIES]
-      : campaign.customMonsters?.[currentQuarryId].main.type ===
-          MonsterType.QUARRY
-        ? campaign.customMonsters[currentQuarryId]
-        : null
-    : null
+  const [selectedQuarryName, setSelectedQuarryName] = useState<
+    string | undefined
+  >(quarry.name)
 
   return (
     <div
@@ -114,48 +92,36 @@ export function QuarryItem({
       {/* Unlocked Checkbox */}
       <Checkbox
         id={`quarry-unlocked-${index}`}
-        checked={selectedSettlement?.quarries?.[index].unlocked}
-        onCheckedChange={(checked) => {
-          if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
-        }}
+        checked={quarry.unlocked}
+        onCheckedChange={(checked) => onToggleUnlocked(index, !!checked)}
       />
 
       {/* Quarry Selection */}
       {isDisabled ? (
         <div className="flex ml-1">
           <Label className="text-sm" htmlFor={`quarry-unlocked-${index}`}>
-            {quarryData?.main.name ?? 'Unknown Quarry'}
+            {quarry.name}
           </Label>
         </div>
       ) : (
         <Select
-          value={selectedSettlement?.quarries?.[index].id.toString()}
-          onValueChange={(value) => {
-            const numValue = parseInt(value)
-            const isBuiltIn =
-              !isNaN(numValue) && QUARRIES[numValue as keyof typeof QUARRIES]
-            onUpdateQuarry(
-              index,
-              isBuiltIn ? numValue : (value as unknown as number)
-            )
-          }}
+          value={selectedQuarryName}
+          onValueChange={(value) => setSelectedQuarryName(value)}
           disabled={isDisabled}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder="Select quarry" />
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(QUARRIES).map(([id, quarry]) => (
-              <SelectItem key={id} value={id}>
-                {quarry.main.name}
+            {Object.values(QUARRIES).map((q) => (
+              <SelectItem key={q.name} value={q.name}>
+                {q.name}
               </SelectItem>
             ))}
-            {Object.entries(campaign.customMonsters ?? {})
-              .filter(([, monster]) => monster.main.type === MonsterType.QUARRY)
-              .map(([id, monster]) => (
-                <SelectItem key={id} value={id}>
-                  {monster.main.name} (Custom)
-                </SelectItem>
-              ))}
+            {Object.values(campaign.customQuarries ?? {}).map((cq) => (
+              <SelectItem key={cq.name} value={cq.name}>
+                {cq.name} (Custom)
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       )}
@@ -163,7 +129,7 @@ export function QuarryItem({
       {/* Node Badge */}
       <div className="flex items-center gap-1 ml-auto">
         <Badge variant="secondary" className="h-8 w-20">
-          {quarryData?.main.node ?? 'N/A'}
+          {quarry.node}
         </Badge>
 
         {/* Interaction Buttons */}
@@ -181,16 +147,7 @@ export function QuarryItem({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => {
-              const quarryId = selectedSettlement?.quarries?.[index].id
-              onSave(
-                typeof quarryId === 'number'
-                  ? quarryId
-                  : (quarryId as unknown as number),
-                selectedSettlement?.quarries?.[index].unlocked,
-                index
-              )
-            }}
+            onClick={() => onSave(selectedQuarryName, index)}
             title="Save quarry">
             <CheckIcon className="h-4 w-4" />
           </Button>
@@ -217,13 +174,9 @@ export function NewQuarryItem({
   onCancel,
   onSave
 }: NewQuarryItemProps): ReactElement {
-  const quarryIdRef = useRef<number | string>(1)
-
-  const handleSave = () => {
-    if (typeof quarryIdRef.current === 'number')
-      onSave(quarryIdRef.current, false)
-    else onSave(quarryIdRef.current as unknown as number, false)
-  }
+  const [selectedQuarryName, setSelectedQuarryName] = useState<
+    string | undefined
+  >(undefined)
 
   return (
     <div className="flex items-center gap-2">
@@ -237,38 +190,32 @@ export function NewQuarryItem({
 
       {/* Quarry Selector */}
       <Select
-        defaultValue="1"
-        onValueChange={(value) => {
-          const numValue = parseInt(value)
-          const isBuiltIn =
-            !isNaN(numValue) && QUARRIES[numValue as keyof typeof QUARRIES]
-          quarryIdRef.current = isBuiltIn ? numValue : value
-        }}>
+        value={selectedQuarryName}
+        onValueChange={(value) => setSelectedQuarryName(value)}>
         <SelectTrigger className="flex-1">
           <SelectValue placeholder="Select quarry" />
         </SelectTrigger>
         <SelectContent>
-          {Object.entries(QUARRIES).map(([id, quarry]) => (
-            <SelectItem key={id} value={id}>
-              {quarry.main.name}
+          {Object.values(QUARRIES).map((quarry) => (
+            <SelectItem key={quarry.name} value={quarry.name}>
+              {quarry.name}
             </SelectItem>
           ))}
-          {Object.entries(campaign.customMonsters ?? {})
-            .filter(([, monster]) => monster.main.type === MonsterType.QUARRY)
-            .map(([id, monster]) => (
-              <SelectItem key={id} value={id}>
-                {monster.main.name} (Custom)
-              </SelectItem>
-            ))}
+          {Object.values(campaign.customQuarries ?? {}).map((quarry) => (
+            <SelectItem key={quarry.name} value={quarry.name}>
+              {quarry.name} (Custom)
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
+      {/* Interaction Buttons */}
       <div className="flex items-center gap-1 ml-auto">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          onClick={handleSave}
+          onClick={() => onSave(selectedQuarryName)}
           title="Save quarry">
           <CheckIcon className="h-4 w-4" />
         </Button>
