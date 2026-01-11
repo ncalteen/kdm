@@ -125,7 +125,8 @@ export function CreateHuntCard({
             (survivor) =>
               survivor.settlementId === selectedSettlement?.id &&
               !survivor.dead &&
-              !survivor.retired
+              !survivor.retired &&
+              !survivor.skipNextHunt
           )
         : [],
     [campaign.survivors, selectedSettlement?.id]
