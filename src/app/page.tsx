@@ -121,8 +121,10 @@ function MainPage(): ReactElement {
     setIsCreatingNewSurvivor,
 
     setSelectedHunt,
+    setSelectedHuntMonsterIndex,
     setSelectedSettlement,
     setSelectedShowdown,
+    setSelectedShowdownMonsterIndex,
     setSelectedSurvivor,
     setSelectedTab,
 
@@ -139,6 +141,10 @@ function MainPage(): ReactElement {
       null,
     [campaign.hunts, campaign.selectedHuntId]
   )
+  const selectedHuntMonsterIndex = useMemo(
+    () => campaign.selectedHuntMonsterIndex || 0,
+    [campaign.selectedHuntMonsterIndex]
+  )
   const selectedSettlement = useMemo(
     () =>
       campaign.settlements.find(
@@ -152,6 +158,10 @@ function MainPage(): ReactElement {
         (showdown) => showdown.id === campaign.selectedShowdownId
       ) || null,
     [campaign.showdowns, campaign.selectedShowdownId]
+  )
+  const selectedShowdownMonsterIndex = useMemo(
+    () => campaign.selectedShowdownMonsterIndex || 0,
+    [campaign.selectedShowdownMonsterIndex]
   )
   const selectedSurvivor = useMemo(
     () =>
@@ -282,8 +292,10 @@ function MainPage(): ReactElement {
                     saveSelectedShowdown={saveSelectedShowdown}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedHunt={selectedHunt}
+                    selectedHuntMonsterIndex={selectedHuntMonsterIndex}
                     selectedSettlement={selectedSettlement}
                     selectedShowdown={selectedShowdown}
+                    selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
                     selectedSurvivor={selectedSurvivor}
                     selectedTab={selectedTab}
                     setIsCreatingNewHunt={setIsCreatingNewHunt}
@@ -291,8 +303,12 @@ function MainPage(): ReactElement {
                     setIsCreatingNewShowdown={setIsCreatingNewShowdown}
                     setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                     setSelectedHunt={setSelectedHunt}
+                    setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
                     setSelectedSettlement={setSelectedSettlement}
                     setSelectedShowdown={setSelectedShowdown}
+                    setSelectedShowdownMonsterIndex={
+                      setSelectedShowdownMonsterIndex
+                    }
                     setSelectedSurvivor={setSelectedSurvivor}
                     setSelectedTab={setSelectedTab}
                     updateCampaign={updateCampaign}
