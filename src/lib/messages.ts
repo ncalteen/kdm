@@ -804,7 +804,7 @@ export const MONSTER_WOUND_DECK_UPDATED_MESSAGE = (
   oldValue: number,
   newValue: number
 ) =>
-  oldValue < newValue
+  oldValue > newValue
     ? 'The monster heals its wounds.'
     : oldValue < newValue
       ? 'The monster suffers new wounds.'
