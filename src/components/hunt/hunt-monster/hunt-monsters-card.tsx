@@ -58,7 +58,7 @@ export function HuntMonstersCard({
   return (
     <div className="p-0">
       {selectedHunt && selectedHunt.monsters.length > 1 && (
-        <div className="monster_carousel_controls">
+        <div className="monster_carousel_controls pb-2">
           <div className="monster_carousel_buttons">
             <Button
               className="h-8 w-8"

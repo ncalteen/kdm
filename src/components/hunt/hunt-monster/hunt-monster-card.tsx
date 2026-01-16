@@ -22,7 +22,7 @@ import {
   TRAIT_REMOVED_MESSAGE,
   TRAIT_UPDATED_MESSAGE
 } from '@/lib/messages'
-import { Hunt } from '@/schemas/hunt'
+import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { HuntMonster, HuntMonsterSchema } from '@/schemas/hunt-monster'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, SkullIcon } from 'lucide-react'
@@ -103,8 +103,13 @@ export function HuntMonsterCard({
 
   // Update form values when monster data changes
   useEffect(() => {
-    if (selectedHunt?.monsters)
+    if (selectedHunt?.monsters) {
       form.reset(selectedHunt?.monsters[selectedHuntMonsterIndex])
+      setNotesDraft(
+        selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes || ''
+      )
+      setIsNotesDirty(false)
+    }
   }, [selectedHunt?.monsters, selectedHuntMonsterIndex, form])
 
   // Update disabled inputs when the computed initial state changes
@@ -130,21 +135,26 @@ export function HuntMonsterCard({
     if (!selectedHunt?.monsters) return
 
     try {
-      const updatedMonsters = {
-        ...selectedHunt.monsters,
-        ...updateData
-      }
-
-      console.log(updatedMonsters)
+      const updatedMonsters = [
+        ...selectedHunt.monsters.slice(0, selectedHuntMonsterIndex),
+        {
+          ...selectedHunt.monsters[selectedHuntMonsterIndex],
+          ...updateData
+        },
+        ...selectedHunt.monsters.slice(selectedHuntMonsterIndex + 1)
+      ]
 
       // Validate the updated monster data
-      HuntMonsterSchema.parse(updatedMonsters)
+      HuntSchema.parse({
+        ...selectedHunt,
+        monsters: updatedMonsters
+      })
 
       // Update the hunt with the modified monster
       saveSelectedHunt({ monsters: updatedMonsters }, successMsg)
 
       // Update the form with the new values
-      form.reset(HuntMonsterSchema.parse(updatedMonsters))
+      form.reset(updatedMonsters[selectedHuntMonsterIndex])
     } catch (error) {
       console.error('Hunt Monster Save Error:', error)
 
