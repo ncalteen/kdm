@@ -40,20 +40,20 @@ export function HuntBoard({
   // Define hunt board spaces
   const spaces = [
     { index: 0, label: 'Start', isStart: true },
-    { index: 1, label: selectedHunt?.monster?.huntBoard?.[1] ?? null },
-    { index: 2, label: selectedHunt?.monster?.huntBoard?.[2] ?? null },
-    { index: 3, label: selectedHunt?.monster?.huntBoard?.[3] ?? null },
-    { index: 4, label: selectedHunt?.monster?.huntBoard?.[4] ?? null },
-    { index: 5, label: selectedHunt?.monster?.huntBoard?.[5] ?? null },
+    { index: 1, label: selectedHunt?.huntBoard?.[1] ?? null },
+    { index: 2, label: selectedHunt?.huntBoard?.[2] ?? null },
+    { index: 3, label: selectedHunt?.huntBoard?.[3] ?? null },
+    { index: 4, label: selectedHunt?.huntBoard?.[4] ?? null },
+    { index: 5, label: selectedHunt?.huntBoard?.[5] ?? null },
     {
       index: 6,
-      label: getOverwhelmingDarknessLabel(selectedHunt?.monster?.name)
+      label: getOverwhelmingDarknessLabel(selectedHunt?.monsters?.[0].name)
     },
-    { index: 7, label: selectedHunt?.monster?.huntBoard?.[7] ?? null },
-    { index: 8, label: selectedHunt?.monster?.huntBoard?.[8] ?? null },
-    { index: 9, label: selectedHunt?.monster?.huntBoard?.[9] ?? null },
-    { index: 10, label: selectedHunt?.monster?.huntBoard?.[10] ?? null },
-    { index: 11, label: selectedHunt?.monster?.huntBoard?.[11] ?? null },
+    { index: 7, label: selectedHunt?.huntBoard?.[7] ?? null },
+    { index: 8, label: selectedHunt?.huntBoard?.[8] ?? null },
+    { index: 9, label: selectedHunt?.huntBoard?.[9] ?? null },
+    { index: 10, label: selectedHunt?.huntBoard?.[10] ?? null },
+    { index: 11, label: selectedHunt?.huntBoard?.[11] ?? null },
     { index: 12, label: 'Starvation', isStarvation: true }
   ]
 
@@ -83,9 +83,7 @@ export function HuntBoard({
     if (pos === 0 || pos === 6 || pos === 12) return
 
     const current =
-      selectedHunt?.monster?.huntBoard?.[
-        pos as keyof typeof selectedHunt.monster.huntBoard
-      ]
+      selectedHunt?.huntBoard?.[pos as keyof typeof selectedHunt.huntBoard]
 
     // Cycle: undefined -> basic -> monster -> undefined
     let newEventType: HuntEventType | undefined

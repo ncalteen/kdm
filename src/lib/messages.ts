@@ -717,6 +717,13 @@ export const MONSTER_STARTS_SHOWDOWN_KNOCKED_DOWN_MESSAGE = (
     : 'The monster will start the showdown standing.'
 
 /**
+ * Monster Stats Saved
+ *
+ * @returns Monster Stats Saved Message
+ */
+export const MONSTER_STATS_SAVED_MESSAGE = () => 'The creature shifts.'
+
+/**
  * Monster Strength Updated
  *
  * @param oldValue Old Value

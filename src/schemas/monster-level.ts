@@ -26,7 +26,7 @@ export const MonsterLevelSchema = z.object({
   /** AI Deck Remaining */
   aiDeckRemaining: z.number().int().min(0).default(0),
   /** Damage */
-  damage: z.number().int().min(0).default(0),
+  damage: z.number().int().default(0),
   /** Damage Tokens */
   damageTokens: z.number().int().default(0),
   /** Evasion */

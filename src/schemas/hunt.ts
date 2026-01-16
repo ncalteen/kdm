@@ -1,5 +1,7 @@
 'use client'
 
+import { MonsterLevel } from '@/lib/enums'
+import { HuntBoardSchema } from '@/schemas/hunt-board'
 import { HuntMonsterSchema } from '@/schemas/hunt-monster'
 import { HuntSurvivorDetailsSchema } from '@/schemas/hunt-survivor-details'
 import { z } from 'zod'
@@ -10,10 +12,14 @@ import { z } from 'zod'
  * This includes any information needed to track a selected hunt.
  */
 export const HuntSchema = z.object({
+  /** Hunt Board */
+  huntBoard: HuntBoardSchema.optional(),
   /** Hunt ID */
   id: z.number().int().min(0),
-  /** Hunt Monster */
-  monster: z.array(HuntMonsterSchema),
+  /** Monster Level */
+  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  /** Hunt Monster(s) */
+  monsters: z.array(HuntMonsterSchema),
   /** Monster Position on Hunt Board */
   monsterPosition: z.number().min(0).max(12),
   /** Selected Scout (Required if Settlement uses Scouts) */

@@ -23,7 +23,7 @@ import { ReactElement } from 'react'
  */
 interface HuntMonsterAttributesProps {
   /** Hunt Monster */
-  monster: HuntMonster
+  monster?: HuntMonster
   /** Save Monster Data */
   saveMonsterData: (
     updateData: Partial<HuntMonster>,
@@ -61,7 +61,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-damage"
             type="number"
-            value={monster.damage ?? 0}
+            value={monster?.damage ?? 0}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-damage"
             readOnly={true}
@@ -69,12 +69,12 @@ export function HuntMonsterAttributes({
           />
           <NumericInput
             label="Damage Tokens"
-            value={monster.damageTokens ?? 0}
+            value={monster?.damageTokens ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { damageTokens: value },
                 MONSTER_DAMAGE_TOKENS_UPDATED_MESSAGE(
-                  monster.damageTokens,
+                  monster?.damageTokens ?? 0,
                   value
                 )
               )
@@ -83,12 +83,12 @@ export function HuntMonsterAttributes({
             <Input
               id="monster-damage-tokens"
               type="number"
-              value={monster.damageTokens}
+              value={monster?.damageTokens ?? 0}
               onChange={(e) =>
                 saveMonsterData(
                   { damageTokens: parseInt(e.target.value) || 0 },
                   MONSTER_DAMAGE_TOKENS_UPDATED_MESSAGE(
-                    monster.damageTokens,
+                    monster?.damageTokens ?? 0,
                     parseInt(e.target.value) || 0
                   )
                 )
@@ -100,7 +100,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-damage-total"
             type="number"
-            value={(monster.damage ?? 0) + (monster.damageTokens ?? 0)}
+            value={(monster?.damage ?? 0) + (monster?.damageTokens ?? 0)}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-damage-total"
             readOnly={true}
@@ -115,11 +115,11 @@ export function HuntMonsterAttributes({
           <Label className="text-xs w-20">Movement</Label>
           <NumericInput
             label="Movement Base"
-            value={monster.movement ?? 1}
+            value={monster?.movement ?? 1}
             onChange={(value) =>
               saveMonsterData(
                 { movement: value },
-                MONSTER_MOVEMENT_UPDATED_MESSAGE(monster.movement, value)
+                MONSTER_MOVEMENT_UPDATED_MESSAGE(monster?.movement ?? 1, value)
               )
             }
             min={1}
@@ -127,13 +127,13 @@ export function HuntMonsterAttributes({
             <Input
               id="monster-movement"
               type="number"
-              value={monster.movement}
+              value={monster?.movement ?? 1}
               onChange={(e) =>
                 saveMonsterData(
-                  { movement: parseInt(e.target.value) || 1 },
+                  { movement: parseInt(e.target.value) ?? 1 },
                   MONSTER_MOVEMENT_UPDATED_MESSAGE(
-                    monster.movement,
-                    parseInt(e.target.value) || 1
+                    monster?.movement ?? 1,
+                    parseInt(e.target.value) ?? 1
                   )
                 )
               }
@@ -144,12 +144,12 @@ export function HuntMonsterAttributes({
           </NumericInput>
           <NumericInput
             label="Movement Tokens"
-            value={monster.movementTokens ?? 0}
+            value={monster?.movementTokens ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { movementTokens: value },
                 MONSTER_MOVEMENT_TOKENS_UPDATED_MESSAGE(
-                  monster.movementTokens,
+                  monster?.movementTokens ?? 0,
                   value
                 )
               )
@@ -158,13 +158,13 @@ export function HuntMonsterAttributes({
             <Input
               id="monster-movement-tokens"
               type="number"
-              value={monster.movementTokens}
+              value={monster?.movementTokens ?? 0}
               onChange={(e) =>
                 saveMonsterData(
-                  { movementTokens: parseInt(e.target.value) || 0 },
+                  { movementTokens: parseInt(e.target.value) ?? 0 },
                   MONSTER_MOVEMENT_TOKENS_UPDATED_MESSAGE(
-                    monster.movementTokens,
-                    parseInt(e.target.value) || 0
+                    monster?.movementTokens ?? 0,
+                    parseInt(e.target.value) ?? 0
                   )
                 )
               }
@@ -175,7 +175,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-movement-total"
             type="number"
-            value={(monster.movementTokens ?? 0) + (monster.movement ?? 0)}
+            value={(monster?.movementTokens ?? 0) + (monster?.movement ?? 1)}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-movement-total"
             readOnly={true}
@@ -189,7 +189,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-accuracy"
             type="number"
-            value={monster.accuracy ?? 0}
+            value={monster?.accuracy ?? 0}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-accuracy"
             readOnly={true}
@@ -197,12 +197,12 @@ export function HuntMonsterAttributes({
           />
           <NumericInput
             label="Accuracy Tokens"
-            value={monster.accuracyTokens ?? 0}
+            value={monster?.accuracyTokens ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { accuracyTokens: value },
                 MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE(
-                  monster.accuracyTokens,
+                  monster?.accuracyTokens ?? 0,
                   value
                 )
               )
@@ -211,13 +211,13 @@ export function HuntMonsterAttributes({
             <Input
               id="monster-accuracy-tokens"
               type="number"
-              value={monster.accuracyTokens}
+              value={monster?.accuracyTokens ?? 0}
               onChange={(e) =>
                 saveMonsterData(
-                  { accuracyTokens: parseInt(e.target.value) || 0 },
+                  { accuracyTokens: parseInt(e.target.value) ?? 0 },
                   MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE(
-                    monster.accuracyTokens,
-                    parseInt(e.target.value) || 0
+                    monster?.accuracyTokens ?? 0,
+                    parseInt(e.target.value) ?? 0
                   )
                 )
               }
@@ -228,7 +228,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-accuracy-total"
             type="number"
-            value={(monster.accuracy ?? 0) + (monster.accuracyTokens ?? 0)}
+            value={(monster?.accuracy ?? 0) + (monster?.accuracyTokens ?? 0)}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-accuracy-total"
             readOnly={true}
@@ -242,7 +242,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-strength"
             type="number"
-            value={monster.strength ?? 0}
+            value={monster?.strength ?? 0}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-strength"
             readOnly={true}
@@ -250,12 +250,12 @@ export function HuntMonsterAttributes({
           />
           <NumericInput
             label="Strength Tokens"
-            value={monster.strengthTokens ?? 0}
+            value={monster?.strengthTokens ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { strengthTokens: value },
                 MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE(
-                  monster.strengthTokens,
+                  monster?.strengthTokens ?? 0,
                   value
                 )
               )
@@ -264,13 +264,13 @@ export function HuntMonsterAttributes({
             <Input
               id="monster-strength-tokens"
               type="number"
-              value={monster.strengthTokens}
+              value={monster?.strengthTokens ?? 0}
               onChange={(e) => {
                 saveMonsterData(
-                  { strengthTokens: parseInt(e.target.value) || 0 },
+                  { strengthTokens: parseInt(e.target.value) ?? 0 },
                   MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE(
-                    monster.strengthTokens,
-                    parseInt(e.target.value) || 0
+                    monster?.strengthTokens ?? 0,
+                    parseInt(e.target.value) ?? 0
                   )
                 )
               }}
@@ -281,7 +281,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-strength-total"
             type="number"
-            value={(monster.strength ?? 0) + (monster.strengthTokens ?? 0)}
+            value={(monster?.strength ?? 0) + (monster?.strengthTokens ?? 0)}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-strength-total"
             readOnly={true}
@@ -295,7 +295,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-evasion"
             type="number"
-            value={monster.evasion ?? 0}
+            value={monster?.evasion ?? 0}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-evasion"
             readOnly={true}
@@ -303,12 +303,12 @@ export function HuntMonsterAttributes({
           />
           <NumericInput
             label="Evasion Tokens"
-            value={monster.evasionTokens ?? 0}
+            value={monster?.evasionTokens ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { evasionTokens: value },
                 MONSTER_EVASION_TOKENS_UPDATED_MESSAGE(
-                  monster.evasionTokens,
+                  monster?.evasionTokens ?? 0,
                   value
                 )
               )
@@ -317,13 +317,13 @@ export function HuntMonsterAttributes({
             <Input
               id="monster-evasion-tokens"
               type="number"
-              value={monster.evasionTokens}
+              value={monster?.evasionTokens ?? 0}
               onChange={(e) =>
                 saveMonsterData(
-                  { evasionTokens: parseInt(e.target.value) || 0 },
+                  { evasionTokens: parseInt(e.target.value) ?? 0 },
                   MONSTER_EVASION_TOKENS_UPDATED_MESSAGE(
-                    monster.evasionTokens,
-                    parseInt(e.target.value) || 0
+                    monster?.evasionTokens ?? 0,
+                    parseInt(e.target.value) ?? 0
                   )
                 )
               }
@@ -334,7 +334,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-evasion-total"
             type="number"
-            value={(monster.evasion ?? 0) + (monster.evasionTokens ?? 0)}
+            value={(monster?.evasion ?? 0) + (monster?.evasionTokens ?? 0)}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-evasion-total"
             readOnly={true}
@@ -348,7 +348,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-luck"
             type="number"
-            value={monster.luck ?? 0}
+            value={monster?.luck ?? 0}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-luck"
             readOnly={true}
@@ -356,24 +356,27 @@ export function HuntMonsterAttributes({
           />
           <NumericInput
             label="Luck Tokens"
-            value={monster.luckTokens ?? 0}
+            value={monster?.luckTokens ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { luckTokens: value },
-                MONSTER_LUCK_TOKENS_UPDATED_MESSAGE(monster.luckTokens, value)
+                MONSTER_LUCK_TOKENS_UPDATED_MESSAGE(
+                  monster?.luckTokens ?? 0,
+                  value
+                )
               )
             }
             readOnly={false}>
             <Input
               id="monster-luck-tokens"
               type="number"
-              value={monster.luckTokens}
+              value={monster?.luckTokens ?? 0}
               onChange={(e) =>
                 saveMonsterData(
-                  { luckTokens: parseInt(e.target.value) || 0 },
+                  { luckTokens: parseInt(e.target.value) ?? 0 },
                   MONSTER_LUCK_TOKENS_UPDATED_MESSAGE(
-                    monster.luckTokens,
-                    parseInt(e.target.value) || 0
+                    monster?.luckTokens ?? 0,
+                    parseInt(e.target.value) ?? 0
                   )
                 )
               }
@@ -384,7 +387,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-luck-total"
             type="number"
-            value={(monster.luck ?? 0) + (monster.luckTokens ?? 0)}
+            value={(monster?.luck ?? 0) + (monster?.luckTokens ?? 0)}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-luck-total"
             readOnly={true}
@@ -397,24 +400,24 @@ export function HuntMonsterAttributes({
           <Label className="text-xs w-20">Speed</Label>
           <NumericInput
             label="Speed Base"
-            value={monster.speed ?? 0}
+            value={monster?.speed ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { speed: value },
-                MONSTER_SPEED_UPDATED_MESSAGE(monster.speed, value)
+                MONSTER_SPEED_UPDATED_MESSAGE(monster?.speed ?? 0, value)
               )
             }
             readOnly={false}>
             <Input
               id="monster-speed"
               type="number"
-              value={monster.speed}
+              value={monster?.speed ?? 0}
               onChange={(e) =>
                 saveMonsterData(
-                  { speed: parseInt(e.target.value) || 0 },
+                  { speed: parseInt(e.target.value) ?? 0 },
                   MONSTER_SPEED_UPDATED_MESSAGE(
-                    monster.speed,
-                    parseInt(e.target.value) || 0
+                    monster?.speed ?? 0,
+                    parseInt(e.target.value) ?? 0
                   )
                 )
               }
@@ -424,24 +427,24 @@ export function HuntMonsterAttributes({
           </NumericInput>
           <NumericInput
             label="Speed Tokens"
-            value={monster.speedTokens ?? 0}
+            value={monster?.speedTokens ?? 0}
             onChange={(value) =>
               saveMonsterData(
                 { speedTokens: value },
-                MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(monster.speed, value)
+                MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(monster?.speed ?? 0, value)
               )
             }
             readOnly={false}>
             <Input
               id="monster-speed-tokens"
               type="number"
-              value={monster.speedTokens}
+              value={monster?.speedTokens ?? 0}
               onChange={(e) =>
                 saveMonsterData(
-                  { speedTokens: parseInt(e.target.value) || 0 },
+                  { speedTokens: parseInt(e.target.value) ?? 0 },
                   MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(
-                    monster.speed,
-                    parseInt(e.target.value) || 0
+                    monster?.speed ?? 0,
+                    parseInt(e.target.value) ?? 0
                   )
                 )
               }
@@ -452,7 +455,7 @@ export function HuntMonsterAttributes({
           <Input
             id="monster-speed-total"
             type="number"
-            value={(monster.speed ?? 0) + (monster.speedTokens ?? 0)}
+            value={(monster?.speed ?? 0) + (monster?.speedTokens ?? 0)}
             className="w-24 h-12 text-center no-spinners text-xl"
             name="monster-speed-total"
             readOnly={true}

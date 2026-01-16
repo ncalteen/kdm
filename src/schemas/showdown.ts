@@ -1,6 +1,6 @@
 'use client'
 
-import { AmbushType } from '@/lib/enums'
+import { AmbushType, MonsterLevel } from '@/lib/enums'
 import { ShowdownMonsterSchema } from '@/schemas/showdown-monster'
 import { ShowdownSurvivorDetailsSchema } from '@/schemas/showdown-survivor-details'
 import { ShowdownTurnSchema } from '@/schemas/showdown-turn'
@@ -14,8 +14,10 @@ export const ShowdownSchema = z.object({
   ambush: z.enum(AmbushType),
   /** Showdown ID */
   id: z.number(),
-  /** Showdown Monster */
-  monster: z.array(ShowdownMonsterSchema),
+  /** Monster Level */
+  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  /** Showdown Monster(s) */
+  monsters: z.array(ShowdownMonsterSchema),
   /** Selected Scout (Required if Settlement uses Scouts) */
   scout: z.number().optional(),
   /** Settlement ID */

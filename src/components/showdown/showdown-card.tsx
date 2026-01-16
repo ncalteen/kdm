@@ -27,14 +27,20 @@ interface ShowdownCardProps {
   ) => void
   /** Selected Hunt */
   selectedHunt: Hunt | null
+  /** Selected Hunt Monster Index */
+  selectedHuntMonsterIndex: number
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Update Campaign */
@@ -52,10 +58,13 @@ export function ShowdownCard({
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
+  selectedHuntMonsterIndex,
   selectedShowdown,
+  selectedShowdownMonsterIndex,
   selectedSettlement,
   selectedSurvivor,
   setSelectedShowdown,
+  setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
   updateCampaign
 }: ShowdownCardProps): ReactElement {
@@ -65,9 +74,11 @@ export function ShowdownCard({
       saveSelectedShowdown={saveSelectedShowdown}
       saveSelectedSurvivor={saveSelectedSurvivor}
       selectedShowdown={selectedShowdown}
+      selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
       selectedSettlement={selectedSettlement}
       selectedSurvivor={selectedSurvivor}
       setSelectedShowdown={setSelectedShowdown}
+      setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
       setSelectedSurvivor={setSelectedSurvivor}
       updateCampaign={updateCampaign}
     />
@@ -76,8 +87,10 @@ export function ShowdownCard({
       campaign={campaign}
       saveSelectedShowdown={saveSelectedShowdown}
       selectedHunt={selectedHunt}
+      selectedHuntMonsterIndex={selectedHuntMonsterIndex}
       selectedSettlement={selectedSettlement}
       setSelectedShowdown={setSelectedShowdown}
+      setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
     />
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { NumericInput } from '@/components/menu/numeric-input'
-import { TraitsMoods } from '@/components/monster/traits-moods/traits-moods'
 import { ScoutSelectionDrawer } from '@/components/survivor/scout-selection/scout-selection-drawer'
 import { SurvivorSelectionDrawer } from '@/components/survivor/survivor-selection/survivor-selection-drawer'
 import { Button } from '@/components/ui/button'
@@ -27,7 +26,6 @@ import {
 import {
   ERROR_MESSAGE,
   HUNT_ALREADY_ACTIVE_ERROR_MESSAGE,
-  NAMELESS_OBJECT_ERROR_MESSAGE,
   SCOUT_CONFLICT_MESSAGE,
   SCOUT_REQUIRED_MESSAGE,
   SHOWDOWN_CREATED_MESSAGE
@@ -37,7 +35,8 @@ import { getNextShowdownId } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
-import { Showdown, SurvivorShowdownDetails } from '@/schemas/showdown'
+import { Showdown } from '@/schemas/showdown'
+import { ShowdownSurvivorDetails } from '@/schemas/showdown-survivor-details'
 import { SkullIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -55,10 +54,14 @@ interface CreateShowdownCardProps {
   ) => void
   /** Selected Hunt */
   selectedHunt: Hunt | null
+  /** Selected Hunt Monster Index */
+  selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
 }
 
 /**
@@ -71,8 +74,10 @@ export function CreateShowdownCard({
   campaign,
   saveSelectedShowdown,
   selectedHunt,
+  selectedHuntMonsterIndex,
   selectedSettlement,
-  setSelectedShowdown
+  setSelectedShowdown,
+  setSelectedShowdownMonsterIndex
 }: CreateShowdownCardProps): ReactElement {
   const [selectedMonsterAccuracyTokens, setSelectedMonsterAccuracyTokens] =
     useState<number>(0)

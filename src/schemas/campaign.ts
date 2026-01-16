@@ -40,8 +40,22 @@ export const CampaignSchema = z.object({
   hunts: z.array(HuntSchema).nullable().optional(),
   /** Selected Hunt ID */
   selectedHuntId: z.number().nullable().optional(),
+  /**
+   * Selected Hunt Monster Index
+   *
+   * Always zero for single monster hunts, or the index of the selected monster
+   * in multi-monster hunts.
+   */
+  selectedHuntMonsterIndex: z.number().default(0).optional(),
   /** Selected Showdown ID */
   selectedShowdownId: z.number().nullable().optional(),
+  /**
+   * Selected Monster Index
+   *
+   * Always zero for single monster showdowns, or the index of the selected
+   * monster in multi-monster showdowns.
+   */
+  selectedShowdownMonsterIndex: z.number().default(0).optional(),
   /** Selected Settlement ID */
   selectedSettlementId: z.number().nullable().optional(),
   /** Selected Survivor ID */

@@ -28,7 +28,7 @@ interface TraitsMoodsProps {
   /** Is Adding Trait */
   isAddingTrait: boolean
   /** Monster data */
-  monster: HuntMonster | ShowdownMonster
+  monster?: HuntMonster | ShowdownMonster
   /** On Edit Mood */
   onEditMood: (index: number) => void
   /** On Edit Trait */
@@ -94,7 +94,7 @@ export function TraitsMoods({
 
       <div className="flex flex-col">
         <div className="flex-1">
-          {monster.traits?.map((trait, index) => (
+          {monster?.traits?.map((trait, index) => (
             <TraitItem
               key={index}
               trait={trait}
@@ -137,7 +137,7 @@ export function TraitsMoods({
 
       <div className="flex flex-col pb-2">
         <div className="flex-1">
-          {monster.moods?.map((mood, index) => (
+          {monster?.moods?.map((mood, index) => (
             <MoodItem
               key={index}
               mood={mood}

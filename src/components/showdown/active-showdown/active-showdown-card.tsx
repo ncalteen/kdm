@@ -41,12 +41,16 @@ interface ActiveShowdownCardProps {
   ) => void
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Update Campaign */
@@ -64,9 +68,11 @@ export function ActiveShowdownCard({
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedShowdown,
+  selectedShowdownMonsterIndex,
   selectedSettlement,
   selectedSurvivor,
   setSelectedShowdown,
+  setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
   updateCampaign
 }: ActiveShowdownCardProps): ReactElement {

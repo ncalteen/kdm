@@ -10,11 +10,12 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { MonsterType } from '@/lib/enums'
 import { COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE } from '@/lib/messages'
-import { getMonsterData } from '@/lib/utils'
+import { getNemesisDataByName, getQuarryDataByName } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { Nemesis, Quarry, Settlement } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
+import { SettlementNemesis } from '@/schemas/settlement-nemesis'
+import { SettlementQuarry } from '@/schemas/settlement-quarry'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
@@ -53,8 +54,8 @@ export function CollectiveCognitionVictoriesCard({
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (
-    quarries: Quarry[] | null,
-    nemeses: Nemesis[] | null,
+    quarries: SettlementQuarry[] | null,
+    nemeses: SettlementNemesis[] | null,
     successMsg?: string
   ) =>
     saveSelectedSettlement(
@@ -98,24 +99,15 @@ export function CollectiveCognitionVictoriesCard({
               </TableHeader>
               <TableBody>
                 {(selectedSettlement?.quarries ?? []).map((quarry, index) => {
-                  const monsterData = getMonsterData(
-                    campaign,
-                    quarry.id,
-                    MonsterType.QUARRY
-                  )
-                  const isPrologue =
-                    monsterData &&
-                    monsterData.main &&
-                    'prologue' in monsterData.main &&
-                    monsterData.main.prologue
+                  const monsterData = getQuarryDataByName(campaign, quarry.name)
 
                   return (
                     <TableRow key={index}>
                       <TableCell className="text-sm text-left pl-5">
-                        {monsterData?.main.name ?? 'Unnamed Quarry'}
+                        {monsterData?.name ?? 'Unnamed Quarry'}
                       </TableCell>
                       <TableCell className="text-center">
-                        {isPrologue && (
+                        {monsterData?.prologue && (
                           <div className="flex justify-center">
                             <Checkbox
                               checked={
@@ -293,13 +285,12 @@ export function CollectiveCognitionVictoriesCard({
                   <TableRow key={index}>
                     <TableCell className="text-sm text-left pl-5">
                       {(() => {
-                        const monsterData = getMonsterData(
+                        const monsterData = getNemesisDataByName(
                           campaign,
-                          nemesis.id,
-                          MonsterType.NEMESIS
+                          nemesis.name
                         )
 
-                        return monsterData?.main.name ?? 'Unnamed Nemesis'
+                        return monsterData?.name ?? 'Unnamed Nemesis'
                       })()}
                     </TableCell>
                     <TableCell className="text-center">

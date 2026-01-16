@@ -34,6 +34,7 @@ import type { Settlement } from '@/schemas/settlement'
 import type { Showdown } from '@/schemas/showdown'
 import type { Survivor } from '@/schemas/survivor'
 import packageJson from '../../package.json'
+import { basicHuntBoard } from './common'
 
 const colors = [
   ColorChoice.RED,
@@ -1374,8 +1375,10 @@ function createHunt(
   const level1Data = monsterData.level1 as QuarryMonsterLevel[]
 
   return {
+    huntBoard: basicHuntBoard,
     id,
-    monster: level1Data.map((level1) => ({
+    level: MonsterLevel.LEVEL_1,
+    monsters: level1Data.map((level1) => ({
       ...level1,
       aiDeckRemaining:
         level1.aiDeck.basic + level1.aiDeck.advanced + level1.aiDeck.legendary,
@@ -1438,7 +1441,8 @@ function createShowdown(
   return {
     ambush: AmbushType.NONE,
     id,
-    monster: level1Data.map((level1) => ({
+    level: MonsterLevel.LEVEL_1,
+    monsters: level1Data.map((level1) => ({
       ...level1,
       aiDeckRemaining:
         level1.aiDeck.basic + level1.aiDeck.advanced + level1.aiDeck.legendary,

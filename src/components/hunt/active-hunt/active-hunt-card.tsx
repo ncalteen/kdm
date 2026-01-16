@@ -1,7 +1,7 @@
 'use client'
 
 import { HuntBoard } from '@/components/hunt/hunt-board/hunt-board'
-import { HuntMonsterCard } from '@/components/hunt/hunt-monster/hunt-monster-card'
+import { HuntMonstersCard } from '@/components/hunt/hunt-monster/hunt-monsters-card'
 import { HuntSurvivorsCard } from '@/components/hunt/hunt-survivors/hunt-survivors-card'
 import {
   AlertDialog,
@@ -60,14 +60,20 @@ interface ActiveHuntCardProps {
   ) => void
   /** Selected Hunt */
   selectedHunt: Hunt | null
+  /** Selected Hunt Monster Index */
+  selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Hunt Monster Index */
+  setSelectedHuntMonsterIndex: (index: number) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
@@ -87,10 +93,13 @@ export function ActiveHuntCard({
   saveSelectedHunt,
   saveSelectedSurvivor,
   selectedHunt,
+  selectedHuntMonsterIndex,
   selectedSettlement,
   selectedSurvivor,
   setSelectedHunt,
+  setSelectedHuntMonsterIndex,
   setSelectedShowdown,
+  setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
   setSelectedTab,
   updateCampaign
@@ -139,17 +148,15 @@ export function ActiveHuntCard({
    */
   const handleHuntBoardUpdate = useCallback(
     (position: number, eventType: HuntEventType | undefined) => {
-      if (!selectedHunt?.monster?.huntBoard) return
+      if (!selectedHunt?.huntBoard) return
 
-      const updatedHuntBoard = { ...selectedHunt.monster.huntBoard }
+      const updatedHuntBoard = { ...selectedHunt.huntBoard }
       updatedHuntBoard[position as 1 | 2 | 3 | 4 | 5 | 7 | 8 | 9 | 10 | 11] =
         eventType
 
       saveSelectedHunt({
-        monster: {
-          ...selectedHunt.monster,
-          huntBoard: updatedHuntBoard
-        }
+        ...selectedHunt,
+        huntBoard: updatedHuntBoard
       })
     },
     [selectedHunt, saveSelectedHunt]
@@ -165,15 +172,12 @@ export function ActiveHuntCard({
    */
   const handleDeleteHunt = useCallback(() => {
     try {
-      const updatedHunts = campaign.hunts?.filter(
-        (hunt) => hunt.id !== selectedHunt?.id
-      )
-
       updateCampaign({
         ...campaign,
-        hunts: updatedHunts
+        hunts: campaign.hunts?.filter((hunt) => hunt.id !== selectedHunt?.id)
       })
       setSelectedHunt(null)
+      setSelectedHuntMonsterIndex(0)
       setIsCancelDialogOpen(false)
 
       toast.success(HUNT_DELETED_MESSAGE())
@@ -181,7 +185,13 @@ export function ActiveHuntCard({
       console.error('Delete Hunt Error:', error)
       toast.error(ERROR_MESSAGE())
     }
-  }, [campaign, selectedHunt?.id, setSelectedHunt, updateCampaign])
+  }, [
+    campaign,
+    selectedHunt?.id,
+    setSelectedHunt,
+    setSelectedHuntMonsterIndex,
+    updateCampaign
+  ])
 
   /**
    * Handle Showdown
@@ -192,11 +202,7 @@ export function ActiveHuntCard({
    * Handle Proceed to Showdown
    */
   const handleProceedToShowdown = useCallback(() => {
-    if (
-      !selectedSettlement?.id ||
-      !selectedHunt?.id ||
-      !selectedHunt?.monster?.level
-    )
+    if (!selectedSettlement?.id || !selectedHunt?.id || !selectedHunt?.level)
       return
 
     try {
@@ -211,37 +217,8 @@ export function ActiveHuntCard({
       const showdown: Showdown = {
         ambush,
         id: getNextShowdownId(campaign),
-        monster: {
-          accuracy: selectedHunt.monster.accuracy,
-          accuracyTokens: selectedHunt.monster.accuracyTokens,
-          aiDeck: selectedHunt.monster.aiDeck,
-          aiDeckRemaining:
-            selectedHunt.monster.aiDeck.advanced +
-            selectedHunt.monster.aiDeck.basic +
-            selectedHunt.monster.aiDeck.legendary +
-            (selectedHunt.monster.aiDeck.overtone || 0),
-          damage: selectedHunt.monster.damage,
-          damageTokens: selectedHunt.monster.damageTokens,
-          evasion: selectedHunt.monster.evasion,
-          evasionTokens: selectedHunt.monster.evasionTokens,
-          knockedDown: selectedHunt.monster.knockedDown,
-          level: selectedHunt.monster.level,
-          luck: selectedHunt.monster.luck,
-          luckTokens: selectedHunt.monster.luckTokens,
-          moods: selectedHunt.monster.moods || [],
-          movement: selectedHunt.monster.movement,
-          movementTokens: selectedHunt.monster.movementTokens,
-          name: selectedHunt.monster.name,
-          notes: selectedHunt.monster.notes || '',
-          speed: selectedHunt.monster.speed,
-          speedTokens: selectedHunt.monster.speedTokens,
-          strength: selectedHunt.monster.strength,
-          strengthTokens: selectedHunt.monster.strengthTokens,
-          toughness: selectedHunt.monster.toughness,
-          traits: selectedHunt.monster.traits || [],
-          type: selectedHunt.monster.type,
-          wounds: selectedHunt.monster.wounds
-        },
+        level: selectedHunt.level,
+        monsters: selectedHunt.monsters,
         scout: selectedHunt.scout,
         settlementId: selectedHunt.settlementId || 0,
         survivorDetails:
@@ -288,7 +265,9 @@ export function ActiveHuntCard({
       })
 
       setSelectedHunt(null)
+      setSelectedHuntMonsterIndex(0)
       setSelectedShowdown(showdown)
+      setSelectedShowdownMonsterIndex(selectedHuntMonsterIndex)
       setIsShowdownDialogOpen(false)
       setSelectedTab(TabType.SHOWDOWN)
 
@@ -301,9 +280,12 @@ export function ActiveHuntCard({
     campaign,
     selectedSettlement?.id,
     selectedHunt,
+    selectedHuntMonsterIndex,
     ambushType,
     setSelectedHunt,
+    setSelectedHuntMonsterIndex,
     setSelectedShowdown,
+    setSelectedShowdownMonsterIndex,
     setSelectedTab,
     updateCampaign
   ])
@@ -393,10 +375,12 @@ export function ActiveHuntCard({
         selectedHunt={selectedHunt}
       />
 
-      {/* Monster Card */}
-      <HuntMonsterCard
+      {/* Monster(s) Card */}
+      <HuntMonstersCard
         saveSelectedHunt={saveSelectedHunt}
         selectedHunt={selectedHunt}
+        selectedHuntMonsterIndex={selectedHuntMonsterIndex}
+        setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
       />
 
       {/* Hunt Party Survivors */}

@@ -1,13 +1,12 @@
 'use client'
 
-import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
-import type {
-  CollectiveCognitionReward,
-  Location,
-  Milestone,
-  Principle,
-  TimelineYear
-} from '@/schemas/settlement'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
+import { SettlementCollectiveCognitionReward } from '@/schemas/settlement-cc-reward'
+import { SettlementLocation } from '@/schemas/settlement-location'
+import { SettlementMilestone } from '@/schemas/settlement-milestone'
+import { SettlementPrinciple } from '@/schemas/settlement-principle'
+import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
 
 /**
  * Campaign Template
@@ -16,19 +15,19 @@ import type {
  */
 export type CampaignTemplate = {
   /** Collective Cognition Rewards */
-  ccRewards: CollectiveCognitionReward[]
+  ccRewards: SettlementCollectiveCognitionReward[]
   /** Innovations */
   innovations: string[]
   /** Locations */
-  locations: Location[]
+  locations: SettlementLocation[]
   /** Milestones */
-  milestones: Milestone[]
+  milestones: SettlementMilestone[]
   /** Nemesis IDs */
   nemeses: NemesisMonsterData[]
   /** Principles */
-  principles: Principle[]
+  principles: SettlementPrinciple[]
   /** Quarry IDs */
   quarries: QuarryMonsterData[]
   /** Settlement Timeline */
-  timeline: TimelineYear[]
+  timeline: SettlementTimelineYear[]
 }

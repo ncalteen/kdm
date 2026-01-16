@@ -1,7 +1,6 @@
 'use client'
 
-import { MonsterLevel, MonsterType } from '@/lib/enums'
-import { HuntBoardSchema } from '@/schemas/hunt-board'
+import { MonsterType } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
@@ -33,12 +32,8 @@ export const HuntMonsterSchema = z.object({
   evasion: z.number().int().default(0),
   /** Evasion Tokens */
   evasionTokens: z.number().int().default(0),
-  /** Hunt Board */
-  huntBoard: HuntBoardSchema.optional(),
   /** Knocked Down */
   knockedDown: z.boolean().default(false),
-  /** Monster Level */
-  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
   /** Luck */
   luck: z.number().int().default(0),
   /** Luck Tokens */

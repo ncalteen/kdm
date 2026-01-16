@@ -12,7 +12,8 @@ import {
   KNOWLEDGE_UPDATED_MESSAGE,
   NAMELESS_OBJECT_ERROR_MESSAGE
 } from '@/lib/messages'
-import { Knowledge, Settlement } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
+import { SettlementKnowledge } from '@/schemas/settlement-knowledge'
 import {
   DndContext,
   DragEndEvent,
@@ -125,9 +126,9 @@ export function KnowledgesCard({
       philosophy && philosophy.trim() !== '' ? philosophy : undefined
 
     const updatedKnowledges = [...(selectedSettlement?.knowledges || [])]
-    const knowledgeData: Knowledge = {
+    const knowledgeData: SettlementKnowledge = {
       name: name.trim(),
-      philosophy: processedPhilosophy as Knowledge['philosophy']
+      philosophy: processedPhilosophy as SettlementKnowledge['philosophy']
     }
 
     if (i !== undefined) {

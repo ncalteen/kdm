@@ -15,13 +15,12 @@ import {
 } from '@/lib/enums'
 import { getNextSettlementId } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
-import {
-  Nemesis,
-  NewSettlementInput,
-  Quarry,
-  Settlement
-} from '@/schemas/settlement'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { NewSettlementInput } from '@/schemas/new-settlement-input'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
+import { Settlement } from '@/schemas/settlement'
+import { SettlementNemesis } from '@/schemas/settlement-nemesis'
+import { SettlementQuarry } from '@/schemas/settlement-quarry'
 
 /**
  * Get Monster Node Mapping for a Campaign Type
@@ -160,7 +159,7 @@ export function createSettlementFromOptions(
 
   // Nemeses
   for (const nemesis of nemeses) {
-    const settlementNemesisData: Nemesis = {
+    const settlementNemesisData: SettlementNemesis = {
       level1Defeated: false,
       level2Defeated: false,
       level3Defeated: false,
@@ -196,6 +195,8 @@ export function createSettlementFromOptions(
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
 
+      if (nemesis.timeline[year] === undefined) continue
+
       for (const entry of nemesis.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)
         else if (entry.campaigns.includes(options.campaignType))
@@ -205,7 +206,7 @@ export function createSettlementFromOptions(
 
   // Quarries
   for (const quarry of quarries) {
-    const settlementQuarryData: Quarry = {
+    const settlementQuarryData: SettlementQuarry = {
       huntBoard: quarry.huntBoard,
       name: quarry.name,
       node: quarry.node,
@@ -237,6 +238,8 @@ export function createSettlementFromOptions(
     // user would be building their own timeline during gameplay.
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
+
+      if (quarry.timeline[year] === undefined) continue
 
       for (const entry of quarry.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)

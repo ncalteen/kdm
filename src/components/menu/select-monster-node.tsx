@@ -16,8 +16,10 @@ import {
 } from '@/components/ui/popover'
 import { MonsterNode, MonsterType } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
-import { cn } from '@/lib/utils'
+import { cn, getNemesisDataByName, getQuarryDataByName } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { type ReactElement, useMemo, useState } from 'react'
 
@@ -32,9 +34,9 @@ export interface SelectMonsterNodeProps {
   /** Monster Node Type */
   nodeType: MonsterNode
   /** OnChange Callback */
-  onChange?: (value: (number | string)[]) => void
-  /** Selected Monster IDs (numbers for built-in, strings for custom) */
-  value?: (number | string)[]
+  onChange?: (value: (NemesisMonsterData | QuarryMonsterData)[]) => void
+  /** Selected Monsters */
+  value?: (QuarryMonsterData | NemesisMonsterData)[]
   /** Whether the input is disabled */
   disabled?: boolean
 }
@@ -63,16 +65,14 @@ export function SelectMonsterNode({
     const isQuarryNode = nodeType.startsWith('NQ')
     const monsterList = isQuarryNode ? QUARRIES : NEMESES
     const options: Array<{
-      id: number | string
       name: string
       node: MonsterNode
     }> = []
 
     // Add built-in monsters
-    Object.entries(monsterList).forEach(([id, monster]) => {
+    Object.values(monsterList).forEach((monster) => {
       if (monster.node === nodeType)
         options.push({
-          id: parseInt(id),
           name: monster.name,
           node: monster.node
         })
@@ -86,13 +86,12 @@ export function SelectMonsterNode({
           ...(campaign.customQuarries ?? {})
         }
 
-        Object.entries(customMonsters).forEach(([id, monster]) => {
+        Object.values(customMonsters).forEach((monster) => {
           const isQuarry = monster.type === MonsterType.QUARRY
 
           // Only include if monster type matches node type and node matches
           if (isQuarry === isQuarryNode && monster.node === nodeType) {
             options.push({
-              id,
               name: monster.name,
               node: monster.node
             })
@@ -100,7 +99,7 @@ export function SelectMonsterNode({
         })
       } catch (error) {
         // Silently fail if campaign data is not available
-        console.error('Failed to load custom monsters:', error)
+        console.error('Failed to Load Custom Monsters:', error)
       }
     }
 
@@ -110,28 +109,29 @@ export function SelectMonsterNode({
   /**
    * Toggle a monster selection.
    *
-   * @param monsterId Monster ID to toggle (number or string)
+   * @param monsterName Monster Name to Toggle
    */
-  const handleToggle = (monsterId: number | string) => {
+  const handleToggle = (monsterName: string) => {
     if (!onChange) return
 
-    const newSelection = propValue.includes(monsterId)
-      ? propValue.filter((id) => id !== monsterId)
-      : [...propValue, monsterId]
+    // Silently ignore if monster data is not found
+    const monsterData =
+      getNemesisDataByName(campaign, monsterName) ??
+      getQuarryDataByName(campaign, monsterName)
 
-    onChange(newSelection)
+    if (propValue.some((monster) => monster.name === monsterName))
+      onChange(propValue.filter((monster) => monster.name !== monsterName))
+    else if (monsterData) onChange([...propValue, monsterData])
   }
 
   /**
    * Remove a monster from selection.
    *
-   * @param monsterId Monster ID to remove (number or string)
+   * @param monsterName Monster Name to Remove
    */
-  const handleRemove = (monsterId: number | string) => {
-    if (!onChange) return
-
-    const newSelection = propValue.filter((id) => id !== monsterId)
-    onChange(newSelection)
+  const handleRemove = (monsterName: string) => {
+    if (onChange)
+      onChange(propValue.filter((monster) => monster.name !== monsterName))
   }
 
   /**
@@ -139,11 +139,8 @@ export function SelectMonsterNode({
    */
   const selectedMonsters = useMemo(() => {
     return propValue
-      .map((id) => monsterOptions.find((m) => m.id === id))
-      .filter(
-        (m): m is { id: number | string; name: string; node: MonsterNode } =>
-          m !== undefined
-      )
+      .map((monster) => monsterOptions.find((m) => m.name === monster.name))
+      .filter((m) => m !== undefined)
   }, [propValue, monsterOptions])
 
   return (
@@ -176,13 +173,13 @@ export function SelectMonsterNode({
               <CommandGroup>
                 {monsterOptions.map((monster) => (
                   <CommandItem
-                    key={monster.id}
+                    key={monster.name}
                     value={monster.name}
-                    onSelect={() => handleToggle(monster.id)}>
+                    onSelect={() => handleToggle(monster.name)}>
                     <Check
                       className={cn(
                         'mr-2 h-4 w-4',
-                        propValue.includes(monster.id)
+                        propValue.some((m) => m.name === monster.name)
                           ? 'opacity-100'
                           : 'opacity-0'
                       )}
@@ -200,13 +197,13 @@ export function SelectMonsterNode({
         <div className="flex flex-col gap-1">
           {selectedMonsters.map((monster) => (
             <div
-              key={monster.id}
+              key={monster.name}
               className="flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-xs">
               <span className="truncate flex-1">{monster.name}</span>
               {!disabled && (
                 <button
                   type="button"
-                  onClick={() => handleRemove(monster.id)}
+                  onClick={() => handleRemove(monster.name)}
                   className="hover:bg-secondary-foreground/20 rounded-sm p-0.5 shrink-0">
                   <X className="h-3 w-3" />
                 </button>
