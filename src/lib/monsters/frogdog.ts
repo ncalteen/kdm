@@ -1,6 +1,6 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { BULLFROGDOG } from '@/lib/monsters/bullfrogdog'
-import { QuarryMonsterData } from '@/schemas/monster'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
  * Frogdog Monster Data

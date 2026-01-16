@@ -1,5 +1,5 @@
 import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/schemas/monster'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
 
 /**
  * Pariah Monster Data

@@ -1,5 +1,6 @@
 import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData, VignetteMonsterData } from '@/schemas/monster'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { VignetteMonsterData } from '@/schemas/vignette-monster-data'
 
 /**
  * Butcher Monster Data

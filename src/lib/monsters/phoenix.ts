@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/schemas/monster'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
  * Phoenix Monster Data

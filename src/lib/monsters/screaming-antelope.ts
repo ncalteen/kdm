@@ -1,6 +1,6 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { SCREAMING_NUKALOPE } from '@/lib/monsters/screaming-nukalope'
-import { QuarryMonsterData } from '@/schemas/monster'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
  * Screaming Antelope Monster Data

@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterType } from '@/lib/enums'
-import { VignetteMonsterData } from '@/schemas/monster'
+import { VignetteMonsterData } from '@/schemas/vignette-monster-data'
 
 /**
  * White Gigalion Monster Data

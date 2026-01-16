@@ -1,6 +1,6 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
 import { WHITE_GIGALION } from '@/lib/monsters/white-gigalion'
-import { QuarryMonsterData } from '@/schemas/monster'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
  * White Lion Monster Data

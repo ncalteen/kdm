@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterType } from '@/lib/enums'
-import { AlternateMonsterData } from '@/schemas/monster'
+import { AlternateMonsterData } from '@/schemas/alternate-monster-data'
 
 /**
  * Bullfrogdog Monster Data
