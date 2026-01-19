@@ -31,14 +31,20 @@ import { MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_CREATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
 import { getAvailableNodes } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { HuntBoard } from '@/schemas/hunt'
+import { HuntBoard } from '@/schemas/hunt-board'
 import {
-  NemesisMonsterDataSchema,
   NemesisMonsterLevel,
-  QuarryMonsterDataSchema,
   QuarryMonsterLevel
-} from '@/schemas/monster'
-import { TimelineYear } from '@/schemas/settlement'
+} from '@/schemas/monster-level'
+import {
+  NemesisMonsterData,
+  NemesisMonsterDataSchema
+} from '@/schemas/nemesis-monster-data'
+import {
+  QuarryMonsterData,
+  QuarryMonsterDataSchema
+} from '@/schemas/quarry-monster-data'
+import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
 import { PlusIcon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
@@ -129,13 +135,16 @@ export function CreateMonsterDialog({
   const handleCreateMonster = () => {
     try {
       // Get existing campaign data
-      const customMonsters = campaign.customMonsters || {}
+      const customNemeses = { ...(campaign.customNemeses ?? {}) }
+      const customQuarries = { ...(campaign.customQuarries ?? {}) }
 
       // Generate a unique ID for the monster
       const monsterId = crypto.randomUUID()
 
       // Convert timeline array to correct format
-      const timelineRecord: { [key: number]: TimelineYear['entries'] } = {}
+      const timelineRecord: {
+        [key: number]: SettlementTimelineYear['entries']
+      } = {}
       timelineData.forEach(({ year, event }) => {
         if (!timelineRecord[year]) timelineRecord[year] = []
         timelineRecord[year].push(event)
@@ -206,12 +215,14 @@ export function CreateMonsterDialog({
               })
             })
 
+      if (monsterType === MonsterType.NEMESIS)
+        customNemeses[monsterId] = monsterData as NemesisMonsterData
+      else customQuarries[monsterId] = monsterData as QuarryMonsterData
+
       updateCampaign({
         ...campaign,
-        customMonsters: {
-          ...customMonsters,
-          [monsterId]: { main: monsterData }
-        }
+        customNemeses,
+        customQuarries
       })
 
       toast.success(CUSTOM_MONSTER_CREATED_MESSAGE(monsterType))
