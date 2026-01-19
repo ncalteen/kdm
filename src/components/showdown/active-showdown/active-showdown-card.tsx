@@ -1,6 +1,6 @@
 'use client'
 
-import { ShowdownMonsterCard } from '@/components/showdown/showdown-monster/showdown-monster-card'
+import { ShowdownMonstersCard } from '@/components/showdown/showdown-monster/showdown-monsters-card'
 import { ShowdownSurvivorsCard } from '@/components/showdown/showdown-survivors/showdown-survivors-card'
 import { TurnCard } from '@/components/showdown/showdown-turn/showdown-turn-card'
 import {
@@ -152,15 +152,18 @@ export function ActiveShowdownCard({
 
       <div className="flex flex-col gap-2">
         <div className="flex flex-col lg:flex-row gap-2">
-          <ShowdownMonsterCard
+          <ShowdownMonstersCard
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
+            selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
+            setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
           />
 
           <TurnCard
-            selectedSurvivor={selectedSurvivor}
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
+            selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
+            selectedSurvivor={selectedSurvivor}
           />
         </div>
 
@@ -172,7 +175,6 @@ export function ActiveShowdownCard({
           selectedSettlement={selectedSettlement}
           selectedSurvivor={selectedSurvivor}
           setSelectedSurvivor={setSelectedSurvivor}
-          updateCampaign={updateCampaign}
         />
       </div>
 

@@ -39,6 +39,8 @@ interface TurnCardProps {
   ) => void
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
 }
@@ -55,6 +57,7 @@ interface TurnCardProps {
 export function TurnCard({
   saveSelectedShowdown,
   selectedShowdown,
+  selectedShowdownMonsterIndex,
   selectedSurvivor
 }: TurnCardProps): ReactElement {
   /**
@@ -283,6 +286,7 @@ export function TurnCard({
             {/* Calculated Stats */}
             <SurvivorCalculatedStats
               selectedShowdown={selectedShowdown}
+              selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
               selectedSurvivor={selectedSurvivor}
             />
           </div>
@@ -330,6 +334,7 @@ export function TurnCard({
             {/* Calculated Stats */}
             <MonsterCalculatedStats
               selectedShowdown={selectedShowdown}
+              selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
               selectedSurvivor={selectedSurvivor}
             />
           </div>

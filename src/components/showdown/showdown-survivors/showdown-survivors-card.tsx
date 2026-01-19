@@ -35,8 +35,6 @@ interface ShowdownSurvivorsCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
-  /** Update Campaign */
-  updateCampaign: (campaign: Campaign) => void
 }
 
 /**

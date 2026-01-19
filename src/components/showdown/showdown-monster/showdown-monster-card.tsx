@@ -22,11 +22,11 @@ import {
   TRAIT_REMOVED_MESSAGE,
   TRAIT_UPDATED_MESSAGE
 } from '@/lib/messages'
+import { Showdown, ShowdownSchema } from '@/schemas/showdown'
 import {
-  Showdown,
   ShowdownMonster,
   ShowdownMonsterSchema
-} from '@/schemas/showdown'
+} from '@/schemas/showdown-monster'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, SkullIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
@@ -45,6 +45,8 @@ interface ShowdownMonsterCardProps {
   ) => void
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
 }
 
 /**
@@ -57,30 +59,37 @@ interface ShowdownMonsterCardProps {
  */
 export function ShowdownMonsterCard({
   saveSelectedShowdown,
-  selectedShowdown
+  selectedShowdown,
+  selectedShowdownMonsterIndex
 }: ShowdownMonsterCardProps): ReactElement {
   const form = useForm<ShowdownMonster>({
     resolver: zodResolver(ShowdownMonsterSchema) as Resolver<ShowdownMonster>,
-    defaultValues: ShowdownMonsterSchema.parse(selectedShowdown?.monster || {})
+    defaultValues: ShowdownMonsterSchema.parse(
+      selectedShowdown?.monsters[selectedShowdownMonsterIndex] || []
+    )
   })
 
   // Compute the initial disabled state based on current traits
   const initialDisabledTraits = useMemo(() => {
     const next: { [key: number]: boolean } = {}
-    selectedShowdown?.monster?.traits?.forEach((_, i) => {
-      next[i] = true
-    })
+    selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits?.forEach(
+      (_, i) => {
+        next[i] = true
+      }
+    )
     return next
-  }, [selectedShowdown?.monster?.traits])
+  }, [selectedShowdown?.monsters, selectedShowdownMonsterIndex])
 
   // Compute the initial disabled state based on current moods
   const initialDisabledMoods = useMemo(() => {
     const next: { [key: number]: boolean } = {}
-    selectedShowdown?.monster?.moods?.forEach((_, i) => {
-      next[i] = true
-    })
+    selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods?.forEach(
+      (_, i) => {
+        next[i] = true
+      }
+    )
     return next
-  }, [selectedShowdown?.monster?.moods])
+  }, [selectedShowdown?.monsters, selectedShowdownMonsterIndex])
 
   // State for managing trait and mood editing
   const [disabledTraits, setDisabledTraits] = useState<{
@@ -94,14 +103,20 @@ export function ShowdownMonsterCard({
 
   // State for managing monster notes
   const [notesDraft, setNotesDraft] = useState<string>(
-    selectedShowdown?.monster?.notes || ''
+    selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].notes || ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
 
   // Update form values when monster data changes
   useEffect(() => {
-    if (selectedShowdown?.monster) form.reset(selectedShowdown?.monster)
-  }, [selectedShowdown?.monster, form])
+    if (selectedShowdown?.monsters) {
+      form.reset(selectedShowdown?.monsters[selectedShowdownMonsterIndex])
+      setNotesDraft(
+        selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].notes || ''
+      )
+      setIsNotesDirty(false)
+    }
+  }, [selectedShowdown?.monsters, selectedShowdownMonsterIndex, form])
 
   // Update disabled inputs when the computed initial state changes
   useEffect(() => {
@@ -116,12 +131,6 @@ export function ShowdownMonsterCard({
     setDisabledMoods(initialDisabledMoods)
   }, [initialDisabledMoods])
 
-  // Update notes draft when selected showdown changes
-  useEffect(() => {
-    setNotesDraft(selectedShowdown?.monster?.notes || '')
-    setIsNotesDirty(false)
-  }, [selectedShowdown?.monster?.notes])
-
   /**
    * Save Monster Data
    */
@@ -129,22 +138,31 @@ export function ShowdownMonsterCard({
     updateData: Partial<ShowdownMonster>,
     successMsg?: string
   ) => {
-    if (!selectedShowdown?.monster) return
+    if (!selectedShowdown?.monsters) return
+
+    console.log(selectedShowdown)
 
     try {
-      const updatedMonster = {
-        ...selectedShowdown.monster,
-        ...updateData
-      }
+      const updatedMonsters = [
+        ...selectedShowdown.monsters.slice(0, selectedShowdownMonsterIndex),
+        {
+          ...selectedShowdown.monsters[selectedShowdownMonsterIndex],
+          ...updateData
+        },
+        ...selectedShowdown.monsters.slice(selectedShowdownMonsterIndex + 1)
+      ]
 
       // Validate the updated monster data
-      ShowdownMonsterSchema.parse(updatedMonster)
+      ShowdownSchema.parse({
+        ...selectedShowdown,
+        monsters: updatedMonsters
+      })
 
       // Update the showdown with the modified monster
-      saveSelectedShowdown({ monster: updatedMonster }, successMsg)
+      saveSelectedShowdown({ monsters: updatedMonsters }, successMsg)
 
       // Update the form with the new values
-      form.reset(ShowdownMonsterSchema.parse(updatedMonster))
+      form.reset(updatedMonsters[selectedShowdownMonsterIndex])
     } catch (error) {
       console.error('Showdown Monster Save Error:', error)
 
@@ -175,7 +193,10 @@ export function ShowdownMonsterCard({
    */
 
   const onRemoveTrait = (index: number) => {
-    const currentTraits = [...(selectedShowdown?.monster?.traits || [])]
+    const currentTraits = [
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits ||
+        [])
+    ]
     currentTraits.splice(index, 1)
 
     setDisabledTraits((prev) => {
@@ -195,7 +216,10 @@ export function ShowdownMonsterCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
 
-    const updatedTraits = [...(selectedShowdown?.monster?.traits || [])]
+    const updatedTraits = [
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits ||
+        [])
+    ]
 
     if (i !== undefined) {
       updatedTraits[i] = value
@@ -221,7 +245,10 @@ export function ShowdownMonsterCard({
    */
 
   const onRemoveMood = (index: number) => {
-    const currentMoods = [...(selectedShowdown?.monster?.moods || [])]
+    const currentMoods = [
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods ||
+        [])
+    ]
     currentMoods.splice(index, 1)
 
     setDisabledMoods((prev) => {
@@ -241,7 +268,10 @@ export function ShowdownMonsterCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))
 
-    const updatedMoods = [...(selectedShowdown?.monster?.moods || [])]
+    const updatedMoods = [
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods ||
+        [])
+    ]
 
     if (i !== undefined) {
       updatedMoods[i] = value
@@ -266,20 +296,25 @@ export function ShowdownMonsterCard({
    * Handle Save Notes
    */
   const handleSaveNotes = () => {
-    setIsNotesDirty(false)
+    if (!selectedShowdown?.monsters) return
 
+    setIsNotesDirty(false)
     saveSelectedShowdown(
       {
-        monster: {
-          ...selectedShowdown?.monster,
-          notes: notesDraft
-        } as ShowdownMonster
+        monsters: [
+          ...selectedShowdown.monsters.slice(0, selectedShowdownMonsterIndex),
+          {
+            ...selectedShowdown.monsters[selectedShowdownMonsterIndex],
+            notes: notesDraft
+          },
+          ...selectedShowdown.monsters.slice(selectedShowdownMonsterIndex + 1)
+        ]
       },
       SHOWDOWN_NOTES_SAVED_MESSAGE()
     )
   }
 
-  if (!selectedShowdown?.monster) return <></>
+  if (!selectedShowdown) return <></>
 
   return (
     <Card className="w-full min-w-[430px] border-2 rounded-xl p-0 gap-0 transition-all duration-200 hover:shadow-lg">
@@ -292,14 +327,15 @@ export function ShowdownMonsterCard({
 
           <div className="text-left flex-1 min-w-0">
             <div className="font-semibold text-sm truncate flex gap-2 items-center">
-              {selectedShowdown.monster.name}
+              {selectedShowdown?.monsters[selectedShowdownMonsterIndex].name ??
+                'Unnamed Monster'}
               <div className="text-xs text-muted-foreground">
-                {selectedShowdown.monster.type}
+                {selectedShowdown?.monsters[selectedShowdownMonsterIndex].type}
               </div>
             </div>
 
             <Badge variant="outline" className="text-xs">
-              Level {selectedShowdown.monster.level}
+              Level {selectedShowdown?.level.replace('level', '') ?? 'Unknown'}
             </Badge>
           </div>
 
@@ -307,7 +343,10 @@ export function ShowdownMonsterCard({
           <div className="flex items-center space-x-1">
             <Checkbox
               id="knocked-down"
-              checked={selectedShowdown.monster.knockedDown}
+              checked={
+                selectedShowdown?.monsters[selectedShowdownMonsterIndex]
+                  .knockedDown ?? false
+              }
               onCheckedChange={(checked) =>
                 saveMonsterData(
                   { knockedDown: !!checked },
@@ -329,14 +368,14 @@ export function ShowdownMonsterCard({
           {/* Column: Base Stats and Attributes */}
           <div className="flex flex-col flex-1">
             <ShowdownMonsterBaseStats
-              monster={selectedShowdown.monster}
+              monster={selectedShowdown.monsters[selectedShowdownMonsterIndex]}
               saveMonsterData={saveMonsterData}
             />
 
             <Separator className="my-1" />
 
             <ShowdownMonsterAttributes
-              monster={selectedShowdown.monster}
+              monster={selectedShowdown.monsters[selectedShowdownMonsterIndex]}
               saveMonsterData={saveMonsterData}
             />
           </div>
@@ -352,7 +391,7 @@ export function ShowdownMonsterCard({
           {/* Column: Traits, Moods, and Notes */}
           <div className="flex flex-col flex-1">
             <TraitsMoods
-              monster={selectedShowdown.monster}
+              monster={selectedShowdown?.monsters[selectedShowdownMonsterIndex]}
               disabledTraits={disabledTraits}
               disabledMoods={disabledMoods}
               isAddingTrait={isAddingTrait}
@@ -382,7 +421,9 @@ export function ShowdownMonsterCard({
                 onChange={(e) => {
                   setNotesDraft(e.target.value)
                   setIsNotesDirty(
-                    e.target.value !== selectedShowdown?.monster?.notes
+                    e.target.value !==
+                      selectedShowdown?.monsters[selectedShowdownMonsterIndex]
+                        .notes
                   )
                 }}
                 placeholder="Add notes about the showdown monster..."
