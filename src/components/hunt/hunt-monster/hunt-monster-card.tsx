@@ -302,6 +302,8 @@ export function HuntMonsterCard({
     )
   }
 
+  if (!selectedHunt) return <></>
+
   return (
     <Card className="w-full min-w-[430px] border-2 rounded-xl p-0 gap-0 transition-all duration-200 hover:shadow-lg">
       <CardHeader className="flex p-3 border-b-1 bg-red-100/50 dark:bg-red-950/30">
@@ -313,12 +315,11 @@ export function HuntMonsterCard({
 
           <div className="text-left flex-1 min-w-0">
             <div className="font-semibold text-sm truncate flex gap-2 items-center">
-              {selectedHunt?.monsters[selectedHuntMonsterIndex].name ??
-                'Unnamed Monster'}
+              {selectedHunt.monsters[selectedHuntMonsterIndex].name}
             </div>
 
             <Badge variant="outline" className="text-xs">
-              Level {selectedHunt?.level.replace('level', '') ?? 'Unknown'}
+              Level {selectedHunt.level.replace('level', '')}
             </Badge>
           </div>
 
@@ -327,8 +328,7 @@ export function HuntMonsterCard({
             <Checkbox
               id="knocked-down"
               checked={
-                selectedHunt?.monsters[selectedHuntMonsterIndex].knockedDown ??
-                false
+                selectedHunt.monsters[selectedHuntMonsterIndex].knockedDown
               }
               onCheckedChange={(checked) =>
                 saveMonsterData(
@@ -351,14 +351,14 @@ export function HuntMonsterCard({
           {/* Column: Base Stats and Attributes */}
           <div className="flex flex-col flex-1">
             <HuntMonsterBaseStats
-              monster={selectedHunt?.monsters[selectedHuntMonsterIndex]}
+              monster={selectedHunt.monsters[selectedHuntMonsterIndex]}
               saveMonsterData={saveMonsterData}
             />
 
             <Separator className="my-1" />
 
             <HuntMonsterAttributes
-              monster={selectedHunt?.monsters[selectedHuntMonsterIndex]}
+              monster={selectedHunt.monsters[selectedHuntMonsterIndex]}
               saveMonsterData={saveMonsterData}
             />
           </div>
@@ -374,7 +374,7 @@ export function HuntMonsterCard({
           {/* Column: Traits, Moods, and Notes */}
           <div className="flex flex-col flex-1">
             <TraitsMoods
-              monster={selectedHunt?.monsters[selectedHuntMonsterIndex]}
+              monster={selectedHunt.monsters[selectedHuntMonsterIndex]}
               disabledTraits={disabledTraits}
               disabledMoods={disabledMoods}
               isAddingTrait={isAddingTrait}
@@ -405,7 +405,7 @@ export function HuntMonsterCard({
                   setNotesDraft(e.target.value)
                   setIsNotesDirty(
                     e.target.value !==
-                      selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes
+                      selectedHunt.monsters[selectedHuntMonsterIndex].notes
                   )
                 }}
                 placeholder="Add notes about your quarry..."

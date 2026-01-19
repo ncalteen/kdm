@@ -15,7 +15,7 @@ import { ReactElement } from 'react'
  */
 interface HuntMonsterBaseStatsProps {
   /** Hunt Monster */
-  monster?: HuntMonster
+  monster: HuntMonster
   /** Save Monster Data */
   saveMonsterData: (
     updateData: Partial<HuntMonster>,
@@ -43,14 +43,11 @@ export function HuntMonsterBaseStats({
 
         <NumericInput
           label="AI Deck Size"
-          value={monster?.aiDeckRemaining ?? 0}
+          value={monster.aiDeckRemaining}
           onChange={(value) =>
             saveMonsterData(
               { aiDeckRemaining: value },
-              MONSTER_AI_DECK_UPDATED_MESSAGE(
-                monster?.aiDeckRemaining ?? 0,
-                value
-              )
+              MONSTER_AI_DECK_UPDATED_MESSAGE(monster.aiDeckRemaining, value)
             )
           }
           min={0}
@@ -58,13 +55,13 @@ export function HuntMonsterBaseStats({
           <Input
             id="monster-ai-deck"
             type="number"
-            value={monster?.aiDeckRemaining ?? 0}
+            value={monster.aiDeckRemaining}
             onChange={(e) =>
               saveMonsterData(
-                { aiDeckRemaining: parseInt(e.target.value) ?? 0 },
+                { aiDeckRemaining: parseInt(e.target.value) },
                 MONSTER_AI_DECK_UPDATED_MESSAGE(
-                  monster?.aiDeckRemaining ?? 0,
-                  parseInt(e.target.value) ?? 0
+                  monster.aiDeckRemaining,
+                  parseInt(e.target.value)
                 )
               )
             }
@@ -83,11 +80,11 @@ export function HuntMonsterBaseStats({
 
         <NumericInput
           label="Wounds"
-          value={monster?.wounds ?? 0}
+          value={monster.wounds}
           onChange={(value) =>
             saveMonsterData(
               { wounds: value },
-              MONSTER_WOUND_DECK_UPDATED_MESSAGE(monster?.wounds ?? 0, value)
+              MONSTER_WOUND_DECK_UPDATED_MESSAGE(monster.wounds, value)
             )
           }
           min={0}
@@ -95,13 +92,13 @@ export function HuntMonsterBaseStats({
           <Input
             id="monster-wounds"
             type="number"
-            value={monster?.wounds ?? 0}
+            value={monster.wounds}
             onChange={(e) =>
               saveMonsterData(
                 { wounds: parseInt(e.target.value) || 0 },
                 MONSTER_WOUND_DECK_UPDATED_MESSAGE(
-                  monster?.wounds ?? 0,
-                  parseInt(e.target.value) || 0
+                  monster.wounds,
+                  parseInt(e.target.value)
                 )
               )
             }
@@ -120,11 +117,11 @@ export function HuntMonsterBaseStats({
 
         <NumericInput
           label="Toughness"
-          value={monster?.toughness ?? 0}
+          value={monster.toughness}
           onChange={(value) =>
             saveMonsterData(
               { toughness: value },
-              MONSTER_TOUGHNESS_UPDATED_MESSAGE(monster?.toughness ?? 0, value)
+              MONSTER_TOUGHNESS_UPDATED_MESSAGE(monster.toughness, value)
             )
           }
           min={0}
@@ -132,13 +129,13 @@ export function HuntMonsterBaseStats({
           <Input
             id="monster-toughness"
             type="number"
-            value={monster?.toughness ?? 0}
+            value={monster.toughness}
             onChange={(e) =>
               saveMonsterData(
-                { toughness: parseInt(e.target.value) ?? 0 },
+                { toughness: parseInt(e.target.value) },
                 MONSTER_TOUGHNESS_UPDATED_MESSAGE(
-                  monster?.toughness ?? 0,
-                  parseInt(e.target.value) ?? 0
+                  monster.toughness,
+                  parseInt(e.target.value)
                 )
               )
             }
