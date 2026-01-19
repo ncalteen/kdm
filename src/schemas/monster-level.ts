@@ -13,16 +13,22 @@ export const MonsterLevelSchema = z.object({
   /** Accuracy Tokens */
   accuracyTokens: z.number().int().default(0),
   /** AI Deck */
-  aiDeck: z.object({
-    /** Basic Cards */
-    basic: z.number().int().min(0).default(0),
-    /** Advanced Cards */
-    advanced: z.number().int().min(0).default(0),
-    /** Legendary Cards */
-    legendary: z.number().int().min(0).default(0),
-    /** Overtone Cards */
-    overtone: z.number().int().min(0).default(0).optional()
-  }),
+  aiDeck: z
+    .object({
+      /** Basic Cards */
+      basic: z.number().int().min(0).default(0),
+      /** Advanced Cards */
+      advanced: z.number().int().min(0).default(0),
+      /** Legendary Cards */
+      legendary: z.number().int().min(0).default(0),
+      /** Overtone Cards */
+      overtone: z.number().int().min(0).default(0).optional()
+    })
+    .default({
+      basic: 0,
+      advanced: 0,
+      legendary: 0
+    }),
   /** AI Deck Remaining */
   aiDeckRemaining: z.number().int().min(0).default(0),
   /** Damage */
