@@ -533,72 +533,75 @@ export function CreateHuntCard({
         <Separator className="my-2" />
 
         {selectedQuarryData &&
+          selectedQuarryData.multiMonster &&
+          selectedQuarryData[selectedMonsterLevel] && (
+            <div className="mb-2">
+              <h3 className="text-sm font-semibold text-muted-foreground text-center">
+                {
+                  selectedQuarryData[selectedMonsterLevel][
+                    selectedHuntMonsterIndex
+                  ].name
+                }
+              </h3>
+            </div>
+          )}
+
+        {selectedQuarryData &&
+          selectedQuarryData.multiMonster &&
           selectedQuarryData[selectedMonsterLevel] &&
           selectedQuarryData[selectedMonsterLevel].length > 1 && (
-            <div>
-              <div className="mb-2">
-                <h3 className="text-sm font-semibold text-muted-foreground text-center">
-                  {
-                    selectedQuarryData[selectedMonsterLevel][
-                      selectedHuntMonsterIndex
-                    ].name
-                  }
-                </h3>
+            <div className="monster_carousel_controls">
+              <div className="monster_carousel_buttons">
+                <Button
+                  className="h-8 w-8"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handlePrevious}>
+                  <ArrowLeftIcon className="size-8" />
+                </Button>
+
+                <Button
+                  className="h-8 w-8"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleNext}>
+                  <ArrowRightIcon className="size-8" />
+                </Button>
               </div>
 
-              <div className="monster_carousel_controls">
-                <div className="monster_carousel_buttons">
-                  <Button
-                    className="h-8 w-8"
-                    variant="ghost"
-                    size="icon"
-                    onClick={handlePrevious}>
-                    <ArrowLeftIcon className="size-8" />
-                  </Button>
+              <div className="monster_carousel_dots">
+                {selectedQuarryData[selectedMonsterLevel].map(
+                  (monster, index) => {
+                    const isSelected = index === selectedHuntMonsterIndex
 
-                  <Button
-                    className="h-8 w-8"
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleNext}>
-                    <ArrowRightIcon className="size-8" />
-                  </Button>
-                </div>
-
-                <div className="monster_carousel_dots">
-                  {selectedQuarryData[selectedMonsterLevel].map(
-                    (monster, index) => {
-                      const isSelected = index === selectedHuntMonsterIndex
-
-                      return (
-                        <Avatar
-                          key={index}
-                          className={`monster_carousel_dot${isSelected ? ' monster_carousel_dot--selected' : ''} bg-red-500 items-center justify-center cursor-pointer`}
-                          style={{
-                            ['--dot-color' as string]: isSelected
-                              ? 'hsl(var(--foreground))'
-                              : 'transparent',
-                            ['--dot-bg' as string]: 'hsl(var(--destructive))'
-                          }}
-                          onClick={() => handleDotClick(index)}>
-                          <AvatarFallback className="bg-transparent">
-                            <SkullIcon className="h-4 w-4" />
-                          </AvatarFallback>
-                        </Avatar>
-                      )
-                    }
-                  )}
-                </div>
+                    return (
+                      <Avatar
+                        key={index}
+                        className={`monster_carousel_dot${isSelected ? ' monster_carousel_dot--selected' : ''} bg-red-500 items-center justify-center cursor-pointer`}
+                        style={{
+                          ['--dot-color' as string]: isSelected
+                            ? 'hsl(var(--foreground))'
+                            : 'transparent',
+                          ['--dot-bg' as string]: 'hsl(var(--destructive))'
+                        }}
+                        onClick={() => handleDotClick(index)}>
+                        <AvatarFallback className="bg-transparent">
+                          <SkullIcon className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                    )
+                  }
+                )}
               </div>
             </div>
           )}
 
         {/* AI Deck */}
-        <div className="flex items-center justify-between">
-          <Label className="text-left whitespace-nowrap min-w-[90px]">
-            AI Deck
-          </Label>
+        <h3 className="text-xs font-semibold text-muted-foreground text-center">
+          AI Deck
+        </h3>
 
+        <div className="flex items-center justify-between">
           <div className="flex gap-2 w-full">
             <div className="flex-1 space-y-1">
               <Label
@@ -745,6 +748,10 @@ export function CreateHuntCard({
         <Separator className="my-2" />
 
         {/* Monster Attributes */}
+        <h3 className="text-xs font-semibold text-muted-foreground text-center">
+          Attributes
+        </h3>
+
         <div className="grid grid-cols-4 gap-2">
           {/* Movement */}
           <div className="space-y-1">
@@ -886,6 +893,10 @@ export function CreateHuntCard({
         <Separator className="my-2" />
 
         {/* Monster Tokens */}
+        <h3 className="text-xs font-semibold text-muted-foreground text-center">
+          Tokens
+        </h3>
+
         <div className="grid grid-cols-3 gap-2">
           {/* Movement */}
           <div className="space-y-1">
