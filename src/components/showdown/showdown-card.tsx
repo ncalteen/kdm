@@ -27,8 +27,6 @@ interface ShowdownCardProps {
   ) => void
   /** Selected Hunt */
   selectedHunt: Hunt | null
-  /** Selected Hunt Monster Index */
-  selectedHuntMonsterIndex: number
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Selected Showdown Monster Index */
@@ -58,7 +56,6 @@ export function ShowdownCard({
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
-  selectedHuntMonsterIndex,
   selectedShowdown,
   selectedShowdownMonsterIndex,
   selectedSettlement,
@@ -87,10 +84,11 @@ export function ShowdownCard({
       campaign={campaign}
       saveSelectedShowdown={saveSelectedShowdown}
       selectedHunt={selectedHunt}
-      selectedHuntMonsterIndex={selectedHuntMonsterIndex}
       selectedSettlement={selectedSettlement}
+      selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
       setSelectedShowdown={setSelectedShowdown}
       setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
+      setSelectedSurvivor={setSelectedSurvivor}
     />
   )
 }
