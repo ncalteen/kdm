@@ -535,15 +535,13 @@ export function CreateHuntCard({
         {selectedQuarryData &&
           selectedQuarryData.multiMonster &&
           selectedQuarryData[selectedMonsterLevel] && (
-            <div className="mb-2">
-              <h3 className="text-sm font-semibold text-muted-foreground text-center">
-                {
-                  selectedQuarryData[selectedMonsterLevel][
-                    selectedHuntMonsterIndex
-                  ].name
-                }
-              </h3>
-            </div>
+            <h3 className="text-sm font-semibold text-muted-foreground text-center">
+              {
+                selectedQuarryData[selectedMonsterLevel][
+                  selectedHuntMonsterIndex
+                ].name
+              }
+            </h3>
           )}
 
         {selectedQuarryData &&
@@ -594,6 +592,12 @@ export function CreateHuntCard({
                 )}
               </div>
             </div>
+          )}
+
+        {selectedQuarryData &&
+          selectedQuarryData.multiMonster &&
+          selectedQuarryData[selectedMonsterLevel] && (
+            <Separator className="my-2" />
           )}
 
         {/* AI Deck */}
