@@ -6,6 +6,7 @@ import { VignetteMonsterData } from '@/schemas/vignette-monster-data'
  * Butcher Monster Data
  */
 export const BUTCHER: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Butcher',
   node: MonsterNode.NN1,
   type: MonsterType.NEMESIS,

@@ -14,6 +14,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * tokens.
  */
 export const GREAT_DEVOURER: NemesisMonsterData = {
+  multiMonster: false,
   name: 'The Great Devourer',
   node: MonsterNode.CO,
   type: MonsterType.NEMESIS,

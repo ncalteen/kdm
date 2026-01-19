@@ -21,6 +21,7 @@ export const LION_GOD: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Lion God',
   node: MonsterNode.NQ4,
   prologue: false,

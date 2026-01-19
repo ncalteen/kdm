@@ -27,6 +27,7 @@ export const SMOG_SINGERS: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Smog Singers',
   node: MonsterNode.NQ2,
   prologue: false,

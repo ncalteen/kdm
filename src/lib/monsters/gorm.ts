@@ -21,6 +21,7 @@ export const GORM: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Gorm',
   node: MonsterNode.NQ1,
   prologue: false,

@@ -23,6 +23,7 @@ export const FROGDOG: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Frogdog',
   node: MonsterNode.NQ1,
   prologue: true,

@@ -10,6 +10,8 @@ import { z } from 'zod'
  * Nemesis Monster Data Schema
  */
 export const NemesisMonsterDataSchema = z.object({
+  /** Multi-Monster Encounter */
+  multiMonster: z.boolean().default(false),
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Node */

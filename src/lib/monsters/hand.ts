@@ -7,6 +7,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Note: For People of the Dream Keeper campaigns, add the Suspicious trait.
  */
 export const HAND: NemesisMonsterData = {
+  multiMonster: false,
   name: 'The Hand',
   node: MonsterNode.NN3,
   type: MonsterType.NEMESIS,

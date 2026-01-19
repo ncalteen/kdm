@@ -28,6 +28,7 @@ export const WHITE_LION: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'White Lion',
   node: MonsterNode.NQ1,
   prologue: true,

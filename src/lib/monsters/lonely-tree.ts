@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Lonely Tree Monster Data
  */
 export const LONELY_TREE: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Lonely Tree',
   // Currently the node level is not known for this monster.
   // See: https://shop.kingdomdeath.com/pages/nodes-in-monster-campaigns

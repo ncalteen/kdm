@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Pariah Monster Data
  */
 export const PARIAH: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Pariah',
   node: MonsterNode.NN1,
   type: MonsterType.NEMESIS,

@@ -20,6 +20,7 @@ export const SCREAMING_NUKALOPE: VignetteMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Screaming Nukalope',
   type: MonsterType.QUARRY,
   level2: [

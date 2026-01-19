@@ -20,6 +20,7 @@ export const BULLFROGDOG: AlternateMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Bullfrogdog',
   type: MonsterType.QUARRY,
   level3: [

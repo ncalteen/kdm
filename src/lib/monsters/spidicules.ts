@@ -21,6 +21,7 @@ export const SPIDICULES: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Spidicules',
   node: MonsterNode.NQ2,
   prologue: false,

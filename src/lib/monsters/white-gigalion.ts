@@ -20,6 +20,7 @@ export const WHITE_GIGALION: VignetteMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'White Gigalion',
   type: MonsterType.QUARRY,
   level2: [

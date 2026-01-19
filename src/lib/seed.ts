@@ -1497,6 +1497,7 @@ function createCustomNemeses(): Campaign['customNemeses'] {
   return {
     // Custom Nemesis: Shadow Weaver
     'custom-nemesis-1': {
+      multiMonster: false,
       name: 'Shadow Weaver',
       node: MonsterNode.NN1,
       type: MonsterType.NEMESIS,
@@ -1587,6 +1588,7 @@ function createCustomNemeses(): Campaign['customNemeses'] {
 
     // Custom Nemesis: Void Caller (simpler configuration)
     'custom-nemesis-2': {
+      multiMonster: false,
       name: 'Void Caller',
       node: MonsterNode.NN2,
       type: MonsterType.NEMESIS,
@@ -1659,6 +1661,7 @@ function createCustomQuarries(): Campaign['customQuarries'] {
   return {
     // Custom Quarry: Iron Wyrm (prologue available)
     'custom-quarry-1': {
+      multiMonster: false,
       name: 'Iron Wyrm',
       node: MonsterNode.NQ1,
       type: MonsterType.QUARRY,
@@ -1759,6 +1762,7 @@ function createCustomQuarries(): Campaign['customQuarries'] {
 
     // Custom Quarry: Crystal Stag
     'custom-quarry-2': {
+      multiMonster: false,
       name: 'Crystal Stag',
       node: MonsterNode.NQ2,
       type: MonsterType.QUARRY,
@@ -1891,6 +1895,7 @@ function createCustomQuarries(): Campaign['customQuarries'] {
 
     // Custom Quarry: Twilight Serpent (full four levels)
     'custom-quarry-3': {
+      multiMonster: false,
       name: 'Twilight Serpent',
       node: MonsterNode.NQ3,
       type: MonsterType.QUARRY,
@@ -2056,6 +2061,7 @@ function createCustomQuarries(): Campaign['customQuarries'] {
 
     // Custom Quarry: Dark Horses (multi-monster quarry)
     'custom-quarry-4': {
+      multiMonster: true,
       name: 'Dark Horses',
       node: MonsterNode.NQ4,
       type: MonsterType.QUARRY,

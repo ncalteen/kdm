@@ -21,6 +21,7 @@ export const DUNG_BEETLE_KNIGHT: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Dung Beetle Knight',
   node: MonsterNode.NQ4,
   prologue: false,

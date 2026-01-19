@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Watcher Monster Data
  */
 export const WATCHER: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Watcher',
   node: MonsterNode.CO,
   type: MonsterType.NEMESIS,

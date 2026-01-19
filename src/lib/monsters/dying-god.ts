@@ -7,6 +7,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Finale boss for PotStars campaigns.
  */
 export const DYING_GOD: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Dying God (Dragon King)',
   node: MonsterNode.FI,
   type: MonsterType.NEMESIS,

@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Red Witches Monster Data
  */
 export const RED_WITCHES: NemesisMonsterData = {
+  multiMonster: true,
   name: 'Red Witches',
   node: MonsterNode.NN2,
   type: MonsterType.NEMESIS,

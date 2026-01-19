@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Black Knight Monster Data
  */
 export const BLACK_KNIGHT: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Black Knight',
   node: MonsterNode.NN3,
   type: MonsterType.NEMESIS,

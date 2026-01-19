@@ -20,6 +20,8 @@ export const QuarryMonsterDataSchema = z.object({
   ccRewards: z.array(SettlementCollectiveCognitionRewardSchema).default([]),
   /** Hunt Board Configuration */
   huntBoard: HuntBoardSchema,
+  /** Multi-Monster Encounter */
+  multiMonster: z.boolean().default(false),
   /** Monster Name */
   name: z.string().min(1, 'Monster name is required.'),
   /** Monster Node */

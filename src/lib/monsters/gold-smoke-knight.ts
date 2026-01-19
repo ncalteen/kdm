@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Gold Smoke Knight Monster Data
  */
 export const GOLD_SMOKE_KNIGHT: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Gold Smoke Knight',
   node: MonsterNode.FI,
   type: MonsterType.NEMESIS,

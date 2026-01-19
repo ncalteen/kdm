@@ -5,6 +5,7 @@ import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
  * Godhand Monster Data
  */
 export const GODHAND: NemesisMonsterData = {
+  multiMonster: false,
   name: 'Godhand',
   node: MonsterNode.FI,
   type: MonsterType.NEMESIS,
