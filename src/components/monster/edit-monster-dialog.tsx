@@ -240,16 +240,16 @@ export function EditMonsterDialog({
                 unlocked: false
               })),
               timeline: timelineRecord,
-              ...(Object.keys(level1Data).length > 0 && {
+              ...(level1Data.length > 0 && {
                 level1: level1Data
               }),
-              ...(Object.keys(level2Data).length > 0 && {
+              ...(level2Data.length > 0 && {
                 level2: level2Data
               }),
-              ...(Object.keys(level3Data).length > 0 && {
+              ...(level3Data.length > 0 && {
                 level3: level3Data
               }),
-              ...(Object.keys(level4Data).length > 0 && {
+              ...(level4Data.length > 0 && {
                 level4: level4Data
               })
             })
@@ -258,16 +258,16 @@ export function EditMonsterDialog({
               node,
               timeline: timelineRecord,
               type: monsterType,
-              ...(Object.keys(level1Data).length > 0 && {
+              ...(level1Data.length > 0 && {
                 level1: level1Data
               }),
-              ...(Object.keys(level2Data).length > 0 && {
+              ...(level2Data.length > 0 && {
                 level2: level2Data
               }),
-              ...(Object.keys(level3Data).length > 0 && {
+              ...(level3Data.length > 0 && {
                 level3: level3Data
               }),
-              ...(Object.keys(level4Data).length > 0 && {
+              ...(level4Data.length > 0 && {
                 level4: level4Data
               })
             })
@@ -388,7 +388,9 @@ export function EditMonsterDialog({
                     2: level2Data,
                     3: level3Data,
                     4: level4Data
-                  }[level] as Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                  }[level] as Partial<
+                    QuarryMonsterLevel | NemesisMonsterLevel
+                  >[]
                 }
                 setLevelData={
                   {
@@ -397,7 +399,7 @@ export function EditMonsterDialog({
                     3: setLevel3Data,
                     4: setLevel4Data
                   }[level] as (
-                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
                   ) => void
                 }
               />

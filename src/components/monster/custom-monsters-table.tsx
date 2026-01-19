@@ -144,48 +144,56 @@ export function CustomMonstersTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Object.keys(monsters).map((monsterId: string) => {
-            const monster = monsters[monsterId as keyof typeof monsters]
-
-            return (
-              <TableRow key={monsterId}>
-                <TableCell className="font-medium">{monster.name}</TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      monster.type === MonsterType.QUARRY
-                        ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                    {monster.type === MonsterType.QUARRY ? 'Quarry' : 'Nemesis'}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                    {monster.node}
-                  </code>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditMonster(monsterId)}
-                      title={`Edit ${monster.name}`}>
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteMonster(monsterId)}
-                      title={`Delete ${monster.name}`}>
-                      <Trash2Icon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
+          {Object.keys(monsters)
+            .sort((a, b) =>
+              monsters[a as keyof typeof monsters].name.localeCompare(
+                monsters[b as keyof typeof monsters].name
+              )
             )
-          })}
+            .map((monsterId: string) => {
+              const monster = monsters[monsterId as keyof typeof monsters]
+
+              return (
+                <TableRow key={monsterId}>
+                  <TableCell className="font-medium">{monster.name}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                        monster.type === MonsterType.QUARRY
+                          ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                      }`}>
+                      {monster.type === MonsterType.QUARRY
+                        ? 'Quarry'
+                        : 'Nemesis'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                      {monster.node}
+                    </code>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditMonster(monsterId)}
+                        title={`Edit ${monster.name}`}>
+                        <PencilIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteMonster(monsterId)}
+                        title={`Delete ${monster.name}`}>
+                        <Trash2Icon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
         </TableBody>
       </Table>
 

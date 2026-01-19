@@ -83,17 +83,17 @@ export function CreateMonsterDialog({
   const [node, setNode] = useState<MonsterNode>(MonsterNode.NQ1)
   const [isPrologue, setIsPrologue] = useState(false)
   const [level1Data, setLevel1Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [level2Data, setLevel2Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [level3Data, setLevel3Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [level4Data, setLevel4Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [timelineData, setTimelineData] = useState<
     Array<{ year: number; event: string }>
   >([])
@@ -119,10 +119,10 @@ export function CreateMonsterDialog({
     setName('')
     setNode(MonsterNode.NQ1)
     setIsPrologue(false)
-    setLevel1Data({})
-    setLevel2Data({})
-    setLevel3Data({})
-    setLevel4Data({})
+    setLevel1Data([])
+    setLevel2Data([])
+    setLevel3Data([])
+    setLevel4Data([])
     setTimelineData([])
     setHuntBoardData(basicHuntBoard)
     setLocationsData([])
@@ -154,10 +154,6 @@ export function CreateMonsterDialog({
       const monsterData =
         monsterType === MonsterType.QUARRY
           ? QuarryMonsterDataSchema.parse({
-              name,
-              node,
-              type: MonsterType.QUARRY,
-              prologue: isPrologue,
               ccRewards: ccRewardsData.map(({ cc, name }) => ({
                 name,
                 cc,
@@ -182,35 +178,49 @@ export function CreateMonsterDialog({
                 name,
                 unlocked: false
               })),
+              multiMonster:
+                level1Data.length > 1 ||
+                level2Data.length > 1 ||
+                level3Data.length > 1 ||
+                level4Data.length > 1,
+              name,
+              node,
+              prologue: isPrologue,
               timeline: timelineRecord,
-              ...(Object.keys(level1Data).length > 0 && {
+              type: MonsterType.QUARRY,
+              ...(level1Data.length > 0 && {
                 level1: level1Data
               }),
-              ...(Object.keys(level2Data).length > 0 && {
+              ...(level2Data.length > 0 && {
                 level2: level2Data
               }),
-              ...(Object.keys(level3Data).length > 0 && {
+              ...(level3Data.length > 0 && {
                 level3: level3Data
               }),
-              ...(Object.keys(level4Data).length > 0 && {
+              ...(level4Data.length > 0 && {
                 level4: level4Data
               })
             })
           : NemesisMonsterDataSchema.parse({
+              multiMonster:
+                level1Data.length > 1 ||
+                level2Data.length > 1 ||
+                level3Data.length > 1 ||
+                level4Data.length > 1,
               name,
               node,
               timeline: timelineRecord,
               type: monsterType,
-              ...(Object.keys(level1Data).length > 0 && {
+              ...(level1Data.length > 0 && {
                 level1: level1Data
               }),
-              ...(Object.keys(level2Data).length > 0 && {
+              ...(level2Data.length > 0 && {
                 level2: level2Data
               }),
-              ...(Object.keys(level3Data).length > 0 && {
+              ...(level3Data.length > 0 && {
                 level3: level3Data
               }),
-              ...(Object.keys(level4Data).length > 0 && {
+              ...(level4Data.length > 0 && {
                 level4: level4Data
               })
             })
@@ -346,7 +356,9 @@ export function CreateMonsterDialog({
                     2: level2Data,
                     3: level3Data,
                     4: level4Data
-                  }[level] as Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                  }[level] as Partial<
+                    QuarryMonsterLevel | NemesisMonsterLevel
+                  >[]
                 }
                 setLevelData={
                   {
@@ -355,7 +367,7 @@ export function CreateMonsterDialog({
                     3: setLevel3Data,
                     4: setLevel4Data
                   }[level] as (
-                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
                   ) => void
                 }
               />
