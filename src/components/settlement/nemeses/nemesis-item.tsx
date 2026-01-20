@@ -165,7 +165,7 @@ export function NemesisItem({
                 disabled={!level1Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level1`}>
-                Lvl 1
+                L1
               </Label>
             </div>
 
@@ -183,7 +183,7 @@ export function NemesisItem({
                 disabled={!level2Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level2`}>
-                Lvl 2
+                L2
               </Label>
             </div>
 
@@ -201,7 +201,7 @@ export function NemesisItem({
                 disabled={!level3Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level3`}>
-                Lvl 3
+                L3
               </Label>
             </div>
 
@@ -219,7 +219,7 @@ export function NemesisItem({
                 disabled={!level4Available}
               />
               <Label className="text-xs" htmlFor={`nemesis-${index}-level4`}>
-                Lvl 4
+                L4
               </Label>
             </div>
           </div>
