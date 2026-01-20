@@ -175,8 +175,6 @@ interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   selectedShowdown: Showdown | null
   /** Selected Tab */
   selectedTab: TabType
-  /** Set Is Creating New Settlement */
-  setIsCreatingNewSettlement: (isCreating: boolean) => void
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
@@ -204,7 +202,6 @@ export function AppSidebar({
   selectedShowdown,
   selectedTab,
   setSelectedHunt,
-  setIsCreatingNewSettlement,
   setSelectedSettlement,
   setSelectedShowdown,
   setSelectedSurvivor,
@@ -399,7 +396,6 @@ export function AppSidebar({
           selectedHunt={selectedHunt}
           selectedSettlement={selectedSettlement}
           selectedShowdown={selectedShowdown}
-          setIsCreatingNewSettlement={setIsCreatingNewSettlement}
           setSelectedHunt={setSelectedHunt}
           setSelectedSettlement={setSelectedSettlement}
           setSelectedShowdown={setSelectedShowdown}

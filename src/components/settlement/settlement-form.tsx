@@ -48,12 +48,6 @@ import { ReactElement } from 'react'
 interface SettlementFormProps {
   /** Campaign */
   campaign: Campaign
-  /** New Hunt Being Created */
-  isCreatingNewHunt: boolean
-  /** New Settlement Being Created */
-  isCreatingNewSettlement: boolean
-  /** New Showdown Being Created */
-  isCreatingNewShowdown: boolean
   /** New Survivor Being Created */
   isCreatingNewSurvivor: boolean
   /** Save Selected Hunt */
@@ -87,12 +81,6 @@ interface SettlementFormProps {
   selectedSurvivor: Survivor | null
   /** Selected Tab */
   selectedTab: string
-  /** Set New Hunt Being Created */
-  setIsCreatingNewHunt: (isCreating: boolean) => void
-  /** Set New Settlement Being Created */
-  setIsCreatingNewSettlement: (isCreating: boolean) => void
-  /** Set New Showdown Being Created */
-  setIsCreatingNewShowdown: (isCreating: boolean) => void
   /** Set New Survivor Being Created */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Hunt */
@@ -120,9 +108,6 @@ interface SettlementFormProps {
  */
 export function SettlementForm({
   campaign,
-  isCreatingNewHunt,
-  isCreatingNewSettlement,
-  isCreatingNewShowdown,
   isCreatingNewSurvivor,
   saveSelectedHunt,
   saveSelectedSettlement,
@@ -135,9 +120,6 @@ export function SettlementForm({
   selectedShowdownMonsterIndex,
   selectedSurvivor,
   selectedTab,
-  setIsCreatingNewHunt,
-  setIsCreatingNewSettlement,
-  setIsCreatingNewShowdown,
   setIsCreatingNewSurvivor,
   setSelectedHunt,
   setSelectedHuntMonsterIndex,
@@ -466,7 +448,6 @@ export function SettlementForm({
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
-              selectedHuntMonsterIndex={selectedHuntMonsterIndex}
               selectedShowdown={selectedShowdown}
               selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
               selectedSettlement={selectedSettlement}

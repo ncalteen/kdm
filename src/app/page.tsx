@@ -110,14 +110,14 @@ function MainPage(): ReactElement {
   const {
     campaign,
 
-    isCreatingNewHunt,
-    isCreatingNewSettlement,
-    isCreatingNewShowdown,
+    // isCreatingNewHunt,
+    // isCreatingNewSettlement,
+    // isCreatingNewShowdown,
     isCreatingNewSurvivor,
 
-    setIsCreatingNewHunt,
-    setIsCreatingNewSettlement,
-    setIsCreatingNewShowdown,
+    // setIsCreatingNewHunt,
+    // setIsCreatingNewSettlement,
+    // setIsCreatingNewShowdown,
     setIsCreatingNewSurvivor,
 
     setSelectedHunt,
@@ -269,7 +269,6 @@ function MainPage(): ReactElement {
             selectedSettlement={selectedSettlement}
             selectedShowdown={selectedShowdown}
             selectedTab={selectedTab}
-            setIsCreatingNewSettlement={setIsCreatingNewSettlement}
             setSelectedHunt={setSelectedHunt}
             setSelectedSettlement={setSelectedSettlement}
             setSelectedShowdown={setSelectedShowdown}
@@ -283,9 +282,6 @@ function MainPage(): ReactElement {
                 <Form {...huntForm}>
                   <SettlementForm
                     campaign={campaign}
-                    isCreatingNewHunt={isCreatingNewHunt}
-                    isCreatingNewSettlement={isCreatingNewSettlement}
-                    isCreatingNewShowdown={isCreatingNewShowdown}
                     isCreatingNewSurvivor={isCreatingNewSurvivor}
                     saveSelectedHunt={saveSelectedHunt}
                     saveSelectedSettlement={saveSelectedSettlement}
@@ -298,9 +294,6 @@ function MainPage(): ReactElement {
                     selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
                     selectedSurvivor={selectedSurvivor}
                     selectedTab={selectedTab}
-                    setIsCreatingNewHunt={setIsCreatingNewHunt}
-                    setIsCreatingNewSettlement={setIsCreatingNewSettlement}
-                    setIsCreatingNewShowdown={setIsCreatingNewShowdown}
                     setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                     setSelectedHunt={setSelectedHunt}
                     setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
