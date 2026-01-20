@@ -609,8 +609,7 @@ export function CreateShowdownCard({
 
         {selectedMonsterData &&
           selectedMonsterData.multiMonster &&
-          selectedMonsterData[selectedMonsterLevel] &&
-          selectedMonsterData[selectedMonsterLevel].length > 1 && (
+          selectedMonsterData[selectedMonsterLevel] && (
             <div className="monster_carousel_controls">
               <div className="monster_carousel_buttons">
                 <Button

@@ -546,8 +546,7 @@ export function CreateHuntCard({
 
         {selectedQuarryData &&
           selectedQuarryData.multiMonster &&
-          selectedQuarryData[selectedMonsterLevel] &&
-          selectedQuarryData[selectedMonsterLevel].length > 1 && (
+          selectedQuarryData[selectedMonsterLevel] && (
             <div className="monster_carousel_controls">
               <div className="monster_carousel_buttons">
                 <Button
