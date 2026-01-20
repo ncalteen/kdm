@@ -26,7 +26,7 @@ export const MonsterTimelineEntrySchema = z
     > = {}
     Object.entries(obj).forEach(([key, value]) => {
       const numKey = Number(key)
-      if (!isNaN(numKey) && numKey >= 1) result[numKey] = value
+      if (!isNaN(numKey) && numKey >= 0) result[numKey] = value
     })
     return result
   })
