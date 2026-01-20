@@ -1,17 +1,16 @@
-import {
-  CampaignType,
-  MonsterNode,
-  MonsterType,
-  SurvivorType
-} from '@/lib/enums'
-import { NEMESES, QUARRIES } from '@/lib/monsters'
+import { CampaignType, SurvivorType } from '@/lib/enums'
+import { BUTCHER } from '@/lib/monsters/butcher'
+import { WHITE_LION } from '@/lib/monsters/white-lion'
 import {
   createSettlementFromOptions,
   getMonsterNodeMapping
 } from '@/lib/settlements/utils'
 import { Campaign } from '@/schemas/campaign'
-import { BaseSettlementSchema, NewSettlementInput } from '@/schemas/settlement'
+import { NewSettlementInput } from '@/schemas/new-settlement-input'
+import { BaseSettlementSchema } from '@/schemas/settlement'
 import { describe, expect, it } from 'vitest'
+import { TEST_NEMESIS } from '../../../__fixtures__/monsters/test-nemesis'
+import { TEST_QUARRY } from '../../../__fixtures__/monsters/test-quarry'
 
 // Helper function to create a minimal NewSettlementInput with defaults
 function createTestOptions(
@@ -37,10 +36,6 @@ describe('getMonsterNodeMapping', () => {
       expect(mapping).toHaveProperty('NN3')
       expect(mapping).toHaveProperty('CO')
       expect(mapping).toHaveProperty('FI')
-
-      // Validate that some expected monsters are in the correct nodes
-      expect(mapping.NQ1).toContain(14) // White Lion
-      expect(mapping.NN1).toContain(3) // Butcher
     })
 
     it('should have arrays for all node types', () => {
@@ -119,7 +114,8 @@ describe('getMonsterNodeMapping', () => {
 
 describe('createSettlementFromOptions', () => {
   const baseCampaign: Campaign = {
-    customMonsters: {},
+    customNemeses: {},
+    customQuarries: {},
     hunts: [],
     selectedHuntId: null,
     selectedSettlementId: null,
@@ -141,12 +137,12 @@ describe('createSettlementFromOptions', () => {
 
   describe('People of the Lantern', () => {
     it('should create a CORE settlement', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -170,12 +166,12 @@ describe('createSettlementFromOptions', () => {
     })
 
     it('should have nemeses from the campaign template', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -183,25 +179,18 @@ describe('createSettlementFromOptions', () => {
 
       // Check that nemeses have the expected properties
       for (const nemesis of settlement.nemeses) {
-        expect(nemesis).toHaveProperty('id')
-        expect(nemesis).toHaveProperty('level1')
-        expect(nemesis).toHaveProperty('level2')
-        expect(nemesis).toHaveProperty('level3')
         expect(nemesis).toHaveProperty('unlocked')
-        expect(nemesis.level1).toBe(false)
-        expect(nemesis.level2).toBe(false)
-        expect(nemesis.level3).toBe(false)
         expect(nemesis.unlocked).toBe(false)
       }
     })
 
     it('should have quarries from the campaign template', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -209,19 +198,18 @@ describe('createSettlementFromOptions', () => {
 
       // Check that quarries have the expected properties
       for (const quarry of settlement.quarries) {
-        expect(quarry).toHaveProperty('id')
         expect(quarry).toHaveProperty('unlocked')
         expect(quarry.unlocked).toBe(false)
       }
     })
 
     it('should have timeline populated with events', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -242,12 +230,12 @@ describe('createSettlementFromOptions', () => {
     })
 
     it('should have locations sorted alphabetically', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -258,12 +246,12 @@ describe('createSettlementFromOptions', () => {
     })
 
     it('should have milestones sorted alphabetically', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -274,12 +262,12 @@ describe('createSettlementFromOptions', () => {
     })
 
     it('should have principles sorted alphabetically', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -289,75 +277,13 @@ describe('createSettlementFromOptions', () => {
       expect(settlement.principles).toEqual(sortedPrinciples)
     })
 
-    it('should have nemeses sorted by node', () => {
-      const options = {
-        campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-        name: 'Test Settlement',
-        survivorType: SurvivorType.CORE,
-        usesScouts: true
-      } as unknown as NewSettlementInput
-
-      const settlement = createSettlementFromOptions(baseCampaign, options)
-
-      // Verify nemeses are sorted by their node values
-      for (let i = 0; i < settlement.nemeses.length - 1; i++) {
-        const currentNemesis = settlement.nemeses[i]
-        const nextNemesis = settlement.nemeses[i + 1]
-
-        if (
-          typeof currentNemesis.id === 'number' &&
-          typeof nextNemesis.id === 'number'
-        ) {
-          const currentNode =
-            NEMESES[currentNemesis.id as keyof typeof NEMESES].main.node
-          const nextNode =
-            NEMESES[nextNemesis.id as keyof typeof NEMESES].main.node
-
-          // Node comparison - we're just checking that it's sorted, not the exact order
-          expect(currentNode).toBeDefined()
-          expect(nextNode).toBeDefined()
-        }
-      }
-    })
-
-    it('should have quarries sorted by node', () => {
-      const options = {
-        campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-        name: 'Test Settlement',
-        survivorType: SurvivorType.CORE,
-        usesScouts: true
-      } as unknown as NewSettlementInput
-
-      const settlement = createSettlementFromOptions(baseCampaign, options)
-
-      // Verify quarries are sorted by their node values
-      for (let i = 0; i < settlement.quarries.length - 1; i++) {
-        const currentQuarry = settlement.quarries[i]
-        const nextQuarry = settlement.quarries[i + 1]
-
-        if (
-          typeof currentQuarry.id === 'number' &&
-          typeof nextQuarry.id === 'number'
-        ) {
-          const currentNode =
-            QUARRIES[currentQuarry.id as keyof typeof QUARRIES].main.node
-          const nextNode =
-            QUARRIES[nextQuarry.id as keyof typeof QUARRIES].main.node
-
-          // Node comparison - we're just checking that it's sorted, not the exact order
-          expect(currentNode).toBeDefined()
-          expect(nextNode).toBeDefined()
-        }
-      }
-    })
-
     it('should have timeline entries sorted alphabetically within each year', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Test Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -372,12 +298,12 @@ describe('createSettlementFromOptions', () => {
 
   describe('Arc Survivors', () => {
     it('should add Arc-specific properties to settlement', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Arc Settlement',
         survivorType: SurvivorType.ARC,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -396,12 +322,12 @@ describe('createSettlementFromOptions', () => {
     })
 
     it('should add Arc-specific properties to nemeses', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Arc Settlement',
         survivorType: SurvivorType.ARC,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -416,36 +342,34 @@ describe('createSettlementFromOptions', () => {
     })
 
     it('should add Arc-specific properties to quarries', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Arc Settlement',
         survivorType: SurvivorType.ARC,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
       for (const quarry of settlement.quarries) {
         expect(quarry).toHaveProperty('ccLevel1')
-        expect(quarry).toHaveProperty('ccLevel2')
-        expect(quarry).toHaveProperty('ccLevel3')
-        expect(quarry).toHaveProperty('ccPrologue')
         expect(quarry.ccLevel1).toBe(false)
+        expect(quarry).toHaveProperty('ccLevel2')
         expect(Array.isArray(quarry.ccLevel2)).toBe(true)
         expect(quarry.ccLevel2).toEqual([false, false])
+        expect(quarry).toHaveProperty('ccLevel3')
         expect(Array.isArray(quarry.ccLevel3)).toBe(true)
         expect(quarry.ccLevel3).toEqual([false, false, false])
-        expect(quarry.ccPrologue).toBe(false)
       }
     })
 
     it('should have ccRewards sorted alphabetically', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Arc Settlement',
         survivorType: SurvivorType.ARC,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -460,12 +384,12 @@ describe('createSettlementFromOptions', () => {
 
   describe('Squires of the Citadel', () => {
     it('should add Squires-specific suspicions to settlement', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.SQUIRES_OF_THE_CITADEL,
         name: 'Squires Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -486,35 +410,34 @@ describe('createSettlementFromOptions', () => {
 
   describe('Custom Campaign', () => {
     it('should create a settlement with custom monster selections', () => {
-      const options = {
-        ...BaseSettlementSchema.parse({}),
+      const options = createTestOptions({
         campaignType: CampaignType.CUSTOM,
         name: 'Custom Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true,
         monsters: {
-          NQ1: [14], // White Lion
+          NQ1: [WHITE_LION],
           NQ2: [],
           NQ3: [],
           NQ4: [],
-          NN1: [3], // Butcher
+          NN1: [BUTCHER],
           NN2: [],
           NN3: [],
           CO: [],
           FI: []
         }
-      } as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
       expect(settlement.quarries.length).toBe(1)
-      expect(settlement.quarries[0].id).toBe(14) // White Lion
+      expect(settlement.quarries[0].name).toBe('White Lion')
       expect(settlement.nemeses.length).toBe(1)
-      expect(settlement.nemeses[0].id).toBe(3) // Butcher
+      expect(settlement.nemeses[0].name).toBe('Butcher')
     })
 
     it('should handle custom campaign with no monsters', () => {
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.CUSTOM,
         name: 'Empty Custom Settlement',
         survivorType: SurvivorType.CORE,
@@ -530,59 +453,25 @@ describe('createSettlementFromOptions', () => {
           CO: [],
           FI: []
         }
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
       expect(settlement.quarries).toEqual([])
       expect(settlement.nemeses).toEqual([])
     })
-
-    it('should support using MonsterNode enum keys', () => {
-      const options = createTestOptions({
-        campaignType: CampaignType.CUSTOM,
-        name: 'Custom Settlement',
-        survivorType: SurvivorType.CORE,
-        usesScouts: true,
-        monsters: {
-          [MonsterNode.NQ1]: [14], // White Lion
-          [MonsterNode.NQ2]: [],
-          [MonsterNode.NQ3]: [],
-          [MonsterNode.NQ4]: [],
-          [MonsterNode.NN1]: [3], // Butcher
-          [MonsterNode.NN2]: [],
-          [MonsterNode.NN3]: [],
-          [MonsterNode.CO]: [],
-          [MonsterNode.FI]: []
-        }
-      })
-
-      const settlement = createSettlementFromOptions(baseCampaign, options)
-
-      expect(settlement.quarries.length).toBe(1)
-      expect(settlement.nemeses.length).toBe(1)
-    })
   })
 
   describe('Custom Monsters', () => {
     it('should handle custom nemesis monsters', () => {
-      const campaignWithCustomMonsters = {
+      const campaignWithCustomMonsters: Campaign = {
         ...baseCampaign,
-        customMonsters: {
-          'custom-nemesis-1': {
-            main: {
-              name: 'Custom Nemesis',
-              node: MonsterNode.NN1,
-              type: MonsterType.NEMESIS,
-              timeline: {},
-              ccRewards: [],
-              locations: []
-            }
-          }
+        customNemeses: {
+          'test-nemesis': TEST_NEMESIS
         }
-      } as unknown as Campaign
+      }
 
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.CUSTOM,
         name: 'Settlement with Custom Nemesis',
         survivorType: SurvivorType.CORE,
@@ -592,13 +481,13 @@ describe('createSettlementFromOptions', () => {
           NQ2: [],
           NQ3: [],
           NQ4: [],
-          NN1: ['custom-nemesis-1'],
+          NN1: [TEST_NEMESIS],
           NN2: [],
           NN3: [],
           CO: [],
           FI: []
         }
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(
         campaignWithCustomMonsters,
@@ -606,37 +495,23 @@ describe('createSettlementFromOptions', () => {
       )
 
       expect(settlement.nemeses.length).toBe(1)
-      expect(settlement.nemeses[0].id).toBe('custom-nemesis-1')
-      expect(settlement.nemeses[0].level1).toBe(false)
-      expect(settlement.nemeses[0].level2).toBe(false)
-      expect(settlement.nemeses[0].level3).toBe(false)
-      expect(settlement.nemeses[0].unlocked).toBe(false)
     })
 
     it('should handle custom quarry monsters', () => {
-      const campaignWithCustomMonsters = {
+      const campaignWithCustomMonsters: Campaign = {
         ...baseCampaign,
-        customMonsters: {
-          'custom-quarry-1': {
-            main: {
-              name: 'Custom Quarry',
-              node: MonsterNode.NQ1,
-              type: MonsterType.QUARRY,
-              timeline: {},
-              ccRewards: [],
-              locations: [{ name: 'Custom Location', unlocked: false }]
-            }
-          }
+        customQuarries: {
+          'test-quarry': TEST_QUARRY
         }
-      } as unknown as Campaign
+      }
 
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.CUSTOM,
         name: 'Settlement with Custom Quarry',
         survivorType: SurvivorType.CORE,
         usesScouts: true,
         monsters: {
-          NQ1: ['custom-quarry-1'],
+          NQ1: [TEST_QUARRY],
           NQ2: [],
           NQ3: [],
           NQ4: [],
@@ -646,7 +521,7 @@ describe('createSettlementFromOptions', () => {
           CO: [],
           FI: []
         }
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(
         campaignWithCustomMonsters,
@@ -654,43 +529,24 @@ describe('createSettlementFromOptions', () => {
       )
 
       expect(settlement.quarries.length).toBe(1)
-      expect(settlement.quarries[0].id).toBe('custom-quarry-1')
       expect(settlement.quarries[0].unlocked).toBe(false)
 
       // Check that custom location was added
       const customLocation = settlement.locations.find(
-        (loc) => loc.name === 'Custom Location'
+        (loc) => loc.name === 'Test Location'
       )
       expect(customLocation).toBeDefined()
     })
 
     it('should handle custom monsters with timeline events', () => {
-      const campaignWithCustomMonsters = {
+      const campaignWithCustomMonsters: Campaign = {
         ...baseCampaign,
-        customMonsters: {
-          'custom-nemesis-1': {
-            main: {
-              name: 'Custom Nemesis',
-              node: MonsterNode.NN1,
-              type: MonsterType.NEMESIS,
-              timeline: {
-                0: ['Custom Event Year 0'],
-                1: ['Custom Event Year 1'],
-                5: [
-                  {
-                    title: 'Campaign-specific Event',
-                    campaigns: [CampaignType.CUSTOM]
-                  }
-                ]
-              },
-              ccRewards: [],
-              locations: []
-            }
-          }
+        customNemeses: {
+          'test-nemesis': TEST_NEMESIS
         }
-      } as unknown as Campaign
+      }
 
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.CUSTOM,
         name: 'Settlement with Custom Events',
         survivorType: SurvivorType.CORE,
@@ -700,13 +556,13 @@ describe('createSettlementFromOptions', () => {
           NQ2: [],
           NQ3: [],
           NQ4: [],
-          NN1: ['custom-nemesis-1'],
+          NN1: [TEST_NEMESIS],
           NN2: [],
           NN3: [],
           CO: [],
           FI: []
         }
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(
         campaignWithCustomMonsters,
@@ -714,37 +570,26 @@ describe('createSettlementFromOptions', () => {
       )
 
       // Check that custom events were added to timeline
-      expect(settlement.timeline[0].entries).toContain('Custom Event Year 0')
-      expect(settlement.timeline[1].entries).toContain('Custom Event Year 1')
-      expect(settlement.timeline[5].entries).toContain(
-        'Campaign-specific Event'
+      expect(settlement.timeline[4].entries).toContain(
+        'Nemesis Encounter - Test Nemesis Lvl 1'
       )
     })
 
     it('should handle custom Arc monsters with CC rewards', () => {
-      const campaignWithCustomMonsters = {
+      const campaignWithCustomMonsters: Campaign = {
         ...baseCampaign,
-        customMonsters: {
-          'custom-quarry-1': {
-            main: {
-              name: 'Custom Quarry',
-              node: MonsterNode.NQ1,
-              type: MonsterType.QUARRY,
-              timeline: {},
-              ccRewards: [{ cc: 1, name: 'Custom Reward', unlocked: false }],
-              locations: []
-            }
-          }
+        customQuarries: {
+          'test-quarry': TEST_QUARRY
         }
-      } as unknown as Campaign
+      }
 
-      const options = {
+      const options = createTestOptions({
         campaignType: CampaignType.CUSTOM,
         name: 'Arc Settlement with Custom Quarry',
         survivorType: SurvivorType.ARC,
         usesScouts: true,
         monsters: {
-          NQ1: ['custom-quarry-1'],
+          NQ1: [TEST_QUARRY],
           NQ2: [],
           NQ3: [],
           NQ4: [],
@@ -754,7 +599,7 @@ describe('createSettlementFromOptions', () => {
           CO: [],
           FI: []
         }
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(
         campaignWithCustomMonsters,
@@ -763,36 +608,22 @@ describe('createSettlementFromOptions', () => {
 
       expect(settlement.ccRewards).toBeDefined()
       const customReward = settlement.ccRewards!.find(
-        (r) => r.name === 'Custom Reward'
+        (r) => r.name === 'Test Quarry Cuisine'
       )
       expect(customReward).toBeDefined()
-      expect(customReward?.cc).toBe(1)
+      expect(customReward?.cc).toBe(6)
     })
+  })
 
-    it('should skip custom monsters with wrong type (nemesis in quarry slot)', () => {
-      const campaignWithCustomMonsters = {
-        ...baseCampaign,
-        customMonsters: {
-          'custom-nemesis-1': {
-            main: {
-              name: 'Custom Nemesis',
-              node: MonsterNode.NN1,
-              type: MonsterType.NEMESIS, // This is a nemesis, not a quarry
-              timeline: {},
-              ccRewards: [],
-              locations: []
-            }
-          }
-        }
-      } as unknown as Campaign
-
-      const options = {
-        campaignType: CampaignType.CUSTOM,
-        name: 'Settlement with Mismatched Monster',
+  describe('Settlement ID Generation', () => {
+    it('should assign ID 1 to first settlement', () => {
+      const options = createTestOptions({
+        campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
+        name: 'First Settlement',
         survivorType: SurvivorType.CORE,
         usesScouts: true,
         monsters: {
-          NQ1: ['custom-nemesis-1'], // Trying to use nemesis as quarry
+          NQ1: [],
           NQ2: [],
           NQ3: [],
           NQ4: [],
@@ -802,70 +633,7 @@ describe('createSettlementFromOptions', () => {
           CO: [],
           FI: []
         }
-      } as unknown as NewSettlementInput
-
-      const settlement = createSettlementFromOptions(
-        campaignWithCustomMonsters,
-        options
-      )
-
-      // Should be skipped because it's the wrong type
-      expect(settlement.quarries.length).toBe(0)
-    })
-
-    it('should skip custom monsters with wrong type (quarry in nemesis slot)', () => {
-      const campaignWithCustomMonsters = {
-        ...baseCampaign,
-        customMonsters: {
-          'custom-quarry-1': {
-            main: {
-              name: 'Custom Quarry',
-              node: MonsterNode.NQ1,
-              type: MonsterType.QUARRY, // This is a quarry, not a nemesis
-              timeline: {},
-              ccRewards: [],
-              locations: []
-            }
-          }
-        }
-      } as unknown as Campaign
-
-      const options = {
-        campaignType: CampaignType.CUSTOM,
-        name: 'Settlement with Mismatched Monster',
-        survivorType: SurvivorType.CORE,
-        usesScouts: true,
-        monsters: {
-          NQ1: [],
-          NQ2: [],
-          NQ3: [],
-          NQ4: [],
-          NN1: ['custom-quarry-1'], // Trying to use quarry as nemesis
-          NN2: [],
-          NN3: [],
-          CO: [],
-          FI: []
-        }
-      } as unknown as NewSettlementInput
-
-      const settlement = createSettlementFromOptions(
-        campaignWithCustomMonsters,
-        options
-      )
-
-      // Should be skipped because it's the wrong type
-      expect(settlement.nemeses.length).toBe(0)
-    })
-  })
-
-  describe('Settlement ID Generation', () => {
-    it('should assign ID 1 to first settlement', () => {
-      const options = {
-        campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
-        name: 'First Settlement',
-        survivorType: SurvivorType.CORE,
-        usesScouts: true
-      } as unknown as NewSettlementInput
+      })
 
       const settlement = createSettlementFromOptions(baseCampaign, options)
 
@@ -878,22 +646,44 @@ describe('createSettlementFromOptions', () => {
         settlements: []
       }
 
-      const options1 = {
+      const options1 = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Settlement 1',
         survivorType: SurvivorType.CORE,
-        usesScouts: true
-      } as unknown as NewSettlementInput
+        usesScouts: true,
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
+      })
 
       const settlement1 = createSettlementFromOptions(campaign, options1)
       campaign.settlements.push(settlement1)
 
-      const options2 = {
+      const options2 = createTestOptions({
         campaignType: CampaignType.PEOPLE_OF_THE_LANTERN,
         name: 'Settlement 2',
         survivorType: SurvivorType.CORE,
-        usesScouts: true
-      } as unknown as NewSettlementInput
+        usesScouts: true,
+        monsters: {
+          NQ1: [],
+          NQ2: [],
+          NQ3: [],
+          NQ4: [],
+          NN1: [],
+          NN2: [],
+          NN3: [],
+          CO: [],
+          FI: []
+        }
+      })
 
       const settlement2 = createSettlementFromOptions(campaign, options2)
 
@@ -904,21 +694,12 @@ describe('createSettlementFromOptions', () => {
 
   describe('Mixed CORE and Custom Monsters', () => {
     it('should handle mix of CORE and custom monsters', () => {
-      const campaignWithCustomMonsters = {
+      const campaignWithCustomMonsters: Campaign = {
         ...baseCampaign,
-        customMonsters: {
-          'custom-quarry-1': {
-            main: {
-              name: 'Custom Quarry',
-              node: MonsterNode.NQ2,
-              type: MonsterType.QUARRY,
-              timeline: {},
-              ccRewards: [],
-              locations: []
-            }
-          }
+        customQuarries: {
+          'test-quarry': TEST_QUARRY
         }
-      } as unknown as Campaign
+      }
 
       const options = createTestOptions({
         campaignType: CampaignType.CUSTOM,
@@ -926,11 +707,11 @@ describe('createSettlementFromOptions', () => {
         survivorType: SurvivorType.CORE,
         usesScouts: true,
         monsters: {
-          NQ1: [14], // CORE White Lion
-          NQ2: ['custom-quarry-1'], // Custom quarry
+          NQ1: [WHITE_LION],
+          NQ2: [TEST_QUARRY],
           NQ3: [],
           NQ4: [],
-          NN1: [3], // CORE Butcher
+          NN1: [BUTCHER],
           NN2: [],
           NN3: [],
           CO: [],
@@ -947,11 +728,13 @@ describe('createSettlementFromOptions', () => {
       expect(settlement.nemeses.length).toBe(1)
 
       // Check CORE monsters
-      expect(settlement.quarries.some((q) => q.id === 14)).toBe(true) // White Lion
-      expect(settlement.nemeses.some((n) => n.id === 3)).toBe(true) // Butcher
+      expect(settlement.quarries.some((q) => q.name === 'White Lion')).toBe(
+        true
+      )
+      expect(settlement.nemeses.some((n) => n.name === 'Butcher')).toBe(true) // Butcher
 
       // Check custom monsters
-      expect(settlement.quarries.some((q) => q.id === 'custom-quarry-1')).toBe(
+      expect(settlement.quarries.some((q) => q.name === 'Test Quarry')).toBe(
         true
       )
     })

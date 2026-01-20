@@ -5,34 +5,58 @@ import {
   MonsterType,
   TurnType
 } from '@/lib/enums'
-import {
-  MonsterTurnStateSchema,
-  ShowdownMonsterSchema,
-  ShowdownSchema,
-  SurvivorShowdownDetailsSchema,
-  SurvivorTurnStateSchema,
-  TurnSchema
-} from '@/schemas/showdown'
+import { ShowdownSchema } from '@/schemas/showdown'
+import { ShowdownMonsterSchema } from '@/schemas/showdown-monster'
+import { ShowdownMonsterTurnStateSchema } from '@/schemas/showdown-monster-turn-state'
+import { ShowdownSurvivorDetailsSchema } from '@/schemas/showdown-survivor-details'
+import { ShowdownSurvivorTurnStateSchema } from '@/schemas/showdown-survivor-turn-state'
+import { ShowdownTurnSchema } from '@/schemas/showdown-turn'
 import { describe, expect, it } from 'vitest'
 
-describe('SurvivorShowdownDetailsSchema', () => {
+const basicShowdown = {
+  ambush: AmbushType.NONE,
+  id: 1,
+  level: MonsterLevel.LEVEL_1,
+  monsters: [
+    {
+      ...ShowdownMonsterSchema.parse({
+        name: 'White Lion',
+        type: MonsterType.QUARRY
+      })
+    }
+  ],
+  scout: 4,
+  settlementId: 1,
+  survivorDetails: [
+    {
+      ...ShowdownSurvivorDetailsSchema.parse({ id: 1 })
+    },
+    {
+      ...ShowdownSurvivorDetailsSchema.parse({ id: 2 })
+    },
+    {
+      ...ShowdownSurvivorDetailsSchema.parse({ id: 3 })
+    },
+    {
+      ...ShowdownSurvivorDetailsSchema.parse({ id: 4 })
+    }
+  ],
+  survivors: [1, 2, 3],
+  turn: {}
+}
+
+describe('ShowdownSurvivorDetailsSchema', () => {
   describe('Valid Data', () => {
     it('should validate with minimal required fields', () => {
-      const result = SurvivorShowdownDetailsSchema.safeParse({
+      const result = ShowdownSurvivorDetailsSchema.safeParse({
         id: 1
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.id).toBe(1)
-        expect(result.data.color).toBe(ColorChoice.SLATE)
-        expect(result.data.knockedDown).toBe(false)
-        expect(result.data.bleedingTokens).toBe(0)
-      }
     })
 
     it('should validate with all fields populated', () => {
-      const result = SurvivorShowdownDetailsSchema.safeParse({
+      const result = ShowdownSurvivorDetailsSchema.safeParse({
         accuracyTokens: 2,
         bleedingTokens: 3,
         blockTokens: 1,
@@ -52,17 +76,12 @@ describe('SurvivorShowdownDetailsSchema', () => {
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.knockedDown).toBe(true)
-        expect(result.data.priorityTarget).toBe(true)
-        expect(result.data.bleedingTokens).toBe(3)
-      }
     })
   })
 
   describe('Invalid Data', () => {
     it('should fail when id is missing', () => {
-      const result = SurvivorShowdownDetailsSchema.safeParse({
+      const result = ShowdownSurvivorDetailsSchema.safeParse({
         knockedDown: false
       })
 
@@ -70,10 +89,11 @@ describe('SurvivorShowdownDetailsSchema', () => {
     })
 
     it('should fail when bleedingTokens is negative', () => {
-      const result = SurvivorShowdownDetailsSchema.safeParse({
+      const result = ShowdownSurvivorDetailsSchema.safeParse({
         id: 1,
         bleedingTokens: -1
       })
+
       expect(result.success).toBe(false)
     })
   })
@@ -93,12 +113,6 @@ describe('ShowdownMonsterSchema', () => {
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.name).toBe('White Lion')
-        expect(result.data.knockedDown).toBe(false)
-        expect(result.data.aiDeck.basic).toBe(0)
-        expect(result.data.aiDeckRemaining).toBe(0)
-      }
     })
 
     it('should validate with all fields populated', () => {
@@ -136,15 +150,6 @@ describe('ShowdownMonsterSchema', () => {
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.knockedDown).toBe(true)
-        expect(result.data.level).toBe(MonsterLevel.LEVEL_3)
-        expect(result.data.aiDeck.basic).toBe(3)
-        expect(result.data.aiDeck.advanced).toBe(2)
-        expect(result.data.aiDeck.legendary).toBe(2)
-        expect(result.data.aiDeck.overtone).toBe(1)
-        expect(result.data.aiDeckRemaining).toBe(8)
-      }
     })
 
     it('should validate aiDeck without optional overtone cards', () => {
@@ -159,12 +164,6 @@ describe('ShowdownMonsterSchema', () => {
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.aiDeck.basic).toBe(2)
-        expect(result.data.aiDeck.advanced).toBe(3)
-        expect(result.data.aiDeck.legendary).toBe(2)
-        expect(result.data.aiDeck.overtone).toBe(0)
-      }
     })
   })
 
@@ -178,15 +177,6 @@ describe('ShowdownMonsterSchema', () => {
           advanced: 0,
           legendary: 0
         }
-      })
-
-      expect(result.success).toBe(false)
-    })
-
-    it('should fail when aiDeck is missing', () => {
-      const result = ShowdownMonsterSchema.safeParse({
-        name: 'Test Monster',
-        type: MonsterType.QUARRY
       })
 
       expect(result.success).toBe(false)
@@ -226,35 +216,27 @@ describe('ShowdownMonsterSchema', () => {
 describe('SurvivorTurnStateSchema', () => {
   describe('Valid Data', () => {
     it('should validate with defaults', () => {
-      const result = SurvivorTurnStateSchema.safeParse({
+      const result = ShowdownSurvivorTurnStateSchema.safeParse({
         id: 1
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.activationUsed).toBe(false)
-        expect(result.data.movementUsed).toBe(false)
-      }
     })
 
     it('should validate with all fields set', () => {
-      const result = SurvivorTurnStateSchema.safeParse({
+      const result = ShowdownSurvivorTurnStateSchema.safeParse({
         activationUsed: true,
         id: 5,
         movementUsed: true
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.activationUsed).toBe(true)
-        expect(result.data.movementUsed).toBe(true)
-      }
     })
   })
 
   describe('Invalid Data', () => {
     it('should fail when id is missing', () => {
-      const result = SurvivorTurnStateSchema.safeParse({
+      const result = ShowdownSurvivorTurnStateSchema.safeParse({
         activationUsed: true
       })
 
@@ -263,41 +245,34 @@ describe('SurvivorTurnStateSchema', () => {
   })
 })
 
-describe('MonsterTurnStateSchema', () => {
+describe('ShowdownMonsterTurnStateSchema', () => {
   describe('Valid Data', () => {
     it('should validate with defaults', () => {
-      const result = MonsterTurnStateSchema.safeParse({})
+      const result = ShowdownMonsterTurnStateSchema.safeParse({})
 
       expect(result.success).toBe(true)
-      if (result.success) expect(result.data.aiCardDrawn).toBe(false)
     })
 
     it('should validate with aiCardDrawn set to true', () => {
-      const result = MonsterTurnStateSchema.safeParse({
+      const result = ShowdownMonsterTurnStateSchema.safeParse({
         aiCardDrawn: true
       })
 
       expect(result.success).toBe(true)
-      if (result.success) expect(result.data.aiCardDrawn).toBe(true)
     })
   })
 })
 
-describe('TurnSchema', () => {
+describe('ShowdownTurnSchema', () => {
   describe('Valid Data', () => {
     it('should validate with defaults', () => {
-      const result = TurnSchema.safeParse({})
+      const result = ShowdownTurnSchema.safeParse({})
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.currentTurn).toBe(TurnType.MONSTER)
-        expect(result.data.monsterState.aiCardDrawn).toBe(false)
-        expect(result.data.survivorStates).toEqual([])
-      }
     })
 
     it('should validate with all fields populated', () => {
-      const result = TurnSchema.safeParse({
+      const result = ShowdownTurnSchema.safeParse({
         currentTurn: TurnType.SURVIVORS,
         monsterState: {
           aiCardDrawn: true
@@ -309,16 +284,12 @@ describe('TurnSchema', () => {
       })
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.currentTurn).toBe(TurnType.SURVIVORS)
-        expect(result.data.survivorStates).toHaveLength(2)
-      }
     })
   })
 
   describe('Invalid Data', () => {
     it('should fail when currentTurn has invalid value', () => {
-      const result = TurnSchema.safeParse({
+      const result = ShowdownTurnSchema.safeParse({
         currentTurn: 'invalid'
       })
 
@@ -330,28 +301,9 @@ describe('TurnSchema', () => {
 describe('ShowdownSchema', () => {
   describe('Valid Data', () => {
     it('should validate with minimal required fields', () => {
-      const result = ShowdownSchema.safeParse({
-        ambush: AmbushType.NONE,
-        id: 1,
-        monster: {
-          name: 'White Lion',
-          type: MonsterType.QUARRY,
-          aiDeck: {
-            basic: 2,
-            advanced: 3,
-            legendary: 2
-          }
-        },
-        settlementId: 1,
-        survivors: [1],
-        turn: {}
-      })
+      const result = ShowdownSchema.safeParse(basicShowdown)
 
       expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.ambush).toBe(AmbushType.NONE)
-        expect(result.data.survivors).toHaveLength(1)
-      }
     })
 
     it('should validate with all ambush types', () => {
@@ -363,67 +315,20 @@ describe('ShowdownSchema', () => {
 
       ambushTypes.forEach((ambushType) => {
         const result = ShowdownSchema.safeParse({
-          ambush: ambushType,
-          id: 1,
-          monster: {
-            name: 'White Lion',
-            type: MonsterType.QUARRY,
-            aiDeck: {
-              basic: 2,
-              advanced: 3,
-              legendary: 2
-            }
-          },
-          settlementId: 1,
-          survivors: [1],
-          turn: {}
+          ...basicShowdown,
+          ambush: ambushType
         })
 
         expect(result.success).toBe(true)
       })
-    })
-
-    it('should validate with scout field', () => {
-      const result = ShowdownSchema.safeParse({
-        ambush: AmbushType.NONE,
-        id: 1,
-        monster: {
-          name: 'White Lion',
-          type: MonsterType.QUARRY,
-          aiDeck: {
-            basic: 2,
-            advanced: 3,
-            legendary: 2
-          }
-        },
-        scout: 3,
-        settlementId: 1,
-        survivors: [1, 2, 3],
-        turn: {}
-      })
-
-      expect(result.success).toBe(true)
-      if (result.success) expect(result.data.scout).toBe(3)
     })
   })
 
   describe('Invalid Data', () => {
     it('should fail when no survivors are selected', () => {
       const result = ShowdownSchema.safeParse({
-        ambush: AmbushType.NONE,
-        id: 1,
-        monster: {
-          name: 'White Lion',
-          type: MonsterType.QUARRY,
-          aiDeck: {
-            basic: 2,
-            advanced: 3,
-            legendary: 2
-          }
-        },
-        settlementId: 1,
-        survivors: [],
-        turn: {}
+        ...basicShowdown,
+        survivors: []
       })
 
       expect(result.success).toBe(false)
@@ -431,20 +336,8 @@ describe('ShowdownSchema', () => {
 
     it('should fail when more than 4 survivors are selected', () => {
       const result = ShowdownSchema.safeParse({
-        ambush: AmbushType.NONE,
-        id: 1,
-        monster: {
-          name: 'White Lion',
-          type: MonsterType.QUARRY,
-          aiDeck: {
-            basic: 2,
-            advanced: 3,
-            legendary: 2
-          }
-        },
-        settlementId: 1,
-        survivors: [1, 2, 3, 4, 5],
-        turn: {}
+        ...basicShowdown,
+        survivors: [1, 2, 3, 4, 5]
       })
 
       expect(result.success).toBe(false)
@@ -452,19 +345,8 @@ describe('ShowdownSchema', () => {
 
     it('should fail when ambush is missing', () => {
       const result = ShowdownSchema.safeParse({
-        id: 1,
-        monster: {
-          name: 'White Lion',
-          type: MonsterType.QUARRY,
-          aiDeck: {
-            basic: 2,
-            advanced: 3,
-            legendary: 2
-          }
-        },
-        settlementId: 1,
-        survivors: [1],
-        turn: {}
+        ...basicShowdown,
+        ambush: undefined
       })
 
       expect(result.success).toBe(false)

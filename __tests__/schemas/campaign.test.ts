@@ -1,5 +1,6 @@
 import { TabType } from '@/lib/enums'
-import { CampaignSchema, GlobalSettingsSchema } from '@/schemas/campaign'
+import { CampaignSchema } from '@/schemas/campaign'
+import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ZodError } from 'zod'
 
