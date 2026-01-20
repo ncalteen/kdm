@@ -1,4 +1,10 @@
-import { ColorChoice, MonsterType, SurvivorType, TurnType } from '@/lib/enums'
+import {
+  AmbushType,
+  ColorChoice,
+  MonsterType,
+  SurvivorType,
+  TurnType
+} from '@/lib/enums'
 
 /**
  * Ability/Impairment Removed
@@ -25,14 +31,14 @@ export const ABILITY_IMPAIRMENT_UPDATED_MESSAGE = (isNew: boolean) =>
  * @param ambushType Ambush Type
  * @returns Ambush Message
  */
-export const AMBUSH_MESSAGE = (ambushType: number): string => {
+export const AMBUSH_MESSAGE = (ambushType: AmbushType): string => {
   switch (ambushType) {
-    case 0:
+    case AmbushType.SURVIVORS:
       return 'The survivors ambush their quarry! The showdown begins.'
-    case 1:
+    case AmbushType.NONE:
+      return 'The hunt reaches its epic climax! The showdown begins.'
+    case AmbushType.MONSTER:
       return 'The monster ambushes the survivors! The showdown begins.'
-    case 2:
-      return 'The hunt reaches its epic climax. The showdown begins.'
     default:
       return 'The showdown begins.'
   }

@@ -107,7 +107,7 @@ export function ActiveHuntCard({
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
   const [isShowdownDialogOpen, setIsShowdownDialogOpen] =
     useState<boolean>(false)
-  const [ambushType, setAmbushType] = useState<number>(1)
+  const [ambushType, setAmbushType] = useState<AmbushType>(AmbushType.NONE)
   const [huntEventPopoverOpen, setHuntEventPopoverOpen] =
     useState<boolean>(false)
 
@@ -206,16 +206,9 @@ export function ActiveHuntCard({
       return
 
     try {
-      const ambush =
-        {
-          0: AmbushType.SURVIVORS,
-          1: AmbushType.NONE,
-          2: AmbushType.MONSTER
-        }[ambushType] || AmbushType.NONE
-
       // Create showdown from current hunt
       const showdown: Showdown = {
-        ambush,
+        ambush: ambushType,
         id: getNextShowdownId(campaign),
         level: selectedHunt.level,
         monsters: selectedHunt.monsters,
@@ -244,7 +237,7 @@ export function ActiveHuntCard({
         turn: {
           // If survivors ambush, they go first. Otherwise, the monster does.
           currentTurn:
-            ambush === AmbushType.SURVIVORS
+            ambushType === AmbushType.SURVIVORS
               ? TurnType.SURVIVORS
               : TurnType.MONSTER,
           monsterState: { aiCardDrawn: false },
@@ -312,6 +305,7 @@ export function ActiveHuntCard({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
+                size="sm"
                 className="pointer-events-auto"
                 title="Roll Hunt Event">
                 Roll Hunt Event <DicesIcon className="size-4" />
@@ -445,8 +439,22 @@ export function ActiveHuntCard({
             </div>
 
             <Slider
-              value={[ambushType]}
-              onValueChange={(value) => setAmbushType(value[0])}
+              value={[
+                {
+                  [AmbushType.SURVIVORS]: 0,
+                  [AmbushType.NONE]: 1,
+                  [AmbushType.MONSTER]: 2
+                }[ambushType]
+              ]}
+              onValueChange={(value) =>
+                setAmbushType(
+                  {
+                    0: AmbushType.SURVIVORS,
+                    1: AmbushType.NONE,
+                    2: AmbushType.MONSTER
+                  }[value[0] as 0 | 1 | 2]
+                )
+              }
               max={2}
               min={0}
               step={1}
