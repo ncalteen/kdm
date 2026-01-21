@@ -310,7 +310,7 @@ function migrateTo0_14_0(campaign: Campaign) {
     // @ts-expect-error -- Old Schema
     const monster = campaign.customMonsters[key].main
 
-    if (monster.main.type === 'Quarry') {
+    if (monster.type === 'Quarry') {
       campaign.customQuarries[key] = {
         ccRewards: [],
         huntBoard: monster.huntBoard,
@@ -333,7 +333,7 @@ function migrateTo0_14_0(campaign: Campaign) {
         campaign.customQuarries[key].level3 = monster.level3
       if ('level4' in monster)
         campaign.customQuarries[key].level4 = monster.level4
-    } else if (monster.main.type === 'Nemesis') {
+    } else if (monster.type === 'Nemesis') {
       campaign.customNemeses[key] = {
         multiMonster: false,
         name: monster.name,
