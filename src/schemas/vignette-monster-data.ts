@@ -36,6 +36,8 @@ export const VignetteMonsterDataSchema = z.object({
     .optional(),
   /** Locations */
   locations: z.array(SettlementLocationSchema).optional(),
+  /** Multi-Monster Flag */
+  multiMonster: z.boolean().optional(),
   /** Timeline Entries */
   timeline: MonsterTimelineEntrySchema,
   /** Monster Type */

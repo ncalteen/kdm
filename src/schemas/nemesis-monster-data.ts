@@ -10,12 +10,6 @@ import { z } from 'zod'
  * Nemesis Monster Data Schema
  */
 export const NemesisMonsterDataSchema = z.object({
-  /** Multi-Monster Encounter */
-  multiMonster: z.boolean().default(false),
-  /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
-  /** Monster Node */
-  node: z.enum(MonsterNode),
   /** Level 1 Data */
   level1: z.array(NemesisMonsterLevelSchema).optional(),
   /** Level 2 Data */
@@ -24,6 +18,12 @@ export const NemesisMonsterDataSchema = z.object({
   level3: z.array(NemesisMonsterLevelSchema).optional(),
   /** Level 4 Data */
   level4: z.array(NemesisMonsterLevelSchema).optional(),
+  /** Multi-Monster Encounter */
+  multiMonster: z.boolean().default(false),
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Node */
+  node: z.enum(MonsterNode),
   /** Timeline Entries */
   timeline: MonsterTimelineEntrySchema,
   /** Monster Type */

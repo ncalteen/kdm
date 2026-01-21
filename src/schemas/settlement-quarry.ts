@@ -23,10 +23,6 @@ export const SettlementQuarrySchema = z.object({
   ccPrologue: z.boolean().optional(),
   /** Hunt Board Layout */
   huntBoard: HuntBoardSchema,
-  /** Name */
-  name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
-  /** Node */
-  node: z.enum(MonsterNode),
   /** Level 1 Data */
   level1: z.array(QuarryMonsterLevelSchema).optional(),
   /** Level 2 Data */
@@ -35,6 +31,10 @@ export const SettlementQuarrySchema = z.object({
   level3: z.array(QuarryMonsterLevelSchema).optional(),
   /** Level 4 Data */
   level4: z.array(QuarryMonsterLevelSchema).optional(),
+  /** Name */
+  name: z.string().min(1, 'A nameless quarry cannot be recorded.'),
+  /** Node */
+  node: z.enum(MonsterNode),
   /** Unlocked */
   unlocked: z.boolean(),
   /** Vignette Monster Data */

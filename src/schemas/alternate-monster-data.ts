@@ -15,8 +15,6 @@ import { z } from 'zod'
 export const AlternateMonsterDataSchema = z.object({
   /** Hunt Board Layout */
   huntBoard: HuntBoardSchema.optional(),
-  /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
   /** Level 1 Data */
   level1: z
     .array(z.union([NemesisMonsterLevelSchema, QuarryMonsterLevelSchema]))
@@ -33,8 +31,12 @@ export const AlternateMonsterDataSchema = z.object({
   level4: z
     .array(z.union([NemesisMonsterLevelSchema, QuarryMonsterLevelSchema]))
     .optional(),
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
   /** Locations */
   locations: z.array(SettlementLocationSchema).optional(),
+  /** Multi-Monster Flag */
+  multiMonster: z.boolean().optional(),
   /** Monster Type */
   type: z.enum(MonsterType)
 })

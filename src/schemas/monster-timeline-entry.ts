@@ -13,8 +13,8 @@ export const MonsterTimelineEntrySchema = z
       z.union([
         z.string(),
         z.object({
-          title: z.string().min(1, 'Title is required.'),
-          campaigns: z.array(z.enum(CampaignType)).default([])
+          campaigns: z.array(z.enum(CampaignType)).default([]),
+          title: z.string().min(1, 'Title is required.')
         })
       ])
     )

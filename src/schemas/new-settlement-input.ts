@@ -27,8 +27,7 @@ export const NewSettlementInputSchema = BaseSettlementSchema.extend({
    * Monster Selection
    *
    * It's normally recommended to only have one monster per node, but custom
-   * campaigns allow for more flexibility. Values can be numbers (built-in
-   * monsters) or strings (custom monster strings).
+   * campaigns allow for more flexibility.
    */
   monsters: z.object({
     /** Node Quarry 1 Monster Selection */

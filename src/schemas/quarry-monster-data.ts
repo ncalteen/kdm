@@ -20,14 +20,6 @@ export const QuarryMonsterDataSchema = z.object({
   ccRewards: z.array(SettlementCollectiveCognitionRewardSchema).default([]),
   /** Hunt Board Configuration */
   huntBoard: HuntBoardSchema,
-  /** Multi-Monster Encounter */
-  multiMonster: z.boolean().default(false),
-  /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
-  /** Monster Node */
-  node: z.enum(MonsterNode),
-  /** Prologue Monster */
-  prologue: z.boolean().default(false),
   /** Level 1 Data */
   level1: z.array(QuarryMonsterLevelSchema).optional(),
   /** Level 2 Data */
@@ -38,6 +30,14 @@ export const QuarryMonsterDataSchema = z.object({
   level4: z.array(QuarryMonsterLevelSchema).optional(),
   /** Locations */
   locations: z.array(SettlementLocationSchema).default([]),
+  /** Multi-Monster Encounter */
+  multiMonster: z.boolean().default(false),
+  /** Monster Name */
+  name: z.string().min(1, 'Monster name is required.'),
+  /** Monster Node */
+  node: z.enum(MonsterNode),
+  /** Prologue Monster */
+  prologue: z.boolean().default(false),
   /** Timeline Entries */
   timeline: MonsterTimelineEntrySchema,
   /** Monster Type */
