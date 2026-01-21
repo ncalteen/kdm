@@ -1,0 +1,6758 @@
+{
+  "customNemeses": {
+    "custom-nemesis-1": {
+      "multiMonster": false,
+      "name": "Shadow Weaver",
+      "node": "NN1",
+      "type": "Nemesis",
+      "level1": [
+        {
+          "accuracy": 1,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 5,
+            "advanced": 3,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 8,
+          "damage": 2,
+          "damageTokens": 0,
+          "evasion": 0,
+          "evasionTokens": 0,
+          "life": 10,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Calculating", "Silent"],
+          "movement": 6,
+          "movementTokens": 0,
+          "speed": 2,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorStatuses": ["Darkness"],
+          "toughness": 8,
+          "toughnessTokens": 0,
+          "traits": ["Shadow Step", "Incorporeal"]
+        }
+      ],
+      "level2": [
+        {
+          "accuracy": 2,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 4,
+            "advanced": 4,
+            "legendary": 2
+          },
+          "aiDeckRemaining": 10,
+          "damage": 3,
+          "damageTokens": 0,
+          "evasion": 1,
+          "evasionTokens": 0,
+          "life": 15,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Calculating", "Silent", "Vengeful"],
+          "movement": 7,
+          "movementTokens": 0,
+          "speed": 3,
+          "speedTokens": 0,
+          "strength": 1,
+          "strengthTokens": 0,
+          "survivorStatuses": ["Darkness", "Nightmare"],
+          "toughness": 10,
+          "toughnessTokens": 0,
+          "traits": ["Shadow Step", "Incorporeal", "Dark Aura"]
+        }
+      ],
+      "level3": [
+        {
+          "accuracy": 3,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 3,
+            "advanced": 5,
+            "legendary": 3
+          },
+          "aiDeckRemaining": 11,
+          "damage": 4,
+          "damageTokens": 0,
+          "evasion": 2,
+          "evasionTokens": 0,
+          "life": 20,
+          "luck": 1,
+          "luckTokens": 0,
+          "moods": ["Calculating", "Silent", "Vengeful", "Frenzied"],
+          "movement": 8,
+          "movementTokens": 0,
+          "speed": 4,
+          "speedTokens": 0,
+          "strength": 2,
+          "strengthTokens": 0,
+          "survivorStatuses": ["Darkness", "Nightmare", "Doomed"],
+          "toughness": 12,
+          "toughnessTokens": 0,
+          "traits": ["Shadow Step", "Incorporeal", "Dark Aura", "Soul Drain"]
+        }
+      ],
+      "timeline": {
+        "8": ["Nemesis Encounter - Shadow Weaver Lvl 1"],
+        "16": ["Nemesis Encounter - Shadow Weaver Lvl 2"],
+        "24": ["Nemesis Encounter - Shadow Weaver Lvl 3"]
+      }
+    }
+  },
+  "customQuarries": {
+    "custom-quarry-1": {
+      "multiMonster": true,
+      "name": "Dark Horses",
+      "node": "NQ4",
+      "type": "Quarry",
+      "prologue": false,
+      "level1": [
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 7,
+            "advanced": 0,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 1,
+          "damageTokens": 0,
+          "evasion": 1,
+          "evasionTokens": 0,
+          "huntPos": 11,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Cunning"],
+          "movement": 6,
+          "movementTokens": 0,
+          "name": "Dark Horse Alpha",
+          "speed": 2,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 7,
+          "toughnessTokens": 0,
+          "traits": ["Stampede"]
+        }
+      ],
+      "level2": [
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 7,
+            "advanced": 0,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 1,
+          "damageTokens": 0,
+          "evasion": 1,
+          "evasionTokens": 0,
+          "huntPos": 11,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Cunning"],
+          "movement": 6,
+          "movementTokens": 0,
+          "name": "Dark Horse Alpha",
+          "speed": 2,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 7,
+          "toughnessTokens": 0,
+          "traits": ["Stampede"]
+        },
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 6,
+            "advanced": 1,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 1,
+          "damageTokens": 0,
+          "evasion": 0,
+          "evasionTokens": 0,
+          "huntPos": 10,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Skittish"],
+          "movement": 5,
+          "movementTokens": 0,
+          "name": "Dark Horse Beta",
+          "speed": 1,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 6,
+          "toughnessTokens": 0,
+          "traits": ["Flee"]
+        }
+      ],
+      "level3": [
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 7,
+            "advanced": 0,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 1,
+          "damageTokens": 0,
+          "evasion": 1,
+          "evasionTokens": 0,
+          "huntPos": 11,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Cunning"],
+          "movement": 6,
+          "movementTokens": 0,
+          "name": "Dark Horse Alpha",
+          "speed": 2,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 7,
+          "toughnessTokens": 0,
+          "traits": ["Stampede"]
+        },
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 6,
+            "advanced": 1,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 1,
+          "damageTokens": 0,
+          "evasion": 0,
+          "evasionTokens": 0,
+          "huntPos": 10,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Skittish"],
+          "movement": 5,
+          "movementTokens": 0,
+          "name": "Dark Horse Beta",
+          "speed": 1,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 6,
+          "toughnessTokens": 0,
+          "traits": ["Flee"]
+        },
+        {
+          "accuracy": 1,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 5,
+            "advanced": 2,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 2,
+          "damageTokens": 0,
+          "evasion": 1,
+          "evasionTokens": 0,
+          "huntPos": 12,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Wild"],
+          "movement": 7,
+          "movementTokens": 0,
+          "name": "Dark Horse Gamma",
+          "speed": 3,
+          "speedTokens": 0,
+          "strength": 1,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 8,
+          "toughnessTokens": 0,
+          "traits": ["Rampage"]
+        }
+      ],
+      "level4": [
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 7,
+            "advanced": 0,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 1,
+          "damageTokens": 0,
+          "evasion": 1,
+          "evasionTokens": 0,
+          "huntPos": 11,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Cunning"],
+          "movement": 6,
+          "movementTokens": 0,
+          "name": "Dark Horse Alpha",
+          "speed": 2,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 7,
+          "toughnessTokens": 0,
+          "traits": ["Stampede"]
+        },
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 6,
+            "advanced": 1,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 1,
+          "damageTokens": 0,
+          "evasion": 0,
+          "evasionTokens": 0,
+          "huntPos": 10,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Skittish"],
+          "movement": 5,
+          "movementTokens": 0,
+          "name": "Dark Horse Beta",
+          "speed": 1,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 6,
+          "toughnessTokens": 0,
+          "traits": ["Flee"]
+        },
+        {
+          "accuracy": 1,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 5,
+            "advanced": 2,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 7,
+          "damage": 2,
+          "damageTokens": 0,
+          "evasion": 1,
+          "evasionTokens": 0,
+          "huntPos": 12,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": ["Wild"],
+          "movement": 7,
+          "movementTokens": 0,
+          "name": "Dark Horse Gamma",
+          "speed": 3,
+          "speedTokens": 0,
+          "strength": 1,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 8,
+          "toughnessTokens": 0,
+          "traits": ["Rampage"]
+        }
+      ],
+      "huntBoard": {
+        "1": "basic",
+        "2": "basic",
+        "3": "monster",
+        "4": "basic",
+        "5": "basic",
+        "7": "basic",
+        "8": "basic",
+        "9": "basic",
+        "10": "monster",
+        "11": "basic"
+      },
+      "locations": [
+        {
+          "name": "Serpent Den",
+          "unlocked": false
+        },
+        {
+          "name": "Twilight Grove",
+          "unlocked": false
+        }
+      ],
+      "ccRewards": [
+        {
+          "cc": 0,
+          "name": "Venom Study",
+          "unlocked": false
+        },
+        {
+          "cc": 1,
+          "name": "Serpent Wisdom",
+          "unlocked": false
+        },
+        {
+          "cc": 2,
+          "name": "Twilight Secrets",
+          "unlocked": false
+        }
+      ],
+      "timeline": {
+        "1": [
+          {
+            "title": "Iron Wyrm Prologue",
+            "campaigns": ["Custom"]
+          }
+        ],
+        "6": ["Iron Wyrm Lvl 1"],
+        "14": ["Iron Wyrm Lvl 2"]
+      }
+    }
+  },
+  "hunts": [
+    {
+      "huntBoard": {
+        "1": "basic",
+        "2": "basic",
+        "3": "basic",
+        "4": "basic",
+        "5": "basic",
+        "7": "basic",
+        "8": "basic",
+        "9": "basic",
+        "10": "basic",
+        "11": "basic"
+      },
+      "id": 1,
+      "level": "level1",
+      "monsters": [
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 7,
+            "advanced": 3,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 10,
+          "damage": 0,
+          "damageTokens": 0,
+          "evasion": 0,
+          "evasionTokens": 0,
+          "huntPos": 4,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": [],
+          "movement": 6,
+          "movementTokens": 0,
+          "speed": 0,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorHuntPos": 0,
+          "survivorStatuses": [],
+          "toughness": 8,
+          "toughnessTokens": 0,
+          "traits": [],
+          "knockedDown": false,
+          "level": "level1",
+          "name": "White Lion",
+          "notes": "Starting hunt state",
+          "type": "Quarry",
+          "wounds": 0
+        }
+      ],
+      "monsterPosition": 6,
+      "settlementId": 1,
+      "survivorDetails": [
+        {
+          "accuracyTokens": 0,
+          "color": "red",
+          "evasionTokens": 0,
+          "id": 7,
+          "insanityTokens": 0,
+          "luckTokens": 0,
+          "movementTokens": 0,
+          "notes": "Survivor 7 ready for hunt",
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        }
+      ],
+      "survivorPosition": 0,
+      "survivors": [7, 8, 9, 10]
+    }
+  ],
+  "selectedHuntId": null,
+  "selectedShowdownId": null,
+  "selectedSettlementId": null,
+  "selectedSurvivorId": null,
+  "selectedTab": "timeline",
+  "settings": {
+    "disableToasts": false,
+    "unlockedMonsters": {
+      "killeniumButcher": false,
+      "screamingNukalope": false,
+      "whiteGigalion": false
+    }
+  },
+  "settlements": [
+    {
+      "id": 1,
+      "name": "PotL 1",
+      "arrivalBonuses": [],
+      "campaignType": "People of the Lantern",
+      "deathCount": 2,
+      "departingBonuses": [],
+      "gear": ["Cloth", "Founding Stone"],
+      "innovations": ["Language"],
+      "locations": [
+        {
+          "name": "Barber Surgeon",
+          "unlocked": false
+        },
+        {
+          "name": "Blacksmith",
+          "unlocked": false
+        },
+        {
+          "name": "Bone Smith",
+          "unlocked": false
+        },
+        {
+          "name": "Exhausted Lantern Hoard",
+          "unlocked": false
+        },
+        {
+          "name": "Lantern Hoard",
+          "unlocked": true
+        },
+        {
+          "name": "Leather Worker",
+          "unlocked": false
+        },
+        {
+          "name": "Mask Maker",
+          "unlocked": false
+        },
+        {
+          "name": "Organ Grinder",
+          "unlocked": false
+        },
+        {
+          "name": "Skinnery",
+          "unlocked": false
+        },
+        {
+          "name": "Weapon Crafter",
+          "unlocked": false
+        },
+        {
+          "name": "Catarium",
+          "unlocked": false
+        },
+        {
+          "name": "Stone Circle",
+          "unlocked": false
+        },
+        {
+          "name": "Plumery",
+          "unlocked": false
+        }
+      ],
+      "lostSettlements": 0,
+      "milestones": [
+        {
+          "name": "Population reaches 0",
+          "complete": false,
+          "event": "Game Over"
+        },
+        {
+          "name": "Population reaches 15",
+          "complete": false,
+          "event": "Principle: Society"
+        },
+        {
+          "name": "First time death count is updated",
+          "complete": false,
+          "event": "Principle: Death"
+        },
+        {
+          "name": "First child is born",
+          "complete": false,
+          "event": "Principle: New Life"
+        },
+        {
+          "name": "Settlement has 5 innovations",
+          "complete": false,
+          "event": "Hooded Knight"
+        }
+      ],
+      "nemeses": [
+        {
+          "multiMonster": false,
+          "name": "Butcher",
+          "node": "NN1",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 9,
+              "toughnessTokens": 0,
+              "traits": ["Berserker", "Dreaded Trophies", "Fast Target"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 11,
+                "advanced": 10,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker",
+                "Invincible",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "4": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 1",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "13": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": ["People of the Stars"]
+              }
+            ],
+            "16": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "22": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "23": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ]
+          },
+          "vignette": {
+            "name": "Killenium Butcher",
+            "type": "Nemesis",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 9,
+                  "advanced": 6,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 15,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 1,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 13,
+                "toughnessTokens": 0,
+                "traits": ["Scorn", "Self-Aware"]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 2,
+                "aiDeck": {
+                  "basic": 11,
+                  "advanced": 10,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 21,
+                "damage": 2,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 1,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 16,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Berzerker",
+                  "Invincible",
+                  "Scorn",
+                  "Self-Aware",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "timeline": {}
+          },
+          "unlocked": true,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "King's Man",
+          "node": "NN2",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 2,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Weak Spot"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 11,
+                "advanced": 4,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 16,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Silent Hymn",
+                "Weak Spot"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 6,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 19,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 18,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Silent Hymn",
+                "Weak Spot",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "6": [
+              {
+                "title": "Armored Strangers",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "9": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 1",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "19": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 2",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "21": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 2",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "23": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "28": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 3",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ]
+          },
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "The Hand",
+          "node": "NN3",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 0,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 14,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 1,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 11,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 2,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 6,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 3,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 30,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "11": [
+              {
+                "title": "Regal Visit",
+                "campaigns": ["People of the Lantern"]
+              }
+            ],
+            "13": [
+              {
+                "title": "Nemesis Encounter - The Hand Lvl 1",
+                "campaigns": [
+                  "People of the Lantern",
+                  "People of the Dream Keeper"
+                ]
+              }
+            ],
+            "24": [
+              {
+                "title": "Nemesis Encounter - The Hand Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ]
+          },
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "Watcher",
+          "node": "CO",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 0,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "life": 15,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": -1,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Retinue"],
+              "toughness": 0,
+              "toughnessTokens": 0,
+              "traits": [
+                "Audience",
+                "Lantern Vortex",
+                "Vapor of Nothingness",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "20": ["Watched"],
+            "25": ["Nemesis Encounter - Watcher"]
+          },
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false,
+          "level4Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "Gold Smoke Knight",
+          "node": "FI",
+          "type": "Nemesis",
+          "level4": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 9,
+                "advanced": 7,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 18,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": [],
+              "toughness": 27,
+              "toughnessTokens": 0,
+              "traits": [
+                "Blacken",
+                "Frustration",
+                "Mauler",
+                "Secondary Forge",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "30": ["Nemesis Encounter - Gold Smoke Knight"]
+          },
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        }
+      ],
+      "notes": "Early game settlement",
+      "patterns": [],
+      "population": 20,
+      "principles": [
+        {
+          "name": "New Life",
+          "option1Name": "Protect the Young",
+          "option1Selected": false,
+          "option2Name": "Survival of the Fittest",
+          "option2Selected": false
+        },
+        {
+          "name": "Death",
+          "option1Name": "Graves",
+          "option1Selected": false,
+          "option2Name": "Cannibalize",
+          "option2Selected": false
+        },
+        {
+          "name": "Society",
+          "option1Name": "Collective Toil",
+          "option1Selected": false,
+          "option2Name": "Accept Darkness",
+          "option2Selected": false
+        },
+        {
+          "name": "Conviction",
+          "option1Name": "Romantic",
+          "option1Selected": false,
+          "option2Name": "Barbaric",
+          "option2Selected": false
+        }
+      ],
+      "quarries": [
+        {
+          "ccRewards": [
+            {
+              "name": "White Lion Cuisine",
+              "cc": 6,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "monster",
+            "2": "monster",
+            "3": "basic",
+            "4": "basic",
+            "5": "monster",
+            "7": "basic",
+            "8": "monster",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "White Lion",
+          "node": "NQ1",
+          "prologue": true,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 3,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 8,
+              "toughnessTokens": 0,
+              "traits": []
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Cunning"]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 9,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 10,
+              "luck": 0,
+              "luckTokens": 1,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 14,
+              "toughnessTokens": 0,
+              "traits": ["Cunning", "Merciless", "Indomitable"]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Catarium",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "0": ["White Lion"]
+          },
+          "vignette": {
+            "huntBoard": {
+              "1": "basic",
+              "2": "basic",
+              "3": "basic",
+              "4": "basic",
+              "5": "monster",
+              "7": "monster",
+              "8": "basic",
+              "9": "monster",
+              "10": "monster",
+              "11": "basic"
+            },
+            "multiMonster": false,
+            "name": "White Gigalion",
+            "type": "Quarry",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 0,
+                "aiDeck": {
+                  "basic": 10,
+                  "advanced": 5,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 15,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 8,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 8,
+                "movementTokens": 0,
+                "speed": 1,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 10,
+                "toughnessTokens": 0,
+                "traits": ["Giga Claws", "Smart Cat", "Vicious"]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 0,
+                "aiDeck": {
+                  "basic": 11,
+                  "advanced": 8,
+                  "legendary": 1
+                },
+                "aiDeckRemaining": 20,
+                "damage": 2,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 8,
+                "luck": 0,
+                "luckTokens": 1,
+                "moods": [],
+                "movement": 10,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 16,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Giga Claws",
+                  "Golden Eyes",
+                  "Merciless",
+                  "Smart Cat",
+                  "Vicious",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "locations": [
+              {
+                "name": "Giga Catarium",
+                "unlocked": false
+              }
+            ],
+            "timeline": {}
+          },
+          "unlocked": true
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Screaming Antelope Cuisine",
+              "cc": 16,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "monster",
+            "2": "basic",
+            "3": "monster",
+            "4": "basic",
+            "5": "basic",
+            "7": "monster",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Screaming Antelope",
+          "node": "NQ2",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 3,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 8,
+              "toughnessTokens": 0,
+              "traits": ["Trample"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Diabolical", "Trample"]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 8,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 22,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 1,
+              "huntPos": 10,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Diabolical",
+                "Hypermetabolism",
+                "Legendary Horns",
+                "Trample",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Stone Circle",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "2": ["Endless Screams"]
+          },
+          "vignette": {
+            "huntBoard": {
+              "1": "basic",
+              "2": "basic",
+              "3": "monster",
+              "4": "basic",
+              "5": "basic",
+              "7": "monster",
+              "8": "basic",
+              "9": "basic",
+              "10": "monster",
+              "11": "basic"
+            },
+            "multiMonster": false,
+            "name": "Screaming Nukalope",
+            "type": "Quarry",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 9,
+                  "advanced": 7,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 16,
+                "damage": 0,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 9,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 9,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 11,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Atomic Vigor - Inert",
+                  "Critical Mass - Inert",
+                  "Prehensile Tail - Inert"
+                ]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 12,
+                  "advanced": 8,
+                  "legendary": 2
+                },
+                "aiDeckRemaining": 22,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 2,
+                "huntPos": 11,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 9,
+                "movementTokens": 0,
+                "speed": 3,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 12,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Atomic Vigor - Inert",
+                  "Critical Mass - Inert",
+                  "Exponential Yield",
+                  "Legendary Horns",
+                  "Prehensile Tail - Inert",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "locations": [
+              {
+                "name": "Stone Circle Hot Zone",
+                "unlocked": false
+              }
+            ],
+            "timeline": {}
+          },
+          "unlocked": false
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Phoenix Cuisine",
+              "cc": 26,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "basic",
+            "2": "monster",
+            "3": "basic",
+            "4": "monster",
+            "5": "basic",
+            "7": "monster",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Phoenix",
+          "node": "NQ3",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 3,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 5,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Materialize", "Spiral Age", "Zeal"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 6,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 17,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 13,
+                "advanced": 7,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 22,
+              "damage": 3,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 11,
+              "luck": 0,
+              "luckTokens": 2,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 17,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Plumery",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "7": ["Phoenix Feather"]
+          },
+          "unlocked": false
+        }
+      ],
+      "resources": [
+        {
+          "name": "Monster Hide",
+          "amount": 15,
+          "category": "Monster",
+          "types": ["Hide"]
+        },
+        {
+          "name": "Monster Bone",
+          "amount": 11,
+          "category": "Monster",
+          "types": ["Bone"]
+        },
+        {
+          "name": "White Lion Claw",
+          "amount": 3,
+          "category": "Monster",
+          "types": ["Bone"]
+        },
+        {
+          "name": "Iron",
+          "amount": 5,
+          "category": "Basic",
+          "types": ["Scrap"]
+        }
+      ],
+      "seedPatterns": [],
+      "survivalLimit": 1,
+      "survivorType": "Core",
+      "timeline": [
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": ["First Day", "Returning Survivors"]
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Hands of Heat"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Principle: Conviction"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        }
+      ],
+      "usesScouts": false,
+      "lanternResearchLevel": 1,
+      "monsterVolumes": []
+    },
+    {
+      "id": 3,
+      "name": "PotSun 1",
+      "arrivalBonuses": [],
+      "campaignType": "People of the Sun",
+      "deathCount": 3,
+      "departingBonuses": [],
+      "gear": ["Cloth", "Founding Stone"],
+      "innovations": ["Language"],
+      "locations": [
+        {
+          "name": "Barber Surgeon",
+          "unlocked": false
+        },
+        {
+          "name": "Blacksmith",
+          "unlocked": false
+        },
+        {
+          "name": "Bone Smith",
+          "unlocked": false
+        },
+        {
+          "name": "Leather Worker",
+          "unlocked": false
+        },
+        {
+          "name": "Mask Maker",
+          "unlocked": false
+        },
+        {
+          "name": "Organ Grinder",
+          "unlocked": false
+        },
+        {
+          "name": "Sacred Pool",
+          "unlocked": true
+        },
+        {
+          "name": "Skinnery",
+          "unlocked": false
+        },
+        {
+          "name": "The Sun",
+          "unlocked": true
+        },
+        {
+          "name": "Weapon Crafter",
+          "unlocked": false
+        },
+        {
+          "name": "Catarium",
+          "unlocked": false
+        },
+        {
+          "name": "Stone Circle",
+          "unlocked": false
+        },
+        {
+          "name": "Plumery",
+          "unlocked": false
+        }
+      ],
+      "lostSettlements": 0,
+      "milestones": [
+        {
+          "name": "Population reaches 0",
+          "complete": false,
+          "event": "Game Over"
+        },
+        {
+          "name": "Population reaches 15",
+          "complete": false,
+          "event": "Principle: Society"
+        },
+        {
+          "name": "First time death count is updated",
+          "complete": false,
+          "event": "Principle: Death"
+        },
+        {
+          "name": "Settlement has 8 innovations",
+          "complete": false,
+          "event": "Edged Tonometry"
+        },
+        {
+          "name": "Not Victorious against Nemesis",
+          "complete": false,
+          "event": "Game Over"
+        }
+      ],
+      "nemeses": [
+        {
+          "multiMonster": false,
+          "name": "Butcher",
+          "node": "NN1",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 9,
+              "toughnessTokens": 0,
+              "traits": ["Berserker", "Dreaded Trophies", "Fast Target"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 11,
+                "advanced": 10,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker",
+                "Invincible",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "4": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 1",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "13": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": ["People of the Stars"]
+              }
+            ],
+            "16": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "22": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "23": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ]
+          },
+          "vignette": {
+            "name": "Killenium Butcher",
+            "type": "Nemesis",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 9,
+                  "advanced": 6,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 15,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 1,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 13,
+                "toughnessTokens": 0,
+                "traits": ["Scorn", "Self-Aware"]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 2,
+                "aiDeck": {
+                  "basic": 11,
+                  "advanced": 10,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 21,
+                "damage": 2,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 1,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 16,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Berzerker",
+                  "Invincible",
+                  "Scorn",
+                  "Self-Aware",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "timeline": {}
+          },
+          "unlocked": true,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "King's Man",
+          "node": "NN2",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 2,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Weak Spot"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 11,
+                "advanced": 4,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 16,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Silent Hymn",
+                "Weak Spot"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 6,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 19,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 18,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Silent Hymn",
+                "Weak Spot",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "6": [
+              {
+                "title": "Armored Strangers",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "9": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 1",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "19": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 2",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "21": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 2",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "23": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "28": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 3",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ]
+          },
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        }
+      ],
+      "notes": "Focused path",
+      "patterns": [],
+      "population": 20,
+      "principles": [
+        {
+          "name": "New Life",
+          "option1Name": "Protect the Young",
+          "option1Selected": false,
+          "option2Name": "Survival of the Fittest",
+          "option2Selected": false
+        },
+        {
+          "name": "Death",
+          "option1Name": "Graves",
+          "option1Selected": false,
+          "option2Name": "Cannibalize",
+          "option2Selected": false
+        },
+        {
+          "name": "Society",
+          "option1Name": "Collective Toil",
+          "option1Selected": false,
+          "option2Name": "Accept Darkness",
+          "option2Selected": false
+        },
+        {
+          "name": "Conviction",
+          "option1Name": "Romantic",
+          "option1Selected": false,
+          "option2Name": "Barbaric",
+          "option2Selected": false
+        }
+      ],
+      "quarries": [
+        {
+          "ccRewards": [
+            {
+              "name": "White Lion Cuisine",
+              "cc": 6,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "monster",
+            "2": "monster",
+            "3": "basic",
+            "4": "basic",
+            "5": "monster",
+            "7": "basic",
+            "8": "monster",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "White Lion",
+          "node": "NQ1",
+          "prologue": true,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 3,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 8,
+              "toughnessTokens": 0,
+              "traits": []
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Cunning"]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 9,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 10,
+              "luck": 0,
+              "luckTokens": 1,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 14,
+              "toughnessTokens": 0,
+              "traits": ["Cunning", "Merciless", "Indomitable"]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Catarium",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "0": ["White Lion"]
+          },
+          "vignette": {
+            "huntBoard": {
+              "1": "basic",
+              "2": "basic",
+              "3": "basic",
+              "4": "basic",
+              "5": "monster",
+              "7": "monster",
+              "8": "basic",
+              "9": "monster",
+              "10": "monster",
+              "11": "basic"
+            },
+            "multiMonster": false,
+            "name": "White Gigalion",
+            "type": "Quarry",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 0,
+                "aiDeck": {
+                  "basic": 10,
+                  "advanced": 5,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 15,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 8,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 8,
+                "movementTokens": 0,
+                "speed": 1,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 10,
+                "toughnessTokens": 0,
+                "traits": ["Giga Claws", "Smart Cat", "Vicious"]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 0,
+                "aiDeck": {
+                  "basic": 11,
+                  "advanced": 8,
+                  "legendary": 1
+                },
+                "aiDeckRemaining": 20,
+                "damage": 2,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 8,
+                "luck": 0,
+                "luckTokens": 1,
+                "moods": [],
+                "movement": 10,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 16,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Giga Claws",
+                  "Golden Eyes",
+                  "Merciless",
+                  "Smart Cat",
+                  "Vicious",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "locations": [
+              {
+                "name": "Giga Catarium",
+                "unlocked": false
+              }
+            ],
+            "timeline": {}
+          },
+          "unlocked": true
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Screaming Antelope Cuisine",
+              "cc": 16,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "monster",
+            "2": "basic",
+            "3": "monster",
+            "4": "basic",
+            "5": "basic",
+            "7": "monster",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Screaming Antelope",
+          "node": "NQ2",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 3,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 8,
+              "toughnessTokens": 0,
+              "traits": ["Trample"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Diabolical", "Trample"]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 8,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 22,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 1,
+              "huntPos": 10,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Diabolical",
+                "Hypermetabolism",
+                "Legendary Horns",
+                "Trample",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Stone Circle",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "2": ["Endless Screams"]
+          },
+          "vignette": {
+            "huntBoard": {
+              "1": "basic",
+              "2": "basic",
+              "3": "monster",
+              "4": "basic",
+              "5": "basic",
+              "7": "monster",
+              "8": "basic",
+              "9": "basic",
+              "10": "monster",
+              "11": "basic"
+            },
+            "multiMonster": false,
+            "name": "Screaming Nukalope",
+            "type": "Quarry",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 9,
+                  "advanced": 7,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 16,
+                "damage": 0,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 9,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 9,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 11,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Atomic Vigor - Inert",
+                  "Critical Mass - Inert",
+                  "Prehensile Tail - Inert"
+                ]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 12,
+                  "advanced": 8,
+                  "legendary": 2
+                },
+                "aiDeckRemaining": 22,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 2,
+                "huntPos": 11,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 9,
+                "movementTokens": 0,
+                "speed": 3,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 12,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Atomic Vigor - Inert",
+                  "Critical Mass - Inert",
+                  "Exponential Yield",
+                  "Legendary Horns",
+                  "Prehensile Tail - Inert",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "locations": [
+              {
+                "name": "Stone Circle Hot Zone",
+                "unlocked": false
+              }
+            ],
+            "timeline": {}
+          },
+          "unlocked": false
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Phoenix Cuisine",
+              "cc": 26,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "basic",
+            "2": "monster",
+            "3": "basic",
+            "4": "monster",
+            "5": "basic",
+            "7": "monster",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Phoenix",
+          "node": "NQ3",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 3,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 5,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Materialize", "Spiral Age", "Zeal"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 6,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 17,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 13,
+                "advanced": 7,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 22,
+              "damage": 3,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 11,
+              "luck": 0,
+              "luckTokens": 2,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 17,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Plumery",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "7": ["Phoenix Feather"]
+          },
+          "unlocked": false
+        }
+      ],
+      "resources": [
+        {
+          "name": "Monster Hide",
+          "amount": 15,
+          "category": "Monster",
+          "types": ["Hide"]
+        },
+        {
+          "name": "Monster Organ",
+          "amount": 6,
+          "category": "Monster",
+          "types": ["Organ"]
+        },
+        {
+          "name": "Love Juice",
+          "amount": 2,
+          "category": "Strange",
+          "types": ["Organ"]
+        }
+      ],
+      "seedPatterns": [],
+      "survivalLimit": 1,
+      "survivorType": "Core",
+      "timeline": [
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": ["The Pool and the Sun"]
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": ["Sun Dipping"]
+        },
+        {
+          "completed": false,
+          "entries": ["The Great Sky Gift"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Birth of Color"]
+        },
+        {
+          "completed": false,
+          "entries": ["Principle: Conviction"]
+        },
+        {
+          "completed": false,
+          "entries": ["Sun Dipping"]
+        },
+        {
+          "completed": false,
+          "entries": ["The Great Sky Gift"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Sun Dipping"]
+        },
+        {
+          "completed": false,
+          "entries": ["Final Gift"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        }
+      ],
+      "usesScouts": false
+    },
+    {
+      "id": 5,
+      "name": "PotStars 1",
+      "arrivalBonuses": [],
+      "campaignType": "People of the Stars",
+      "deathCount": 2,
+      "departingBonuses": [],
+      "gear": ["Founding Stone"],
+      "innovations": ["Dragon Speech"],
+      "locations": [
+        {
+          "name": "Barber Surgeon",
+          "unlocked": false
+        },
+        {
+          "name": "Blacksmith",
+          "unlocked": false
+        },
+        {
+          "name": "Bone Smith",
+          "unlocked": false
+        },
+        {
+          "name": "Leather Worker",
+          "unlocked": false
+        },
+        {
+          "name": "Mask Maker",
+          "unlocked": false
+        },
+        {
+          "name": "Organ Grinder",
+          "unlocked": false
+        },
+        {
+          "name": "Skinnery",
+          "unlocked": false
+        },
+        {
+          "name": "Throne",
+          "unlocked": true
+        },
+        {
+          "name": "Weapon Crafter",
+          "unlocked": false
+        },
+        {
+          "name": "Catarium",
+          "unlocked": false
+        },
+        {
+          "name": "Stone Circle",
+          "unlocked": false
+        },
+        {
+          "name": "Plumery",
+          "unlocked": false
+        }
+      ],
+      "lostSettlements": 0,
+      "milestones": [
+        {
+          "name": "Population reaches 0",
+          "complete": false,
+          "event": "Game Over"
+        },
+        {
+          "name": "Population reaches 15",
+          "complete": false,
+          "event": "Principle: Society"
+        },
+        {
+          "name": "First time death count is updated",
+          "complete": false,
+          "event": "Principle: Death"
+        },
+        {
+          "name": "First child is born",
+          "complete": false,
+          "event": "Principle: New Life"
+        }
+      ],
+      "nemeses": [
+        {
+          "multiMonster": false,
+          "name": "Butcher",
+          "node": "NN1",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 9,
+              "toughnessTokens": 0,
+              "traits": ["Berserker", "Dreaded Trophies", "Fast Target"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 11,
+                "advanced": 10,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker",
+                "Invincible",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "4": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 1",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "13": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": ["People of the Stars"]
+              }
+            ],
+            "16": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "22": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "23": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ]
+          },
+          "vignette": {
+            "name": "Killenium Butcher",
+            "type": "Nemesis",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 9,
+                  "advanced": 6,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 15,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 1,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 13,
+                "toughnessTokens": 0,
+                "traits": ["Scorn", "Self-Aware"]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 2,
+                "aiDeck": {
+                  "basic": 11,
+                  "advanced": 10,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 21,
+                "damage": 2,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 1,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 16,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Berzerker",
+                  "Invincible",
+                  "Scorn",
+                  "Self-Aware",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "timeline": {}
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "King's Man",
+          "node": "NN2",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 2,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Weak Spot"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 11,
+                "advanced": 4,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 16,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Silent Hymn",
+                "Weak Spot"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 6,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 19,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Battle Tempo"],
+              "toughness": 18,
+              "toughnessTokens": 0,
+              "traits": [
+                "King's Aura",
+                "King's Combat",
+                "Out-Fighting",
+                "Silent Hymn",
+                "Weak Spot",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "6": [
+              {
+                "title": "Armored Strangers",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "9": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 1",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "19": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 2",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ],
+            "21": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 2",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "23": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "28": [
+              {
+                "title": "Nemesis Encounter - King's Man Lvl 3",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern",
+                  "People of the Stars"
+                ]
+              }
+            ]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "The Hand",
+          "node": "NN3",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 0,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 14,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 1,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 11,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 2,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 6,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 3,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 30,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "11": [
+              {
+                "title": "Regal Visit",
+                "campaigns": ["People of the Lantern"]
+              }
+            ],
+            "13": [
+              {
+                "title": "Nemesis Encounter - The Hand Lvl 1",
+                "campaigns": [
+                  "People of the Lantern",
+                  "People of the Dream Keeper"
+                ]
+              }
+            ],
+            "24": [
+              {
+                "title": "Nemesis Encounter - The Hand Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "Watcher",
+          "node": "CO",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 0,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "life": 15,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": -1,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Retinue"],
+              "toughness": 0,
+              "toughnessTokens": 0,
+              "traits": [
+                "Audience",
+                "Lantern Vortex",
+                "Vapor of Nothingness",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "20": ["Watched"],
+            "25": ["Nemesis Encounter - Watcher"]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false,
+          "level4Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "Dying God (Dragon King)",
+          "node": "FI",
+          "type": "Nemesis",
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 5,
+                "advanced": 5,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 11,
+              "damage": 3,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "life": 20,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 10,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": [],
+              "toughness": 17,
+              "toughnessTokens": 0,
+              "traits": ["Irradiate", "Smolder", "Trample", "Unseen Agony"]
+            }
+          ],
+          "timeline": {
+            "24": ["Nemesis Encounter - Death of the Dragon King"]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        }
+      ],
+      "notes": "Arc survivor campaign with collective cognition mechanics",
+      "patterns": [],
+      "population": 20,
+      "principles": [
+        {
+          "name": "New Life",
+          "option1Name": "Protect the Young",
+          "option1Selected": false,
+          "option2Name": "Survival of the Fittest",
+          "option2Selected": false
+        },
+        {
+          "name": "Death",
+          "option1Name": "Graves",
+          "option1Selected": false,
+          "option2Name": "Cannibalize",
+          "option2Selected": false
+        },
+        {
+          "name": "Society",
+          "option1Name": "Collective Toil",
+          "option1Selected": false,
+          "option2Name": "Accept Darkness",
+          "option2Selected": false
+        },
+        {
+          "name": "Conviction",
+          "option1Name": "Romantic",
+          "option1Selected": false,
+          "option2Name": "Barbaric",
+          "option2Selected": false
+        }
+      ],
+      "quarries": [
+        {
+          "ccRewards": [
+            {
+              "name": "White Lion Cuisine",
+              "cc": 6,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "monster",
+            "2": "monster",
+            "3": "basic",
+            "4": "basic",
+            "5": "monster",
+            "7": "basic",
+            "8": "monster",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "White Lion",
+          "node": "NQ1",
+          "prologue": true,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 3,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 8,
+              "toughnessTokens": 0,
+              "traits": []
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Cunning"]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 9,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 10,
+              "luck": 0,
+              "luckTokens": 1,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 14,
+              "toughnessTokens": 0,
+              "traits": ["Cunning", "Merciless", "Indomitable"]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Catarium",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "0": ["White Lion"]
+          },
+          "vignette": {
+            "huntBoard": {
+              "1": "basic",
+              "2": "basic",
+              "3": "basic",
+              "4": "basic",
+              "5": "monster",
+              "7": "monster",
+              "8": "basic",
+              "9": "monster",
+              "10": "monster",
+              "11": "basic"
+            },
+            "multiMonster": false,
+            "name": "White Gigalion",
+            "type": "Quarry",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 0,
+                "aiDeck": {
+                  "basic": 10,
+                  "advanced": 5,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 15,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 8,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 8,
+                "movementTokens": 0,
+                "speed": 1,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 10,
+                "toughnessTokens": 0,
+                "traits": ["Giga Claws", "Smart Cat", "Vicious"]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 0,
+                "aiDeck": {
+                  "basic": 11,
+                  "advanced": 8,
+                  "legendary": 1
+                },
+                "aiDeckRemaining": 20,
+                "damage": 2,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 8,
+                "luck": 0,
+                "luckTokens": 1,
+                "moods": [],
+                "movement": 10,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 16,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Giga Claws",
+                  "Golden Eyes",
+                  "Merciless",
+                  "Smart Cat",
+                  "Vicious",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "locations": [
+              {
+                "name": "Giga Catarium",
+                "unlocked": false
+              }
+            ],
+            "timeline": {}
+          },
+          "ccPrologue": false,
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "unlocked": true
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Screaming Antelope Cuisine",
+              "cc": 16,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "monster",
+            "2": "basic",
+            "3": "monster",
+            "4": "basic",
+            "5": "basic",
+            "7": "monster",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Screaming Antelope",
+          "node": "NQ2",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 3,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 8,
+              "toughnessTokens": 0,
+              "traits": ["Trample"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Diabolical", "Trample"]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 8,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 22,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 1,
+              "huntPos": 10,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Diabolical",
+                "Hypermetabolism",
+                "Legendary Horns",
+                "Trample",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Stone Circle",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "2": ["Endless Screams"]
+          },
+          "vignette": {
+            "huntBoard": {
+              "1": "basic",
+              "2": "basic",
+              "3": "monster",
+              "4": "basic",
+              "5": "basic",
+              "7": "monster",
+              "8": "basic",
+              "9": "basic",
+              "10": "monster",
+              "11": "basic"
+            },
+            "multiMonster": false,
+            "name": "Screaming Nukalope",
+            "type": "Quarry",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 9,
+                  "advanced": 7,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 16,
+                "damage": 0,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "huntPos": 9,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 9,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 11,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Atomic Vigor - Inert",
+                  "Critical Mass - Inert",
+                  "Prehensile Tail - Inert"
+                ]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 12,
+                  "advanced": 8,
+                  "legendary": 2
+                },
+                "aiDeckRemaining": 22,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 2,
+                "huntPos": 11,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 9,
+                "movementTokens": 0,
+                "speed": 3,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorHuntPos": 0,
+                "survivorStatuses": [],
+                "toughness": 12,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Atomic Vigor - Inert",
+                  "Critical Mass - Inert",
+                  "Exponential Yield",
+                  "Legendary Horns",
+                  "Prehensile Tail - Inert",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "locations": [
+              {
+                "name": "Stone Circle Hot Zone",
+                "unlocked": false
+              }
+            ],
+            "timeline": {}
+          },
+          "ccPrologue": false,
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "unlocked": false
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Phoenix Cuisine",
+              "cc": 26,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "basic",
+            "2": "monster",
+            "3": "basic",
+            "4": "monster",
+            "5": "basic",
+            "7": "monster",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Phoenix",
+          "node": "NQ3",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 3,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 5,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Materialize", "Spiral Age", "Zeal"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 6,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 17,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 13,
+                "advanced": 7,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 22,
+              "damage": 3,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 11,
+              "luck": 0,
+              "luckTokens": 2,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 17,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Plumery",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "7": ["Phoenix Feather"]
+          },
+          "ccPrologue": false,
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "unlocked": false
+        }
+      ],
+      "resources": [
+        {
+          "name": "Monster Hide",
+          "amount": 12,
+          "category": "Monster",
+          "types": ["Hide"]
+        },
+        {
+          "name": "Monster Bone",
+          "amount": 10,
+          "category": "Monster",
+          "types": ["Bone"]
+        }
+      ],
+      "seedPatterns": [],
+      "survivalLimit": 1,
+      "survivorType": "Arc",
+      "timeline": [
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": ["Foundlings"]
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Midnight's Children"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Unveil the Sky"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Principle: Conviction"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["The Dragon's Tomb"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        }
+      ],
+      "usesScouts": false,
+      "ccRewards": [
+        {
+          "name": "Facets of Existence",
+          "cc": 1,
+          "unlocked": false
+        },
+        {
+          "name": "Pleasing Plating",
+          "cc": 2,
+          "unlocked": false
+        },
+        {
+          "name": "Comprehensive Construction",
+          "cc": 5,
+          "unlocked": false
+        },
+        {
+          "name": "Communal Larder",
+          "cc": 8,
+          "unlocked": false
+        },
+        {
+          "name": "Sated Enlightenment",
+          "cc": 13,
+          "unlocked": false
+        },
+        {
+          "name": "Metabolic Improvements",
+          "cc": 21,
+          "unlocked": false
+        },
+        {
+          "name": "Shared Illumination",
+          "cc": 30,
+          "unlocked": false
+        },
+        {
+          "name": "Culinary Ingenuity",
+          "cc": 46,
+          "unlocked": false
+        }
+      ],
+      "ccValue": 15,
+      "knowledges": [
+        {
+          "name": "Anatomy",
+          "philosophy": "Collectivism"
+        }
+      ],
+      "philosophies": ["Collectivism"]
+    },
+    {
+      "id": 7,
+      "name": "PotDK 1",
+      "arrivalBonuses": [],
+      "campaignType": "People of the Dream Keeper",
+      "deathCount": 2,
+      "departingBonuses": [],
+      "gear": ["Cloth", "Founding Stone"],
+      "innovations": [],
+      "locations": [
+        {
+          "name": "Barber Surgeon",
+          "unlocked": false
+        },
+        {
+          "name": "Blacksmith",
+          "unlocked": false
+        },
+        {
+          "name": "Bone Smith",
+          "unlocked": false
+        },
+        {
+          "name": "Forum",
+          "unlocked": false
+        },
+        {
+          "name": "Keeper of Dreams",
+          "unlocked": true
+        },
+        {
+          "name": "Leather Worker",
+          "unlocked": false
+        },
+        {
+          "name": "Mask Maker",
+          "unlocked": false
+        },
+        {
+          "name": "Organ Grinder",
+          "unlocked": false
+        },
+        {
+          "name": "Skinnery",
+          "unlocked": false
+        },
+        {
+          "name": "Weapon Crafter",
+          "unlocked": false
+        },
+        {
+          "name": "Crimson Crockery",
+          "unlocked": false
+        },
+        {
+          "name": "Kingsmith",
+          "unlocked": false
+        },
+        {
+          "name": "Plumery",
+          "unlocked": false
+        },
+        {
+          "name": "Chorusseum",
+          "unlocked": false
+        }
+      ],
+      "lostSettlements": 0,
+      "milestones": [
+        {
+          "name": "Population reaches 0",
+          "complete": false,
+          "event": "Game Over"
+        },
+        {
+          "name": "Population reaches 15",
+          "complete": false,
+          "event": "Principle: Society"
+        },
+        {
+          "name": "First time death count is updated",
+          "complete": false,
+          "event": "Principle: Death"
+        },
+        {
+          "name": "First child is born",
+          "complete": false,
+          "event": "Principle: New Life"
+        },
+        {
+          "name": "First survivor to reach 3 understanding",
+          "complete": false,
+          "event": "Designs & Dandelions"
+        }
+      ],
+      "nemeses": [
+        {
+          "multiMonster": false,
+          "name": "Atnas the Child Eater",
+          "node": "NN2",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 3,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": [],
+              "toughness": 11,
+              "toughnessTokens": 0,
+              "traits": [
+                "Old Battle Scars",
+                "Master's Presence",
+                "Mad Master",
+                "Spark of Joy"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 4,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 16,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": [],
+              "toughness": 14,
+              "toughnessTokens": 0,
+              "traits": [
+                "Curb Stomp",
+                "Mad Master",
+                "Master's Presence",
+                "Old Battle Scars",
+                "Spark of Joy"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 13,
+                "advanced": 5,
+                "legendary": 3
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 1,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": [],
+              "toughness": 19,
+              "toughnessTokens": 0,
+              "traits": [
+                "Curb Stomp",
+                "Keen Eyes",
+                "Mad Master",
+                "Master's Presence",
+                "Old Battle Scars",
+                "Spark of Joy",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "6": [
+              {
+                "title": "Unwanted Gifts",
+                "campaigns": ["People of the Dream Keeper"]
+              }
+            ],
+            "9": ["Nemesis Encounter - Atnas the Child Eater Lvl 1"],
+            "18": ["Nemesis Encounter - Atnas the Child Eater Lvl 2"],
+            "28": ["Nemesis Encounter - Atnas the Child Eater Lvl 3"]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "Butcher",
+          "node": "NN1",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 9,
+              "toughnessTokens": 0,
+              "traits": ["Berserker", "Dreaded Trophies", "Fast Target"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 5,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 11,
+                "advanced": 10,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 21,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Infectious Lunacy"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Dreaded Trophies",
+                "Fast Target",
+                "Frenzied Berserker",
+                "Invincible",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "4": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 1",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "13": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": ["People of the Stars"]
+              }
+            ],
+            "16": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 2",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ],
+            "22": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ],
+            "23": [
+              {
+                "title": "Nemesis Encounter - Butcher Lvl 3",
+                "campaigns": [
+                  "People of the Dream Keeper",
+                  "People of the Lantern"
+                ]
+              }
+            ]
+          },
+          "vignette": {
+            "name": "Killenium Butcher",
+            "type": "Nemesis",
+            "level2": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 1,
+                "aiDeck": {
+                  "basic": 9,
+                  "advanced": 6,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 15,
+                "damage": 1,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 0,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 1,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 13,
+                "toughnessTokens": 0,
+                "traits": ["Scorn", "Self-Aware"]
+              }
+            ],
+            "level3": [
+              {
+                "accuracy": 0,
+                "accuracyTokens": 2,
+                "aiDeck": {
+                  "basic": 11,
+                  "advanced": 10,
+                  "legendary": 0
+                },
+                "aiDeckRemaining": 21,
+                "damage": 2,
+                "damageTokens": 0,
+                "evasion": 0,
+                "evasionTokens": 1,
+                "luck": 0,
+                "luckTokens": 0,
+                "moods": [],
+                "movement": 5,
+                "movementTokens": 0,
+                "speed": 2,
+                "speedTokens": 0,
+                "strength": 0,
+                "strengthTokens": 0,
+                "survivorStatuses": ["Infectious Lunacy"],
+                "toughness": 16,
+                "toughnessTokens": 0,
+                "traits": [
+                  "Berzerker",
+                  "Invincible",
+                  "Scorn",
+                  "Self-Aware",
+                  "Indomitable"
+                ]
+              }
+            ],
+            "timeline": {}
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "Gambler",
+          "node": "CO",
+          "type": "Nemesis",
+          "level4": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 9,
+                "advanced": 9,
+                "legendary": 3
+              },
+              "aiDeckRemaining": 21,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 10000,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": [],
+              "toughness": 20,
+              "toughnessTokens": 0,
+              "traits": [
+                "Critical Failure",
+                "Dice Bag",
+                "Double or Death",
+                "Gambler's Dice",
+                "Magister Ludi"
+              ]
+            }
+          ],
+          "timeline": {
+            "20": ["Nemesis Encounter - The Gambler"]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "Godhand",
+          "node": "FI",
+          "type": "Nemesis",
+          "level4": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 6,
+                "advanced": 5,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "life": 30,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": -1,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": [],
+              "toughness": 30,
+              "toughnessTokens": 0,
+              "traits": [
+                "Old Blood",
+                "Reinforcements",
+                "True Ghost Step",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "30": ["Nemesis Encounter - Godhand"]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false,
+          "level4Defeated": false
+        },
+        {
+          "multiMonster": false,
+          "name": "The Hand",
+          "node": "NN3",
+          "type": "Nemesis",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 0,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 5,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 14,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 1,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 11,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 2,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 6,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 3,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorStatuses": ["Polarized Aura"],
+              "toughness": 30,
+              "toughnessTokens": 0,
+              "traits": [
+                "Applause",
+                "Blue Lens - Closed",
+                "Ghost Step",
+                "Green Lens - Closed",
+                "Impossible Eyes",
+                "Red Lens - Closed",
+                "Indomitable"
+              ]
+            }
+          ],
+          "timeline": {
+            "11": [
+              {
+                "title": "Regal Visit",
+                "campaigns": ["People of the Lantern"]
+              }
+            ],
+            "13": [
+              {
+                "title": "Nemesis Encounter - The Hand Lvl 1",
+                "campaigns": [
+                  "People of the Lantern",
+                  "People of the Dream Keeper"
+                ]
+              }
+            ],
+            "24": [
+              {
+                "title": "Nemesis Encounter - The Hand Lvl 3",
+                "campaigns": ["People of the Sun"]
+              }
+            ]
+          },
+          "ccLevel1": false,
+          "ccLevel2": false,
+          "ccLevel3": false,
+          "unlocked": false,
+          "level1Defeated": false,
+          "level2Defeated": false,
+          "level3Defeated": false
+        }
+      ],
+      "notes": "PotDK Arc campaign",
+      "patterns": [],
+      "population": 20,
+      "principles": [
+        {
+          "name": "New Life",
+          "option1Name": "Protect the Young",
+          "option1Selected": false,
+          "option2Name": "Survival of the Fittest",
+          "option2Selected": false
+        },
+        {
+          "name": "Death",
+          "option1Name": "Graves",
+          "option1Selected": false,
+          "option2Name": "Cannibalize",
+          "option2Selected": false
+        },
+        {
+          "name": "Society",
+          "option1Name": "Collective Toil",
+          "option1Selected": false,
+          "option2Name": "Accept Darkness",
+          "option2Selected": false
+        },
+        {
+          "name": "Conviction",
+          "option1Name": "Romantic",
+          "option1Selected": false,
+          "option2Name": "Barbaric",
+          "option2Selected": false
+        }
+      ],
+      "quarries": [
+        {
+          "ccRewards": [
+            {
+              "name": "Crimson Crocodile Cuisine",
+              "cc": 6,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "basic",
+            "2": "monster",
+            "3": "basic",
+            "4": "basic",
+            "5": "monster",
+            "7": "monster",
+            "8": "basic",
+            "9": "basic",
+            "10": "monster",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Crimson Crocodile",
+          "node": "NQ1",
+          "prologue": true,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 7,
+                "advanced": 3,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 10,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 7,
+              "toughnessTokens": 0,
+              "traits": [
+                "Adrenal Adept",
+                "Enchanted Flesh",
+                "Immortal Presence"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 9,
+                "advanced": 5,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 15,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 9,
+              "toughnessTokens": 0,
+              "traits": [
+                "Adrenal Adept",
+                "Blood Soaked",
+                "Enchanted Flesh",
+                "Immortal Presence"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 12,
+                "advanced": 6,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 20,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 11,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 15,
+              "toughnessTokens": 0,
+              "traits": [
+                "Adrenal Adept",
+                "Blood Secret",
+                "Blood Soaked",
+                "Enchanted Flesh",
+                "Immortal Presence",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Crimson Crockery",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "0": ["Crimson Crocodile"]
+          },
+          "ccPrologue": false,
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "unlocked": true
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "King Cuisine",
+              "cc": 36,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "monster",
+            "2": "basic",
+            "3": "monster",
+            "4": "basic",
+            "5": "monster",
+            "7": "basic",
+            "8": "monster",
+            "9": "basic",
+            "10": "monster",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "King",
+          "node": "NQ4",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 8,
+                "legendary": 3
+              },
+              "aiDeckRemaining": 19,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 7,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 19,
+              "toughnessTokens": 0,
+              "traits": [
+                "Audio Synthesis",
+                "Current",
+                "Ghost Geometry",
+                "King's New Clothes"
+              ]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 1,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 8,
+                "legendary": 6
+              },
+              "aiDeckRemaining": 22,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 9,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 22,
+              "toughnessTokens": 0,
+              "traits": [
+                "Audio Synthesis",
+                "Current",
+                "Ghost Geometry",
+                "Half Power",
+                "King's New Clothes"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 2,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 12,
+                "legendary": 7
+              },
+              "aiDeckRemaining": 27,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 11,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 9,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": [],
+              "toughness": 25,
+              "toughnessTokens": 0,
+              "traits": [
+                "Audio Synthesis",
+                "Current",
+                "Full Power",
+                "Ghost Geometry",
+                "King's New Clothes",
+                "King's Presence",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Kingsmith",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "22": ["The Awaited"]
+          },
+          "ccPrologue": false,
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "unlocked": false
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Phoenix Cuisine",
+              "cc": 26,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "basic",
+            "2": "monster",
+            "3": "basic",
+            "4": "monster",
+            "5": "basic",
+            "7": "monster",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Phoenix",
+          "node": "NQ3",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 3,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 5,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 10,
+              "toughnessTokens": 0,
+              "traits": ["Materialize", "Spiral Age", "Zeal"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 10,
+                "advanced": 6,
+                "legendary": 1
+              },
+              "aiDeckRemaining": 17,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 13,
+                "advanced": 7,
+                "legendary": 2
+              },
+              "aiDeckRemaining": 22,
+              "damage": 3,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 11,
+              "luck": 0,
+              "luckTokens": 2,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Dreaded Decade"],
+              "toughness": 17,
+              "toughnessTokens": 0,
+              "traits": [
+                "Materialize",
+                "Spiral Age",
+                "Top of the Food Chain",
+                "Zeal",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Plumery",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "7": ["Phoenix Feather"]
+          },
+          "ccPrologue": false,
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "unlocked": false
+        },
+        {
+          "ccRewards": [
+            {
+              "name": "Smog Singer Cuisine",
+              "cc": 16,
+              "unlocked": false
+            }
+          ],
+          "huntBoard": {
+            "1": "basic",
+            "2": "monster",
+            "3": "monster",
+            "4": "basic",
+            "5": "monster",
+            "7": "basic",
+            "8": "basic",
+            "9": "monster",
+            "10": "basic",
+            "11": "basic"
+          },
+          "multiMonster": false,
+          "name": "Smog Singers",
+          "node": "NQ2",
+          "prologue": false,
+          "type": "Quarry",
+          "level1": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 4,
+                "legendary": 0
+              },
+              "aiDeckRemaining": 12,
+              "damage": 0,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 4,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 6,
+              "movementTokens": 0,
+              "speed": 0,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Bloody Hands"],
+              "toughness": 7,
+              "toughnessTokens": 0,
+              "traits": ["Performing Artists", "Song Cards", "Vibration Damage"]
+            }
+          ],
+          "level2": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 8,
+                "advanced": 4,
+                "legendary": 1,
+                "overtone": 4
+              },
+              "aiDeckRemaining": 17,
+              "damage": 1,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 8,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 7,
+              "movementTokens": 0,
+              "speed": 1,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Bloody Hands"],
+              "toughness": 9,
+              "toughnessTokens": 0,
+              "traits": [
+                "Overtone Singing",
+                "Performing Artists",
+                "Song Cards",
+                "Vibration Damage"
+              ]
+            }
+          ],
+          "level3": [
+            {
+              "accuracy": 0,
+              "accuracyTokens": 0,
+              "aiDeck": {
+                "basic": 9,
+                "advanced": 6,
+                "legendary": 2,
+                "overtone": 8
+              },
+              "aiDeckRemaining": 25,
+              "damage": 2,
+              "damageTokens": 0,
+              "evasion": 0,
+              "evasionTokens": 0,
+              "huntPos": 10,
+              "luck": 0,
+              "luckTokens": 0,
+              "moods": [],
+              "movement": 8,
+              "movementTokens": 0,
+              "speed": 2,
+              "speedTokens": 0,
+              "strength": 0,
+              "strengthTokens": 0,
+              "survivorHuntPos": 0,
+              "survivorStatuses": ["Bloody Hands"],
+              "toughness": 12,
+              "toughnessTokens": 0,
+              "traits": [
+                "Overtone Singing",
+                "Performing Artists",
+                "Singing Whale",
+                "Song Cards",
+                "Vibration Damage",
+                "Indomitable"
+              ]
+            }
+          ],
+          "locations": [
+            {
+              "name": "Chorusseum",
+              "unlocked": false
+            }
+          ],
+          "timeline": {
+            "2": ["Death of Song"]
+          },
+          "ccPrologue": false,
+          "ccLevel1": false,
+          "ccLevel2": [false, false],
+          "ccLevel3": [false, false, false],
+          "unlocked": false
+        }
+      ],
+      "resources": [
+        {
+          "name": "Monster Hide",
+          "amount": 15,
+          "category": "Monster",
+          "types": ["Hide"]
+        },
+        {
+          "name": "Monster Bone",
+          "amount": 11,
+          "category": "Monster",
+          "types": ["Bone"]
+        },
+        {
+          "name": "White Lion Claw",
+          "amount": 3,
+          "category": "Monster",
+          "types": ["Bone"]
+        },
+        {
+          "name": "Iron",
+          "amount": 5,
+          "category": "Basic",
+          "types": ["Scrap"]
+        }
+      ],
+      "seedPatterns": [],
+      "survivalLimit": 1,
+      "survivorType": "Arc",
+      "timeline": [
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": ["Foundlings"]
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": true,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Midnight's Children"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Unveil the Sky"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["Principle: Conviction"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": ["The Dragon's Tomb"]
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        },
+        {
+          "completed": false,
+          "entries": []
+        }
+      ],
+      "usesScouts": false,
+      "ccRewards": [
+        {
+          "name": "Facets of Existence",
+          "cc": 1,
+          "unlocked": false
+        },
+        {
+          "name": "Pleasing Plating",
+          "cc": 2,
+          "unlocked": false
+        },
+        {
+          "name": "Comprehensive Construction",
+          "cc": 5,
+          "unlocked": false
+        },
+        {
+          "name": "Communal Larder",
+          "cc": 8,
+          "unlocked": false
+        },
+        {
+          "name": "Sated Enlightenment",
+          "cc": 13,
+          "unlocked": false
+        },
+        {
+          "name": "Metabolic Improvements",
+          "cc": 21,
+          "unlocked": false
+        },
+        {
+          "name": "Shared Illumination",
+          "cc": 30,
+          "unlocked": false
+        },
+        {
+          "name": "Culinary Ingenuity",
+          "cc": 46,
+          "unlocked": false
+        }
+      ],
+      "ccValue": 15,
+      "knowledges": [
+        {
+          "name": "Anatomy",
+          "philosophy": "Collectivism"
+        }
+      ],
+      "philosophies": ["Collectivism"]
+    }
+  ],
+  "showdowns": [
+    {
+      "ambush": "none",
+      "id": 1,
+      "level": "level1",
+      "monsters": [
+        {
+          "accuracy": 0,
+          "accuracyTokens": 0,
+          "aiDeck": {
+            "basic": 7,
+            "advanced": 5,
+            "legendary": 0
+          },
+          "aiDeckRemaining": 12,
+          "damage": 0,
+          "damageTokens": 0,
+          "evasion": 0,
+          "evasionTokens": 0,
+          "luck": 0,
+          "luckTokens": 0,
+          "moods": [],
+          "movement": 5,
+          "movementTokens": 0,
+          "speed": 0,
+          "speedTokens": 0,
+          "strength": 0,
+          "strengthTokens": 0,
+          "survivorStatuses": ["Infectious Lunacy"],
+          "toughness": 9,
+          "toughnessTokens": 0,
+          "traits": ["Berserker", "Dreaded Trophies", "Fast Target"],
+          "knockedDown": false,
+          "level": "level1",
+          "name": "Butcher",
+          "notes": "Starting showdown state",
+          "type": "Nemesis",
+          "wounds": 0
+        }
+      ],
+      "scout": 24,
+      "settlementId": 2,
+      "survivorDetails": [
+        {
+          "accuracyTokens": 0,
+          "bleedingTokens": 0,
+          "blockTokens": 0,
+          "color": "red",
+          "deflectTokens": 0,
+          "evasionTokens": 0,
+          "id": 20,
+          "insanityTokens": 0,
+          "knockedDown": false,
+          "luckTokens": 0,
+          "movementTokens": 0,
+          "notes": "Survivor 20 ready for showdown",
+          "priorityTarget": false,
+          "speedTokens": 0,
+          "strengthTokens": 0,
+          "survivalTokens": 0
+        }
+      ],
+      "survivors": [20, 21, 22, 23, 24],
+      "turn": {
+        "currentTurn": "survivors",
+        "monsterState": {
+          "aiCardDrawn": false
+        },
+        "survivorStates": [
+          {
+            "id": 20,
+            "movementUsed": true,
+            "activationUsed": true
+          },
+          {
+            "id": 21,
+            "movementUsed": false,
+            "activationUsed": false
+          },
+          {
+            "id": 22,
+            "movementUsed": false,
+            "activationUsed": false
+          },
+          {
+            "id": 23,
+            "movementUsed": false,
+            "activationUsed": false
+          },
+          {
+            "id": 24,
+            "movementUsed": false,
+            "activationUsed": false
+          }
+        ]
+      }
+    }
+  ],
+  "survivors": [
+    {
+      "id": 1,
+      "settlementId": 1,
+      "name": "Theron",
+      "gender": "M",
+      "abilitiesAndImpairments": ["Ability"],
+      "accuracy": 2,
+      "canDash": true,
+      "canDodge": true,
+      "canFistPump": false,
+      "canEncourage": true,
+      "canSpendSurvival": true,
+      "canSurge": false,
+      "canUseFightingArtsOrKnowledges": true,
+      "courage": 3,
+      "cursedGear": ["Cursed Sword"],
+      "dead": false,
+      "disorders": ["Anxiety", "Binge Eating Disorder"],
+      "evasion": 1,
+      "fightingArts": ["Mighty Strike", "Leader"],
+      "hasAnalyze": false,
+      "hasExplore": true,
+      "hasMatchmaker": false,
+      "hasPrepared": true,
+      "hasStalwart": false,
+      "hasTinker": false,
+      "huntXP": 8,
+      "huntXPRankUp": [2, 6],
+      "insanity": 3,
+      "luck": 1,
+      "movement": 5,
+      "nextDeparture": ["Next Departure Bonus"],
+      "notes": "Veteran survivor with extensive experience",
+      "oncePerLifetime": ["Once Per Lifetime Bonus"],
+      "rerollUsed": false,
+      "retired": false,
+      "secretFightingArts": ["Counter-Weighted Axe"],
+      "skipNextHunt": true,
+      "speed": 1,
+      "strength": 2,
+      "survival": 3,
+      "understanding": 2,
+      "weaponProficiency": 5,
+      "weaponProficiencyType": "Sword",
+      "armArmor": 0,
+      "armLightDamage": false,
+      "armHeavyDamage": false,
+      "bodyArmor": 0,
+      "bodyLightDamage": false,
+      "bodyHeavyDamage": false,
+      "brainLightDamage": false,
+      "headArmor": 0,
+      "headHeavyDamage": false,
+      "legArmor": 0,
+      "legLightDamage": false,
+      "legHeavyDamage": false,
+      "waistArmor": 0,
+      "waistLightDamage": false,
+      "waistHeavyDamage": false,
+      "armBroken": 1,
+      "armContracture": 3,
+      "armDismembered": 1,
+      "armRupturedMuscle": false,
+      "bodyBrokenRib": 2,
+      "bodyDestroyedBack": false,
+      "bodyGapingChestWound": 3,
+      "headBlind": 1,
+      "headDeaf": false,
+      "headIntracranialHemorrhage": false,
+      "headShatteredJaw": false,
+      "legBroken": 1,
+      "legDismembered": 0,
+      "legHamstrung": false,
+      "waistBrokenHip": false,
+      "waistDestroyedGenitals": false,
+      "waistIntestinalProlapse": false,
+      "waistWarpedPelvis": 3,
+      "canEndure": true,
+      "knowledge1": "Anatomy",
+      "knowledge1ObservationConditions": "Observe during showdown",
+      "knowledge1ObservationRank": 3,
+      "knowledge1RankUp": 2,
+      "knowledge1Rules": "Understanding of anatomy",
+      "knowledge2": "Symposium",
+      "knowledge2ObservationConditions": "Study texts",
+      "knowledge2ObservationRank": 2,
+      "knowledge2RankUp": 1,
+      "knowledge2Rules": "Philosophical insights",
+      "lumi": 5,
+      "neurosis": "Fear of Darkness",
+      "philosophy": "Collectivism",
+      "philosophyRank": 2,
+      "systemicPressure": 2,
+      "tenetKnowledge": "Tenet Knowledge Example",
+      "tenetKnowledgeObservationConditions": "During hunts",
+      "tenetKnowledgeObservationRank": 1,
+      "tenetKnowledgeRankUp": 1,
+      "tenetKnowledgeRules": "Insights into tenets",
+      "torment": 1,
+      "hasAbsoluteReaper": true,
+      "hasAbsoluteRust": true,
+      "hasAbsoluteStorm": true,
+      "hasAbsoluteWitch": true,
+      "hasGamblerReaper": true,
+      "hasGamblerRust": true,
+      "hasGamblerStorm": true,
+      "hasGamblerWitch": true,
+      "hasGoblinReaper": true,
+      "hasGoblinRust": true,
+      "hasGoblinStorm": true,
+      "hasGoblinWitch": true,
+      "hasSculptorReaper": true,
+      "hasSculptorRust": true,
+      "hasSculptorStorm": true,
+      "hasSculptorWitch": true
+    }
+  ],
+  "version": "0.14.0"
+}
