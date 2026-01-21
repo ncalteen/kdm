@@ -300,45 +300,51 @@ function MainPage(): ReactElement {
             updateCampaign={updateCampaign}
           />
           <SidebarInset>
-            <MigrationAlertDialog
-              campaign={campaign}
-              current={migrationStatus.current}
-              migrate={migrationStatus.migrate}
-              onConfirm={handleMigrationConfirm}
-              target={packageInfo.version}
-            />
-            <Form {...settlementForm}>
-              <Form {...survivorForm}>
-                <Form {...huntForm}>
-                  <SettlementForm
-                    campaign={campaign}
-                    isCreatingNewSurvivor={isCreatingNewSurvivor}
-                    saveSelectedHunt={saveSelectedHunt}
-                    saveSelectedSettlement={saveSelectedSettlement}
-                    saveSelectedShowdown={saveSelectedShowdown}
-                    saveSelectedSurvivor={saveSelectedSurvivor}
-                    selectedHunt={selectedHunt}
-                    selectedHuntMonsterIndex={selectedHuntMonsterIndex}
-                    selectedSettlement={selectedSettlement}
-                    selectedShowdown={selectedShowdown}
-                    selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
-                    selectedSurvivor={selectedSurvivor}
-                    selectedTab={selectedTab}
-                    setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
-                    setSelectedHunt={setSelectedHunt}
-                    setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
-                    setSelectedSettlement={setSelectedSettlement}
-                    setSelectedShowdown={setSelectedShowdown}
-                    setSelectedShowdownMonsterIndex={
-                      setSelectedShowdownMonsterIndex
-                    }
-                    setSelectedSurvivor={setSelectedSurvivor}
-                    setSelectedTab={setSelectedTab}
-                    updateCampaign={updateCampaign}
-                  />
+            {migrationStatus.migrate && (
+              <MigrationAlertDialog
+                campaign={campaign}
+                current={migrationStatus.current}
+                migrate={migrationStatus.migrate}
+                onConfirm={handleMigrationConfirm}
+                target={packageInfo.version}
+              />
+            )}
+            {!migrationStatus.migrate && (
+              <Form {...settlementForm}>
+                <Form {...survivorForm}>
+                  <Form {...huntForm}>
+                    <SettlementForm
+                      campaign={campaign}
+                      isCreatingNewSurvivor={isCreatingNewSurvivor}
+                      saveSelectedHunt={saveSelectedHunt}
+                      saveSelectedSettlement={saveSelectedSettlement}
+                      saveSelectedShowdown={saveSelectedShowdown}
+                      saveSelectedSurvivor={saveSelectedSurvivor}
+                      selectedHunt={selectedHunt}
+                      selectedHuntMonsterIndex={selectedHuntMonsterIndex}
+                      selectedSettlement={selectedSettlement}
+                      selectedShowdown={selectedShowdown}
+                      selectedShowdownMonsterIndex={
+                        selectedShowdownMonsterIndex
+                      }
+                      selectedSurvivor={selectedSurvivor}
+                      selectedTab={selectedTab}
+                      setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
+                      setSelectedHunt={setSelectedHunt}
+                      setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
+                      setSelectedSettlement={setSelectedSettlement}
+                      setSelectedShowdown={setSelectedShowdown}
+                      setSelectedShowdownMonsterIndex={
+                        setSelectedShowdownMonsterIndex
+                      }
+                      setSelectedSurvivor={setSelectedSurvivor}
+                      setSelectedTab={setSelectedTab}
+                      updateCampaign={updateCampaign}
+                    />
+                  </Form>
                 </Form>
               </Form>
-            </Form>
+            )}
           </SidebarInset>
         </div>
       </SidebarProvider>
