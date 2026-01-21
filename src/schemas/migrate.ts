@@ -65,6 +65,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
     migrateTo0_13_0(campaign)
   if (campaign.version === '0.13.0') migrateTo0_13_1(campaign)
   if (campaign.version === '0.13.1') migrateTo0_14_0(campaign)
+  if (campaign.version === '0.14.0') migrateTo0_14_1(campaign)
 
   return campaign
 }
@@ -217,7 +218,7 @@ function migrateTo0_13_1(campaign: Campaign) {
     const quarry = Object.values(QUARRIES).find(
       (quarry) =>
         // @ts-expect-error -- Old Schema
-        quarry.main.name.toLowerCase() === hunt.monster.name.toLowerCase()
+        quarry.name.toLowerCase() === hunt.monster.name.toLowerCase()
     )
 
     // @ts-expect-error -- Old Schema
@@ -228,7 +229,7 @@ function migrateTo0_13_1(campaign: Campaign) {
     )
 
     // @ts-expect-error -- Old Schema
-    if (quarry) hunt.monster.huntBoard = quarry.main.huntBoard
+    if (quarry) hunt.monster.huntBoard = quarry.huntBoard
     // @ts-expect-error -- Old Schema
     else if (custom && 'huntBoard' in custom.main)
       // @ts-expect-error -- Old Schema
@@ -664,4 +665,19 @@ function migrateTo0_14_0(campaign: Campaign) {
 
   // Migration complete. Update version.
   campaign.version = '0.14.0'
+
+  // @ts-expect-error -- Old Schema
+  delete campaign['customMonsters']
+}
+
+/**
+ * Migration logic from version 0.14.0 to 0.14.1
+ *
+ * @param campaign Campaign to Migrate
+ */
+function migrateTo0_14_1(campaign: Campaign) {
+  console.log('Migrating to 0.14.1')
+
+  // Do nothing, just update version
+  campaign.version = '0.14.1'
 }

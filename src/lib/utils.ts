@@ -5,7 +5,6 @@ import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { Campaign } from '@/schemas/campaign'
 import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { Hunt } from '@/schemas/hunt'
-import { migrateCampaign } from '@/schemas/migrate'
 import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
 import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 import { SettlementNemesis } from '@/schemas/settlement-nemesis'
@@ -53,19 +52,9 @@ export const newCampaign: Campaign = {
  * @returns Campaign
  */
 export function getCampaign(): Campaign {
-  const storedCampaign = JSON.parse(
+  return JSON.parse(
     localStorage.getItem('campaign') || JSON.stringify(newCampaign)
   )
-
-  // If the stored campaign version matches the current package version, return
-  // it directly. Otherwise, migrate it to the latest version.
-  if (storedCampaign.version !== packageInfo.version) {
-    const migratedCampaign = migrateCampaign(storedCampaign)
-    saveCampaignToLocalStorage(migratedCampaign)
-    return migratedCampaign
-  }
-
-  return storedCampaign
 }
 
 /**
