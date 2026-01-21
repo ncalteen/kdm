@@ -61,7 +61,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
   )
 
   // Add version migration steps here...
-  if (campaign.version === undefined || campaign.version.startsWith('0.12.0'))
+  if (campaign.version === undefined || campaign.version === '0.12.0')
     migrateTo0_13_0(campaign)
   if (campaign.version === '0.13.0') migrateTo0_13_1(campaign)
   if (campaign.version === '0.13.1') migrateTo0_14_0(campaign)
