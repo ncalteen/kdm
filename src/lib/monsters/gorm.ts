@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
  * Gorm Monster Data
@@ -21,100 +21,113 @@ export const GORM: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Gorm',
   node: MonsterNode.NQ1,
   prologue: false,
   type: MonsterType.QUARRY,
-  level1: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 8,
-      advanced: 2,
-      legendary: 0
-    },
-    damage: 0,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 0,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 6,
-    movementTokens: 0,
-    speed: 0,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: [],
-    toughness: 8,
-    toughnessTokens: 0,
-    traits: []
-  },
-  level2: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 9,
-      advanced: 5,
-      legendary: 0
-    },
-    damage: 1,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 0,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 9,
-    movementTokens: 0,
-    speed: 1,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: [],
-    toughness: 11,
-    toughnessTokens: 0,
-    traits: [
-      // TODO: On Arrival - Fetid Grotto story event?
-      "Gorm's Den",
-      'Musth'
-    ]
-  },
-  level3: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 10,
-      advanced: 8,
-      legendary: 2
-    },
-    damage: 2,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 0,
-    luck: 0,
-    luckTokens: 1,
-    moods: [],
-    movement: 8,
-    movementTokens: 0,
-    speed: 2,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: [],
-    toughness: 15,
-    toughnessTokens: 0,
-    traits: [
-      // TODO: Depart - Final March story event
-      'Ancient Tusks',
-      'Gormyard',
-      'Indomitable'
-    ]
-  },
+  level1: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 8,
+        advanced: 2,
+        legendary: 0
+      },
+      aiDeckRemaining: 10,
+      damage: 0,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 0,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 6,
+      movementTokens: 0,
+      speed: 0,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 8,
+      toughnessTokens: 0,
+      traits: []
+    }
+  ],
+  level2: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 9,
+        advanced: 5,
+        legendary: 0
+      },
+      aiDeckRemaining: 14,
+      damage: 1,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 0,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 9,
+      movementTokens: 0,
+      speed: 1,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 11,
+      toughnessTokens: 0,
+      traits: [
+        // TODO: On Arrival - Fetid Grotto story event?
+        "Gorm's Den",
+        'Musth'
+      ]
+    }
+  ],
+  level3: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 10,
+        advanced: 8,
+        legendary: 2
+      },
+      aiDeckRemaining: 20,
+      damage: 2,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 0,
+      luck: 0,
+      luckTokens: 1,
+      moods: [],
+      movement: 8,
+      movementTokens: 0,
+      speed: 2,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 15,
+      toughnessTokens: 0,
+      traits: [
+        // TODO: Depart - Final March story event
+        'Ancient Tusks',
+        'Gormyard',
+        'Indomitable'
+      ]
+    }
+  ],
   locations: [
     { name: 'Gormchymist', unlocked: false },
     { name: 'Gormery', unlocked: false }

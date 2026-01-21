@@ -16,6 +16,8 @@ import { ReactElement } from 'react'
 interface SurvivorCalculatedStatsProps {
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
 }
@@ -103,6 +105,7 @@ function CalculatedStatRow({
  */
 export function SurvivorCalculatedStats({
   selectedShowdown,
+  selectedShowdownMonsterIndex,
   selectedSurvivor
 }: SurvivorCalculatedStatsProps): ReactElement {
   // Get survivor showdown details (for tokens)
@@ -110,52 +113,51 @@ export function SurvivorCalculatedStats({
     (sd) => sd.id === selectedSurvivor?.id
   )
 
-  // Get monster stats
-  const monster = selectedShowdown?.monster
+  const monster = selectedShowdown?.monsters?.[selectedShowdownMonsterIndex]
 
   return (
     <>
       <CalculatedStatRow
         label="Accuracy"
-        baseValue={selectedSurvivor?.accuracy || 0}
-        tokens={survivorDetails?.accuracyTokens || 0}
+        baseValue={selectedSurvivor?.accuracy ?? 0}
+        tokens={survivorDetails?.accuracyTokens ?? 0}
         modifierLabel="Monster Evasion"
-        modifierValue={monster?.evasion || 0}
-        modifierTokens={monster?.evasionTokens || 0}
+        modifierValue={monster?.evasion ?? 0}
+        modifierTokens={monster?.evasionTokens ?? 0}
         tooltip="(Survivor Accuracy + Tokens) - (Monster Evasion + Tokens)"
       />
       <Separator />
       <CalculatedStatRow
         label="Strength"
-        baseValue={selectedSurvivor?.strength || 0}
-        tokens={survivorDetails?.strengthTokens || 0}
+        baseValue={selectedSurvivor?.strength ?? 0}
+        tokens={survivorDetails?.strengthTokens ?? 0}
         tooltip="(Survivor Strength + Tokens)"
       />
       <Separator />
       <CalculatedStatRow
         label="Evasion"
-        baseValue={selectedSurvivor?.evasion || 0}
-        tokens={survivorDetails?.evasionTokens || 0}
+        baseValue={selectedSurvivor?.evasion ?? 0}
+        tokens={survivorDetails?.evasionTokens ?? 0}
         modifierLabel="Monster Accuracy"
-        modifierValue={monster?.accuracy || 0}
-        modifierTokens={monster?.accuracyTokens || 0}
+        modifierValue={monster?.accuracy ?? 0}
+        modifierTokens={monster?.accuracyTokens ?? 0}
         tooltip="(Survivor Evasion + Tokens) - (Monster Accuracy + Tokens)"
       />
       <Separator />
       <CalculatedStatRow
         label="Luck"
-        baseValue={selectedSurvivor?.luck || 0}
-        tokens={survivorDetails?.luckTokens || 0}
+        baseValue={selectedSurvivor?.luck ?? 0}
+        tokens={survivorDetails?.luckTokens ?? 0}
         modifierLabel="Monster Luck"
-        modifierValue={monster?.luck || 0}
-        modifierTokens={monster?.luckTokens || 0}
+        modifierValue={monster?.luck ?? 0}
+        modifierTokens={monster?.luckTokens ?? 0}
         tooltip="(Survivor Luck + Tokens) - (Monster Luck + Tokens)"
       />
       <Separator />
       <CalculatedStatRow
         label="Speed"
-        baseValue={selectedSurvivor?.speed || 0}
-        tokens={survivorDetails?.speedTokens || 0}
+        baseValue={selectedSurvivor?.speed ?? 0}
+        tokens={survivorDetails?.speedTokens ?? 0}
         tooltip="(Survivor Speed + Tokens)"
       />
     </>

@@ -11,18 +11,16 @@ import {
   CampaignType,
   MonsterNode,
   MonsterNodeNumeric,
-  MonsterType,
   SurvivorType
 } from '@/lib/enums'
-import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { getNextSettlementId } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import {
-  Nemesis,
-  NewSettlementInput,
-  Quarry,
-  Settlement
-} from '@/schemas/settlement'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { NewSettlementInput } from '@/schemas/new-settlement-input'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
+import { Settlement } from '@/schemas/settlement'
+import { SettlementNemesis } from '@/schemas/settlement-nemesis'
+import { SettlementQuarry } from '@/schemas/settlement-quarry'
 
 /**
  * Get Monster Node Mapping for a Campaign Type
@@ -34,15 +32,15 @@ import {
  * @returns Monster node mapping
  */
 export function getMonsterNodeMapping(campaignType: CampaignType): {
-  NQ1: number[]
-  NQ2: number[]
-  NQ3: number[]
-  NQ4: number[]
-  NN1: number[]
-  NN2: number[]
-  NN3: number[]
-  CO: number[]
-  FI: number[]
+  NQ1: QuarryMonsterData[]
+  NQ2: QuarryMonsterData[]
+  NQ3: QuarryMonsterData[]
+  NQ4: QuarryMonsterData[]
+  NN1: NemesisMonsterData[]
+  NN2: NemesisMonsterData[]
+  NN3: NemesisMonsterData[]
+  CO: NemesisMonsterData[]
+  FI: NemesisMonsterData[]
 } {
   const template = {
     [CampaignType.CUSTOM]: CustomCampaign,
@@ -53,43 +51,17 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
     [CampaignType.SQUIRES_OF_THE_CITADEL]: SquiresOfTheCitadel
   }[campaignType]
 
-  const mapping: {
-    NQ1: number[]
-    NQ2: number[]
-    NQ3: number[]
-    NQ4: number[]
-    NN1: number[]
-    NN2: number[]
-    NN3: number[]
-    CO: number[]
-    FI: number[]
-  } = {
-    NQ1: [],
-    NQ2: [],
-    NQ3: [],
-    NQ4: [],
-    NN1: [],
-    NN2: [],
-    NN3: [],
-    CO: [],
-    FI: []
+  return {
+    NQ1: template.quarries.filter((q) => q.node === MonsterNode.NQ1),
+    NQ2: template.quarries.filter((q) => q.node === MonsterNode.NQ2),
+    NQ3: template.quarries.filter((q) => q.node === MonsterNode.NQ3),
+    NQ4: template.quarries.filter((q) => q.node === MonsterNode.NQ4),
+    NN1: template.nemeses.filter((n) => n.node === MonsterNode.NN1),
+    NN2: template.nemeses.filter((n) => n.node === MonsterNode.NN2),
+    NN3: template.nemeses.filter((n) => n.node === MonsterNode.NN3),
+    CO: template.nemeses.filter((n) => n.node === MonsterNode.CO),
+    FI: template.nemeses.filter((n) => n.node === MonsterNode.FI)
   }
-
-  // Map quarries to their nodes
-  for (const quarryId of template.quarries) {
-    const node = QUARRIES[quarryId as keyof typeof QUARRIES].main.node
-
-    mapping[node].push(quarryId)
-  }
-
-  // Map nemeses to their nodes
-  for (const nemesisId of template.nemeses) {
-    const node = NEMESES[nemesisId as keyof typeof NEMESES].main.node
-
-    mapping[node].push(nemesisId)
-  }
-
-  return mapping
 }
 
 /**
@@ -119,19 +91,19 @@ export function createSettlementFromOptions(
 
   // Get monster selections - either from options (custom campaign) or from template
   const monsterSelections =
-    options.monsters || getMonsterNodeMapping(options.campaignType)
-  const quarryIds = [
-    ...(monsterSelections.NQ1 || monsterSelections[MonsterNode.NQ1] || []),
-    ...(monsterSelections.NQ2 || monsterSelections[MonsterNode.NQ2] || []),
-    ...(monsterSelections.NQ3 || monsterSelections[MonsterNode.NQ3] || []),
-    ...(monsterSelections.NQ4 || monsterSelections[MonsterNode.NQ4] || [])
+    options.monsters ?? getMonsterNodeMapping(options.campaignType)
+  const quarries = [
+    ...monsterSelections.NQ1,
+    ...monsterSelections.NQ2,
+    ...monsterSelections.NQ3,
+    ...monsterSelections.NQ4
   ]
-  const nemesisIds = [
-    ...(monsterSelections.NN1 || monsterSelections[MonsterNode.NN1] || []),
-    ...(monsterSelections.NN2 || monsterSelections[MonsterNode.NN2] || []),
-    ...(monsterSelections.NN3 || monsterSelections[MonsterNode.NN3] || []),
-    ...(monsterSelections.CO || monsterSelections[MonsterNode.CO] || []),
-    ...(monsterSelections.FI || monsterSelections[MonsterNode.FI] || [])
+  const nemeses = [
+    ...monsterSelections.NN1,
+    ...monsterSelections.NN2,
+    ...monsterSelections.NN3,
+    ...monsterSelections.CO,
+    ...monsterSelections.FI
   ]
 
   // Insantiate the base settlement object. Deep copies are made of arrays and
@@ -164,11 +136,11 @@ export function createSettlementFromOptions(
     seedPatterns: [],
     survivalLimit: 1,
     survivorType: options.survivorType,
-    usesScouts: options.usesScouts,
     timeline: template.timeline.map((year) => ({
       ...year,
       entries: [...year.entries]
-    }))
+    })),
+    usesScouts: options.usesScouts
   }
 
   // Arc survivor data.
@@ -186,72 +158,46 @@ export function createSettlementFromOptions(
     settlement.suspicions = DefaultSquiresSuspicion
 
   // Nemeses
-  for (const nemesisId of nemesisIds) {
-    // Skip string IDs (custom monsters) - they'll be handled separately
-    if (typeof nemesisId === 'string') continue
-
-    const data = NEMESES[nemesisId as keyof typeof NEMESES]
-
-    const nemesis: Nemesis = {
-      id: nemesisId,
-      level1: false,
-      level2: false,
-      level3: false,
+  for (const nemesis of nemeses) {
+    const settlementNemesisData: SettlementNemesis = {
+      level1Defeated: false,
+      level2Defeated: false,
+      level3Defeated: false,
+      level4Defeated: false,
+      name: nemesis.name,
+      node: nemesis.node,
       unlocked: false
     }
 
+    if (nemesis.level1 !== undefined)
+      settlementNemesisData.level1 = nemesis.level1
+    if (nemesis.level2 !== undefined)
+      settlementNemesisData.level2 = nemesis.level2
+    if (nemesis.level3 !== undefined)
+      settlementNemesisData.level3 = nemesis.level3
+    if (nemesis.level4 !== undefined)
+      settlementNemesisData.level4 = nemesis.level4
+    if (nemesis.vignette !== undefined)
+      settlementNemesisData.vignette = nemesis.vignette
+
     if (options.survivorType === SurvivorType.ARC) {
-      nemesis.ccLevel1 = false
-      nemesis.ccLevel2 = false
-      nemesis.ccLevel3 = false
+      settlementNemesisData.ccLevel1 = false
+      settlementNemesisData.ccLevel2 = false
+      settlementNemesisData.ccLevel3 = false
     }
 
-    settlement.nemeses.push(nemesis)
+    settlement.nemeses.push(settlementNemesisData)
 
     // Add the respective timeline events for this nemesis. Only add them if
     // they are included in all campaigns (they are string), or they include
-    // the current campaign type. Custom campaigns are not included here, as the
+    // the current campaign type. Custom campaigns are not included here, the
     // user would be building their own timeline during gameplay.
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
 
-      for (const entry of data.main.timeline[year] || [])
-        if (typeof entry === 'string') timelineYear.entries.push(entry)
-        else if (entry.campaigns.includes(options.campaignType))
-          timelineYear.entries.push(entry.title)
-    }
-  }
+      if (nemesis.timeline[year] === undefined) continue
 
-  // Custom nemeses
-  for (const nemesisId of nemesisIds) {
-    // Only process string IDs (custom monsters)
-    if (typeof nemesisId !== 'string') continue
-
-    const customMonster = campaign.customMonsters?.[nemesisId]
-    if (!customMonster || customMonster.main.type !== MonsterType.NEMESIS)
-      continue
-
-    const nemesis: Nemesis = {
-      id: nemesisId,
-      level1: false,
-      level2: false,
-      level3: false,
-      unlocked: false
-    }
-
-    if (options.survivorType === SurvivorType.ARC) {
-      nemesis.ccLevel1 = false
-      nemesis.ccLevel2 = false
-      nemesis.ccLevel3 = false
-    }
-
-    settlement.nemeses.push(nemesis)
-
-    // Add timeline events for custom nemeses if they exist
-    for (let year = 0; year < settlement.timeline.length; year++) {
-      const timelineYear = settlement.timeline[year]
-
-      for (const entry of customMonster.main.timeline[year] || [])
+      for (const entry of nemesis.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)
         else if (entry.campaigns.includes(options.campaignType))
           timelineYear.entries.push(entry.title)
@@ -259,88 +205,60 @@ export function createSettlementFromOptions(
   }
 
   // Quarries
-  for (const quarryId of quarryIds) {
-    // Skip string IDs (custom monsters) - they'll be handled separately
-    if (typeof quarryId === 'string') continue
-
-    const data = QUARRIES[quarryId as keyof typeof QUARRIES]
-
-    const quarry: Quarry = {
-      id: quarryId,
+  for (const quarry of quarries) {
+    const settlementQuarryData: SettlementQuarry = {
+      huntBoard: quarry.huntBoard,
+      name: quarry.name,
+      node: quarry.node,
       unlocked: false
     }
 
+    if (quarry.alternate !== undefined)
+      settlementQuarryData.alternate = quarry.alternate
+    if (quarry.level1 !== undefined) settlementQuarryData.level1 = quarry.level1
+    if (quarry.level2 !== undefined) settlementQuarryData.level2 = quarry.level2
+    if (quarry.level3 !== undefined) settlementQuarryData.level3 = quarry.level3
+    if (quarry.level4 !== undefined) settlementQuarryData.level4 = quarry.level4
+    if (quarry.vignette !== undefined)
+      settlementQuarryData.vignette = quarry.vignette
+
     if (options.survivorType === SurvivorType.ARC) {
-      quarry.ccLevel1 = false
-      quarry.ccLevel2 = [false, false]
-      quarry.ccLevel3 = [false, false, false]
-      quarry.ccPrologue = false
+      settlementQuarryData.ccLevel1 = false
+      settlementQuarryData.ccLevel2 = [false, false]
+      settlementQuarryData.ccLevel3 = [false, false, false]
+
+      if (quarry.prologue) settlementQuarryData.ccPrologue = false
     }
 
-    settlement.quarries.push(quarry)
+    settlement.quarries.push(settlementQuarryData)
 
     // Add the respective timeline events for this quarry. Only add them if
     // they are included in all campaigns (they are string), or they include
-    // the current campaign type. Custom campaigns are not included here, as the
+    // the current campaign type. Custom campaigns are not included here, the
     // user would be building their own timeline during gameplay.
     for (let year = 0; year < settlement.timeline.length; year++) {
       const timelineYear = settlement.timeline[year]
 
-      for (const entry of data.main.timeline[year] || [])
+      if (quarry.timeline[year] === undefined) continue
+
+      for (const entry of quarry.timeline[year])
         if (typeof entry === 'string') timelineYear.entries.push(entry)
         else if (entry.campaigns.includes(options.campaignType))
           timelineYear.entries.push(entry.title)
     }
 
     // Add the respective settlement locations for this quarry.
-    settlement.locations.push(...data.main.locations)
-    if ('vignette' in data)
-      settlement.locations.push(...data.vignette.locations)
+    settlement.locations.push(...quarry.locations)
+    if (quarry.alternate !== undefined)
+      settlement.locations.push(...(quarry.alternate.locations ?? []))
+    if (quarry.vignette !== undefined)
+      settlement.locations.push(...(quarry.vignette.locations ?? []))
 
     // Add the respective CC rewards for this quarry.
-    if (options.survivorType === SurvivorType.ARC)
-      settlement.ccRewards!.push(...data.main.ccRewards)
-  }
-
-  // Custom quarries
-  for (const quarryId of quarryIds) {
-    // Only process string IDs (custom monsters)
-    if (typeof quarryId !== 'string') continue
-
-    const customMonster = campaign.customMonsters?.[quarryId]
-    if (!customMonster || customMonster.main.type !== MonsterType.QUARRY)
-      continue
-
-    const quarry: Quarry = {
-      id: quarryId,
-      unlocked: false
-    }
-
     if (options.survivorType === SurvivorType.ARC) {
-      quarry.ccLevel1 = false
-      quarry.ccLevel2 = [false, false]
-      quarry.ccLevel3 = [false, false, false]
-      quarry.ccPrologue = false
+      if (settlement.ccRewards === undefined) settlement.ccRewards = []
+      settlement.ccRewards.push(...quarry.ccRewards)
     }
-
-    settlement.quarries.push(quarry)
-
-    // Add timeline events for custom quarries if they exist
-    for (let year = 0; year < settlement.timeline.length; year++) {
-      const timelineYear = settlement.timeline[year]
-
-      for (const entry of customMonster.main.timeline[year] || [])
-        if (typeof entry === 'string') timelineYear.entries.push(entry)
-        else if (entry.campaigns.includes(options.campaignType))
-          timelineYear.entries.push(entry.title)
-    }
-
-    // Add settlement locations for custom quarries
-    settlement.locations.push(...customMonster.main.locations)
-
-    // Add CC rewards for custom quarries
-    if (options.survivorType === SurvivorType.ARC)
-      settlement.ccRewards!.push(...customMonster.main.ccRewards)
   }
 
   // Sort various settlement arrays for consistency.
@@ -352,38 +270,10 @@ export function createSettlementFromOptions(
     a.name.localeCompare(b.name)
   )
   settlement.nemeses = settlement.nemeses.sort((a, b) => {
-    const nemesisA =
-      typeof a.id === 'number'
-        ? NEMESES[a.id as keyof typeof NEMESES].main
-        : campaign.customMonsters?.[a.id]?.main
-    const nemesisB =
-      typeof b.id === 'number'
-        ? NEMESES[b.id as keyof typeof NEMESES].main
-        : campaign.customMonsters?.[b.id]?.main
-
-    if (!nemesisA || !nemesisB) return 0
-
-    return (
-      MonsterNodeNumeric[nemesisA.node as keyof typeof MonsterNodeNumeric] -
-      MonsterNodeNumeric[nemesisB.node as keyof typeof MonsterNodeNumeric]
-    )
+    return MonsterNodeNumeric[a.node] - MonsterNodeNumeric[b.node]
   })
   settlement.quarries = settlement.quarries.sort((a, b) => {
-    const quarryA =
-      typeof a.id === 'number'
-        ? QUARRIES[a.id as keyof typeof QUARRIES].main
-        : campaign.customMonsters?.[a.id]?.main
-    const quarryB =
-      typeof b.id === 'number'
-        ? QUARRIES[b.id as keyof typeof QUARRIES].main
-        : campaign.customMonsters?.[b.id]?.main
-
-    if (!quarryA || !quarryB) return 0
-
-    return (
-      MonsterNodeNumeric[quarryA.node as keyof typeof MonsterNodeNumeric] -
-      MonsterNodeNumeric[quarryB.node as keyof typeof MonsterNodeNumeric]
-    )
+    return MonsterNodeNumeric[a.node] - MonsterNodeNumeric[b.node]
   })
 
   for (let year = 0; year < settlement.timeline.length; year++)

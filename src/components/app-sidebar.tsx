@@ -175,8 +175,6 @@ interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   selectedShowdown: Showdown | null
   /** Selected Tab */
   selectedTab: TabType
-  /** Set Is Creating New Settlement */
-  setIsCreatingNewSettlement: (isCreating: boolean) => void
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
@@ -204,7 +202,6 @@ export function AppSidebar({
   selectedShowdown,
   selectedTab,
   setSelectedHunt,
-  setIsCreatingNewSettlement,
   setSelectedSettlement,
   setSelectedShowdown,
   setSelectedSurvivor,
@@ -399,7 +396,6 @@ export function AppSidebar({
           selectedHunt={selectedHunt}
           selectedSettlement={selectedSettlement}
           selectedShowdown={selectedShowdown}
-          setIsCreatingNewSettlement={setIsCreatingNewSettlement}
           setSelectedHunt={setSelectedHunt}
           setSelectedSettlement={setSelectedSettlement}
           setSelectedShowdown={setSelectedShowdown}
@@ -513,12 +509,20 @@ export function AppSidebar({
                           {campaign.survivors.length !== 1 ? 's' : ''}
                         </li>
                         <li>
-                          {Object.keys(campaign.customMonsters || {}).length}{' '}
-                          custom monster
-                          {Object.keys(campaign.customMonsters || {}).length !==
+                          {Object.keys(campaign.customNemeses || {}).length}{' '}
+                          custom
+                          {Object.keys(campaign.customNemeses || {}).length ===
                           1
-                            ? 's'
-                            : ''}
+                            ? ' nemesis'
+                            : ' nemeses'}
+                        </li>
+                        <li>
+                          {Object.keys(campaign.customQuarries || {}).length}{' '}
+                          custom
+                          {Object.keys(campaign.customQuarries || {}).length ===
+                          1
+                            ? ' quarry'
+                            : ' quarries'}
                         </li>
                       </ul>
                       <p>The records you seek to restore contain:</p>
@@ -533,14 +537,25 @@ export function AppSidebar({
                         </li>
                         <li>
                           {
-                            Object.keys(uploadedData?.customMonsters || {})
+                            Object.keys(uploadedData?.customNemeses || {})
                               .length
                           }{' '}
-                          custom monster
-                          {Object.keys(uploadedData?.customMonsters || {})
-                            .length !== 1
-                            ? 's'
-                            : ''}
+                          custom
+                          {Object.keys(uploadedData?.customNemeses || {})
+                            .length === 1
+                            ? ' nemesis'
+                            : ' nemeses'}
+                        </li>
+                        <li>
+                          {
+                            Object.keys(uploadedData?.customQuarries || {})
+                              .length
+                          }{' '}
+                          custom
+                          {Object.keys(uploadedData?.customQuarries || {})
+                            .length === 1
+                            ? ' quarry'
+                            : ' quarries'}
                         </li>
                       </ul>
                       <p>Do you wish to continue?</p>

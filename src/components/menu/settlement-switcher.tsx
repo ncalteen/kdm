@@ -33,8 +33,6 @@ interface SettlementSwitcherProps extends ComponentProps<typeof Sidebar> {
   selectedSettlement: Settlement | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
-  /** Set Is Creating New Settlement */
-  setIsCreatingNewSettlement: (isCreating: boolean) => void
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
@@ -61,7 +59,6 @@ export function SettlementSwitcher({
   selectedHunt,
   selectedSettlement,
   selectedShowdown,
-  setIsCreatingNewSettlement,
   setSelectedHunt,
   setSelectedSettlement,
   setSelectedShowdown,
@@ -83,7 +80,6 @@ export function SettlementSwitcher({
         (showdown) => showdown.settlementId === settlement.id
       ) || null
 
-    setIsCreatingNewSettlement(false)
     setSelectedSettlement(settlement)
     setSelectedHunt(settlementHunt)
     setSelectedShowdown(settlementShowdown)
@@ -127,7 +123,6 @@ export function SettlementSwitcher({
             {/* Always display the create settlement option */}
             <DropdownMenuItem
               onSelect={() => {
-                setIsCreatingNewSettlement(true)
                 setSelectedSettlement(null)
                 setSelectedHunt(null)
                 setSelectedShowdown(null)

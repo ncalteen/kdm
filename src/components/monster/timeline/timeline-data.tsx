@@ -21,7 +21,7 @@ import { ReactElement, useState } from 'react'
 /**
  * Timeline Data Properties
  */
-export interface TimelineDataProps {
+interface TimelineDataProps {
   /** Timeline entries */
   timelineData: Array<{ year: number; event: string }>
   /** Update timeline data callback */

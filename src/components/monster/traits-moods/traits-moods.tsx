@@ -10,8 +10,8 @@ import {
 } from '@/components/monster/traits-moods/traits/trait-item'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { HuntMonster } from '@/schemas/hunt'
-import { ShowdownMonster } from '@/schemas/showdown'
+import { HuntMonster } from '@/schemas/hunt-monster'
+import { ShowdownMonster } from '@/schemas/showdown-monster'
 import { PlusIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
@@ -94,7 +94,7 @@ export function TraitsMoods({
 
       <div className="flex flex-col">
         <div className="flex-1">
-          {monster.traits?.map((trait, index) => (
+          {monster.traits.map((trait, index) => (
             <TraitItem
               key={index}
               trait={trait}
@@ -137,7 +137,7 @@ export function TraitsMoods({
 
       <div className="flex flex-col pb-2">
         <div className="flex-1">
-          {monster.moods?.map((mood, index) => (
+          {monster.moods.map((mood, index) => (
             <MoodItem
               key={index}
               mood={mood}

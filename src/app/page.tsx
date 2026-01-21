@@ -110,19 +110,21 @@ function MainPage(): ReactElement {
   const {
     campaign,
 
-    isCreatingNewHunt,
-    isCreatingNewSettlement,
-    isCreatingNewShowdown,
+    // isCreatingNewHunt,
+    // isCreatingNewSettlement,
+    // isCreatingNewShowdown,
     isCreatingNewSurvivor,
 
-    setIsCreatingNewHunt,
-    setIsCreatingNewSettlement,
-    setIsCreatingNewShowdown,
+    // setIsCreatingNewHunt,
+    // setIsCreatingNewSettlement,
+    // setIsCreatingNewShowdown,
     setIsCreatingNewSurvivor,
 
     setSelectedHunt,
+    setSelectedHuntMonsterIndex,
     setSelectedSettlement,
     setSelectedShowdown,
+    setSelectedShowdownMonsterIndex,
     setSelectedSurvivor,
     setSelectedTab,
 
@@ -139,6 +141,10 @@ function MainPage(): ReactElement {
       null,
     [campaign.hunts, campaign.selectedHuntId]
   )
+  const selectedHuntMonsterIndex = useMemo(
+    () => campaign.selectedHuntMonsterIndex || 0,
+    [campaign.selectedHuntMonsterIndex]
+  )
   const selectedSettlement = useMemo(
     () =>
       campaign.settlements.find(
@@ -152,6 +158,10 @@ function MainPage(): ReactElement {
         (showdown) => showdown.id === campaign.selectedShowdownId
       ) || null,
     [campaign.showdowns, campaign.selectedShowdownId]
+  )
+  const selectedShowdownMonsterIndex = useMemo(
+    () => campaign.selectedShowdownMonsterIndex || 0,
+    [campaign.selectedShowdownMonsterIndex]
   )
   const selectedSurvivor = useMemo(
     () =>
@@ -259,7 +269,6 @@ function MainPage(): ReactElement {
             selectedSettlement={selectedSettlement}
             selectedShowdown={selectedShowdown}
             selectedTab={selectedTab}
-            setIsCreatingNewSettlement={setIsCreatingNewSettlement}
             setSelectedHunt={setSelectedHunt}
             setSelectedSettlement={setSelectedSettlement}
             setSelectedShowdown={setSelectedShowdown}
@@ -273,26 +282,26 @@ function MainPage(): ReactElement {
                 <Form {...huntForm}>
                   <SettlementForm
                     campaign={campaign}
-                    isCreatingNewHunt={isCreatingNewHunt}
-                    isCreatingNewSettlement={isCreatingNewSettlement}
-                    isCreatingNewShowdown={isCreatingNewShowdown}
                     isCreatingNewSurvivor={isCreatingNewSurvivor}
                     saveSelectedHunt={saveSelectedHunt}
                     saveSelectedSettlement={saveSelectedSettlement}
                     saveSelectedShowdown={saveSelectedShowdown}
                     saveSelectedSurvivor={saveSelectedSurvivor}
                     selectedHunt={selectedHunt}
+                    selectedHuntMonsterIndex={selectedHuntMonsterIndex}
                     selectedSettlement={selectedSettlement}
                     selectedShowdown={selectedShowdown}
+                    selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
                     selectedSurvivor={selectedSurvivor}
                     selectedTab={selectedTab}
-                    setIsCreatingNewHunt={setIsCreatingNewHunt}
-                    setIsCreatingNewSettlement={setIsCreatingNewSettlement}
-                    setIsCreatingNewShowdown={setIsCreatingNewShowdown}
                     setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                     setSelectedHunt={setSelectedHunt}
+                    setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
                     setSelectedSettlement={setSelectedSettlement}
                     setSelectedShowdown={setSelectedShowdown}
+                    setSelectedShowdownMonsterIndex={
+                      setSelectedShowdownMonsterIndex
+                    }
                     setSelectedSurvivor={setSelectedSurvivor}
                     setSelectedTab={setSelectedTab}
                     updateCampaign={updateCampaign}

@@ -167,13 +167,13 @@ export enum ResourceType {
 /** Monster Level */
 export enum MonsterLevel {
   /** Level 1 */
-  LEVEL_1 = '1',
+  LEVEL_1 = 'level1',
   /** Level 2 */
-  LEVEL_2 = '2',
+  LEVEL_2 = 'level2',
   /** Level 3 */
-  LEVEL_3 = '3',
+  LEVEL_3 = 'level3',
   /** Level 4 */
-  LEVEL_4 = '4'
+  LEVEL_4 = 'level4'
 }
 
 /** Monster Type */

@@ -5,6 +5,7 @@ import {
   CoreMilestones,
   CorePrinciples
 } from '@/lib/campaigns/common'
+import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { CampaignTemplate } from '@/lib/types'
 
 /**
@@ -45,9 +46,19 @@ export const PeopleOfTheLantern: CampaignTemplate = {
       event: 'Hooded Knight'
     }
   ],
-  nemeses: [3, 9, 8, 19, 7],
+  nemeses: [
+    NEMESES.BUTCHER,
+    NEMESES.KINGS_MAN,
+    NEMESES.HAND,
+    NEMESES.WATCHER,
+    NEMESES.GOLD_SMOKE_KNIGHT
+  ],
   principles: [...CorePrinciples],
-  quarries: [14, 10, 9],
+  quarries: [
+    QUARRIES.WHITE_LION,
+    QUARRIES.SCREAMING_ANTELOPE,
+    QUARRIES.PHOENIX
+  ],
   timeline: [
     // Year 0 (Prologue)
     { completed: false, entries: [] },

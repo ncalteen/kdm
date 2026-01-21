@@ -1,5 +1,5 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { QuarryMonsterData } from '@/lib/types'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
  * Lion God Monster Data
@@ -21,99 +21,112 @@ export const LION_GOD: QuarryMonsterData = {
     11: HuntEventType.BASIC,
     12: undefined
   },
+  multiMonster: false,
   name: 'Lion God',
   node: MonsterNode.NQ4,
   prologue: false,
   type: MonsterType.QUARRY,
-  level1: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 7,
-      advanced: 7,
-      legendary: 1
-    },
-    damage: 0,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 0,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 8,
-    movementTokens: 0,
-    speed: 0,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: [],
-    toughness: 14,
-    toughnessTokens: 0,
-    traits: ['Heft', 'Hollow Earth', 'Whiplash']
-  },
-  level2: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 11,
-      advanced: 8,
-      legendary: 1
-    },
-    damage: 1,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    huntPos: 0,
-    luck: 0,
-    luckTokens: 1,
-    moods: [],
-    movement: 9,
-    movementTokens: 0,
-    speed: 1,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: [],
-    toughness: 16,
-    toughnessTokens: 0,
-    traits: ['Divine Prowess', 'Heft', 'Hollow Earth', 'Whiplash']
-  },
-  level3: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 14,
-      advanced: 9,
-      legendary: 2
-    },
-    damage: 3,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 1,
-    huntPos: 0,
-    luck: 0,
-    luckTokens: 2,
-    moods: [],
-    movement: 10,
-    movementTokens: 0,
-    speed: 2,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: [],
-    toughness: 21,
-    toughnessTokens: 0,
-    traits: [
-      'Divine Prowess',
-      'Heft',
-      'Hollow Earth',
-      'Immaculate Intuition',
-      'Whiplash',
+  level1: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 7,
+        advanced: 7,
+        legendary: 1
+      },
+      aiDeckRemaining: 15,
+      damage: 0,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 0,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 8,
+      movementTokens: 0,
+      speed: 0,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 14,
+      toughnessTokens: 0,
+      traits: ['Heft', 'Hollow Earth', 'Whiplash']
+    }
+  ],
+  level2: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 11,
+        advanced: 8,
+        legendary: 1
+      },
+      aiDeckRemaining: 20,
+      damage: 1,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      huntPos: 0,
+      luck: 0,
+      luckTokens: 1,
+      moods: [],
+      movement: 9,
+      movementTokens: 0,
+      speed: 1,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 16,
+      toughnessTokens: 0,
+      traits: ['Divine Prowess', 'Heft', 'Hollow Earth', 'Whiplash']
+    }
+  ],
+  level3: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 14,
+        advanced: 9,
+        legendary: 2
+      },
+      aiDeckRemaining: 25,
+      damage: 3,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 1,
+      huntPos: 0,
+      luck: 0,
+      luckTokens: 2,
+      moods: [],
+      movement: 10,
+      movementTokens: 0,
+      speed: 2,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorHuntPos: 0,
+      survivorStatuses: [],
+      toughness: 21,
+      toughnessTokens: 0,
+      traits: [
+        'Divine Prowess',
+        'Heft',
+        'Hollow Earth',
+        'Immaculate Intuition',
+        'Whiplash',
 
-      'Indomitable'
-    ]
-  },
+        'Indomitable'
+      ]
+    }
+  ],
   locations: [],
   timeline: {
     13: ['The Silver City']

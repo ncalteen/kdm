@@ -25,6 +25,8 @@ interface HuntCardProps {
   ) => void
   /** Selected Hunt */
   selectedHunt: Hunt | null
+  /** Selected Hunt Monster Index */
+  selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Showdown */
@@ -33,8 +35,12 @@ interface HuntCardProps {
   selectedSurvivor: Survivor | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Hunt Monster Index */
+  setSelectedHuntMonsterIndex: (index: number) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
@@ -54,11 +60,14 @@ export function HuntCard({
   saveSelectedHunt,
   saveSelectedSurvivor,
   selectedHunt,
+  selectedHuntMonsterIndex,
   selectedSettlement,
   selectedShowdown,
   selectedSurvivor,
   setSelectedHunt,
+  setSelectedHuntMonsterIndex,
   setSelectedShowdown,
+  setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
   setSelectedTab,
   updateCampaign
@@ -69,10 +78,13 @@ export function HuntCard({
       saveSelectedHunt={saveSelectedHunt}
       saveSelectedSurvivor={saveSelectedSurvivor}
       selectedHunt={selectedHunt}
+      selectedHuntMonsterIndex={selectedHuntMonsterIndex}
       selectedSettlement={selectedSettlement}
       selectedSurvivor={selectedSurvivor}
       setSelectedHunt={setSelectedHunt}
+      setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
       setSelectedShowdown={setSelectedShowdown}
+      setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
       setSelectedSurvivor={setSelectedSurvivor}
       setSelectedTab={setSelectedTab}
       updateCampaign={updateCampaign}
@@ -81,9 +93,11 @@ export function HuntCard({
     <CreateHuntCard
       campaign={campaign}
       saveSelectedHunt={saveSelectedHunt}
+      selectedHuntMonsterIndex={selectedHuntMonsterIndex}
       selectedSettlement={selectedSettlement}
       selectedShowdown={selectedShowdown}
       setSelectedHunt={setSelectedHunt}
+      setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
       setSelectedSurvivor={setSelectedSurvivor}
     />
   )

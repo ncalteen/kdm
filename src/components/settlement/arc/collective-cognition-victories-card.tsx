@@ -10,11 +10,12 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { MonsterType } from '@/lib/enums'
 import { COLLECTIVE_COGNITION_VICTORY_SAVED_MESSAGE } from '@/lib/messages'
-import { getMonsterData } from '@/lib/utils'
+import { getNemesisDataByName, getQuarryDataByName } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { Nemesis, Quarry, Settlement } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
+import { SettlementNemesis } from '@/schemas/settlement-nemesis'
+import { SettlementQuarry } from '@/schemas/settlement-quarry'
 import { TrophyIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
@@ -53,14 +54,14 @@ export function CollectiveCognitionVictoriesCard({
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (
-    quarries: Quarry[] | null,
-    nemeses: Nemesis[] | null,
+    quarries: SettlementQuarry[] | null,
+    nemeses: SettlementNemesis[] | null,
     successMsg?: string
   ) =>
     saveSelectedSettlement(
       {
-        quarries: quarries || selectedSettlement?.quarries || [],
-        nemeses: nemeses || selectedSettlement?.nemeses || []
+        quarries: quarries ?? selectedSettlement?.quarries ?? [],
+        nemeses: nemeses ?? selectedSettlement?.nemeses ?? []
       },
       successMsg
     )
@@ -97,35 +98,26 @@ export function CollectiveCognitionVictoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(selectedSettlement?.quarries || []).map((quarry, index) => {
-                  const monsterData = getMonsterData(
-                    campaign,
-                    quarry.id,
-                    MonsterType.QUARRY
-                  )
-                  const isPrologue =
-                    monsterData &&
-                    monsterData.main &&
-                    'prologue' in monsterData.main &&
-                    monsterData.main.prologue
+                {(selectedSettlement?.quarries ?? []).map((quarry, index) => {
+                  const monsterData = getQuarryDataByName(campaign, quarry.name)
 
                   return (
                     <TableRow key={index}>
                       <TableCell className="text-sm text-left pl-5">
-                        {monsterData?.main.name || 'Unnamed Quarry'}
+                        {monsterData?.name ?? 'Unnamed Quarry'}
                       </TableCell>
                       <TableCell className="text-center">
-                        {isPrologue && (
+                        {monsterData?.prologue && (
                           <div className="flex justify-center">
                             <Checkbox
                               checked={
                                 selectedSettlement?.quarries?.[index]
-                                  ?.ccPrologue || false
+                                  ?.ccPrologue ?? false
                               }
                               onCheckedChange={(checked) => {
                                 if (checked !== 'indeterminate') {
                                   const updatedQuarries = [
-                                    ...(selectedSettlement?.quarries || [])
+                                    ...(selectedSettlement?.quarries ?? [])
                                   ]
                                   updatedQuarries[index] = {
                                     ...updatedQuarries[index],
@@ -150,13 +142,13 @@ export function CollectiveCognitionVictoriesCard({
                         <div className="flex justify-center">
                           <Checkbox
                             checked={
-                              selectedSettlement?.quarries?.[index]?.ccLevel1 ||
+                              selectedSettlement?.quarries?.[index].ccLevel1 ??
                               false
                             }
                             onCheckedChange={(checked) => {
                               if (checked !== 'indeterminate') {
                                 const updatedQuarries = [
-                                  ...(selectedSettlement?.quarries || [])
+                                  ...(selectedSettlement?.quarries ?? [])
                                 ]
                                 updatedQuarries[index] = {
                                   ...updatedQuarries[index],
@@ -178,7 +170,7 @@ export function CollectiveCognitionVictoriesCard({
                       </TableCell>
                       <TableCell className="text-center" colSpan={2}>
                         <div className="flex flex-row justify-center gap-2">
-                          {(quarry.ccLevel2 || [false, false]).map(
+                          {(quarry.ccLevel2 ?? [false, false]).map(
                             (checked, lvl2Index) => (
                               <div
                                 className="flex justify-center"
@@ -186,16 +178,18 @@ export function CollectiveCognitionVictoriesCard({
                                 <Checkbox
                                   checked={
                                     selectedSettlement?.quarries?.[index]
-                                      ?.ccLevel2?.[lvl2Index] || false
+                                      .ccLevel2?.[lvl2Index] ?? false
                                   }
                                   onCheckedChange={(checked) => {
                                     if (checked !== 'indeterminate') {
                                       const updatedQuarries = [
-                                        ...(selectedSettlement?.quarries || [])
+                                        ...(selectedSettlement?.quarries ?? [])
                                       ]
                                       const updatedCcLevel2 = [
-                                        ...(updatedQuarries[index]
-                                          ?.ccLevel2 || [false, false])
+                                        ...(updatedQuarries[index].ccLevel2 ?? [
+                                          false,
+                                          false
+                                        ])
                                       ]
                                       updatedCcLevel2[lvl2Index] = checked
                                       updatedQuarries[index] = {
@@ -221,7 +215,7 @@ export function CollectiveCognitionVictoriesCard({
                       </TableCell>
                       <TableCell className="text-center" colSpan={3}>
                         <div className="flex flex-row justify-center gap-2">
-                          {(quarry.ccLevel3 || [false, false, false]).map(
+                          {(quarry.ccLevel3 ?? [false, false, false]).map(
                             (checked, lvl3Index) => (
                               <div
                                 key={`ccLevel3-${lvl3Index}`}
@@ -229,16 +223,16 @@ export function CollectiveCognitionVictoriesCard({
                                 <Checkbox
                                   checked={
                                     selectedSettlement?.quarries?.[index]
-                                      ?.ccLevel3?.[lvl3Index] || false
+                                      .ccLevel3?.[lvl3Index] ?? false
                                   }
                                   onCheckedChange={(checked) => {
                                     if (checked !== 'indeterminate') {
                                       const updatedQuarries = [
-                                        ...(selectedSettlement?.quarries || [])
+                                        ...(selectedSettlement?.quarries ?? [])
                                       ]
                                       const updatedCcLevel3 = [
                                         ...(updatedQuarries[index]
-                                          ?.ccLevel3 || [false, false, false])
+                                          ?.ccLevel3 ?? [false, false, false])
                                       ]
                                       updatedCcLevel3[lvl3Index] = checked
                                       updatedQuarries[index] = {
@@ -287,30 +281,29 @@ export function CollectiveCognitionVictoriesCard({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(selectedSettlement?.nemeses || []).map((nemesis, index) => (
+                {(selectedSettlement?.nemeses ?? []).map((nemesis, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-sm text-left pl-5">
                       {(() => {
-                        const monsterData = getMonsterData(
+                        const monsterData = getNemesisDataByName(
                           campaign,
-                          nemesis.id,
-                          MonsterType.NEMESIS
+                          nemesis.name
                         )
 
-                        return monsterData?.main?.name || 'Unnamed Nemesis'
+                        return monsterData?.name ?? 'Unnamed Nemesis'
                       })()}
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex justify-center">
                         <Checkbox
                           checked={
-                            selectedSettlement?.nemeses?.[index]?.ccLevel1 ||
+                            selectedSettlement?.nemeses?.[index].ccLevel1 ??
                             false
                           }
                           onCheckedChange={(checked) => {
                             if (checked !== 'indeterminate') {
                               const updatedNemeses = [
-                                ...(selectedSettlement?.nemeses || [])
+                                ...(selectedSettlement?.nemeses ?? [])
                               ]
                               updatedNemeses[index] = {
                                 ...updatedNemeses[index],
@@ -334,13 +327,13 @@ export function CollectiveCognitionVictoriesCard({
                       <div className="flex justify-center">
                         <Checkbox
                           checked={
-                            selectedSettlement?.nemeses?.[index]?.ccLevel2 ||
+                            selectedSettlement?.nemeses?.[index].ccLevel2 ??
                             false
                           }
                           onCheckedChange={(checked) => {
                             if (checked !== 'indeterminate') {
                               const updatedNemeses = [
-                                ...(selectedSettlement?.nemeses || [])
+                                ...(selectedSettlement?.nemeses ?? [])
                               ]
                               updatedNemeses[index] = {
                                 ...updatedNemeses[index],
@@ -364,13 +357,13 @@ export function CollectiveCognitionVictoriesCard({
                       <div className="flex justify-center">
                         <Checkbox
                           checked={
-                            selectedSettlement?.nemeses?.[index]?.ccLevel3 ||
+                            selectedSettlement?.nemeses?.[index].ccLevel3 ??
                             false
                           }
                           onCheckedChange={(checked) => {
                             if (checked !== 'indeterminate') {
                               const updatedNemeses = [
-                                ...(selectedSettlement?.nemeses || [])
+                                ...(selectedSettlement?.nemeses ?? [])
                               ]
                               updatedNemeses[index] = {
                                 ...updatedNemeses[index],

@@ -1,35 +1,14 @@
+'use client'
+
 import { TabType } from '@/lib/enums'
+import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { HuntSchema } from '@/schemas/hunt'
-import {
-  NemesisMonsterDataSchema,
-  QuarryMonsterDataSchema
-} from '@/schemas/monster'
+import { NemesisMonsterDataSchema } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterDataSchema } from '@/schemas/quarry-monster-data'
 import { SettlementSchema } from '@/schemas/settlement'
 import { ShowdownSchema } from '@/schemas/showdown'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { z } from 'zod'
-
-/**
- * Global Settings Schema
- */
-export const GlobalSettingsSchema = z.object({
-  /** Disable Toast Notifications */
-  disableToasts: z.boolean().default(false),
-  /** Unlocked Special Monsters */
-  unlockedMonsters: z.object({
-    /** Killenium Butcher Nemesis */
-    killeniumButcher: z.boolean().default(false),
-    /** Screaming Nukalope Quarry */
-    screamingNukalope: z.boolean().default(false),
-    /** White Gigalion Quarry */
-    whiteGigalion: z.boolean().default(false)
-  })
-})
-
-/**
- * Global Settings
- */
-export type GlobalSettings = z.infer<typeof GlobalSettingsSchema>
 
 /**
  * Campaign Schema
@@ -37,16 +16,23 @@ export type GlobalSettings = z.infer<typeof GlobalSettingsSchema>
  * All of the data stored for all of the settlements and survivors for a player.
  */
 export const CampaignSchema = z.object({
-  /** Custom Monsters */
-  customMonsters: z
+  /** Custom Nemeses */
+  customNemeses: z
     .record(
-      /** Monster ID */
+      /** Nemesis ID */
       z.string(),
-      /** Monster Data */
-      z.record(
-        z.literal('main'),
-        z.union([NemesisMonsterDataSchema, QuarryMonsterDataSchema])
-      )
+      /** Nemesis Data */
+      NemesisMonsterDataSchema
+    )
+    .nullable()
+    .optional(),
+  /** Custom Quarries */
+  customQuarries: z
+    .record(
+      /** Quarry ID */
+      z.string(),
+      /** Quarry Data */
+      QuarryMonsterDataSchema
     )
     .nullable()
     .optional(),
@@ -54,8 +40,22 @@ export const CampaignSchema = z.object({
   hunts: z.array(HuntSchema).nullable().optional(),
   /** Selected Hunt ID */
   selectedHuntId: z.number().nullable().optional(),
+  /**
+   * Selected Hunt Monster Index
+   *
+   * Always zero for single monster hunts, or the index of the selected monster
+   * in multi-monster hunts.
+   */
+  selectedHuntMonsterIndex: z.number().default(0).optional(),
   /** Selected Showdown ID */
   selectedShowdownId: z.number().nullable().optional(),
+  /**
+   * Selected Monster Index
+   *
+   * Always zero for single monster showdowns, or the index of the selected
+   * monster in multi-monster showdowns.
+   */
+  selectedShowdownMonsterIndex: z.number().default(0).optional(),
   /** Selected Settlement ID */
   selectedSettlementId: z.number().nullable().optional(),
   /** Selected Survivor ID */

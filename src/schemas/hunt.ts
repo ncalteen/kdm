@@ -1,156 +1,10 @@
 'use client'
 
-import {
-  ColorChoice,
-  HuntEventType,
-  MonsterLevel,
-  MonsterType
-} from '@/lib/enums'
+import { MonsterLevel } from '@/lib/enums'
+import { HuntBoardSchema } from '@/schemas/hunt-board'
+import { HuntMonsterSchema } from '@/schemas/hunt-monster'
+import { HuntSurvivorDetailsSchema } from '@/schemas/hunt-survivor-details'
 import { z } from 'zod'
-
-/**
- * Survivor Hunt Details Schema
- *
- * Used to assign details to survivors that only persist during a hunt.
- */
-export const SurvivorHuntDetailsSchema = z.object({
-  /** Accuracy Tokens */
-  accuracyTokens: z.number().int().default(0),
-  /** Survivor Color Code */
-  color: z.enum(ColorChoice).default(ColorChoice.SLATE),
-  /** Evasion Tokens */
-  evasionTokens: z.number().int().default(0),
-  /** Survivor ID */
-  id: z.number().int().min(0),
-  /** Insanity Tokens */
-  insanityTokens: z.number().int().default(0),
-  /** Luck Tokens */
-  luckTokens: z.number().int().default(0),
-  /** Movement Tokens */
-  movementTokens: z.number().int().default(0),
-  /** Survivor Notes */
-  notes: z.string().default(''),
-  /** Speed Tokens */
-  speedTokens: z.number().int().default(0),
-  /** Strength Tokens */
-  strengthTokens: z.number().int().default(0),
-  /** Survival Tokens */
-  survivalTokens: z.number().int().default(0)
-})
-
-/**
- * Survivor Hunt Details
- */
-export type SurvivorHuntDetails = z.infer<typeof SurvivorHuntDetailsSchema>
-
-/**
- * Hunt Board Schema
- */
-export const HuntBoardSchema = z.object({
-  /** Position 0 (Start) */
-  0: z.undefined(),
-  /** Position 1 */
-  1: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 2 */
-  2: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 3 */
-  3: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 4 */
-  4: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 5 */
-  5: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 6 (Overwhelming Darkness) */
-  6: z.undefined(),
-  /** Position 7 */
-  7: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 8 */
-  8: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 9 */
-  9: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 10 */
-  10: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 11 */
-  11: z.union([z.enum(HuntEventType), z.undefined()]),
-  /** Position 12 (Starvation) */
-  12: z.undefined()
-})
-
-/**
- * Hunt Board
- */
-export type HuntBoard = z.infer<typeof HuntBoardSchema>
-
-/**
- * Hunt Monster Schema
- */
-export const HuntMonsterSchema = z.object({
-  /** Accuracy */
-  accuracy: z.number().int().default(0),
-  /** Accuracy Tokens */
-  accuracyTokens: z.number().int().default(0),
-  /** AI Deck */
-  aiDeck: z.object({
-    /** Basic Cards */
-    basic: z.number().int().min(0).default(0),
-    /** Advanced Cards */
-    advanced: z.number().int().min(0).default(0),
-    /** Legendary Cards */
-    legendary: z.number().int().min(0).default(0),
-    /** Overtone Cards */
-    overtone: z.number().int().min(0).default(0).optional()
-  }),
-  /** AI Deck Remaining */
-  aiDeckRemaining: z.number().int().min(0).default(0),
-  /** Damage */
-  damage: z.number().int().min(0).default(0),
-  /** Damage Tokens */
-  damageTokens: z.number().int().default(0),
-  /** Evasion */
-  evasion: z.number().int().default(0),
-  /** Evasion Tokens */
-  evasionTokens: z.number().int().default(0),
-  /** Hunt Board */
-  huntBoard: HuntBoardSchema.optional(),
-  /** Knocked Down */
-  knockedDown: z.boolean().default(false),
-  /** Monster Level */
-  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
-  /** Luck */
-  luck: z.number().int().default(0),
-  /** Luck Tokens */
-  luckTokens: z.number().int().default(0),
-  /** Moods */
-  moods: z.array(z.string()).default([]),
-  /** Movement */
-  movement: z.number().int().min(1).default(1),
-  /** Movement Tokens */
-  movementTokens: z.number().int().default(0),
-  /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
-  /** Monster Notes */
-  notes: z.string().default(''),
-  /** Speed */
-  speed: z.number().int().default(0),
-  /** Speed Tokens */
-  speedTokens: z.number().int().default(0),
-  /** Strength */
-  strength: z.number().int().default(0),
-  /** Strength Tokens */
-  strengthTokens: z.number().int().default(0),
-  /** Toughness */
-  toughness: z.number().int().min(0).default(0),
-  /** Traits */
-  traits: z.array(z.string()).default([]),
-  /** Monster Type */
-  type: z.enum(MonsterType),
-  /** Wounds */
-  wounds: z.number().int().min(0).default(0)
-})
-
-/**
- * Hunt Monster
- */
-export type HuntMonster = z.infer<typeof HuntMonsterSchema>
 
 /**
  * Hunt Schema
@@ -158,10 +12,14 @@ export type HuntMonster = z.infer<typeof HuntMonsterSchema>
  * This includes any information needed to track a selected hunt.
  */
 export const HuntSchema = z.object({
+  /** Hunt Board */
+  huntBoard: HuntBoardSchema.optional(),
   /** Hunt ID */
   id: z.number().int().min(0),
-  /** Hunt Monster */
-  monster: HuntMonsterSchema,
+  /** Monster Level */
+  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  /** Hunt Monster(s) */
+  monsters: z.array(HuntMonsterSchema),
   /** Monster Position on Hunt Board */
   monsterPosition: z.number().min(0).max(12),
   /** Selected Scout (Required if Settlement uses Scouts) */
@@ -169,7 +27,7 @@ export const HuntSchema = z.object({
   /** Settlement ID */
   settlementId: z.number().int().min(0),
   /** Survivor Hunt Details */
-  survivorDetails: z.array(SurvivorHuntDetailsSchema).default([]),
+  survivorDetails: z.array(HuntSurvivorDetailsSchema).default([]),
   /** Survivor Position on Hunt Board */
   survivorPosition: z.number().min(0).max(12).default(0),
   /** Selected Survivors */

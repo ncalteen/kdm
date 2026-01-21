@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { Milestone } from '@/schemas/settlement'
+import { SettlementMilestone } from '@/schemas/settlement-milestone'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
@@ -27,7 +27,7 @@ export interface MilestoneItemProps {
   /** Is Disabled */
   isDisabled: boolean
   /** Milestone */
-  milestone: Milestone
+  milestone: SettlementMilestone
   /** On Edit Handler */
   onEdit: (index: number) => void
   /** On Remove Handler */

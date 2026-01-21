@@ -30,15 +30,20 @@ import { MonsterNode, MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_UPDATED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
 import { getAvailableNodes } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { HuntBoard } from '@/schemas/hunt'
+import { HuntBoard } from '@/schemas/hunt-board'
 import {
-  NemesisMonsterDataSchema,
   NemesisMonsterLevel,
-  QuarryMonsterData,
-  QuarryMonsterDataSchema,
   QuarryMonsterLevel
-} from '@/schemas/monster'
-import { TimelineYear } from '@/schemas/settlement'
+} from '@/schemas/monster-level'
+import {
+  NemesisMonsterData,
+  NemesisMonsterDataSchema
+} from '@/schemas/nemesis-monster-data'
+import {
+  QuarryMonsterData,
+  QuarryMonsterDataSchema
+} from '@/schemas/quarry-monster-data'
+import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
 import { ReactElement, useEffect, useState } from 'react'
 
 /**
@@ -84,17 +89,17 @@ export function EditMonsterDialog({
   const [node, setNode] = useState<MonsterNode>(MonsterNode.NQ1)
   const [isPrologue, setIsPrologue] = useState(false)
   const [level1Data, setLevel1Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [level2Data, setLevel2Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [level3Data, setLevel3Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [level4Data, setLevel4Data] = useState<
-    Partial<QuarryMonsterLevel | NemesisMonsterLevel>
-  >({})
+    Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
+  >([])
   const [timelineData, setTimelineData] = useState<
     Array<{ year: number; event: string }>
   >([])
@@ -111,7 +116,10 @@ export function EditMonsterDialog({
     if (!monsterId || !isOpen) return
 
     const loadMonsterData = () => {
-      const monster = campaign.customMonsters?.[monsterId]?.main
+      const monster =
+        monsterId in (campaign.customNemeses ?? {})
+          ? campaign.customNemeses?.[monsterId]
+          : campaign.customQuarries?.[monsterId]
 
       if (!monster) return
 
@@ -121,14 +129,14 @@ export function EditMonsterDialog({
 
       // Load prologue flag for quarry monsters
       if (monster.type === MonsterType.QUARRY)
-        setIsPrologue(monster.prologue || false)
+        setIsPrologue(monster.prologue ?? false)
       else setIsPrologue(false)
 
       // Load level data
-      setLevel1Data(monster.level1 || {})
-      setLevel2Data(monster.level2 || {})
-      setLevel3Data(monster.level3 || {})
-      setLevel4Data(monster.level4 || {})
+      setLevel1Data(monster.level1 ?? [])
+      setLevel2Data(monster.level2 ?? [])
+      setLevel3Data(monster.level3 ?? [])
+      setLevel4Data(monster.level4 ?? [])
 
       // Load timeline data
       const timelineArray: Array<{ year: number; event: string }> = []
@@ -144,20 +152,18 @@ export function EditMonsterDialog({
 
       // Load quarry-specific data
       if (monster.type === MonsterType.QUARRY) {
-        const quarryMonster = monster as QuarryMonsterData
-
         // Load hunt board
-        setHuntBoardData(quarryMonster.huntBoard || {})
+        setHuntBoardData(monster.huntBoard ?? {})
 
         // Load locations
-        setLocationsData(quarryMonster.locations?.map((loc) => loc.name) || [])
+        setLocationsData(monster.locations.map((loc) => loc.name))
 
         // Load CC rewards
         setCcRewardsData(
-          quarryMonster.ccRewards?.map((reward) => ({
+          monster.ccRewards.map((reward) => ({
             cc: reward.cc,
             name: reward.name
-          })) || []
+          }))
         )
       } else {
         // Reset quarry-specific data for nemesis
@@ -168,7 +174,7 @@ export function EditMonsterDialog({
     }
 
     loadMonsterData()
-  }, [campaign.customMonsters, monsterId, isOpen])
+  }, [campaign.customNemeses, campaign.customQuarries, monsterId, isOpen])
 
   /**
    * Handles monster type change to restrict allowed nodes.
@@ -189,10 +195,13 @@ export function EditMonsterDialog({
 
     try {
       // Get existing campaign data
-      const customMonsters = campaign.customMonsters || {}
+      const customNemeses = { ...(campaign.customNemeses ?? {}) }
+      const customQuarries = { ...(campaign.customQuarries ?? {}) }
 
       // Convert timeline array to correct format
-      const timelineRecord: { [key: number]: TimelineYear['entries'] } = {}
+      const timelineRecord: {
+        [key: number]: SettlementTimelineYear['entries']
+      } = {}
       timelineData.forEach(({ year, event }) => {
         if (!timelineRecord[year]) timelineRecord[year] = []
         timelineRecord[year].push(event)
@@ -231,16 +240,16 @@ export function EditMonsterDialog({
                 unlocked: false
               })),
               timeline: timelineRecord,
-              ...(Object.keys(level1Data).length > 0 && {
+              ...(level1Data.length > 0 && {
                 level1: level1Data
               }),
-              ...(Object.keys(level2Data).length > 0 && {
+              ...(level2Data.length > 0 && {
                 level2: level2Data
               }),
-              ...(Object.keys(level3Data).length > 0 && {
+              ...(level3Data.length > 0 && {
                 level3: level3Data
               }),
-              ...(Object.keys(level4Data).length > 0 && {
+              ...(level4Data.length > 0 && {
                 level4: level4Data
               })
             })
@@ -249,28 +258,28 @@ export function EditMonsterDialog({
               node,
               timeline: timelineRecord,
               type: monsterType,
-              ...(Object.keys(level1Data).length > 0 && {
+              ...(level1Data.length > 0 && {
                 level1: level1Data
               }),
-              ...(Object.keys(level2Data).length > 0 && {
+              ...(level2Data.length > 0 && {
                 level2: level2Data
               }),
-              ...(Object.keys(level3Data).length > 0 && {
+              ...(level3Data.length > 0 && {
                 level3: level3Data
               }),
-              ...(Object.keys(level4Data).length > 0 && {
+              ...(level4Data.length > 0 && {
                 level4: level4Data
               })
             })
 
+      if (monsterType === MonsterType.NEMESIS)
+        customNemeses[monsterId] = monsterData as NemesisMonsterData
+      else customQuarries[monsterId] = monsterData as QuarryMonsterData
+
       updateCampaign({
         ...campaign,
-        customMonsters: {
-          ...customMonsters,
-          [monsterId]: {
-            main: monsterData
-          }
-        }
+        customNemeses,
+        customQuarries
       })
 
       toast.success(CUSTOM_MONSTER_UPDATED_MESSAGE(monsterType))
@@ -379,7 +388,9 @@ export function EditMonsterDialog({
                     2: level2Data,
                     3: level3Data,
                     4: level4Data
-                  }[level] as Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                  }[level] as Partial<
+                    QuarryMonsterLevel | NemesisMonsterLevel
+                  >[]
                 }
                 setLevelData={
                   {
@@ -388,7 +399,7 @@ export function EditMonsterDialog({
                     3: setLevel3Data,
                     4: setLevel4Data
                   }[level] as (
-                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
+                    data: Partial<QuarryMonsterLevel | NemesisMonsterLevel>[]
                   ) => void
                 }
               />

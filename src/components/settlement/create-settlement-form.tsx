@@ -22,11 +22,10 @@ import {
 } from '@/lib/settlements/utils'
 import { Campaign } from '@/schemas/campaign'
 import {
-  BaseSettlementSchema,
   NewSettlementInput,
-  NewSettlementInputSchema,
-  Settlement
-} from '@/schemas/settlement'
+  NewSettlementInputSchema
+} from '@/schemas/new-settlement-input'
+import { BaseSettlementSchema, Settlement } from '@/schemas/settlement'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { Resolver, useForm, useWatch } from 'react-hook-form'

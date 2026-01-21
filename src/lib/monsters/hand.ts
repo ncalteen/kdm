@@ -1,5 +1,5 @@
 import { CampaignType, MonsterNode, MonsterType } from '@/lib/enums'
-import { NemesisMonsterData } from '@/lib/types'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
 
 /**
  * The Hand Monster Data
@@ -7,110 +7,120 @@ import { NemesisMonsterData } from '@/lib/types'
  * Note: For People of the Dream Keeper campaigns, add the Suspicious trait.
  */
 export const HAND: NemesisMonsterData = {
+  multiMonster: false,
   name: 'The Hand',
   node: MonsterNode.NN3,
   type: MonsterType.NEMESIS,
-  level1: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 10,
-      advanced: 0,
-      legendary: 0
-    },
-    damage: 0,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 5,
-    movementTokens: 0,
-    speed: 0,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: ['Polarized Aura'],
-    toughness: 14,
-    toughnessTokens: 0,
-    traits: [
-      'Applause',
-      'Blue Lens - Closed',
-      'Ghost Step',
-      'Green Lens - Closed',
-      'Impossible Eyes',
-      'Red Lens - Closed'
-    ]
-  },
-  level2: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 10,
-      advanced: 1,
-      legendary: 0
-    },
-    damage: 1,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 6,
-    movementTokens: 0,
-    speed: 1,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: ['Polarized Aura'],
-    toughness: 15,
-    toughnessTokens: 0,
-    traits: [
-      'Applause',
-      'Blue Lens - Closed',
-      'Ghost Step',
-      'Green Lens - Closed',
-      'Impossible Eyes',
-      'Red Lens - Closed'
-    ]
-  },
-  level3: {
-    accuracy: 0,
-    accuracyTokens: 0,
-    aiDeck: {
-      basic: 10,
-      advanced: 2,
-      legendary: 0
-    },
-    damage: 6,
-    damageTokens: 0,
-    evasion: 0,
-    evasionTokens: 0,
-    luck: 0,
-    luckTokens: 0,
-    moods: [],
-    movement: 6,
-    movementTokens: 0,
-    speed: 3,
-    speedTokens: 0,
-    strength: 0,
-    strengthTokens: 0,
-    survivorStatuses: ['Polarized Aura'],
-    toughness: 30,
-    toughnessTokens: 0,
-    traits: [
-      'Applause',
-      'Blue Lens - Closed',
-      'Ghost Step',
-      'Green Lens - Closed',
-      'Impossible Eyes',
-      'Red Lens - Closed',
+  level1: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 10,
+        advanced: 0,
+        legendary: 0
+      },
+      aiDeckRemaining: 10,
+      damage: 0,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 5,
+      movementTokens: 0,
+      speed: 0,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorStatuses: ['Polarized Aura'],
+      toughness: 14,
+      toughnessTokens: 0,
+      traits: [
+        'Applause',
+        'Blue Lens - Closed',
+        'Ghost Step',
+        'Green Lens - Closed',
+        'Impossible Eyes',
+        'Red Lens - Closed'
+      ]
+    }
+  ],
+  level2: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 10,
+        advanced: 1,
+        legendary: 0
+      },
+      aiDeckRemaining: 11,
+      damage: 1,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 6,
+      movementTokens: 0,
+      speed: 1,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorStatuses: ['Polarized Aura'],
+      toughness: 15,
+      toughnessTokens: 0,
+      traits: [
+        'Applause',
+        'Blue Lens - Closed',
+        'Ghost Step',
+        'Green Lens - Closed',
+        'Impossible Eyes',
+        'Red Lens - Closed'
+      ]
+    }
+  ],
+  level3: [
+    {
+      accuracy: 0,
+      accuracyTokens: 0,
+      aiDeck: {
+        basic: 10,
+        advanced: 2,
+        legendary: 0
+      },
+      aiDeckRemaining: 12,
+      damage: 6,
+      damageTokens: 0,
+      evasion: 0,
+      evasionTokens: 0,
+      luck: 0,
+      luckTokens: 0,
+      moods: [],
+      movement: 6,
+      movementTokens: 0,
+      speed: 3,
+      speedTokens: 0,
+      strength: 0,
+      strengthTokens: 0,
+      survivorStatuses: ['Polarized Aura'],
+      toughness: 30,
+      toughnessTokens: 0,
+      traits: [
+        'Applause',
+        'Blue Lens - Closed',
+        'Ghost Step',
+        'Green Lens - Closed',
+        'Impossible Eyes',
+        'Red Lens - Closed',
 
-      'Indomitable'
-    ]
-  },
+        'Indomitable'
+      ]
+    }
+  ],
   timeline: {
     11: [
       {

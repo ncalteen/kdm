@@ -48,12 +48,6 @@ import { ReactElement } from 'react'
 interface SettlementFormProps {
   /** Campaign */
   campaign: Campaign
-  /** New Hunt Being Created */
-  isCreatingNewHunt: boolean
-  /** New Settlement Being Created */
-  isCreatingNewSettlement: boolean
-  /** New Showdown Being Created */
-  isCreatingNewShowdown: boolean
   /** New Survivor Being Created */
   isCreatingNewSurvivor: boolean
   /** Save Selected Hunt */
@@ -75,28 +69,30 @@ interface SettlementFormProps {
   ) => void
   /** Selected Hunt */
   selectedHunt: Hunt | null
+  /** Selected Hunt Monster Index */
+  selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Selected Tab */
   selectedTab: string
-  /** Set New Hunt Being Created */
-  setIsCreatingNewHunt: (isCreating: boolean) => void
-  /** Set New Settlement Being Created */
-  setIsCreatingNewSettlement: (isCreating: boolean) => void
-  /** Set New Showdown Being Created */
-  setIsCreatingNewShowdown: (isCreating: boolean) => void
   /** Set New Survivor Being Created */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Hunt Monster Index */
+  setSelectedHuntMonsterIndex: (index: number) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
@@ -112,26 +108,24 @@ interface SettlementFormProps {
  */
 export function SettlementForm({
   campaign,
-  isCreatingNewHunt,
-  isCreatingNewSettlement,
-  isCreatingNewShowdown,
   isCreatingNewSurvivor,
   saveSelectedHunt,
   saveSelectedSettlement,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
+  selectedHuntMonsterIndex,
   selectedSettlement,
   selectedShowdown,
+  selectedShowdownMonsterIndex,
   selectedSurvivor,
   selectedTab,
-  setIsCreatingNewHunt,
-  setIsCreatingNewSettlement,
-  setIsCreatingNewShowdown,
   setIsCreatingNewSurvivor,
   setSelectedHunt,
+  setSelectedHuntMonsterIndex,
   setSelectedSettlement,
   setSelectedShowdown,
+  setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
   setSelectedTab,
   updateCampaign
@@ -433,11 +427,14 @@ export function SettlementForm({
               saveSelectedHunt={saveSelectedHunt}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
+              selectedHuntMonsterIndex={selectedHuntMonsterIndex}
               selectedSettlement={selectedSettlement}
               selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
               setSelectedHunt={setSelectedHunt}
+              setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
               setSelectedShowdown={setSelectedShowdown}
+              setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
               setSelectedSurvivor={setSelectedSurvivor}
               setSelectedTab={setSelectedTab}
               updateCampaign={updateCampaign}
@@ -452,9 +449,11 @@ export function SettlementForm({
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
               selectedShowdown={selectedShowdown}
+              selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
               setSelectedShowdown={setSelectedShowdown}
+              setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
               setSelectedSurvivor={setSelectedSurvivor}
               updateCampaign={updateCampaign}
             />

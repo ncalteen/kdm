@@ -1,6 +1,6 @@
 'use client'
 
-import { ShowdownMonsterCard } from '@/components/showdown/showdown-monster/showdown-monster-card'
+import { ShowdownMonstersCard } from '@/components/showdown/showdown-monster/showdown-monsters-card'
 import { ShowdownSurvivorsCard } from '@/components/showdown/showdown-survivors/showdown-survivors-card'
 import { TurnCard } from '@/components/showdown/showdown-turn/showdown-turn-card'
 import {
@@ -41,12 +41,16 @@ interface ActiveShowdownCardProps {
   ) => void
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Update Campaign */
@@ -64,9 +68,11 @@ export function ActiveShowdownCard({
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedShowdown,
+  selectedShowdownMonsterIndex,
   selectedSettlement,
   selectedSurvivor,
   setSelectedShowdown,
+  setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
   updateCampaign
 }: ActiveShowdownCardProps): ReactElement {
@@ -146,15 +152,18 @@ export function ActiveShowdownCard({
 
       <div className="flex flex-col gap-2">
         <div className="flex flex-col lg:flex-row gap-2">
-          <ShowdownMonsterCard
+          <ShowdownMonstersCard
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
+            selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
+            setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
           />
 
           <TurnCard
-            selectedSurvivor={selectedSurvivor}
             saveSelectedShowdown={saveSelectedShowdown}
             selectedShowdown={selectedShowdown}
+            selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
+            selectedSurvivor={selectedSurvivor}
           />
         </div>
 
@@ -166,7 +175,6 @@ export function ActiveShowdownCard({
           selectedSettlement={selectedSettlement}
           selectedSurvivor={selectedSurvivor}
           setSelectedSurvivor={setSelectedSurvivor}
-          updateCampaign={updateCampaign}
         />
       </div>
 

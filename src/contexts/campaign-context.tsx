@@ -37,10 +37,14 @@ interface CampaignContextType {
 
   /** Selected Hunt */
   selectedHunt: Hunt | null
+  /** Selected Hunt Monster Index */
+  selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
+  /** Selected Showdown Monster Index */
+  selectedShowdownMonsterIndex: number
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Selected Tab */
@@ -57,10 +61,14 @@ interface CampaignContextType {
 
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
+  /** Set Selected Hunt Monster Index */
+  setSelectedHuntMonsterIndex: (index: number) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
+  /** Set Selected Showdown Monster Index */
+  setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
@@ -116,6 +124,8 @@ export function CampaignProvider({
       campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ||
       null
   )
+  const [selectedHuntMonsterIndex, setSelectedHuntMonsterIndexState] =
+    useState<number>(() => campaign.selectedHuntMonsterIndex ?? 0)
   const [selectedSettlement, setSelectedSettlementState] =
     useState<Settlement | null>(
       () =>
@@ -130,6 +140,8 @@ export function CampaignProvider({
           (showdown) => showdown.id === campaign.selectedShowdownId
         ) || null
     )
+  const [selectedShowdownMonsterIndex, setSelectedShowdownMonsterIndexState] =
+    useState<number>(() => campaign.selectedShowdownMonsterIndex ?? 0)
   const [selectedSurvivor, setSelectedSurvivorState] =
     useState<Survivor | null>(
       () =>
@@ -161,7 +173,8 @@ export function CampaignProvider({
     setCampaignState((campaign) => {
       const updatedCampaign = {
         ...campaign,
-        selectedHuntId: hunt?.id || null
+        selectedHuntId: hunt?.id || null,
+        selectedHuntMonsterIndex: 0
       }
 
       saveCampaignToLocalStorage(updatedCampaign)
@@ -171,6 +184,23 @@ export function CampaignProvider({
 
     // When selecting a hunt, stop creation mode
     if (hunt) setIsCreatingNewHunt(false)
+  }
+
+  /**
+   * Set Selected Hunt Monster Index
+   */
+  const setSelectedHuntMonsterIndex = (index: number) => {
+    setSelectedHuntMonsterIndexState(index)
+    setCampaignState((campaign) => {
+      const updatedCampaign = {
+        ...campaign,
+        selectedHuntMonsterIndex: index
+      }
+
+      saveCampaignToLocalStorage(updatedCampaign)
+
+      return updatedCampaign
+    })
   }
 
   /**
@@ -188,8 +218,10 @@ export function CampaignProvider({
 
       // If the selected settlement changed, also clear selected showdown
       if (currentSettlementId !== settlement?.id) {
-        setSelectedShowdownState(null)
         setSelectedHuntState(null)
+        setSelectedHuntMonsterIndexState(0)
+        setSelectedShowdownState(null)
+        setSelectedShowdownMonsterIndexState(0)
         setSelectedSurvivorState(null)
       }
 
@@ -210,7 +242,8 @@ export function CampaignProvider({
     setCampaignState((campaign) => {
       const updatedCampaign = {
         ...campaign,
-        selectedShowdownId: showdown?.id || null
+        selectedShowdownId: showdown?.id || null,
+        selectedShowdownMonsterIndex: 0
       }
 
       saveCampaignToLocalStorage(updatedCampaign)
@@ -220,6 +253,23 @@ export function CampaignProvider({
 
     // When selecting a showdown, stop creation mode
     if (showdown) setIsCreatingNewShowdown(false)
+  }
+
+  /**
+   * Set Selected Showdown Monster Index
+   */
+  const setSelectedShowdownMonsterIndex = (index: number) => {
+    setSelectedShowdownMonsterIndexState(index)
+    setCampaignState((campaign) => {
+      const updatedCampaign = {
+        ...campaign,
+        selectedShowdownMonsterIndex: index
+      }
+
+      saveCampaignToLocalStorage(updatedCampaign)
+
+      return updatedCampaign
+    })
   }
 
   /**
@@ -286,11 +336,13 @@ export function CampaignProvider({
   /**
    * Update Selected Hunt
    */
-  const updateSelectedHunt = () =>
+  const updateSelectedHunt = () => {
     setSelectedHuntState(
       campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ||
         null
     )
+    setSelectedHuntMonsterIndexState(0)
+  }
 
   /**
    * Update Selected Settlement
@@ -305,12 +357,14 @@ export function CampaignProvider({
   /**
    * Update Selected Showdown
    */
-  const updateSelectedShowdown = () =>
+  const updateSelectedShowdown = () => {
     setSelectedShowdownState(
       campaign.showdowns?.find(
         (showdown) => showdown.id === campaign.selectedShowdownId
       ) || null
     )
+    setSelectedShowdownMonsterIndexState(0)
+  }
 
   /**
    * Update Selected Survivor
@@ -333,8 +387,10 @@ export function CampaignProvider({
         isCreatingNewSurvivor,
 
         selectedHunt,
+        selectedHuntMonsterIndex,
         selectedSettlement,
         selectedShowdown,
+        selectedShowdownMonsterIndex,
         selectedSurvivor,
         selectedTab,
 
@@ -344,8 +400,10 @@ export function CampaignProvider({
         setIsCreatingNewSurvivor,
 
         setSelectedHunt,
+        setSelectedHuntMonsterIndex,
         setSelectedSettlement,
         setSelectedShowdown,
+        setSelectedShowdownMonsterIndex,
         setSelectedSurvivor,
         setSelectedTab,
         setSurvivors,

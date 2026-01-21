@@ -6,16 +6,18 @@ import {
 } from '@/components/settlement/quarries/quarry-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { MonsterNode, MonsterType } from '@/lib/enums'
 import {
-  NAMELESS_OBJECT_ERROR_MESSAGE,
+  QUARRY_ADDED_MESSAGE,
   QUARRY_REMOVED_MESSAGE,
   QUARRY_UNLOCKED_MESSAGE,
   QUARRY_UPDATED_MESSAGE
 } from '@/lib/messages'
-import { QUARRIES } from '@/lib/monsters'
+import {
+  createSettlementQuarryFromData,
+  getQuarryDataByName
+} from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
-import { Quarry, Settlement } from '@/schemas/settlement'
+import { Settlement } from '@/schemas/settlement'
 import {
   DndContext,
   DragEndEvent,
@@ -33,7 +35,6 @@ import {
 } from '@dnd-kit/sortable'
 import { PlusIcon, SwordIcon } from 'lucide-react'
 import { ReactElement, useRef, useState } from 'react'
-import { toast } from 'sonner'
 
 /**
  * Quarries Card Properties
@@ -67,7 +68,7 @@ export function QuarriesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.quarries || []).map((_, i) => [i, true])
+      (selectedSettlement?.quarries ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -84,7 +85,7 @@ export function QuarriesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.quarries || []).map((_, i) => [i, true])
+        (selectedSettlement?.quarries ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -95,7 +96,7 @@ export function QuarriesCard({
    * @param index Quarry Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.quarries || [])]
+    const current = [...(selectedSettlement?.quarries ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -116,46 +117,39 @@ export function QuarriesCard({
   /**
    * Save a Quarry
    *
-   * @param id Quarry ID (number for built-in, string for custom)
-   * @param unlocked Quarry Unlocked Status
+   * @param name Quarry Name
    * @param index Quarry Index (When Updating Only)
    */
-  const onSave = (id?: number | string, unlocked?: boolean, index?: number) => {
-    if (id === undefined)
-      return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('quarry'))
+  const onSave = (name: string | undefined, index?: number) => {
+    const data = getQuarryDataByName(campaign, name)
 
-    const value: Quarry = {
-      id,
-      unlocked: unlocked || false,
-      ccPrologue: false,
-      ccLevel1: false,
-      ccLevel2: [false, false],
-      ccLevel3: [false, false, false]
+    if (name === undefined || name.trim() === '' || !data) {
+      setIsAddingNew(false)
+      return
     }
 
-    const updated = [...(selectedSettlement?.quarries || [])]
+    const updatedQuarries = [...(selectedSettlement?.quarries ?? [])]
 
     if (index !== undefined) {
       // Updating an existing value
-      updated[index] = {
-        ...updated[index],
-        id,
-        unlocked: unlocked || false
-      }
+      updatedQuarries[index] = createSettlementQuarryFromData(data)
       setDisabledInputs((prev) => ({
         ...prev,
         [index]: true
       }))
     } else {
       // Adding a new value
-      updated.push(value)
+      updatedQuarries.push(createSettlementQuarryFromData(data))
       setDisabledInputs((prev) => ({
         ...prev,
-        [updated.length - 1]: true
+        [updatedQuarries.length - 1]: true
       }))
     }
 
-    saveSelectedSettlement({ quarries: updated }, QUARRY_UPDATED_MESSAGE(index))
+    saveSelectedSettlement(
+      { quarries: updatedQuarries },
+      index !== undefined ? QUARRY_UPDATED_MESSAGE() : QUARRY_ADDED_MESSAGE()
+    )
     setIsAddingNew(false)
   }
 
@@ -166,47 +160,14 @@ export function QuarriesCard({
    * @param unlocked Unlocked Status
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
+    const updatedQuarries = (selectedSettlement?.quarries ?? []).map((q, i) =>
       i === index ? { ...q, unlocked } : q
     )
 
-    const quarryId = selectedSettlement?.quarries![index].id
-    const quarryName = quarryId
-      ? typeof quarryId === 'number'
-        ? QUARRIES[quarryId as keyof typeof QUARRIES]?.main.name || ''
-        : campaign.customMonsters?.[quarryId]?.main.name || ''
-      : ''
-
     saveSelectedSettlement(
       { quarries: updatedQuarries },
-      QUARRY_UNLOCKED_MESSAGE(quarryName, unlocked)
+      QUARRY_UNLOCKED_MESSAGE(updatedQuarries[index].name, unlocked)
     )
-  }
-
-  /**
-   * Update the Quarry ID and automatically set the node from QUARRIES data
-   *
-   * @param index Quarry Index
-   * @param id Quarry ID (number for built-in, string for custom)
-   */
-  const onUpdateQuarry = (index: number, id: number | string) => {
-    let node: MonsterNode = MonsterNode.NQ1
-
-    if (typeof id === 'number') {
-      const quarryData = QUARRIES[id as keyof typeof QUARRIES]
-      node = quarryData?.main.node || MonsterNode.NQ1
-    } else {
-      const customMonster = campaign.customMonsters?.[id]
-      if (customMonster?.main.type === MonsterType.QUARRY) {
-        node = customMonster.main.node as MonsterNode
-      }
-    }
-
-    const updatedQuarries = (selectedSettlement?.quarries || []).map((q, i) =>
-      i === index ? { ...q, id, node } : q
-    )
-
-    saveSelectedSettlement({ quarries: updatedQuarries })
   }
 
   /**
@@ -221,7 +182,7 @@ export function QuarriesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.quarries || [],
+        selectedSettlement?.quarries ?? [],
         oldIndex,
         newIndex
       )
@@ -277,28 +238,26 @@ export function QuarriesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.quarries || []).map((_, index) =>
+                  items={(selectedSettlement?.quarries ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.quarries || []).map((quarry, index) => (
+                  {(selectedSettlement?.quarries ?? []).map((quarry, index) => (
                     <QuarryItem
                       campaign={campaign}
-                      key={index}
-                      id={index.toString()}
                       index={index}
-                      onRemove={onRemove}
                       isDisabled={!!disabledInputs[index]}
-                      onSave={(id, unlocked, i) => onSave(id, unlocked, i)}
+                      key={index}
                       onEdit={() =>
                         setDisabledInputs((prev) => ({
                           ...prev,
                           [index]: false
                         }))
                       }
+                      onRemove={onRemove}
+                      onSave={onSave}
                       onToggleUnlocked={onToggleUnlocked}
-                      onUpdateQuarry={onUpdateQuarry}
-                      selectedSettlement={selectedSettlement}
+                      quarry={quarry}
                     />
                   ))}
                 </SortableContext>
@@ -307,8 +266,8 @@ export function QuarriesCard({
             {isAddingNew && (
               <NewQuarryItem
                 campaign={campaign}
-                onSave={onSave}
                 onCancel={() => setIsAddingNew(false)}
+                onSave={onSave}
               />
             )}
           </div>

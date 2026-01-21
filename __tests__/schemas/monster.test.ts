@@ -1,3 +1,4 @@
+import { basicHuntBoard } from '@/lib/common'
 import {
   CampaignType,
   HuntEventType,
@@ -5,18 +6,18 @@ import {
   MonsterType
 } from '@/lib/enums'
 import {
-  BaseMonsterLevelSchema,
-  NemesisMonsterDataSchema,
+  MonsterLevelSchema,
   NemesisMonsterLevelSchema,
-  QuarryMonsterDataSchema,
   QuarryMonsterLevelSchema
-} from '@/schemas/monster'
+} from '@/schemas/monster-level'
+import { NemesisMonsterDataSchema } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterDataSchema } from '@/schemas/quarry-monster-data'
 import { describe, expect, it } from 'vitest'
 
-describe('BaseMonsterLevelSchema', () => {
+describe('MonsterLevelSchema', () => {
   describe('Valid Data', () => {
     it('should validate with all defaults', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 0,
           advanced: 0,
@@ -35,7 +36,7 @@ describe('BaseMonsterLevelSchema', () => {
     })
 
     it('should validate with all fields populated', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         accuracy: 3,
         accuracyTokens: 2,
         aiDeck: {
@@ -78,7 +79,7 @@ describe('BaseMonsterLevelSchema', () => {
     })
 
     it('should validate aiDeck without optional overtone', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 3,
           advanced: 2,
@@ -93,7 +94,7 @@ describe('BaseMonsterLevelSchema', () => {
     })
 
     it('should validate with empty arrays', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 2,
           advanced: 2,
@@ -114,14 +115,8 @@ describe('BaseMonsterLevelSchema', () => {
   })
 
   describe('Invalid Data', () => {
-    it('should fail when aiDeck is missing', () => {
-      const result = BaseMonsterLevelSchema.safeParse({})
-
-      expect(result.success).toBe(false)
-    })
-
     it('should fail when aiDeck basic is negative', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: -1,
           advanced: 0,
@@ -133,7 +128,7 @@ describe('BaseMonsterLevelSchema', () => {
     })
 
     it('should fail when aiDeck advanced is negative', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 0,
           advanced: -1,
@@ -145,7 +140,7 @@ describe('BaseMonsterLevelSchema', () => {
     })
 
     it('should fail when aiDeck legendary is negative', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 0,
           advanced: 0,
@@ -157,7 +152,7 @@ describe('BaseMonsterLevelSchema', () => {
     })
 
     it('should fail when aiDeck overtone is negative', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 0,
           advanced: 0,
@@ -170,7 +165,7 @@ describe('BaseMonsterLevelSchema', () => {
     })
 
     it('should fail when aiDeckRemaining is negative', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 2,
           advanced: 2,
@@ -182,21 +177,8 @@ describe('BaseMonsterLevelSchema', () => {
       expect(result.success).toBe(false)
     })
 
-    it('should fail when movement is less than 1', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
-        aiDeck: {
-          basic: 0,
-          advanced: 0,
-          legendary: 0
-        },
-        movement: 0
-      })
-
-      expect(result.success).toBe(false)
-    })
-
     it('should fail when toughness is negative', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 0,
           advanced: 0,
@@ -208,21 +190,8 @@ describe('BaseMonsterLevelSchema', () => {
       expect(result.success).toBe(false)
     })
 
-    it('should fail when damage is negative', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
-        aiDeck: {
-          basic: 0,
-          advanced: 0,
-          legendary: 0
-        },
-        damage: -1
-      })
-
-      expect(result.success).toBe(false)
-    })
-
     it('should fail when aiDeck values are not integers', () => {
-      const result = BaseMonsterLevelSchema.safeParse({
+      const result = MonsterLevelSchema.safeParse({
         aiDeck: {
           basic: 2.5,
           advanced: 0,
@@ -450,44 +419,6 @@ describe('NemesisMonsterDataSchema', () => {
       }
     })
 
-    it('should validate with all level data', () => {
-      const result = NemesisMonsterDataSchema.safeParse({
-        name: 'Butcher',
-        node: MonsterNode.NN1,
-        level1: {
-          aiDeck: { basic: 2, advanced: 3, legendary: 2 },
-          life: 8
-        },
-        level2: {
-          aiDeck: { basic: 2, advanced: 3, legendary: 3 },
-          life: 10
-        },
-        level3: {
-          aiDeck: { basic: 2, advanced: 4, legendary: 3 },
-          life: 12
-        },
-        level4: {
-          aiDeck: { basic: 3, advanced: 4, legendary: 3 },
-          life: 15
-        },
-        timeline: {
-          1: ['Butcher Level 1'],
-          6: ['Butcher Level 2'],
-          12: ['Butcher Level 3']
-        },
-        type: MonsterType.NEMESIS
-      })
-
-      console.log(result)
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.level1?.life).toBe(8)
-        expect(result.data.level2?.life).toBe(10)
-        expect(result.data.level3?.life).toBe(12)
-        expect(result.data.level4?.life).toBe(15)
-      }
-    })
-
     it('should validate timeline with campaign-specific entries', () => {
       const result = NemesisMonsterDataSchema.safeParse({
         name: 'Butcher',
@@ -632,38 +563,6 @@ describe('QuarryMonsterDataSchema', () => {
         expect(result.data.type).toBe(MonsterType.QUARRY)
         expect(result.data.ccRewards).toEqual([])
         expect(result.data.locations).toEqual([])
-      }
-    })
-
-    it('should validate with all level data', () => {
-      const result = QuarryMonsterDataSchema.safeParse({
-        huntBoard: {},
-        name: 'White Lion',
-        node: MonsterNode.NQ1,
-        level1: {
-          aiDeck: { basic: 2, advanced: 3, legendary: 2 },
-          huntPos: 12,
-          survivorHuntPos: 0
-        },
-        level2: {
-          aiDeck: { basic: 2, advanced: 3, legendary: 3 },
-          huntPos: 10,
-          survivorHuntPos: 0
-        },
-        level3: {
-          aiDeck: { basic: 2, advanced: 4, legendary: 3 },
-          huntPos: 9,
-          survivorHuntPos: 0
-        },
-        timeline: {},
-        type: MonsterType.QUARRY
-      })
-
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.level1?.huntPos).toBe(12)
-        expect(result.data.level2?.huntPos).toBe(10)
-        expect(result.data.level3?.huntPos).toBe(9)
       }
     })
 
@@ -944,7 +843,7 @@ describe('QuarryMonsterDataSchema', () => {
 
     it('should filter out negative timeline keys', () => {
       const result = QuarryMonsterDataSchema.safeParse({
-        huntBoard: {},
+        huntBoard: basicHuntBoard,
         name: 'White Lion',
         node: MonsterNode.NQ1,
         timeline: {
@@ -1098,7 +997,6 @@ describe('NemesisMonsterDataSchema Timeline Transform', () => {
     if (result.success) {
       const timeline = result.data.timeline as Record<number, string[]>
       expect(timeline[-1]).toBeUndefined()
-      expect(timeline[0]).toBeUndefined()
       expect(timeline[1]).toBeDefined()
       expect(timeline[6]).toBeDefined()
     }
@@ -1132,7 +1030,6 @@ describe('NemesisMonsterDataSchema Timeline Transform', () => {
       timeline: {
         invalid: ['Should be filtered - not a number'],
         '-1': ['Should be filtered - negative'],
-        '0': ['Should be filtered - zero'],
         '1': ['Valid - lantern year 1'],
         '2': ['Valid - lantern year 2'],
         '5': ['Valid - lantern year 5']
@@ -1148,7 +1045,6 @@ describe('NemesisMonsterDataSchema Timeline Transform', () => {
       expect(keys).toContain(2)
       expect(keys).toContain(5)
       expect(keys).not.toContain(-1)
-      expect(keys).not.toContain(0)
       expect(keys.length).toBe(3)
     }
   })

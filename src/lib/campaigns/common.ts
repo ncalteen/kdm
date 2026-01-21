@@ -1,16 +1,14 @@
 'use client'
 
-import {
-  CollectiveCognitionReward,
-  Location,
-  Milestone,
-  Principle
-} from '@/schemas/settlement'
+import { SettlementCollectiveCognitionReward } from '@/schemas/settlement-cc-reward'
+import { SettlementLocation } from '@/schemas/settlement-location'
+import { SettlementMilestone } from '@/schemas/settlement-milestone'
+import { SettlementPrinciple } from '@/schemas/settlement-principle'
 
 /**
  * Core Collective Cognition Rewards
  */
-export const CoreCCRewards: CollectiveCognitionReward[] = [
+export const CoreCCRewards: SettlementCollectiveCognitionReward[] = [
   {
     name: 'Pleasing Plating',
     cc: 2,
@@ -51,7 +49,7 @@ export const CoreCCRewards: CollectiveCognitionReward[] = [
 /**
  * Core Campaign Milestones
  */
-export const CoreMilestones: Milestone[] = [
+export const CoreMilestones: SettlementMilestone[] = [
   {
     name: 'Population reaches 0',
     complete: false,
@@ -72,7 +70,7 @@ export const CoreMilestones: Milestone[] = [
 /**
  * Core Campaign Principles
  */
-export const CorePrinciples: Principle[] = [
+export const CorePrinciples: SettlementPrinciple[] = [
   {
     name: 'New Life',
     option1Name: 'Protect the Young',
@@ -107,7 +105,7 @@ export const CorePrinciples: Principle[] = [
  * Scout Campaign Data
  */
 export const ScoutCampaignData: {
-  locations: Location[]
+  locations: SettlementLocation[]
 } = {
   locations: [{ name: 'Outskirts', unlocked: false }]
 }

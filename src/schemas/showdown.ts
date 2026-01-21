@@ -1,185 +1,10 @@
 'use client'
 
-import {
-  AmbushType,
-  ColorChoice,
-  MonsterLevel,
-  MonsterType,
-  TurnType
-} from '@/lib/enums'
+import { AmbushType, MonsterLevel } from '@/lib/enums'
+import { ShowdownMonsterSchema } from '@/schemas/showdown-monster'
+import { ShowdownSurvivorDetailsSchema } from '@/schemas/showdown-survivor-details'
+import { ShowdownTurnSchema } from '@/schemas/showdown-turn'
 import { z } from 'zod'
-
-/**
- * Showdown Monster Schema
- */
-export const ShowdownMonsterSchema = z.object({
-  /** Accuracy */
-  accuracy: z.number().int().default(0),
-  /** Accuracy Tokens */
-  accuracyTokens: z.number().int().default(0),
-  /** AI Deck */
-  aiDeck: z.object({
-    /** Basic Cards */
-    basic: z.number().int().min(0).default(0),
-    /** Advanced Cards */
-    advanced: z.number().int().min(0).default(0),
-    /** Legendary Cards */
-    legendary: z.number().int().min(0).default(0),
-    /** Overtone Cards */
-    overtone: z.number().int().min(0).default(0).optional()
-  }),
-  /** AI Deck Remaining */
-  aiDeckRemaining: z.number().int().min(0).default(0),
-  /** Damage */
-  damage: z.number().int().min(0).default(0),
-  /** Damage Tokens */
-  damageTokens: z.number().int().default(0),
-  /** Evasion */
-  evasion: z.number().int().default(0),
-  /** Evasion Tokens */
-  evasionTokens: z.number().int().default(0),
-  /** Knocked Down */
-  knockedDown: z.boolean().default(false),
-  /** Monster Level */
-  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
-  /** Luck */
-  luck: z.number().int().default(0),
-  /** Luck Tokens */
-  luckTokens: z.number().int().default(0),
-  /** Moods */
-  moods: z.array(z.string()).default([]),
-  /** Movement */
-  movement: z.number().int().min(1).default(1),
-  /** Movement Tokens */
-  movementTokens: z.number().int().default(0),
-  /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
-  /** Monster Notes */
-  notes: z.string().default(''),
-  /** Speed */
-  speed: z.number().int().default(0),
-  /** Speed Tokens */
-  speedTokens: z.number().int().default(0),
-  /** Strength */
-  strength: z.number().int().default(0),
-  /** Strength Tokens */
-  strengthTokens: z.number().int().default(0),
-  /** Toughness */
-  toughness: z.number().int().min(0).default(0),
-  /** Traits */
-  traits: z.array(z.string()).default([]),
-  /** Monster Type */
-  type: z.enum(MonsterType),
-  /** Wounds */
-  wounds: z.number().int().min(0).default(0)
-})
-
-/**
- * Showdown Monster
- */
-export type ShowdownMonster = z.infer<typeof ShowdownMonsterSchema>
-
-/**
- * Survivor Showdown Details Schema
- *
- * Used to assign details to survivors that only persist during a showdown.
- */
-export const SurvivorShowdownDetailsSchema = z.object({
-  /** Accuracy Tokens */
-  accuracyTokens: z.number().int().default(0),
-  /** Bleeding Tokens */
-  bleedingTokens: z.number().int().min(0).default(0),
-  /** Block Tokens */
-  blockTokens: z.number().int().min(0).default(0),
-  /** Survivor Color Code */
-  color: z.enum(ColorChoice).default(ColorChoice.SLATE),
-  /** Deflect Tokens */
-  deflectTokens: z.number().int().min(0).default(0),
-  /** Evasion Tokens */
-  evasionTokens: z.number().int().default(0),
-  /** Survivor ID */
-  id: z.number().int().min(0),
-  /** Insanity Tokens */
-  insanityTokens: z.number().int().default(0),
-  /** Knocked Down */
-  knockedDown: z.boolean().default(false),
-  /** Luck Tokens */
-  luckTokens: z.number().int().default(0),
-  /** Movement Tokens */
-  movementTokens: z.number().int().default(0),
-  /** Survivor Notes */
-  notes: z.string().default(''),
-  /** Priority Target */
-  priorityTarget: z.boolean().default(false),
-  /** Speed Tokens */
-  speedTokens: z.number().int().default(0),
-  /** Strength Tokens */
-  strengthTokens: z.number().int().default(0),
-  /** Survival Tokens */
-  survivalTokens: z.number().int().default(0)
-})
-
-/**
- * Survivor Showdown Details
- */
-export type SurvivorShowdownDetails = z.infer<
-  typeof SurvivorShowdownDetailsSchema
->
-
-/**
- * Survivor Turn State Schema
- *
- * Tracks movement and activation usage for each survivor during their turn.
- */
-export const SurvivorTurnStateSchema = z.object({
-  /** Activation Used */
-  activationUsed: z.boolean().default(false),
-  /** Survivor ID */
-  id: z.number().int().min(0),
-  /** Movement Used */
-  movementUsed: z.boolean().default(false)
-})
-
-/**
- * Survivor Turn State
- */
-export type SurvivorTurnState = z.infer<typeof SurvivorTurnStateSchema>
-
-/**
- * Monster Turn State Schema
- *
- * Tracks AI card draw and other actions for monsters during their turn.
- */
-export const MonsterTurnStateSchema = z.object({
-  /** AI Card Drawn */
-  aiCardDrawn: z.boolean().default(false)
-})
-
-/**
- * Survivor Turn State
- */
-export type MonsterTurnState = z.infer<typeof MonsterTurnStateSchema>
-
-/**
- * Turn Schema
- *
- * Tracks whose turn it is and survivor action states.
- */
-export const TurnSchema = z.object({
-  /** Current Turn: 'monster' or 'survivors' */
-  currentTurn: z.enum(TurnType).default(TurnType.MONSTER),
-  /** Monster Turn State */
-  monsterState: MonsterTurnStateSchema.default({
-    aiCardDrawn: false
-  }),
-  /** Survivor Turn States */
-  survivorStates: z.array(SurvivorTurnStateSchema).default([])
-})
-
-/**
- * Turn State
- */
-export type Turn = z.infer<typeof TurnSchema>
 
 /**
  * Showdown Schema
@@ -189,21 +14,23 @@ export const ShowdownSchema = z.object({
   ambush: z.enum(AmbushType),
   /** Showdown ID */
   id: z.number(),
-  /** Showdown Monster */
-  monster: ShowdownMonsterSchema,
+  /** Monster Level */
+  level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
+  /** Showdown Monster(s) */
+  monsters: z.array(ShowdownMonsterSchema),
   /** Selected Scout (Required if Settlement uses Scouts) */
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),
   /** Survivor Showdown Details */
-  survivorDetails: z.array(SurvivorShowdownDetailsSchema).default([]),
+  survivorDetails: z.array(ShowdownSurvivorDetailsSchema).default([]),
   /** Selected Survivors */
   survivors: z
     .array(z.number())
     .min(1, 'At least one survivor must be selected for the hunt.')
     .max(4, 'No more than four survivors can embark on a hunt.'),
   /** Turn State */
-  turn: TurnSchema
+  turn: ShowdownTurnSchema
 })
 
 /**

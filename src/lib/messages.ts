@@ -1,4 +1,10 @@
-import { ColorChoice, MonsterType, SurvivorType, TurnType } from '@/lib/enums'
+import {
+  AmbushType,
+  ColorChoice,
+  MonsterType,
+  SurvivorType,
+  TurnType
+} from '@/lib/enums'
 
 /**
  * Ability/Impairment Removed
@@ -25,14 +31,14 @@ export const ABILITY_IMPAIRMENT_UPDATED_MESSAGE = (isNew: boolean) =>
  * @param ambushType Ambush Type
  * @returns Ambush Message
  */
-export const AMBUSH_MESSAGE = (ambushType: number): string => {
+export const AMBUSH_MESSAGE = (ambushType: AmbushType): string => {
   switch (ambushType) {
-    case 0:
+    case AmbushType.SURVIVORS:
       return 'The survivors ambush their quarry! The showdown begins.'
-    case 1:
+    case AmbushType.NONE:
+      return 'The hunt reaches its epic climax! The showdown begins.'
+    case AmbushType.MONSTER:
       return 'The monster ambushes the survivors! The showdown begins.'
-    case 2:
-      return 'The hunt reaches its epic climax. The showdown begins.'
     default:
       return 'The showdown begins.'
   }
@@ -717,6 +723,13 @@ export const MONSTER_STARTS_SHOWDOWN_KNOCKED_DOWN_MESSAGE = (
     : 'The monster will start the showdown standing.'
 
 /**
+ * Monster Stats Saved
+ *
+ * @returns Monster Stats Saved Message
+ */
+export const MONSTER_STATS_SAVED_MESSAGE = () => 'The creature shifts.'
+
+/**
  * Monster Strength Updated
  *
  * @param oldValue Old Value
@@ -797,7 +810,7 @@ export const MONSTER_WOUND_DECK_UPDATED_MESSAGE = (
   oldValue: number,
   newValue: number
 ) =>
-  oldValue < newValue
+  oldValue > newValue
     ? 'The monster heals its wounds.'
     : oldValue < newValue
       ? 'The monster suffers new wounds.'
@@ -832,6 +845,14 @@ export const MOOD_UPDATED_MESSAGE = () => 'The mood has been updated.'
  */
 export const NAMELESS_OBJECT_ERROR_MESSAGE = (objType: string) =>
   `A nameless ${objType} cannot be recorded.`
+
+/**
+ * Nemesis Added
+ *
+ * @returns Nemesis Added Message
+ */
+export const NEMESIS_ADDED_MESSAGE = () => 'A new nemesis emerges.'
+
 /**
  * Nemesis Removed
  *
@@ -853,13 +874,10 @@ export const NEMESIS_UNLOCKED_MESSAGE = (name: string, unlocked: boolean) =>
 /**
  * Nemesis Updated
  *
- * @param index Nemesis Index
  * @returns Nemesis Updated Message
  */
-export const NEMESIS_UPDATED_MESSAGE = (index?: number) =>
-  index !== undefined
-    ? 'The nemesis waits outside your settlement.'
-    : 'A new nemesis emerges.'
+export const NEMESIS_UPDATED_MESSAGE = () =>
+  'The nemesis waits outside your settlement.'
 
 /**
  * Pattern Removed
@@ -938,6 +956,13 @@ export const PRINCIPLE_UPDATED_MESSAGE = (isNew: boolean) =>
     : 'The principle has been inscribed.'
 
 /**
+ * Quarry Added
+ *
+ * @returns Quarry Added Message
+ */
+export const QUARRY_ADDED_MESSAGE = () => 'A new quarry has been discovered.'
+
+/**
  * Quarry Removed
  *
  * @returns Quarry Removed Message
@@ -960,13 +985,9 @@ export const QUARRY_UNLOCKED_MESSAGE = (
 /**
  * Quarry Updated
  *
- * @param index Quarry Index
  * @returns Quarry Updated Message
  */
-export const QUARRY_UPDATED_MESSAGE = (index?: number) =>
-  index !== undefined
-    ? 'The quarry has been tracked.'
-    : 'A new quarry has been discovered.'
+export const QUARRY_UPDATED_MESSAGE = () => 'The quarry has been tracked.'
 
 /**
  * Resource Removed

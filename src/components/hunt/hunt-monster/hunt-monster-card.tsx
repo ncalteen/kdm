@@ -22,7 +22,8 @@ import {
   TRAIT_REMOVED_MESSAGE,
   TRAIT_UPDATED_MESSAGE
 } from '@/lib/messages'
-import { Hunt, HuntMonster, HuntMonsterSchema } from '@/schemas/hunt'
+import { Hunt, HuntSchema } from '@/schemas/hunt'
+import { HuntMonster, HuntMonsterSchema } from '@/schemas/hunt-monster'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, SkullIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
@@ -38,6 +39,8 @@ interface HuntMonsterCardProps {
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Selected Hunt */
   selectedHunt: Hunt | null
+  /** Selected Hunt Monster Index */
+  selectedHuntMonsterIndex: number
 }
 
 /**
@@ -50,30 +53,37 @@ interface HuntMonsterCardProps {
  */
 export function HuntMonsterCard({
   saveSelectedHunt,
-  selectedHunt
+  selectedHunt,
+  selectedHuntMonsterIndex
 }: HuntMonsterCardProps): ReactElement {
   const form = useForm<HuntMonster>({
     resolver: zodResolver(HuntMonsterSchema) as Resolver<HuntMonster>,
-    defaultValues: HuntMonsterSchema.parse(selectedHunt?.monster || {})
+    defaultValues: HuntMonsterSchema.parse(
+      selectedHunt?.monsters[selectedHuntMonsterIndex] || {}
+    )
   })
 
   // Compute the initial disabled state based on current traits
   const initialDisabledTraits = useMemo(() => {
     const next: { [key: number]: boolean } = {}
-    selectedHunt?.monster?.traits?.forEach((_, i) => {
-      next[i] = true
-    })
+    selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits?.forEach(
+      (_, i) => {
+        next[i] = true
+      }
+    )
     return next
-  }, [selectedHunt?.monster?.traits])
+  }, [selectedHunt?.monsters, selectedHuntMonsterIndex])
 
   // Compute the initial disabled state based on current moods
   const initialDisabledMoods = useMemo(() => {
     const next: { [key: number]: boolean } = {}
-    selectedHunt?.monster?.moods?.forEach((_, i) => {
-      next[i] = true
-    })
+    selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods?.forEach(
+      (_, i) => {
+        next[i] = true
+      }
+    )
     return next
-  }, [selectedHunt?.monster?.moods])
+  }, [selectedHunt?.monsters, selectedHuntMonsterIndex])
 
   // State for managing trait and mood editing
   const [disabledTraits, setDisabledTraits] = useState<{
@@ -87,14 +97,20 @@ export function HuntMonsterCard({
 
   // State for managing monster notes
   const [notesDraft, setNotesDraft] = useState<string>(
-    selectedHunt?.monster?.notes || ''
+    selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes || ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
 
   // Update form values when monster data changes
   useEffect(() => {
-    if (selectedHunt?.monster) form.reset(selectedHunt?.monster)
-  }, [selectedHunt?.monster, form])
+    if (selectedHunt?.monsters) {
+      form.reset(selectedHunt?.monsters[selectedHuntMonsterIndex])
+      setNotesDraft(
+        selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes || ''
+      )
+      setIsNotesDirty(false)
+    }
+  }, [selectedHunt?.monsters, selectedHuntMonsterIndex, form])
 
   // Update disabled inputs when the computed initial state changes
   useEffect(() => {
@@ -116,22 +132,29 @@ export function HuntMonsterCard({
     updateData: Partial<HuntMonster>,
     successMsg?: string
   ) => {
-    if (!selectedHunt?.monster) return
+    if (!selectedHunt?.monsters) return
 
     try {
-      const updatedMonster = {
-        ...selectedHunt.monster,
-        ...updateData
-      }
+      const updatedMonsters = [
+        ...selectedHunt.monsters.slice(0, selectedHuntMonsterIndex),
+        {
+          ...selectedHunt.monsters[selectedHuntMonsterIndex],
+          ...updateData
+        },
+        ...selectedHunt.monsters.slice(selectedHuntMonsterIndex + 1)
+      ]
 
       // Validate the updated monster data
-      HuntMonsterSchema.parse(updatedMonster)
+      HuntSchema.parse({
+        ...selectedHunt,
+        monsters: updatedMonsters
+      })
 
       // Update the hunt with the modified monster
-      saveSelectedHunt({ monster: updatedMonster }, successMsg)
+      saveSelectedHunt({ monsters: updatedMonsters }, successMsg)
 
       // Update the form with the new values
-      form.reset(HuntMonsterSchema.parse(updatedMonster))
+      form.reset(updatedMonsters[selectedHuntMonsterIndex])
     } catch (error) {
       console.error('Hunt Monster Save Error:', error)
 
@@ -162,7 +185,9 @@ export function HuntMonsterCard({
    */
 
   const onRemoveTrait = (index: number) => {
-    const currentTraits = [...(selectedHunt?.monster?.traits || [])]
+    const currentTraits = [
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits || [])
+    ]
     currentTraits.splice(index, 1)
 
     setDisabledTraits((prev) => {
@@ -182,7 +207,9 @@ export function HuntMonsterCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
 
-    const updatedTraits = [...(selectedHunt?.monster?.traits || [])]
+    const updatedTraits = [
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits || [])
+    ]
 
     if (i !== undefined) {
       updatedTraits[i] = value
@@ -208,7 +235,9 @@ export function HuntMonsterCard({
    */
 
   const onRemoveMood = (index: number) => {
-    const currentMoods = [...(selectedHunt?.monster?.moods || [])]
+    const currentMoods = [
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods || [])
+    ]
     currentMoods.splice(index, 1)
 
     setDisabledMoods((prev) => {
@@ -228,7 +257,9 @@ export function HuntMonsterCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))
 
-    const updatedMoods = [...(selectedHunt?.monster?.moods || [])]
+    const updatedMoods = [
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods || [])
+    ]
 
     if (i !== undefined) {
       updatedMoods[i] = value
@@ -253,20 +284,25 @@ export function HuntMonsterCard({
    * Handle Save Notes
    */
   const handleSaveNotes = () => {
-    setIsNotesDirty(false)
+    if (!selectedHunt?.monsters) return
 
+    setIsNotesDirty(false)
     saveSelectedHunt(
       {
-        monster: {
-          ...selectedHunt?.monster,
-          notes: notesDraft
-        } as HuntMonster
+        monsters: [
+          ...selectedHunt.monsters.slice(0, selectedHuntMonsterIndex),
+          {
+            ...selectedHunt.monsters[selectedHuntMonsterIndex],
+            notes: notesDraft
+          },
+          ...selectedHunt.monsters.slice(selectedHuntMonsterIndex + 1)
+        ]
       },
       HUNT_NOTES_SAVED_MESSAGE()
     )
   }
 
-  if (!selectedHunt?.monster) return <></>
+  if (!selectedHunt) return <></>
 
   return (
     <Card className="w-full min-w-[430px] border-2 rounded-xl p-0 gap-0 transition-all duration-200 hover:shadow-lg">
@@ -279,14 +315,11 @@ export function HuntMonsterCard({
 
           <div className="text-left flex-1 min-w-0">
             <div className="font-semibold text-sm truncate flex gap-2 items-center">
-              {selectedHunt.monster.name}
-              <div className="text-xs text-muted-foreground">
-                {selectedHunt.monster.type}
-              </div>
+              {selectedHunt.monsters[selectedHuntMonsterIndex].name}
             </div>
 
             <Badge variant="outline" className="text-xs">
-              Level {selectedHunt.monster.level}
+              Level {selectedHunt.level.replace('level', '')}
             </Badge>
           </div>
 
@@ -294,7 +327,9 @@ export function HuntMonsterCard({
           <div className="flex items-center space-x-1">
             <Checkbox
               id="knocked-down"
-              checked={selectedHunt.monster.knockedDown}
+              checked={
+                selectedHunt.monsters[selectedHuntMonsterIndex].knockedDown
+              }
               onCheckedChange={(checked) =>
                 saveMonsterData(
                   { knockedDown: !!checked },
@@ -316,14 +351,14 @@ export function HuntMonsterCard({
           {/* Column: Base Stats and Attributes */}
           <div className="flex flex-col flex-1">
             <HuntMonsterBaseStats
-              monster={selectedHunt.monster}
+              monster={selectedHunt.monsters[selectedHuntMonsterIndex]}
               saveMonsterData={saveMonsterData}
             />
 
             <Separator className="my-1" />
 
             <HuntMonsterAttributes
-              monster={selectedHunt.monster}
+              monster={selectedHunt.monsters[selectedHuntMonsterIndex]}
               saveMonsterData={saveMonsterData}
             />
           </div>
@@ -339,7 +374,7 @@ export function HuntMonsterCard({
           {/* Column: Traits, Moods, and Notes */}
           <div className="flex flex-col flex-1">
             <TraitsMoods
-              monster={selectedHunt.monster}
+              monster={selectedHunt.monsters[selectedHuntMonsterIndex]}
               disabledTraits={disabledTraits}
               disabledMoods={disabledMoods}
               isAddingTrait={isAddingTrait}
@@ -369,7 +404,8 @@ export function HuntMonsterCard({
                 onChange={(e) => {
                   setNotesDraft(e.target.value)
                   setIsNotesDirty(
-                    e.target.value !== selectedHunt?.monster?.notes
+                    e.target.value !==
+                      selectedHunt.monsters[selectedHuntMonsterIndex].notes
                   )
                 }}
                 placeholder="Add notes about your quarry..."

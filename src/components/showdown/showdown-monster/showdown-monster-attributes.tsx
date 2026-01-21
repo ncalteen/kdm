@@ -15,7 +15,7 @@ import {
   MONSTER_SPEED_UPDATED_MESSAGE,
   MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE
 } from '@/lib/messages'
-import { ShowdownMonster } from '@/schemas/showdown'
+import { ShowdownMonster } from '@/schemas/showdown-monster'
 import { ReactElement } from 'react'
 
 /**

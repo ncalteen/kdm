@@ -7,7 +7,7 @@ import {
   MONSTER_TOUGHNESS_UPDATED_MESSAGE,
   MONSTER_WOUND_DECK_UPDATED_MESSAGE
 } from '@/lib/messages'
-import { HuntMonster } from '@/schemas/hunt'
+import { HuntMonster } from '@/schemas/hunt-monster'
 import { ReactElement } from 'react'
 
 /**
@@ -43,7 +43,7 @@ export function HuntMonsterBaseStats({
 
         <NumericInput
           label="AI Deck Size"
-          value={monster.aiDeckRemaining ?? 0}
+          value={monster.aiDeckRemaining}
           onChange={(value) =>
             saveMonsterData(
               { aiDeckRemaining: value },
@@ -58,10 +58,10 @@ export function HuntMonsterBaseStats({
             value={monster.aiDeckRemaining}
             onChange={(e) =>
               saveMonsterData(
-                { aiDeckRemaining: parseInt(e.target.value) || 0 },
+                { aiDeckRemaining: parseInt(e.target.value) },
                 MONSTER_AI_DECK_UPDATED_MESSAGE(
                   monster.aiDeckRemaining,
-                  parseInt(e.target.value) || 0
+                  parseInt(e.target.value)
                 )
               )
             }
@@ -80,7 +80,7 @@ export function HuntMonsterBaseStats({
 
         <NumericInput
           label="Wounds"
-          value={monster.wounds ?? 0}
+          value={monster.wounds}
           onChange={(value) =>
             saveMonsterData(
               { wounds: value },
@@ -98,7 +98,7 @@ export function HuntMonsterBaseStats({
                 { wounds: parseInt(e.target.value) || 0 },
                 MONSTER_WOUND_DECK_UPDATED_MESSAGE(
                   monster.wounds,
-                  parseInt(e.target.value) || 0
+                  parseInt(e.target.value)
                 )
               )
             }
@@ -117,7 +117,7 @@ export function HuntMonsterBaseStats({
 
         <NumericInput
           label="Toughness"
-          value={monster.toughness ?? 0}
+          value={monster.toughness}
           onChange={(value) =>
             saveMonsterData(
               { toughness: value },
@@ -132,10 +132,10 @@ export function HuntMonsterBaseStats({
             value={monster.toughness}
             onChange={(e) =>
               saveMonsterData(
-                { toughness: parseInt(e.target.value) || 0 },
+                { toughness: parseInt(e.target.value) },
                 MONSTER_TOUGHNESS_UPDATED_MESSAGE(
                   monster.toughness,
-                  parseInt(e.target.value) || 0
+                  parseInt(e.target.value)
                 )
               )
             }

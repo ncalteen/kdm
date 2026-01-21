@@ -1,5 +1,10 @@
 'use client'
 
+import { CustomCampaign } from '@/lib/campaigns/custom'
+import { PeopleOfTheDreamKeeper } from '@/lib/campaigns/potdk'
+import { PeopleOfTheLantern } from '@/lib/campaigns/potl'
+import { PeopleOfTheStars } from '@/lib/campaigns/potstars'
+import { PeopleOfTheSun } from '@/lib/campaigns/potsun'
 import {
   AmbushType,
   CampaignType,
@@ -17,21 +22,19 @@ import {
   TurnType,
   WeaponType
 } from '@/lib/enums'
+import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { saveCampaignToLocalStorage } from '@/lib/utils'
 import type { Campaign } from '@/schemas/campaign'
 import type { Hunt } from '@/schemas/hunt'
-import { QuarryMonsterData } from '@/schemas/monster'
+import {
+  NemesisMonsterLevel,
+  QuarryMonsterLevel
+} from '@/schemas/monster-level'
 import type { Settlement } from '@/schemas/settlement'
 import type { Showdown } from '@/schemas/showdown'
 import type { Survivor } from '@/schemas/survivor'
 import packageJson from '../../package.json'
-import { CustomCampaign } from './campaigns/custom'
-import { PeopleOfTheDreamKeeper } from './campaigns/potdk'
-import { PeopleOfTheLantern } from './campaigns/potl'
-import { PeopleOfTheStars } from './campaigns/potstars'
-import { PeopleOfTheSun } from './campaigns/potsun'
-import { NEMESES, QUARRIES } from './monsters'
-import { NemesisMonsterLevelData, QuarryMonsterLevelData } from './types'
+import { basicHuntBoard } from './common'
 
 const colors = [
   ColorChoice.RED,
@@ -42,19 +45,19 @@ const colors = [
 ]
 
 const quarryMap = {
-  [CampaignType.PEOPLE_OF_THE_LANTERN]: QUARRIES[14].main,
-  [CampaignType.PEOPLE_OF_THE_SUN]: QUARRIES[14].main,
-  [CampaignType.PEOPLE_OF_THE_STARS]: QUARRIES[14].main,
-  [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]: QUARRIES[1].main,
-  [CampaignType.CUSTOM]: QUARRIES[14].main
+  [CampaignType.PEOPLE_OF_THE_LANTERN]: QUARRIES.WHITE_LION,
+  [CampaignType.PEOPLE_OF_THE_SUN]: QUARRIES.WHITE_LION,
+  [CampaignType.PEOPLE_OF_THE_STARS]: QUARRIES.WHITE_LION,
+  [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]: QUARRIES.CRIMSON_CROCODILE,
+  [CampaignType.CUSTOM]: QUARRIES.WHITE_LION
 }
 
 const nemesisMap = {
-  [CampaignType.PEOPLE_OF_THE_LANTERN]: NEMESES[3].main,
-  [CampaignType.PEOPLE_OF_THE_SUN]: NEMESES[3].main,
-  [CampaignType.PEOPLE_OF_THE_STARS]: NEMESES[3].main,
-  [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]: NEMESES[1].main,
-  [CampaignType.CUSTOM]: NEMESES[1].main
+  [CampaignType.PEOPLE_OF_THE_LANTERN]: NEMESES.BUTCHER,
+  [CampaignType.PEOPLE_OF_THE_SUN]: NEMESES.BUTCHER,
+  [CampaignType.PEOPLE_OF_THE_STARS]: NEMESES.BUTCHER,
+  [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]: NEMESES.ATNAS,
+  [CampaignType.CUSTOM]: NEMESES.BUTCHER
 }
 
 /**
@@ -283,7 +286,8 @@ export function generateSeedData(): void {
 
   // Create campaign object
   const campaign: Campaign = {
-    customMonsters: createCustomMonsters(),
+    customNemeses: createCustomNemeses(),
+    customQuarries: createCustomQuarries(),
     hunts,
     selectedHuntId: null,
     selectedShowdownId: null,
@@ -343,9 +347,9 @@ function createPeopleOfTheLanternSettlement(
         ...loc,
         unlocked: variant === 2 || loc.unlocked
       })),
-      ...QUARRIES[14].main.locations,
-      ...QUARRIES[10].main.locations,
-      ...QUARRIES[9].main.locations
+      ...(QUARRIES.WHITE_LION.locations || []),
+      ...(QUARRIES.SCREAMING_ANTELOPE.locations || []),
+      ...(QUARRIES.PHOENIX.locations || [])
     ],
     lostSettlements: 0,
     milestones: [
@@ -356,23 +360,41 @@ function createPeopleOfTheLanternSettlement(
     ],
     nemeses: [
       {
-        id: 3,
+        ...NEMESES.BUTCHER,
         unlocked: true,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
-      { id: 9, unlocked: false, level1: false, level2: false, level3: false },
-      { id: 8, unlocked: false, level1: false, level2: false, level3: false },
       {
-        id: 19,
+        ...NEMESES.KINGS_MAN,
         unlocked: false,
-        level1: false,
-        level2: false,
-        level3: false,
-        level4: false
+        level1Defeated: false,
+        level2Defeated: false,
+        level3Defeated: false
       },
-      { id: 7, unlocked: false, level1: false, level2: false, level3: false }
+      {
+        ...NEMESES.HAND,
+        unlocked: false,
+        level1Defeated: false,
+        level2Defeated: false,
+        level3Defeated: false
+      },
+      {
+        ...NEMESES.WATCHER,
+        unlocked: false,
+        level1Defeated: false,
+        level2Defeated: false,
+        level3Defeated: false,
+        level4Defeated: false
+      },
+      {
+        ...NEMESES.GOLD_SMOKE_KNIGHT,
+        unlocked: false,
+        level1Defeated: false,
+        level2Defeated: false,
+        level3Defeated: false
+      }
     ],
     notes:
       variant === 1
@@ -389,11 +411,11 @@ function createPeopleOfTheLanternSettlement(
     ],
     quarries: [
       {
-        id: 14,
+        ...QUARRIES.WHITE_LION,
         unlocked: true
       },
-      { id: 10, unlocked: variant === 2 },
-      { id: 9, unlocked: false }
+      { ...QUARRIES.SCREAMING_ANTELOPE, unlocked: variant === 2 },
+      { ...QUARRIES.PHOENIX, unlocked: false }
     ],
     resources: [
       {
@@ -470,9 +492,9 @@ function createPeopleOfTheSunSettlement(
         ...loc,
         unlocked: variant === 2 || loc.unlocked
       })),
-      ...QUARRIES[14].main.locations,
-      ...QUARRIES[10].main.locations,
-      ...QUARRIES[9].main.locations
+      ...QUARRIES.WHITE_LION.locations,
+      ...QUARRIES.SCREAMING_ANTELOPE.locations,
+      ...QUARRIES.PHOENIX.locations
     ],
     lostSettlements: 0,
     milestones: [
@@ -483,13 +505,19 @@ function createPeopleOfTheSunSettlement(
     ],
     nemeses: [
       {
-        id: 3,
+        ...NEMESES.BUTCHER,
         unlocked: true,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
-      { id: 9, unlocked: false, level1: false, level2: false, level3: false }
+      {
+        ...NEMESES.KINGS_MAN,
+        unlocked: false,
+        level1Defeated: false,
+        level2Defeated: false,
+        level3Defeated: false
+      }
     ],
     notes: variant === 1 ? 'Focused path' : 'Exploring different innovations',
     patterns: variant === 2 ? ['Catgut Bow'] : [],
@@ -502,9 +530,9 @@ function createPeopleOfTheSunSettlement(
       }))
     ],
     quarries: [
-      { id: 14, unlocked: true },
-      { id: 10, unlocked: variant === 2 },
-      { id: 9, unlocked: false }
+      { ...QUARRIES.WHITE_LION, unlocked: true },
+      { ...QUARRIES.SCREAMING_ANTELOPE, unlocked: variant === 2 },
+      { ...QUARRIES.PHOENIX, unlocked: false }
     ],
     resources: [
       {
@@ -566,9 +594,9 @@ function createPeopleOfTheStarsSettlement(
         ...loc,
         unlocked: variant === 2 || loc.unlocked
       })),
-      ...QUARRIES[14].main.locations,
-      ...QUARRIES[10].main.locations,
-      ...QUARRIES[9].main.locations
+      ...QUARRIES.WHITE_LION.locations,
+      ...QUARRIES.SCREAMING_ANTELOPE.locations,
+      ...QUARRIES.PHOENIX.locations
     ],
     lostSettlements: 0,
     milestones: [
@@ -579,55 +607,55 @@ function createPeopleOfTheStarsSettlement(
     ],
     nemeses: [
       {
+        ...NEMESES.BUTCHER,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 3,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.KINGS_MAN,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 9,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.HAND,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 8,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.WATCHER,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 18,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false,
-        level4: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false,
+        level4Defeated: false
       },
       {
+        ...NEMESES.DYING_GOD,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 4,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       }
     ],
     notes: 'Arc survivor campaign with collective cognition mechanics',
@@ -642,27 +670,27 @@ function createPeopleOfTheStarsSettlement(
     ],
     quarries: [
       {
+        ...QUARRIES.WHITE_LION,
         ccPrologue: variant === 2,
         ccLevel1: variant === 2,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
-        id: 14,
         unlocked: true
       },
       {
+        ...QUARRIES.SCREAMING_ANTELOPE,
         ccPrologue: variant === 2,
         ccLevel1: variant === 2,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
-        id: 10,
         unlocked: variant === 2
       },
       {
+        ...QUARRIES.PHOENIX,
         ccPrologue: variant === 2,
         ccLevel1: variant === 2,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
-        id: 9,
         unlocked: false
       }
     ],
@@ -742,10 +770,10 @@ function createPeopleOfTheDreamKeeperSettlement(
         ...loc,
         unlocked: variant === 2 || loc.unlocked
       })),
-      ...QUARRIES[1].main.locations,
-      ...QUARRIES[7].main.locations,
-      ...QUARRIES[9].main.locations,
-      ...QUARRIES[11].main.locations
+      ...QUARRIES.CRIMSON_CROCODILE.locations,
+      ...QUARRIES.KING.locations,
+      ...QUARRIES.PHOENIX.locations,
+      ...QUARRIES.SMOG_SINGERS.locations
     ],
     lostSettlements: 0,
     milestones: [
@@ -756,55 +784,55 @@ function createPeopleOfTheDreamKeeperSettlement(
     ],
     nemeses: [
       {
+        ...NEMESES.ATNAS,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 1,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.BUTCHER,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 3,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.GAMBLER,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 5,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.GODHAND,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 6,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false,
-        level4: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false,
+        level4Defeated: false
       },
       {
+        ...NEMESES.HAND,
         ccLevel1: variant === 2,
         ccLevel2: false,
         ccLevel3: false,
-        id: 8,
         unlocked: variant === 2,
-        level1: variant === 2,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 2,
+        level2Defeated: false,
+        level3Defeated: false
       }
     ],
     notes: 'PotDK Arc campaign',
@@ -819,35 +847,35 @@ function createPeopleOfTheDreamKeeperSettlement(
     ],
     quarries: [
       {
+        ...QUARRIES.CRIMSON_CROCODILE,
         ccPrologue: variant === 2,
         ccLevel1: variant === 2,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
-        id: 1,
         unlocked: true
       },
       {
+        ...QUARRIES.KING,
         ccPrologue: variant === 2,
         ccLevel1: variant === 2,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
-        id: 7,
         unlocked: variant === 2
       },
       {
+        ...QUARRIES.PHOENIX,
         ccPrologue: variant === 2,
         ccLevel1: variant === 2,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
-        id: 9,
         unlocked: false
       },
       {
+        ...QUARRIES.SMOG_SINGERS,
         ccPrologue: variant === 2,
         ccLevel1: variant === 2,
         ccLevel2: [false, false],
         ccLevel3: [false, false, false],
-        id: 11,
         unlocked: false
       }
     ],
@@ -946,65 +974,65 @@ function createCustomSettlement(id: number, variant: number): Settlement {
     ],
     nemeses: [
       {
+        ...NEMESES.ATNAS,
         ...(isArc && {
           ccLevel1: variant === 3,
           ccLevel2: false,
           ccLevel3: false
         }),
-        id: 1,
         unlocked: variant === 3,
-        level1: variant === 3,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 3,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.BUTCHER,
         ...(isArc && {
           ccLevel1: variant === 3,
           ccLevel2: false,
           ccLevel3: false
         }),
-        id: 3,
         unlocked: variant === 3,
-        level1: variant === 3,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 3,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.GAMBLER,
         ...(isArc && {
           ccLevel1: variant === 3,
           ccLevel2: false,
           ccLevel3: false
         }),
-        id: 5,
         unlocked: variant === 3,
-        level1: variant === 3,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 3,
+        level2Defeated: false,
+        level3Defeated: false
       },
       {
+        ...NEMESES.GODHAND,
         ...(isArc && {
           ccLevel1: variant === 3,
           ccLevel2: false,
           ccLevel3: false
         }),
-        id: 6,
         unlocked: variant === 3,
-        level1: variant === 3,
-        level2: false,
-        level3: false,
-        level4: false
+        level1Defeated: variant === 3,
+        level2Defeated: false,
+        level3Defeated: false,
+        level4Defeated: false
       },
       {
+        ...NEMESES.HAND,
         ...(isArc && {
           ccLevel1: variant === 3,
           ccLevel2: false,
           ccLevel3: false
         }),
-        id: 8,
         unlocked: variant === 3,
-        level1: variant === 3,
-        level2: false,
-        level3: false
+        level1Defeated: variant === 3,
+        level2Defeated: false,
+        level3Defeated: false
       }
     ],
     notes: `Custom campaign ${variant} - ${isArc ? 'Arc Survivors' : 'Core Survivors'}`,
@@ -1019,33 +1047,33 @@ function createCustomSettlement(id: number, variant: number): Settlement {
     ],
     quarries: [
       {
+        ...QUARRIES.WHITE_LION,
         ...(isArc && {
           ccPrologue: variant === 3,
           ccLevel1: variant === 3,
           ccLevel2: [false, false],
           ccLevel3: [false, false, false]
         }),
-        id: 14,
         unlocked: true
       },
       {
+        ...QUARRIES.SCREAMING_ANTELOPE,
         ...(isArc && {
           ccPrologue: variant === 3,
           ccLevel1: variant === 3,
           ccLevel2: [false, false],
           ccLevel3: [false, false, false]
         }),
-        id: 10,
         unlocked: variant >= 2
       },
       {
+        ...QUARRIES.PHOENIX,
         ...(isArc && {
           ccPrologue: variant === 3,
           ccLevel1: variant === 3,
           ccLevel2: [false, false],
           ccLevel3: [false, false, false]
         }),
-        id: 9,
         unlocked: variant === 3
       }
     ],
@@ -1343,26 +1371,24 @@ function createHunt(
 
   if (usesScouts) survivors.push(startSurvivorId + 4)
 
-  const monsterData = quarryMap[
-    campaignType as keyof typeof quarryMap
-  ] as QuarryMonsterData
-  const level1Data = monsterData.level1 as QuarryMonsterLevelData
+  const monsterData = quarryMap[campaignType as keyof typeof quarryMap]
+  const level1Data = monsterData.level1 as QuarryMonsterLevel[]
 
   return {
+    huntBoard: basicHuntBoard,
     id,
-    monster: {
-      ...level1Data,
+    level: MonsterLevel.LEVEL_1,
+    monsters: level1Data.map((level1) => ({
+      ...level1,
       aiDeckRemaining:
-        level1Data.aiDeck.basic +
-        level1Data.aiDeck.advanced +
-        level1Data.aiDeck.legendary,
+        level1.aiDeck.basic + level1.aiDeck.advanced + level1.aiDeck.legendary,
       knockedDown: false,
       level: MonsterLevel.LEVEL_1,
       name: monsterData.name,
       notes: 'Starting hunt state',
       type: MonsterType.QUARRY,
       wounds: 0
-    },
+    })),
     monsterPosition: 6,
     scout: usesScouts ? startSurvivorId + 4 : undefined,
     settlementId,
@@ -1409,25 +1435,24 @@ function createShowdown(
       ? quarryMap[campaignType as keyof typeof quarryMap]
       : nemesisMap[campaignType as keyof typeof nemesisMap]
   const level1Data = monsterData.level1 as
-    | QuarryMonsterLevelData
-    | NemesisMonsterLevelData
+    | QuarryMonsterLevel[]
+    | NemesisMonsterLevel[]
 
   return {
     ambush: AmbushType.NONE,
     id,
-    monster: {
-      ...level1Data,
+    level: MonsterLevel.LEVEL_1,
+    monsters: level1Data.map((level1) => ({
+      ...level1,
       aiDeckRemaining:
-        level1Data.aiDeck.basic +
-        level1Data.aiDeck.advanced +
-        level1Data.aiDeck.legendary,
+        level1.aiDeck.basic + level1.aiDeck.advanced + level1.aiDeck.legendary,
       knockedDown: false,
       level: MonsterLevel.LEVEL_1,
       name: monsterData.name,
       notes: 'Starting showdown state',
       type: monsterType,
       wounds: 0
-    },
+    })),
     scout: usesScouts ? startSurvivorId + 4 : undefined,
     settlementId,
     survivorDetails: survivors.map((survivorId, index) => ({
@@ -1464,20 +1489,20 @@ function createShowdown(
 }
 
 /**
- * Create Custom Monsters
+ * Create Custom Nemeses
  *
- * Creates sample custom monsters for testing, including both nemesis and quarry
- * types with varying levels of complexity and configuration.
+ * Creates sample custom nemeses for testing.
  */
-function createCustomMonsters(): Campaign['customMonsters'] {
+function createCustomNemeses(): Campaign['customNemeses'] {
   return {
     // Custom Nemesis: Shadow Weaver
     'custom-nemesis-1': {
-      main: {
-        name: 'Shadow Weaver',
-        node: MonsterNode.NN1,
-        type: MonsterType.NEMESIS,
-        level1: {
+      multiMonster: false,
+      name: 'Shadow Weaver',
+      node: MonsterNode.NN1,
+      type: MonsterType.NEMESIS,
+      level1: [
+        {
           accuracy: 1,
           accuracyTokens: 0,
           aiDeck: { basic: 5, advanced: 3, legendary: 0 },
@@ -1500,8 +1525,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 8,
           toughnessTokens: 0,
           traits: ['Shadow Step', 'Incorporeal']
-        },
-        level2: {
+        }
+      ],
+      level2: [
+        {
           accuracy: 2,
           accuracyTokens: 0,
           aiDeck: { basic: 4, advanced: 4, legendary: 2 },
@@ -1524,8 +1551,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 10,
           toughnessTokens: 0,
           traits: ['Shadow Step', 'Incorporeal', 'Dark Aura']
-        },
-        level3: {
+        }
+      ],
+      level3: [
+        {
           accuracy: 3,
           accuracyTokens: 0,
           aiDeck: { basic: 3, advanced: 5, legendary: 3 },
@@ -1548,22 +1577,23 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 12,
           toughnessTokens: 0,
           traits: ['Shadow Step', 'Incorporeal', 'Dark Aura', 'Soul Drain']
-        },
-        timeline: {
-          8: ['Nemesis Encounter - Shadow Weaver Lvl 1'],
-          16: ['Nemesis Encounter - Shadow Weaver Lvl 2'],
-          24: ['Nemesis Encounter - Shadow Weaver Lvl 3']
         }
+      ],
+      timeline: {
+        8: ['Nemesis Encounter - Shadow Weaver Lvl 1'],
+        16: ['Nemesis Encounter - Shadow Weaver Lvl 2'],
+        24: ['Nemesis Encounter - Shadow Weaver Lvl 3']
       }
     },
 
     // Custom Nemesis: Void Caller (simpler configuration)
     'custom-nemesis-2': {
-      main: {
-        name: 'Void Caller',
-        node: MonsterNode.NN2,
-        type: MonsterType.NEMESIS,
-        level1: {
+      multiMonster: false,
+      name: 'Void Caller',
+      node: MonsterNode.NN2,
+      type: MonsterType.NEMESIS,
+      level1: [
+        {
           accuracy: 0,
           accuracyTokens: 0,
           aiDeck: { basic: 6, advanced: 2, legendary: 0 },
@@ -1586,8 +1616,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 6,
           toughnessTokens: 0,
           traits: ['Void Touch']
-        },
-        level2: {
+        }
+      ],
+      level2: [
+        {
           accuracy: 1,
           accuracyTokens: 0,
           aiDeck: { basic: 5, advanced: 4, legendary: 1 },
@@ -1610,22 +1642,32 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 8,
           toughnessTokens: 0,
           traits: ['Void Touch', 'Reality Warp']
-        },
-        timeline: {
-          10: ['Nemesis Encounter - Void Caller Lvl 1'],
-          20: ['Nemesis Encounter - Void Caller Lvl 2']
         }
+      ],
+      timeline: {
+        10: ['Nemesis Encounter - Void Caller Lvl 1'],
+        20: ['Nemesis Encounter - Void Caller Lvl 2']
       }
-    },
+    }
+  }
+}
 
+/**
+ * Create Custom Quarries
+ *
+ * Creates sample custom quarries for testing.
+ */
+function createCustomQuarries(): Campaign['customQuarries'] {
+  return {
     // Custom Quarry: Iron Wyrm (prologue available)
     'custom-quarry-1': {
-      main: {
-        name: 'Iron Wyrm',
-        node: MonsterNode.NQ1,
-        type: MonsterType.QUARRY,
-        prologue: true,
-        level1: {
+      multiMonster: false,
+      name: 'Iron Wyrm',
+      node: MonsterNode.NQ1,
+      type: MonsterType.QUARRY,
+      prologue: true,
+      level1: [
+        {
           accuracy: 0,
           accuracyTokens: 0,
           aiDeck: { basic: 8, advanced: 0, legendary: 0 },
@@ -1649,8 +1691,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 10,
           toughnessTokens: 0,
           traits: ['Armored', 'Slow']
-        },
-        level2: {
+        }
+      ],
+      level2: [
+        {
           accuracy: 1,
           accuracyTokens: 0,
           aiDeck: { basic: 6, advanced: 3, legendary: 0 },
@@ -1674,56 +1718,57 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 12,
           toughnessTokens: 0,
           traits: ['Armored', 'Slow', 'Metal Rend']
-        },
-        huntBoard: {
-          0: undefined,
-          1: HuntEventType.BASIC,
-          2: HuntEventType.BASIC,
-          3: HuntEventType.MONSTER,
-          4: HuntEventType.BASIC,
-          5: HuntEventType.BASIC,
-          6: undefined,
-          7: HuntEventType.BASIC,
-          8: HuntEventType.BASIC,
-          9: HuntEventType.BASIC,
-          10: HuntEventType.MONSTER,
-          11: HuntEventType.BASIC,
-          12: undefined
-        },
-        locations: [
-          {
-            name: 'Forge',
-            unlocked: false
-          }
-        ],
-        ccRewards: [
-          {
-            cc: 0,
-            name: 'Metalworking',
-            unlocked: false
-          }
-        ],
-        timeline: {
-          1: [
-            {
-              title: 'Iron Wyrm Prologue',
-              campaigns: [CampaignType.CUSTOM]
-            }
-          ],
-          6: ['Iron Wyrm Lvl 1'],
-          14: ['Iron Wyrm Lvl 2']
         }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Forge',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Metalworking',
+          unlocked: false
+        }
+      ],
+      timeline: {
+        1: [
+          {
+            title: 'Iron Wyrm Prologue',
+            campaigns: [CampaignType.CUSTOM]
+          }
+        ],
+        6: ['Iron Wyrm Lvl 1'],
+        14: ['Iron Wyrm Lvl 2']
       }
     },
 
     // Custom Quarry: Crystal Stag
     'custom-quarry-2': {
-      main: {
-        name: 'Crystal Stag',
-        node: MonsterNode.NQ2,
-        type: MonsterType.QUARRY,
-        prologue: false,
-        level1: {
+      multiMonster: false,
+      name: 'Crystal Stag',
+      node: MonsterNode.NQ2,
+      type: MonsterType.QUARRY,
+      prologue: false,
+      level1: [
+        {
           accuracy: 0,
           accuracyTokens: 0,
           aiDeck: { basic: 7, advanced: 0, legendary: 0 },
@@ -1747,8 +1792,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 6,
           toughnessTokens: 0,
           traits: ['Crystalline Hide', 'Swift']
-        },
-        level2: {
+        }
+      ],
+      level2: [
+        {
           accuracy: 1,
           accuracyTokens: 0,
           aiDeck: { basic: 5, advanced: 3, legendary: 0 },
@@ -1772,8 +1819,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 8,
           toughnessTokens: 0,
           traits: ['Crystalline Hide', 'Swift', 'Light Burst']
-        },
-        level3: {
+        }
+      ],
+      level3: [
+        {
           accuracy: 2,
           accuracyTokens: 0,
           aiDeck: { basic: 4, advanced: 4, legendary: 2 },
@@ -1797,61 +1846,62 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 10,
           toughnessTokens: 0,
           traits: ['Crystalline Hide', 'Swift', 'Light Burst', 'Prismatic']
+        }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Crystal Workshop',
+          unlocked: false
         },
-        huntBoard: {
-          0: undefined,
-          1: HuntEventType.BASIC,
-          2: HuntEventType.BASIC,
-          3: HuntEventType.MONSTER,
-          4: HuntEventType.BASIC,
-          5: HuntEventType.BASIC,
-          6: undefined,
-          7: HuntEventType.BASIC,
-          8: HuntEventType.BASIC,
-          9: HuntEventType.BASIC,
-          10: HuntEventType.MONSTER,
-          11: HuntEventType.BASIC,
-          12: undefined
+        {
+          name: 'Prism Shrine',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Crystalline Insight',
+          unlocked: false
         },
-        locations: [
-          {
-            name: 'Crystal Workshop',
-            unlocked: false
-          },
-          {
-            name: 'Prism Shrine',
-            unlocked: false
-          }
-        ],
-        ccRewards: [
-          {
-            cc: 0,
-            name: 'Crystalline Insight',
-            unlocked: false
-          },
-          {
-            cc: 1,
-            name: 'Refraction Mastery',
-            unlocked: false
-          },
-          {
-            cc: 2,
-            name: 'Prismatic Understanding',
-            unlocked: false
-          }
-        ],
-        timeline: {}
-      }
+        {
+          cc: 1,
+          name: 'Refraction Mastery',
+          unlocked: false
+        },
+        {
+          cc: 2,
+          name: 'Prismatic Understanding',
+          unlocked: false
+        }
+      ],
+      timeline: {}
     },
 
     // Custom Quarry: Twilight Serpent (full four levels)
     'custom-quarry-3': {
-      main: {
-        name: 'Twilight Serpent',
-        node: MonsterNode.NQ3,
-        type: MonsterType.QUARRY,
-        prologue: false,
-        level1: {
+      multiMonster: false,
+      name: 'Twilight Serpent',
+      node: MonsterNode.NQ3,
+      type: MonsterType.QUARRY,
+      prologue: false,
+      level1: [
+        {
           accuracy: 0,
           accuracyTokens: 0,
           aiDeck: { basic: 7, advanced: 0, legendary: 0 },
@@ -1875,8 +1925,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 7,
           toughnessTokens: 0,
           traits: ['Venomous', 'Camouflage']
-        },
-        level2: {
+        }
+      ],
+      level2: [
+        {
           accuracy: 1,
           accuracyTokens: 0,
           aiDeck: { basic: 6, advanced: 2, legendary: 0 },
@@ -1900,8 +1952,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 9,
           toughnessTokens: 0,
           traits: ['Venomous', 'Camouflage', 'Constrictor']
-        },
-        level3: {
+        }
+      ],
+      level3: [
+        {
           accuracy: 2,
           accuracyTokens: 0,
           aiDeck: { basic: 5, advanced: 3, legendary: 1 },
@@ -1925,8 +1979,10 @@ function createCustomMonsters(): Campaign['customMonsters'] {
           toughness: 11,
           toughnessTokens: 0,
           traits: ['Venomous', 'Camouflage', 'Constrictor', 'Shadow Strike']
-        },
-        level4: {
+        }
+      ],
+      level4: [
+        {
           accuracy: 3,
           accuracyTokens: 0,
           aiDeck: { basic: 4, advanced: 4, legendary: 2 },
@@ -1956,51 +2012,265 @@ function createCustomMonsters(): Campaign['customMonsters'] {
             'Shadow Strike',
             'Apex Predator'
           ]
+        }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Serpent Den',
+          unlocked: false
         },
-        huntBoard: {
-          0: undefined,
-          1: HuntEventType.BASIC,
-          2: HuntEventType.BASIC,
-          3: HuntEventType.MONSTER,
-          4: HuntEventType.BASIC,
-          5: HuntEventType.BASIC,
-          6: undefined,
-          7: HuntEventType.BASIC,
-          8: HuntEventType.BASIC,
-          9: HuntEventType.BASIC,
-          10: HuntEventType.MONSTER,
-          11: HuntEventType.BASIC,
-          12: undefined
+        {
+          name: 'Twilight Grove',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Venom Study',
+          unlocked: false
         },
-        locations: [
-          {
-            name: 'Serpent Den',
-            unlocked: false
-          },
-          {
-            name: 'Twilight Grove',
-            unlocked: false
-          }
-        ],
-        ccRewards: [
-          {
-            cc: 0,
-            name: 'Venom Study',
-            unlocked: false
-          },
-          {
-            cc: 1,
-            name: 'Serpent Wisdom',
-            unlocked: false
-          },
-          {
-            cc: 2,
-            name: 'Twilight Secrets',
-            unlocked: false
-          }
-        ],
-        timeline: {}
-      }
+        {
+          cc: 1,
+          name: 'Serpent Wisdom',
+          unlocked: false
+        },
+        {
+          cc: 2,
+          name: 'Twilight Secrets',
+          unlocked: false
+        }
+      ],
+      timeline: {}
+    },
+
+    // Custom Quarry: Dark Horses (multi-monster quarry)
+    'custom-quarry-4': {
+      multiMonster: true,
+      name: 'Dark Horses',
+      node: MonsterNode.NQ4,
+      type: MonsterType.QUARRY,
+      prologue: false,
+      level1: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 11,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning'],
+          movement: 6,
+          movementTokens: 0,
+          name: 'Dark Horse Alpha',
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 7,
+          toughnessTokens: 0,
+          traits: ['Stampede']
+        }
+      ],
+      level2: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 11,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning'],
+          movement: 6,
+          movementTokens: 0,
+          name: 'Dark Horse Alpha',
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 7,
+          toughnessTokens: 0,
+          traits: ['Stampede']
+        },
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 6, advanced: 1, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          huntPos: 10,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Skittish'],
+          movement: 5,
+          movementTokens: 0,
+          name: 'Dark Horse Beta',
+          speed: 1,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 6,
+          toughnessTokens: 0,
+          traits: ['Flee']
+        }
+      ],
+      level3: [
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 7, advanced: 0, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 11,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Cunning'],
+          movement: 6,
+          movementTokens: 0,
+          name: 'Dark Horse Alpha',
+          speed: 2,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 7,
+          toughnessTokens: 0,
+          traits: ['Stampede']
+        },
+        {
+          accuracy: 0,
+          accuracyTokens: 0,
+          aiDeck: { basic: 6, advanced: 1, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 1,
+          damageTokens: 0,
+          evasion: 0,
+          evasionTokens: 0,
+          huntPos: 10,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Skittish'],
+          movement: 5,
+          movementTokens: 0,
+          name: 'Dark Horse Beta',
+          speed: 1,
+          speedTokens: 0,
+          strength: 0,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 6,
+          toughnessTokens: 0,
+          traits: ['Flee']
+        },
+        {
+          accuracy: 1,
+          accuracyTokens: 0,
+          aiDeck: { basic: 5, advanced: 2, legendary: 0 },
+          aiDeckRemaining: 7,
+          damage: 2,
+          damageTokens: 0,
+          evasion: 1,
+          evasionTokens: 0,
+          huntPos: 12,
+          luck: 0,
+          luckTokens: 0,
+          moods: ['Wild'],
+          movement: 7,
+          movementTokens: 0,
+          name: 'Dark Horse Gamma',
+          speed: 3,
+          speedTokens: 0,
+          strength: 1,
+          strengthTokens: 0,
+          survivorHuntPos: 0,
+          survivorStatuses: [],
+          toughness: 8,
+          toughnessTokens: 0,
+          traits: ['Rampage']
+        }
+      ],
+      huntBoard: {
+        0: undefined,
+        1: HuntEventType.BASIC,
+        2: HuntEventType.BASIC,
+        3: HuntEventType.MONSTER,
+        4: HuntEventType.BASIC,
+        5: HuntEventType.BASIC,
+        6: undefined,
+        7: HuntEventType.BASIC,
+        8: HuntEventType.BASIC,
+        9: HuntEventType.BASIC,
+        10: HuntEventType.MONSTER,
+        11: HuntEventType.BASIC,
+        12: undefined
+      },
+      locations: [
+        {
+          name: 'Serpent Den',
+          unlocked: false
+        },
+        {
+          name: 'Twilight Grove',
+          unlocked: false
+        }
+      ],
+      ccRewards: [
+        {
+          cc: 0,
+          name: 'Venom Study',
+          unlocked: false
+        },
+        {
+          cc: 1,
+          name: 'Serpent Wisdom',
+          unlocked: false
+        },
+        {
+          cc: 2,
+          name: 'Twilight Secrets',
+          unlocked: false
+        }
+      ],
+      timeline: {}
     }
   }
 }

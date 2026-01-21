@@ -14,7 +14,8 @@ import { useToast } from '@/hooks/use-toast'
 import { MonsterType } from '@/lib/enums'
 import { CUSTOM_MONSTER_DELETED_MESSAGE, ERROR_MESSAGE } from '@/lib/messages'
 import { Campaign } from '@/schemas/campaign'
-import { NemesisMonsterData, QuarryMonsterData } from '@/schemas/monster'
+import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
+import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 import { PencilIcon, Trash2Icon } from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
@@ -45,16 +46,12 @@ export function CustomMonstersTable({
 }: CustomMonstersTableProps): ReactElement {
   const { toast } = useToast(campaign)
 
-  const [monsters, setMonsters] = useState<
-    Record<string, Record<'main', NemesisMonsterData | QuarryMonsterData>>
-  >(() => {
-    try {
-      return campaign.customMonsters || {}
-    } catch (error) {
-      console.error('Load Custom Monsters Error:', error)
-      return {}
-    }
-  })
+  const [monsters, setMonsters] = useState<{
+    [key: string]: NemesisMonsterData | QuarryMonsterData
+  }>(() => ({
+    ...(campaign.customNemeses ?? {}),
+    ...(campaign.customQuarries ?? {})
+  }))
 
   const [editingMonsterId, setEditingMonsterId] = useState<string | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -72,7 +69,10 @@ export function CustomMonstersTable({
    */
   const handleMonsterUpdated = () => {
     try {
-      setMonsters(campaign.customMonsters || {})
+      setMonsters({
+        ...(campaign.customNemeses ?? {}),
+        ...(campaign.customQuarries ?? {})
+      })
 
       if (onMonstersChange) onMonstersChange()
     } catch (error) {
@@ -87,16 +87,29 @@ export function CustomMonstersTable({
     try {
       const monsterToDelete = monsters[id as keyof typeof monsters]
 
-      const updatedMonsters = { ...campaign.customMonsters }
-      delete updatedMonsters[id]
+      const updatedNemeses = {
+        ...(campaign.customNemeses ?? {})
+      }
+      const updatedQuarries = {
+        ...(campaign.customQuarries ?? {})
+      }
+
+      if (monsterToDelete.type === MonsterType.NEMESIS)
+        delete updatedNemeses[id]
+      if (monsterToDelete.type === MonsterType.QUARRY)
+        delete updatedQuarries[id]
 
       updateCampaign({
         ...campaign,
-        customMonsters: updatedMonsters
+        customNemeses: updatedNemeses,
+        customQuarries: updatedQuarries
       })
-      setMonsters(updatedMonsters)
+      setMonsters({
+        ...updatedNemeses,
+        ...updatedQuarries
+      })
 
-      toast.success(CUSTOM_MONSTER_DELETED_MESSAGE(monsterToDelete?.main.name))
+      toast.success(CUSTOM_MONSTER_DELETED_MESSAGE(monsterToDelete.name))
 
       if (onMonstersChange) onMonstersChange()
     } catch (error) {
@@ -131,52 +144,56 @@ export function CustomMonstersTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Object.keys(monsters).map((monsterId: string) => {
-            const monster = monsters[monsterId as keyof typeof monsters]
-
-            return (
-              <TableRow key={monsterId}>
-                <TableCell className="font-medium">
-                  {monster.main.name}
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                      monster.main.type === MonsterType.QUARRY
-                        ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                    {monster.main.type === MonsterType.QUARRY
-                      ? 'Quarry'
-                      : 'Nemesis'}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                    {monster.main.node}
-                  </code>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEditMonster(monsterId)}
-                      title={`Edit ${monster.main.name}`}>
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteMonster(monsterId)}
-                      title={`Delete ${monster.main.name}`}>
-                      <Trash2Icon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
+          {Object.keys(monsters)
+            .sort((a, b) =>
+              monsters[a as keyof typeof monsters].name.localeCompare(
+                monsters[b as keyof typeof monsters].name
+              )
             )
-          })}
+            .map((monsterId: string) => {
+              const monster = monsters[monsterId as keyof typeof monsters]
+
+              return (
+                <TableRow key={monsterId}>
+                  <TableCell className="font-medium">{monster.name}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                        monster.type === MonsterType.QUARRY
+                          ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                      }`}>
+                      {monster.type === MonsterType.QUARRY
+                        ? 'Quarry'
+                        : 'Nemesis'}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                      {monster.node}
+                    </code>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditMonster(monsterId)}
+                        title={`Edit ${monster.name}`}>
+                        <PencilIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteMonster(monsterId)}
+                        title={`Delete ${monster.name}`}>
+                        <Trash2Icon className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
         </TableBody>
       </Table>
 
