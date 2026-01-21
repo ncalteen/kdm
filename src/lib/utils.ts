@@ -622,6 +622,9 @@ export const getAvailableNodes = (type: MonsterType): MonsterNode[] => {
 /**
  * Get Nemesis by Name
  *
+ * Returns a deep copy of the nemesis data to prevent mutations affecting the
+ * original source data.
+ *
  * @param campaign Campaign
  * @param name Nemesis Name
  * @returns Nemesis Data
@@ -632,20 +635,26 @@ export const getNemesisDataByName = (
 ) => {
   if (name === undefined || name.trim() === '') return undefined
 
-  return (
+  const nemesisData =
     Object.values(NEMESES).find((nemesis) => nemesis.name === name) ||
     Object.values(campaign.customNemeses || {}).find(
       (nemesis) => nemesis.name === name
     )
-  )
+
+  if (!nemesisData) return undefined
+
+  return structuredClone(nemesisData)
 }
 
 /**
  * Get Quarry by Name
  *
+ * Returns a deep copy of the quarry data to prevent mutations affecting the
+ * original source data.
+ *
  * @param campaign Campaign
- * @param name Nemesis Name
- * @returns Nemesis Data
+ * @param name Quarry Name
+ * @returns Quarry Data
  */
 export const getQuarryDataByName = (
   campaign: Campaign,
@@ -653,12 +662,16 @@ export const getQuarryDataByName = (
 ) => {
   if (name === undefined || name.trim() === '') return undefined
 
-  return (
+  const quarryData =
     Object.values(QUARRIES).find((quarry) => quarry.name === name) ||
     Object.values(campaign.customQuarries || {}).find(
       (quarry) => quarry.name === name
     )
-  )
+
+  if (!quarryData) return undefined
+
+  // Return a deep copy to prevent mutations affecting the original data
+  return structuredClone(quarryData)
 }
 
 /**
