@@ -140,8 +140,6 @@ export function ShowdownMonsterCard({
   ) => {
     if (!selectedShowdown?.monsters) return
 
-    console.log(selectedShowdown)
-
     try {
       const updatedMonsters = [
         ...selectedShowdown.monsters.slice(0, selectedShowdownMonsterIndex),
