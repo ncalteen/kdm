@@ -1,5 +1,4 @@
 import { HuntEventType, MonsterNode, MonsterType } from '@/lib/enums'
-import { WHITE_GIGALION } from '@/lib/monsters/white-gigalion'
 import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 
 /**
@@ -129,6 +128,5 @@ export const WHITE_LION: QuarryMonsterData = {
   locations: [{ name: 'Catarium', unlocked: false }],
   timeline: {
     0: ['White Lion']
-  },
-  vignette: WHITE_GIGALION
+  }
 }
