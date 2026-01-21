@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
+import { SchemaVersion } from '@/lib/enums'
 import {
   CAMPAIGN_UNLOCK_KILLENIUM_BUTCHER_UPDATED_MESSAGE,
   CAMPAIGN_UNLOCK_SCREAMING_NUKALOPE_UPDATED_MESSAGE,
@@ -41,7 +42,13 @@ import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
-import { DatabaseIcon, Trash2Icon, XIcon } from 'lucide-react'
+import {
+  DatabaseIcon,
+  FlaskConical,
+  Loader2,
+  Trash2Icon,
+  XIcon
+} from 'lucide-react'
 import { ReactElement, useState } from 'react'
 
 /**
@@ -50,6 +57,8 @@ import { ReactElement, useState } from 'react'
 interface SettingsCardProps {
   /** Campaign */
   campaign: Campaign
+  /** Callback to Load Test Campaign Data for Development */
+  loadTestData: (version: SchemaVersion) => Promise<void>
   /** Save Selected Settlement */
   saveSelectedSettlement: (
     updateData: Partial<Settlement>,
@@ -83,6 +92,7 @@ interface SettingsCardProps {
  */
 export function SettingsCard({
   campaign,
+  loadTestData,
   saveSelectedSettlement,
   selectedHunt,
   selectedSettlement,
@@ -97,6 +107,10 @@ export function SettingsCard({
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
   const [monstersRefreshKey, setMonstersRefreshKey] = useState<number>(0)
+  const [selectedTestVersion, setSelectedTestVersion] = useState<
+    SchemaVersion | undefined
+  >(undefined)
+  const [isLoadingTestData, setIsLoadingTestData] = useState<boolean>(false)
   const [disableToasts, setDisableToasts] = useState<boolean>(() => {
     try {
       return campaign.settings.disableToasts ?? false
@@ -370,6 +384,26 @@ export function SettingsCard({
     }
   }
 
+  /**
+   * Handle Loading Test Campaign Data (Development Only)
+   *
+   * Loads campaign data from a fixture file for testing migration.
+   */
+  const handleLoadTestData = async () => {
+    if (!loadTestData || !selectedTestVersion) return
+
+    setIsLoadingTestData(true)
+
+    try {
+      await loadTestData(selectedTestVersion)
+    } catch (error) {
+      console.error('Load Test Data Error:', error)
+      toast.error(ERROR_MESSAGE())
+    } finally {
+      setIsLoadingTestData(false)
+    }
+  }
+
   const isDevelopment = process.env.NODE_ENV === 'development'
 
   return (
@@ -378,11 +412,12 @@ export function SettingsCard({
       {isDevelopment && (
         <Card className="p-0 border-blue-500">
           <CardHeader className="px-4 pt-3 pb-0">
-            <CardTitle className="text-lg text-blue-600">
-              Development Tools
+            <CardTitle className="text-lg text-blue-600 flex justify-between">
+              <div>Development Tools</div>
+              <div>{campaign.version && `v${campaign.version}`}</div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0">
+          <CardContent className="p-4 pt-0 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium text-sm">Generate Seed Data</div>
@@ -418,6 +453,50 @@ export function SettingsCard({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">
+                  Load Migration Test Data
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Override local storage with campaign data from a specific
+                  version to test migration functionality.
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={selectedTestVersion}
+                  onValueChange={(value) =>
+                    setSelectedTestVersion(value as SchemaVersion)
+                  }
+                  name="test-version"
+                  aria-label="Test Version">
+                  <SelectTrigger className="w-[120px]" id="test-version">
+                    <SelectValue placeholder="Version" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(SchemaVersion).map(([key, version]) => (
+                      <SelectItem key={key} value={version}>
+                        v{version}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLoadTestData}
+                  disabled={!selectedTestVersion || isLoadingTestData}>
+                  {isLoadingTestData ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <FlaskConical className="h-4 w-4 mr-2" />
+                  )}
+                  Load
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

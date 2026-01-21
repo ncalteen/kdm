@@ -11,7 +11,8 @@ import { useSelectedHuntSave } from '@/hooks/use-selected-hunt-save'
 import { useSelectedSettlementSave } from '@/hooks/use-selected-settlement-save'
 import { useSelectedShowdownSave } from '@/hooks/use-selected-showdown-save'
 import { useSelectedSurvivorSave } from '@/hooks/use-selected-survivor-save'
-import { TabType } from '@/lib/enums'
+import { SchemaVersion, TabType } from '@/lib/enums'
+import { Campaign } from '@/schemas/campaign'
 import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { migrateCampaign } from '@/schemas/migrate'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
@@ -280,6 +281,27 @@ function MainPage(): ReactElement {
     setVersion(packageInfo.version)
   }
 
+  const loadTestData = async (version: SchemaVersion): Promise<void> => {
+    console.debug(`[MainPage] Loading Test Data for Version ${version}`)
+
+    const data =
+      version === SchemaVersion.V0_12_0
+        ? await import('../../__fixtures__/campaigns/0.12.0.json')
+        : version === SchemaVersion.V0_13_0
+          ? await import('../../__fixtures__/campaigns/0.13.0.json')
+          : version === SchemaVersion.V0_14_0
+            ? await import('../../__fixtures__/campaigns/0.14.0.json')
+            : null
+
+    if (!data) {
+      console.warn(`[MainPage] No Data Found for Version ${version}`)
+      return
+    }
+
+    updateCampaign(data as unknown as Campaign)
+    setVersion(data.version)
+  }
+
   return (
     <div className="[--header-height:calc(--spacing(10))] min-w-[450px]">
       <SidebarProvider className="flex flex-col">
@@ -304,6 +326,7 @@ function MainPage(): ReactElement {
               <MigrationAlertDialog
                 campaign={campaign}
                 current={migrationStatus.current}
+                loadTestData={loadTestData}
                 migrate={migrationStatus.migrate}
                 onConfirm={handleMigrationConfirm}
                 target={packageInfo.version}
@@ -316,6 +339,7 @@ function MainPage(): ReactElement {
                     <SettlementForm
                       campaign={campaign}
                       isCreatingNewSurvivor={isCreatingNewSurvivor}
+                      loadTestData={loadTestData}
                       saveSelectedHunt={saveSelectedHunt}
                       saveSelectedSettlement={saveSelectedSettlement}
                       saveSelectedShowdown={saveSelectedShowdown}

@@ -341,3 +341,13 @@ export enum MonsterNodeNumeric {
   /** Finale Monster */
   FI = 9
 }
+
+/** Campaign Data Schema Versions */
+export enum SchemaVersion {
+  /** Version 0.12.0 */
+  V0_12_0 = '0.12.0',
+  /** Version 0.13.0 */
+  V0_13_0 = '0.13.0',
+  /** Version 0.14.0 */
+  V0_14_0 = '0.14.0'
+}

@@ -31,6 +31,7 @@ import { CreateSurvivorForm } from '@/components/survivor/create-survivor-form'
 import { SurvivorCard } from '@/components/survivor/survivor-card'
 import {
   CampaignType,
+  SchemaVersion,
   SurvivorCardMode,
   SurvivorType,
   TabType
@@ -50,6 +51,8 @@ interface SettlementFormProps {
   campaign: Campaign
   /** New Survivor Being Created */
   isCreatingNewSurvivor: boolean
+  /** Callback to Load Test Campaign Data for Development */
+  loadTestData: (version: SchemaVersion) => Promise<void>
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
   /** Save Selected Settlement */
@@ -109,6 +112,7 @@ interface SettlementFormProps {
 export function SettlementForm({
   campaign,
   isCreatingNewSurvivor,
+  loadTestData,
   saveSelectedHunt,
   saveSelectedSettlement,
   saveSelectedShowdown,
@@ -408,6 +412,7 @@ export function SettlementForm({
           {selectedTab === 'settings' && (
             <SettingsCard
               campaign={campaign}
+              loadTestData={loadTestData}
               saveSelectedSettlement={saveSelectedSettlement}
               selectedHunt={selectedHunt}
               selectedSettlement={selectedSettlement}
