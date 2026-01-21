@@ -1,6 +1,7 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
+import { MigrationAlertDialog } from '@/components/migration-alert-dialog'
 import { SettlementForm } from '@/components/settlement/settlement-form'
 import { SiteHeader } from '@/components/side-header'
 import { Form } from '@/components/ui/form'
@@ -12,6 +13,7 @@ import { useSelectedShowdownSave } from '@/hooks/use-selected-showdown-save'
 import { useSelectedSurvivorSave } from '@/hooks/use-selected-survivor-save'
 import { TabType } from '@/lib/enums'
 import { Hunt, HuntSchema } from '@/schemas/hunt'
+import { migrateCampaign } from '@/schemas/migrate'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
 import { Showdown, ShowdownSchema } from '@/schemas/showdown'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
@@ -25,6 +27,7 @@ import {
   useState
 } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
+import packageInfo from '../../package.json'
 
 /**
  * Main Page Component
@@ -127,12 +130,15 @@ function MainPage(): ReactElement {
     setSelectedShowdownMonsterIndex,
     setSelectedSurvivor,
     setSelectedTab,
+    setVersion,
 
     updateCampaign,
     updateSelectedHunt,
     updateSelectedSettlement,
     updateSelectedShowdown,
-    updateSelectedSurvivor
+    updateSelectedSurvivor,
+
+    version
   } = useCampaign()
 
   const selectedHunt = useMemo(
@@ -208,6 +214,14 @@ function MainPage(): ReactElement {
     [selectedSurvivor]
   )
 
+  const migrationStatus = useMemo(
+    () => ({
+      migrate: version !== packageInfo.version,
+      current: version ?? '0.12.0'
+    }),
+    [version]
+  )
+
   // Initialize the form data from the context
   const huntForm = useForm<Hunt>(huntFormConfig)
   const settlementForm = useForm<Settlement>(settlementFormConfig)
@@ -257,6 +271,15 @@ function MainPage(): ReactElement {
     updateCampaign
   )
 
+  const handleMigrationConfirm = (): void => {
+    console.debug(
+      `[MainPage] Migration confirmed. Updating campaign version ${version} -> ${packageInfo.version}`
+    )
+
+    updateCampaign(migrateCampaign(campaign))
+    setVersion(packageInfo.version)
+  }
+
   return (
     <div className="[--header-height:calc(--spacing(10))] min-w-[450px]">
       <SidebarProvider className="flex flex-col">
@@ -277,6 +300,13 @@ function MainPage(): ReactElement {
             updateCampaign={updateCampaign}
           />
           <SidebarInset>
+            <MigrationAlertDialog
+              campaign={campaign}
+              current={migrationStatus.current}
+              migrate={migrationStatus.migrate}
+              onConfirm={handleMigrationConfirm}
+              target={packageInfo.version}
+            />
             <Form {...settlementForm}>
               <Form {...survivorForm}>
                 <Form {...huntForm}>

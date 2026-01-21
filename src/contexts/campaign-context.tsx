@@ -73,6 +73,8 @@ interface CampaignContextType {
   setSelectedSurvivor: (survivor: Survivor | null) => void
   /** Set Selected Tab */
   setSelectedTab: (tab: TabType) => void
+  /** Set Campaign Schema Version */
+  setVersion: (version: string) => void
 
   /** Set Survivors */
   setSurvivors: (survivors: Survivor[]) => void
@@ -89,6 +91,9 @@ interface CampaignContextType {
   updateSelectedShowdown: () => void
   /** Update Selected Survivor */
   updateSelectedSurvivor: () => void
+
+  /** Campaign Schema Version */
+  version: string
 }
 
 /**
@@ -164,6 +169,12 @@ export function CampaignProvider({
     useState<boolean>(false)
   const [isCreatingNewSurvivor, setIsCreatingNewSurvivor] =
     useState<boolean>(false)
+
+  // Note: 0.12.0 is the first version with the version field. If there is no
+  // version, assume 0.12.0
+  const [version, setVersionState] = useState<string>(
+    campaign.version ?? '0.12.0'
+  )
 
   /**
    * Set Selected Hunt
@@ -326,6 +337,23 @@ export function CampaignProvider({
   }
 
   /**
+   * Set Version
+   */
+  const setVersion = (v: string) => {
+    setVersionState(v)
+    setCampaignState((campaign) => {
+      const updatedCampaign = {
+        ...campaign,
+        version: v
+      }
+
+      saveCampaignToLocalStorage(updatedCampaign)
+
+      return updatedCampaign
+    })
+  }
+
+  /**
    * Update Campaign
    */
   const updateCampaign = (campaign: Campaign) => {
@@ -407,6 +435,7 @@ export function CampaignProvider({
         setSelectedSurvivor,
         setSelectedTab,
         setSurvivors,
+        setVersion,
 
         survivors: survivorsState,
 
@@ -414,7 +443,9 @@ export function CampaignProvider({
         updateSelectedHunt,
         updateSelectedSettlement,
         updateSelectedShowdown,
-        updateSelectedSurvivor
+        updateSelectedSurvivor,
+
+        version
       }}>
       {children}
     </CampaignContext.Provider>
