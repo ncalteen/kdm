@@ -47,7 +47,7 @@ jobs:
       # prettier-ignore
       - name: Restore Cache
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .next/cache
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
@@ -99,7 +99,7 @@ jobs:
 
       - name: Tag
         id: tag
-        uses: issue-ops/semver@v2
+        uses: issue-ops/semver@v3
         with:
           manifest-path: package.json
           workspace: ${{ github.workspace }}
@@ -107,6 +107,6 @@ jobs:
 
       - name: Create Release
         id: release
-        uses: issue-ops/releaser@v2
+        uses: issue-ops/releaser@v3
         with:
           tag: v${{ steps.tag.outputs.version }}
