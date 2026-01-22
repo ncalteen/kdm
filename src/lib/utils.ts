@@ -583,7 +583,7 @@ export function getOverwhelmingDarknessLabel(
 /**
  * Get the Survivors Color Choice
  *
- * @param selectedHuntOrShowdown Selected Hunt or Showdown
+ * @param campaign Campaign Data
  * @param survivorId Survivor ID
  * @returns Color Choice
  */
