@@ -337,6 +337,18 @@ export function CreateHuntCard({
       return toast.error(ERROR_MESSAGE())
     }
 
+    console.log('CreateHuntCard: Creating Hunt with Level Data:', levelData)
+    console.log(selectedQuarryData)
+
+    // Select the monster name based on the version and encounter type (multi-
+    // or single-monster)
+    const monsterName =
+      selectedMonsterVersion === MonsterVersion.ALTERNATE
+        ? selectedQuarryData.alternate?.name
+        : selectedMonsterVersion === MonsterVersion.VIGNETTE
+          ? selectedQuarryData.vignette?.name
+          : undefined
+
     const huntData: Hunt = {
       huntBoard: selectedQuarryData.huntBoard,
       id: getNextHuntId(campaign),
@@ -356,9 +368,9 @@ export function CreateHuntCard({
         moods: quarry.moods,
         movement: quarry.movement,
         movementTokens: quarry.movementTokens,
-        // For multi-monster encounters, use each sub-monster's name. Or, use
-        // the main monster name.
-        name: quarry.name ?? selectedQuarryData.name,
+        // If monsterName isn't defined, use the default quarry name (multi-
+        // monster), or the quarry data name (single monster)
+        name: monsterName ?? quarry.name ?? selectedQuarryData.name,
         notes: '',
         speed: quarry.speed,
         speedTokens: quarry.speedTokens,

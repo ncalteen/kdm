@@ -387,6 +387,15 @@ export function CreateShowdownCard({
       return toast.error(ERROR_MESSAGE())
     }
 
+    // Select the monster name based on the version and encounter type (multi-
+    // or single-monster)
+    const monsterName =
+      selectedMonsterVersion === MonsterVersion.ALTERNATE
+        ? (selectedMonsterData as QuarryMonsterData).alternate?.name
+        : selectedMonsterVersion === MonsterVersion.VIGNETTE
+          ? selectedMonsterData.vignette?.name
+          : undefined
+
     // Save as partial data that will be merged by the hook
     const showdownData: Showdown = {
       ambush: AmbushType.NONE,
@@ -407,9 +416,9 @@ export function CreateShowdownCard({
         moods: monster.moods,
         movement: monster.movement,
         movementTokens: monster.movementTokens,
-        // For multi-monster encounters, use each sub-monster's name. Or, use
-        // the main monster name.
-        name: monster.name ?? selectedMonsterData.name,
+        // If monsterName isn't defined, use the default quarry name (multi-
+        // monster), or the quarry data name (single monster)
+        name: monsterName ?? monster.name ?? selectedMonsterData.name,
         notes: '',
         speed: monster.speed,
         speedTokens: monster.speedTokens,
