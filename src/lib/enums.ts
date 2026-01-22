@@ -351,3 +351,13 @@ export enum SchemaVersion {
   /** Version 0.14.0 */
   V0_14_0 = '0.14.0'
 }
+
+/** Monster Versions */
+export enum MonsterVersion {
+  /** Original Monster */
+  ORIGINAL = 'original',
+  /** Alternate Monster */
+  ALTERNATE = 'alternate',
+  /** Vignette Monster */
+  VIGNETTE = 'vignette'
+}
