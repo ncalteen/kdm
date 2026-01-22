@@ -16,17 +16,13 @@ import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
 import { AmbushType, ColorChoice, TurnType } from '@/lib/enums'
 import { SHOWDOWN_TURN_MESSAGE } from '@/lib/messages'
-import {
-  getCardColorStyles,
-  getColorStyle,
-  getSurvivorColorChoice
-} from '@/lib/utils'
+import { getCardColorStyles, getColorStyle } from '@/lib/utils'
 import { Showdown } from '@/schemas/showdown'
 import { ShowdownMonsterTurnState } from '@/schemas/showdown-monster-turn-state'
 import { ShowdownSurvivorTurnState } from '@/schemas/showdown-survivor-turn-state'
 import { Survivor } from '@/schemas/survivor'
 import { CheckCircleIcon, SkullIcon, UsersIcon, ZapIcon } from 'lucide-react'
-import { MouseEvent, ReactElement, useCallback, useMemo } from 'react'
+import { ReactElement, useCallback, useMemo } from 'react'
 
 /**
  * Turn Card Properties
@@ -183,19 +179,10 @@ export function TurnCard({
    * Get Current Survivor Color
    */
   const currentColor = useMemo((): ColorChoice => {
-    if (isMonsterTurn || !selectedSurvivor?.id || !selectedShowdown)
-      return ColorChoice.SLATE
+    if (isMonsterTurn || !selectedSurvivor) return ColorChoice.SLATE
 
-    return getSurvivorColorChoice(selectedShowdown, selectedSurvivor.id)
-  }, [isMonsterTurn, selectedSurvivor?.id, selectedShowdown])
-
-  const handleMouseEnter = useCallback((e: MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
-  }, [])
-
-  const handleMouseLeave = useCallback((e: MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.borderColor = 'var(--card-border-color)'
-  }, [])
+    return selectedSurvivor.color
+  }, [isMonsterTurn, selectedSurvivor])
 
   return (
     <Card
@@ -203,9 +190,7 @@ export function TurnCard({
       style={{
         ...getCardColorStyles(currentColor),
         borderColor: 'var(--card-border-color)'
-      }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}>
+      }}>
       <CardHeader
         className="flex items-center gap-3 p-3 rounded-t-lg"
         style={{ backgroundColor: 'var(--card-header-bg)' }}>
