@@ -66,6 +66,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
   if (campaign.version === '0.13.0') migrateTo0_13_1(campaign)
   if (campaign.version === '0.13.1') migrateTo0_14_0(campaign)
   if (campaign.version === '0.14.0') migrateTo0_14_1(campaign)
+  if (campaign.version === '0.14.1') migrateTo0_14_2(campaign)
 
   return campaign
 }
@@ -680,4 +681,16 @@ function migrateTo0_14_1(campaign: Campaign) {
 
   // Do nothing, just update version
   campaign.version = '0.14.1'
+}
+
+/**
+ * Migration logic from version 0.14.1 to 0.14.2
+ *
+ * @param campaign Campaign to Migrate
+ */
+function migrateTo0_14_2(campaign: Campaign) {
+  console.log('Migrating to 0.14.2')
+
+  // Do nothing, just update version
+  campaign.version = '0.14.2'
 }
