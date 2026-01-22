@@ -34,7 +34,8 @@ import { NEMESES, QUARRIES } from '@/lib/monsters'
 import {
   getNemesisDataByName,
   getNextShowdownId,
-  getQuarryDataByName
+  getQuarryDataByName,
+  isVignetteMonsterUnlocked
 } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -687,7 +688,11 @@ export function CreateShowdownCard({
           ((selectedMonsterData as QuarryMonsterData)?.alternate?.[
             selectedMonsterLevel
           ] ||
-            selectedMonsterData?.vignette?.[selectedMonsterLevel]) && (
+            (selectedMonsterData?.vignette?.[selectedMonsterLevel] &&
+              isVignetteMonsterUnlocked(
+                campaign,
+                selectedMonsterData?.vignette?.name
+              ))) && (
             <div className="flex items-center justify-between">
               <Label className="text-left whitespace-nowrap min-w-[90px]">
                 Version

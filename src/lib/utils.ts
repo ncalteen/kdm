@@ -2,6 +2,9 @@
 
 import { ColorChoice, MonsterName, MonsterNode, MonsterType } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
+import { KILLENIUM_BUTCHER } from '@/lib/monsters/killenium-butcher'
+import { SCREAMING_NUKALOPE } from '@/lib/monsters/screaming-nukalope'
+import { WHITE_GIGALION } from '@/lib/monsters/white-gigalion'
 import { Campaign } from '@/schemas/campaign'
 import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { Hunt } from '@/schemas/hunt'
@@ -741,4 +744,43 @@ export const createSettlementQuarryFromData = (
   if (data.vignette) quarry.vignette = data.vignette
 
   return quarry
+}
+
+/**
+ * Check if Vignette Monster is Unlocked
+ *
+ * Checks the campaign data to confirm if a vignette monster has been unlocked.
+ *
+ * @param campaign Campaign
+ * @param monsterName Vignette Monster Name
+ * @returns Vignette Monster is Unlocked
+ */
+export const isVignetteMonsterUnlocked = (
+  campaign: Campaign,
+  monsterName: string | undefined
+): boolean => {
+  if (!monsterName) return false
+
+  // Killenium Butcher
+  if (
+    monsterName === KILLENIUM_BUTCHER.name &&
+    campaign.settings.unlockedMonsters.killeniumButcher
+  )
+    return true
+
+  // Screaming Nukalope
+  if (
+    monsterName === SCREAMING_NUKALOPE.name &&
+    campaign.settings.unlockedMonsters.screamingNukalope
+  )
+    return true
+
+  // White Gigalion
+  if (
+    monsterName === WHITE_GIGALION.name &&
+    campaign.settings.unlockedMonsters.whiteGigalion
+  )
+    return true
+
+  return false
 }
