@@ -7,13 +7,11 @@ import { SCREAMING_NUKALOPE } from '@/lib/monsters/screaming-nukalope'
 import { WHITE_GIGALION } from '@/lib/monsters/white-gigalion'
 import { Campaign } from '@/schemas/campaign'
 import { GlobalSettingsSchema } from '@/schemas/global-settings'
-import { Hunt } from '@/schemas/hunt'
 import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
 import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 import { SettlementNemesis } from '@/schemas/settlement-nemesis'
 import { SettlementQuarry } from '@/schemas/settlement-quarry'
 import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
-import { Showdown } from '@/schemas/showdown'
 import { clsx, type ClassValue } from 'clsx'
 import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -585,23 +583,20 @@ export function getOverwhelmingDarknessLabel(
 /**
  * Get the Survivors Color Choice
  *
- * @param selectedHuntOrShowdown Selected Hunt or Showdown
+ * @param campaign Campaign Data
  * @param survivorId Survivor ID
  * @returns Color Choice
  */
 export function getSurvivorColorChoice(
-  selectedHuntOrShowdown: Partial<Hunt> | Partial<Showdown> | null,
+  campaign: Campaign,
   survivorId: number | undefined
 ): ColorChoice {
   if (!survivorId) return ColorChoice.SLATE
 
-  if (!selectedHuntOrShowdown?.survivorDetails) return ColorChoice.SLATE
-
-  const survivorDetail = selectedHuntOrShowdown.survivorDetails.find(
-    (sd) => sd.id === survivorId
+  return (
+    campaign.survivors.find((survivor) => survivorId === survivor.id)?.color ||
+    ColorChoice.SLATE
   )
-
-  return survivorDetail?.color || ColorChoice.SLATE
 }
 
 /**

@@ -1,6 +1,5 @@
 'use client'
 
-import { ColorChoice } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
@@ -15,8 +14,6 @@ export const ShowdownSurvivorDetailsSchema = z.object({
   bleedingTokens: z.number().int().min(0).default(0),
   /** Block Tokens */
   blockTokens: z.number().int().min(0).default(0),
-  /** Survivor Color Code */
-  color: z.enum(ColorChoice).default(ColorChoice.SLATE),
   /** Deflect Tokens */
   deflectTokens: z.number().int().min(0).default(0),
   /** Evasion Tokens */

@@ -111,10 +111,7 @@ export function HuntSurvivorsCard({
 
         <div className="survivor_carousel_dots">
           {filteredSurvivors?.map((survivor, index) => {
-            const survivorColor = getSurvivorColorChoice(
-              selectedHunt,
-              survivor.id
-            )
+            const survivorColor = getSurvivorColorChoice(campaign, survivor.id)
             const isSelected = index === currentIndex
 
             return (

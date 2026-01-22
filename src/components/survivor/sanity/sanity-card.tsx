@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
+import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
   INSANITY_MINIMUM_ERROR_MESSAGE,
   SURVIVOR_ATTRIBUTE_TOKEN_UPDATED_MESSAGE,
@@ -108,7 +108,6 @@ export function SanityCard({
             accuracyTokens: 0,
             bleedingTokens: 0,
             blockTokens: 0,
-            color: ColorChoice.SLATE,
             deflectTokens: 0,
             evasionTokens: 0,
             id: selectedSurvivor.id!,
@@ -154,7 +153,6 @@ export function SanityCard({
           ...currentDetails,
           {
             accuracyTokens: 0,
-            color: ColorChoice.SLATE,
             evasionTokens: 0,
             id: selectedSurvivor.id!,
             insanityTokens: value,
@@ -185,7 +183,6 @@ export function SanityCard({
         accuracyTokens: 0,
         bleedingTokens: 0,
         blockTokens: 0,
-        color: ColorChoice.SLATE,
         deflectTokens: 0,
         evasionTokens: 0,
         id: 0,
@@ -208,7 +205,6 @@ export function SanityCard({
         (sd) => sd.id === selectedSurvivor?.id
       ) || {
         accuracyTokens: 0,
-        color: ColorChoice.SLATE,
         evasionTokens: 0,
         id: 0,
         insanityTokens: 0,

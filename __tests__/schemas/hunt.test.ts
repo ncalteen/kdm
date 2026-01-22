@@ -1,5 +1,5 @@
 import { basicHuntBoard } from '@/lib/common'
-import { ColorChoice, MonsterLevel, MonsterType } from '@/lib/enums'
+import { MonsterLevel, MonsterType } from '@/lib/enums'
 import { HuntSchema } from '@/schemas/hunt'
 import { HuntMonsterSchema } from '@/schemas/hunt-monster'
 import { HuntSurvivorDetailsSchema } from '@/schemas/hunt-survivor-details'
@@ -51,7 +51,6 @@ describe('HuntSurvivorDetailsSchema', () => {
     it('should validate with all fields populated', () => {
       const result = HuntSurvivorDetailsSchema.safeParse({
         accuracyTokens: 2,
-        color: ColorChoice.RED,
         evasionTokens: 1,
         id: 5,
         insanityTokens: 3,

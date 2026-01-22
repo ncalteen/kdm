@@ -5,18 +5,10 @@ import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { ColorChoice, SurvivorCardMode } from '@/lib/enums'
-import {
-  SHOWDOWN_NOTES_SAVED_MESSAGE,
-  SURVIVOR_COLOR_CHANGED_MESSAGE
-} from '@/lib/messages'
+import { SHOWDOWN_NOTES_SAVED_MESSAGE } from '@/lib/messages'
 import { getCardColorStyles, getColorStyle } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -61,8 +53,6 @@ export function ShowdownSurvivorCard({
   selectedShowdown,
   selectedSurvivor
 }: ShowdownSurvivorCardProps): ReactElement {
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
-
   // Get current survivor's showdown details
   const survivorShowdownDetails = selectedShowdown?.survivorDetails?.find(
     (detail) => detail.id === selectedSurvivor?.id
@@ -83,42 +73,6 @@ export function ShowdownSurvivorCard({
   useEffect(() => {
     if (selectedSurvivor) form.reset(selectedSurvivor)
   }, [selectedSurvivor, form])
-
-  /**
-   * Update Survivor Color
-   */
-  const updateSurvivorColor = (color: ColorChoice) => {
-    if (!selectedSurvivor?.id || !selectedShowdown) return
-
-    const currentDetails = selectedShowdown.survivorDetails || []
-    const survivorDetail = currentDetails.find(
-      (sd) => sd.id === selectedSurvivor?.id
-    )
-    const updatedDetails = currentDetails.filter(
-      (sd) => sd.id !== selectedSurvivor?.id
-    )
-
-    updatedDetails.push({ ...survivorDetail!, color })
-
-    saveSelectedShowdown(
-      { survivorDetails: updatedDetails },
-      SURVIVOR_COLOR_CHANGED_MESSAGE(color)
-    )
-  }
-
-  /**
-   * Get Current Survivor Color
-   */
-  const getCurrentColor = (): ColorChoice => {
-    if (!selectedSurvivor?.id || !selectedShowdown?.survivorDetails)
-      return ColorChoice.SLATE
-
-    const survivorDetail = selectedShowdown.survivorDetails.find(
-      (sc) => sc.id === selectedSurvivor.id
-    )
-
-    return survivorDetail?.color || ColorChoice.SLATE
-  }
 
   /**
    * Handle Save Notes
@@ -145,64 +99,27 @@ export function ShowdownSurvivorCard({
 
   return (
     <Card
-      className="w-full min-w-[430px] flex-grow-2 border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
+      className="w-full min-w-[430px] border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
       style={{
-        ...getCardColorStyles(getCurrentColor()),
+        ...getCardColorStyles(selectedSurvivor?.color || ColorChoice.SLATE),
         borderColor: 'var(--card-border-color)'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'var(--card-border-hover-color)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--card-border-color)'
       }}>
       <CardHeader
-        className="flex items-center gap-3 p-3 rounded-t-lg border-b"
+        className="flex items-center gap-3 p-2 rounded-t-lg"
         style={{ backgroundColor: 'var(--card-header-bg)' }}>
-        <Popover open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
-          <PopoverTrigger asChild>
-            {/* Header with Avatar and Name */}
-            <Avatar
-              className={`h-12 w-12 border-2 ${getColorStyle(getCurrentColor(), 'bg')} items-center justify-center cursor-pointer`}
-              onClick={() => setIsColorPickerOpen(true)}
-              onContextMenu={(e) => {
-                e.preventDefault() // Prevent default right-click menu
-                setIsColorPickerOpen(true)
-              }}>
-              <AvatarFallback className="font-bold text-lg text-white">
-                {selectedSurvivor.name
-                  ? selectedSurvivor.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')
-                      .slice(0, 2)
-                  : '??'}
-              </AvatarFallback>
-            </Avatar>
-          </PopoverTrigger>
-          <PopoverContent className="w-64 p-2">
-            <div className="grid grid-cols-6 gap-1">
-              {Object.values(ColorChoice).map((color) => {
-                const isSelected = getCurrentColor() === color
-                return (
-                  <button
-                    key={color}
-                    className={`h-8 w-8 rounded-full border-2 ${getColorStyle(color, 'bg')} ${
-                      isSelected
-                        ? 'border-white ring-2 ring-black'
-                        : 'border-gray-300 hover:border-white'
-                    } transition-all duration-200`}
-                    onClick={() => {
-                      updateSurvivorColor(color)
-                      setIsColorPickerOpen(false)
-                    }}
-                    title={color.charAt(0).toUpperCase() + color.slice(1)}
-                  />
-                )
-              })}
-            </div>
-          </PopoverContent>
-        </Popover>
+        {/* Header with Avatar and Name */}
+        <Avatar
+          className={`h-12 w-12 border-2 ${getColorStyle(selectedSurvivor?.color || ColorChoice.SLATE, 'bg')} items-center justify-center cursor-pointer`}>
+          <AvatarFallback className="font-bold text-lg text-white">
+            {selectedSurvivor.name
+              ? selectedSurvivor.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .slice(0, 2)
+              : '??'}
+          </AvatarFallback>
+        </Avatar>
 
         <div className="text-left flex-1 min-w-0">
           <div className="font-semibold text-sm truncate">

@@ -1197,6 +1197,7 @@ function createSurvivorsForSettlement(
       canSpendSurvival: true,
       canSurge: false,
       canUseFightingArtsOrKnowledges: true,
+      color: isExperienced ? ColorChoice.BLUE : ColorChoice.SLATE,
       courage: isExperienced ? 3 : 0,
       cursedGear: isExperienced ? ['Cursed Sword'] : [],
       dead: isDead,
@@ -1394,7 +1395,6 @@ function createHunt(
     settlementId,
     survivorDetails: survivors.map((survivorId, index) => ({
       accuracyTokens: 0,
-      color: colors[index],
       evasionTokens: 0,
       id: survivorId,
       insanityTokens: 0,
@@ -1459,7 +1459,6 @@ function createShowdown(
       accuracyTokens: 0,
       bleedingTokens: 0,
       blockTokens: 0,
-      color: colors[index],
       deflectTokens: 0,
       evasionTokens: 0,
       id: survivorId,

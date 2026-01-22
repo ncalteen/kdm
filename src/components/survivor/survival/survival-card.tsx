@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
+import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
   SURVIVAL_LIMIT_EXCEEDED_ERROR_MESSAGE,
   SURVIVAL_MINIMUM_ERROR_MESSAGE,
@@ -113,7 +113,6 @@ export function SurvivalCard({
             accuracyTokens: 0,
             bleedingTokens: 0,
             blockTokens: 0,
-            color: ColorChoice.SLATE,
             deflectTokens: 0,
             evasionTokens: 0,
             id: selectedSurvivor.id,
@@ -159,7 +158,6 @@ export function SurvivalCard({
           ...currentDetails,
           {
             accuracyTokens: 0,
-            color: ColorChoice.SLATE,
             evasionTokens: 0,
             id: selectedSurvivor.id,
             insanityTokens: 0,
@@ -190,7 +188,6 @@ export function SurvivalCard({
         accuracyTokens: 0,
         bleedingTokens: 0,
         blockTokens: 0,
-        color: ColorChoice.SLATE,
         deflectTokens: 0,
         evasionTokens: 0,
         id: 0,
@@ -213,7 +210,6 @@ export function SurvivalCard({
         (sd) => sd.id === selectedSurvivor?.id
       ) || {
         accuracyTokens: 0,
-        color: ColorChoice.SLATE,
         evasionTokens: 0,
         id: 0,
         insanityTokens: 0,

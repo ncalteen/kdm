@@ -16,13 +16,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import {
-  AmbushType,
-  ColorChoice,
-  MonsterLevel,
-  MonsterVersion,
-  TurnType
-} from '@/lib/enums'
+import { AmbushType, MonsterLevel, MonsterVersion, TurnType } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
   HUNT_ALREADY_ACTIVE_ERROR_MESSAGE,
@@ -332,7 +326,6 @@ export function CreateShowdownCard({
         accuracyTokens: 0,
         bleedingTokens: 0,
         blockTokens: 0,
-        color: ColorChoice.SLATE,
         deflectTokens: 0,
         evasionTokens: 0,
         id: survivorId,
@@ -353,7 +346,6 @@ export function CreateShowdownCard({
         accuracyTokens: 0,
         bleedingTokens: 0,
         blockTokens: 0,
-        color: ColorChoice.SLATE,
         deflectTokens: 0,
         evasionTokens: 0,
         id: selectedScout,

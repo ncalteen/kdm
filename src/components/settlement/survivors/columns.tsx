@@ -11,9 +11,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TabType } from '@/lib/enums'
+import { getColorStyle } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
@@ -159,7 +161,12 @@ export const createColumns = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <div className="text-left text-sm pl-2">{row.getValue('name')}</div>
+          <div className="text-left text-sm pl-2 flex gap-2 items-center">
+            <Avatar
+              className={`h-6 w-6 ${getColorStyle(row.original.color, 'bg')}`}
+            />
+            {row.getValue('name')}
+          </div>
         </div>
       ),
       sortingFn: (rowA, rowB, columnId) => {

@@ -21,7 +21,8 @@ import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
 import { Card, CardContent } from '@/components/ui/card'
-import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
+import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
+import { getCardColorStyles } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
@@ -66,7 +67,12 @@ export function SurvivorCard({
   selectedSurvivor
 }: SurvivorCardProps): ReactElement {
   return (
-    <Card className="w-full py-2 border-0 bg-secondary">
+    <Card
+      className="w-full min-w-[430px] border-2 rounded-xl py-2 gap-2 transition-all duration-200 hover:shadow-lg bg-secondary"
+      style={{
+        ...getCardColorStyles(selectedSurvivor?.color || ColorChoice.SLATE),
+        borderColor: 'var(--card-border-color)'
+      }}>
       <CardContent className="px-2">
         <div className="flex flex-col xl:flex-row xl:flex-wrap gap-2 w-full">
           {/* First Column - Essential Stats */}
