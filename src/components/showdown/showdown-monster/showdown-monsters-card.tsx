@@ -59,7 +59,7 @@ export function ShowdownMonstersCard({
   }
 
   return (
-    <div className="p-0">
+    <div className="p-0 w-full">
       {selectedShowdown && selectedShowdown.monsters.length > 1 && (
         <div className="monster_carousel_controls pb-2">
           <div className="monster_carousel_buttons">
