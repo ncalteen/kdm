@@ -96,7 +96,7 @@ export function HuntSurvivorCard({
 
   return (
     <Card
-      className="w-full min-w-[430px] flex-grow-2 border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
+      className="w-full min-w-[430px] border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
       style={{
         ...getCardColorStyles(selectedSurvivor.color),
         borderColor: 'var(--card-border-color)'
