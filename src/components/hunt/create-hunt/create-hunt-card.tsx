@@ -215,6 +215,9 @@ export function CreateHuntCard({
 
     // Reset the version selection
     setSelectedMonsterVersion(MonsterVersion.ORIGINAL)
+
+    // Reset the monster index
+    setSelectedHuntMonsterIndex(0)
   }
 
   /**
@@ -254,6 +257,7 @@ export function CreateHuntCard({
    */
   const handleMonsterVersionSelection = (version: MonsterVersion) => {
     setSelectedMonsterVersion(version)
+    setSelectedHuntMonsterIndex(0)
   }
 
   /**
