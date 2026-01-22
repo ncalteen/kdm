@@ -187,11 +187,8 @@ export function CreateHuntCard({
         'CreateHuntCard: Monster Data Not Found for Quarry:',
         quarryName
       )
-      toast.error(ERROR_MESSAGE())
-      return
+      return toast.error(ERROR_MESSAGE())
     }
-
-    setSelectedQuarryData(quarryData)
 
     // Determine which levels are available for this monster.
     const levels: MonsterLevel[] = []
@@ -210,13 +207,9 @@ export function CreateHuntCard({
       selectedMonsterLevel && levels.includes(selectedMonsterLevel)
     const levelToUse = currentLevelValid ? selectedMonsterLevel : levels[0]
 
-    if (!levelToUse) return
+    setSelectedQuarryData(quarryData)
     setSelectedMonsterLevel(levelToUse)
-
-    // Reset the version selection
     setSelectedMonsterVersion(MonsterVersion.ORIGINAL)
-
-    // Reset the monster index
     setSelectedHuntMonsterIndex(0)
   }
 
@@ -410,7 +403,7 @@ export function CreateHuntCard({
    * vignette).
    *
    * @param path Property Path (string or array)
-   * @param value New value to set
+   * @param value New Value
    */
   const updateSelectedMonsterProperty = <T,>(
     path: string | string[],
@@ -616,10 +609,8 @@ export function CreateHuntCard({
          * Only show if the selected monster has alternate or vignette versions
          * for the selected level.
          */}
-        {((selectedQuarryData?.alternate &&
-          selectedMonsterLevel in selectedQuarryData.alternate) ||
-          (selectedQuarryData?.vignette &&
-            selectedMonsterLevel in selectedQuarryData.vignette)) && (
+        {(selectedQuarryData?.alternate?.[selectedMonsterLevel] ||
+          selectedQuarryData?.vignette?.[selectedMonsterLevel]) && (
           <div className="flex items-center justify-between">
             <Label className="text-left whitespace-nowrap min-w-[90px]">
               Version
