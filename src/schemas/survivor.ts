@@ -1,6 +1,6 @@
 'use client'
 
-import { Gender, Philosophy, WeaponType } from '@/lib/enums'
+import { ColorChoice, Gender, Philosophy, WeaponType } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
@@ -32,6 +32,8 @@ export const BaseSurvivorSchema = z.object({
   canSurge: z.boolean().default(false),
   /** Can Use Fighting Arts or Knowledges */
   canUseFightingArtsOrKnowledges: z.boolean().default(true),
+  /** Survivor Color Code */
+  color: z.enum(ColorChoice).default(ColorChoice.SLATE),
   /** Courage */
   courage: z
     .number()

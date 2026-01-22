@@ -1197,6 +1197,7 @@ function createSurvivorsForSettlement(
       canSpendSurvival: true,
       canSurge: false,
       canUseFightingArtsOrKnowledges: true,
+      color: isExperienced ? ColorChoice.BLUE : ColorChoice.SLATE,
       courage: isExperienced ? 3 : 0,
       cursedGear: isExperienced ? ['Cursed Sword'] : [],
       dead: isDead,

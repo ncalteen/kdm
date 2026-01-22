@@ -1,5 +1,6 @@
 import { basicHuntBoard } from '@/lib/common'
 import {
+  ColorChoice,
   MonsterLevel,
   MonsterNode,
   MonsterType,
@@ -67,6 +68,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
   if (campaign.version === '0.13.1') migrateTo0_14_0(campaign)
   if (campaign.version === '0.14.0') migrateTo0_14_1(campaign)
   if (campaign.version === '0.14.1') migrateTo0_14_2(campaign)
+  if (campaign.version === '0.14.2') migrateTo0_15_0(campaign)
 
   return campaign
 }
@@ -420,6 +422,7 @@ function migrateTo0_14_0(campaign: Campaign) {
       settlementId: hunt.settlementId,
       survivorDetails: hunt.survivorDetails.map((details) => ({
         accuracyTokens: details.accuracyTokens,
+        // @ts-expect-error -- Old Schema
         color: details.color,
         evasionTokens: details.evasionTokens,
         id: details.id,
@@ -640,6 +643,7 @@ function migrateTo0_14_0(campaign: Campaign) {
         accuracyTokens: details.accuracyTokens,
         bleedingTokens: details.bleedingTokens,
         blockTokens: details.blockTokens,
+        // @ts-expect-error -- Old Schema
         color: details.color,
         deflectTokens: details.deflectTokens,
         evasionTokens: details.evasionTokens,
@@ -693,4 +697,42 @@ function migrateTo0_14_2(campaign: Campaign) {
 
   // Do nothing, just update version
   campaign.version = '0.14.2'
+}
+
+/**
+ * Migration logic from version 0.14.2 to 0.15.0
+ *
+ * @param campaign Campaign to Migrate
+ */
+function migrateTo0_15_0(campaign: Campaign) {
+  console.log('Migrating to 0.15.0')
+
+  for (const settlement of campaign.settlements || []) {
+    for (const survivor of (campaign.survivors || []).filter(
+      (survivor) => survivor.settlementId === settlement.id
+    )) {
+      // Check if the survivor is on a hunt or showdown
+      const hunt = (campaign.hunts || []).find(
+        (hunt) =>
+          hunt.settlementId === settlement.id &&
+          hunt.survivors.includes(survivor.id)
+      )
+      const showdown = (campaign.showdowns || []).find(
+        (showdown) =>
+          showdown.settlementId === settlement.id &&
+          showdown.survivors.includes(survivor.id)
+      )
+
+      // If there is no hunt or showdown, set the default color.
+      // prettier-ignore
+      // @ts-expect-error -- Old Schema
+      survivor.color = hunt?.survivorDetails.find((details) => details.id === survivor.id)?.color
+        // @ts-expect-error -- Old Schema
+        ?? showdown?.survivorDetails.find((details) => details.id === survivor.id)?.color
+        ?? ColorChoice.SLATE
+    }
+  }
+
+  // Migration complete. Update version.
+  campaign.version = '0.15.0'
 }
