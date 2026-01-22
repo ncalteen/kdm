@@ -30,7 +30,11 @@ import {
   SHOWDOWN_ALREADY_ACTIVE_ERROR_MESSAGE
 } from '@/lib/messages'
 import { QUARRIES } from '@/lib/monsters'
-import { getNextHuntId, getQuarryDataByName } from '@/lib/utils'
+import {
+  getNextHuntId,
+  getQuarryDataByName,
+  isVignetteMonsterUnlocked
+} from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { HuntSurvivorDetails } from '@/schemas/hunt-survivor-details'
@@ -337,9 +341,6 @@ export function CreateHuntCard({
       return toast.error(ERROR_MESSAGE())
     }
 
-    console.log('CreateHuntCard: Creating Hunt with Level Data:', levelData)
-    console.log(selectedQuarryData)
-
     // Select the monster name based on the version and encounter type (multi-
     // or single-monster)
     const monsterName =
@@ -621,40 +622,45 @@ export function CreateHuntCard({
          * Only show if the selected monster has alternate or vignette versions
          * for the selected level.
          */}
-        {(selectedQuarryData?.alternate?.[selectedMonsterLevel] ||
-          selectedQuarryData?.vignette?.[selectedMonsterLevel]) && (
-          <div className="flex items-center justify-between">
-            <Label className="text-left whitespace-nowrap min-w-[90px]">
-              Version
-            </Label>
+        {selectedQuarryData &&
+          (selectedQuarryData.alternate?.[selectedMonsterLevel] ||
+            (selectedQuarryData.vignette?.[selectedMonsterLevel] &&
+              isVignetteMonsterUnlocked(
+                campaign,
+                selectedQuarryData.vignette?.name
+              ))) && (
+            <div className="flex items-center justify-between">
+              <Label className="text-left whitespace-nowrap min-w-[90px]">
+                Version
+              </Label>
 
-            <Select
-              value={selectedMonsterVersion}
-              onValueChange={(value) =>
-                handleMonsterVersionSelection(value as MonsterVersion)
-              }>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choose version..." />
-              </SelectTrigger>
+              <Select
+                value={selectedMonsterVersion}
+                onValueChange={(value) =>
+                  handleMonsterVersionSelection(value as MonsterVersion)
+                }>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose version..." />
+                </SelectTrigger>
 
-              <SelectContent>
-                <SelectItem value={MonsterVersion.ORIGINAL}>
-                  {selectedQuarryData.name}
-                </SelectItem>
-                {selectedQuarryData.alternate && (
-                  <SelectItem value={MonsterVersion.ALTERNATE}>
-                    {selectedQuarryData.alternate.name} (Alternate)
+                <SelectContent>
+                  <SelectItem value={MonsterVersion.ORIGINAL}>
+                    {selectedQuarryData.name}
                   </SelectItem>
-                )}
-                {selectedQuarryData.vignette && (
-                  <SelectItem value={MonsterVersion.VIGNETTE}>
-                    {selectedQuarryData.vignette.name} (Vignette)
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+                  {selectedQuarryData.alternate && (
+                    <SelectItem value={MonsterVersion.ALTERNATE}>
+                      {selectedQuarryData.alternate.name} (Alternate)
+                    </SelectItem>
+                  )}
+                  {selectedQuarryData.vignette && (
+                    <SelectItem value={MonsterVersion.VIGNETTE}>
+                      {selectedQuarryData.vignette.name} (Vignette)
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
         <Separator className="my-2" />
 

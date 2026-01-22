@@ -685,13 +685,13 @@ export function CreateShowdownCard({
          * for the selected level.
          */}
         {selectedMonsterData &&
-          ((selectedMonsterData as QuarryMonsterData)?.alternate?.[
+          ((selectedMonsterData as QuarryMonsterData).alternate?.[
             selectedMonsterLevel
           ] ||
-            (selectedMonsterData?.vignette?.[selectedMonsterLevel] &&
+            (selectedMonsterData.vignette?.[selectedMonsterLevel] &&
               isVignetteMonsterUnlocked(
                 campaign,
-                selectedMonsterData?.vignette?.name
+                selectedMonsterData.vignette?.name
               ))) && (
             <div className="flex items-center justify-between">
               <Label className="text-left whitespace-nowrap min-w-[90px]">
