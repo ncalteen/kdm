@@ -349,7 +349,11 @@ export enum SchemaVersion {
   /** Version 0.13.0 */
   V0_13_0 = '0.13.0',
   /** Version 0.14.0 */
-  V0_14_0 = '0.14.0'
+  V0_14_0 = '0.14.0',
+  /** Version 0.14.0 */
+  V0_14_1 = '0.14.1',
+  /** Version 0.14.0 */
+  V0_14_2 = '0.14.2'
 }
 
 /** Monster Versions */

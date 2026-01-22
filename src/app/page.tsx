@@ -284,14 +284,20 @@ function MainPage(): ReactElement {
   const loadTestData = async (version: SchemaVersion): Promise<void> => {
     console.debug(`[MainPage] Loading Test Data for Version ${version}`)
 
-    const data =
-      version === SchemaVersion.V0_12_0
-        ? await import('../../__fixtures__/campaigns/0.12.0.json')
-        : version === SchemaVersion.V0_13_0
-          ? await import('../../__fixtures__/campaigns/0.13.0.json')
-          : version === SchemaVersion.V0_14_0
-            ? await import('../../__fixtures__/campaigns/0.14.0.json')
-            : null
+    const data = await (async () => {
+      switch (version) {
+        case SchemaVersion.V0_12_0:
+          return await import('../../__fixtures__/campaigns/0.12.0.json')
+        case SchemaVersion.V0_13_0:
+          return await import('../../__fixtures__/campaigns/0.13.0.json')
+        case SchemaVersion.V0_14_0:
+        case SchemaVersion.V0_14_1:
+        case SchemaVersion.V0_14_2:
+          return await import('../../__fixtures__/campaigns/0.14.0.json')
+        default:
+          return null
+      }
+    })()
 
     if (!data) {
       console.warn(`[MainPage] No Data Found for Version ${version}`)
