@@ -364,7 +364,7 @@ export function ShowdownMonsterCard({
       <CardContent className="p-2 py-0 mt-0">
         <div className="flex flex-col lg:flex-row lg:gap-2">
           {/* Column: Base Stats and Attributes */}
-          <div className="flex flex-col flex-1">
+          <div className="flex flex-col flex-1 max-w-[400px]">
             <ShowdownMonsterBaseStats
               monster={selectedShowdown.monsters[selectedShowdownMonsterIndex]}
               saveMonsterData={saveMonsterData}

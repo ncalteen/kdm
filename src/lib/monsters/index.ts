@@ -1,5 +1,6 @@
 import { ATNAS } from '@/lib/monsters/atnas'
 import { BLACK_KNIGHT } from '@/lib/monsters/black-knight'
+import { BULLFROGDOG } from '@/lib/monsters/bullfrogdog'
 import { BUTCHER } from '@/lib/monsters/butcher'
 import { CRIMSON_CROCODILE } from '@/lib/monsters/crimson-crocodile'
 import { DRAGON_KING } from '@/lib/monsters/dragon-king'
@@ -24,12 +25,14 @@ import { PARIAH } from '@/lib/monsters/pariah'
 import { PHOENIX } from '@/lib/monsters/phoenix'
 import { RED_WITCHES } from '@/lib/monsters/red-witches'
 import { SCREAMING_ANTELOPE } from '@/lib/monsters/screaming-antelope'
+import { SCREAMING_NUKALOPE } from '@/lib/monsters/screaming-nukalope'
 import { SLENDERMAN } from '@/lib/monsters/slenderman'
 import { SMOG_SINGERS } from '@/lib/monsters/smog-singers'
 import { SPIDICULES } from '@/lib/monsters/spidicules'
 import { SUNSTALKER } from '@/lib/monsters/sunstalker'
 import { TYRANT } from '@/lib/monsters/tyrant'
 import { WATCHER } from '@/lib/monsters/watcher'
+import { WHITE_GIGALION } from '@/lib/monsters/white-gigalion'
 import { WHITE_LION } from '@/lib/monsters/white-lion'
 import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
 import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
@@ -89,7 +92,7 @@ export const QUARRIES: { [key: string]: QuarryMonsterData } = {
   /** Flower Knight */
   FLOWER_KNIGHT,
   /** Frogdog */
-  FROGDOG,
+  FROGDOG: { ...FROGDOG, alternate: BULLFROGDOG },
   /** Gorm */
   GORM,
   /** King */
@@ -99,7 +102,7 @@ export const QUARRIES: { [key: string]: QuarryMonsterData } = {
   /** Phoenix */
   PHOENIX,
   /** Screaming Antelope */
-  SCREAMING_ANTELOPE,
+  SCREAMING_ANTELOPE: { ...SCREAMING_ANTELOPE, vignette: SCREAMING_NUKALOPE },
   /** Smog Singers */
   SMOG_SINGERS,
   /** Spidicules */
@@ -107,5 +110,5 @@ export const QUARRIES: { [key: string]: QuarryMonsterData } = {
   /** Sunstalker */
   SUNSTALKER,
   /** White Lion */
-  WHITE_LION
+  WHITE_LION: { ...WHITE_LION, vignette: WHITE_GIGALION }
 }
