@@ -122,10 +122,7 @@ export function ShowdownSurvivorsCard({
 
         <div className="survivor_carousel_dots">
           {filteredSurvivors?.map((survivor, index) => {
-            const survivorColor = getSurvivorColorChoice(
-              selectedShowdown,
-              survivor.id
-            )
+            const survivorColor = getSurvivorColorChoice(campaign, survivor.id)
             const isSelected = index === currentIndex
 
             return (
