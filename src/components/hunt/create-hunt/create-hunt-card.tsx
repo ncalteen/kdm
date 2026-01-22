@@ -16,12 +16,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import {
-  ColorChoice,
-  MonsterLevel,
-  MonsterType,
-  MonsterVersion
-} from '@/lib/enums'
+import { MonsterLevel, MonsterType, MonsterVersion } from '@/lib/enums'
 import {
   ERROR_MESSAGE,
   HUNT_BEGINS_MESSAGE,
@@ -295,7 +290,6 @@ export function CreateHuntCard({
     const survivorDetails: HuntSurvivorDetails[] = selectedSurvivors.map(
       (survivorId) => ({
         accuracyTokens: 0,
-        color: ColorChoice.SLATE,
         evasionTokens: 0,
         id: survivorId,
         insanityTokens: 0,
@@ -311,7 +305,6 @@ export function CreateHuntCard({
     if (selectedScout)
       survivorDetails.push({
         accuracyTokens: 0,
-        color: ColorChoice.SLATE,
         evasionTokens: 0,
         id: selectedScout,
         insanityTokens: 0,

@@ -1,10 +1,4 @@
-import {
-  AmbushType,
-  ColorChoice,
-  MonsterLevel,
-  MonsterType,
-  TurnType
-} from '@/lib/enums'
+import { AmbushType, MonsterLevel, MonsterType, TurnType } from '@/lib/enums'
 import { ShowdownSchema } from '@/schemas/showdown'
 import { ShowdownMonsterSchema } from '@/schemas/showdown-monster'
 import { ShowdownMonsterTurnStateSchema } from '@/schemas/showdown-monster-turn-state'
@@ -60,7 +54,6 @@ describe('ShowdownSurvivorDetailsSchema', () => {
         accuracyTokens: 2,
         bleedingTokens: 3,
         blockTokens: 1,
-        color: ColorChoice.BLUE,
         deflectTokens: 2,
         evasionTokens: 1,
         id: 5,

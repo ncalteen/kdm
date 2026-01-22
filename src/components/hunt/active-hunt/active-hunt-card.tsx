@@ -219,7 +219,6 @@ export function ActiveHuntCard({
             accuracyTokens: survivor.accuracyTokens,
             bleedingTokens: 0,
             blockTokens: 0,
-            color: survivor.color,
             deflectTokens: 0,
             evasionTokens: survivor.evasionTokens,
             id: survivor.id,
