@@ -1473,6 +1473,14 @@ export const SURVIVOR_DISORDER_UPDATED_MESSAGE = (isNew = false) =>
     : 'The disorder has been updated.'
 
 /**
+ * Survivor Disposition Updated
+ *
+ * @returns Survivor Disposition Updated Message
+ */
+export const SURVIVOR_DISPOSITION_UPDATED_MESSAGE = () =>
+  "The wanderer's disposition shifts."
+
+/**
  * Survivor Evasion Updated
  *
  * @returns Survivor Evasion Updated Message
