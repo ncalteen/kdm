@@ -7,6 +7,7 @@ import {
 } from '@/lib/campaigns/common'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { CampaignTemplate } from '@/lib/types'
+import { LUCK } from '@/lib/wanderers/luck'
 
 /**
  * People of the Dream Keeper Campaign Template
@@ -119,10 +120,7 @@ export const PeopleOfTheDreamKeeper: CampaignTemplate = {
     // Year 22
     { completed: false, entries: [] },
     // Year 23
-    {
-      completed: false,
-      entries: ['Wanderer - Luck']
-    },
+    { completed: false, entries: [] },
     // Year 24
     { completed: false, entries: [] },
     // Year 25
@@ -157,5 +155,6 @@ export const PeopleOfTheDreamKeeper: CampaignTemplate = {
     { completed: false, entries: [] },
     // Year 40
     { completed: false, entries: [] }
-  ]
+  ],
+  wanderers: [LUCK]
 }

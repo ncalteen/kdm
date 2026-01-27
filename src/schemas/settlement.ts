@@ -11,6 +11,7 @@ import { SettlementQuarrySchema } from '@/schemas/settlement-quarry'
 import { SettlementResourceSchema } from '@/schemas/settlement-resource'
 import { SettlementTimelineYearSchema } from '@/schemas/settlement-timeline-year'
 import { SquireSuspicionSchema } from '@/schemas/squire-suspicion'
+import { WandererSchema } from '@/schemas/wanderer'
 import { z } from 'zod'
 
 /**
@@ -76,6 +77,8 @@ export const BaseSettlementSchema = z.object({
   timeline: z.array(SettlementTimelineYearSchema).default([]),
   /** Uses Scouts (determines if scouts are required for hunts/showdowns) */
   usesScouts: z.boolean().default(false),
+  /** Wanderers */
+  wanderers: z.array(WandererSchema).default([]),
 
   /*
    * Arc Survivor Settlements

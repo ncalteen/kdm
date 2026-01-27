@@ -17,5 +17,6 @@ export const CustomCampaign: CampaignTemplate = {
   timeline: Array(40).fill({
     completed: false,
     entries: []
-  })
+  }),
+  wanderers: []
 }

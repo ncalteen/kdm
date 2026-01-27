@@ -145,5 +145,6 @@ export const PeopleOfTheStars: CampaignTemplate = {
     { completed: false, entries: [] },
     // Year 40
     { completed: false, entries: [] }
-  ]
+  ],
+  wanderers: []
 }

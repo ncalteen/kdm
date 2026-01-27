@@ -141,5 +141,6 @@ export const PeopleOfTheSun: CampaignTemplate = {
     { completed: false, entries: [] },
     // Year 40
     { completed: false, entries: [] }
-  ]
+  ],
+  wanderers: []
 }
