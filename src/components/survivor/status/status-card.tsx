@@ -1,5 +1,6 @@
 'use client'
 
+import { NumericInput } from '@/components/menu/numeric-input'
 import { Avatar } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -14,6 +15,7 @@ import { ColorChoice, Gender } from '@/lib/enums'
 import {
   SURVIVOR_COLOR_CHANGED_MESSAGE,
   SURVIVOR_DEAD_STATUS_UPDATED_MESSAGE,
+  SURVIVOR_DISPOSITION_UPDATED_MESSAGE,
   SURVIVOR_GENDER_UPDATED_MESSAGE,
   SURVIVOR_NAME_UPDATED_MESSAGE,
   SURVIVOR_RETIRED_STATUS_UPDATED_MESSAGE
@@ -188,6 +190,37 @@ export function StatusCard({
                 onKeyDown={(e) => handleNameKeyDown(e, e.currentTarget.value)}
               />
             </div>
+
+            {/* Disposition (Wanderers) */}
+            {selectedSurvivor?.wanderer && (
+              <div className="flex items-center gap-2 max-w-[150px]">
+                <Label className="text-xs">Disp.</Label>
+                <NumericInput
+                  label="Disposition"
+                  value={selectedSurvivor.disposition ?? 0}
+                  onChange={(value) =>
+                    saveSelectedSurvivor(
+                      { disposition: value },
+                      SURVIVOR_DISPOSITION_UPDATED_MESSAGE()
+                    )
+                  }
+                  readOnly={false}>
+                  <Input
+                    id="disposition"
+                    type="number"
+                    value={selectedSurvivor?.disposition ?? 0}
+                    onChange={(e) =>
+                      saveSelectedSurvivor(
+                        { disposition: parseInt(e.target.value, 10) ?? 0 },
+                        SURVIVOR_DISPOSITION_UPDATED_MESSAGE()
+                      )
+                    }
+                    min="0"
+                    className="text-center no-spinners"
+                  />
+                </NumericInput>
+              </div>
+            )}
 
             {/* Gender */}
             <div className="ml-4 flex items-center gap-2">
