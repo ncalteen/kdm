@@ -753,5 +753,5 @@ function migrateTo0_16_0(campaign: Campaign) {
     if (survivor.wanderer === undefined) survivor.wanderer = false
 
   // Migration complete. Update version.
-  campaign.version = '0.15.0'
+  campaign.version = '0.16.0'
 }
