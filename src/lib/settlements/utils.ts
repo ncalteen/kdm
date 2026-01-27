@@ -21,6 +21,7 @@ import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 import { Settlement } from '@/schemas/settlement'
 import { SettlementNemesis } from '@/schemas/settlement-nemesis'
 import { SettlementQuarry } from '@/schemas/settlement-quarry'
+import { Wanderer } from '@/schemas/wanderer'
 
 /**
  * Get Monster Node Mapping for a Campaign Type
@@ -62,6 +63,28 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
     CO: template.nemeses.filter((n) => n.node === MonsterNode.CO),
     FI: template.nemeses.filter((n) => n.node === MonsterNode.FI)
   }
+}
+
+/**
+ * Get Wanderers for a Campaign Type
+ *
+ * This function takes a campaign type and returns the wanderers that are
+ * included in that campaign template.
+ *
+ * @param campaignType Campaign Type
+ * @returns Array of wanderers for the campaign
+ */
+export function getWanderers(campaignType: CampaignType): Wanderer[] {
+  const template = {
+    [CampaignType.CUSTOM]: CustomCampaign,
+    [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]: PeopleOfTheDreamKeeper,
+    [CampaignType.PEOPLE_OF_THE_LANTERN]: PeopleOfTheLantern,
+    [CampaignType.PEOPLE_OF_THE_STARS]: PeopleOfTheStars,
+    [CampaignType.PEOPLE_OF_THE_SUN]: PeopleOfTheSun,
+    [CampaignType.SQUIRES_OF_THE_CITADEL]: SquiresOfTheCitadel
+  }[campaignType]
+
+  return template.wanderers
 }
 
 /**
@@ -140,7 +163,8 @@ export function createSettlementFromOptions(
       ...year,
       entries: [...year.entries]
     })),
-    usesScouts: options.usesScouts
+    usesScouts: options.usesScouts,
+    wanderers: options.wanderers
   }
 
   // Arc survivor data.
@@ -260,6 +284,13 @@ export function createSettlementFromOptions(
       settlement.ccRewards.push(...quarry.ccRewards)
     }
   }
+
+  // Add the wanderer's timeline events to the settlement's timeline
+  for (const wanderer of settlement.wanderers)
+    for (const yearNumber of Object.keys(wanderer.timeline))
+      settlement.timeline[Number(yearNumber)].entries.push(
+        ...wanderer.timeline[Number(yearNumber)]
+      )
 
   // Sort various settlement arrays for consistency.
   if (settlement.ccRewards)
