@@ -167,6 +167,11 @@ export const createColumns = ({
             />
             {row.getValue('name')}
           </div>
+          {row.original.wanderer && (
+            <Badge variant="outline" className="text-xs">
+              Wanderer
+            </Badge>
+          )}
         </div>
       ),
       sortingFn: (rowA, rowB, columnId) => {
