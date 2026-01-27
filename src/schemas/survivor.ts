@@ -51,6 +51,8 @@ export const BaseSurvivorSchema = z.object({
     .array(z.string().min(1, 'A nameless disorder cannot be recorded.'))
     .max(3, 'A survivor may not have more than three disorders.')
     .default([]),
+  /** Disposition (Wanderers) */
+  disposition: z.number().optional(),
   /** Evasion */
   evasion: z.number().default(0),
   /** Fighting Arts */
@@ -115,6 +117,8 @@ export const BaseSurvivorSchema = z.object({
     .min(0, 'Understanding cannot be negative.')
     .max(9, 'Understanding cannot exceed 9.')
     .default(0),
+  /** Survivor is a Wanderer */
+  wanderer: z.boolean().default(false),
   /** Weapon Proficiency (Level) */
   weaponProficiency: z
     .number()
