@@ -69,7 +69,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
   if (campaign.version === '0.14.0') migrateTo0_14_1(campaign)
   if (campaign.version === '0.14.1') migrateTo0_14_2(campaign)
   if (campaign.version === '0.14.2') migrateTo0_15_0(campaign)
-  // if (campaign.version === '0.15.0') migrateTo0_16_0(campaign)
+  if (campaign.version === '0.15.0') migrateTo0_16_0(campaign)
 
   return campaign
 }
