@@ -209,12 +209,15 @@ export function StatusCard({
                     id="disposition"
                     type="number"
                     value={selectedSurvivor?.disposition ?? 0}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const parsed = parseInt(e.target.value, 10)
+                      const disposition = Number.isNaN(parsed) ? 0 : parsed
+
                       saveSelectedSurvivor(
-                        { disposition: parseInt(e.target.value, 10) ?? 0 },
+                        { disposition },
                         SURVIVOR_DISPOSITION_UPDATED_MESSAGE()
                       )
-                    }
+                    }}
                     min="0"
                     className="text-center no-spinners"
                   />

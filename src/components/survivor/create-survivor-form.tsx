@@ -218,8 +218,8 @@ export function CreateSurvivorForm({
       wanderer.name === 'Goth' &&
       !selectedSettlement.principles?.some(
         (p) =>
-          (p.option1Name === 'Cannibalize' && !p.option1Selected) ||
-          (p.option2Name === 'Cannibalize' && !p.option2Selected)
+          (p.option1Name === 'Cannibalize' && p.option1Selected) ||
+          (p.option2Name === 'Cannibalize' && p.option2Selected)
       )
     )
       newSurvivor.disposition = (newSurvivor.disposition ?? 0) + 1
@@ -240,10 +240,9 @@ export function CreateSurvivorForm({
       const updatedSettlement: Settlement = {
         ...selectedSettlement,
         // Remove the wanderer from the settlement's available wanderers
-        wanderers:
-          selectedSettlement.wanderers.filter(
-            (w) => w.name !== selectedWanderer.name
-          ) ?? [],
+        wanderers: selectedSettlement.wanderers.filter(
+          (w) => w.name !== selectedWanderer.name
+        ),
         // Add the wanderer's rare gear to the settlement's gear
         gear: [...selectedSettlement.gear, ...(selectedWanderer.rareGear ?? [])]
       }
