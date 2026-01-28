@@ -326,21 +326,30 @@ export function ResourceItem({
                     onChange={setSelectedCategory}
                   />
                 </div>
-                <div className="col-span-3">
-                  <ResourceTypesCombobox
-                    selectedTypes={selectedTypes}
-                    onChange={setSelectedTypes}
-                  />
-                </div>
-                <div className="col-span-2">
-                  {selectedCategory === ResourceCategory.MONSTER && (
-                    <ResourceMonsterCombobox
-                      selectedMonsterName={selectedMonsterName}
-                      selectedSettlement={selectedSettlement}
-                      onChange={handleMonsterChange}
+                {selectedCategory === ResourceCategory.MONSTER ? (
+                  <>
+                    <div className="col-span-3">
+                      <ResourceTypesCombobox
+                        selectedTypes={selectedTypes}
+                        onChange={setSelectedTypes}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <ResourceMonsterCombobox
+                        selectedMonsterName={selectedMonsterName}
+                        selectedSettlement={selectedSettlement}
+                        onChange={handleMonsterChange}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="col-span-5">
+                    <ResourceTypesCombobox
+                      selectedTypes={selectedTypes}
+                      onChange={setSelectedTypes}
                     />
-                  )}
-                </div>
+                  </div>
+                )}
                 <div className="col-span-1">
                   <NumericInput
                     label="Resource Amount"
