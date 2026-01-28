@@ -45,10 +45,10 @@ import { WHITE_LION } from '@/lib/monsters/white-lion'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementNemesis } from '@/schemas/settlement-nemesis'
+import { SettlementQuarry } from '@/schemas/settlement-quarry'
+import { Showdown } from '@/schemas/showdown'
 import * as packageInfo from '../../package.json'
-import { SettlementNemesis } from './settlement-nemesis'
-import { SettlementQuarry } from './settlement-quarry'
-import { Showdown } from './showdown'
 
 /**
  * Migrate Campaign to Latest Schema Version

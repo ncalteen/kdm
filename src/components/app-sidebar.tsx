@@ -32,9 +32,9 @@ import {
   SETTLEMENT_LOADED_MESSAGE,
   SETTLEMENT_SAVED_MESSAGE
 } from '@/lib/messages'
+import { migrateCampaign } from '@/lib/migrate'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
-import { migrateCampaign } from '@/schemas/migrate'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
