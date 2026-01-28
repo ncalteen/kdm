@@ -24,7 +24,7 @@ import {
 } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { saveCampaignToLocalStorage } from '@/lib/utils'
-import { LUCK } from '@/lib/wanderers/luck'
+import { WANDERERS } from '@/lib/wanderers'
 import type { Campaign } from '@/schemas/campaign'
 import type { Hunt } from '@/schemas/hunt'
 import {
@@ -444,7 +444,13 @@ function createPeopleOfTheLanternSettlement(
       entries: year.entries
     })),
     usesScouts: variant === 2,
-    wanderers: [LUCK],
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     lanternResearchLevel: variant,
     monsterVolumes: variant === 2 ? ['White Lion Vol. 1'] : []
@@ -556,7 +562,13 @@ function createPeopleOfTheSunSettlement(
       entries: year.entries
     })),
     usesScouts: variant === 2,
-    wanderers: [LUCK]
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ]
   }
 }
 
@@ -711,7 +723,13 @@ function createPeopleOfTheStarsSettlement(
       entries: year.entries
     })),
     usesScouts: variant === 2,
-    wanderers: [LUCK],
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     ccRewards: PeopleOfTheStars.ccRewards.map((reward) => ({
       ...reward,
@@ -909,7 +927,13 @@ function createPeopleOfTheDreamKeeperSettlement(
       entries: year.entries
     })),
     usesScouts: variant === 2,
-    wanderers: [LUCK],
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     ccRewards: PeopleOfTheStars.ccRewards.map((reward) => ({
       ...reward,
@@ -1115,7 +1139,13 @@ function createCustomSettlement(id: number, variant: number): Settlement {
               : []
       })),
     usesScouts: variant === 2,
-    wanderers: [LUCK],
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     ...(isArc && {
       ccRewards: PeopleOfTheStars.ccRewards.map((reward) => ({
