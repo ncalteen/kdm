@@ -142,5 +142,6 @@ export const PeopleOfTheLantern: CampaignTemplate = {
     { completed: false, entries: [] },
     // Year 40
     { completed: false, entries: [] }
-  ]
+  ],
+  wanderers: []
 }

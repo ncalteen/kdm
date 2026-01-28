@@ -1,3 +1,4 @@
+import { Gender } from '@/lib/enums'
 import { Wanderer } from '@/schemas/wanderer'
 
 export const CANDY_COLA: Wanderer = {
@@ -8,6 +9,7 @@ export const CANDY_COLA: Wanderer = {
   disposition: 0,
   evasion: 0,
   fightingArts: ['Phantom Friend'],
+  gender: Gender.FEMALE,
   huntXP: 0,
   huntXPRankUp: [1, 3, 5, 12],
   insanity: 0,

@@ -4,6 +4,7 @@ import { CampaignType, SurvivorType } from '@/lib/enums'
 import { NemesisMonsterDataSchema } from '@/schemas/nemesis-monster-data'
 import { QuarryMonsterDataSchema } from '@/schemas/quarry-monster-data'
 import { BaseSettlementSchema } from '@/schemas/settlement'
+import { WandererSchema } from '@/schemas/wanderer'
 import { z } from 'zod'
 
 /**
@@ -48,7 +49,8 @@ export const NewSettlementInputSchema = BaseSettlementSchema.extend({
     CO: z.array(NemesisMonsterDataSchema).default([]),
     /** Finale Monster Selection */
     FI: z.array(NemesisMonsterDataSchema).default([])
-  })
+  }),
+  wanderers: z.array(WandererSchema).default([])
 })
 
 /**

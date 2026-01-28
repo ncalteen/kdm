@@ -24,6 +24,7 @@ import {
 } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { saveCampaignToLocalStorage } from '@/lib/utils'
+import { WANDERERS } from '@/lib/wanderers'
 import type { Campaign } from '@/schemas/campaign'
 import type { Hunt } from '@/schemas/hunt'
 import {
@@ -35,14 +36,6 @@ import type { Showdown } from '@/schemas/showdown'
 import type { Survivor } from '@/schemas/survivor'
 import packageJson from '../../package.json'
 import { basicHuntBoard } from './common'
-
-const colors = [
-  ColorChoice.RED,
-  ColorChoice.BLUE,
-  ColorChoice.GREEN,
-  ColorChoice.YELLOW,
-  ColorChoice.PURPLE
-]
 
 const quarryMap = {
   [CampaignType.PEOPLE_OF_THE_LANTERN]: QUARRIES.WHITE_LION,
@@ -451,6 +444,13 @@ function createPeopleOfTheLanternSettlement(
       entries: year.entries
     })),
     usesScouts: variant === 2,
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     lanternResearchLevel: variant,
     monsterVolumes: variant === 2 ? ['White Lion Vol. 1'] : []
@@ -561,7 +561,14 @@ function createPeopleOfTheSunSettlement(
       completed: index < lanternYear,
       entries: year.entries
     })),
-    usesScouts: variant === 2
+    usesScouts: variant === 2,
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ]
   }
 }
 
@@ -716,6 +723,13 @@ function createPeopleOfTheStarsSettlement(
       entries: year.entries
     })),
     usesScouts: variant === 2,
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     ccRewards: PeopleOfTheStars.ccRewards.map((reward) => ({
       ...reward,
@@ -913,6 +927,13 @@ function createPeopleOfTheDreamKeeperSettlement(
       entries: year.entries
     })),
     usesScouts: variant === 2,
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     ccRewards: PeopleOfTheStars.ccRewards.map((reward) => ({
       ...reward,
@@ -1118,6 +1139,13 @@ function createCustomSettlement(id: number, variant: number): Settlement {
               : []
       })),
     usesScouts: variant === 2,
+    wanderers: [
+      WANDERERS.AENAS,
+      WANDERERS.CANDY_COLA,
+      WANDERERS.DEATH_DRIFTER,
+      WANDERERS.GOTH,
+      WANDERERS.LUCK
+    ],
 
     ...(isArc && {
       ccRewards: PeopleOfTheStars.ccRewards.map((reward) => ({
@@ -1236,6 +1264,7 @@ function createSurvivorsForSettlement(
       strength: isExperienced ? 2 : 0,
       survival: 1 + (isExperienced ? 2 : 0),
       understanding: isExperienced ? 2 : 0,
+      wanderer: false,
       weaponProficiency: isExperienced ? 5 : Math.min(i, 3),
       weaponProficiencyType: isExperienced
         ? i % 5 === 0

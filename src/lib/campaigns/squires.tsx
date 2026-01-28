@@ -20,7 +20,8 @@ export const SquiresOfTheCitadel: CampaignTemplate = {
     { completed: false, entries: ['The Quest'] },
     { completed: false, entries: ['Glimpse into the Future'] },
     { completed: false, entries: ['Secrets, Secrets'] }
-  ]
+  ],
+  wanderers: []
 }
 
 /**

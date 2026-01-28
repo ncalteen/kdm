@@ -294,6 +294,8 @@ function MainPage(): ReactElement {
         case SchemaVersion.V0_14_1:
         case SchemaVersion.V0_14_2:
           return await import('../../__fixtures__/campaigns/0.14.0.json')
+        case SchemaVersion.V0_15_0:
+          return await import('../../__fixtures__/campaigns/0.15.0.json')
         default:
           return null
       }

@@ -3,6 +3,7 @@
 import { SelectCampaignType } from '@/components/menu/select-campaign-type'
 import { SelectMonsterNode } from '@/components/menu/select-monster-node'
 import { SelectSurvivorType } from '@/components/menu/select-survivor-type'
+import { SelectWanderers } from '@/components/menu/select-wanderers'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -18,7 +19,8 @@ import { CampaignType, MonsterNode, SurvivorType } from '@/lib/enums'
 import { ERROR_MESSAGE, SETTLEMENT_CREATED_MESSAGE } from '@/lib/messages'
 import {
   createSettlementFromOptions,
-  getMonsterNodeMapping
+  getMonsterNodeMapping,
+  getWanderers
 } from '@/lib/settlements/utils'
 import { Campaign } from '@/schemas/campaign'
 import {
@@ -74,7 +76,8 @@ export function CreateSettlementForm({
         NN3: [],
         CO: [],
         FI: []
-      }
+      },
+      wanderers: []
     }
   })
 
@@ -102,6 +105,14 @@ export function CreateSettlementForm({
     form.setValue('monsters', monsterMapping)
   }, [watchedCampaignType, isCustomCampaign, form])
 
+  /**
+   * Auto-populate wanderer selections when campaign type changes.
+   */
+  useEffect(() => {
+    if (watchedCampaignType)
+      form.setValue('wanderers', getWanderers(watchedCampaignType))
+  }, [watchedCampaignType, form])
+
   function onSubmit(values: NewSettlementInput) {
     try {
       // Get campaign data based on the selected campaign type
@@ -128,7 +139,8 @@ export function CreateSettlementForm({
           NN3: [],
           CO: [],
           FI: []
-        }
+        },
+        wanderers: []
       })
 
       // Show success message
@@ -249,6 +261,27 @@ export function CreateSettlementForm({
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            {/* Wanderers */}
+            <FormField
+              control={form.control}
+              name="wanderers"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-left whitespace-nowrap min-w-[120px]">
+                      Wanderers
+                    </FormLabel>
+                    <FormControl>
+                      <SelectWanderers
+                        value={field.value}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                   </div>

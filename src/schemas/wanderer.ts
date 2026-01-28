@@ -1,5 +1,6 @@
 'use client'
 
+import { Gender } from '@/lib/enums'
 import { z } from 'zod'
 
 /**
@@ -11,7 +12,7 @@ export const WandererSchema = z.object({
   /** Accuracy */
   accuracy: z.number().int().default(0),
   /** Arc Wanderer */
-  arc: z.boolean().default(false),
+  arc: z.boolean(),
   /** Courage */
   courage: z.number().int().default(0),
   /** Disposition */
@@ -20,6 +21,8 @@ export const WandererSchema = z.object({
   evasion: z.number().int().default(0),
   /** Fighting Arts */
   fightingArts: z.array(z.string()).default([]),
+  /** Gender */
+  gender: z.enum(Gender),
   /** Hunt XP */
   huntXP: z.number().int().default(0),
   /** Hunt XP Rank Up Milestones */
@@ -47,7 +50,7 @@ export const WandererSchema = z.object({
   /** Systemic Pressure */
   systemicPressure: z.number().int().default(0),
   /** Timeline */
-  timeline: z.record(z.number(), z.array(z.string())).default({}),
+  timeline: z.record(z.string(), z.array(z.string())),
   /** Torment */
   torment: z.number().int().default(0),
   /** Understanding */

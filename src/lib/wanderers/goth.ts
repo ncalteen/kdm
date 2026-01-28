@@ -1,3 +1,4 @@
+import { Gender } from '@/lib/enums'
 import { Wanderer } from '@/schemas/wanderer'
 
 export const GOTH: Wanderer = {
@@ -8,6 +9,7 @@ export const GOTH: Wanderer = {
   disposition: 0,
   evasion: -1,
   fightingArts: [],
+  gender: Gender.FEMALE,
   huntXP: 0,
   huntXPRankUp: [1, 4, 8],
   insanity: 4,

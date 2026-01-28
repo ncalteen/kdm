@@ -69,6 +69,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
   if (campaign.version === '0.14.0') migrateTo0_14_1(campaign)
   if (campaign.version === '0.14.1') migrateTo0_14_2(campaign)
   if (campaign.version === '0.14.2') migrateTo0_15_0(campaign)
+  if (campaign.version === '0.15.0') migrateTo0_16_0(campaign)
 
   return campaign
 }
@@ -735,4 +736,22 @@ function migrateTo0_15_0(campaign: Campaign) {
 
   // Migration complete. Update version.
   campaign.version = '0.15.0'
+}
+
+/**
+ * Migration logic from version 0.15.0 to 0.16.0
+ *
+ * @param campaign Campaign to Migrate
+ */
+function migrateTo0_16_0(campaign: Campaign) {
+  console.log('Migrating to 0.16.0')
+
+  for (const settlement of campaign.settlements || [])
+    if (settlement.wanderers === undefined) settlement.wanderers = []
+
+  for (const survivor of campaign.survivors || [])
+    if (survivor.wanderer === undefined) survivor.wanderer = false
+
+  // Migration complete. Update version.
+  campaign.version = '0.16.0'
 }

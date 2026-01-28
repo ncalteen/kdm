@@ -273,6 +273,7 @@ export function SettlementForm({
                     selectedSettlement={selectedSettlement}
                     setIsCreatingNewSurvivor={setIsCreatingNewSurvivor}
                     setSelectedSurvivor={setSelectedSurvivor}
+                    updateCampaign={updateCampaign}
                   />
                 )}
               </div>

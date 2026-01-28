@@ -10,6 +10,7 @@ import {
   SURVIVOR_ON_HUNT_ERROR_MESSAGE,
   SURVIVOR_ON_SHOWDOWN_ERROR_MESSAGE
 } from '@/lib/messages'
+import { WANDERERS } from '@/lib/wanderers'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
@@ -100,12 +101,33 @@ export function SettlementSurvivorsCard({
         if (survivorIndex === -1) return toast.error(ERROR_MESSAGE())
 
         const updatedSurvivors = [...campaign.survivors]
-        updatedSurvivors.splice(survivorIndex, 1)
+        const deletedSurvivor = updatedSurvivors.splice(survivorIndex, 1)[0]
 
         // Clear selected survivor if the deleted survivor is currently selected
         if (selectedSurvivor?.id === survivorId) setSelectedSurvivor(null)
 
-        updateCampaign({ ...campaign, survivors: updatedSurvivors })
+        // If the survivor was a wanderer, add them back to the available
+        // wanderers for the settlement (in case a user wants to delete and
+        // re-add them)
+        const updatedWanderers = selectedSettlement?.wanderers ?? []
+        const wandererData = Object.values(WANDERERS).find(
+          (wanderer) => wanderer.name === deletedSurvivor.name
+        )
+        if (deletedSurvivor.wanderer && wandererData)
+          updatedWanderers.push(wandererData)
+
+        updateCampaign({
+          ...campaign,
+          survivors: updatedSurvivors,
+          settlements: campaign.settlements.map((settlement) =>
+            settlement.id === selectedSettlement?.id
+              ? {
+                  ...settlement,
+                  wanderers: updatedWanderers
+                }
+              : settlement
+          )
+        })
 
         setDeleteId(undefined)
         setIsDeleteDialogOpen(false)
@@ -118,6 +140,7 @@ export function SettlementSurvivorsCard({
       campaign,
       updateCampaign,
       selectedHunt,
+      selectedSettlement,
       selectedSurvivor,
       selectedShowdown,
       setSelectedSurvivor

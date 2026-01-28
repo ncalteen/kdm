@@ -7,6 +7,7 @@ import { SettlementLocation } from '@/schemas/settlement-location'
 import { SettlementMilestone } from '@/schemas/settlement-milestone'
 import { SettlementPrinciple } from '@/schemas/settlement-principle'
 import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
+import { Wanderer } from '@/schemas/wanderer'
 
 /**
  * Campaign Template
@@ -30,4 +31,6 @@ export type CampaignTemplate = {
   quarries: QuarryMonsterData[]
   /** Settlement Timeline */
   timeline: SettlementTimelineYear[]
+  /** Wanderers */
+  wanderers: Wanderer[]
 }
