@@ -2,12 +2,13 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { ResourceCategoriesCombobox } from '@/components/settlement/resources/resource-categories-combobox'
+import { ResourceMonsterCombobox } from '@/components/settlement/resources/resource-monster-combobox'
 import { ResourceTypesCombobox } from '@/components/settlement/resources/resource-types-combobox'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { ResourceCategory, ResourceType } from '@/lib/enums'
+import { MonsterNode, ResourceCategory, ResourceType } from '@/lib/enums'
 import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -42,7 +43,9 @@ export interface ResourceItemProps {
     name: string,
     category: ResourceCategory,
     types: ResourceType[],
-    amount: number
+    amount: number,
+    monsterName?: string,
+    monsterNode?: MonsterNode
   ) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
@@ -59,8 +62,12 @@ export interface NewResourceItemProps {
     name: string,
     category: ResourceCategory,
     types: ResourceType[],
-    amount: number
+    amount: number,
+    monsterName?: string,
+    monsterNode?: MonsterNode
   ) => void
+  /** Selected Settlement */
+  selectedSettlement: Settlement | null
 }
 
 /**
@@ -93,6 +100,12 @@ export function ResourceItem({
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
     selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
   )
+  const [selectedMonsterName, setSelectedMonsterName] = useState<
+    string | undefined
+  >(selectedSettlement?.resources?.[index].monsterName)
+  const [selectedMonsterNode, setSelectedMonsterNode] = useState<
+    MonsterNode | undefined
+  >(selectedSettlement?.resources?.[index].monsterNode)
 
   /**
    * Handle Key Down
@@ -110,9 +123,29 @@ export function ResourceItem({
         nameInputRef.current.value,
         selectedCategory,
         selectedTypes,
-        Number(amountInputRef.current.value)
+        Number(amountInputRef.current.value),
+        selectedCategory === ResourceCategory.MONSTER
+          ? selectedMonsterName
+          : undefined,
+        selectedCategory === ResourceCategory.MONSTER
+          ? selectedMonsterNode
+          : undefined
       )
     }
+  }
+
+  /**
+   * Handle Monster Selection
+   *
+   * @param monsterName Monster Name
+   * @param monsterNode Monster Node
+   */
+  const handleMonsterChange = (
+    monsterName: string | undefined,
+    monsterNode: MonsterNode | undefined
+  ) => {
+    setSelectedMonsterName(monsterName)
+    setSelectedMonsterNode(monsterNode)
   }
 
   /**
@@ -149,13 +182,19 @@ export function ResourceItem({
             !isMobile ? (
               // Desktop Layout
               <div className="grid grid-cols-12 items-center gap-2">
-                <div className="col-span-4 text-sm text-left flex items-center">
-                  {selectedSettlement?.resources?.[index].name}
+                <div className="col-span-3 text-sm text-left flex flex-col">
+                  <span>{selectedSettlement?.resources?.[index].name}</span>
+                  {selectedCategory === ResourceCategory.MONSTER &&
+                    selectedMonsterName && (
+                      <span className="text-xs text-muted-foreground">
+                        {selectedMonsterName} ({selectedMonsterNode})
+                      </span>
+                    )}
                 </div>
                 <div className="col-span-2">
                   <Badge variant="default">{selectedCategory}</Badge>
                 </div>
-                <div className="flex flex-wrap gap-1 col-span-4">
+                <div className="flex flex-wrap gap-1 col-span-5">
                   {selectedTypes.map((type) => (
                     <Badge key={type} variant="secondary" className="text-xs">
                       {type}
@@ -207,8 +246,14 @@ export function ResourceItem({
               // Mobile Layout
               <div className="space-y-1">
                 <div className="flex items-center justify-between gap-2">
-                  <div className="text-sm flex-1 min-w-0">
-                    {selectedSettlement?.resources?.[index].name}
+                  <div className="text-sm flex-1 min-w-0 flex flex-col">
+                    <span>{selectedSettlement?.resources?.[index].name}</span>
+                    {selectedCategory === ResourceCategory.MONSTER &&
+                      selectedMonsterName && (
+                        <span className="text-xs text-muted-foreground">
+                          {selectedMonsterName} ({selectedMonsterNode})
+                        </span>
+                      )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <NumericInput
@@ -265,78 +310,106 @@ export function ResourceItem({
             )
           ) : !isMobile ? (
             // Desktop Edit Mode Layout
-            <div className="grid grid-cols-12 items-center gap-2">
-              <div className="col-span-4">
-                <Input
-                  ref={nameInputRef}
-                  placeholder="Resource Name"
-                  defaultValue={selectedSettlement?.resources?.[index].name}
-                  onKeyDown={handleNameKeyDown}
-                />
-              </div>
-              <div className="col-span-2">
-                <ResourceCategoriesCombobox
-                  selectedCategory={selectedCategory}
-                  onChange={setSelectedCategory}
-                />
-              </div>
-              <div className="col-span-4">
-                <ResourceTypesCombobox
-                  selectedTypes={selectedTypes}
-                  onChange={setSelectedTypes}
-                />
-              </div>
-              <div className="col-span-1">
-                <NumericInput
-                  label="Resource Amount"
-                  value={selectedSettlement?.resources?.[index].amount ?? 0}
-                  onChange={(value) => {
-                    if (amountInputRef.current) {
-                      amountInputRef.current.value = value.toString()
-                    }
-                  }}
-                  min={0}
-                  readOnly={false}>
+            <div className="space-y-2">
+              <div className="grid grid-cols-12 items-center gap-2">
+                <div className="col-span-3">
                   <Input
-                    ref={amountInputRef}
-                    type="number"
-                    min={0}
-                    placeholder="0"
-                    readOnly={isMobile}
-                    defaultValue={selectedSettlement?.resources?.[index].amount}
-                    onChange={handleAmountChange}
-                    className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    name={`resource-amount-edit-${index}`}
-                    id={`resource-amount-edit-${index}`}
+                    ref={nameInputRef}
+                    placeholder="Resource Name"
+                    defaultValue={selectedSettlement?.resources?.[index].name}
+                    onKeyDown={handleNameKeyDown}
                   />
-                </NumericInput>
-              </div>
-              <div className="col-span-1 flex justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    if (nameInputRef.current && amountInputRef.current) {
-                      onSave(
-                        index,
-                        nameInputRef.current.value,
-                        selectedCategory,
-                        selectedTypes,
-                        Number(amountInputRef.current.value)
-                      )
-                    }
-                  }}
-                  title="Save resource">
-                  <CheckIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                  onClick={() => onRemove(index)}>
-                  <TrashIcon className="h-4 w-4" />
-                </Button>
+                </div>
+                <div className="col-span-2">
+                  <ResourceCategoriesCombobox
+                    selectedCategory={selectedCategory}
+                    onChange={setSelectedCategory}
+                  />
+                </div>
+                {selectedCategory === ResourceCategory.MONSTER ? (
+                  <>
+                    <div className="col-span-3">
+                      <ResourceTypesCombobox
+                        selectedTypes={selectedTypes}
+                        onChange={setSelectedTypes}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <ResourceMonsterCombobox
+                        selectedMonsterName={selectedMonsterName}
+                        selectedSettlement={selectedSettlement}
+                        onChange={handleMonsterChange}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="col-span-5">
+                    <ResourceTypesCombobox
+                      selectedTypes={selectedTypes}
+                      onChange={setSelectedTypes}
+                    />
+                  </div>
+                )}
+                <div className="col-span-1">
+                  <NumericInput
+                    label="Resource Amount"
+                    value={selectedSettlement?.resources?.[index].amount ?? 0}
+                    onChange={(value) => {
+                      if (amountInputRef.current) {
+                        amountInputRef.current.value = value.toString()
+                      }
+                    }}
+                    min={0}
+                    readOnly={false}>
+                    <Input
+                      ref={amountInputRef}
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      readOnly={isMobile}
+                      defaultValue={
+                        selectedSettlement?.resources?.[index].amount
+                      }
+                      onChange={handleAmountChange}
+                      className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      name={`resource-amount-edit-${index}`}
+                      id={`resource-amount-edit-${index}`}
+                    />
+                  </NumericInput>
+                </div>
+                <div className="col-span-1 flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (nameInputRef.current && amountInputRef.current) {
+                        onSave(
+                          index,
+                          nameInputRef.current.value,
+                          selectedCategory,
+                          selectedTypes,
+                          Number(amountInputRef.current.value),
+                          selectedCategory === ResourceCategory.MONSTER
+                            ? selectedMonsterName
+                            : undefined,
+                          selectedCategory === ResourceCategory.MONSTER
+                            ? selectedMonsterNode
+                            : undefined
+                        )
+                      }
+                    }}
+                    title="Save resource">
+                    <CheckIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    onClick={() => onRemove(index)}>
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           ) : (
@@ -389,7 +462,13 @@ export function ResourceItem({
                           nameInputRef.current.value,
                           selectedCategory,
                           selectedTypes,
-                          Number(amountInputRef.current.value)
+                          Number(amountInputRef.current.value),
+                          selectedCategory === ResourceCategory.MONSTER
+                            ? selectedMonsterName
+                            : undefined,
+                          selectedCategory === ResourceCategory.MONSTER
+                            ? selectedMonsterNode
+                            : undefined
                         )
                     }}
                     title="Save resource">
@@ -418,6 +497,15 @@ export function ResourceItem({
                     onChange={setSelectedTypes}
                   />
                 </div>
+                {selectedCategory === ResourceCategory.MONSTER && (
+                  <div className="flex-1">
+                    <ResourceMonsterCombobox
+                      selectedMonsterName={selectedMonsterName}
+                      selectedSettlement={selectedSettlement}
+                      onChange={handleMonsterChange}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -434,7 +522,8 @@ export function ResourceItem({
  */
 export function NewResourceItem({
   onCancel,
-  onSave
+  onSave,
+  selectedSettlement
 }: NewResourceItemProps): ReactElement {
   const isMobile = useIsMobile()
 
@@ -445,6 +534,24 @@ export function NewResourceItem({
     ResourceCategory.BASIC
   )
   const [types, setTypes] = useState<ResourceType[]>([ResourceType.BONE])
+  const [monsterName, setMonsterName] = useState<string | undefined>(undefined)
+  const [monsterNode, setMonsterNode] = useState<MonsterNode | undefined>(
+    undefined
+  )
+
+  /**
+   * Handle Monster Selection
+   *
+   * @param name Monster Name
+   * @param node Monster Node
+   */
+  const handleMonsterChange = (
+    name: string | undefined,
+    node: MonsterNode | undefined
+  ) => {
+    setMonsterName(name)
+    setMonsterNode(node)
+  }
 
   /**
    * Handles the key down event for the input field.
@@ -461,7 +568,9 @@ export function NewResourceItem({
         nameInputRef.current.value,
         category,
         types,
-        Number(amountInputRef.current.value)
+        Number(amountInputRef.current.value),
+        category === ResourceCategory.MONSTER ? monsterName : undefined,
+        category === ResourceCategory.MONSTER ? monsterNode : undefined
       )
     } else if (e.key === 'Escape') {
       e.preventDefault()
@@ -483,64 +592,81 @@ export function NewResourceItem({
         <div className="flex-1">
           {!isMobile ? (
             // Desktop Layout
-            <div className="grid grid-cols-12 items-center gap-2">
-              <div className="col-span-4 text-sm text-left flex items-center">
-                <Input
-                  ref={nameInputRef}
-                  placeholder="Add a resource..."
-                  defaultValue={''}
-                  onKeyDown={handleKeyDown}
-                />
-              </div>
-              <div className="col-span-2">
-                <ResourceCategoriesCombobox
-                  selectedCategory={category}
-                  onChange={setCategory}
-                />
-              </div>
-              <div className="flex flex-wrap gap-1 col-span-4">
-                <ResourceTypesCombobox
-                  selectedTypes={types}
-                  onChange={setTypes}
-                />
-              </div>
-              <div className="col-span-1">
-                <Input
-                  ref={amountInputRef}
-                  type="number"
-                  min={0}
-                  placeholder="0"
-                  disabled={true}
-                  defaultValue={''}
-                  onKeyDown={handleKeyDown}
-                  className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-              </div>
-              <div className="col-span-1 flex justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    if (nameInputRef.current && amountInputRef.current)
-                      onSave(
-                        nameInputRef.current.value,
-                        category,
-                        types,
-                        Number(amountInputRef.current.value)
-                      )
-                  }}
-                  title="Save resource">
-                  <CheckIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={onCancel}
-                  title="Cancel">
-                  <TrashIcon className="h-4 w-4" />
-                </Button>
+            <div className="space-y-2">
+              <div className="grid grid-cols-12 items-center gap-2">
+                <div className="col-span-3 text-sm text-left flex items-center">
+                  <Input
+                    ref={nameInputRef}
+                    placeholder="Add a resource..."
+                    defaultValue={''}
+                    onKeyDown={handleKeyDown}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <ResourceCategoriesCombobox
+                    selectedCategory={category}
+                    onChange={setCategory}
+                  />
+                </div>
+                <div className="col-span-3">
+                  <ResourceTypesCombobox
+                    selectedTypes={types}
+                    onChange={setTypes}
+                  />
+                </div>
+                <div className="col-span-2">
+                  {category === ResourceCategory.MONSTER && (
+                    <ResourceMonsterCombobox
+                      selectedMonsterName={monsterName}
+                      selectedSettlement={selectedSettlement}
+                      onChange={handleMonsterChange}
+                    />
+                  )}
+                </div>
+                <div className="col-span-1">
+                  <Input
+                    ref={amountInputRef}
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    disabled={true}
+                    defaultValue={''}
+                    onKeyDown={handleKeyDown}
+                    className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                </div>
+                <div className="col-span-1 flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      if (nameInputRef.current && amountInputRef.current)
+                        onSave(
+                          nameInputRef.current.value,
+                          category,
+                          types,
+                          Number(amountInputRef.current.value),
+                          category === ResourceCategory.MONSTER
+                            ? monsterName
+                            : undefined,
+                          category === ResourceCategory.MONSTER
+                            ? monsterNode
+                            : undefined
+                        )
+                    }}
+                    title="Save resource">
+                    <CheckIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={onCancel}
+                    title="Cancel">
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           ) : (
@@ -577,7 +703,13 @@ export function NewResourceItem({
                           nameInputRef.current.value,
                           category,
                           types,
-                          Number(amountInputRef.current.value)
+                          Number(amountInputRef.current.value),
+                          category === ResourceCategory.MONSTER
+                            ? monsterName
+                            : undefined,
+                          category === ResourceCategory.MONSTER
+                            ? monsterNode
+                            : undefined
                         )
                     }}
                     title="Save resource">
@@ -606,6 +738,15 @@ export function NewResourceItem({
                     onChange={setTypes}
                   />
                 </div>
+                {category === ResourceCategory.MONSTER && (
+                  <div className="flex-1">
+                    <ResourceMonsterCombobox
+                      selectedMonsterName={monsterName}
+                      selectedSettlement={selectedSettlement}
+                      onChange={handleMonsterChange}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}

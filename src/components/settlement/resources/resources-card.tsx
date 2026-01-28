@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { ResourceCategory, ResourceType } from '@/lib/enums'
+import { MonsterNode, ResourceCategory, ResourceType } from '@/lib/enums'
 import {
   NAMELESS_OBJECT_ERROR_MESSAGE,
   RESOURCE_REMOVED_MESSAGE,
@@ -83,6 +83,9 @@ export function ResourcesCard({
     []
   )
   const [filterTypes, setFilterTypes] = useState<ResourceType[]>([])
+  const [filterMonsterNodes, setFilterMonsterNodes] = useState<MonsterNode[]>(
+    []
+  )
 
   // Filter resources based on selected filters
   const filteredResources = useMemo(() => {
@@ -106,6 +109,14 @@ export function ResourcesCard({
         )
           return false
 
+        // Monster Node filter
+        if (
+          filterMonsterNodes.length > 0 &&
+          (!resource.monsterNode ||
+            !filterMonsterNodes.includes(resource.monsterNode))
+        )
+          return false
+
         return true
       })
       .map((resource, filteredIndex) => {
@@ -113,12 +124,13 @@ export function ResourcesCard({
         const originalIndex = selectedSettlement.resources!.indexOf(resource)
         return { resource, originalIndex, filteredIndex }
       })
-  }, [selectedSettlement, filterCategories, filterTypes])
+  }, [selectedSettlement, filterCategories, filterTypes, filterMonsterNodes])
 
   // Clear all filters
   const clearFilters = useCallback(() => {
     setFilterCategories([])
     setFilterTypes([])
+    setFilterMonsterNodes([])
   }, [])
 
   const handleCategoryFilterChange = useCallback(
@@ -137,8 +149,19 @@ export function ResourcesCard({
     []
   )
 
+  const handleMonsterNodeFilterChange = useCallback(
+    (node: MonsterNode, checked: boolean) => {
+      if (checked) setFilterMonsterNodes((prev) => [...prev, node])
+      else setFilterMonsterNodes((prev) => prev.filter((n) => n !== node))
+    },
+    []
+  )
+
   // Check if any filters are active
-  const hasActiveFilters = filterCategories.length > 0 || filterTypes.length > 0
+  const hasActiveFilters =
+    filterCategories.length > 0 ||
+    filterTypes.length > 0 ||
+    filterMonsterNodes.length > 0
 
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
@@ -202,13 +225,17 @@ export function ResourcesCard({
    * @param types Resource Types
    * @param amount Resource Amount
    * @param i Resource Index (When Updating Only)
+   * @param monsterName Monster Name (For Monster Resources)
+   * @param monsterNode Monster Node (For Monster Resources)
    */
   const onSave = (
     name?: string,
     category?: ResourceCategory,
     types?: ResourceType[],
     amount?: number,
-    i?: number
+    i?: number,
+    monsterName?: string,
+    monsterNode?: MonsterNode
   ) => {
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('resource'))
@@ -221,7 +248,11 @@ export function ResourcesCard({
         name,
         category: category!,
         types: types!,
-        amount: amount!
+        amount: amount!,
+        monsterName:
+          category === ResourceCategory.MONSTER ? monsterName : undefined,
+        monsterNode:
+          category === ResourceCategory.MONSTER ? monsterNode : undefined
       }
       setDisabledInputs((prev) => ({
         ...prev,
@@ -233,7 +264,11 @@ export function ResourcesCard({
         name,
         category: category!,
         types: types!,
-        amount: amount!
+        amount: amount!,
+        monsterName:
+          category === ResourceCategory.MONSTER ? monsterName : undefined,
+        monsterNode:
+          category === ResourceCategory.MONSTER ? monsterNode : undefined
       })
       setDisabledInputs((prev) => ({
         ...prev,
@@ -304,7 +339,7 @@ export function ResourcesCard({
 
         {/* Filters */}
         <div className="pt-2 space-y-2">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -360,6 +395,34 @@ export function ResourcesCard({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-between text-xs h-8">
+                  {filterMonsterNodes.length > 0
+                    ? `${filterMonsterNodes.length} node(s)`
+                    : 'Filter by Node'}
+                  <ChevronDownIcon className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="start">
+                <DropdownMenuLabel>Monster Nodes</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {Object.values(MonsterNode).map((node) => (
+                  <DropdownMenuCheckboxItem
+                    key={node}
+                    checked={filterMonsterNodes.includes(node)}
+                    onCheckedChange={(checked) =>
+                      handleMonsterNodeFilterChange(node, !!checked)
+                    }>
+                    {node}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {hasActiveFilters && (
@@ -389,6 +452,22 @@ export function ResourcesCard({
                     className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
                     onClick={() =>
                       setFilterTypes((prev) => prev.filter((t) => t !== type))
+                    }>
+                    <XIcon className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              ))}
+              {filterMonsterNodes.map((node) => (
+                <Badge key={node} variant="outline" className="text-xs">
+                  {node}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
+                    onClick={() =>
+                      setFilterMonsterNodes((prev) =>
+                        prev.filter((n) => n !== node)
+                      )
                     }>
                     <XIcon className="h-3 w-3" />
                   </Button>
@@ -428,8 +507,24 @@ export function ResourcesCard({
                       index={item.originalIndex}
                       onRemove={onRemove}
                       isDisabled={!!disabledInputs[item.originalIndex]}
-                      onSave={(i, name, category, types, amount) =>
-                        onSave(name, category, types, amount, i)
+                      onSave={(
+                        i,
+                        name,
+                        category,
+                        types,
+                        amount,
+                        monsterName,
+                        monsterNode
+                      ) =>
+                        onSave(
+                          name,
+                          category,
+                          types,
+                          amount,
+                          i,
+                          monsterName,
+                          monsterNode
+                        )
                       }
                       onEdit={() =>
                         setDisabledInputs((prev) => ({
@@ -458,10 +553,26 @@ export function ResourcesCard({
               )}
             {isAddingNew && (
               <NewResourceItem
-                onSave={(name, category, types, amount) =>
-                  onSave(name, category, types, amount)
+                onSave={(
+                  name,
+                  category,
+                  types,
+                  amount,
+                  monsterName,
+                  monsterNode
+                ) =>
+                  onSave(
+                    name,
+                    category,
+                    types,
+                    amount,
+                    undefined,
+                    monsterName,
+                    monsterNode
+                  )
                 }
                 onCancel={() => setIsAddingNew(false)}
+                selectedSettlement={selectedSettlement}
               />
             )}
           </div>
