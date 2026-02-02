@@ -1775,6 +1775,18 @@ export const SURVIVOR_SPEED_UPDATED_MESSAGE = () =>
   'Swift as shadows, the survivor advances.'
 
 /**
+ * Survivor State Updated
+ *
+ * @param survivorName Survivor Name
+ * @param state Survivor State
+ * @returns Survivor State Updated Message
+ */
+export const SURVIVOR_STATE_UPDATED_MESSAGE = (
+  survivorName: string,
+  state: string
+) => `${survivorName} is now ${state.toLowerCase()}.`
+
+/**
  * Survivor Strength Updated
  *
  * @returns Survivor Strength Updated Message

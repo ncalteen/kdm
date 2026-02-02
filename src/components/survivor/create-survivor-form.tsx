@@ -25,6 +25,7 @@ import {
   canSurge,
   getNextSurvivorId
 } from '@/lib/utils'
+import { AenasState } from '@/lib/wanderers/aenas'
 import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
 import {
@@ -223,6 +224,9 @@ export function CreateSurvivorForm({
       )
     )
       newSurvivor.disposition = (newSurvivor.disposition ?? 0) + 1
+
+    // If the wanderer is Aenas, set her initial state (default to Hungry)
+    if (wanderer.name === 'Aenas') newSurvivor.state = AenasState.HUNGRY
 
     // Populate form with wanderer data
     form.reset(newSurvivor)
