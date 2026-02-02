@@ -29,3 +29,16 @@ export const AENAS: Wanderer = {
   torment: 1,
   understanding: 0
 }
+
+/**
+ * Aenas' State
+ *
+ * Aenas can be in one of two states: Content or Hungry. This affects her
+ * behavior while in the settlement.
+ */
+export enum AenasState {
+  /** Content */
+  CONTENT = 'Content',
+  /** Hungry */
+  HUNGRY = 'Hungry'
+}
