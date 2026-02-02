@@ -31,7 +31,9 @@ import {
   NemesisMonsterLevel,
   QuarryMonsterLevel
 } from '@/schemas/monster-level'
+import type { MonsterTimelineEntry } from '@/schemas/monster-timeline-entry'
 import type { Settlement } from '@/schemas/settlement'
+import type { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
 import type { Showdown } from '@/schemas/showdown'
 import type { Survivor } from '@/schemas/survivor'
 import packageJson from '../../package.json'
@@ -51,6 +53,34 @@ const nemesisMap = {
   [CampaignType.PEOPLE_OF_THE_STARS]: NEMESES.BUTCHER,
   [CampaignType.PEOPLE_OF_THE_DREAM_KEEPER]: NEMESES.ATNAS,
   [CampaignType.CUSTOM]: NEMESES.BUTCHER
+}
+
+/**
+ * Add Monster Timeline Entries to Settlement Timeline.
+ *
+ * @param timeline Timeline
+ * @param monsterTimeline Monster Timeline Entries
+ * @param campaignType Campaign Type
+ */
+function addMonsterTimelineEntries(
+  timeline: SettlementTimelineYear[],
+  monsterTimeline: MonsterTimelineEntry,
+  campaignType: CampaignType
+): void {
+  for (const [yearStr, entries] of Object.entries(monsterTimeline)) {
+    const year = Number(yearStr)
+
+    if (year >= 0 && year < timeline.length && entries)
+      for (const entry of entries) {
+        if (typeof entry === 'string') {
+          if (!timeline[year].entries.includes(entry))
+            timeline[year].entries.push(entry)
+        } else if (entry.campaigns.includes(campaignType)) {
+          if (!timeline[year].entries.includes(entry.title))
+            timeline[year].entries.push(entry.title)
+        }
+      }
+  }
 }
 
 /**
@@ -317,7 +347,7 @@ function createPeopleOfTheLanternSettlement(
 ): Settlement {
   const lanternYear = variant === 1 ? 5 : 12
 
-  return {
+  const settlement: Settlement = {
     id,
     name: `PotL ${variant}`,
     arrivalBonuses: variant === 2 ? ['+1 Survival'] : [],
@@ -455,6 +485,19 @@ function createPeopleOfTheLanternSettlement(
     lanternResearchLevel: variant,
     monsterVolumes: variant === 2 ? ['White Lion Vol. 1'] : []
   }
+
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    quarryMap[CampaignType.PEOPLE_OF_THE_LANTERN].timeline,
+    CampaignType.PEOPLE_OF_THE_LANTERN
+  )
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    nemesisMap[CampaignType.PEOPLE_OF_THE_LANTERN].timeline,
+    CampaignType.PEOPLE_OF_THE_LANTERN
+  )
+
+  return settlement
 }
 
 /**
@@ -469,7 +512,7 @@ function createPeopleOfTheSunSettlement(
 ): Settlement {
   const lanternYear = variant === 1 ? 5 : 12
 
-  return {
+  const settlement: Settlement = {
     id,
     name: `PotSun ${variant}`,
     arrivalBonuses: variant === 2 ? ['+1 Survival'] : [],
@@ -570,6 +613,19 @@ function createPeopleOfTheSunSettlement(
       WANDERERS.LUCK
     ]
   }
+
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    quarryMap[CampaignType.PEOPLE_OF_THE_SUN].timeline,
+    CampaignType.PEOPLE_OF_THE_SUN
+  )
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    nemesisMap[CampaignType.PEOPLE_OF_THE_SUN].timeline,
+    CampaignType.PEOPLE_OF_THE_SUN
+  )
+
+  return settlement
 }
 
 /**
@@ -584,7 +640,7 @@ function createPeopleOfTheStarsSettlement(
 ): Settlement {
   const lanternYear = variant === 1 ? 5 : 12
 
-  return {
+  const settlement: Settlement = {
     id,
     name: `PotStars ${variant}`,
     arrivalBonuses: variant === 2 ? ['+1 Survival'] : [],
@@ -747,6 +803,19 @@ function createPeopleOfTheStarsSettlement(
       ...(variant === 2 ? [Philosophy.LANTERNISM] : [])
     ]
   }
+
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    quarryMap[CampaignType.PEOPLE_OF_THE_STARS].timeline,
+    CampaignType.PEOPLE_OF_THE_STARS
+  )
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    nemesisMap[CampaignType.PEOPLE_OF_THE_STARS].timeline,
+    CampaignType.PEOPLE_OF_THE_STARS
+  )
+
+  return settlement
 }
 
 /**
@@ -761,7 +830,7 @@ function createPeopleOfTheDreamKeeperSettlement(
 ): Settlement {
   const lanternYear = variant === 1 ? 5 : 12
 
-  return {
+  const settlement: Settlement = {
     id,
     name: `PotDK ${variant}`,
     arrivalBonuses: variant === 2 ? ['+1 Survival'] : [],
@@ -951,6 +1020,19 @@ function createPeopleOfTheDreamKeeperSettlement(
       ...(variant === 2 ? [Philosophy.LANTERNISM] : [])
     ]
   }
+
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    quarryMap[CampaignType.PEOPLE_OF_THE_DREAM_KEEPER].timeline,
+    CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+  )
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    nemesisMap[CampaignType.PEOPLE_OF_THE_DREAM_KEEPER].timeline,
+    CampaignType.PEOPLE_OF_THE_DREAM_KEEPER
+  )
+
+  return settlement
 }
 
 /**
@@ -963,7 +1045,7 @@ function createCustomSettlement(id: number, variant: number): Settlement {
   const isArc = variant === 3
   const lanternYear = variant === 1 ? 5 : 12
 
-  return {
+  const settlement: Settlement = {
     id,
     name: `Custom Settlement ${variant}`,
     arrivalBonuses: variant === 2 ? ['+1 Survival'] : [],
@@ -1165,6 +1247,19 @@ function createCustomSettlement(id: number, variant: number): Settlement {
       ]
     })
   }
+
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    quarryMap[CampaignType.CUSTOM].timeline,
+    CampaignType.CUSTOM
+  )
+  addMonsterTimelineEntries(
+    settlement.timeline,
+    nemesisMap[CampaignType.CUSTOM].timeline,
+    CampaignType.CUSTOM
+  )
+
+  return settlement
 }
 
 /**
