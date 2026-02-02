@@ -1,6 +1,7 @@
 'use client'
 
 import { ColorChoice, Gender, Philosophy, WeaponType } from '@/lib/enums'
+import { AenasState } from '@/lib/wanderers/aenas'
 import { z } from 'zod'
 
 /**
@@ -107,6 +108,12 @@ export const BaseSurvivorSchema = z.object({
   skipNextHunt: z.boolean().default(false),
   /** Speed */
   speed: z.number().default(0),
+  /**
+   * State
+   *
+   * Used by the Aenas (Wanderer) to track state while in the settlement.
+   */
+  state: z.enum(AenasState).optional(),
   /** Strength */
   strength: z.number().default(0),
   /** Survival (Named survivors start with 1 survival) */
