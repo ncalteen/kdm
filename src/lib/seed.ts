@@ -991,7 +991,7 @@ function createPeopleOfTheDreamKeeperSettlement(
     seedPatterns: variant === 2 ? ['Screaming Bracers'] : [],
     survivalLimit: variant === 1 ? 1 : 3,
     survivorType: SurvivorType.ARC,
-    timeline: PeopleOfTheStars.timeline.map((year, index) => ({
+    timeline: PeopleOfTheDreamKeeper.timeline.map((year, index) => ({
       completed: index < lanternYear,
       entries: year.entries
     })),
