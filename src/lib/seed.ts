@@ -1524,7 +1524,7 @@ function createHunt(
       insanityTokens: 0,
       luckTokens: 0,
       movementTokens: 0,
-      notes: `Survivor ${survivorId} ready for hunt`,
+      notes: `Survivor ${survivorId} (#${index}) ready for hunt`,
       speedTokens: 0,
       strengthTokens: 0,
       survivalTokens: 0
@@ -1590,7 +1590,7 @@ function createShowdown(
       knockedDown: false,
       luckTokens: 0,
       movementTokens: 0,
-      notes: `Survivor ${survivorId} ready for showdown`,
+      notes: `Survivor ${survivorId} (#${index}) ready for showdown`,
       priorityTarget: false,
       speedTokens: 0,
       strengthTokens: 0,
