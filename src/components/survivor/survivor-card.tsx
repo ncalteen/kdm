@@ -19,6 +19,7 @@ import { PhilosophyCard } from '@/components/survivor/philosophy/philosophy-card
 import { SanityCard } from '@/components/survivor/sanity/sanity-card'
 import { StatusCard } from '@/components/survivor/status/status-card'
 import { SurvivalCard } from '@/components/survivor/survival/survival-card'
+import { WandererCard } from '@/components/survivor/wanderer/wanderer-card'
 import { WeaponProficiencyCard } from '@/components/survivor/weapon-proficiency/weapon-proficiency-card'
 import { Card, CardContent } from '@/components/ui/card'
 import { ColorChoice, SurvivorCardMode, SurvivorType } from '@/lib/enums'
@@ -79,6 +80,12 @@ export function SurvivorCard({
           <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px]">
             {mode === SurvivorCardMode.SURVIVOR_CARD && (
               <StatusCard
+                saveSelectedSurvivor={saveSelectedSurvivor}
+                selectedSurvivor={selectedSurvivor}
+              />
+            )}
+            {selectedSurvivor?.wanderer && (
+              <WandererCard
                 saveSelectedSurvivor={saveSelectedSurvivor}
                 selectedSurvivor={selectedSurvivor}
               />
