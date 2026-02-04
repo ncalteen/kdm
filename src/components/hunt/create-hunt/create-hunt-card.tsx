@@ -38,6 +38,7 @@ import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
+import _ from 'lodash'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -401,112 +402,72 @@ export function CreateHuntCard({
   }
 
   /**
-   * Updates a Selected Monster Property
+   * Gets the Monster Data
    *
-   * Handles both direct properties (e.g., 'movement') and nested properties
-   * (e.g., ['aiDeck', 'advanced']). Automatically selects the correct data
-   * location based on the current monster version (original, alternate, or
-   * vignette).
+   * Automatically selects the correct data location based on the current
+   * monster version (original, alternate, or vignette).
    *
-   * @param path Property Path (string or array)
-   * @param value New Value
+   * @returns Monster Data
    */
-  const updateSelectedMonsterProperty = <T,>(
-    path: string | string[],
-    value: T
-  ) => {
-    if (!selectedQuarryData) return
-
-    const updated = { ...selectedQuarryData }
+  const getMonsterLevelData = (): QuarryMonsterLevel | undefined => {
+    if (!selectedQuarryData) return undefined
 
     // Get the monster to update based on selected version
-    const monster: QuarryMonsterLevel | null =
-      selectedMonsterVersion === MonsterVersion.ORIGINAL &&
-      updated[selectedMonsterLevel]?.[selectedHuntMonsterIndex]
-        ? (updated[selectedMonsterLevel][
+    return selectedMonsterVersion === MonsterVersion.ORIGINAL &&
+      selectedQuarryData[selectedMonsterLevel]?.[selectedHuntMonsterIndex]
+      ? (selectedQuarryData[selectedMonsterLevel][
+          selectedHuntMonsterIndex
+        ] as QuarryMonsterLevel)
+      : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
+          selectedQuarryData.alternate?.[selectedMonsterLevel]?.[
+            selectedHuntMonsterIndex
+          ]
+        ? (selectedQuarryData.alternate[selectedMonsterLevel][
             selectedHuntMonsterIndex
           ] as QuarryMonsterLevel)
-        : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
-            updated.alternate?.[selectedMonsterLevel]?.[
+        : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
+            selectedQuarryData.vignette?.[selectedMonsterLevel]?.[
               selectedHuntMonsterIndex
             ]
-          ? (updated.alternate[selectedMonsterLevel][
+          ? (selectedQuarryData.vignette[selectedMonsterLevel][
               selectedHuntMonsterIndex
             ] as QuarryMonsterLevel)
-          : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
-              updated.vignette?.[selectedMonsterLevel]?.[
-                selectedHuntMonsterIndex
-              ]
-            ? (updated.vignette[selectedMonsterLevel][
-                selectedHuntMonsterIndex
-              ] as QuarryMonsterLevel)
-            : null
-
-    if (!monster) return
-
-    // Handle nested path (e.g., ['aiDeck', 'advanced']) vs direct property
-    if (Array.isArray(path)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let target: any = monster
-      for (let i = 0; i < path.length - 1; i++) {
-        target = target[path[i]]
-        if (target === undefined) return
-      }
-      target[path[path.length - 1]] = value
-    } else (monster as { [key: string]: unknown })[path] = value
-
-    setSelectedQuarryData(updated)
+          : undefined
   }
 
   /**
-   * Gets a Selected Monster Property
+   * Updates a Numeric Monster Property
    *
-   * Handles both direct properties (e.g., 'movement') and nested properties
-   * (e.g., ['aiDeck', 'advanced']). Automatically selects the correct data
-   * location based on the current monster version (original, alternate, or
-   * vignette).
+   * Automatically selects the correct data location based on the current
+   * monster version (original, alternate, or vignette).
    *
-   * @param path Property Path (string or array)
-   * @returns Property Value
+   * @param path Property Path
+   * @param value New Value
    */
-  const getSelectedMonsterProperty = (path: string | string[]) => {
+  const updateNumericMonsterProperty = (path: string[], value: number) => {
     if (!selectedQuarryData) return
 
-    // Get the monster to update based on selected version
-    const monster: QuarryMonsterLevel | null =
-      selectedMonsterVersion === MonsterVersion.ORIGINAL &&
-      selectedQuarryData[selectedMonsterLevel]?.[selectedHuntMonsterIndex]
-        ? (selectedQuarryData[selectedMonsterLevel][
-            selectedHuntMonsterIndex
-          ] as QuarryMonsterLevel)
-        : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
-            selectedQuarryData.alternate?.[selectedMonsterLevel]?.[
-              selectedHuntMonsterIndex
-            ]
-          ? (selectedQuarryData.alternate[selectedMonsterLevel][
-              selectedHuntMonsterIndex
-            ] as QuarryMonsterLevel)
-          : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
-              selectedQuarryData.vignette?.[selectedMonsterLevel]?.[
-                selectedHuntMonsterIndex
-              ]
-            ? (selectedQuarryData.vignette[selectedMonsterLevel][
-                selectedHuntMonsterIndex
-              ] as QuarryMonsterLevel)
-            : null
-
+    const monster = getMonsterLevelData()
     if (!monster) return
 
-    // Handle nested path (e.g., ['aiDeck', 'advanced']) vs direct property
-    if (Array.isArray(path)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let target: any = monster
-      for (let i = 0; i < path.length - 1; i++) {
-        target = target[path[i]]
-        if (target === undefined) return
-      }
-      return target[path[path.length - 1]]
-    } else return (monster as { [key: string]: unknown })[path]
+    const updated = { ...selectedQuarryData }
+
+    _.set(monster, path, value)
+
+    // If the AI deck values are updated, update AI deck remaining as well
+    if (path[0] === 'aiDeck')
+      monster.aiDeckRemaining =
+        monster.aiDeck.advanced +
+        monster.aiDeck.basic +
+        monster.aiDeck.legendary +
+        (monster.aiDeck.overtone ?? 0)
+
+    updated[selectedMonsterLevel] = updated[selectedMonsterLevel]?.map((m) => {
+      if (m === monster) return monster
+      return m
+    })
+
+    setSelectedQuarryData(updated)
   }
 
   /**
@@ -661,7 +622,7 @@ export function CreateHuntCard({
           selectedQuarryData.multiMonster &&
           selectedQuarryData[selectedMonsterLevel] && (
             <h3 className="text-sm font-semibold text-muted-foreground text-center">
-              {getSelectedMonsterProperty('name') ?? 'Unknown Monster'}
+              {getMonsterLevelData()?.name ?? 'Unknown Monster'}
             </h3>
           )}
 
