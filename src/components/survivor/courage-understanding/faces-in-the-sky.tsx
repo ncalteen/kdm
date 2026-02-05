@@ -69,7 +69,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasGamblerWitch: !selectedSurvivor?.hasGamblerWitch || false
+                    hasGamblerWitch: selectedSurvivor?.hasGamblerWitch ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -81,7 +81,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasGamblerRust: !selectedSurvivor?.hasGamblerRust || false
+                    hasGamblerRust: selectedSurvivor?.hasGamblerRust ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -93,7 +93,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasGamblerStorm: !selectedSurvivor?.hasGamblerStorm || false
+                    hasGamblerStorm: selectedSurvivor?.hasGamblerStorm ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -106,7 +106,7 @@ export function FacesInTheSky({
                 saveSelectedSurvivor(
                   {
                     hasGamblerReaper:
-                      !selectedSurvivor?.hasGamblerReaper || false
+                      selectedSurvivor?.hasGamblerReaper ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -126,7 +126,7 @@ export function FacesInTheSky({
                 saveSelectedSurvivor(
                   {
                     hasAbsoluteWitch:
-                      !selectedSurvivor?.hasAbsoluteWitch || false
+                      selectedSurvivor?.hasAbsoluteWitch ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -138,7 +138,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasAbsoluteRust: !selectedSurvivor?.hasAbsoluteRust || false
+                    hasAbsoluteRust: selectedSurvivor?.hasAbsoluteRust ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -151,7 +151,7 @@ export function FacesInTheSky({
                 saveSelectedSurvivor(
                   {
                     hasAbsoluteStorm:
-                      !selectedSurvivor?.hasAbsoluteStorm || false
+                      selectedSurvivor?.hasAbsoluteStorm ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -164,7 +164,7 @@ export function FacesInTheSky({
                 saveSelectedSurvivor(
                   {
                     hasAbsoluteReaper:
-                      !selectedSurvivor?.hasAbsoluteReaper || false
+                      selectedSurvivor?.hasAbsoluteReaper ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -184,7 +184,7 @@ export function FacesInTheSky({
                 saveSelectedSurvivor(
                   {
                     hasSculptorWitch:
-                      !selectedSurvivor?.hasSculptorWitch || false
+                      selectedSurvivor?.hasSculptorWitch ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -196,7 +196,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasSculptorRust: !selectedSurvivor?.hasSculptorRust || false
+                    hasSculptorRust: selectedSurvivor?.hasSculptorRust ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -209,7 +209,7 @@ export function FacesInTheSky({
                 saveSelectedSurvivor(
                   {
                     hasSculptorStorm:
-                      !selectedSurvivor?.hasSculptorStorm || false
+                      selectedSurvivor?.hasSculptorStorm ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -222,7 +222,7 @@ export function FacesInTheSky({
                 saveSelectedSurvivor(
                   {
                     hasSculptorReaper:
-                      !selectedSurvivor?.hasSculptorReaper || false
+                      selectedSurvivor?.hasSculptorReaper ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -241,7 +241,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasGoblinWitch: !selectedSurvivor?.hasGoblinWitch || false
+                    hasGoblinWitch: selectedSurvivor?.hasGoblinWitch ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -253,7 +253,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasGoblinRust: !selectedSurvivor?.hasGoblinRust || false
+                    hasGoblinRust: selectedSurvivor?.hasGoblinRust ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -265,7 +265,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasGoblinStorm: !selectedSurvivor?.hasGoblinStorm || false
+                    hasGoblinStorm: selectedSurvivor?.hasGoblinStorm ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )
@@ -277,7 +277,7 @@ export function FacesInTheSky({
               onClick={() =>
                 saveSelectedSurvivor(
                   {
-                    hasGoblinReaper: !selectedSurvivor?.hasGoblinReaper || false
+                    hasGoblinReaper: selectedSurvivor?.hasGoblinReaper ?? false
                   },
                   SURVIVOR_FACES_IN_THE_SKY_TRAIT_UPDATED_MESSAGE()
                 )

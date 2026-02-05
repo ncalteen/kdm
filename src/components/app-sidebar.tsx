@@ -509,17 +509,17 @@ export function AppSidebar({
                           {campaign.survivors.length !== 1 ? 's' : ''}
                         </li>
                         <li>
-                          {Object.keys(campaign.customNemeses || {}).length}{' '}
+                          {Object.keys(campaign.customNemeses ?? {}).length}{' '}
                           custom
-                          {Object.keys(campaign.customNemeses || {}).length ===
+                          {Object.keys(campaign.customNemeses ?? {}).length ===
                           1
                             ? ' nemesis'
                             : ' nemeses'}
                         </li>
                         <li>
-                          {Object.keys(campaign.customQuarries || {}).length}{' '}
+                          {Object.keys(campaign.customQuarries ?? {}).length}{' '}
                           custom
-                          {Object.keys(campaign.customQuarries || {}).length ===
+                          {Object.keys(campaign.customQuarries ?? {}).length ===
                           1
                             ? ' quarry'
                             : ' quarries'}
@@ -537,22 +537,22 @@ export function AppSidebar({
                         </li>
                         <li>
                           {
-                            Object.keys(uploadedData?.customNemeses || {})
+                            Object.keys(uploadedData?.customNemeses ?? {})
                               .length
                           }{' '}
                           custom
-                          {Object.keys(uploadedData?.customNemeses || {})
+                          {Object.keys(uploadedData?.customNemeses ?? {})
                             .length === 1
                             ? ' nemesis'
                             : ' nemeses'}
                         </li>
                         <li>
                           {
-                            Object.keys(uploadedData?.customQuarries || {})
+                            Object.keys(uploadedData?.customQuarries ?? {})
                               .length
                           }{' '}
                           custom
-                          {Object.keys(uploadedData?.customQuarries || {})
+                          {Object.keys(uploadedData?.customQuarries ?? {})
                             .length === 1
                             ? ' quarry'
                             : ' quarries'}

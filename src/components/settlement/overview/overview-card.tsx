@@ -66,14 +66,14 @@ export function OverviewCard({
     let totalCc = 0
 
     // Calculate CC from nemesis victories. Each nemesis victory gives 3 CC.
-    for (const nemesis of selectedSettlement?.nemeses || []) {
+    for (const nemesis of selectedSettlement?.nemeses ?? []) {
       if (nemesis.ccLevel1) totalCc += 3
       if (nemesis.ccLevel2) totalCc += 3
       if (nemesis.ccLevel3) totalCc += 3
     }
 
     // Calculate CC from quarry victories.
-    for (const quarry of selectedSettlement?.quarries || []) {
+    for (const quarry of selectedSettlement?.quarries ?? []) {
       // Prologue Monster (1 CC)
       if (quarry.ccPrologue) totalCc += 1
 
@@ -81,11 +81,11 @@ export function OverviewCard({
       if (quarry.ccLevel1) totalCc += 1
 
       // Level 2 Monster (2 CC)
-      for (const level2Victory of quarry.ccLevel2 || [])
+      for (const level2Victory of quarry.ccLevel2 ?? [])
         if (level2Victory) totalCc += 2
 
       // Level 3 Monster (3 CC)
-      for (const level3Victory of quarry.ccLevel3 || [])
+      for (const level3Victory of quarry.ccLevel3 ?? [])
         if (level3Victory) totalCc += 3
     }
 
@@ -336,29 +336,18 @@ export function OverviewCard({
           <div className="flex items-center justify-between">
             <Label className="text-sm">Survival Limit</Label>
             <NumericInput
+              label="Survival Limit"
               value={selectedSettlement?.survivalLimit ?? 1}
               min={1}
-              label="Survival Limit"
               onChange={(value) =>
                 handleSurvivalLimitChange(
                   selectedSettlement?.survivalLimit ?? 1,
                   value
                 )
               }
-              readOnly={false}
-              disabled={!selectedSettlement}>
-              <Input
-                type="number"
-                min="1"
-                placeholder="1"
-                className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSettlement?.survivalLimit ?? 1}
-                readOnly
-                disabled={!selectedSettlement}
-                name="survival-limit-mobile"
-                id="survival-limit-mobile"
-              />
-            </NumericInput>
+              className="w-16 h-8 text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              disabled={!selectedSettlement}
+            />
           </div>
 
           {/* Population */}
@@ -391,29 +380,18 @@ export function OverviewCard({
           <div className="flex items-center justify-between">
             <Label className="text-sm">Lost Settlements</Label>
             <NumericInput
+              label="Lost Settlements"
               value={selectedSettlement?.lostSettlements ?? 0}
               min={0}
-              label="Lost Settlements"
               onChange={(value) =>
                 handleLostSettlementCountChange(
                   selectedSettlement?.lostSettlements ?? 0,
                   value
                 )
               }
-              readOnly={false}
-              disabled={!selectedSettlement}>
-              <Input
-                type="number"
-                min="0"
-                placeholder="0"
-                className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSettlement?.lostSettlements ?? 0}
-                readOnly
-                disabled={!selectedSettlement}
-                name="lost-settlements-mobile"
-                id="lost-settlements-mobile"
-              />
-            </NumericInput>
+              disabled={!selectedSettlement}
+              className="w-16 h-8 text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
           {/* Collective Cognition (ARC only) */}
@@ -439,27 +417,17 @@ export function OverviewCard({
             <div className="flex items-center justify-between">
               <Label className="text-sm">Lantern Research</Label>
               <NumericInput
+                label="Lantern Research"
                 value={selectedSettlement?.lanternResearchLevel ?? 0}
                 min={0}
-                label="Lantern Research"
                 onChange={(value) =>
                   handleLanternResearchLevelChange(
                     selectedSettlement?.lanternResearchLevel ?? 0,
                     value
                   )
                 }
-                readOnly={false}>
-                <Input
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  className="w-16 h-8 text-center no-spinners text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={selectedSettlement?.lanternResearchLevel ?? 0}
-                  readOnly
-                  name="lantern-research-mobile"
-                  id="lantern-research-mobile"
-                />
-              </NumericInput>
+                className="w-16 h-8 text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
             </div>
           )}
         </div>

@@ -65,7 +65,7 @@ export function ArrivalBonusItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.arrivalBonuses?.[index] || ''
+      inputRef.current.value = selectedSettlement?.arrivalBonuses?.[index] ?? ''
   }, [selectedSettlement?.arrivalBonuses, index])
 
   /**

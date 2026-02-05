@@ -57,13 +57,13 @@ export function HuntSurvivorCard({
 
   // State for managing notes
   const [notesDraft, setNotesDraft] = useState<string>(
-    survivorHuntDetails?.notes || ''
+    survivorHuntDetails?.notes ?? ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
 
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: SurvivorSchema.parse(selectedSurvivor || {})
+    defaultValues: SurvivorSchema.parse(selectedSurvivor ?? {})
   })
 
   // Update form values when survivor data changes

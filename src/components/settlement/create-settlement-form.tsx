@@ -203,7 +203,7 @@ export function CreateSettlementForm({
                       <SelectCampaignType
                         {...field}
                         value={
-                          field.value || CampaignType.PEOPLE_OF_THE_LANTERN
+                          field.value ?? CampaignType.PEOPLE_OF_THE_LANTERN
                         }
                       />
                     </FormControl>

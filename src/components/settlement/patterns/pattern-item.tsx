@@ -65,7 +65,7 @@ export function PatternItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.patterns?.[index] || ''
+      inputRef.current.value = selectedSettlement?.patterns?.[index] ?? ''
   }, [selectedSettlement?.patterns, index])
 
   /**

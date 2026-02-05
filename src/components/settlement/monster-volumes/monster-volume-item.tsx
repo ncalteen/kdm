@@ -66,7 +66,7 @@ export function MonsterVolumeItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.monsterVolumes?.[index] || ''
+      inputRef.current.value = selectedSettlement?.monsterVolumes?.[index] ?? ''
   }, [selectedSettlement?.monsterVolumes, index])
 
   /**

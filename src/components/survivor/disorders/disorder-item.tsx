@@ -62,7 +62,7 @@ export function DisorderItem({
     console.debug('[DisorderItem] Changed', selectedSurvivor?.disorders)
 
     if (inputRef.current)
-      inputRef.current.value = selectedSurvivor?.disorders?.[index] || ''
+      inputRef.current.value = selectedSurvivor?.disorders?.[index] ?? ''
   }, [selectedSurvivor?.disorders, index])
 
   /**

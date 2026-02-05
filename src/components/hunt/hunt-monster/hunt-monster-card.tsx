@@ -59,7 +59,7 @@ export function HuntMonsterCard({
   const form = useForm<HuntMonster>({
     resolver: zodResolver(HuntMonsterSchema) as Resolver<HuntMonster>,
     defaultValues: HuntMonsterSchema.parse(
-      selectedHunt?.monsters[selectedHuntMonsterIndex] || {}
+      selectedHunt?.monsters[selectedHuntMonsterIndex] ?? {}
     )
   })
 
@@ -97,7 +97,7 @@ export function HuntMonsterCard({
 
   // State for managing monster notes
   const [notesDraft, setNotesDraft] = useState<string>(
-    selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes || ''
+    selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes ?? ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
 
@@ -106,7 +106,7 @@ export function HuntMonsterCard({
     if (selectedHunt?.monsters) {
       form.reset(selectedHunt?.monsters[selectedHuntMonsterIndex])
       setNotesDraft(
-        selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes || ''
+        selectedHunt?.monsters?.[selectedHuntMonsterIndex].notes ?? ''
       )
       setIsNotesDirty(false)
     }
@@ -186,7 +186,7 @@ export function HuntMonsterCard({
 
   const onRemoveTrait = (index: number) => {
     const currentTraits = [
-      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits || [])
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits ?? [])
     ]
     currentTraits.splice(index, 1)
 
@@ -208,7 +208,7 @@ export function HuntMonsterCard({
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
 
     const updatedTraits = [
-      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits || [])
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits ?? [])
     ]
 
     if (i !== undefined) {
@@ -236,7 +236,7 @@ export function HuntMonsterCard({
 
   const onRemoveMood = (index: number) => {
     const currentMoods = [
-      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods || [])
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods ?? [])
     ]
     currentMoods.splice(index, 1)
 
@@ -258,7 +258,7 @@ export function HuntMonsterCard({
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))
 
     const updatedMoods = [
-      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods || [])
+      ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods ?? [])
     ]
 
     if (i !== undefined) {

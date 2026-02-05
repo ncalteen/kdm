@@ -100,7 +100,7 @@ export function TimelineCard({
   const addEventToYear = useCallback(
     (yearIndex: number) => {
       const currentEntries =
-        selectedSettlement?.timeline?.[yearIndex].entries || []
+        selectedSettlement?.timeline?.[yearIndex].entries ?? []
 
       // Check if any entry in this year is being edited
       const isEditing = Object.keys(editingEvents).some((key) => {
@@ -142,7 +142,7 @@ export function TimelineCard({
       if (!selectedSettlement) return
 
       const currentEntries =
-        selectedSettlement?.timeline?.[yearIndex].entries || []
+        selectedSettlement?.timeline?.[yearIndex].entries ?? []
       const inputKey = `${yearIndex}-${eventIndex}`
 
       // Remove from editingEvents first
@@ -161,7 +161,7 @@ export function TimelineCard({
       newEntries.splice(eventIndex, 1)
 
       // Create a new timeline array instead of mutating the existing one
-      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
+      const updatedTimeline = [...(selectedSettlement?.timeline ?? [])]
       updatedTimeline[yearIndex] = {
         ...selectedSettlement?.timeline?.[yearIndex],
         entries: newEntries
@@ -208,8 +208,8 @@ export function TimelineCard({
       })
 
       // Save to localStorage with the updated timeline
-      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
-      const currentEntries = [...(updatedTimeline[yearIndex]?.entries || [])]
+      const updatedTimeline = [...(selectedSettlement?.timeline ?? [])]
+      const currentEntries = [...(updatedTimeline[yearIndex]?.entries ?? [])]
       currentEntries[entryIndex] = newEventValue
 
       updatedTimeline[yearIndex] = {
@@ -237,7 +237,7 @@ export function TimelineCard({
       if (!selectedSettlement) return
 
       // Save to localStorage with the updated timeline
-      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
+      const updatedTimeline = [...(selectedSettlement?.timeline ?? [])]
       updatedTimeline[yearIndex] = {
         ...updatedTimeline[yearIndex],
         completed
@@ -258,7 +258,7 @@ export function TimelineCard({
   const handleAddLanternYear = useCallback(() => {
     if (!selectedSettlement) return
 
-    const currentTimeline = selectedSettlement?.timeline || []
+    const currentTimeline = selectedSettlement?.timeline ?? []
     const updatedTimeline = [
       ...currentTimeline,
       { completed: false, entries: [] }

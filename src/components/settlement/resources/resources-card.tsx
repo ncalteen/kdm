@@ -73,7 +73,7 @@ export function ResourcesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.resources || []).map((_, i) => [i, true])
+      (selectedSettlement?.resources ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -168,7 +168,7 @@ export function ResourcesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.resources || []).map((_, i) => [i, true])
+        (selectedSettlement?.resources ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -187,7 +187,7 @@ export function ResourcesCard({
    * @param amount New Amount
    */
   const onAmountChange = (index: number, amount: number) => {
-    const currentResources = [...(selectedSettlement?.resources || [])]
+    const currentResources = [...(selectedSettlement?.resources ?? [])]
     currentResources[index] = { ...currentResources[index], amount }
 
     saveSelectedSettlement({ resources: currentResources })
@@ -199,7 +199,7 @@ export function ResourcesCard({
    * @param index Resource Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.resources || [])]
+    const current = [...(selectedSettlement?.resources ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -240,7 +240,7 @@ export function ResourcesCard({
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('resource'))
 
-    const updated = [...(selectedSettlement?.resources || [])]
+    const updated = [...(selectedSettlement?.resources ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -292,7 +292,7 @@ export function ResourcesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.resources || [],
+        selectedSettlement?.resources ?? [],
         oldIndex,
         newIndex
       )

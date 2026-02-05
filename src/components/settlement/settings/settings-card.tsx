@@ -322,7 +322,7 @@ export function SettingsCard({
     if (!selectedSettlement?.id) return
 
     try {
-      const settlementName = selectedSettlement?.name || 'this settlement'
+      const settlementName = selectedSettlement?.name ?? 'this settlement'
 
       const updatedSettlements = campaign.settlements.filter(
         (s) => s.id !== selectedSettlement?.id
@@ -758,7 +758,7 @@ export function SettingsCard({
                     size="sm"
                     onClick={() => setIsDeleteDialogOpen(true)}>
                     <Trash2Icon className="h-4 w-4 mr-2" />
-                    Delete {selectedSettlement?.name || 'Settlement'}
+                    Delete {selectedSettlement?.name ?? 'Settlement'}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -776,7 +776,7 @@ export function SettingsCard({
                     <AlertDialogAction
                       onClick={handleDeleteSettlement}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                      Delete {selectedSettlement?.name || 'Settlement'}
+                      Delete {selectedSettlement?.name ?? 'Settlement'}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

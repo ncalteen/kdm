@@ -57,7 +57,7 @@ export function NextDepartureCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.nextDeparture || []).map((_, i) => [i, true])
+      (selectedSurvivor?.nextDeparture ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -67,7 +67,7 @@ export function NextDepartureCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSurvivor?.nextDeparture || []).map((_, i) => [i, true])
+        (selectedSurvivor?.nextDeparture ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -85,7 +85,7 @@ export function NextDepartureCard({
    * @param index Next Departure Index
    */
   const onRemove = (index: number) => {
-    const updated = [...(selectedSurvivor?.nextDeparture || [])]
+    const updated = [...(selectedSurvivor?.nextDeparture ?? [])]
     updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -116,7 +116,7 @@ export function NextDepartureCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('next departure bonus'))
 
-    const updated = [...(selectedSurvivor?.nextDeparture || [])]
+    const updated = [...(selectedSurvivor?.nextDeparture ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -153,7 +153,7 @@ export function NextDepartureCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.nextDeparture || [],
+        selectedSurvivor?.nextDeparture ?? [],
         oldIndex,
         newIndex
       )
@@ -201,17 +201,17 @@ export function NextDepartureCard({
       {/* Next Departure List */}
       <CardContent className="p-0">
         <div className="flex flex-col">
-          {(selectedSurvivor?.nextDeparture || []).length !== 0 && (
+          {(selectedSurvivor?.nextDeparture ?? []).length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(selectedSurvivor?.nextDeparture || []).map((_, index) =>
+                items={(selectedSurvivor?.nextDeparture ?? []).map((_, index) =>
                   index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.nextDeparture || []).map((item, index) => (
+                {(selectedSurvivor?.nextDeparture ?? []).map((item, index) => (
                   <NextDepartureItem
                     key={index}
                     id={index.toString()}

@@ -103,7 +103,7 @@ export function ScoutSelectionDrawer({
           {!isMobile && (
             <div className="w-[450px]">
               <SurvivorDetailsPanel
-                survivor={hoveredSurvivor || lastHoveredSurvivor}
+                survivor={hoveredSurvivor ?? lastHoveredSurvivor}
                 survivors={survivors}
               />
             </div>

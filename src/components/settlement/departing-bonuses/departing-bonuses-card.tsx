@@ -60,7 +60,7 @@ export function DepartingBonusesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.departingBonuses || []).map((_, i) => [i, true])
+      (selectedSettlement?.departingBonuses ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -77,7 +77,7 @@ export function DepartingBonusesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.departingBonuses || []).map((_, i) => [i, true])
+        (selectedSettlement?.departingBonuses ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -88,7 +88,7 @@ export function DepartingBonusesCard({
    * @param index Departing Bonus Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.departingBonuses || [])]
+    const current = [...(selectedSettlement?.departingBonuses ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -119,7 +119,7 @@ export function DepartingBonusesCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('departing bonus'))
 
-    const updated = [...(selectedSettlement?.departingBonuses || [])]
+    const updated = [...(selectedSettlement?.departingBonuses ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -156,7 +156,7 @@ export function DepartingBonusesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.departingBonuses || [],
+        selectedSettlement?.departingBonuses ?? [],
         oldIndex,
         newIndex
       )
@@ -212,11 +212,11 @@ export function DepartingBonusesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.departingBonuses || []).map(
+                  items={(selectedSettlement?.departingBonuses ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.departingBonuses || []).map(
+                  {(selectedSettlement?.departingBonuses ?? []).map(
                     (bonus, index) => (
                       <DepartingBonusItem
                         key={index}

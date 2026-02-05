@@ -69,7 +69,7 @@ export function LocationItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.locations?.[index].name || ''
+      inputRef.current.value = selectedSettlement?.locations?.[index].name ?? ''
   }, [selectedSettlement?.locations, index])
 
   /**
@@ -85,7 +85,7 @@ export function LocationItem({
       e.preventDefault()
       onSave(
         inputRef.current.value,
-        selectedSettlement?.locations?.[index].unlocked || false,
+        selectedSettlement?.locations?.[index].unlocked ?? false,
         index
       )
     }
@@ -107,7 +107,7 @@ export function LocationItem({
       {/* Unlocked Checkbox */}
       <Checkbox
         id={`location-unlocked-${index}`}
-        checked={selectedSettlement?.locations?.[index].unlocked || false}
+        checked={selectedSettlement?.locations?.[index].unlocked ?? false}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -117,14 +117,14 @@ export function LocationItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-sm">
-            {selectedSettlement?.locations?.[index].name || ''}
+            {selectedSettlement?.locations?.[index].name ?? ''}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Location Name"
-          defaultValue={selectedSettlement?.locations?.[index].name || ''}
+          defaultValue={selectedSettlement?.locations?.[index].name ?? ''}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
         />
@@ -149,7 +149,7 @@ export function LocationItem({
             onClick={() =>
               onSave(
                 inputRef.current!.value,
-                selectedSettlement?.locations?.[index].unlocked || false,
+                selectedSettlement?.locations?.[index].unlocked ?? false,
                 index
               )
             }

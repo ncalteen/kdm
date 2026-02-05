@@ -80,9 +80,9 @@ export function PrincipleItem({
    */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const name = nameInputRef.current?.value || ''
-      const option1 = option1InputRef.current?.value || ''
-      const option2 = option2InputRef.current?.value || ''
+      const name = nameInputRef.current?.value ?? ''
+      const option1 = option1InputRef.current?.value ?? ''
+      const option2 = option2InputRef.current?.value ?? ''
 
       if (name && option1 && option2) {
         e.preventDefault()
@@ -195,9 +195,9 @@ export function PrincipleItem({
               variant="ghost"
               size="icon"
               onClick={() => {
-                const name = nameInputRef.current?.value || ''
-                const option1 = option1InputRef.current?.value || ''
-                const option2 = option2InputRef.current?.value || ''
+                const name = nameInputRef.current?.value ?? ''
+                const option1 = option1InputRef.current?.value ?? ''
+                const option2 = option2InputRef.current?.value ?? ''
 
                 if (name && option1 && option2)
                   onSave(index, name, option1, option2)

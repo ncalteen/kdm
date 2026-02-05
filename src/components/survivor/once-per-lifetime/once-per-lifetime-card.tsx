@@ -60,7 +60,7 @@ export function OncePerLifetimeCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.oncePerLifetime || []).map((_, i) => [i, true])
+      (selectedSurvivor?.oncePerLifetime ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -70,7 +70,7 @@ export function OncePerLifetimeCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSurvivor?.oncePerLifetime || []).map((_, i) => [i, true])
+        (selectedSurvivor?.oncePerLifetime ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -110,7 +110,7 @@ export function OncePerLifetimeCard({
    * @param index Event Index
    */
   const onRemove = (index: number) => {
-    const updated = [...(selectedSurvivor?.oncePerLifetime || [])]
+    const updated = [...(selectedSurvivor?.oncePerLifetime ?? [])]
     updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -144,7 +144,7 @@ export function OncePerLifetimeCard({
         NAMELESS_OBJECT_ERROR_MESSAGE('once per lifetime event')
       )
 
-    const updated = [...(selectedSurvivor?.oncePerLifetime || [])]
+    const updated = [...(selectedSurvivor?.oncePerLifetime ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -181,7 +181,7 @@ export function OncePerLifetimeCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.oncePerLifetime || [],
+        selectedSurvivor?.oncePerLifetime ?? [],
         oldIndex,
         newIndex
       )
@@ -245,11 +245,11 @@ export function OncePerLifetimeCard({
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(selectedSurvivor?.oncePerLifetime || []).map(
+                items={(selectedSurvivor?.oncePerLifetime ?? []).map(
                   (_, index) => index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.oncePerLifetime || []).map(
+                {(selectedSurvivor?.oncePerLifetime ?? []).map(
                   (event, index) => (
                     <OncePerLifetimeItem
                       key={index}

@@ -41,7 +41,7 @@ export function SquireSuspicionsCard({
   selectedSettlement
 }: SquireSuspicionsCardProps): ReactElement {
   // Calculate total suspicion level
-  const totalSuspicion = (selectedSettlement?.suspicions || []).reduce(
+  const totalSuspicion = (selectedSettlement?.suspicions ?? []).reduce(
     (total, suspicion) => {
       let suspicionLevel = 0
 
@@ -67,7 +67,7 @@ export function SquireSuspicionsCard({
     level: number,
     checked: boolean
   ) => {
-    const updated = (selectedSettlement?.suspicions || []).map((suspicion) => {
+    const updated = (selectedSettlement?.suspicions ?? []).map((suspicion) => {
       if (suspicion.name === squireName) {
         // Make a copy of the suspicion
         const updatedSuspicion = { ...suspicion }
@@ -147,7 +147,7 @@ export function SquireSuspicionsCard({
                 <TableCell className="text-center" />
                 <TableCell className="text-center" />
               </TableRow>
-              {(selectedSettlement?.suspicions || []).map(
+              {(selectedSettlement?.suspicions ?? []).map(
                 (suspicion, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium text-left pl-5">
@@ -155,7 +155,7 @@ export function SquireSuspicionsCard({
                     </TableCell>
                     <TableCell className="text-center">
                       <Checkbox
-                        checked={suspicion.level1 || false}
+                        checked={suspicion.level1 ?? false}
                         onCheckedChange={(checked) =>
                           handleSuspicionChange(suspicion.name, 1, !!checked)
                         }
@@ -163,7 +163,7 @@ export function SquireSuspicionsCard({
                     </TableCell>
                     <TableCell className="text-center">
                       <Checkbox
-                        checked={suspicion.level2 || false}
+                        checked={suspicion.level2 ?? false}
                         onCheckedChange={(checked) =>
                           handleSuspicionChange(suspicion.name, 2, !!checked)
                         }
@@ -171,7 +171,7 @@ export function SquireSuspicionsCard({
                     </TableCell>
                     <TableCell className="text-center">
                       <Checkbox
-                        checked={suspicion.level3 || false}
+                        checked={suspicion.level3 ?? false}
                         onCheckedChange={(checked) =>
                           handleSuspicionChange(suspicion.name, 3, !!checked)
                         }
@@ -179,7 +179,7 @@ export function SquireSuspicionsCard({
                     </TableCell>
                     <TableCell className="text-center">
                       <Checkbox
-                        checked={suspicion.level4 || false}
+                        checked={suspicion.level4 ?? false}
                         onCheckedChange={(checked) =>
                           handleSuspicionChange(suspicion.name, 4, !!checked)
                         }

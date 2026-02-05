@@ -65,7 +65,7 @@ export function SeedPatternItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.seedPatterns?.[index] || ''
+      inputRef.current.value = selectedSettlement?.seedPatterns?.[index] ?? ''
   }, [selectedSettlement?.seedPatterns, index])
 
   /**

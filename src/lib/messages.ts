@@ -197,7 +197,7 @@ export const CUSTOM_MONSTER_CREATED_MESSAGE = (monsterType: MonsterType) =>
  * @returns Custom Monster Deleted Message
  */
 export const CUSTOM_MONSTER_DELETED_MESSAGE = (monsterName?: string) =>
-  `${monsterName || 'Monster'} fades back into the darkness.`
+  `${monsterName ?? 'Monster'} fades back into the darkness.`
 
 /**
  * Custom Monster Updated
@@ -1417,7 +1417,7 @@ export const SURVIVOR_CREATED_MESSAGE = () =>
  * @returns Survivor Cursed Gear Removed Message
  */
 export const SURVIVOR_CURSED_GEAR_REMOVED_MESSAGE = (name?: string) =>
-  `${name || 'Survivor'}'s cursed gear has been removed.`
+  `${name ?? 'Survivor'}'s cursed gear has been removed.`
 
 /**
  * Survivor Cursed Gear Updated
@@ -1431,8 +1431,8 @@ export const SURVIVOR_CURSED_GEAR_UPDATED_MESSAGE = (
   isNew = false
 ) =>
   isNew
-    ? `${name || 'Survivor'}'s cursed gear has been added.`
-    : `${name || 'Survivor'}'s cursed gear has been updated.`
+    ? `${name ?? 'Survivor'}'s cursed gear has been added.`
+    : `${name ?? 'Survivor'}'s cursed gear has been updated.`
 
 /**
  * Survivor Dead Status Updated

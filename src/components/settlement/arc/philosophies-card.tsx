@@ -62,7 +62,7 @@ export function PhilosophiesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+      (selectedSettlement?.knowledges ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -72,7 +72,7 @@ export function PhilosophiesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+        (selectedSettlement?.knowledges ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -90,7 +90,7 @@ export function PhilosophiesCard({
    * @param index Philosophy Index
    */
   const onRemove = (index: number) => {
-    const currentPhilosophies = [...(selectedSettlement?.philosophies || [])]
+    const currentPhilosophies = [...(selectedSettlement?.philosophies ?? [])]
     currentPhilosophies.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -123,7 +123,7 @@ export function PhilosophiesCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('philosophy'))
 
-    const updatedPhilosophies = [...(selectedSettlement?.philosophies || [])]
+    const updatedPhilosophies = [...(selectedSettlement?.philosophies ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -165,7 +165,7 @@ export function PhilosophiesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.philosophies || [],
+        selectedSettlement?.philosophies ?? [],
         oldIndex,
         newIndex
       )
@@ -225,11 +225,11 @@ export function PhilosophiesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.philosophies || []).map(
+                  items={(selectedSettlement?.philosophies ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.philosophies || []).map(
+                  {(selectedSettlement?.philosophies ?? []).map(
                     (philosophy, index) => (
                       <PhilosophyItem
                         key={index}

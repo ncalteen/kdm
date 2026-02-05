@@ -297,7 +297,7 @@ export function KnowledgeCard({
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
               const checked =
-                (selectedSurvivor?.knowledge1ObservationRank || 0) >= index + 1
+                (selectedSurvivor?.knowledge1ObservationRank ?? 0) >= index + 1
               const isRankUpMilestone =
                 selectedSurvivor?.knowledge1RankUp === index
 
@@ -376,7 +376,7 @@ export function KnowledgeCard({
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
               const checked =
-                (selectedSurvivor?.knowledge2ObservationRank || 0) >= index + 1
+                (selectedSurvivor?.knowledge2ObservationRank ?? 0) >= index + 1
               const isRankUpMilestone =
                 selectedSurvivor?.knowledge2RankUp === index
 

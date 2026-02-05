@@ -77,7 +77,7 @@ export function SurvivorDetailsPanel({
           selectedSettlement={null}
           selectedShowdown={null}
           selectedSurvivor={survivor}
-          readOnly={true}
+          disabled={true}
         />
 
         {/* Additional Attributes Section */}

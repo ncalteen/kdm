@@ -68,7 +68,7 @@ export function ResourceCategoriesCombobox({
           aria-expanded={open}
           className="w-full justify-between h-9"
           disabled={disabled}>
-          {selectedCategory || 'Select category...'}
+          {selectedCategory ?? 'Select category...'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

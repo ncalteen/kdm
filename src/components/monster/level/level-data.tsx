@@ -132,7 +132,7 @@ export function LevelData({
           {label}
         </Label>
         <NumericInput
-          label={extendedLabel || label}
+          label={extendedLabel ?? label}
           value={numericValue}
           onChange={(val: number) => updateFn(val)}
           min={0}
@@ -380,7 +380,7 @@ export function LevelData({
                 id={`level${level}-${selectedSubMonsterIndex}-name`}
                 type="text"
                 placeholder="Sub-Monster Name"
-                value={currentSubMonster.name || ''}
+                value={currentSubMonster.name ?? ''}
                 onChange={(e) =>
                   updateSubMonster({
                     ...currentSubMonster,

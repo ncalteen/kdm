@@ -65,7 +65,7 @@ export function ShowdownMonsterCard({
   const form = useForm<ShowdownMonster>({
     resolver: zodResolver(ShowdownMonsterSchema) as Resolver<ShowdownMonster>,
     defaultValues: ShowdownMonsterSchema.parse(
-      selectedShowdown?.monsters[selectedShowdownMonsterIndex] || []
+      selectedShowdown?.monsters[selectedShowdownMonsterIndex] ?? []
     )
   })
 
@@ -103,7 +103,7 @@ export function ShowdownMonsterCard({
 
   // State for managing monster notes
   const [notesDraft, setNotesDraft] = useState<string>(
-    selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].notes || ''
+    selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].notes ?? ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
 
@@ -112,7 +112,7 @@ export function ShowdownMonsterCard({
     if (selectedShowdown?.monsters) {
       form.reset(selectedShowdown?.monsters[selectedShowdownMonsterIndex])
       setNotesDraft(
-        selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].notes || ''
+        selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].notes ?? ''
       )
       setIsNotesDirty(false)
     }
@@ -192,7 +192,7 @@ export function ShowdownMonsterCard({
 
   const onRemoveTrait = (index: number) => {
     const currentTraits = [
-      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits ||
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits ??
         [])
     ]
     currentTraits.splice(index, 1)
@@ -215,7 +215,7 @@ export function ShowdownMonsterCard({
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
 
     const updatedTraits = [
-      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits ||
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits ??
         [])
     ]
 
@@ -244,7 +244,7 @@ export function ShowdownMonsterCard({
 
   const onRemoveMood = (index: number) => {
     const currentMoods = [
-      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods ||
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods ??
         [])
     ]
     currentMoods.splice(index, 1)
@@ -267,7 +267,7 @@ export function ShowdownMonsterCard({
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))
 
     const updatedMoods = [
-      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods ||
+      ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods ??
         [])
     ]
 

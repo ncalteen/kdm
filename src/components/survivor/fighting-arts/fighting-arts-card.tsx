@@ -80,22 +80,22 @@ export function FightingArtsCard({
   const survivorIdRef = useRef<number | undefined>(undefined)
 
   // Determine survivor type from settlement data
-  const survivorType = selectedSettlement?.survivorType || SurvivorType.CORE
+  const survivorType = selectedSettlement?.survivorType ?? SurvivorType.CORE
 
   // Calculate total arts to check against limits
   const totalArts =
-    (selectedSurvivor?.fightingArts?.length || 0) +
-    (selectedSurvivor?.secretFightingArts?.length || 0)
+    (selectedSurvivor?.fightingArts?.length ?? 0) +
+    (selectedSurvivor?.secretFightingArts?.length ?? 0)
 
   // Track state for input editing
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.fightingArts || [])
+      (selectedSurvivor?.fightingArts ?? [])
         .map((_, i) => [i, true])
         .concat(
-          (selectedSurvivor?.secretFightingArts || []).map((_, i) => [i, true])
+          (selectedSurvivor?.secretFightingArts ?? []).map((_, i) => [i, true])
         )
     )
   )
@@ -145,7 +145,7 @@ export function FightingArtsCard({
    */
   const onRemove = (art: CombinedFightingArt) => {
     if (art.type === 'regular') {
-      const updated = [...(selectedSurvivor?.fightingArts || [])]
+      const updated = [...(selectedSurvivor?.fightingArts ?? [])]
       updated.splice(art.originalIndex, 1)
 
       setDisabledInputs((prev) => {
@@ -168,12 +168,12 @@ export function FightingArtsCard({
       saveSelectedSurvivor(
         {
           fightingArts: updated,
-          secretFightingArts: selectedSurvivor?.secretFightingArts || []
+          secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
         },
         SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(false)
       )
     } else {
-      const updated = [...(selectedSurvivor?.secretFightingArts || [])]
+      const updated = [...(selectedSurvivor?.secretFightingArts ?? [])]
       updated.splice(art.originalIndex, 1)
 
       setDisabledInputs((prev) => {
@@ -195,7 +195,7 @@ export function FightingArtsCard({
 
       saveSelectedSurvivor(
         {
-          fightingArts: selectedSurvivor?.fightingArts || [],
+          fightingArts: selectedSurvivor?.fightingArts ?? [],
           secretFightingArts: updated
         },
         SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(true)
@@ -218,25 +218,25 @@ export function FightingArtsCard({
       const key = `${art.type}-${art.originalIndex}`
 
       if (art.type === 'regular') {
-        const updated = [...(selectedSurvivor?.fightingArts || [])]
+        const updated = [...(selectedSurvivor?.fightingArts ?? [])]
         updated[art.originalIndex] = value
 
         setDisabledInputs((prev) => ({ ...prev, [key]: true }))
         saveSelectedSurvivor(
           {
             fightingArts: updated,
-            secretFightingArts: selectedSurvivor?.secretFightingArts || []
+            secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, false)
         )
       } else {
-        const updated = [...(selectedSurvivor?.secretFightingArts || [])]
+        const updated = [...(selectedSurvivor?.secretFightingArts ?? [])]
         updated[art.originalIndex] = value
 
         setDisabledInputs((prev) => ({ ...prev, [key]: true }))
         saveSelectedSurvivor(
           {
-            fightingArts: selectedSurvivor?.fightingArts || [],
+            fightingArts: selectedSurvivor?.fightingArts ?? [],
             secretFightingArts: updated
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, false)
@@ -250,7 +250,7 @@ export function FightingArtsCard({
             FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE(survivorType)
           )
 
-        const newArts = [...(selectedSurvivor?.fightingArts || []), value]
+        const newArts = [...(selectedSurvivor?.fightingArts ?? []), value]
 
         setDisabledInputs((prev) => ({
           ...prev,
@@ -260,7 +260,7 @@ export function FightingArtsCard({
         saveSelectedSurvivor(
           {
             fightingArts: newArts,
-            secretFightingArts: selectedSurvivor?.secretFightingArts || []
+            secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, true)
         )
@@ -270,7 +270,7 @@ export function FightingArtsCard({
             SECRET_FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE(survivorType)
           )
 
-        const newArts = [...(selectedSurvivor?.secretFightingArts || []), value]
+        const newArts = [...(selectedSurvivor?.secretFightingArts ?? []), value]
 
         setDisabledInputs((prev) => ({
           ...prev,
@@ -279,7 +279,7 @@ export function FightingArtsCard({
 
         saveSelectedSurvivor(
           {
-            fightingArts: selectedSurvivor?.fightingArts || [],
+            fightingArts: selectedSurvivor?.fightingArts ?? [],
             secretFightingArts: newArts
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, true)
@@ -320,7 +320,7 @@ export function FightingArtsCard({
    */
   const isAtRegularFightingArtLimit = () =>
     survivorType === SurvivorType.ARC
-      ? (selectedSurvivor?.fightingArts || []).length >= 1
+      ? (selectedSurvivor?.fightingArts ?? []).length >= 1
       : totalArts >= 3
 
   /**
@@ -333,7 +333,7 @@ export function FightingArtsCard({
    */
   const isAtSecretFightingArtLimit = () =>
     survivorType === SurvivorType.ARC
-      ? (selectedSurvivor?.secretFightingArts || []).length >= 1
+      ? (selectedSurvivor?.secretFightingArts ?? []).length >= 1
       : totalArts >= 3
 
   /**
@@ -354,13 +354,13 @@ export function FightingArtsCard({
 
       if (artType === 'regular') {
         const newOrder = arrayMove(
-          selectedSurvivor?.fightingArts || [],
+          selectedSurvivor?.fightingArts ?? [],
           oldIndex,
           newIndex
         )
         saveSelectedSurvivor({
           fightingArts: newOrder,
-          secretFightingArts: selectedSurvivor?.secretFightingArts || []
+          secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
         })
 
         setDisabledInputs((prev) => {
@@ -384,12 +384,12 @@ export function FightingArtsCard({
         })
       } else {
         const newOrder = arrayMove(
-          selectedSurvivor?.secretFightingArts || [],
+          selectedSurvivor?.secretFightingArts ?? [],
           oldIndex,
           newIndex
         )
         saveSelectedSurvivor({
-          fightingArts: selectedSurvivor?.fightingArts || [],
+          fightingArts: selectedSurvivor?.fightingArts ?? [],
           secretFightingArts: newOrder
         })
 
@@ -470,11 +470,11 @@ export function FightingArtsCard({
               collisionDetection={closestCenter}
               onDragEnd={(event) => handleDragEnd(event, 'regular')}>
               <SortableContext
-                items={(selectedSurvivor?.fightingArts || []).map((_, index) =>
+                items={(selectedSurvivor?.fightingArts ?? []).map((_, index) =>
                   index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.fightingArts || []).map((art, index) => (
+                {(selectedSurvivor?.fightingArts ?? []).map((art, index) => (
                   <FightingArtItem
                     key={`regular-${index}`}
                     id={index.toString()}
@@ -517,11 +517,11 @@ export function FightingArtsCard({
               collisionDetection={closestCenter}
               onDragEnd={(event) => handleDragEnd(event, 'secret')}>
               <SortableContext
-                items={(selectedSurvivor?.secretFightingArts || []).map(
+                items={(selectedSurvivor?.secretFightingArts ?? []).map(
                   (_, index) => index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.secretFightingArts || []).map(
+                {(selectedSurvivor?.secretFightingArts ?? []).map(
                   (art, index) => (
                     <FightingArtItem
                       key={`secret-${index}`}

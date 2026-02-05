@@ -175,7 +175,7 @@ export function LocationsData({
                         const input = document.getElementById(
                           'new-location-name'
                         ) as HTMLInputElement
-                        const name = input?.value || ''
+                        const name = input?.value ?? ''
                         if (name.trim()) {
                           const newLocations = [...locations, name]
                           onLocationsChange(newLocations)
@@ -201,7 +201,7 @@ export function LocationsData({
                       const input = document.getElementById(
                         'new-location-name'
                       ) as HTMLInputElement
-                      const name = input?.value || ''
+                      const name = input?.value ?? ''
                       if (name.trim()) {
                         const newLocations = [...locations, name]
                         onLocationsChange(newLocations)

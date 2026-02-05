@@ -52,7 +52,7 @@ export function HuntBoardSpace({
         className
       )}>
       <div className="text-[10px] sm:text-xs font-medium text-center break-words px-1 sm:px-2 leading-tight">
-        {label || index}
+        {label ?? index}
       </div>
     </div>
   )

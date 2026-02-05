@@ -65,7 +65,7 @@ export function InnovationItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.innovations?.[index] || ''
+      inputRef.current.value = selectedSettlement?.innovations?.[index] ?? ''
   }, [selectedSettlement?.innovations, index])
 
   /**

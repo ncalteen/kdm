@@ -213,26 +213,25 @@ export function ActiveHuntCard({
         level: selectedHunt.level,
         monsters: selectedHunt.monsters,
         scout: selectedHunt.scout,
-        settlementId: selectedHunt.settlementId || 0,
-        survivorDetails:
-          selectedHunt.survivorDetails?.map((survivor) => ({
-            accuracyTokens: survivor.accuracyTokens,
-            bleedingTokens: 0,
-            blockTokens: 0,
-            deflectTokens: 0,
-            evasionTokens: survivor.evasionTokens,
-            id: survivor.id,
-            insanityTokens: survivor.insanityTokens,
-            knockedDown: false,
-            luckTokens: survivor.luckTokens,
-            movementTokens: survivor.movementTokens,
-            notes: survivor.notes || '',
-            priorityTarget: false,
-            speedTokens: survivor.speedTokens,
-            strengthTokens: survivor.strengthTokens,
-            survivalTokens: survivor.survivalTokens
-          })) || [],
-        survivors: selectedHunt.survivors || [],
+        settlementId: selectedHunt.settlementId,
+        survivorDetails: selectedHunt.survivorDetails.map((survivor) => ({
+          accuracyTokens: survivor.accuracyTokens,
+          bleedingTokens: 0,
+          blockTokens: 0,
+          deflectTokens: 0,
+          evasionTokens: survivor.evasionTokens,
+          id: survivor.id,
+          insanityTokens: survivor.insanityTokens,
+          knockedDown: false,
+          luckTokens: survivor.luckTokens,
+          movementTokens: survivor.movementTokens,
+          notes: survivor.notes,
+          priorityTarget: false,
+          speedTokens: survivor.speedTokens,
+          strengthTokens: survivor.strengthTokens,
+          survivalTokens: survivor.survivalTokens
+        })),
+        survivors: selectedHunt.survivors,
         turn: {
           // If survivors ambush, they go first. Otherwise, the monster does.
           currentTurn:
@@ -248,7 +247,7 @@ export function ActiveHuntCard({
       const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.id !== selectedHunt.id
       )
-      const updatedShowdowns = [...(campaign.showdowns || []), showdown]
+      const updatedShowdowns = [...(campaign.showdowns ?? []), showdown]
 
       updateCampaign({
         ...campaign,

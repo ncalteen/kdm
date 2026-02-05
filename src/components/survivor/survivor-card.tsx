@@ -71,7 +71,7 @@ export function SurvivorCard({
     <Card
       className="w-full min-w-[430px] border-2 rounded-xl py-2 gap-2 transition-all duration-200 hover:shadow-lg bg-secondary"
       style={{
-        ...getCardColorStyles(selectedSurvivor?.color || ColorChoice.SLATE),
+        ...getCardColorStyles(selectedSurvivor?.color ?? ColorChoice.SLATE),
         borderColor: 'var(--card-border-color)'
       }}>
       <CardContent className="px-2">
@@ -139,7 +139,6 @@ export function SurvivorCard({
               selectedSettlement={selectedSettlement}
               selectedShowdown={selectedShowdown}
               selectedSurvivor={selectedSurvivor}
-              readOnly={false}
             />
             <SanityCard
               displayText={true}

@@ -58,7 +58,7 @@ import * as packageInfo from '../../package.json'
  */
 export function migrateCampaign(campaign: Campaign): Campaign {
   console.log(
-    `Migrating Campaign (${campaign.version || '0.12.0'} -> ${packageInfo.version})`
+    `Migrating Campaign (${campaign.version ?? '0.12.0'} -> ${packageInfo.version})`
   )
 
   // Add version migration steps here...
@@ -85,11 +85,11 @@ function migrateTo0_13_0(campaign: Campaign) {
   console.log('Migrating to 0.13.0')
 
   // Unchnanged
-  campaign.selectedHuntId = campaign.selectedHuntId || null
-  campaign.selectedShowdownId = campaign.selectedShowdownId || null
-  campaign.selectedSettlementId = campaign.selectedSettlementId || null
-  campaign.selectedSurvivorId = campaign.selectedSurvivorId || null
-  campaign.selectedTab = campaign.selectedTab || null
+  campaign.selectedHuntId = campaign.selectedHuntId ?? null
+  campaign.selectedShowdownId = campaign.selectedShowdownId ?? null
+  campaign.selectedSettlementId = campaign.selectedSettlementId ?? null
+  campaign.selectedSurvivorId = campaign.selectedSurvivorId ?? null
+  campaign.selectedTab = campaign.selectedTab ?? null
   campaign.settings = {
     disableToasts: campaign.settings?.disableToasts ?? false,
     unlockedMonsters: {
@@ -100,16 +100,16 @@ function migrateTo0_13_0(campaign: Campaign) {
       whiteGigalion: campaign.settings?.unlockedMonsters?.whiteGigalion ?? false
     }
   }
-  campaign.survivors = campaign.survivors || []
+  campaign.survivors = campaign.survivors ?? []
 
   // Custom monsters is a new addition.
   // @ts-expect-error -- Old Schema
-  campaign.customMonsters = campaign.customMonsters || {}
+  campaign.customMonsters = campaign.customMonsters ?? {}
 
   // Hunts use a new AI deck structure.
-  campaign.hunts = (campaign.hunts || []).map((hunt) => {
+  campaign.hunts = (campaign.hunts ?? []).map((hunt) => {
     // @ts-expect-error -- Old Schema
-    const originalAIDeckSize = hunt.monster.aiDeckSize || 0
+    const originalAIDeckSize = hunt.monster.aiDeckSize ?? 0
 
     // @ts-expect-error -- Old Schema
     hunt.monster.aiDeck = {
@@ -123,10 +123,10 @@ function migrateTo0_13_0(campaign: Campaign) {
     return hunt
   })
 
-  campaign.settlements = (campaign.settlements || []).map((settlement) => {
+  campaign.settlements = (campaign.settlements ?? []).map((settlement) => {
     // Settlement nemeses use ID instead of name.
     // @ts-expect-error -- Old Schema
-    settlement.nemeses = (settlement.nemeses || []).map((nemesis) => {
+    settlement.nemeses = (settlement.nemeses ?? []).map((nemesis) => {
       let nemesisId = -1
 
       for (const key of Object.keys(NEMESES)) {
@@ -144,17 +144,17 @@ function migrateTo0_13_0(campaign: Campaign) {
         ccLevel2: nemesis.ccLevel2,
         ccLevel3: nemesis.ccLevel3,
         id: nemesisId,
-        level1: nemesis.level1 || false,
-        level2: nemesis.level2 || false,
-        level3: nemesis.level3 || false,
+        level1: nemesis.level1 ?? false,
+        level2: nemesis.level2 ?? false,
+        level3: nemesis.level3 ?? false,
         level4: nemesis.level4,
-        unlocked: nemesis.unlocked || false
+        unlocked: nemesis.unlocked ?? false
       }
     })
 
     // Settlement quarries use ID instead of name.
     // @ts-expect-error -- Old Schema
-    settlement.quarries = (settlement.quarries || []).map((quarry) => {
+    settlement.quarries = (settlement.quarries ?? []).map((quarry) => {
       let quarryId = -1
       let quarryNode = MonsterNode.NQ1
 
@@ -177,7 +177,7 @@ function migrateTo0_13_0(campaign: Campaign) {
         ccPrologue: quarry.ccPrologue,
         id: quarryId,
         node: quarryNode,
-        unlocked: quarry.unlocked || false
+        unlocked: quarry.unlocked ?? false
       }
     })
 
@@ -185,9 +185,9 @@ function migrateTo0_13_0(campaign: Campaign) {
   })
 
   // Showdowns use a new AI deck structure.
-  campaign.showdowns = (campaign.showdowns || []).map((showdown) => {
+  campaign.showdowns = (campaign.showdowns ?? []).map((showdown) => {
     // @ts-expect-error -- Old Schema
-    const originalAIDeckSize = showdown.monster.aiDeckSize || 0
+    const originalAIDeckSize = showdown.monster.aiDeckSize ?? 0
 
     // @ts-expect-error -- Old Schema
     showdown.monster.aiDeck = {
@@ -214,7 +214,7 @@ function migrateTo0_13_1(campaign: Campaign) {
   console.log('Migrating to 0.13.1')
 
   // Hunts should include the hunt board layout.
-  campaign.hunts = (campaign.hunts || []).map((hunt) => {
+  campaign.hunts = (campaign.hunts ?? []).map((hunt) => {
     // If hunt board already exists, skip
     // @ts-expect-error -- Old Schema
     if (hunt.monster.huntBoard) return hunt
@@ -228,7 +228,7 @@ function migrateTo0_13_1(campaign: Campaign) {
     )
 
     // @ts-expect-error -- Old Schema
-    const custom = Object.values(campaign.customMonsters || {}).find(
+    const custom = Object.values(campaign.customMonsters ?? {}).find(
       (monster) =>
         // @ts-expect-error -- Old Schema
         monster.main.name.toLowerCase() === hunt.monster.name.toLowerCase()
@@ -313,7 +313,7 @@ function migrateTo0_14_0(campaign: Campaign) {
 
   // Iterate over customMonsters and organize by type
   // @ts-expect-error -- Old Schema
-  for (const key of Object.keys(campaign.customMonsters || {})) {
+  for (const key of Object.keys(campaign.customMonsters ?? {})) {
     // @ts-expect-error -- Old Schema
     const monster = campaign.customMonsters[key].main
 
@@ -362,7 +362,7 @@ function migrateTo0_14_0(campaign: Campaign) {
 
   // Iterate over hunts and restructure
   const updatedHunts: Hunt[] = []
-  for (const hunt of campaign.hunts || []) {
+  for (const hunt of campaign.hunts ?? []) {
     const updatedHunt = {
       // @ts-expect-error -- Old Schema
       huntBoard: hunt.monster.huntBoard,
@@ -394,7 +394,7 @@ function migrateTo0_14_0(campaign: Campaign) {
           // @ts-expect-error -- Old Schema
           luckTokens: hunt.monster.luckTokens,
           // @ts-expect-error -- Old Schema
-          moods: hunt.monster.moods || [],
+          moods: hunt.monster.moods ?? [],
           // @ts-expect-error -- Old Schema
           movement: hunt.monster.movement,
           // @ts-expect-error -- Old Schema
@@ -402,7 +402,7 @@ function migrateTo0_14_0(campaign: Campaign) {
           // @ts-expect-error -- Old Schema
           name: hunt.monster.name,
           // @ts-expect-error -- Old Schema
-          notes: hunt.monster.notes || '',
+          notes: hunt.monster.notes ?? '',
           // @ts-expect-error -- Old Schema
           speed: hunt.monster.speed,
           // @ts-expect-error -- Old Schema
@@ -414,7 +414,7 @@ function migrateTo0_14_0(campaign: Campaign) {
           // @ts-expect-error -- Old Schema
           toughness: hunt.monster.toughness,
           // @ts-expect-error -- Old Schema
-          traits: hunt.monster.traits || [],
+          traits: hunt.monster.traits ?? [],
           // @ts-expect-error -- Old Schema
           type: hunt.monster.type as MonsterType,
           // @ts-expect-error -- Old Schema
@@ -449,7 +449,7 @@ function migrateTo0_14_0(campaign: Campaign) {
 
   // Iterate over settlements and restructure nemeses and quarries
   const updatedSettlements: Settlement[] = []
-  for (const settlement of campaign.settlements || []) {
+  for (const settlement of campaign.settlements ?? []) {
     const updatedSettlement = {
       arrivalBonuses: settlement.arrivalBonuses,
       campaignType: settlement.campaignType,
@@ -505,7 +505,7 @@ function migrateTo0_14_0(campaign: Campaign) {
 
         return updatedNemesis
       }),
-      notes: settlement.notes || '',
+      notes: settlement.notes ?? '',
       patterns: settlement.patterns,
       population: settlement.population,
       principles: settlement.principles,
@@ -583,7 +583,7 @@ function migrateTo0_14_0(campaign: Campaign) {
 
   // Iterate over showdowns and restructure
   const updatedShowdowns: Showdown[] = []
-  for (const showdown of campaign.showdowns || []) {
+  for (const showdown of campaign.showdowns ?? []) {
     const updatedShowdown = {
       ambush: showdown.ambush,
       id: showdown.id,
@@ -614,7 +614,7 @@ function migrateTo0_14_0(campaign: Campaign) {
           // @ts-expect-error -- Old Schema
           luckTokens: showdown.monster.luckTokens,
           // @ts-expect-error -- Old Schema
-          moods: showdown.monster.moods || [],
+          moods: showdown.monster.moods ?? [],
           // @ts-expect-error -- Old Schema
           movement: showdown.monster.movement,
           // @ts-expect-error -- Old Schema
@@ -622,7 +622,7 @@ function migrateTo0_14_0(campaign: Campaign) {
           // @ts-expect-error -- Old Schema
           name: showdown.monster.name,
           // @ts-expect-error -- Old Schema
-          notes: showdown.monster.notes || '',
+          notes: showdown.monster.notes ?? '',
           // @ts-expect-error -- Old Schema
           speed: showdown.monster.speed,
           // @ts-expect-error -- Old Schema
@@ -634,7 +634,7 @@ function migrateTo0_14_0(campaign: Campaign) {
           // @ts-expect-error -- Old Schema
           toughness: showdown.monster.toughness,
           // @ts-expect-error -- Old Schema
-          traits: showdown.monster.traits || [],
+          traits: showdown.monster.traits ?? [],
           // @ts-expect-error -- Old Schema
           type: showdown.monster.type as MonsterType,
           // @ts-expect-error -- Old Schema
@@ -710,17 +710,17 @@ function migrateTo0_14_2(campaign: Campaign) {
 function migrateTo0_15_0(campaign: Campaign) {
   console.log('Migrating to 0.15.0')
 
-  for (const settlement of campaign.settlements || []) {
-    for (const survivor of (campaign.survivors || []).filter(
+  for (const settlement of campaign.settlements ?? []) {
+    for (const survivor of (campaign.survivors ?? []).filter(
       (survivor) => survivor.settlementId === settlement.id
     )) {
       // Check if the survivor is on a hunt or showdown
-      const hunt = (campaign.hunts || []).find(
+      const hunt = (campaign.hunts ?? []).find(
         (hunt) =>
           hunt.settlementId === settlement.id &&
           hunt.survivors.includes(survivor.id)
       )
-      const showdown = (campaign.showdowns || []).find(
+      const showdown = (campaign.showdowns ?? []).find(
         (showdown) =>
           showdown.settlementId === settlement.id &&
           showdown.survivors.includes(survivor.id)
@@ -748,10 +748,10 @@ function migrateTo0_15_0(campaign: Campaign) {
 function migrateTo0_16_0(campaign: Campaign) {
   console.log('Migrating to 0.16.0')
 
-  for (const settlement of campaign.settlements || [])
+  for (const settlement of campaign.settlements ?? [])
     if (settlement.wanderers === undefined) settlement.wanderers = []
 
-  for (const survivor of campaign.survivors || [])
+  for (const survivor of campaign.survivors ?? [])
     if (survivor.wanderer === undefined) survivor.wanderer = false
 
   // Migration complete. Update version.

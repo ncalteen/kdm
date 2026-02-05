@@ -76,9 +76,9 @@ export function MilestoneItem({
   useEffect(() => {
     console.debug('[MilestoneItem] Changed', milestone)
 
-    if (nameRef.current) nameRef.current.value = milestone.name || ''
+    if (nameRef.current) nameRef.current.value = milestone.name
 
-    if (eventRef.current) eventRef.current.value = milestone.event || ''
+    if (eventRef.current) eventRef.current.value = milestone.event
   }, [milestone])
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -247,7 +247,7 @@ export function NewMilestoneItem({
           variant="ghost"
           size="icon"
           onClick={() =>
-            onSave(nameRef.current?.value || '', eventRef.current?.value || '')
+            onSave(nameRef.current?.value ?? '', eventRef.current?.value ?? '')
           }
           title="Save milestone">
           <CheckIcon className="h-4 w-4" />

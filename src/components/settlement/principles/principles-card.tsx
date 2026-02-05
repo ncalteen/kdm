@@ -64,7 +64,7 @@ export function PrinciplesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.principles || []).map((_, i) => [i, true])
+      (selectedSettlement?.principles ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -81,7 +81,7 @@ export function PrinciplesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.principles || []).map((_, i) => [i, true])
+        (selectedSettlement?.principles ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -92,7 +92,7 @@ export function PrinciplesCard({
    * @param index Principle Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.principles || [])]
+    const current = [...(selectedSettlement?.principles ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -127,7 +127,7 @@ export function PrinciplesCard({
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
-    const updated = [...(selectedSettlement?.principles || [])]
+    const updated = [...(selectedSettlement?.principles ?? [])]
 
     if (index < updated.length) {
       // Updating an existing principle
@@ -160,7 +160,7 @@ export function PrinciplesCard({
    * @param option Which option (1 or 2)
    */
   const handleOptionSelect = (index: number, option: 1 | 2) => {
-    const updated = [...(selectedSettlement?.principles || [])]
+    const updated = [...(selectedSettlement?.principles ?? [])]
 
     // Update the option selected, ensuring only one is selected at a time
     updated[index] = {
@@ -195,7 +195,7 @@ export function PrinciplesCard({
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
     const updated = [
-      ...(selectedSettlement?.principles || []),
+      ...(selectedSettlement?.principles ?? []),
       {
         name,
         option1Name,
@@ -231,7 +231,7 @@ export function PrinciplesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.principles || [],
+        selectedSettlement?.principles ?? [],
         oldIndex,
         newIndex
       )
@@ -287,11 +287,11 @@ export function PrinciplesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.principles || []).map(
+                  items={(selectedSettlement?.principles ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.principles || []).map(
+                  {(selectedSettlement?.principles ?? []).map(
                     (principle, index) => (
                       <PrincipleItem
                         key={index}

@@ -46,7 +46,7 @@ export function SelectSurvivorType({
   id
 }: SelectSurvivorTypeProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState(propValue || '')
+  const [value, setValue] = useState(propValue ?? '')
 
   const survivorTypeOptions = Object.values(SurvivorType).map(
     (survivorType) => ({

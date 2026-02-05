@@ -59,7 +59,7 @@ export function KnowledgesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+      (selectedSettlement?.knowledges ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -69,7 +69,7 @@ export function KnowledgesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+        (selectedSettlement?.knowledges ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -89,7 +89,7 @@ export function KnowledgesCard({
    * @param index Knowledge Index
    */
   const onRemove = (index: number) => {
-    const currentKnowledges = [...(selectedSettlement?.knowledges || [])]
+    const currentKnowledges = [...(selectedSettlement?.knowledges ?? [])]
     currentKnowledges.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -125,7 +125,7 @@ export function KnowledgesCard({
     const processedPhilosophy =
       philosophy && philosophy.trim() !== '' ? philosophy : undefined
 
-    const updatedKnowledges = [...(selectedSettlement?.knowledges || [])]
+    const updatedKnowledges = [...(selectedSettlement?.knowledges ?? [])]
     const knowledgeData: SettlementKnowledge = {
       name: name.trim(),
       philosophy: processedPhilosophy as SettlementKnowledge['philosophy']
@@ -169,7 +169,7 @@ export function KnowledgesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.knowledges || [],
+        selectedSettlement?.knowledges ?? [],
         oldIndex,
         newIndex
       )
@@ -228,11 +228,11 @@ export function KnowledgesCard({
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(selectedSettlement?.knowledges || []).map((_, index) =>
+                items={(selectedSettlement?.knowledges ?? []).map((_, index) =>
                   index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSettlement?.knowledges || []).map(
+                {(selectedSettlement?.knowledges ?? []).map(
                   (knowledge, index) => (
                     <KnowledgeItem
                       key={index}

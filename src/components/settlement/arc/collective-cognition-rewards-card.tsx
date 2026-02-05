@@ -65,7 +65,7 @@ export function CollectiveCognitionRewardsCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.ccRewards || []).map((_, i) => [i, true])
+      (selectedSettlement?.ccRewards ?? []).map((_, i) => [i, true])
     )
   )
 
@@ -74,7 +74,7 @@ export function CollectiveCognitionRewardsCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.ccRewards || []).map((_, i) => [i, true])
+        (selectedSettlement?.ccRewards ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -93,7 +93,7 @@ export function CollectiveCognitionRewardsCard({
    * @param unlocked Unlocked State
    */
   const handleToggleUnlocked = (index: number, unlocked: boolean) => {
-    const currentRewards = [...(selectedSettlement?.ccRewards || [])]
+    const currentRewards = [...(selectedSettlement?.ccRewards ?? [])]
     currentRewards[index] = { ...currentRewards[index], unlocked }
 
     saveSelectedSettlement(
@@ -110,7 +110,7 @@ export function CollectiveCognitionRewardsCard({
    * @param index Reward Index
    */
   const onRemove = (index: number) => {
-    const currentRewards = [...(selectedSettlement?.ccRewards || [])]
+    const currentRewards = [...(selectedSettlement?.ccRewards ?? [])]
     currentRewards.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -149,7 +149,7 @@ export function CollectiveCognitionRewardsCard({
     if (cc === undefined || cc < 0)
       return toast.error(COLLECTIVE_COGNITION_REWARD_NO_TARGET_ERROR_MESSAGE())
 
-    const updatedRewards = [...(selectedSettlement?.ccRewards || [])]
+    const updatedRewards = [...(selectedSettlement?.ccRewards ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -191,7 +191,7 @@ export function CollectiveCognitionRewardsCard({
       const newIndex = parseInt(over.id.toString())
 
       const newOrder = arrayMove(
-        selectedSettlement?.ccRewards || [],
+        selectedSettlement?.ccRewards ?? [],
         oldIndex,
         newIndex
       )
@@ -246,17 +246,17 @@ export function CollectiveCognitionRewardsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-full">
           <div className="space-y-1">
-            {(selectedSettlement?.ccRewards || []).length > 0 && (
+            {(selectedSettlement?.ccRewards ?? []).length > 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.ccRewards || []).map((_, index) =>
+                  items={(selectedSettlement?.ccRewards ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.ccRewards || []).map(
+                  {(selectedSettlement?.ccRewards ?? []).map(
                     (reward, index) => (
                       <RewardItem
                         key={`${index}-${reward.name}-${reward.cc}`}

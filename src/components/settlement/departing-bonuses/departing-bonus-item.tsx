@@ -66,7 +66,7 @@ export function DepartingBonusItem({
 
     if (inputRef.current)
       inputRef.current.value =
-        selectedSettlement?.departingBonuses?.[index] || ''
+        selectedSettlement?.departingBonuses?.[index] ?? ''
   }, [selectedSettlement?.departingBonuses, index])
 
   /**

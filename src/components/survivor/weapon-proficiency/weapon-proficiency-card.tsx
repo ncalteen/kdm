@@ -112,7 +112,7 @@ export function WeaponProficiencyCard({
               {Array.from({ length: 8 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex">
                   <Checkbox
-                    checked={(selectedSurvivor?.weaponProficiency || 0) > i}
+                    checked={(selectedSurvivor?.weaponProficiency ?? 0) > i}
                     onCheckedChange={(checked) =>
                       handleProficiencyChange(i, !!checked)
                     }

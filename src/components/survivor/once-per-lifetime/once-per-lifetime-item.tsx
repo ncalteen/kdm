@@ -66,7 +66,7 @@ export function OncePerLifetimeItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSurvivor?.oncePerLifetime?.[index] || ''
+      inputRef.current.value = selectedSurvivor?.oncePerLifetime?.[index] ?? ''
   }, [selectedSurvivor?.oncePerLifetime, index])
 
   /**

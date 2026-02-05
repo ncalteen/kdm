@@ -132,7 +132,7 @@ export function StatusCard({
     <Card
       className="p-2 border-0"
       style={{
-        ...getCardColorStyles(selectedSurvivor?.color || ColorChoice.SLATE),
+        ...getCardColorStyles(selectedSurvivor?.color ?? ColorChoice.SLATE),
         borderColor: 'var(--card-border-color)'
       }}>
       <CardContent className="p-0">

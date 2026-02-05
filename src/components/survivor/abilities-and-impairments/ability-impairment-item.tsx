@@ -66,7 +66,7 @@ export function AbilityImpairmentItem({
 
     if (inputRef.current)
       inputRef.current.value =
-        selectedSurvivor?.abilitiesAndImpairments?.[index] || ''
+        selectedSurvivor?.abilitiesAndImpairments?.[index] ?? ''
   }, [selectedSurvivor?.abilitiesAndImpairments, index])
 
   /**

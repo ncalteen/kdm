@@ -62,7 +62,7 @@ export function GearItem({
     console.debug('[GearItem] Changed', selectedSettlement?.gear)
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.gear?.[index] || ''
+      inputRef.current.value = selectedSettlement?.gear?.[index] ?? ''
   }, [selectedSettlement?.gear, index])
 
   /**

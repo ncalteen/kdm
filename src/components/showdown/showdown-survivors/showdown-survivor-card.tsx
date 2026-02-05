@@ -60,13 +60,13 @@ export function ShowdownSurvivorCard({
 
   // State for managing notes
   const [notesDraft, setNotesDraft] = useState<string>(
-    survivorShowdownDetails?.notes || ''
+    survivorShowdownDetails?.notes ?? ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
 
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: SurvivorSchema.parse(selectedSurvivor || {})
+    defaultValues: SurvivorSchema.parse(selectedSurvivor ?? {})
   })
 
   // Update form values when survivor data changes
@@ -101,7 +101,7 @@ export function ShowdownSurvivorCard({
     <Card
       className="w-full min-w-[430px] border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
       style={{
-        ...getCardColorStyles(selectedSurvivor?.color || ColorChoice.SLATE),
+        ...getCardColorStyles(selectedSurvivor?.color ?? ColorChoice.SLATE),
         borderColor: 'var(--card-border-color)'
       }}>
       <CardHeader
@@ -109,7 +109,7 @@ export function ShowdownSurvivorCard({
         style={{ backgroundColor: 'var(--card-header-bg)' }}>
         {/* Header with Avatar and Name */}
         <Avatar
-          className={`h-12 w-12 border-2 ${getColorStyle(selectedSurvivor?.color || ColorChoice.SLATE, 'bg')} items-center justify-center cursor-pointer`}>
+          className={`h-12 w-12 border-2 ${getColorStyle(selectedSurvivor?.color ?? ColorChoice.SLATE, 'bg')} items-center justify-center cursor-pointer`}>
           <AvatarFallback className="font-bold text-lg text-white">
             {selectedSurvivor.name
               ? selectedSurvivor.name

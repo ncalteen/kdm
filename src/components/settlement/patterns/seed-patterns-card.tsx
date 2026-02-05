@@ -60,7 +60,7 @@ export function SeedPatternsCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.seedPatterns || []).map((_, i) => [i, true])
+      (selectedSettlement?.seedPatterns ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -77,7 +77,7 @@ export function SeedPatternsCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.seedPatterns || []).map((_, i) => [i, true])
+        (selectedSettlement?.seedPatterns ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -88,7 +88,7 @@ export function SeedPatternsCard({
    * @param index Seed Pattern Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.seedPatterns || [])]
+    const current = [...(selectedSettlement?.seedPatterns ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -119,7 +119,7 @@ export function SeedPatternsCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('seed pattern'))
 
-    const updated = [...(selectedSettlement?.seedPatterns || [])]
+    const updated = [...(selectedSettlement?.seedPatterns ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -156,7 +156,7 @@ export function SeedPatternsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.seedPatterns || [],
+        selectedSettlement?.seedPatterns ?? [],
         oldIndex,
         newIndex
       )
@@ -212,11 +212,11 @@ export function SeedPatternsCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.seedPatterns || []).map(
+                  items={(selectedSettlement?.seedPatterns ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.seedPatterns || []).map(
+                  {(selectedSettlement?.seedPatterns ?? []).map(
                     (seedPattern, index) => (
                       <SeedPatternItem
                         key={index}

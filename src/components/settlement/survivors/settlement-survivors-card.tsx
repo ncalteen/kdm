@@ -188,11 +188,9 @@ export function SettlementSurvivorsCard({
         ) : (
           <SurvivorDataTable
             columns={columns}
-            data={
-              campaign.survivors.filter(
-                (survivor) => survivor.settlementId === selectedSettlement?.id
-              ) || []
-            }
+            data={campaign.survivors.filter(
+              (survivor) => survivor.settlementId === selectedSettlement?.id
+            )}
             initialColumnVisibility={columnVisibility}
             onNewSurvivor={handleNewSurvivor}
             selectedSettlement={selectedSettlement}

@@ -61,7 +61,7 @@ export const SelectPhilosophy = forwardRef<
       if (onKeyDown) onKeyDown(e)
     }
 
-    const availableOptions = options || Object.values(Philosophy)
+    const availableOptions = options ?? Object.values(Philosophy)
 
     const philosophyOptions = [
       { value: '', label: 'None' },
@@ -94,7 +94,7 @@ export const SelectPhilosophy = forwardRef<
               <CommandGroup>
                 {philosophyOptions.map((p) => (
                   <CommandItem
-                    key={p.value || 'none'}
+                    key={p.value ?? 'none'}
                     value={p.value}
                     onSelect={handleSelect}>
                     <Check

@@ -60,7 +60,7 @@ export function AbilitiesAndImpairmentsCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.abilitiesAndImpairments || []).map((_, i) => [i, true])
+      (selectedSurvivor?.abilitiesAndImpairments ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -70,7 +70,7 @@ export function AbilitiesAndImpairmentsCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSurvivor?.abilitiesAndImpairments || []).map((_, i) => [
+        (selectedSurvivor?.abilitiesAndImpairments ?? []).map((_, i) => [
           i,
           true
         ])
@@ -91,7 +91,7 @@ export function AbilitiesAndImpairmentsCard({
    * @param index Ability Index
    */
   const onRemove = (index: number) => {
-    const updated = [...(selectedSurvivor?.abilitiesAndImpairments || [])]
+    const updated = [...(selectedSurvivor?.abilitiesAndImpairments ?? [])]
     updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -125,7 +125,7 @@ export function AbilitiesAndImpairmentsCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('ability/impairment'))
 
-    const updated = [...(selectedSurvivor?.abilitiesAndImpairments || [])]
+    const updated = [...(selectedSurvivor?.abilitiesAndImpairments ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -161,7 +161,7 @@ export function AbilitiesAndImpairmentsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.abilitiesAndImpairments || [],
+        selectedSurvivor?.abilitiesAndImpairments ?? [],
         oldIndex,
         newIndex
       )
@@ -215,7 +215,7 @@ export function AbilitiesAndImpairmentsCard({
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(selectedSurvivor?.abilitiesAndImpairments || []).map(
+                items={(selectedSurvivor?.abilitiesAndImpairments ?? []).map(
                   (_, index) => index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>

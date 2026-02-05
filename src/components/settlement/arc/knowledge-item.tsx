@@ -70,7 +70,7 @@ export function KnowledgeItem({
 
     if (inputRef.current)
       inputRef.current.value =
-        selectedSettlement?.knowledges?.[index].name || ''
+        selectedSettlement?.knowledges?.[index].name ?? ''
   }, [selectedSettlement?.knowledges, index])
 
   /**
@@ -116,7 +116,7 @@ export function KnowledgeItem({
           {/* Knowledge Name */}
           <div className="flex ml-1">
             <span className="text-sm">
-              {selectedSettlement?.knowledges?.[index].name || ''}
+              {selectedSettlement?.knowledges?.[index].name ?? ''}
             </span>
           </div>
 
@@ -125,7 +125,7 @@ export function KnowledgeItem({
             <div className="flex ml-1">
               <span className="text-xs">
                 <Badge variant="outline">
-                  {selectedSettlement?.knowledges?.[index].philosophy || 'None'}
+                  {selectedSettlement?.knowledges?.[index].philosophy ?? 'None'}
                 </Badge>
               </span>
             </div>
@@ -165,7 +165,7 @@ export function KnowledgeItem({
             <Input
               ref={inputRef}
               placeholder="Add knowledge..."
-              defaultValue={selectedSettlement?.knowledges?.[index].name || ''}
+              defaultValue={selectedSettlement?.knowledges?.[index].name ?? ''}
               onKeyDown={handleKeyDown}
             />
 

@@ -370,9 +370,9 @@ function createPeopleOfTheLanternSettlement(
         ...loc,
         unlocked: variant === 2 || loc.unlocked
       })),
-      ...(QUARRIES.WHITE_LION.locations || []),
-      ...(QUARRIES.SCREAMING_ANTELOPE.locations || []),
-      ...(QUARRIES.PHOENIX.locations || [])
+      ...QUARRIES.WHITE_LION.locations,
+      ...QUARRIES.SCREAMING_ANTELOPE.locations,
+      ...QUARRIES.PHOENIX.locations
     ],
     lostSettlements: 0,
     milestones: [

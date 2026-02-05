@@ -62,7 +62,7 @@ export function SelectWeaponType({
           aria-expanded={open}
           className="justify-between text-sm min-w-[180px]"
           disabled={disabled}>
-          {value || 'Select Type'}
+          {value ?? 'Select Type'}
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

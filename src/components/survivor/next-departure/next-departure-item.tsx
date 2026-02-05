@@ -66,7 +66,7 @@ export function NextDepartureItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSurvivor?.nextDeparture?.[index] || ''
+      inputRef.current.value = selectedSurvivor?.nextDeparture?.[index] ?? ''
   }, [selectedSurvivor?.nextDeparture, index])
 
   /**

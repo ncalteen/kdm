@@ -115,7 +115,7 @@ export function SurvivorDataTable<TData, TValue>({
                     key={header.id}
                     className={`text-left p-2 font-bold text-sm ${
                       (header.column.columnDef.meta as { className?: string })
-                        ?.className || ''
+                        ?.className ?? ''
                     }`}>
                     <div
                       {...{
@@ -144,7 +144,7 @@ export function SurvivorDataTable<TData, TValue>({
                     key={cell.id}
                     className={`p-2 align-top ${
                       (cell.column.columnDef.meta as { className?: string })
-                        ?.className || ''
+                        ?.className ?? ''
                     }`}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

@@ -62,7 +62,7 @@ export function CursedGearItem({
     console.debug('[CursedGearItem] Changed', selectedSurvivor?.cursedGear)
 
     if (inputRef.current)
-      inputRef.current.value = selectedSurvivor?.cursedGear?.[index] || ''
+      inputRef.current.value = selectedSurvivor?.cursedGear?.[index] ?? ''
   }, [selectedSurvivor?.cursedGear, index])
 
   /**

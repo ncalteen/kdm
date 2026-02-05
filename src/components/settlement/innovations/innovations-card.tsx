@@ -60,7 +60,7 @@ export function InnovationsCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.innovations || []).map((_, i) => [i, true])
+      (selectedSettlement?.innovations ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -77,7 +77,7 @@ export function InnovationsCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.innovations || []).map((_, i) => [i, true])
+        (selectedSettlement?.innovations ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -88,7 +88,7 @@ export function InnovationsCard({
    * @param index Innovation Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.innovations || [])]
+    const current = [...(selectedSettlement?.innovations ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -119,7 +119,7 @@ export function InnovationsCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('innovation'))
 
-    const updated = [...(selectedSettlement?.innovations || [])]
+    const updated = [...(selectedSettlement?.innovations ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -156,7 +156,7 @@ export function InnovationsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.innovations || [],
+        selectedSettlement?.innovations ?? [],
         oldIndex,
         newIndex
       )
@@ -212,11 +212,11 @@ export function InnovationsCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.innovations || []).map(
+                  items={(selectedSettlement?.innovations ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.innovations || []).map(
+                  {(selectedSettlement?.innovations ?? []).map(
                     (innovation, index) => (
                       <InnovationItem
                         key={index}

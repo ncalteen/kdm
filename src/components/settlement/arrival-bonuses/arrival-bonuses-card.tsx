@@ -60,7 +60,7 @@ export function ArrivalBonusesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.arrivalBonuses || []).map((_, i) => [i, true])
+      (selectedSettlement?.arrivalBonuses ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -77,7 +77,7 @@ export function ArrivalBonusesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.arrivalBonuses || []).map((_, i) => [i, true])
+        (selectedSettlement?.arrivalBonuses ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -88,7 +88,7 @@ export function ArrivalBonusesCard({
    * @param index Arrival Bonus Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.arrivalBonuses || [])]
+    const current = [...(selectedSettlement?.arrivalBonuses ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -119,7 +119,7 @@ export function ArrivalBonusesCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('arrival bonus'))
 
-    const updated = [...(selectedSettlement?.arrivalBonuses || [])]
+    const updated = [...(selectedSettlement?.arrivalBonuses ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -156,7 +156,7 @@ export function ArrivalBonusesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.arrivalBonuses || [],
+        selectedSettlement?.arrivalBonuses ?? [],
         oldIndex,
         newIndex
       )
@@ -206,17 +206,17 @@ export function ArrivalBonusesCard({
       <CardContent className="p-1 pb-0">
         <div className="flex flex-col h-[240px]">
           <div className="flex-1 overflow-y-auto">
-            {(selectedSettlement?.arrivalBonuses || []).length !== 0 && (
+            {(selectedSettlement?.arrivalBonuses ?? []).length !== 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.arrivalBonuses || []).map(
+                  items={(selectedSettlement?.arrivalBonuses ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.arrivalBonuses || []).map(
+                  {(selectedSettlement?.arrivalBonuses ?? []).map(
                     (bonus, index) => (
                       <ArrivalBonusItem
                         key={index}

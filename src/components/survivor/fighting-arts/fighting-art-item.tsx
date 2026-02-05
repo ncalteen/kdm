@@ -73,7 +73,7 @@ export function FightingArtItem({
     console.debug('[FightingArtItem] Changed', index)
 
     if (inputRef.current)
-      inputRef.current.value = selectedSurvivor?.[arrayName]?.[index] || ''
+      inputRef.current.value = selectedSurvivor?.[arrayName]?.[index] ?? ''
   }, [selectedSurvivor, index, arrayName])
 
   /**

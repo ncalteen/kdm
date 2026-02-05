@@ -57,7 +57,7 @@ export function CursedGearCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.cursedGear || []).map((_, i) => [i, true])
+      (selectedSurvivor?.cursedGear ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -67,7 +67,7 @@ export function CursedGearCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSurvivor?.cursedGear || []).map((_, i) => [i, true])
+        (selectedSurvivor?.cursedGear ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -85,7 +85,7 @@ export function CursedGearCard({
    * @param index Cursed Gear Index
    */
   const onRemove = (index: number) => {
-    const updated = [...(selectedSurvivor?.cursedGear || [])]
+    const updated = [...(selectedSurvivor?.cursedGear ?? [])]
     updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -116,7 +116,7 @@ export function CursedGearCard({
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('cursed gear'))
 
-    const updated = [...(selectedSurvivor?.cursedGear || [])]
+    const updated = [...(selectedSurvivor?.cursedGear ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -156,7 +156,7 @@ export function CursedGearCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.cursedGear || [],
+        selectedSurvivor?.cursedGear ?? [],
         oldIndex,
         newIndex
       )
@@ -204,17 +204,17 @@ export function CursedGearCard({
       {/* Cursed Gear List */}
       <CardContent className="p-0">
         <div className="flex flex-col">
-          {(selectedSurvivor?.cursedGear || []).length !== 0 && (
+          {(selectedSurvivor?.cursedGear ?? []).length !== 0 && (
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(selectedSurvivor?.cursedGear || []).map((_, index) =>
+                items={(selectedSurvivor?.cursedGear ?? []).map((_, index) =>
                   index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.cursedGear || []).map((item, index) => (
+                {(selectedSurvivor?.cursedGear ?? []).map((item, index) => (
                   <CursedGearItem
                     key={index}
                     id={index.toString()}

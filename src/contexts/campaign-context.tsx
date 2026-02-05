@@ -126,7 +126,7 @@ export function CampaignProvider({
 
   const [selectedHunt, setSelectedHuntState] = useState<Hunt | null>(
     () =>
-      campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ||
+      campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ??
       null
   )
   const [selectedHuntMonsterIndex, setSelectedHuntMonsterIndexState] =
@@ -136,14 +136,14 @@ export function CampaignProvider({
       () =>
         campaign.settlements.find(
           (settlement) => settlement.id === campaign.selectedSettlementId
-        ) || null
+        ) ?? null
     )
   const [selectedShowdown, setSelectedShowdownState] =
     useState<Showdown | null>(
       () =>
         campaign.showdowns?.find(
           (showdown) => showdown.id === campaign.selectedShowdownId
-        ) || null
+        ) ?? null
     )
   const [selectedShowdownMonsterIndex, setSelectedShowdownMonsterIndexState] =
     useState<number>(() => campaign.selectedShowdownMonsterIndex ?? 0)
@@ -152,10 +152,10 @@ export function CampaignProvider({
       () =>
         campaign.survivors.find(
           (survivor) => survivor.id === campaign.selectedSurvivorId
-        ) || null
+        ) ?? null
     )
   const [selectedTab, setSelectedTabState] = useState<TabType>(
-    () => campaign?.selectedTab || TabType.TIMELINE
+    () => campaign?.selectedTab ?? TabType.TIMELINE
   )
 
   const [survivorsState, setSurvivorsState] = useState<Survivor[] | null>(
@@ -184,7 +184,7 @@ export function CampaignProvider({
     setCampaignState((campaign) => {
       const updatedCampaign = {
         ...campaign,
-        selectedHuntId: hunt?.id || null,
+        selectedHuntId: hunt?.id ?? null,
         selectedHuntMonsterIndex: 0
       }
 
@@ -222,7 +222,7 @@ export function CampaignProvider({
       const currentSettlementId = campaign.selectedSettlementId
       const updatedCampaign = {
         ...campaign,
-        selectedSettlementId: settlement?.id || null
+        selectedSettlementId: settlement?.id ?? null
       }
 
       saveCampaignToLocalStorage(updatedCampaign)
@@ -253,7 +253,7 @@ export function CampaignProvider({
     setCampaignState((campaign) => {
       const updatedCampaign = {
         ...campaign,
-        selectedShowdownId: showdown?.id || null,
+        selectedShowdownId: showdown?.id ?? null,
         selectedShowdownMonsterIndex: 0
       }
 
@@ -291,7 +291,7 @@ export function CampaignProvider({
     setCampaignState((campaign) => {
       const updatedCampaign = {
         ...campaign,
-        selectedSurvivorId: survivor?.id || null
+        selectedSurvivorId: survivor?.id ?? null
       }
 
       saveCampaignToLocalStorage(updatedCampaign)
@@ -366,7 +366,7 @@ export function CampaignProvider({
    */
   const updateSelectedHunt = () => {
     setSelectedHuntState(
-      campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ||
+      campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ??
         null
     )
     setSelectedHuntMonsterIndexState(0)
@@ -379,7 +379,7 @@ export function CampaignProvider({
     setSelectedSettlementState(
       campaign.settlements.find(
         (settlement) => settlement.id === campaign.selectedSettlementId
-      ) || null
+      ) ?? null
     )
 
   /**
@@ -389,7 +389,7 @@ export function CampaignProvider({
     setSelectedShowdownState(
       campaign.showdowns?.find(
         (showdown) => showdown.id === campaign.selectedShowdownId
-      ) || null
+      ) ?? null
     )
     setSelectedShowdownMonsterIndexState(0)
   }
@@ -401,7 +401,7 @@ export function CampaignProvider({
     setSelectedSurvivorState(
       campaign.survivors.find(
         (survivor) => survivor.id === campaign.selectedSurvivorId
-      ) || null
+      ) ?? null
     )
   }
 

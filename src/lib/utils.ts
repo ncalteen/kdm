@@ -54,7 +54,7 @@ export const newCampaign: Campaign = {
  */
 export function getCampaign(): Campaign {
   return JSON.parse(
-    localStorage.getItem('campaign') || JSON.stringify(newCampaign)
+    localStorage.getItem('campaign') ?? JSON.stringify(newCampaign)
   )
 }
 
@@ -426,8 +426,8 @@ export function getColorStyle(
   }
 
   return (
-    colorMap[color]?.[type] ||
-    colorMap[ColorChoice.SLATE][type] ||
+    colorMap[color]?.[type] ??
+    colorMap[ColorChoice.SLATE][type] ??
     'bg-slate-500'
   )
 }
@@ -555,7 +555,7 @@ export function getCardColorStyles(color: ColorChoice): CSSProperties {
     }
   }
 
-  const colors = colorMap[color] || colorMap[ColorChoice.SLATE]
+  const colors = colorMap[color] ?? colorMap[ColorChoice.SLATE]
   return {
     '--card-border-color': colors.border,
     '--card-border-hover-color': colors.borderHover,
@@ -594,7 +594,7 @@ export function getSurvivorColorChoice(
   if (!survivorId) return ColorChoice.SLATE
 
   return (
-    campaign.survivors.find((survivor) => survivorId === survivor.id)?.color ||
+    campaign.survivors.find((survivor) => survivorId === survivor.id)?.color ??
     ColorChoice.SLATE
   )
 }
@@ -634,8 +634,8 @@ export const getNemesisDataByName = (
   if (name === undefined || name.trim() === '') return undefined
 
   const nemesisData =
-    Object.values(NEMESES).find((nemesis) => nemesis.name === name) ||
-    Object.values(campaign.customNemeses || {}).find(
+    Object.values(NEMESES).find((nemesis) => nemesis.name === name) ??
+    Object.values(campaign.customNemeses ?? {}).find(
       (nemesis) => nemesis.name === name
     )
 
@@ -661,8 +661,8 @@ export const getQuarryDataByName = (
   if (name === undefined || name.trim() === '') return undefined
 
   const quarryData =
-    Object.values(QUARRIES).find((quarry) => quarry.name === name) ||
-    Object.values(campaign.customQuarries || {}).find(
+    Object.values(QUARRIES).find((quarry) => quarry.name === name) ??
+    Object.values(campaign.customQuarries ?? {}).find(
       (quarry) => quarry.name === name
     )
 

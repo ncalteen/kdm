@@ -65,7 +65,7 @@ export function TurnCard({
     return (
       selectedShowdown.turn?.survivorStates?.find(
         (state) => state.id === selectedSurvivor.id
-      ) || {
+      ) ?? {
         id: selectedSurvivor.id,
         movementUsed: false,
         activationUsed: false
@@ -79,7 +79,7 @@ export function TurnCard({
   const switchTurn = useCallback(() => {
     if (!selectedShowdown) return
 
-    const currentTurn = selectedShowdown.turn?.currentTurn || TurnType.MONSTER
+    const currentTurn = selectedShowdown.turn?.currentTurn ?? TurnType.MONSTER
 
     // If the showdown starts with an ambush, the next turn is monster
     // (regardless of who ambushed whom). Otherwise, switch turns normally. E.g.
@@ -95,12 +95,12 @@ export function TurnCard({
     // If switching to survivors turn, reset all survivor turn states.
     const survivorStates =
       nextTurn === TurnType.SURVIVORS
-        ? selectedShowdown.survivors?.map((survivorId) => ({
+        ? (selectedShowdown.survivors?.map((survivorId) => ({
             id: survivorId,
             movementUsed: false,
             activationUsed: false
-          })) || []
-        : selectedShowdown.turn?.survivorStates || []
+          })) ?? [])
+        : (selectedShowdown.turn?.survivorStates ?? [])
 
     saveSelectedShowdown(
       {
@@ -108,7 +108,7 @@ export function TurnCard({
         ambush: AmbushType.NONE,
         turn: {
           currentTurn: nextTurn,
-          monsterState: selectedShowdown.turn?.monsterState || {
+          monsterState: selectedShowdown.turn?.monsterState ?? {
             aiCardDrawn: false
           },
           survivorStates
@@ -125,7 +125,7 @@ export function TurnCard({
     (survivorId: number, updates: Partial<ShowdownSurvivorTurnState>) => {
       if (!selectedShowdown) return
 
-      const currentStates = selectedShowdown.turn?.survivorStates || []
+      const currentStates = selectedShowdown.turn?.survivorStates ?? []
       const updatedStates = currentStates.map((state) =>
         state.id === survivorId ? { ...state, ...updates } : state
       )
@@ -142,8 +142,8 @@ export function TurnCard({
 
       saveSelectedShowdown({
         turn: {
-          currentTurn: selectedShowdown.turn?.currentTurn || TurnType.MONSTER,
-          monsterState: selectedShowdown.turn?.monsterState || {
+          currentTurn: selectedShowdown.turn?.currentTurn ?? TurnType.MONSTER,
+          monsterState: selectedShowdown.turn?.monsterState ?? {
             aiCardDrawn: false
           },
           survivorStates: updatedStates
@@ -160,12 +160,12 @@ export function TurnCard({
     (updates: Partial<ShowdownMonsterTurnState>) => {
       if (!selectedShowdown) return
 
-      const currentState = selectedShowdown.turn?.monsterState || {}
+      const currentState = selectedShowdown.turn?.monsterState ?? {}
 
       saveSelectedShowdown({
         turn: {
-          currentTurn: selectedShowdown.turn?.currentTurn || TurnType.MONSTER,
-          survivorStates: selectedShowdown.turn?.survivorStates || [],
+          currentTurn: selectedShowdown.turn?.currentTurn ?? TurnType.MONSTER,
+          survivorStates: selectedShowdown.turn?.survivorStates ?? [],
           monsterState: { ...currentState, ...updates }
         }
       })
@@ -216,7 +216,7 @@ export function TurnCard({
             <div className="space-y-2">
               {/* Survivor Name */}
               <div className="font-medium text-sm text-center h-6">
-                {selectedSurvivor?.name || 'No Survivor Selected'}
+                {selectedSurvivor?.name ?? 'No Survivor Selected'}
                 {selectedSurvivor?.id === selectedShowdown?.scout && (
                   <Badge variant="outline" className="ml-2">
                     Scout
@@ -283,7 +283,7 @@ export function TurnCard({
             <div className="space-y-2">
               {/* Survivor Name */}
               <div className="font-medium text-sm text-center h-6">
-                Targeting: {selectedSurvivor?.name || 'No Survivor Selected'}
+                Targeting: {selectedSurvivor?.name ?? 'No Survivor Selected'}
                 {selectedSurvivor?.id === selectedShowdown?.scout && (
                   <Badge variant="outline" className="ml-2">
                     Scout
