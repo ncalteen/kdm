@@ -347,7 +347,7 @@ export function SurvivalCard({
                     min={0}
                     max={selectedSettlement?.survivalLimit ?? 1}
                     onChange={(value) => updateSurvival(value)}
-                    className="w-16 h-12 text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="w-12 h-12 text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     disabled={selectedSurvivor?.canSpendSurvival === false}
                   />
                 </div>
