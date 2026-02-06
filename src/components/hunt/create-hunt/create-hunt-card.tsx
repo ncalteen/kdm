@@ -461,10 +461,9 @@ export function CreateHuntCard({
         monster.aiDeck.legendary +
         (monster.aiDeck.overtone ?? 0)
 
-    updated[selectedMonsterLevel] = updated[selectedMonsterLevel]?.map((m) => {
-      if (m === monster) return monster
-      return m
-    })
+    updated[selectedMonsterLevel] = updated[selectedMonsterLevel]?.map((m) =>
+      m === monster ? monster : m
+    )
 
     setSelectedQuarryData(updated)
   }

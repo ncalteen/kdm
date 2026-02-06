@@ -42,6 +42,7 @@ import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { ShowdownSurvivorDetails } from '@/schemas/showdown-survivor-details'
 import { Survivor } from '@/schemas/survivor'
+import _ from 'lodash'
 import { ArrowLeftIcon, ArrowRightIcon, SkullIcon } from 'lucide-react'
 import { ReactElement, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -457,114 +458,76 @@ export function CreateShowdownCard({
   }
 
   /**
+   * Get the Monster Data
+   *
+   * Automatically selects the correct data location based on the current
+   * monster version (original, alternate, or vignette).
+   *
+   * @returns Monster Data
+   */
+  const getMonsterLevelData = ():
+    | NemesisMonsterLevel
+    | QuarryMonsterLevel
+    | undefined => {
+    if (!selectedMonsterData) return undefined
+
+    // Get the monster to update based on selected version
+    return selectedMonsterVersion === MonsterVersion.ORIGINAL &&
+      selectedMonsterData[selectedMonsterLevel]?.[selectedShowdownMonsterIndex]
+      ? (selectedMonsterData[selectedMonsterLevel][
+          selectedShowdownMonsterIndex
+        ] as NemesisMonsterLevel | QuarryMonsterLevel)
+      : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
+          (selectedMonsterData as QuarryMonsterData).alternate?.[
+            selectedMonsterLevel
+          ]?.[selectedShowdownMonsterIndex]
+        ? ((selectedMonsterData as QuarryMonsterData).alternate?.[
+            selectedMonsterLevel
+          ]?.[selectedShowdownMonsterIndex] as
+            | NemesisMonsterLevel
+            | QuarryMonsterLevel)
+        : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
+            selectedMonsterData.vignette?.[selectedMonsterLevel]?.[
+              selectedShowdownMonsterIndex
+            ]
+          ? (selectedMonsterData.vignette[selectedMonsterLevel][
+              selectedShowdownMonsterIndex
+            ] as NemesisMonsterLevel | QuarryMonsterLevel)
+          : undefined
+  }
+
+  /**
    * Updates a Selected Monster Property
    *
-   * Handles both direct properties (e.g., 'movement') and nested properties
-   * (e.g., ['aiDeck', 'advanced']). Automatically selects the correct data
-   * location based on the current monster version (original, alternate, or
-   * vignette).
+   * Automatically selects the correct data location based on the current
+   * monster version (original, alternate, or vignette).
    *
    * @param path Property Path
    * @param value New Value
    */
-  const updateSelectedMonsterProperty = <T,>(
-    path: string | string[],
-    value: T
-  ) => {
+  const updateProp = (path: string[], value: number) => {
     if (!selectedMonsterData) return
+
+    const monster = getMonsterLevelData()
+    if (!monster) return
 
     const updated = { ...selectedMonsterData }
 
-    // Get the monster to update based on selected version
-    const monster: NemesisMonsterLevel | QuarryMonsterLevel | null =
-      selectedMonsterVersion === MonsterVersion.ORIGINAL &&
-      updated[selectedMonsterLevel]?.[selectedShowdownMonsterIndex]
-        ? (updated[selectedMonsterLevel][selectedShowdownMonsterIndex] as
-            | NemesisMonsterLevel
-            | QuarryMonsterLevel)
-        : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
-            (updated as QuarryMonsterData).alternate?.[selectedMonsterLevel]?.[
-              selectedShowdownMonsterIndex
-            ]
-          ? ((updated as QuarryMonsterData).alternate?.[selectedMonsterLevel]?.[
-              selectedShowdownMonsterIndex
-            ] as NemesisMonsterLevel | QuarryMonsterLevel)
-          : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
-              updated.vignette?.[selectedMonsterLevel]?.[
-                selectedShowdownMonsterIndex
-              ]
-            ? (updated.vignette[selectedMonsterLevel][
-                selectedShowdownMonsterIndex
-              ] as NemesisMonsterLevel | QuarryMonsterLevel)
-            : null
+    _.set(monster, path, value)
 
-    if (!monster) return
+    // If the AI deck values are updated, update AI deck remaining as well
+    if (path[0] === 'aiDeck')
+      monster.aiDeckRemaining =
+        monster.aiDeck.advanced +
+        monster.aiDeck.basic +
+        monster.aiDeck.legendary +
+        (monster.aiDeck.overtone ?? 0)
 
-    // Handle nested path (e.g., ['aiDeck', 'advanced']) vs direct property
-    if (Array.isArray(path)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let target: any = monster
-      for (let i = 0; i < path.length - 1; i++) {
-        target = target[path[i]]
-        if (target === undefined) return
-      }
-      target[path[path.length - 1]] = value
-    } else (monster as { [key: string]: unknown })[path] = value
+    updated[selectedMonsterLevel] = updated[selectedMonsterLevel]?.map((m) =>
+      m === monster ? monster : m
+    )
 
     setSelectedMonsterData(updated)
-  }
-
-  /**
-   * Gets a Selected Monster Property
-   *
-   * Handles both direct properties (e.g., 'movement') and nested properties
-   * (e.g., ['aiDeck', 'advanced']). Automatically selects the correct data
-   * location based on the current monster version (original, alternate, or
-   * vignette).
-   *
-   * @param path Property Path
-   * @returns Property Value
-   */
-  const getSelectedMonsterProperty = (path: string | string[]) => {
-    if (!selectedMonsterData) return
-
-    // Get the monster to update based on selected version
-    const monster: NemesisMonsterLevel | QuarryMonsterLevel | null =
-      selectedMonsterVersion === MonsterVersion.ORIGINAL &&
-      selectedMonsterData[selectedMonsterLevel]?.[selectedShowdownMonsterIndex]
-        ? (selectedMonsterData[selectedMonsterLevel][
-            selectedShowdownMonsterIndex
-          ] as NemesisMonsterLevel | QuarryMonsterLevel)
-        : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
-            (selectedMonsterData as QuarryMonsterData).alternate?.[
-              selectedMonsterLevel
-            ]?.[selectedShowdownMonsterIndex]
-          ? ((selectedMonsterData as QuarryMonsterData).alternate?.[
-              selectedMonsterLevel
-            ]?.[selectedShowdownMonsterIndex] as
-              | NemesisMonsterLevel
-              | QuarryMonsterLevel)
-          : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
-              selectedMonsterData.vignette?.[selectedMonsterLevel]?.[
-                selectedShowdownMonsterIndex
-              ]
-            ? (selectedMonsterData.vignette[selectedMonsterLevel][
-                selectedShowdownMonsterIndex
-              ] as NemesisMonsterLevel | QuarryMonsterLevel)
-            : null
-
-    if (!monster) return
-
-    // Handle nested path (e.g., ['aiDeck', 'advanced']) vs direct property
-    if (Array.isArray(path)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let target: any = monster
-      for (let i = 0; i < path.length - 1; i++) {
-        target = target[path[i]]
-        if (target === undefined) return
-      }
-      return target[path[path.length - 1]]
-    } else return (monster as { [key: string]: unknown })[path]
   }
 
   /**
@@ -727,7 +690,7 @@ export function CreateShowdownCard({
           selectedMonsterData.multiMonster &&
           selectedMonsterData[selectedMonsterLevel] && (
             <h3 className="text-sm font-semibold text-muted-foreground text-center">
-              {getSelectedMonsterProperty('name') ?? 'Unknown Monster'}
+              {getMonsterLevelData()?.name ?? 'Unknown Monster'}
             </h3>
           )}
 
@@ -801,10 +764,8 @@ export function CreateShowdownCard({
               </Label>
               <NumericInput
                 label="A Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'advanced']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'advanced'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.advanced ?? 0}
+                onChange={(value) => updateProp(['aiDeck', 'advanced'], value)}
                 min={0}
                 disabled={selectedMonsterData === undefined}
               />
@@ -818,10 +779,8 @@ export function CreateShowdownCard({
               </Label>
               <NumericInput
                 label="B Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'basic']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'basic'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.basic ?? 0}
+                onChange={(value) => updateProp(['aiDeck', 'basic'], value)}
                 min={0}
                 disabled={selectedMonsterData === undefined}
               />
@@ -835,10 +794,8 @@ export function CreateShowdownCard({
               </Label>
               <NumericInput
                 label="L Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'legendary']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'legendary'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.legendary ?? 0}
+                onChange={(value) => updateProp(['aiDeck', 'legendary'], value)}
                 min={0}
                 disabled={selectedMonsterData === undefined}
               />
@@ -852,10 +809,8 @@ export function CreateShowdownCard({
               </Label>
               <NumericInput
                 label="O Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'overtone']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'overtone'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.overtone ?? 0}
+                onChange={(value) => updateProp(['aiDeck', 'overtone'], value)}
                 min={0}
                 disabled={selectedMonsterData === undefined}
               />
@@ -880,10 +835,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Movement"
-              value={getSelectedMonsterProperty('movement') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('movement', value)
-              }
+              value={getMonsterLevelData()?.movement ?? 0}
+              onChange={(value) => updateProp(['movement'], value)}
               min={0}
               disabled={selectedMonsterData === undefined}
             />
@@ -898,10 +851,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Toughness"
-              value={getSelectedMonsterProperty('toughness') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('toughness', value)
-              }
+              value={getMonsterLevelData()?.toughness ?? 0}
+              onChange={(value) => updateProp(['toughness'], value)}
               min={0}
               disabled={selectedMonsterData === undefined}
             />
@@ -914,10 +865,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Speed"
-              value={getSelectedMonsterProperty('speed') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('speed', value)
-              }
+              value={getMonsterLevelData()?.speed ?? 0}
+              onChange={(value) => updateProp(['speed'], value)}
               min={0}
               disabled={selectedMonsterData === undefined}
             />
@@ -930,10 +879,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Damage"
-              value={getSelectedMonsterProperty('damage') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('damage', value)
-              }
+              value={getMonsterLevelData()?.damage ?? 0}
+              onChange={(value) => updateProp(['damage'], value)}
               min={0}
               disabled={selectedMonsterData === undefined}
             />
@@ -957,10 +904,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Movement Tokens"
-              value={getSelectedMonsterProperty('movementTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('movementTokens', value)
-              }
+              value={getMonsterLevelData()?.movementTokens ?? 0}
+              onChange={(value) => updateProp(['movementTokens'], value)}
               disabled={selectedMonsterData === undefined}
             />
           </div>
@@ -974,10 +919,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Speed Tokens"
-              value={getSelectedMonsterProperty('speedTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('speedTokens', value)
-              }
+              value={getMonsterLevelData()?.speedTokens ?? 0}
+              onChange={(value) => updateProp(['speedTokens'], value)}
               disabled={selectedMonsterData === undefined}
             />
           </div>
@@ -991,10 +934,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Damage Tokens"
-              value={getSelectedMonsterProperty('damageTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('damageTokens', value)
-              }
+              value={getMonsterLevelData()?.damageTokens ?? 0}
+              onChange={(value) => updateProp(['damageTokens'], value)}
               disabled={selectedMonsterData === undefined}
             />
           </div>
@@ -1010,10 +951,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Accuracy Tokens"
-              value={getSelectedMonsterProperty('accuracyTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('accuracyTokens', value)
-              }
+              value={getMonsterLevelData()?.accuracyTokens ?? 0}
+              onChange={(value) => updateProp(['accuracyTokens'], value)}
               disabled={selectedMonsterData === undefined}
             />
           </div>
@@ -1027,10 +966,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Strength Tokens"
-              value={getSelectedMonsterProperty('strengthTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('strengthTokens', value)
-              }
+              value={getMonsterLevelData()?.strengthTokens ?? 0}
+              onChange={(value) => updateProp(['strengthTokens'], value)}
               disabled={selectedMonsterData === undefined}
             />
           </div>
@@ -1044,10 +981,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Evasion Tokens"
-              value={getSelectedMonsterProperty('evasionTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('evasionTokens', value)
-              }
+              value={getMonsterLevelData()?.evasionTokens ?? 0}
+              onChange={(value) => updateProp(['evasionTokens'], value)}
               disabled={selectedMonsterData === undefined}
             />
           </div>
@@ -1061,10 +996,8 @@ export function CreateShowdownCard({
             </Label>
             <NumericInput
               label="Luck Tokens"
-              value={getSelectedMonsterProperty('luckTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('luckTokens', value)
-              }
+              value={getMonsterLevelData()?.luckTokens ?? 0}
+              onChange={(value) => updateProp(['luckTokens'], value)}
               disabled={selectedMonsterData === undefined}
             />
           </div>
