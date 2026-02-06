@@ -294,23 +294,6 @@ describe('HuntSchema', () => {
         )
     })
 
-    it('should fail when more than 4 survivors are selected', () => {
-      const result = HuntSchema.safeParse({
-        ...basicHunt,
-        survivors: [1, 2, 3, 4, 5]
-      })
-
-      expect(result.success).toBe(false)
-      if (!result.success)
-        expect(result.error.issues).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              message: 'No more than four survivors can embark on a hunt.'
-            })
-          ])
-        )
-    })
-
     it('should fail when monsterPosition is out of range', () => {
       const result = HuntSchema.safeParse({
         ...basicHunt,

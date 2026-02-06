@@ -11,6 +11,9 @@ import { z } from 'zod'
 
 /**
  * Alternate Monster Data Schema
+ *
+ * These are alternate versions of monsters that can be fought. E.g. the
+ * Screaming Nukalope or White Gigalion.
  */
 export const AlternateMonsterDataSchema = z.object({
   /** Hunt Board Layout */

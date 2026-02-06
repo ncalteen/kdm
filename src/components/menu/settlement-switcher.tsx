@@ -73,12 +73,12 @@ export function SettlementSwitcher({
    */
   const handleSettlementSelect = (settlement: Settlement) => {
     const settlementHunt =
-      campaign.hunts?.find((hunt) => hunt.settlementId === settlement.id) ||
+      campaign.hunts?.find((hunt) => hunt.settlementId === settlement.id) ??
       null
     const settlementShowdown =
       campaign.showdowns?.find(
         (showdown) => showdown.settlementId === settlement.id
-      ) || null
+      ) ?? null
 
     setSelectedSettlement(settlement)
     setSelectedHunt(settlementHunt)

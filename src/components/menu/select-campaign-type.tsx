@@ -47,7 +47,7 @@ export function SelectCampaignType({
   value: propValue
 }: SelectCampaignTypeProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState(propValue || '')
+  const [value, setValue] = useState(propValue ?? '')
 
   const campaignOptions = Object.values(CampaignType).map((campaign) => ({
     value: campaign,
@@ -55,7 +55,7 @@ export function SelectCampaignType({
   }))
 
   /**
-   * Selects a campaign option and updates the state.
+   * Select Campaign Option
    *
    * @param currentValue Selected Campaign Value
    */

@@ -76,11 +76,19 @@ export function MilestoneItem({
   useEffect(() => {
     console.debug('[MilestoneItem] Changed', milestone)
 
-    if (nameRef.current) nameRef.current.value = milestone.name || ''
+    if (nameRef.current) nameRef.current.value = milestone.name
 
-    if (eventRef.current) eventRef.current.value = milestone.event || ''
+    if (eventRef.current) eventRef.current.value = milestone.event
   }, [milestone])
 
+  /**
+   * Handle Key Down Event
+   *
+   * Handles the key down event for the input fields. If the Enter key is
+   * pressed, it calls the onSave function with the current index and values.
+   *
+   * @param e Key Down Event
+   */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && nameRef.current && eventRef.current) {
       e.preventDefault()
@@ -195,7 +203,7 @@ export function NewMilestoneItem({
   const eventRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.
@@ -247,7 +255,7 @@ export function NewMilestoneItem({
           variant="ghost"
           size="icon"
           onClick={() =>
-            onSave(nameRef.current?.value || '', eventRef.current?.value || '')
+            onSave(nameRef.current?.value ?? '', eventRef.current?.value ?? '')
           }
           title="Save milestone">
           <CheckIcon className="h-4 w-4" />

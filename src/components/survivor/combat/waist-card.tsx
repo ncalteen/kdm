@@ -3,9 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_WAIST_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
@@ -35,13 +33,11 @@ export function WaistCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: WaistCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   /**
    * Save to Local Storage
    *
-   * @param attrName Attribute name
-   * @param value New value
+   * @param attrName Attribute Name
+   * @param value New Value
    */
   const saveToLocalStorage = (
     attrName:
@@ -72,30 +68,12 @@ export function WaistCard({
               strokeWidth={1}
             />
             <NumericInput
+              label="Waist Armor"
               value={selectedSurvivor?.waistArmor ?? 0}
               min={0}
-              label="Waist Armor"
               onChange={(value) => saveToLocalStorage('waistArmor', value)}
-              readOnly={false}>
-              <Input
-                placeholder="1"
-                type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSurvivor?.waistArmor ?? 0}
-                readOnly={isMobile}
-                onChange={
-                  !isMobile
-                    ? (e) =>
-                        saveToLocalStorage(
-                          'waistArmor',
-                          parseInt(e.target.value, 10)
-                        )
-                    : undefined
-                }
-                name="waist-armor"
-                id="waist-armor"
-              />
-            </NumericInput>
+              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
           <div className="mx-2 w-px bg-border h-19" />
@@ -152,7 +130,7 @@ export function WaistCard({
                       key={value}
                       className="h-4 w-4 rounded-sm"
                       checked={
-                        (selectedSurvivor?.waistWarpedPelvis || 0) >= value
+                        (selectedSurvivor?.waistWarpedPelvis ?? 0) >= value
                       }
                       onCheckedChange={(checked) => {
                         const newValue = checked ? value : value - 1

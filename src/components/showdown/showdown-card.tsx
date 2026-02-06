@@ -48,8 +48,9 @@ interface ShowdownCardProps {
 /**
  * Showdown Card Component
  *
- * Displays showdown initiation interface when no active showdown or showdown exists.
- * Allows selection of quarry, survivors, and scout (if settlement uses scouts).
+ * Displays showdown initiation interface when no active showdown or showdown
+ * exists. Allows selection of quarry, survivors, and scout (if settlement uses
+ * scouts).
  */
 export function ShowdownCard({
   campaign,

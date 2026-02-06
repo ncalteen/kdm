@@ -47,7 +47,7 @@ export function HuntXPCard({
   /**
    * Update Hunt XP
    *
-   * @param index The index of the checkbox (0-based)
+   * @param index Checkbox Index (0-based)
    * @param checked Whether the checkbox is checked
    */
   const updateHuntXP = (index: number, checked: boolean) => {
@@ -64,13 +64,13 @@ export function HuntXPCard({
   /**
    * Handles right-clicking on Hunt XP checkboxes to toggle rank up milestones
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * @param index Checkbox Index (0-based)
+   * @param event Mouse Event
    */
   const updateHuntXPRankUp = (index: number, event: MouseEvent) => {
     event.preventDefault()
 
-    const currentRankUps = [...(selectedSurvivor?.huntXPRankUp || [])]
+    const currentRankUps = [...(selectedSurvivor?.huntXPRankUp ?? [])]
     const rankUpIndex = currentRankUps.indexOf(index)
 
     if (rankUpIndex >= 0) {
@@ -96,12 +96,12 @@ export function HuntXPCard({
   }
 
   /**
-   * Checks if a checkbox should be disabled
+   * Check if a Checkbox Should be Disabled
    *
-   * @param index The index of the checkbox (0-based)
-   * @returns True if the checkbox should be disabled
+   * @param index Checkbox Index (0-based)
+   * @returns Checkbox Should be Disabled
    */
-  const isDisabled = (index: number) => index > (selectedSurvivor?.huntXP || 0)
+  const isDisabled = (index: number) => index > (selectedSurvivor?.huntXP ?? 0)
 
   return (
     <Card className="p-2 border-0">
@@ -113,7 +113,7 @@ export function HuntXPCard({
                 <Label className="font-bold text-left text-sm">Hunt XP</Label>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 16 }, (_, i) => {
-                    const checked = (selectedSurvivor?.huntXP || 0) > i
+                    const checked = (selectedSurvivor?.huntXP ?? 0) > i
 
                     return (
                       <div key={i} className="flex">

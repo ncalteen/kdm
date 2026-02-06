@@ -65,6 +65,8 @@ const SquireProgressionCard = ({
 
 /**
  * Squire Progression Cards Component
+ *
+ * @returns Squire Progression Cards Component
  */
 export function SquireProgressionCards(): ReactElement {
   return (

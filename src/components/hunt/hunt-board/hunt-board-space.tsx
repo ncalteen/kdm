@@ -5,7 +5,7 @@ import { useDroppable } from '@dnd-kit/core'
 import { ReactElement } from 'react'
 
 /**
- * Hunt Board Space Component Props
+ * Hunt Board Space Component Properties
  */
 interface HuntBoardSpaceProps {
   /** Additional CSS classes */
@@ -26,6 +26,9 @@ interface HuntBoardSpaceProps {
  * Hunt Board Space Component
  *
  * Represents a single space on the hunt board that can accept dropped tokens.
+ *
+ * @param props Hunt Board Space Properties
+ * @returns Hunt Board Space Component
  */
 export function HuntBoardSpace({
   className,
@@ -52,7 +55,7 @@ export function HuntBoardSpace({
         className
       )}>
       <div className="text-[10px] sm:text-xs font-medium text-center break-words px-1 sm:px-2 leading-tight">
-        {label || index}
+        {label ?? index}
       </div>
     </div>
   )

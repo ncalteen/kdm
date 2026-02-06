@@ -3,9 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_BODY_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
@@ -35,13 +33,11 @@ export function BodyCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: BodyCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   /**
    * Save to Local Storage
    *
-   * @param attrName Attribute name
-   * @param value New value
+   * @param attrName Attribute Name
+   * @param value New Value
    */
   const saveToLocalStorage = (
     attrName:
@@ -71,30 +67,12 @@ export function BodyCard({
               strokeWidth={1}
             />
             <NumericInput
+              label="Body Armor"
               value={selectedSurvivor?.bodyArmor ?? 0}
               min={0}
-              label="Body Armor"
               onChange={(value) => saveToLocalStorage('bodyArmor', value)}
-              readOnly={false}>
-              <Input
-                placeholder="1"
-                type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSurvivor?.bodyArmor ?? '0'}
-                readOnly={isMobile}
-                onChange={
-                  !isMobile
-                    ? (e) =>
-                        saveToLocalStorage(
-                          'bodyArmor',
-                          parseInt(e.target.value, 10)
-                        )
-                    : undefined
-                }
-                name="body-armor"
-                id="body-armor"
-              />
-            </NumericInput>
+              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
           <div className="mx-2 w-px bg-border h-19" />
@@ -123,7 +101,7 @@ export function BodyCard({
                     <Checkbox
                       key={value}
                       className="h-4 w-4 rounded-sm"
-                      checked={(selectedSurvivor?.bodyBrokenRib || 0) >= value}
+                      checked={(selectedSurvivor?.bodyBrokenRib ?? 0) >= value}
                       onCheckedChange={(checked) => {
                         const newValue = checked ? value : value - 1
                         const safeValue = Math.max(0, Math.min(5, newValue))
@@ -144,7 +122,7 @@ export function BodyCard({
                       key={value}
                       className="h-4 w-4 rounded-sm"
                       checked={
-                        (selectedSurvivor?.bodyGapingChestWound || 0) >= value
+                        (selectedSurvivor?.bodyGapingChestWound ?? 0) >= value
                       }
                       onCheckedChange={(checked) => {
                         const newValue = checked ? value : value - 1

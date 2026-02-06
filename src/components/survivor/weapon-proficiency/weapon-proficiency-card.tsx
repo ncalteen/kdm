@@ -63,7 +63,7 @@ export function WeaponProficiencyCard({
   )
 
   /**
-   * Handle weapon proficiency level checkbox change
+   * Handle Weapon Proficiency Level Checkbox Change
    *
    * @param index Checkbox index (0-7)
    * @param checked Whether the checkbox is checked
@@ -83,7 +83,7 @@ export function WeaponProficiencyCard({
   }
 
   /**
-   * Handle weapon type selection change
+   * Handle Weapon Type Selection Change
    *
    * @param type Selected weapon type
    */
@@ -112,7 +112,7 @@ export function WeaponProficiencyCard({
               {Array.from({ length: 8 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex">
                   <Checkbox
-                    checked={(selectedSurvivor?.weaponProficiency || 0) > i}
+                    checked={(selectedSurvivor?.weaponProficiency ?? 0) > i}
                     onCheckedChange={(checked) =>
                       handleProficiencyChange(i, !!checked)
                     }

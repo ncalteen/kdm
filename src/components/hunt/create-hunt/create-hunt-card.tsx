@@ -6,7 +6,6 @@ import { SurvivorSelectionDrawer } from '@/components/survivor/survivor-selectio
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -38,6 +37,7 @@ import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
+import _ from 'lodash'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -401,112 +401,71 @@ export function CreateHuntCard({
   }
 
   /**
-   * Updates a Selected Monster Property
+   * Get the Monster Data
    *
-   * Handles both direct properties (e.g., 'movement') and nested properties
-   * (e.g., ['aiDeck', 'advanced']). Automatically selects the correct data
-   * location based on the current monster version (original, alternate, or
-   * vignette).
+   * Automatically selects the correct data location based on the current
+   * monster version (original, alternate, or vignette).
    *
-   * @param path Property Path (string or array)
-   * @param value New Value
+   * @returns Monster Data
    */
-  const updateSelectedMonsterProperty = <T,>(
-    path: string | string[],
-    value: T
-  ) => {
-    if (!selectedQuarryData) return
-
-    const updated = { ...selectedQuarryData }
+  const getMonsterLevelData = (): QuarryMonsterLevel | undefined => {
+    if (!selectedQuarryData) return undefined
 
     // Get the monster to update based on selected version
-    const monster: QuarryMonsterLevel | null =
-      selectedMonsterVersion === MonsterVersion.ORIGINAL &&
-      updated[selectedMonsterLevel]?.[selectedHuntMonsterIndex]
-        ? (updated[selectedMonsterLevel][
+    return selectedMonsterVersion === MonsterVersion.ORIGINAL &&
+      selectedQuarryData[selectedMonsterLevel]?.[selectedHuntMonsterIndex]
+      ? (selectedQuarryData[selectedMonsterLevel][
+          selectedHuntMonsterIndex
+        ] as QuarryMonsterLevel)
+      : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
+          selectedQuarryData.alternate?.[selectedMonsterLevel]?.[
+            selectedHuntMonsterIndex
+          ]
+        ? (selectedQuarryData.alternate[selectedMonsterLevel][
             selectedHuntMonsterIndex
           ] as QuarryMonsterLevel)
-        : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
-            updated.alternate?.[selectedMonsterLevel]?.[
+        : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
+            selectedQuarryData.vignette?.[selectedMonsterLevel]?.[
               selectedHuntMonsterIndex
             ]
-          ? (updated.alternate[selectedMonsterLevel][
+          ? (selectedQuarryData.vignette[selectedMonsterLevel][
               selectedHuntMonsterIndex
             ] as QuarryMonsterLevel)
-          : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
-              updated.vignette?.[selectedMonsterLevel]?.[
-                selectedHuntMonsterIndex
-              ]
-            ? (updated.vignette[selectedMonsterLevel][
-                selectedHuntMonsterIndex
-              ] as QuarryMonsterLevel)
-            : null
-
-    if (!monster) return
-
-    // Handle nested path (e.g., ['aiDeck', 'advanced']) vs direct property
-    if (Array.isArray(path)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let target: any = monster
-      for (let i = 0; i < path.length - 1; i++) {
-        target = target[path[i]]
-        if (target === undefined) return
-      }
-      target[path[path.length - 1]] = value
-    } else (monster as { [key: string]: unknown })[path] = value
-
-    setSelectedQuarryData(updated)
+          : undefined
   }
 
   /**
-   * Gets a Selected Monster Property
+   * Updates a Numeric Monster Property
    *
-   * Handles both direct properties (e.g., 'movement') and nested properties
-   * (e.g., ['aiDeck', 'advanced']). Automatically selects the correct data
-   * location based on the current monster version (original, alternate, or
-   * vignette).
+   * Automatically selects the correct data location based on the current
+   * monster version (original, alternate, or vignette).
    *
-   * @param path Property Path (string or array)
-   * @returns Property Value
+   * @param path Property Path
+   * @param value New Value
    */
-  const getSelectedMonsterProperty = (path: string | string[]) => {
+  const updateProp = (path: string[], value: number) => {
     if (!selectedQuarryData) return
 
-    // Get the monster to update based on selected version
-    const monster: QuarryMonsterLevel | null =
-      selectedMonsterVersion === MonsterVersion.ORIGINAL &&
-      selectedQuarryData[selectedMonsterLevel]?.[selectedHuntMonsterIndex]
-        ? (selectedQuarryData[selectedMonsterLevel][
-            selectedHuntMonsterIndex
-          ] as QuarryMonsterLevel)
-        : selectedMonsterVersion === MonsterVersion.ALTERNATE &&
-            selectedQuarryData.alternate?.[selectedMonsterLevel]?.[
-              selectedHuntMonsterIndex
-            ]
-          ? (selectedQuarryData.alternate[selectedMonsterLevel][
-              selectedHuntMonsterIndex
-            ] as QuarryMonsterLevel)
-          : selectedMonsterVersion === MonsterVersion.VIGNETTE &&
-              selectedQuarryData.vignette?.[selectedMonsterLevel]?.[
-                selectedHuntMonsterIndex
-              ]
-            ? (selectedQuarryData.vignette[selectedMonsterLevel][
-                selectedHuntMonsterIndex
-              ] as QuarryMonsterLevel)
-            : null
-
+    const monster = getMonsterLevelData()
     if (!monster) return
 
-    // Handle nested path (e.g., ['aiDeck', 'advanced']) vs direct property
-    if (Array.isArray(path)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let target: any = monster
-      for (let i = 0; i < path.length - 1; i++) {
-        target = target[path[i]]
-        if (target === undefined) return
-      }
-      return target[path[path.length - 1]]
-    } else return (monster as { [key: string]: unknown })[path]
+    const updated = { ...selectedQuarryData }
+
+    _.set(monster, path, value)
+
+    // If the AI deck values are updated, update AI deck remaining as well
+    if (path[0] === 'aiDeck')
+      monster.aiDeckRemaining =
+        monster.aiDeck.advanced +
+        monster.aiDeck.basic +
+        monster.aiDeck.legendary +
+        (monster.aiDeck.overtone ?? 0)
+
+    updated[selectedMonsterLevel] = updated[selectedMonsterLevel]?.map((m) =>
+      m === monster ? monster : m
+    )
+
+    setSelectedQuarryData(updated)
   }
 
   /**
@@ -661,7 +620,7 @@ export function CreateHuntCard({
           selectedQuarryData.multiMonster &&
           selectedQuarryData[selectedMonsterLevel] && (
             <h3 className="text-sm font-semibold text-muted-foreground text-center">
-              {getSelectedMonsterProperty('name') ?? 'Unknown Monster'}
+              {getMonsterLevelData()?.name ?? 'Unknown Monster'}
             </h3>
           )}
 
@@ -735,28 +694,11 @@ export function CreateHuntCard({
               </Label>
               <NumericInput
                 label="A Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'advanced']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'advanced'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.advanced ?? 0}
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-a"
-                  type="number"
-                  value={
-                    getSelectedMonsterProperty(['aiDeck', 'advanced']) ?? 0
-                  }
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'advanced'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                onChange={(value) => updateProp(['aiDeck', 'advanced'], value)}
+                disabled={selectedQuarryData === undefined}
+              />
             </div>
 
             <div className="flex-1 space-y-1">
@@ -767,26 +709,11 @@ export function CreateHuntCard({
               </Label>
               <NumericInput
                 label="B Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'basic']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'basic'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.basic ?? 0}
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-b"
-                  type="number"
-                  value={getSelectedMonsterProperty(['aiDeck', 'basic']) ?? 0}
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'basic'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                onChange={(value) => updateProp(['aiDeck', 'basic'], value)}
+                disabled={selectedQuarryData === undefined}
+              />
             </div>
 
             <div className="flex-1 space-y-1">
@@ -797,28 +724,11 @@ export function CreateHuntCard({
               </Label>
               <NumericInput
                 label="L Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'legendary']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'legendary'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.legendary ?? 0}
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-l"
-                  type="number"
-                  value={
-                    getSelectedMonsterProperty(['aiDeck', 'legendary']) ?? 0
-                  }
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'legendary'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                onChange={(value) => updateProp(['aiDeck', 'legendary'], value)}
+                disabled={selectedQuarryData === undefined}
+              />
             </div>
 
             <div className="flex-1 space-y-1">
@@ -829,28 +739,11 @@ export function CreateHuntCard({
               </Label>
               <NumericInput
                 label="O Cards"
-                value={getSelectedMonsterProperty(['aiDeck', 'overtone']) ?? 0}
-                onChange={(value) =>
-                  updateSelectedMonsterProperty(['aiDeck', 'overtone'], value)
-                }
+                value={getMonsterLevelData()?.aiDeck.overtone ?? 0}
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-o"
-                  type="number"
-                  value={
-                    getSelectedMonsterProperty(['aiDeck', 'overtone']) ?? 0
-                  }
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'overtone'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                onChange={(value) => updateProp(['aiDeck', 'overtone'], value)}
+                disabled={selectedQuarryData === undefined}
+              />
             </div>
           </div>
         </div>
@@ -870,29 +763,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Movement
             </Label>
-
             <NumericInput
               label="Movement"
-              value={getSelectedMonsterProperty('movement') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('movement', value)
-              }
-              min={0}
-              readOnly={false}>
-              <Input
-                id="monster-movement"
-                type="number"
-                value={getSelectedMonsterProperty('movement') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'movement',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.movement ?? 0}
+              onChange={(value) => updateProp(['movement'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Toughness */}
@@ -902,29 +778,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Toughness
             </Label>
-
             <NumericInput
               label="Toughness"
-              value={getSelectedMonsterProperty('toughness') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('toughness', value)
-              }
-              min={0}
-              readOnly={false}>
-              <Input
-                id="monster-toughness"
-                type="number"
-                value={getSelectedMonsterProperty('toughness') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'toughness',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.toughness ?? 0}
+              onChange={(value) => updateProp(['toughness'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Speed */}
@@ -932,29 +791,12 @@ export function CreateHuntCard({
             <Label htmlFor="monster-speed" className="text-xs justify-center">
               Speed
             </Label>
-
             <NumericInput
               label="Speed"
-              value={getSelectedMonsterProperty('speed') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('speed', value)
-              }
-              min={0}
-              readOnly={false}>
-              <Input
-                id="monster-speed"
-                type="number"
-                value={getSelectedMonsterProperty('speed') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'speed',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.speed ?? 0}
+              onChange={(value) => updateProp(['speed'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Damage */}
@@ -962,29 +804,12 @@ export function CreateHuntCard({
             <Label htmlFor="monster-damage" className="text-xs justify-center">
               Damage
             </Label>
-
             <NumericInput
               label="Damage"
-              value={getSelectedMonsterProperty('damage') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('damage', value)
-              }
-              min={0}
-              readOnly={false}>
-              <Input
-                id="monster-damage"
-                type="number"
-                value={getSelectedMonsterProperty('damage') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'damage',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.damage ?? 0}
+              onChange={(value) => updateProp(['damage'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
         </div>
 
@@ -1003,27 +828,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Movement
             </Label>
-
             <NumericInput
               label="Movement Tokens"
-              value={getSelectedMonsterProperty('movementTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('movementTokens', value)
-              }
-              readOnly={false}>
-              <Input
-                id="monster-movement-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('movementTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'movementTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.movementTokens ?? 0}
+              onChange={(value) => updateProp(['movementTokens'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Speed */}
@@ -1033,27 +843,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Speed
             </Label>
-
             <NumericInput
               label="Speed Tokens"
-              value={getSelectedMonsterProperty('speedTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('speedTokens', value)
-              }
-              readOnly={false}>
-              <Input
-                id="monster-speed-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('speedTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'speedTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.speedTokens ?? 0}
+              onChange={(value) => updateProp(['speedTokens'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Damage */}
@@ -1063,27 +858,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Damage
             </Label>
-
             <NumericInput
               label="Damage Tokens"
-              value={getSelectedMonsterProperty('damageTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('damageTokens', value)
-              }
-              readOnly={false}>
-              <Input
-                id="monster-damage-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('damageTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'damageTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.damageTokens ?? 0}
+              onChange={(value) => updateProp(['damageTokens'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
         </div>
 
@@ -1095,27 +875,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Accuracy
             </Label>
-
             <NumericInput
               label="Accuracy Tokens"
-              value={getSelectedMonsterProperty('accuracyTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('accuracyTokens', value)
-              }
-              readOnly={false}>
-              <Input
-                id="monster-accuracy-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('accuracyTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'accuracyTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.accuracyTokens ?? 0}
+              onChange={(value) => updateProp(['accuracyTokens'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Strength */}
@@ -1125,27 +890,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Strength
             </Label>
-
             <NumericInput
               label="Strength Tokens"
-              value={getSelectedMonsterProperty('strengthTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('strengthTokens', value)
-              }
-              readOnly={false}>
-              <Input
-                id="monster-strength-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('strengthTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'strengthTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.strengthTokens ?? 0}
+              onChange={(value) => updateProp(['strengthTokens'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Evasion */}
@@ -1155,27 +905,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Evasion
             </Label>
-
             <NumericInput
               label="Evasion Tokens"
-              value={getSelectedMonsterProperty('evasionTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('evasionTokens', value)
-              }
-              readOnly={false}>
-              <Input
-                id="monster-evasion-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('evasionTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'evasionTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.evasionTokens ?? 0}
+              onChange={(value) => updateProp(['evasionTokens'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
 
           {/* Luck */}
@@ -1185,27 +920,12 @@ export function CreateHuntCard({
               className="text-xs justify-center">
               Luck
             </Label>
-
             <NumericInput
               label="Luck Tokens"
-              value={getSelectedMonsterProperty('luckTokens') ?? 0}
-              onChange={(value) =>
-                updateSelectedMonsterProperty('luckTokens', value)
-              }
-              readOnly={false}>
-              <Input
-                id="monster-luck-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('luckTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'luckTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              value={getMonsterLevelData()?.luckTokens ?? 0}
+              onChange={(value) => updateProp(['luckTokens'], value)}
+              disabled={selectedQuarryData === undefined}
+            />
           </div>
         </div>
 

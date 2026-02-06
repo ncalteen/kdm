@@ -53,7 +53,7 @@ export interface ColumnProps {
 }
 
 /**
- * Creates column definitions for the survivor data table
+ * Create Column Definitions for the Survivor Data Table
  *
  * @param props Column Configuration Properties
  * @returns Column definitions

@@ -260,7 +260,7 @@ export function AppSidebar({
   ])
 
   /**
-   * Handles campaign data download.
+   * Handle Campaign Data Download
    */
   const handleDownload = () => {
     try {
@@ -294,7 +294,7 @@ export function AppSidebar({
   }
 
   /**
-   * Handles the file selection and validation.
+   * Handles File Selection and Validation
    *
    * @param event File Input Change Event
    */
@@ -348,7 +348,9 @@ export function AppSidebar({
   }
 
   /**
-   * Confirms the upload and replaces the existing campaign data.
+   * Confirms Upload
+   *
+   * Replaces the existing campaign data.
    */
   const confirmUpload = () => {
     if (!uploadedData) return
@@ -375,7 +377,7 @@ export function AppSidebar({
   }
 
   /**
-   * Handles the dialog close event.
+   * Handles Dialog Close Event
    */
   const handleDialogClose = () => {
     setUploadedData(undefined)
@@ -509,17 +511,17 @@ export function AppSidebar({
                           {campaign.survivors.length !== 1 ? 's' : ''}
                         </li>
                         <li>
-                          {Object.keys(campaign.customNemeses || {}).length}{' '}
+                          {Object.keys(campaign.customNemeses ?? {}).length}{' '}
                           custom
-                          {Object.keys(campaign.customNemeses || {}).length ===
+                          {Object.keys(campaign.customNemeses ?? {}).length ===
                           1
                             ? ' nemesis'
                             : ' nemeses'}
                         </li>
                         <li>
-                          {Object.keys(campaign.customQuarries || {}).length}{' '}
+                          {Object.keys(campaign.customQuarries ?? {}).length}{' '}
                           custom
-                          {Object.keys(campaign.customQuarries || {}).length ===
+                          {Object.keys(campaign.customQuarries ?? {}).length ===
                           1
                             ? ' quarry'
                             : ' quarries'}
@@ -537,22 +539,22 @@ export function AppSidebar({
                         </li>
                         <li>
                           {
-                            Object.keys(uploadedData?.customNemeses || {})
+                            Object.keys(uploadedData?.customNemeses ?? {})
                               .length
                           }{' '}
                           custom
-                          {Object.keys(uploadedData?.customNemeses || {})
+                          {Object.keys(uploadedData?.customNemeses ?? {})
                             .length === 1
                             ? ' nemesis'
                             : ' nemeses'}
                         </li>
                         <li>
                           {
-                            Object.keys(uploadedData?.customQuarries || {})
+                            Object.keys(uploadedData?.customQuarries ?? {})
                               .length
                           }{' '}
                           custom
-                          {Object.keys(uploadedData?.customQuarries || {})
+                          {Object.keys(uploadedData?.customQuarries ?? {})
                             .length === 1
                             ? ' quarry'
                             : ' quarries'}

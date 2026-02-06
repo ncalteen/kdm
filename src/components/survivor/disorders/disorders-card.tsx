@@ -60,7 +60,7 @@ export function DisordersCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.disorders || []).map((_, i) => [i, true])
+      (selectedSurvivor?.disorders ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -70,7 +70,7 @@ export function DisordersCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSurvivor?.disorders || []).map((_, i) => [i, true])
+        (selectedSurvivor?.disorders ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -83,12 +83,12 @@ export function DisordersCard({
   )
 
   /**
-   * Handles the removal of a disorder.
+   * Handle Disorder Removal
    *
    * @param index Disorder Index
    */
   const onRemove = (index: number) => {
-    const updated = [...(selectedSurvivor?.disorders || [])]
+    const updated = [...(selectedSurvivor?.disorders ?? [])]
     updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -111,10 +111,10 @@ export function DisordersCard({
   }
 
   /**
-   * Handles saving a new disorder.
+   * Handle Saving a Disorder
    *
    * @param value Disorder Value
-   * @param i Disorder Index (When Updating Only)
+   * @param i Disorder Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -122,11 +122,11 @@ export function DisordersCard({
 
     if (
       i === undefined &&
-      (selectedSurvivor?.disorders?.length || 0) >= MAX_DISORDERS
+      (selectedSurvivor?.disorders?.length ?? 0) >= MAX_DISORDERS
     )
       return toast.error(SURVIVOR_DISORDER_LIMIT_EXCEEDED_ERROR_MESSAGE())
 
-    const updated = [...(selectedSurvivor?.disorders || [])]
+    const updated = [...(selectedSurvivor?.disorders ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -152,7 +152,7 @@ export function DisordersCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -163,7 +163,7 @@ export function DisordersCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.disorders || [],
+        selectedSurvivor?.disorders ?? [],
         oldIndex,
         newIndex
       )
@@ -200,7 +200,7 @@ export function DisordersCard({
               className="h-6 w-6"
               disabled={
                 isAddingNew ||
-                (selectedSurvivor?.disorders?.length || 0) >= MAX_DISORDERS ||
+                (selectedSurvivor?.disorders?.length ?? 0) >= MAX_DISORDERS ||
                 Object.values(disabledInputs).some((v) => v === false)
               }>
               <PlusIcon />
@@ -218,11 +218,11 @@ export function DisordersCard({
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(selectedSurvivor?.disorders || []).map((_, index) =>
+                items={(selectedSurvivor?.disorders ?? []).map((_, index) =>
                   index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.disorders || []).map((disorder, index) => (
+                {(selectedSurvivor?.disorders ?? []).map((disorder, index) => (
                   <DisorderItem
                     key={index}
                     id={index.toString()}

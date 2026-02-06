@@ -65,11 +65,11 @@ export function InnovationItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.innovations?.[index] || ''
+      inputRef.current.value = selectedSettlement?.innovations?.[index] ?? ''
   }, [selectedSettlement?.innovations, index])
 
   /**
-   * Handle Key Down
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -149,7 +149,7 @@ export function InnovationItem({
 /**
  * New Innovation Item Component
  *
- * @param props New Innovation Item Component Props
+ * @param props New Innovation Item Component Properties
  */
 export function NewInnovationItem({
   onCancel,
@@ -158,7 +158,7 @@ export function NewInnovationItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

@@ -69,7 +69,9 @@ export function LevelData({
   const currentSubMonster = levelData[selectedSubMonsterIndex] ?? {}
 
   /**
-   * Updates a specific sub-monster's data
+   * Update Sub-Monster Data
+   *
+   * @param updatedData Partial Update Data
    */
   const updateSubMonster = (
     updatedData: Partial<QuarryMonsterLevel | NemesisMonsterLevel>
@@ -81,7 +83,7 @@ export function LevelData({
   }
 
   /**
-   * Adds a new sub-monster
+   * Add New Sub-Monster
    */
   const addSubMonster = () => {
     setLevelData([...levelData, {}])
@@ -89,7 +91,9 @@ export function LevelData({
   }
 
   /**
-   * Removes a sub-monster
+   * Remove Sub-Monster
+   *
+   * @param index Index of Sub-Monster to Remove
    */
   const removeSubMonster = (index: number) => {
     const newLevelData = levelData.filter((_, i) => i !== index)
@@ -101,7 +105,14 @@ export function LevelData({
   }
 
   /**
-   * Renders a numeric input for a level field
+   * Render a Numeric Input Field
+   *
+   * @param accessor Accessor Path to Value
+   * @param updateFn Update Function
+   * @param label Label for Input
+   * @param colspan Number of Columns to Span
+   * @param extendedLabel Optional Extended Label for Accessibility
+   * @returns Numeric Input Element
    */
   const renderNumericInput = (
     accessor: string[],
@@ -132,27 +143,22 @@ export function LevelData({
           {label}
         </Label>
         <NumericInput
-          label={extendedLabel || label}
+          label={extendedLabel ?? label}
           value={numericValue}
           onChange={(val: number) => updateFn(val)}
           min={0}
-          readOnly={false}>
-          <Input
-            id={`level${level}-${selectedSubMonsterIndex}-${accessor.join('-')}`}
-            type="number"
-            min="0"
-            placeholder="0"
-            value={numericValue}
-            onChange={(e) => updateFn(parseInt(e.target.value) || 0)}
-            className="text-center no-spinners"
-          />
-        </NumericInput>
+        />
       </div>
     )
   }
 
   /**
-   * Renders a text array input for a level field using interactive list
+   * Render a Text Array Input Field
+   *
+   * @param accessor Accessor Path to Value
+   * @param updateFn Update Function
+   * @param label Label for Input
+   * @returns Text Array Input Element
    */
   const renderArrayInput = (
     accessor: string[],
@@ -177,14 +183,29 @@ export function LevelData({
     const editingIndex = arrayInputEditingIndex[fieldKey] ?? null
     const isAddingNew = arrayInputAddingNew[fieldKey] ?? false
 
+    /**
+     * Set Editing Index
+     *
+     * @param index Index to Set
+     */
     const setEditingIndex = (index: number | null) => {
       setArrayInputEditingIndex((prev) => ({ ...prev, [fieldKey]: index }))
     }
 
+    /**
+     * Set Is Adding New
+     *
+     * @param adding Is Adding New Flag
+     */
     const setIsAddingNew = (adding: boolean) => {
       setArrayInputAddingNew((prev) => ({ ...prev, [fieldKey]: adding }))
     }
 
+    /**
+     * Add Item
+     *
+     * @param value Value to Add
+     */
     const addItem = (value: string) => {
       if (value.trim()) {
         updateFn([...items, value.trim()])
@@ -192,6 +213,12 @@ export function LevelData({
       }
     }
 
+    /**
+     * Update Item
+     *
+     * @param index Index of Item to Update
+     * @param value New Value
+     */
     const updateItem = (index: number, value: string) => {
       const newItems = [...items]
       newItems[index] = value.trim()
@@ -199,6 +226,11 @@ export function LevelData({
       setEditingIndex(null)
     }
 
+    /**
+     * Remove Item
+     *
+     * @param index Index of Item to Remove
+     */
     const removeItem = (index: number) => {
       const newItems = items.filter((_, i) => i !== index)
       updateFn(newItems)
@@ -380,7 +412,7 @@ export function LevelData({
                 id={`level${level}-${selectedSubMonsterIndex}-name`}
                 type="text"
                 placeholder="Sub-Monster Name"
-                value={currentSubMonster.name || ''}
+                value={currentSubMonster.name ?? ''}
                 onChange={(e) =>
                   updateSubMonster({
                     ...currentSubMonster,

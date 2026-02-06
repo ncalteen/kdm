@@ -73,11 +73,11 @@ export function FightingArtItem({
     console.debug('[FightingArtItem] Changed', index)
 
     if (inputRef.current)
-      inputRef.current.value = selectedSurvivor?.[arrayName]?.[index] || ''
+      inputRef.current.value = selectedSurvivor?.[arrayName]?.[index] ?? ''
   }, [selectedSurvivor, index, arrayName])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * value.
@@ -164,7 +164,7 @@ export function FightingArtItem({
 /**
  * New Fighting Art Item Component
  *
- * @param props New Fighting Art Item Component Props
+ * @param props New Fighting Art Item Component Properties
  * @returns New Fighting Art Item Component
  */
 export function NewFightingArtItem({
@@ -176,7 +176,7 @@ export function NewFightingArtItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

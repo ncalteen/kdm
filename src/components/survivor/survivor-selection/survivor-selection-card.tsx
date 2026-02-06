@@ -29,6 +29,9 @@ interface SurvivorSelectionCardProps {
  * Survivor Selection Card Component
  *
  * This component is used to display a survivor for selection during a hunt.
+ *
+ * @param props Survivor Selection Card Props
+ * @returns Survivor Selection Card Component
  */
 export function SurvivorSelectionCard({
   handleSurvivorToggle,

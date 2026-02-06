@@ -40,6 +40,11 @@ export function SelectWanderer({
   wanderers,
   value
 }: SelectWandererProps): ReactElement {
+  /**
+   * Handle Value Change
+   *
+   * @param selectedName Selected Wanderer Name
+   */
   const handleValueChange = (selectedName: string) => {
     if (!onChange) return
 

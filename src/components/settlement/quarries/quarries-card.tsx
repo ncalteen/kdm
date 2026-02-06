@@ -118,7 +118,7 @@ export function QuarriesCard({
    * Save a Quarry
    *
    * @param name Quarry Name
-   * @param index Quarry Index (When Updating Only)
+   * @param index Quarry Index (Updates Only)
    */
   const onSave = (name: string | undefined, index?: number) => {
     const data = getQuarryDataByName(campaign, name)

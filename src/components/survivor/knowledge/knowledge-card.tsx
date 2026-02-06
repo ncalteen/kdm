@@ -74,7 +74,7 @@ export function KnowledgeCard({
   }
 
   /**
-   * Handles observation rank changes
+   * Handle Observation Rank Change
    *
    * @param fieldName Field Name
    * @param rank Selected Rank
@@ -93,6 +93,8 @@ export function KnowledgeCard({
 
   /**
    * Update Can Use Fighting Arts or Knowledges
+   *
+   * @param checked Checkbox Checked State
    */
   const updateCanUseFightingArtsOrKnowledges = useCallback(
     (checked: boolean) => {
@@ -108,6 +110,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1
+   *
+   * @param value Knowledge 1 Value
    */
   const updateKnowledge1 = (value: string) => {
     setKnowledge1(value)
@@ -119,6 +123,9 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Observation Rank
+   *
+   * @param checked Checkbox Checked State
+   * @param index Checkbox Index (0-based)
    */
   const updateKnowledge1ObservationRank = (checked: boolean, index: number) => {
     const rank = index + 1
@@ -131,8 +138,8 @@ export function KnowledgeCard({
   /**
    * Update Knowledge 1 Rank Up Milestone
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * @param index Checkbox Index (0-based)
+   * @param event Mouse Event
    */
   const updateKnowledge1RankUp = useCallback(
     (index: number, event: MouseEvent) => {
@@ -153,6 +160,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Rules
+   *
+   * @param value Knowledge 1 Rules Value
    */
   const updateKnowledge1Rules = (value: string) => {
     setKnowledge1Rules(value)
@@ -166,6 +175,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Observation Conditions
+   *
+   * @param value Knowledge 1 Observation Conditions Value
    */
   const updateKnowledge1ObservationConditions = (value: string) => {
     setKnowledge1ObservationConditions(value)
@@ -181,6 +192,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 2
+   *
+   * @param value Knowledge 2 Value
    */
   const updateKnowledge2 = (value: string) => {
     setKnowledge2(value)
@@ -192,6 +205,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 2 Observation Rank
+   *
+   * @param checked Checkbox Checked State
    */
   const updateKnowledge2ObservationRank = (checked: boolean, index: number) => {
     const rank = index + 1
@@ -204,8 +219,8 @@ export function KnowledgeCard({
   /**
    * Update Knowledge 2 Rank Up Milestone
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * @param index Checkbox Index (0-based)
+   * @param event Mouse Event
    */
   const updateKnowledge2RankUp = useCallback(
     (index: number, event: MouseEvent) => {
@@ -226,6 +241,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 2 Rules
+   *
+   * @param value Knowledge 2 Rules Value
    */
   const updateKnowledge2Rules = (value: string) => {
     setKnowledge2Rules(value)
@@ -239,6 +256,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Observation Conditions
+   *
+   * @param value Knowledge 2 Observation Conditions Value
    */
   const updateKnowledge2ObservationConditions = (value: string) => {
     setKnowledge2ObservationConditions(value)
@@ -253,7 +272,11 @@ export function KnowledgeCard({
   }
 
   return (
-    <Card className="p-2 border-0 gap-0">
+    <Card
+      className={cn(
+        'p-2 border-0 gap-0',
+        !selectedSurvivor?.canUseFightingArtsOrKnowledges && 'bg-red-500/40'
+      )}>
       {/* Title */}
       <CardHeader className="p-0">
         <div className="flex flex-row justify-between">
@@ -284,7 +307,7 @@ export function KnowledgeCard({
             <div className="flex flex-col gap-1">
               <Input
                 placeholder=" Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
+                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 text-sm"
                 value={knowledge1}
                 onChange={(e) => setKnowledge1(e.target.value)}
                 onBlur={(e) => updateKnowledge1(e.target.value)}
@@ -297,7 +320,7 @@ export function KnowledgeCard({
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
               const checked =
-                (selectedSurvivor?.knowledge1ObservationRank || 0) >= index + 1
+                (selectedSurvivor?.knowledge1ObservationRank ?? 0) >= index + 1
               const isRankUpMilestone =
                 selectedSurvivor?.knowledge1RankUp === index
 
@@ -325,7 +348,7 @@ export function KnowledgeCard({
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
             placeholder=" Enter knowledge rules..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
             value={knowledge1Rules}
             onChange={(e) => setKnowledge1Rules(e.target.value)}
             onBlur={(e) => updateKnowledge1Rules(e.target.value)}
@@ -340,7 +363,7 @@ export function KnowledgeCard({
           <div className="flex flex-col gap-1">
             <Textarea
               placeholder=" Enter observation conditions..."
-              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+              className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
               value={knowledge1ObservationConditions}
               onChange={(e) =>
                 setKnowledge1ObservationConditions(e.target.value)
@@ -363,7 +386,7 @@ export function KnowledgeCard({
             <div className="flex flex-col gap-1">
               <Input
                 placeholder=" Enter knowledge..."
-                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
+                className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 text-sm"
                 value={knowledge2}
                 onChange={(e) => setKnowledge2(e.target.value)}
                 onBlur={(e) => updateKnowledge2(e.target.value)}
@@ -376,7 +399,7 @@ export function KnowledgeCard({
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
               const checked =
-                (selectedSurvivor?.knowledge2ObservationRank || 0) >= index + 1
+                (selectedSurvivor?.knowledge2ObservationRank ?? 0) >= index + 1
               const isRankUpMilestone =
                 selectedSurvivor?.knowledge2RankUp === index
 
@@ -404,7 +427,7 @@ export function KnowledgeCard({
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
             placeholder=" Enter knowledge rules..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
             value={knowledge2Rules}
             onChange={(e) => setKnowledge2Rules(e.target.value)}
             onBlur={(e) => updateKnowledge2Rules(e.target.value)}
@@ -418,7 +441,7 @@ export function KnowledgeCard({
         <div className="mt-1 flex flex-col gap-1 pb-2">
           <Textarea
             placeholder=" Enter observation conditions..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
             value={knowledge2ObservationConditions}
             onChange={(e) => setKnowledge2ObservationConditions(e.target.value)}
             onBlur={(e) =>

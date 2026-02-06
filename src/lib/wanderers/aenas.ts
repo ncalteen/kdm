@@ -1,6 +1,9 @@
 import { Gender } from '@/lib/enums'
 import { Wanderer } from '@/schemas/wanderer'
 
+/**
+ * Aenas Wanderer Data
+ */
 export const AENAS: Wanderer = {
   abilitiesAndImpairments: ['Endless Appetite', 'Veteran'],
   accuracy: 1,

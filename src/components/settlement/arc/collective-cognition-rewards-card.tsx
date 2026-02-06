@@ -49,7 +49,8 @@ interface CollectiveCognitionRewardsCardProps {
  * Collective Cognition Rewards Card Component
  *
  * Displays and manages the collective cognition rewards for the settlement.
- * Allows adding, editing, removing, and reordering rewards with drag-and-drop functionality.
+ * Allows adding, editing, removing, and reordering rewards with drag-and-drop
+ * functionality.
  *
  * @param props Collective Cognition Rewards Card Properties
  * @returns Collective Cognition Rewards Card Component
@@ -65,7 +66,7 @@ export function CollectiveCognitionRewardsCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.ccRewards || []).map((_, i) => [i, true])
+      (selectedSettlement?.ccRewards ?? []).map((_, i) => [i, true])
     )
   )
 
@@ -74,7 +75,7 @@ export function CollectiveCognitionRewardsCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.ccRewards || []).map((_, i) => [i, true])
+        (selectedSettlement?.ccRewards ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -87,13 +88,13 @@ export function CollectiveCognitionRewardsCard({
   )
 
   /**
-   * Handles the toggling of a reward's unlocked state.
+   * Handle Unlocked Toggle
    *
    * @param index Reward Index
    * @param unlocked Unlocked State
    */
   const handleToggleUnlocked = (index: number, unlocked: boolean) => {
-    const currentRewards = [...(selectedSettlement?.ccRewards || [])]
+    const currentRewards = [...(selectedSettlement?.ccRewards ?? [])]
     currentRewards[index] = { ...currentRewards[index], unlocked }
 
     saveSelectedSettlement(
@@ -105,12 +106,12 @@ export function CollectiveCognitionRewardsCard({
   }
 
   /**
-   * Handles the removal of a reward.
+   * Handle Reward Removal
    *
    * @param index Reward Index
    */
   const onRemove = (index: number) => {
-    const currentRewards = [...(selectedSettlement?.ccRewards || [])]
+    const currentRewards = [...(selectedSettlement?.ccRewards ?? [])]
     currentRewards.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -134,11 +135,11 @@ export function CollectiveCognitionRewardsCard({
   }
 
   /**
-   * Handles saving a new reward or updating an existing one.
+   * Handle Reward Save
    *
    * @param name Reward Name
    * @param cc Collective Cognition Value
-   * @param i Reward Index (When Updating Only)
+   * @param i Reward Index (Updates Only)
    */
   const onSave = (name?: string, cc?: number, i?: number) => {
     if (!name || name.trim() === '')
@@ -149,7 +150,7 @@ export function CollectiveCognitionRewardsCard({
     if (cc === undefined || cc < 0)
       return toast.error(COLLECTIVE_COGNITION_REWARD_NO_TARGET_ERROR_MESSAGE())
 
-    const updatedRewards = [...(selectedSettlement?.ccRewards || [])]
+    const updatedRewards = [...(selectedSettlement?.ccRewards ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -179,7 +180,7 @@ export function CollectiveCognitionRewardsCard({
   }
 
   /**
-   * Handles the drag end event.
+   * Handle Drag End Event
    *
    * @param event Event
    */
@@ -191,7 +192,7 @@ export function CollectiveCognitionRewardsCard({
       const newIndex = parseInt(over.id.toString())
 
       const newOrder = arrayMove(
-        selectedSettlement?.ccRewards || [],
+        selectedSettlement?.ccRewards ?? [],
         oldIndex,
         newIndex
       )
@@ -216,6 +217,9 @@ export function CollectiveCognitionRewardsCard({
     }
   }
 
+  /**
+   * Add a Reward
+   */
   const addReward = () => setIsAddingNew(true)
 
   return (
@@ -246,17 +250,17 @@ export function CollectiveCognitionRewardsCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="h-full">
           <div className="space-y-1">
-            {(selectedSettlement?.ccRewards || []).length > 0 && (
+            {(selectedSettlement?.ccRewards ?? []).length > 0 && (
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.ccRewards || []).map((_, index) =>
+                  items={(selectedSettlement?.ccRewards ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.ccRewards || []).map(
+                  {(selectedSettlement?.ccRewards ?? []).map(
                     (reward, index) => (
                       <RewardItem
                         key={`${index}-${reward.name}-${reward.cc}`}

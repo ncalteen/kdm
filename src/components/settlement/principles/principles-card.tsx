@@ -51,7 +51,7 @@ interface PrinciplesCardProps {
  * Displays and manages an editable and draggable list of principles for the settlement.
  * Each principle has two options that can be selected, and principles can be reordered.
  *
- * @param form Settlement form instance
+ * @param props Principles Card Properties
  * @returns Principles Card Component
  */
 export function PrinciplesCard({
@@ -64,7 +64,7 @@ export function PrinciplesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.principles || []).map((_, i) => [i, true])
+      (selectedSettlement?.principles ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -81,18 +81,18 @@ export function PrinciplesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.principles || []).map((_, i) => [i, true])
+        (selectedSettlement?.principles ?? []).map((_, i) => [i, true])
       )
     )
   }
 
   /**
-   * Handles the removal of a principle.
+   * Handle Principal Removal
    *
    * @param index Principle Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.principles || [])]
+    const current = [...(selectedSettlement?.principles ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -111,7 +111,7 @@ export function PrinciplesCard({
   }
 
   /**
-   * Handles saving a principle.
+   * Handle Principle Save
    *
    * @param index Principle Index
    * @param name Principle Name
@@ -127,7 +127,7 @@ export function PrinciplesCard({
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
-    const updated = [...(selectedSettlement?.principles || [])]
+    const updated = [...(selectedSettlement?.principles ?? [])]
 
     if (index < updated.length) {
       // Updating an existing principle
@@ -154,13 +154,13 @@ export function PrinciplesCard({
   }
 
   /**
-   * Handles selecting an option for a principle. Only one option can be selected at a time.
+   * Handle Option Selection
    *
    * @param index Principle Index
-   * @param option Which option (1 or 2)
+   * @param option Option Selected (1 or 2)
    */
   const handleOptionSelect = (index: number, option: 1 | 2) => {
-    const updated = [...(selectedSettlement?.principles || [])]
+    const updated = [...(selectedSettlement?.principles ?? [])]
 
     // Update the option selected, ensuring only one is selected at a time
     updated[index] = {
@@ -180,7 +180,7 @@ export function PrinciplesCard({
   }
 
   /**
-   * Handles saving a new principle.
+   * Handle New Principle Save
    *
    * @param name Principle Name
    * @param option1Name Option 1 Name
@@ -195,7 +195,7 @@ export function PrinciplesCard({
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('principle'))
 
     const updated = [
-      ...(selectedSettlement?.principles || []),
+      ...(selectedSettlement?.principles ?? []),
       {
         name,
         option1Name,
@@ -220,7 +220,7 @@ export function PrinciplesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering principles.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -231,7 +231,7 @@ export function PrinciplesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.principles || [],
+        selectedSettlement?.principles ?? [],
         oldIndex,
         newIndex
       )
@@ -287,11 +287,11 @@ export function PrinciplesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.principles || []).map(
+                  items={(selectedSettlement?.principles ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.principles || []).map(
+                  {(selectedSettlement?.principles ?? []).map(
                     (principle, index) => (
                       <PrincipleItem
                         key={index}

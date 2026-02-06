@@ -167,7 +167,8 @@ export function QuarryItem({
 /**
  * New Quarry Item Component
  *
- * @param props New Quarry Item Component Props
+ * @param props New Quarry Item Component Properties
+ * @returns New Quarry Item Component
  */
 export function NewQuarryItem({
   campaign,

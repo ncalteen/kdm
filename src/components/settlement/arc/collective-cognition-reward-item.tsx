@@ -4,7 +4,6 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
@@ -58,8 +57,6 @@ export function RewardItem({
   onSave,
   onToggleUnlocked
 }: RewardItemProps): ReactElement {
-  const isMobile = useIsMobile()
-
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -67,10 +64,10 @@ export function RewardItem({
   const ccInputRef = useRef<HTMLInputElement>(null)
 
   // Track the current CC value for the NumericInput
-  const [currentCcValue, setCurrentCcValue] = useState(reward?.cc || 1)
+  const [currentCcValue, setCurrentCcValue] = useState(reward?.cc ?? 1)
 
   /**
-   * Handles the key down event for the input fields.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * values.
@@ -83,7 +80,7 @@ export function RewardItem({
 
       onSave(
         nameInputRef.current.value,
-        parseInt(ccInputRef.current.value, 10) || 1,
+        parseInt(ccInputRef.current.value, 10),
         index
       )
     }
@@ -104,7 +101,7 @@ export function RewardItem({
 
       {/* Unlocked Checkbox */}
       <Checkbox
-        checked={reward?.unlocked || false}
+        checked={reward?.unlocked ?? false}
         onCheckedChange={(checked) => {
           if (checked !== 'indeterminate') onToggleUnlocked(index, checked)
         }}
@@ -120,25 +117,10 @@ export function RewardItem({
           if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
         min={0}
-        readOnly={false}>
-        <Input
-          ref={ccInputRef}
-          type="number"
-          className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-          defaultValue={reward?.cc || 1}
-          disabled={isDisabled}
-          min={0}
-          onKeyDown={handleKeyDown}
-          onChange={
-            !isMobile
-              ? (e) => setCurrentCcValue(parseInt(e.target.value, 10))
-              : undefined
-          }
-          readOnly={isMobile}
-          name={`cc-value-${index}`}
-          id={`cc-value-${index}`}
-        />
-      </NumericInput>
+        className="w-12 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        ref={ccInputRef}
+        disabled={isDisabled}
+      />
 
       {/* Reward Name Input */}
       {isDisabled ? (
@@ -173,7 +155,7 @@ export function RewardItem({
             size="icon"
             onClick={() => {
               if (nameInputRef.current && ccInputRef.current) {
-                const ccValue = parseInt(ccInputRef.current.value, 10) || 1
+                const ccValue = parseInt(ccInputRef.current.value, 10)
                 onSave(nameInputRef.current.value, ccValue, index)
               }
             }}
@@ -197,14 +179,13 @@ export function RewardItem({
 /**
  * New Reward Item Component
  *
- * @param props New Reward Item Component Props
+ * @param props New Reward Item Component Properties
+ * @returns New Reward Item Component
  */
 export function NewRewardItem({
   onCancel,
   onSave
 }: NewRewardItemProps): ReactElement {
-  const isMobile = useIsMobile()
-
   const nameInputRef = useRef<HTMLInputElement>(null)
   const ccInputRef = useRef<HTMLInputElement>(null)
 
@@ -212,7 +193,7 @@ export function NewRewardItem({
   const [currentCcValue, setCurrentCcValue] = useState(1)
 
   /**
-   * Handles the key down event for the input fields.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * values. If the Escape key is pressed, it calls the onCancel function.
@@ -223,10 +204,7 @@ export function NewRewardItem({
     if (e.key === 'Enter' && nameInputRef.current && ccInputRef.current) {
       e.preventDefault()
 
-      onSave(
-        nameInputRef.current.value,
-        parseInt(ccInputRef.current.value, 10) || 1
-      )
+      onSave(nameInputRef.current.value, parseInt(ccInputRef.current.value, 10))
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()
@@ -252,24 +230,9 @@ export function NewRewardItem({
           if (ccInputRef.current) ccInputRef.current.value = value.toString()
         }}
         min={0}
-        readOnly={false}>
-        <Input
-          ref={ccInputRef}
-          type="number"
-          className="w-12 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-          defaultValue={1}
-          min={0}
-          onKeyDown={handleKeyDown}
-          onChange={
-            !isMobile
-              ? (e) => setCurrentCcValue(parseInt(e.target.value, 10))
-              : undefined
-          }
-          readOnly={isMobile}
-          name="new-cc-value"
-          id="new-cc-value"
-        />
-      </NumericInput>
+        className="w-12 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        ref={ccInputRef}
+      />
 
       {/* Reward Name Input */}
       <Input
@@ -289,7 +252,7 @@ export function NewRewardItem({
             if (nameInputRef.current && ccInputRef.current)
               onSave(
                 nameInputRef.current.value,
-                parseInt(ccInputRef.current.value, 10) || 1
+                parseInt(ccInputRef.current.value, 10)
               )
           }}
           title="Save reward">

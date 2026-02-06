@@ -43,6 +43,9 @@ export interface TimelineContentProps {
 
 /**
  * Timeline Content Component
+ *
+ * @param props Timeline Content Component Properties
+ * @returns Timeline Content Component
  */
 export const TimelineContent = ({
   addEventToYear,

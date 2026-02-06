@@ -1,3 +1,4 @@
+import { ScoutCampaignData } from '@/lib/campaigns/common'
 import { CustomCampaign } from '@/lib/campaigns/custom'
 import { PeopleOfTheDreamKeeper } from '@/lib/campaigns/potdk'
 import { PeopleOfTheLantern } from '@/lib/campaigns/potl'
@@ -26,11 +27,11 @@ import { Wanderer } from '@/schemas/wanderer'
 /**
  * Get Monster Node Mapping for a Campaign Type
  *
- * This function takes a campaign type and returns a mapping of monster nodes to
- * monster IDs for that campaign.
+ * Takes a campaign type and returns a mapping of monster nodes to monster IDs
+ * for that campaign.
  *
  * @param campaignType Campaign Type
- * @returns Monster node mapping
+ * @returns Monster Node Mapping
  */
 export function getMonsterNodeMapping(campaignType: CampaignType): {
   NQ1: QuarryMonsterData[]
@@ -68,11 +69,11 @@ export function getMonsterNodeMapping(campaignType: CampaignType): {
 /**
  * Get Wanderers for a Campaign Type
  *
- * This function takes a campaign type and returns the wanderers that are
- * included in that campaign template.
+ * Takes a campaign type and returns the wanderers that are included in that
+ * campaign template.
  *
  * @param campaignType Campaign Type
- * @returns Array of wanderers for the campaign
+ * @returns Array of Wanderers for the Campaign
  */
 export function getWanderers(campaignType: CampaignType): Wanderer[] {
   const template = {
@@ -90,10 +91,10 @@ export function getWanderers(campaignType: CampaignType): Wanderer[] {
 /**
  * Settlement Creator Function
  *
- * This function takes in either the preselected campaign or custom campaign
- * data and uses it to create a new settlement. Preselected campaigns are
- * defined in src/lib/campaigns. Custom campaigns require a user provide the
- * specific monster(s) they wish to include.
+ * Takes either the preselected campaign or custom campaign data and uses it to
+ * create a new settlement. Preselected campaigns are defined in
+ * src/lib/campaigns. Custom campaigns require a user provide the specific
+ * monster(s) they wish to include.
  *
  * @param campaign Campaign Data
  * @param options New Settlement Input Options
@@ -112,7 +113,8 @@ export function createSettlementFromOptions(
     [CampaignType.SQUIRES_OF_THE_CITADEL]: SquiresOfTheCitadel
   }[options.campaignType]
 
-  // Get monster selections - either from options (custom campaign) or from template
+  // Get monster selections either from options (custom campaign) or from the
+  // template
   const monsterSelections =
     options.monsters ?? getMonsterNodeMapping(options.campaignType)
   const quarries = [
@@ -291,6 +293,10 @@ export function createSettlementFromOptions(
       settlement.timeline[Number(yearNumber)].entries.push(
         ...wanderer.timeline[Number(yearNumber)]
       )
+
+  // If the settlement uses scouts, add the scout location data.
+  if (settlement.usesScouts)
+    settlement.locations.push(...ScoutCampaignData.locations)
 
   // Sort various settlement arrays for consistency.
   if (settlement.ccRewards)

@@ -16,8 +16,8 @@ import { ZodError } from 'zod'
  *
  * @param campaign Campaign
  * @param form React Hook Form Return Object for Survivor
- * @param updateSelectedSurvivor Function to Update Selected Survivor Context
- * @param updateCampaign Function to Update Campaign in Context
+ * @param updateSelectedSurvivor Callback to Update Selected Survivor Context
+ * @param updateCampaign Callback to Update Campaign Context
  */
 export function useSelectedSurvivorSave(
   campaign: Campaign,

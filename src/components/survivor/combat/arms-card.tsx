@@ -4,9 +4,7 @@ import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { FormControl } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_ARMS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
@@ -36,13 +34,11 @@ export function ArmsCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: ArmsCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   /**
    * Save to Local Storage
    *
-   * @param attrName Attribute name
-   * @param value New value
+   * @param attrName Attribute Name
+   * @param value New Value
    */
   const saveToLocalStorage = (
     attrName:
@@ -73,30 +69,12 @@ export function ArmsCard({
               strokeWidth={1}
             />
             <NumericInput
+              label="Arm Armor"
               value={selectedSurvivor?.armArmor ?? 0}
               min={0}
-              label="Arm Armor"
               onChange={(value) => saveToLocalStorage('armArmor', value)}
-              readOnly={false}>
-              <Input
-                placeholder="1"
-                type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSurvivor?.armArmor ?? '0'}
-                readOnly={isMobile}
-                onChange={
-                  !isMobile
-                    ? (e) =>
-                        saveToLocalStorage(
-                          'armArmor',
-                          parseInt(e.target.value, 10)
-                        )
-                    : undefined
-                }
-                name="arm-armor"
-                id="arm-armor"
-              />
-            </NumericInput>
+              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
           <div className="mx-2 w-px bg-border h-19" />
@@ -112,12 +90,12 @@ export function ArmsCard({
                   {[...Array(2)].map((_, index) => (
                     <Checkbox
                       key={index}
-                      checked={(selectedSurvivor?.armBroken || 0) > index}
+                      checked={(selectedSurvivor?.armBroken ?? 0) > index}
                       onCheckedChange={(checked) => {
-                        let newValue = selectedSurvivor?.armBroken || 0
+                        let newValue = selectedSurvivor?.armBroken ?? 0
                         if (checked) newValue = index + 1
                         else if (
-                          (selectedSurvivor?.armBroken || 0) ===
+                          (selectedSurvivor?.armBroken ?? 0) ===
                           index + 1
                         )
                           newValue = index
@@ -148,12 +126,12 @@ export function ArmsCard({
                   {[...Array(2)].map((_, index) => (
                     <Checkbox
                       key={index}
-                      checked={(selectedSurvivor?.armDismembered || 0) > index}
+                      checked={(selectedSurvivor?.armDismembered ?? 0) > index}
                       onCheckedChange={(checked) => {
-                        let newValue = selectedSurvivor?.armDismembered || 0
+                        let newValue = selectedSurvivor?.armDismembered ?? 0
                         if (checked) newValue = index + 1
                         else if (
-                          (selectedSurvivor?.armDismembered || 0) ===
+                          (selectedSurvivor?.armDismembered ?? 0) ===
                           index + 1
                         )
                           newValue = index
@@ -173,7 +151,7 @@ export function ArmsCard({
                     <Checkbox
                       key={value}
                       className="h-4 w-4 rounded-sm"
-                      checked={(selectedSurvivor?.armContracture || 0) >= value}
+                      checked={(selectedSurvivor?.armContracture ?? 0) >= value}
                       onCheckedChange={(checked) => {
                         const newValue = checked ? value : value - 1
                         const safeValue = Math.max(0, Math.min(5, newValue))

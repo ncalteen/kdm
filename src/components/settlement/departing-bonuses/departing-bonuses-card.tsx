@@ -60,7 +60,7 @@ export function DepartingBonusesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.departingBonuses || []).map((_, i) => [i, true])
+      (selectedSettlement?.departingBonuses ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -77,18 +77,18 @@ export function DepartingBonusesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.departingBonuses || []).map((_, i) => [i, true])
+        (selectedSettlement?.departingBonuses ?? []).map((_, i) => [i, true])
       )
     )
   }
 
   /**
-   * Handles the removal of a departing bonus.
+   * Handle Departing Bonus Removal
    *
    * @param index Departing Bonus Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.departingBonuses || [])]
+    const current = [...(selectedSettlement?.departingBonuses ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -110,16 +110,16 @@ export function DepartingBonusesCard({
   }
 
   /**
-   * Handles saving departing bonus.
+   * Handle Departing Bonus Save
    *
    * @param value Departing Bonus Value
-   * @param i Departing Bonus Index (When Updating Only)
+   * @param i Departing Bonus Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('departing bonus'))
 
-    const updated = [...(selectedSettlement?.departingBonuses || [])]
+    const updated = [...(selectedSettlement?.departingBonuses ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -145,7 +145,7 @@ export function DepartingBonusesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering departing bonuses.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -156,7 +156,7 @@ export function DepartingBonusesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.departingBonuses || [],
+        selectedSettlement?.departingBonuses ?? [],
         oldIndex,
         newIndex
       )
@@ -212,11 +212,11 @@ export function DepartingBonusesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.departingBonuses || []).map(
+                  items={(selectedSettlement?.departingBonuses ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.departingBonuses || []).map(
+                  {(selectedSettlement?.departingBonuses ?? []).map(
                     (bonus, index) => (
                       <DepartingBonusItem
                         key={index}

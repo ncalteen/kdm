@@ -60,7 +60,7 @@ export function MonsterVolumesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.monsterVolumes || []).map((_, i) => [i, true])
+      (selectedSettlement?.monsterVolumes ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -77,18 +77,18 @@ export function MonsterVolumesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.monsterVolumes || []).map((_, i) => [i, true])
+        (selectedSettlement?.monsterVolumes ?? []).map((_, i) => [i, true])
       )
     )
   }
 
   /**
-   * Handles the removal of a monster volume.
+   * Handle Monster Volume Removal
    *
    * @param index Monster Volume Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.monsterVolumes || [])]
+    const current = [...(selectedSettlement?.monsterVolumes ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -110,16 +110,16 @@ export function MonsterVolumesCard({
   }
 
   /**
-   * Handles saving a new monster volume.
+   * Handle Monster Volume Save
    *
    * @param value Monster Volume Value
-   * @param i Monster Volume Index (When Updating Only)
+   * @param i Monster Volume Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('monster volume'))
 
-    const updated = [...(selectedSettlement?.monsterVolumes || [])]
+    const updated = [...(selectedSettlement?.monsterVolumes ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -145,7 +145,7 @@ export function MonsterVolumesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -156,7 +156,7 @@ export function MonsterVolumesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.monsterVolumes || [],
+        selectedSettlement?.monsterVolumes ?? [],
         oldIndex,
         newIndex
       )
@@ -212,11 +212,11 @@ export function MonsterVolumesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.monsterVolumes || []).map(
+                  items={(selectedSettlement?.monsterVolumes ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.monsterVolumes || []).map(
+                  {(selectedSettlement?.monsterVolumes ?? []).map(
                     (volume, index) => (
                       <MonsterVolumeItem
                         key={index}

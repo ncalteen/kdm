@@ -3,9 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_LEGS_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
@@ -35,13 +33,11 @@ export function LegsCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: LegsCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   /**
    * Save to Local Storage
    *
-   * @param attrName Attribute name
-   * @param value New value
+   * @param attrName Attribute Name
+   * @param value New Value
    */
   const saveToLocalStorage = (
     attrName:
@@ -71,30 +67,12 @@ export function LegsCard({
               strokeWidth={1}
             />
             <NumericInput
+              label="Leg Armor"
               value={selectedSurvivor?.legArmor ?? 0}
               min={0}
-              label="Leg Armor"
               onChange={(value) => saveToLocalStorage('legArmor', value)}
-              readOnly={false}>
-              <Input
-                placeholder="1"
-                type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSurvivor?.legArmor ?? '0'}
-                readOnly={isMobile}
-                onChange={
-                  !isMobile
-                    ? (e) =>
-                        saveToLocalStorage(
-                          'legArmor',
-                          parseInt(e.target.value, 10)
-                        )
-                    : undefined
-                }
-                name="leg-armor"
-                id="leg-armor"
-              />
-            </NumericInput>
+              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
           <div className="mx-2 w-px bg-border h-19" />
@@ -123,12 +101,12 @@ export function LegsCard({
                   {[...Array(2)].map((_, index) => (
                     <Checkbox
                       key={index}
-                      checked={(selectedSurvivor?.legBroken || 0) > index}
+                      checked={(selectedSurvivor?.legBroken ?? 0) > index}
                       onCheckedChange={(checked) => {
-                        let newValue = selectedSurvivor?.legBroken || 0
+                        let newValue = selectedSurvivor?.legBroken ?? 0
                         if (checked) newValue = index + 1
                         else if (
-                          (selectedSurvivor?.legBroken || 0) ===
+                          (selectedSurvivor?.legBroken ?? 0) ===
                           index + 1
                         )
                           newValue = index
@@ -148,12 +126,12 @@ export function LegsCard({
                   {[...Array(2)].map((_, index) => (
                     <Checkbox
                       key={index}
-                      checked={(selectedSurvivor?.legDismembered || 0) > index}
+                      checked={(selectedSurvivor?.legDismembered ?? 0) > index}
                       onCheckedChange={(checked) => {
-                        let newValue = selectedSurvivor?.legDismembered || 0
+                        let newValue = selectedSurvivor?.legDismembered ?? 0
                         if (checked) newValue = index + 1
                         else if (
-                          (selectedSurvivor?.legDismembered || 0) ===
+                          (selectedSurvivor?.legDismembered ?? 0) ===
                           index + 1
                         )
                           newValue = index

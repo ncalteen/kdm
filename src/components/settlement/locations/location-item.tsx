@@ -69,11 +69,11 @@ export function LocationItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSettlement?.locations?.[index].name || ''
+      inputRef.current.value = selectedSettlement?.locations?.[index].name ?? ''
   }, [selectedSettlement?.locations, index])
 
   /**
-   * Handle Key Down
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -85,7 +85,7 @@ export function LocationItem({
       e.preventDefault()
       onSave(
         inputRef.current.value,
-        selectedSettlement?.locations?.[index].unlocked || false,
+        selectedSettlement?.locations?.[index].unlocked ?? false,
         index
       )
     }
@@ -107,7 +107,7 @@ export function LocationItem({
       {/* Unlocked Checkbox */}
       <Checkbox
         id={`location-unlocked-${index}`}
-        checked={selectedSettlement?.locations?.[index].unlocked || false}
+        checked={selectedSettlement?.locations?.[index].unlocked ?? false}
         onCheckedChange={(checked) => {
           if (typeof checked === 'boolean') onToggleUnlocked(index, checked)
         }}
@@ -117,14 +117,14 @@ export function LocationItem({
       {isDisabled ? (
         <div className="flex ml-1">
           <span className="text-sm">
-            {selectedSettlement?.locations?.[index].name || ''}
+            {selectedSettlement?.locations?.[index].name ?? ''}
           </span>
         </div>
       ) : (
         <Input
           ref={inputRef}
           placeholder="Location Name"
-          defaultValue={selectedSettlement?.locations?.[index].name || ''}
+          defaultValue={selectedSettlement?.locations?.[index].name ?? ''}
           disabled={isDisabled}
           onKeyDown={handleKeyDown}
         />
@@ -149,7 +149,7 @@ export function LocationItem({
             onClick={() =>
               onSave(
                 inputRef.current!.value,
-                selectedSettlement?.locations?.[index].unlocked || false,
+                selectedSettlement?.locations?.[index].unlocked ?? false,
                 index
               )
             }
@@ -172,7 +172,7 @@ export function LocationItem({
 /**
  * New Location Item Component
  *
- * @param props New Location Item Component Props
+ * @param props New Location Item Component Properties
  */
 export function NewLocationItem({
   onCancel,
@@ -181,7 +181,7 @@ export function NewLocationItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

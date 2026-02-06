@@ -111,12 +111,17 @@ export const BaseSurvivorSchema = z.object({
   /**
    * State
    *
-   * Used by the Aenas (Wanderer) to track state while in the settlement.
+   * Currently only used by Aenas (Wanderer) to track her Hungry/Content state
+   * while in the settlement.
    */
   state: z.enum(AenasState).optional(),
   /** Strength */
   strength: z.number().default(0),
-  /** Survival (Named survivors start with 1 survival) */
+  /**
+   * Survival
+   *
+   * Named survivors start with 1 survival.
+   */
   survival: z.number().min(0, 'Survival cannot be negative.').default(1),
   /** Understanding */
   understanding: z

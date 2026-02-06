@@ -2,9 +2,7 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
   SURVIVOR_ACCURACY_UPDATED_MESSAGE,
@@ -41,8 +39,8 @@ interface AttributeCardProps {
   selectedShowdown: Showdown | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
-  /** Read Only Mode */
-  readOnly: boolean
+  /** Disabled */
+  disabled?: boolean
 }
 
 /**
@@ -64,17 +62,15 @@ export function AttributeCard({
   selectedSettlement,
   selectedShowdown,
   selectedSurvivor,
-  readOnly
+  disabled = false
 }: AttributeCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   /**
    * Save Tokens
    *
    * Saves to either hunt or showdown based on mode
    *
-   * @param tokenName Token attribute name
-   * @param value New value
+   * @param tokenName Token Attribute Name
+   * @param value New Value
    */
   const saveTokens = (
     tokenName:
@@ -92,43 +88,37 @@ export function AttributeCard({
       if (!saveSelectedShowdown || !selectedShowdown) return
 
       // Get current survivor details or create new one
-      const currentDetails = selectedShowdown.survivorDetails || []
-      const survivorDetailIndex = currentDetails.findIndex(
+      const updatedDetails = [...selectedShowdown.survivorDetails]
+      const survivorDetailIndex = selectedShowdown.survivorDetails.findIndex(
         (sd) => sd.id === selectedSurvivor.id
       )
 
-      let updatedDetails
-      if (survivorDetailIndex >= 0) {
+      if (survivorDetailIndex >= 0)
         // Update existing survivor details
-        updatedDetails = [...currentDetails]
         updatedDetails[survivorDetailIndex] = {
           ...updatedDetails[survivorDetailIndex],
           [tokenName]: value
         }
-      } else {
+      else
         // Create new survivor details entry
-        updatedDetails = [
-          ...currentDetails,
-          {
-            accuracyTokens: 0,
-            bleedingTokens: 0,
-            blockTokens: 0,
-            deflectTokens: 0,
-            evasionTokens: 0,
-            id: selectedSurvivor.id!,
-            insanityTokens: 0,
-            knockedDown: false,
-            luckTokens: 0,
-            movementTokens: 0,
-            notes: '',
-            priorityTarget: false,
-            speedTokens: 0,
-            strengthTokens: 0,
-            survivalTokens: 0,
-            [tokenName]: value
-          }
-        ]
-      }
+        updatedDetails.push({
+          accuracyTokens: 0,
+          bleedingTokens: 0,
+          blockTokens: 0,
+          deflectTokens: 0,
+          evasionTokens: 0,
+          id: selectedSurvivor.id!,
+          insanityTokens: 0,
+          knockedDown: false,
+          luckTokens: 0,
+          movementTokens: 0,
+          notes: '',
+          priorityTarget: false,
+          speedTokens: 0,
+          strengthTokens: 0,
+          survivalTokens: 0,
+          [tokenName]: value
+        })
 
       saveSelectedShowdown({
         survivorDetails: updatedDetails
@@ -137,38 +127,32 @@ export function AttributeCard({
       if (!saveSelectedHunt || !selectedHunt) return
 
       // Get current survivor details or create new one
-      const currentDetails = selectedHunt.survivorDetails || []
-      const survivorDetailIndex = currentDetails.findIndex(
+      const updatedDetails = [...selectedHunt.survivorDetails]
+      const survivorDetailIndex = selectedHunt.survivorDetails.findIndex(
         (sd) => sd.id === selectedSurvivor.id
       )
 
-      let updatedDetails
-      if (survivorDetailIndex >= 0) {
+      if (survivorDetailIndex >= 0)
         // Update existing survivor details
-        updatedDetails = [...currentDetails]
         updatedDetails[survivorDetailIndex] = {
           ...updatedDetails[survivorDetailIndex],
           [tokenName]: value
         }
-      } else {
+      else
         // Create new survivor details entry
-        updatedDetails = [
-          ...currentDetails,
-          {
-            accuracyTokens: 0,
-            evasionTokens: 0,
-            id: selectedSurvivor.id!,
-            insanityTokens: 0,
-            luckTokens: 0,
-            movementTokens: 0,
-            notes: '',
-            speedTokens: 0,
-            strengthTokens: 0,
-            survivalTokens: 0,
-            [tokenName]: value
-          }
-        ]
-      }
+        updatedDetails.push({
+          accuracyTokens: 0,
+          evasionTokens: 0,
+          id: selectedSurvivor.id!,
+          insanityTokens: 0,
+          luckTokens: 0,
+          movementTokens: 0,
+          notes: '',
+          speedTokens: 0,
+          strengthTokens: 0,
+          survivalTokens: 0,
+          [tokenName]: value
+        })
 
       saveSelectedHunt({
         survivorDetails: updatedDetails
@@ -192,7 +176,7 @@ export function AttributeCard({
     () =>
       selectedShowdown?.survivorDetails?.find(
         (sd) => sd.id === selectedSurvivor?.id
-      ) || {
+      ) ?? {
         accuracyTokens: 0,
         bleedingTokens: 0,
         blockTokens: 0,
@@ -252,9 +236,9 @@ export function AttributeCard({
         {/* Movement */}
         <div className="flex flex-col items-center gap-1">
           <NumericInput
-            value={selectedSurvivor?.movement ?? 1}
-            min={0}
             label="Movement"
+            value={selectedSurvivor?.movement ?? 1}
+            min={1}
             onChange={(value) => {
               if (saveSelectedSurvivor)
                 saveSelectedSurvivor(
@@ -264,33 +248,16 @@ export function AttributeCard({
                   SURVIVOR_MOVEMENT_UPDATED_MESSAGE()
                 )
             }}
-            readOnly={readOnly}>
-            <Input
-              placeholder="1"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.movement ?? 1}
-              readOnly={isMobile || readOnly}
-              onChange={(e) => {
-                if (!isMobile && !readOnly && saveSelectedSurvivor)
-                  saveSelectedSurvivor(
-                    {
-                      movement: parseInt(e.target.value, 10)
-                    },
-                    SURVIVOR_MOVEMENT_UPDATED_MESSAGE()
-                  )
-              }}
-              name="movement"
-              id="movement"
-            />
-          </NumericInput>
+            className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            disabled={disabled}
+          />
         </div>
 
         {/* Accuracy */}
         <div className="flex flex-col items-center gap-1">
           <NumericInput
-            value={selectedSurvivor?.accuracy ?? 0}
             label="Accuracy"
+            value={selectedSurvivor?.accuracy ?? 0}
             onChange={(value) => {
               if (saveSelectedSurvivor)
                 saveSelectedSurvivor(
@@ -300,33 +267,16 @@ export function AttributeCard({
                   SURVIVOR_ACCURACY_UPDATED_MESSAGE()
                 )
             }}
-            readOnly={readOnly}>
-            <Input
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.accuracy ?? 0}
-              readOnly={isMobile || readOnly}
-              onChange={(e) => {
-                if (!isMobile && !readOnly && saveSelectedSurvivor)
-                  saveSelectedSurvivor(
-                    {
-                      accuracy: parseInt(e.target.value, 10)
-                    },
-                    SURVIVOR_ACCURACY_UPDATED_MESSAGE()
-                  )
-              }}
-              name="accuracy"
-              id="accuracy"
-            />
-          </NumericInput>
+            className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            disabled={disabled}
+          />
         </div>
 
         {/* Strength */}
         <div className="flex flex-col items-center gap-1">
           <NumericInput
-            value={selectedSurvivor?.strength ?? 0}
             label="Strength"
+            value={selectedSurvivor?.strength ?? 0}
             onChange={(value) => {
               if (saveSelectedSurvivor)
                 saveSelectedSurvivor(
@@ -336,33 +286,16 @@ export function AttributeCard({
                   SURVIVOR_STRENGTH_UPDATED_MESSAGE()
                 )
             }}
-            readOnly={readOnly}>
-            <Input
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.strength ?? 0}
-              readOnly={isMobile || readOnly}
-              onChange={(e) => {
-                if (!isMobile && !readOnly && saveSelectedSurvivor)
-                  saveSelectedSurvivor(
-                    {
-                      strength: parseInt(e.target.value, 10)
-                    },
-                    SURVIVOR_STRENGTH_UPDATED_MESSAGE()
-                  )
-              }}
-              name="strength"
-              id="strength"
-            />
-          </NumericInput>
+            className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            disabled={disabled}
+          />
         </div>
 
         {/* Evasion */}
         <div className="flex flex-col items-center gap-1">
           <NumericInput
-            value={selectedSurvivor?.evasion ?? 0}
             label="Evasion"
+            value={selectedSurvivor?.evasion ?? 0}
             onChange={(value) => {
               if (saveSelectedSurvivor)
                 saveSelectedSurvivor(
@@ -372,33 +305,16 @@ export function AttributeCard({
                   SURVIVOR_EVASION_UPDATED_MESSAGE()
                 )
             }}
-            readOnly={readOnly}>
-            <Input
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.evasion ?? 0}
-              readOnly={isMobile || readOnly}
-              onChange={(e) => {
-                if (!isMobile && !readOnly && saveSelectedSurvivor)
-                  saveSelectedSurvivor(
-                    {
-                      evasion: parseInt(e.target.value, 10)
-                    },
-                    SURVIVOR_EVASION_UPDATED_MESSAGE()
-                  )
-              }}
-              name="evasion"
-              id="evasion"
-            />
-          </NumericInput>
+            className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            disabled={disabled}
+          />
         </div>
 
         {/* Luck */}
         <div className="flex flex-col items-center gap-1">
           <NumericInput
-            value={selectedSurvivor?.luck ?? 0}
             label="Luck"
+            value={selectedSurvivor?.luck ?? 0}
             onChange={(value) => {
               if (saveSelectedSurvivor)
                 saveSelectedSurvivor(
@@ -408,33 +324,16 @@ export function AttributeCard({
                   SURVIVOR_LUCK_UPDATED_MESSAGE()
                 )
             }}
-            readOnly={readOnly}>
-            <Input
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.luck ?? 0}
-              readOnly={isMobile || readOnly}
-              onChange={(e) => {
-                if (!isMobile && !readOnly && saveSelectedSurvivor)
-                  saveSelectedSurvivor(
-                    {
-                      luck: parseInt(e.target.value, 10)
-                    },
-                    SURVIVOR_LUCK_UPDATED_MESSAGE()
-                  )
-              }}
-              name="luck"
-              id="luck"
-            />
-          </NumericInput>
+            className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            disabled={disabled}
+          />
         </div>
 
         {/* Speed */}
         <div className="flex flex-col items-center gap-1">
           <NumericInput
-            value={selectedSurvivor?.speed ?? 0}
             label="Speed"
+            value={selectedSurvivor?.speed ?? 0}
             onChange={(value) => {
               if (saveSelectedSurvivor)
                 saveSelectedSurvivor(
@@ -444,35 +343,18 @@ export function AttributeCard({
                   SURVIVOR_SPEED_UPDATED_MESSAGE()
                 )
             }}
-            readOnly={readOnly}>
-            <Input
-              placeholder="0"
-              type="number"
-              className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              value={selectedSurvivor?.speed ?? 0}
-              readOnly={isMobile || readOnly}
-              onChange={(e) => {
-                if (!isMobile && !readOnly && saveSelectedSurvivor)
-                  saveSelectedSurvivor(
-                    {
-                      speed: parseInt(e.target.value, 10)
-                    },
-                    SURVIVOR_SPEED_UPDATED_MESSAGE()
-                  )
-              }}
-              name="speed"
-              id="speed"
-            />
-          </NumericInput>
+            className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            disabled={disabled}
+          />
         </div>
 
         {/* Lumi (Arc) */}
         {selectedSettlement?.survivorType === SurvivorType.ARC && (
           <div className="flex flex-col items-center gap-1">
             <NumericInput
+              label="Lumi"
               value={selectedSurvivor?.lumi ?? 0}
               min={0}
-              label="Lumi"
               onChange={(value) => {
                 if (saveSelectedSurvivor)
                   saveSelectedSurvivor(
@@ -482,26 +364,9 @@ export function AttributeCard({
                     SURVIVOR_LUMI_UPDATED_MESSAGE()
                   )
               }}
-              readOnly={readOnly}>
-              <Input
-                placeholder="0"
-                type="number"
-                className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSurvivor?.lumi ?? 0}
-                readOnly={isMobile || readOnly}
-                onChange={(e) => {
-                  if (!isMobile && !readOnly && saveSelectedSurvivor)
-                    saveSelectedSurvivor(
-                      {
-                        lumi: parseInt(e.target.value, 10)
-                      },
-                      SURVIVOR_LUMI_UPDATED_MESSAGE()
-                    )
-                }}
-                name="lumi"
-                id="lumi"
-              />
-            </NumericInput>
+              className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              disabled={disabled}
+            />
           </div>
         )}
 
@@ -515,166 +380,67 @@ export function AttributeCard({
             {/* Movement Tokens */}
             <div className="flex flex-col items-center gap-1">
               <NumericInput
-                value={survivorDetails.movementTokens}
                 label="Movement Tokens"
+                value={survivorDetails.movementTokens}
                 onChange={(value) => saveTokens('movementTokens', value)}
-                readOnly={readOnly}>
-                <Input
-                  placeholder="1"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={survivorDetails.movementTokens}
-                  readOnly={isMobile || readOnly}
-                  onChange={
-                    !isMobile && !readOnly
-                      ? (e) =>
-                          saveTokens(
-                            'movementTokens',
-                            parseInt(e.target.value, 10)
-                          )
-                      : undefined
-                  }
-                  name="movement-tokens"
-                  id="movement-tokens"
-                />
-              </NumericInput>
+                className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+                disabled={disabled}
+              />
             </div>
 
             {/* Accuracy Tokens */}
             <div className="flex flex-col items-center gap-1">
               <NumericInput
-                value={survivorDetails.accuracyTokens}
                 label="Accuracy Tokens"
+                value={survivorDetails.accuracyTokens}
                 onChange={(value) => saveTokens('accuracyTokens', value)}
-                readOnly={readOnly}>
-                <Input
-                  placeholder="0"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={survivorDetails.accuracyTokens}
-                  readOnly={isMobile || readOnly}
-                  onChange={
-                    !isMobile && !readOnly
-                      ? (e) =>
-                          saveTokens(
-                            'accuracyTokens',
-                            parseInt(e.target.value, 10)
-                          )
-                      : undefined
-                  }
-                  name="accuracy-tokens"
-                  id="accuracy-tokens"
-                />
-              </NumericInput>
+                className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+                disabled={disabled}
+              />
             </div>
 
             {/* Strength Tokens */}
             <div className="flex flex-col items-center gap-1">
               <NumericInput
-                value={survivorDetails.strengthTokens}
                 label="Strength Tokens"
+                value={survivorDetails.strengthTokens}
                 onChange={(value) => saveTokens('strengthTokens', value)}
-                readOnly={readOnly}>
-                <Input
-                  placeholder="0"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={survivorDetails.strengthTokens}
-                  readOnly={isMobile || readOnly}
-                  onChange={
-                    !isMobile && !readOnly
-                      ? (e) =>
-                          saveTokens(
-                            'strengthTokens',
-                            parseInt(e.target.value, 10)
-                          )
-                      : undefined
-                  }
-                  name="strength-tokens"
-                  id="strength-tokens"
-                />
-              </NumericInput>
+                className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+                disabled={disabled}
+              />
             </div>
 
             {/* Evasion Tokens */}
             <div className="flex flex-col items-center gap-1">
               <NumericInput
-                value={survivorDetails.evasionTokens}
                 label="Evasion Tokens"
+                value={survivorDetails.evasionTokens}
                 onChange={(value) => saveTokens('evasionTokens', value)}
-                readOnly={readOnly}>
-                <Input
-                  placeholder="0"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={survivorDetails.evasionTokens}
-                  readOnly={isMobile || readOnly}
-                  onChange={
-                    !isMobile && !readOnly
-                      ? (e) =>
-                          saveTokens(
-                            'evasionTokens',
-                            parseInt(e.target.value, 10)
-                          )
-                      : undefined
-                  }
-                  name="evasion-tokens"
-                  id="evasion-tokens"
-                />
-              </NumericInput>
+                className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+                disabled={disabled}
+              />
             </div>
 
             {/* Luck Tokens */}
             <div className="flex flex-col items-center gap-1">
               <NumericInput
-                value={survivorDetails.luckTokens}
                 label="Luck Tokens"
+                value={survivorDetails.luckTokens}
                 onChange={(value) => saveTokens('luckTokens', value)}
-                readOnly={readOnly}>
-                <Input
-                  placeholder="0"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={survivorDetails.luckTokens}
-                  readOnly={isMobile || readOnly}
-                  onChange={
-                    !isMobile && !readOnly
-                      ? (e) =>
-                          saveTokens('luckTokens', parseInt(e.target.value, 10))
-                      : undefined
-                  }
-                  name="luck-tokens"
-                  id="luck-tokens"
-                />
-              </NumericInput>
+                className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+                disabled={disabled}
+              />
             </div>
 
             {/* Speed Tokens */}
             <div className="flex flex-col items-center gap-1">
               <NumericInput
-                value={survivorDetails.speedTokens}
                 label="Speed Tokens"
+                value={survivorDetails.speedTokens}
                 onChange={(value) => saveTokens('speedTokens', value)}
-                readOnly={readOnly}>
-                <Input
-                  placeholder="0"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={survivorDetails.speedTokens}
-                  readOnly={isMobile || readOnly}
-                  onChange={
-                    !isMobile && !readOnly
-                      ? (e) =>
-                          saveTokens(
-                            'speedTokens',
-                            parseInt(e.target.value, 10)
-                          )
-                      : undefined
-                  }
-                  name="speed-tokens"
-                  id="speed-tokens"
-                />
-              </NumericInput>
+                className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+                disabled={disabled}
+              />
             </div>
 
             {/* Lumi (Arc) - No Tokens */}

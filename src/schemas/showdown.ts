@@ -18,7 +18,11 @@ export const ShowdownSchema = z.object({
   level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
   /** Showdown Monster(s) */
   monsters: z.array(ShowdownMonsterSchema),
-  /** Selected Scout (Required if Settlement uses Scouts) */
+  /**
+   * Selected Scout
+   *
+   * Required if the settlement uses scouts.
+   */
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),
@@ -27,8 +31,7 @@ export const ShowdownSchema = z.object({
   /** Selected Survivors */
   survivors: z
     .array(z.number())
-    .min(1, 'At least one survivor must be selected for the hunt.')
-    .max(4, 'No more than four survivors can embark on a hunt.'),
+    .min(1, 'At least one survivor must be selected for the hunt.'),
   /** Turn State */
   turn: ShowdownTurnSchema
 })

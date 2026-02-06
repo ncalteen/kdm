@@ -34,7 +34,10 @@ export const TimelineEventBadge = ({
   yearIndex
 }: TimelineEventBadgeProps) => {
   /**
-   * Handles click events on the badge for editing
+   * Handle Click Event
+   *
+   * Clicking a badge will trigger the onEdit handler if the entry is not
+   * completed.
    */
   const handleClick = useCallback(() => {
     if (!isCompleted) onEdit(yearIndex, entryIndex)

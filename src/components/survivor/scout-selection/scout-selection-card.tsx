@@ -28,6 +28,9 @@ interface ScoutSelectionCardProps {
  *
  * This component is used to display a survivor for selection when creating a
  * hunt or showdown.
+ *
+ * @param props Scout Selection Card Props
+ * @returns Scout Selection Card Component
  */
 export function ScoutSelectionCard({
   handleSurvivorToggle,

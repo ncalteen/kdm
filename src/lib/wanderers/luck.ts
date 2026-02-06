@@ -1,6 +1,9 @@
 import { Gender } from '@/lib/enums'
 import { Wanderer } from '@/schemas/wanderer'
 
+/**
+ * Luck Wanderer Definition
+ */
 export const LUCK: Wanderer = {
   abilitiesAndImpairments: ['Servant of Fate', 'Veteran'],
   accuracy: -1,

@@ -64,7 +64,7 @@ export function PatternsCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.patterns || []).map((_, i) => [i, true])
+      (selectedSettlement?.patterns ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -81,18 +81,18 @@ export function PatternsCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.patterns || []).map((_, i) => [i, true])
+        (selectedSettlement?.patterns ?? []).map((_, i) => [i, true])
       )
     )
   }
 
   /**
-   * Handles the removal of a pattern.
+   * Handle Pattern Removal
    *
    * @param index Pattern Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.patterns || [])]
+    const current = [...(selectedSettlement?.patterns ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -111,16 +111,16 @@ export function PatternsCard({
   }
 
   /**
-   * Handles saving a new pattern.
+   * Handle Pattern Save
    *
    * @param value Pattern Value
-   * @param i Pattern Index (When Updating Only)
+   * @param i Pattern Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('pattern'))
 
-    const updated = [...(selectedSettlement?.patterns || [])]
+    const updated = [...(selectedSettlement?.patterns ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -143,7 +143,7 @@ export function PatternsCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -154,7 +154,7 @@ export function PatternsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.patterns || [],
+        selectedSettlement?.patterns ?? [],
         oldIndex,
         newIndex
       )
@@ -210,11 +210,11 @@ export function PatternsCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.patterns || []).map((_, index) =>
+                  items={(selectedSettlement?.patterns ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.patterns || []).map(
+                  {(selectedSettlement?.patterns ?? []).map(
                     (pattern, index) => (
                       <PatternItem
                         key={index}

@@ -35,7 +35,7 @@ interface CourageUnderstandingCardProps {
  * It includes checkboxes to set the level of each stat from 0 to 9. The two
  * stats are displayed side by side, separated by a vertical divider.
  *
- * @param form Form
+ * @param props Courage Understanding Card Properties
  * @returns Courage and Understanding Card Component
  */
 export function CourageUnderstandingCard({
@@ -65,7 +65,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(selectedSurvivor?.courage || 0) > i}
+                    checked={(selectedSurvivor?.courage ?? 0) > i}
                     onCheckedChange={(checked) =>
                       saveSelectedSurvivor(
                         {
@@ -117,7 +117,7 @@ export function CourageUnderstandingCard({
               {Array.from({ length: 9 }, (_, i) => (
                 <div key={i} className="w-4 h-4 flex items-center">
                   <Checkbox
-                    checked={(selectedSurvivor?.understanding || 0) > i}
+                    checked={(selectedSurvivor?.understanding ?? 0) > i}
                     onCheckedChange={(checked) =>
                       saveSelectedSurvivor(
                         {

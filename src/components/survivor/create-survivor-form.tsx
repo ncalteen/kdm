@@ -66,6 +66,7 @@ interface CreateSurvivorFormProps {
  *
  * The chosen settlement will determine the available options and defaults.
  *
+ * @param props Create Survivor Form Properties
  * @returns Create Survivor Form
  */
 export function CreateSurvivorForm({
@@ -160,8 +161,7 @@ export function CreateSurvivorForm({
   /**
    * Handle Wanderer Selection
    *
-   * When a wanderer is selected, their data is used to populate the survivor
-   * form.
+   * When a wanderer is selected, their data is used to populate the form.
    *
    * @param wanderer Selected Wanderer
    */
@@ -233,7 +233,7 @@ export function CreateSurvivorForm({
   }
 
   /**
-   * Handles form submission
+   * Handle Form Submission
    *
    * @param values Form Values
    */

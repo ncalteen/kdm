@@ -107,7 +107,7 @@ export function SelectMonsterNode({
   }, [campaign.customNemeses, campaign.customQuarries, nodeType, disabled])
 
   /**
-   * Toggle a monster selection.
+   * Toggle Monster Selection
    *
    * @param monsterName Monster Name to Toggle
    */
@@ -125,7 +125,7 @@ export function SelectMonsterNode({
   }
 
   /**
-   * Remove a monster from selection.
+   * Remove Monster from Selection.
    *
    * @param monsterName Monster Name to Remove
    */
@@ -134,9 +134,6 @@ export function SelectMonsterNode({
       onChange(propValue.filter((monster) => monster.name !== monsterName))
   }
 
-  /**
-   * Get the selected monster names for display.
-   */
   const selectedMonsters = useMemo(() => {
     return propValue
       .map((monster) => monsterOptions.find((m) => m.name === monster.name))

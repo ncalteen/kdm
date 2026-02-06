@@ -47,7 +47,10 @@ export interface TimelineRowProps {
 }
 
 /**
- * Timeline Year Row Component for virtualization
+ * Timeline Year Row Component
+ *
+ * @param props Timeline Row Properties
+ * @returns Timeline Year Row Component
  */
 export const TimelineYearRow = ({
   index,
@@ -65,7 +68,7 @@ export const TimelineYearRow = ({
 }: TimelineRowProps) => {
   // Get all entry indices that should be rendered (existing entries + new
   // entries being edited)
-  const entries = selectedSettlement?.timeline?.[index].entries || []
+  const entries = selectedSettlement?.timeline?.[index].entries ?? []
   const allEntryIndices = new Set([...entries.map((_, i) => i)])
 
   // Also include any entry indices that are being edited but don't exist in
@@ -85,7 +88,7 @@ export const TimelineYearRow = ({
       {/* Year Number and Completion Checkbox */}
       <div className="flex gap-1 items-center">
         <Checkbox
-          checked={selectedSettlement?.timeline?.[index].completed || false}
+          checked={selectedSettlement?.timeline?.[index].completed ?? false}
           onCheckedChange={(checked) =>
             handleYearCompletionChange(index, !!checked)
           }
@@ -179,7 +182,7 @@ export const TimelineYearRow = ({
                       ? `Year ${index + 1}`
                       : `Year ${index}`
                 } event...`}
-                defaultValue={entries[entryIndex] || ''}
+                defaultValue={entries[entryIndex] ?? ''}
                 ref={(element) => setInputRef(element, index, entryIndex)}
                 onKeyDown={(e) => handleKeyDown(e, index, entryIndex)}
                 className="h-7 text-xs"

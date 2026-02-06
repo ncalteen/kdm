@@ -60,7 +60,7 @@ export function OncePerLifetimeCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.oncePerLifetime || []).map((_, i) => [i, true])
+      (selectedSurvivor?.oncePerLifetime ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -70,7 +70,7 @@ export function OncePerLifetimeCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSurvivor?.oncePerLifetime || []).map((_, i) => [i, true])
+        (selectedSurvivor?.oncePerLifetime ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -105,12 +105,12 @@ export function OncePerLifetimeCard({
   }
 
   /**
-   * Handles the removal of a once per lifetime event.
+   * Handle Removal of an Event
    *
    * @param index Event Index
    */
   const onRemove = (index: number) => {
-    const updated = [...(selectedSurvivor?.oncePerLifetime || [])]
+    const updated = [...(selectedSurvivor?.oncePerLifetime ?? [])]
     updated.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -133,10 +133,12 @@ export function OncePerLifetimeCard({
   }
 
   /**
-   * Handles saving a new once per lifetime event.
+   * Handle Saving of an Event
+   *
+   * Used for both new and udpated events.
    *
    * @param value Event Value
-   * @param i Event Index (When Updating Only)
+   * @param i Event Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -144,7 +146,7 @@ export function OncePerLifetimeCard({
         NAMELESS_OBJECT_ERROR_MESSAGE('once per lifetime event')
       )
 
-    const updated = [...(selectedSurvivor?.oncePerLifetime || [])]
+    const updated = [...(selectedSurvivor?.oncePerLifetime ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -170,7 +172,7 @@ export function OncePerLifetimeCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -181,7 +183,7 @@ export function OncePerLifetimeCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSurvivor?.oncePerLifetime || [],
+        selectedSurvivor?.oncePerLifetime ?? [],
         oldIndex,
         newIndex
       )
@@ -204,7 +206,9 @@ export function OncePerLifetimeCard({
   }
 
   /**
-   * Handle toggling the rerollUsed checkbox
+   * Handle Reroll Used Toggle
+   *
+   * @param checked Whether Reroll Used is Checked
    */
   const handleRerollUsedToggle = (checked: boolean) => {
     saveSelectedSurvivor(
@@ -245,11 +249,11 @@ export function OncePerLifetimeCard({
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}>
               <SortableContext
-                items={(selectedSurvivor?.oncePerLifetime || []).map(
+                items={(selectedSurvivor?.oncePerLifetime ?? []).map(
                   (_, index) => index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.oncePerLifetime || []).map(
+                {(selectedSurvivor?.oncePerLifetime ?? []).map(
                   (event, index) => (
                     <OncePerLifetimeItem
                       key={index}

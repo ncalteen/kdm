@@ -1,6 +1,8 @@
 'use client'
 
-/** Campaign Type */
+/**
+ * Campaign Type
+ */
 export enum CampaignType {
   /** People of the Dream Keeper */
   PEOPLE_OF_THE_DREAM_KEEPER = 'People of the Dream Keeper',
@@ -16,7 +18,9 @@ export enum CampaignType {
   CUSTOM = 'Custom'
 }
 
-/** Survivor Type */
+/**
+ * Survivor Type
+ */
 export enum SurvivorType {
   /** Arc */
   ARC = 'Arc',
@@ -24,6 +28,9 @@ export enum SurvivorType {
   CORE = 'Core'
 }
 
+/**
+ * Tab Type
+ */
 export enum TabType {
   /** Arc Survivors */
   ARC = 'arc',
@@ -51,7 +58,9 @@ export enum TabType {
   TIMELINE = 'timeline'
 }
 
-/** Philosophies */
+/**
+ * Philosophy
+ */
 export enum Philosophy {
   /** Ambitionism */
   AMBITIONISM = 'Ambitionism',
@@ -93,7 +102,9 @@ export enum Philosophy {
   WANDERER = 'Wanderer'
 }
 
-/** Survivor Gender */
+/**
+ * Survivor Gender
+ */
 export enum Gender {
   /** Female */
   FEMALE = 'F',
@@ -101,7 +112,9 @@ export enum Gender {
   MALE = 'M'
 }
 
-/** Weapon Types */
+/**
+ * Weapon Type
+ */
 export enum WeaponType {
   /** Axe */
   AXE = 'Axe',
@@ -137,6 +150,9 @@ export enum WeaponType {
   WHIP = 'Whip'
 }
 
+/**
+ * Resource Category
+ */
 export enum ResourceCategory {
   /** Basic */
   BASIC = 'Basic',
@@ -148,7 +164,9 @@ export enum ResourceCategory {
   VERMIN = 'Vermin'
 }
 
-/** Resource Types */
+/**
+ * Resource Type
+ */
 export enum ResourceType {
   /** Bone */
   BONE = 'Bone',
@@ -164,7 +182,9 @@ export enum ResourceType {
   VERMIN = 'Vermin'
 }
 
-/** Monster Level */
+/**
+ * Monster Level
+ */
 export enum MonsterLevel {
   /** Level 1 */
   LEVEL_1 = 'level1',
@@ -176,7 +196,9 @@ export enum MonsterLevel {
   LEVEL_4 = 'level4'
 }
 
-/** Monster Type */
+/**
+ * Monster Type
+ */
 export enum MonsterType {
   /** Nemesis */
   NEMESIS = 'Nemesis',
@@ -184,7 +206,9 @@ export enum MonsterType {
   QUARRY = 'Quarry'
 }
 
-/** Color Choices */
+/**
+ * Color Choice
+ */
 export enum ColorChoice {
   /** Neutral */
   NEUTRAL = 'neutral',
@@ -232,6 +256,9 @@ export enum ColorChoice {
   ROSE = 'rose'
 }
 
+/**
+ * Ambush Type
+ */
 export enum AmbushType {
   /** Survivors Ambush Monster */
   SURVIVORS = 'survivors',
@@ -241,15 +268,14 @@ export enum AmbushType {
   NONE = 'none'
 }
 
+/**
+ * Turn Type
+ */
 export enum TurnType {
-  /** Survivors Turn */
+  /** Survivors' Turn */
   SURVIVORS = 'survivors',
-  /** Monsters Turn */
+  /** Monster's Turn */
   MONSTER = 'monster'
-}
-
-export enum MonsterName {
-  FLOWER_KNIGHT = 'Flower Knight'
 }
 
 /**
@@ -342,7 +368,9 @@ export enum MonsterNodeNumeric {
   FI = 9
 }
 
-/** Campaign Data Schema Versions */
+/**
+ * Campaign Data Schema Versions
+ */
 export enum SchemaVersion {
   /** Version 0.12.0 */
   V0_12_0 = '0.12.0',
@@ -355,10 +383,18 @@ export enum SchemaVersion {
   /** Version 0.14.2 */
   V0_14_2 = '0.14.2',
   /** Version 0.15.0 */
-  V0_15_0 = '0.15.0'
+  V0_15_0 = '0.15.0',
+  /** Version 0.16.0 */
+  V0_16_0 = '0.16.0',
+  /** Version 0.17.0 */
+  V0_17_0 = '0.17.0',
+  /** Version 0.18.0 */
+  V0_18_0 = '0.18.0'
 }
 
-/** Monster Versions */
+/**
+ * Monster Versions
+ */
 export enum MonsterVersion {
   /** Original Monster */
   ORIGINAL = 'original',

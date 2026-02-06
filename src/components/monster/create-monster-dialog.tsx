@@ -104,7 +104,9 @@ export function CreateMonsterDialog({
   >([])
 
   /**
-   * Handles monster type change to restrict allowed nodes.
+   * Handle Monster Type Change
+   *
+   * @param type Monster Type
    */
   const handleMonsterTypeChange = (type: MonsterType) => {
     setMonsterType(type)
@@ -112,7 +114,7 @@ export function CreateMonsterDialog({
   }
 
   /**
-   * Resets the form to its initial state.
+   * Reset Form to Original State
    */
   const resetForm = () => {
     setMonsterType(MonsterType.QUARRY)
@@ -130,7 +132,7 @@ export function CreateMonsterDialog({
   }
 
   /**
-   * Handles creating a new monster
+   * Handle Monster Create
    */
   const handleCreateMonster = () => {
     try {
@@ -248,7 +250,9 @@ export function CreateMonsterDialog({
   }
 
   /**
-   * Handles dialog close with cleanup
+   * Handle Dialog Open Change
+   *
+   * @param open Open State
    */
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open)

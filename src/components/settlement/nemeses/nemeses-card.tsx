@@ -118,7 +118,7 @@ export function NemesesCard({
    * Save a Nemesis
    *
    * @param name Nemesis Name
-   * @param index Nemesis Index (When Updating Only)
+   * @param index Nemesis Index (Updates Only)
    */
   const onSave = (name: string | undefined, index?: number) => {
     const data = getNemesisDataByName(campaign, name)
@@ -130,14 +130,19 @@ export function NemesesCard({
 
     if (index !== undefined) {
       // Updating an existing value
-      updatedNemeses[index] = createSettlementNemesisFromData(data)
+      updatedNemeses[index] = createSettlementNemesisFromData(
+        selectedSettlement,
+        data
+      )
       setDisabledInputs((prev) => ({
         ...prev,
         [index]: true
       }))
     } else {
       // Adding a new value
-      updatedNemeses.push(createSettlementNemesisFromData(data))
+      updatedNemeses.push(
+        createSettlementNemesisFromData(selectedSettlement, data)
+      )
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedNemeses.length - 1]: true
@@ -169,7 +174,7 @@ export function NemesesCard({
   }
 
   /**
-   * Handles toggling nemesis levels.
+   * Toggle Nemesis Levels
    *
    * @param index Nemesis Index
    * @param level Level to Toggle

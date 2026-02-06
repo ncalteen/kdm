@@ -80,9 +80,9 @@ export function PrincipleItem({
    */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const name = nameInputRef.current?.value || ''
-      const option1 = option1InputRef.current?.value || ''
-      const option2 = option2InputRef.current?.value || ''
+      const name = nameInputRef.current?.value ?? ''
+      const option1 = option1InputRef.current?.value ?? ''
+      const option2 = option2InputRef.current?.value ?? ''
 
       if (name && option1 && option2) {
         e.preventDefault()
@@ -195,9 +195,9 @@ export function PrincipleItem({
               variant="ghost"
               size="icon"
               onClick={() => {
-                const name = nameInputRef.current?.value || ''
-                const option1 = option1InputRef.current?.value || ''
-                const option2 = option2InputRef.current?.value || ''
+                const name = nameInputRef.current?.value ?? ''
+                const option1 = option1InputRef.current?.value ?? ''
+                const option2 = option2InputRef.current?.value ?? ''
 
                 if (name && option1 && option2)
                   onSave(index, name, option1, option2)
@@ -223,7 +223,8 @@ export function PrincipleItem({
 /**
  * New Principle Item Component
  *
- * @param props New Principle Item Component Props
+ * @param props New Principle Item Component Properties
+ * @returns New Principle Item Component
  */
 export function NewPrincipleItem({
   onCancel,
@@ -236,7 +237,7 @@ export function NewPrincipleItem({
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input fields.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * values. If the Escape key is pressed, it calls the onCancel function.

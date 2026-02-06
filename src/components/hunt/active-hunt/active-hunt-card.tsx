@@ -114,7 +114,7 @@ export function ActiveHuntCard({
   /**
    * Roll Random Hunt Event
    *
-   * @param eventType Event type to roll for (Basic, Arc, or Scout)
+   * @param eventType Event Type
    */
   const rollHuntEvent = useCallback((eventType: HuntEventType) => {
     const maxValue =
@@ -131,6 +131,9 @@ export function ActiveHuntCard({
 
   /**
    * Handle Position Update
+   *
+   * @param survivorPosition Survivor Position
+   * @param monsterPosition Monster Position
    */
   const handlePositionUpdate = useCallback(
     (survivorPosition: number, monsterPosition: number) =>
@@ -145,6 +148,9 @@ export function ActiveHuntCard({
 
   /**
    * Handle Hunt Board Update
+   *
+   * @param position Position to Update
+   * @param eventType Event Type
    */
   const handleHuntBoardUpdate = useCallback(
     (position: number, eventType: HuntEventType | undefined) => {
@@ -174,7 +180,25 @@ export function ActiveHuntCard({
     try {
       updateCampaign({
         ...campaign,
-        hunts: campaign.hunts?.filter((hunt) => hunt.id !== selectedHunt?.id)
+        hunts: campaign.hunts?.filter((hunt) => hunt.id !== selectedHunt?.id),
+        survivors: campaign.survivors?.map((survivor) =>
+          selectedHunt?.survivors?.includes(survivor.id)
+            ? // Reset the survivors' injuries
+              {
+                ...survivor,
+                brainLightDamage: false,
+                headHeavyDamage: false,
+                armLightDamage: false,
+                armHeavyDamage: false,
+                bodyLightDamage: false,
+                bodyHeavyDamage: false,
+                waistLightDamage: false,
+                waistHeavyDamage: false,
+                legLightDamage: false,
+                legHeavyDamage: false
+              }
+            : survivor
+        )
       })
       setSelectedHunt(null)
       setSelectedHuntMonsterIndex(0)
@@ -188,6 +212,7 @@ export function ActiveHuntCard({
   }, [
     campaign,
     selectedHunt?.id,
+    selectedHunt?.survivors,
     setSelectedHunt,
     setSelectedHuntMonsterIndex,
     updateCampaign
@@ -213,26 +238,25 @@ export function ActiveHuntCard({
         level: selectedHunt.level,
         monsters: selectedHunt.monsters,
         scout: selectedHunt.scout,
-        settlementId: selectedHunt.settlementId || 0,
-        survivorDetails:
-          selectedHunt.survivorDetails?.map((survivor) => ({
-            accuracyTokens: survivor.accuracyTokens,
-            bleedingTokens: 0,
-            blockTokens: 0,
-            deflectTokens: 0,
-            evasionTokens: survivor.evasionTokens,
-            id: survivor.id,
-            insanityTokens: survivor.insanityTokens,
-            knockedDown: false,
-            luckTokens: survivor.luckTokens,
-            movementTokens: survivor.movementTokens,
-            notes: survivor.notes || '',
-            priorityTarget: false,
-            speedTokens: survivor.speedTokens,
-            strengthTokens: survivor.strengthTokens,
-            survivalTokens: survivor.survivalTokens
-          })) || [],
-        survivors: selectedHunt.survivors || [],
+        settlementId: selectedHunt.settlementId,
+        survivorDetails: selectedHunt.survivorDetails.map((survivor) => ({
+          accuracyTokens: survivor.accuracyTokens,
+          bleedingTokens: 0,
+          blockTokens: 0,
+          deflectTokens: 0,
+          evasionTokens: survivor.evasionTokens,
+          id: survivor.id,
+          insanityTokens: survivor.insanityTokens,
+          knockedDown: false,
+          luckTokens: survivor.luckTokens,
+          movementTokens: survivor.movementTokens,
+          notes: survivor.notes,
+          priorityTarget: false,
+          speedTokens: survivor.speedTokens,
+          strengthTokens: survivor.strengthTokens,
+          survivalTokens: survivor.survivalTokens
+        })),
+        survivors: selectedHunt.survivors,
         turn: {
           // If survivors ambush, they go first. Otherwise, the monster does.
           currentTurn:
@@ -248,7 +272,7 @@ export function ActiveHuntCard({
       const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.id !== selectedHunt.id
       )
-      const updatedShowdowns = [...(campaign.showdowns || []), showdown]
+      const updatedShowdowns = [...(campaign.showdowns ?? []), showdown]
 
       updateCampaign({
         ...campaign,

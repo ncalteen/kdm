@@ -327,15 +327,6 @@ describe('ShowdownSchema', () => {
       expect(result.success).toBe(false)
     })
 
-    it('should fail when more than 4 survivors are selected', () => {
-      const result = ShowdownSchema.safeParse({
-        ...basicShowdown,
-        survivors: [1, 2, 3, 4, 5]
-      })
-
-      expect(result.success).toBe(false)
-    })
-
     it('should fail when ambush is missing', () => {
       const result = ShowdownSchema.safeParse({
         ...basicShowdown,

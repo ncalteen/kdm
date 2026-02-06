@@ -57,7 +57,11 @@ export function CustomMonstersTable({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   /**
-   * Opens edit dialog for a monster
+   * Handle Monster Edit
+   *
+   * Opens the edit dialog for the selected monster.
+   *
+   * @param monsterId Monster ID
    */
   const handleEditMonster = (monsterId: string) => {
     setEditingMonsterId(monsterId)
@@ -65,7 +69,7 @@ export function CustomMonstersTable({
   }
 
   /**
-   * Handles monster update completion
+   * Handles Monster Update
    */
   const handleMonsterUpdated = () => {
     try {
@@ -81,7 +85,9 @@ export function CustomMonstersTable({
   }
 
   /**
-   * Deletes a custom monster
+   * Handle Monster Delete
+   *
+   * @param id Monster ID
    */
   const handleDeleteMonster = (id: string) => {
     try {

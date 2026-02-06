@@ -1,6 +1,11 @@
 'use client'
 
-import { ColorChoice, MonsterName, MonsterNode, MonsterType } from '@/lib/enums'
+import {
+  CampaignType,
+  ColorChoice,
+  MonsterNode,
+  MonsterType
+} from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { KILLENIUM_BUTCHER } from '@/lib/monsters/killenium-butcher'
 import { SCREAMING_NUKALOPE } from '@/lib/monsters/screaming-nukalope'
@@ -9,6 +14,7 @@ import { Campaign } from '@/schemas/campaign'
 import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
 import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
+import { Settlement } from '@/schemas/settlement'
 import { SettlementNemesis } from '@/schemas/settlement-nemesis'
 import { SettlementQuarry } from '@/schemas/settlement-quarry'
 import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
@@ -17,10 +23,19 @@ import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
 import * as packageInfo from '../../package.json'
 
+/**
+ * Class Names Utility
+ *
+ * @param inputs Class Values
+ * @returns Merged Class Names
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/**
+ * New Campaign Template
+ */
 export const newCampaign: Campaign = {
   customNemeses: {},
   customQuarries: {},
@@ -47,14 +62,11 @@ export const newCampaign: Campaign = {
 /**
  * Get Campaign
  *
- * This function is used to ensure backwards compatibility with older versions
- * of the campaign data structures.
- *
  * @returns Campaign
  */
 export function getCampaign(): Campaign {
   return JSON.parse(
-    localStorage.getItem('campaign') || JSON.stringify(newCampaign)
+    localStorage.getItem('campaign') ?? JSON.stringify(newCampaign)
   )
 }
 
@@ -258,7 +270,7 @@ export function canEndure(campaign: Campaign, settlementId: number): boolean {
 }
 
 /**
- * Check if Settlement Survivors are Born with Understanding
+ * Check if Settlement Survivors are Born with +1 Understanding
  *
  * This is true if the settlement has the Graves innovation.
  *
@@ -285,6 +297,10 @@ export function bornWithUnderstanding(
 
 /**
  * Get Color Style for Display
+ *
+ * @param color Color Choice
+ * @param type Style Type
+ * @returns Color Style String
  */
 export function getColorStyle(
   color: ColorChoice,
@@ -426,8 +442,8 @@ export function getColorStyle(
   }
 
   return (
-    colorMap[color]?.[type] ||
-    colorMap[ColorChoice.SLATE][type] ||
+    colorMap[color]?.[type] ??
+    colorMap[ColorChoice.SLATE][type] ??
     'bg-slate-500'
   )
 }
@@ -555,7 +571,7 @@ export function getCardColorStyles(color: ColorChoice): CSSProperties {
     }
   }
 
-  const colors = colorMap[color] || colorMap[ColorChoice.SLATE]
+  const colors = colorMap[color] ?? colorMap[ColorChoice.SLATE]
   return {
     '--card-border-color': colors.border,
     '--card-border-hover-color': colors.borderHover,
@@ -575,7 +591,7 @@ export function getCardColorStyles(color: ColorChoice): CSSProperties {
 export function getOverwhelmingDarknessLabel(
   monsterName: string | undefined
 ): string {
-  return monsterName === MonsterName.FLOWER_KNIGHT
+  return monsterName && monsterName.toLowerCase() === 'flower knight'
     ? 'The Forest Wants What it Wants'
     : 'Overwhelming Darkness'
 }
@@ -594,7 +610,7 @@ export function getSurvivorColorChoice(
   if (!survivorId) return ColorChoice.SLATE
 
   return (
-    campaign.survivors.find((survivor) => survivorId === survivor.id)?.color ||
+    campaign.survivors.find((survivor) => survivorId === survivor.id)?.color ??
     ColorChoice.SLATE
   )
 }
@@ -634,8 +650,8 @@ export const getNemesisDataByName = (
   if (name === undefined || name.trim() === '') return undefined
 
   const nemesisData =
-    Object.values(NEMESES).find((nemesis) => nemesis.name === name) ||
-    Object.values(campaign.customNemeses || {}).find(
+    Object.values(NEMESES).find((nemesis) => nemesis.name === name) ??
+    Object.values(campaign.customNemeses ?? {}).find(
       (nemesis) => nemesis.name === name
     )
 
@@ -661,14 +677,13 @@ export const getQuarryDataByName = (
   if (name === undefined || name.trim() === '') return undefined
 
   const quarryData =
-    Object.values(QUARRIES).find((quarry) => quarry.name === name) ||
-    Object.values(campaign.customQuarries || {}).find(
+    Object.values(QUARRIES).find((quarry) => quarry.name === name) ??
+    Object.values(campaign.customQuarries ?? {}).find(
       (quarry) => quarry.name === name
     )
 
   if (!quarryData) return undefined
 
-  // Return a deep copy to prevent mutations affecting the original data
   return structuredClone(quarryData)
 }
 
@@ -679,6 +694,7 @@ export const getQuarryDataByName = (
  * @returns Settlement Nemesis
  */
 export const createSettlementNemesisFromData = (
+  selectedSettlement: Settlement | null,
   data: NemesisMonsterData
 ): SettlementNemesis => {
   const nemesis: SettlementNemesis = {
@@ -707,6 +723,20 @@ export const createSettlementNemesisFromData = (
     nemesis.level4Defeated = false
   }
   if (data.vignette) nemesis.vignette = data.vignette
+
+  // If the campaign is People of the Dream Keeper and the nemesis is The Hand,
+  // add the Suspicious trait to all levels.
+  if (
+    selectedSettlement &&
+    selectedSettlement.campaignType ===
+      CampaignType.PEOPLE_OF_THE_DREAM_KEEPER &&
+    data.name.toLowerCase() === 'the hand'
+  ) {
+    if (data.level1) nemesis.level1?.[0].traits.push('Suspicious')
+    if (data.level2) nemesis.level2?.[0].traits.push('Suspicious')
+    if (data.level3) nemesis.level3?.[0].traits.push('Suspicious')
+    if (data.level4) nemesis.level4?.[0].traits.push('Suspicious')
+  }
 
   return nemesis
 }

@@ -21,7 +21,7 @@ export const NemesisMonsterDataSchema = z.object({
   /** Multi-Monster Encounter */
   multiMonster: z.boolean().default(false),
   /** Monster Name */
-  name: z.string().min(1, 'Monster name is required.'),
+  name: z.string().min(1, 'A nameless monster cannot be recorded.'),
   /** Monster Node */
   node: z.enum(MonsterNode),
   /** Timeline Entries */

@@ -1,6 +1,9 @@
 import { Gender } from '@/lib/enums'
 import { Wanderer } from '@/schemas/wanderer'
 
+/**
+ * Death Drifter Wanderer Data
+ */
 export const DEATH_DRIFTER: Wanderer = {
   abilitiesAndImpairments: ['Lone Drifter', 'Veteran'],
   accuracy: 1,

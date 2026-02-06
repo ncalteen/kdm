@@ -28,7 +28,12 @@ interface ScoutSelectionDrawerProps {
   onSelectionChange: (scoutId: number | null) => void
   /** Currently Selected Scout */
   selectedScout: number | null
-  /** Currently Selected Survivors (to disable in scout list) */
+  /**
+   * Currently Selected Survivors
+   *
+   * Used to disable survivors who have already been selected for the
+   * hunt/showdown.
+   */
   selectedSurvivors?: number[]
   /** List of Survivors */
   survivors: Survivor[]
@@ -38,6 +43,9 @@ interface ScoutSelectionDrawerProps {
 
 /**
  * Scout Selection Drawer Component
+ *
+ * @param props Scout Selection Drawer Props
+ * @returns Scout Selection Drawer Component
  */
 export function ScoutSelectionDrawer({
   description,
@@ -56,19 +64,35 @@ export function ScoutSelectionDrawer({
   const [lastHoveredSurvivor, setLastHoveredSurvivor] =
     useState<Survivor | null>(null)
 
+  /**
+   * Handle Survivor Toggle
+   *
+   * @param survivorId Survivor ID
+   */
   const handleSurvivorToggle = (survivorId: number) =>
     // If clicking the currently selected scout, deselect them
     // Otherwise, select the clicked survivor as scout
     setTempSelection(tempSelection === survivorId ? null : survivorId)
 
+  /**
+   * Handle Survivor Hover
+   *
+   * @param survivor Survivor Being Hovered
+   */
   const handleSurvivorHover = (survivor: Survivor | null) => {
     setHoveredSurvivor(survivor)
 
     if (survivor) setLastHoveredSurvivor(survivor)
   }
 
+  /**
+   * Handle Confirm Selection
+   */
   const handleConfirm = () => onSelectionChange(tempSelection)
 
+  /**
+   * Handle Cancel Selection
+   */
   const handleCancel = () => setTempSelection(selectedScout)
 
   return (
@@ -103,7 +127,7 @@ export function ScoutSelectionDrawer({
           {!isMobile && (
             <div className="w-[450px]">
               <SurvivorDetailsPanel
-                survivor={hoveredSurvivor || lastHoveredSurvivor}
+                survivor={hoveredSurvivor ?? lastHoveredSurvivor}
                 survivors={survivors}
               />
             </div>

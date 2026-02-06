@@ -7,7 +7,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { Philosophy } from '@/lib/enums'
 import {
   PHILOSOPHY_RANK_MINIMUM_ERROR,
@@ -45,11 +44,10 @@ export function PhilosophyCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: PhilosophyCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   const survivorIdRef = useRef<number | undefined>(undefined)
 
-  // Local state for text fields to enable controlled components that update when survivor changes
+  // Local state for text fields to enable controlled components that update
+  // when survivor changes
   const [neurosis, setNeurosis] = useState(selectedSurvivor?.neurosis ?? '')
   const [tenetKnowledge, setTenetKnowledge] = useState(
     selectedSurvivor?.tenetKnowledge ?? ''
@@ -75,7 +73,7 @@ export function PhilosophyCard({
   }
 
   /**
-   * Handles the change of philosophy selection.
+   * Handle Philosophy Change
    *
    * @param value Value
    */
@@ -95,10 +93,13 @@ export function PhilosophyCard({
   )
 
   /**
-   * Handles right-clicking on tenet knowledge observation rank checkboxes to toggle rank up milestone
+   * Handle Right Click
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * Right-clicking on a tenet knowledge observation rank checkbox toggles the
+   * rank up milestone.
+   *
+   * @param index Checkbox Index (0-Based)
+   * @param event Mouse Event
    */
   const handleRightClick = useCallback(
     (index: number, event: MouseEvent) => {
@@ -117,18 +118,16 @@ export function PhilosophyCard({
 
   /**
    * Update Philosophy Rank
+   *
+   * @param value New Philosophy Rank
    */
   const updatePhilosophyRank = useCallback(
-    (val: string) => {
-      const value = parseInt(val) || 0
-
+    (value: number) => {
       // Enforce minimum value of 0
       if (value < 0) return toast.error(PHILOSOPHY_RANK_MINIMUM_ERROR())
 
-      const updateData: Partial<Survivor> = { philosophyRank: value }
-
       saveSelectedSurvivor(
-        updateData,
+        { philosophyRank: value },
         SURVIVOR_PHILOSOPHY_RANK_UPDATED_MESSAGE()
       )
     },
@@ -137,9 +136,12 @@ export function PhilosophyCard({
 
   /**
    * Update Neurosis
+   *
+   * @param value New Neurosis Value
    */
   const updateNeurosis = (value: string) => {
     setNeurosis(value)
+
     saveSelectedSurvivor(
       { neurosis: value },
       SURVIVOR_NEUROSIS_UPDATED_MESSAGE(value)
@@ -148,9 +150,12 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge
+   *
+   * @param value New Tenet Knowledge Value
    */
   const updateTenetKnowledge = (value: string) => {
     setTenetKnowledge(value)
+
     saveSelectedSurvivor(
       { tenetKnowledge: value },
       SURVIVOR_TENET_KNOWLEDGE_UPDATED_MESSAGE(value)
@@ -159,6 +164,9 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge Observation Rank
+   *
+   * @param checked Checked Status
+   * @param index Checkbox Index (0-Based)
    */
   const updateTenetKnowledgeObservationRank = (
     checked: boolean,
@@ -166,7 +174,7 @@ export function PhilosophyCard({
   ) => {
     const newRank = checked
       ? index + 1
-      : (selectedSurvivor?.tenetKnowledgeObservationRank || 0) === index + 1
+      : (selectedSurvivor?.tenetKnowledgeObservationRank ?? 0) === index + 1
         ? index
         : undefined
 
@@ -187,9 +195,12 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge Rules
+   *
+   * @param value New Tenet Knowledge Rules Value
    */
   const updateTenetKnowledgeRules = (value: string) => {
     setTenetKnowledgeRules(value)
+
     saveSelectedSurvivor(
       { tenetKnowledgeRules: value },
       SURVIVOR_TENET_KNOWLEDGE_RULES_UPDATED_MESSAGE(value)
@@ -198,9 +209,12 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge Observation Conditions
+   *
+   * @param value New Tenet Knowledge Observation Conditions Value
    */
   const updateTenetKnowledgeObservationConditions = (value: string) => {
     setTenetKnowledgeObservationConditions(value)
+
     saveSelectedSurvivor(
       { tenetKnowledgeObservationConditions: value },
       SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE(value)
@@ -208,7 +222,11 @@ export function PhilosophyCard({
   }
 
   return (
-    <Card className="p-2 border-0">
+    <Card
+      className={cn(
+        'p-2 border-0',
+        !selectedSurvivor?.canUseFightingArtsOrKnowledges && 'bg-red-500/40'
+      )}>
       {/* Title */}
       <CardHeader className="p-0">
         <div className="flex flex-row justify-between">
@@ -227,27 +245,10 @@ export function PhilosophyCard({
           <NumericInput
             label="Philosophy Rank"
             value={selectedSurvivor?.philosophyRank ?? 0}
-            onChange={(value) => updatePhilosophyRank(value.toString())}
+            onChange={(value) => updatePhilosophyRank(value)}
             min={0}
-            readOnly={false}>
-            <Input
-              placeholder="0"
-              type="number"
-              className={cn(
-                'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-              )}
-              value={selectedSurvivor?.philosophyRank ?? '0'}
-              min={0}
-              readOnly={isMobile}
-              onChange={
-                !isMobile
-                  ? (e) => updatePhilosophyRank(e.target.value)
-                  : undefined
-              }
-              name="philosophy-rank"
-              id="philosophy-rank"
-            />
-          </NumericInput>
+            className="w-14 h-14 text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
         </div>
 
         {/* Rules Text */}
@@ -265,7 +266,7 @@ export function PhilosophyCard({
         <div className="flex flex-col gap-1">
           <Input
             placeholder=" Neurosis..."
-            className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
+            className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 text-sm"
             value={neurosis}
             onChange={(e) => setNeurosis(e.target.value)}
             onBlur={(e) => {
@@ -280,7 +281,7 @@ export function PhilosophyCard({
           <div className="flex-grow flex flex-col gap-1">
             <Input
               placeholder=" Tenet knowledge..."
-              className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
+              className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 text-sm"
               value={tenetKnowledge}
               onChange={(e) => setTenetKnowledge(e.target.value)}
               onBlur={(e) => {
@@ -294,7 +295,7 @@ export function PhilosophyCard({
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
               const checked =
-                (selectedSurvivor?.tenetKnowledgeObservationRank || 0) > index
+                (selectedSurvivor?.tenetKnowledgeObservationRank ?? 0) > index
               const isRankUpMilestone =
                 selectedSurvivor?.tenetKnowledgeRankUp === index
 
@@ -320,7 +321,7 @@ export function PhilosophyCard({
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
             placeholder=" Tenet knowledge rules..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
             value={tenetKnowledgeRules}
             onChange={(e) => setTenetKnowledgeRules(e.target.value)}
             onBlur={(e) => updateTenetKnowledgeRules(e.target.value)}
@@ -334,7 +335,7 @@ export function PhilosophyCard({
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
             placeholder=" Observation conditions..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
             value={tenetKnowledgeObservationConditions}
             onChange={(e) =>
               setTenetKnowledgeObservationConditions(e.target.value)

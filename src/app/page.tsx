@@ -144,41 +144,41 @@ function MainPage(): ReactElement {
 
   const selectedHunt = useMemo(
     () =>
-      campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ||
+      campaign.hunts?.find((hunt) => hunt.id === campaign.selectedHuntId) ??
       null,
     [campaign.hunts, campaign.selectedHuntId]
   )
   const selectedHuntMonsterIndex = useMemo(
-    () => campaign.selectedHuntMonsterIndex || 0,
+    () => campaign.selectedHuntMonsterIndex ?? 0,
     [campaign.selectedHuntMonsterIndex]
   )
   const selectedSettlement = useMemo(
     () =>
       campaign.settlements.find(
         (settlement) => settlement.id === campaign.selectedSettlementId
-      ) || null,
+      ) ?? null,
     [campaign.settlements, campaign.selectedSettlementId]
   )
   const selectedShowdown = useMemo(
     () =>
       campaign.showdowns?.find(
         (showdown) => showdown.id === campaign.selectedShowdownId
-      ) || null,
+      ) ?? null,
     [campaign.showdowns, campaign.selectedShowdownId]
   )
   const selectedShowdownMonsterIndex = useMemo(
-    () => campaign.selectedShowdownMonsterIndex || 0,
+    () => campaign.selectedShowdownMonsterIndex ?? 0,
     [campaign.selectedShowdownMonsterIndex]
   )
   const selectedSurvivor = useMemo(
     () =>
       campaign.survivors?.find(
         (survivor) => survivor.id === campaign.selectedSurvivorId
-      ) || null,
+      ) ?? null,
     [campaign.survivors, campaign.selectedSurvivorId]
   )
   const selectedTab = useMemo(
-    () => campaign.selectedTab || TabType.TIMELINE,
+    () => campaign.selectedTab ?? TabType.TIMELINE,
     [campaign.selectedTab]
   )
 
@@ -186,7 +186,7 @@ function MainPage(): ReactElement {
   const huntFormConfig = useMemo(
     () => ({
       resolver: zodResolver(HuntSchema) as Resolver<Hunt>,
-      defaultValues: selectedHunt || undefined
+      defaultValues: selectedHunt ?? undefined
     }),
     [selectedHunt]
   )
@@ -194,7 +194,7 @@ function MainPage(): ReactElement {
   const settlementFormConfig = useMemo(
     () => ({
       resolver: zodResolver(SettlementSchema) as Resolver<Settlement>,
-      defaultValues: selectedSettlement || undefined
+      defaultValues: selectedSettlement ?? undefined
     }),
     [selectedSettlement]
   )
@@ -202,7 +202,7 @@ function MainPage(): ReactElement {
   const showdownFormConfig = useMemo(
     () => ({
       resolver: zodResolver(ShowdownSchema) as Resolver<Showdown>,
-      defaultValues: selectedShowdown || undefined
+      defaultValues: selectedShowdown ?? undefined
     }),
     [selectedShowdown]
   )
@@ -210,7 +210,7 @@ function MainPage(): ReactElement {
   const survivorFormConfig = useMemo(
     () => ({
       resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-      defaultValues: selectedSurvivor || undefined
+      defaultValues: selectedSurvivor ?? undefined
     }),
     [selectedSurvivor]
   )

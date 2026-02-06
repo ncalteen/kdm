@@ -16,7 +16,7 @@ import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AvatarFallback } from '@radix-ui/react-avatar'
 import { CheckIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 
 /**
@@ -45,6 +45,9 @@ interface ShowdownSurvivorCardProps {
  * Survivor Card Component
  *
  * Displays updatable survivor information for showdown
+ *
+ * @param props Showdown Survivor Card Properties
+ * @returns Showdown Survivor Card Component
  */
 export function ShowdownSurvivorCard({
   saveSelectedShowdown,
@@ -58,15 +61,25 @@ export function ShowdownSurvivorCard({
     (detail) => detail.id === selectedSurvivor?.id
   )
 
+  // Track survivor ID to detect changes
+  const survivorIdRef = useRef(selectedSurvivor?.id)
+
   // State for managing notes
   const [notesDraft, setNotesDraft] = useState<string>(
-    survivorShowdownDetails?.notes || ''
+    survivorShowdownDetails?.notes ?? ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
 
+  // Reset notes draft when survivor changes
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
+    setNotesDraft(survivorShowdownDetails?.notes ?? '')
+    setIsNotesDirty(false)
+  }
+
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
-    defaultValues: SurvivorSchema.parse(selectedSurvivor || {})
+    defaultValues: SurvivorSchema.parse(selectedSurvivor ?? {})
   })
 
   // Update form values when survivor data changes
@@ -101,7 +114,7 @@ export function ShowdownSurvivorCard({
     <Card
       className="w-full min-w-[430px] border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
       style={{
-        ...getCardColorStyles(selectedSurvivor?.color || ColorChoice.SLATE),
+        ...getCardColorStyles(selectedSurvivor?.color ?? ColorChoice.SLATE),
         borderColor: 'var(--card-border-color)'
       }}>
       <CardHeader
@@ -109,7 +122,7 @@ export function ShowdownSurvivorCard({
         style={{ backgroundColor: 'var(--card-header-bg)' }}>
         {/* Header with Avatar and Name */}
         <Avatar
-          className={`h-12 w-12 border-2 ${getColorStyle(selectedSurvivor?.color || ColorChoice.SLATE, 'bg')} items-center justify-center cursor-pointer`}>
+          className={`h-12 w-12 border-2 ${getColorStyle(selectedSurvivor?.color ?? ColorChoice.SLATE, 'bg')} items-center justify-center cursor-pointer`}>
           <AvatarFallback className="font-bold text-lg text-white">
             {selectedSurvivor.name
               ? selectedSurvivor.name

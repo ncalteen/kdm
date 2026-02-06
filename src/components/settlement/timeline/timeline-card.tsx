@@ -89,7 +89,7 @@ export function TimelineCard({
   )
 
   /**
-   * Adds an Event to a Year
+   * Add an Event to a Year
    *
    * This uses the form state directly instead of the settlement context, to
    * ensure that the timeline is updated immediately without needing to
@@ -100,7 +100,7 @@ export function TimelineCard({
   const addEventToYear = useCallback(
     (yearIndex: number) => {
       const currentEntries =
-        selectedSettlement?.timeline?.[yearIndex].entries || []
+        selectedSettlement?.timeline?.[yearIndex].entries ?? []
 
       // Check if any entry in this year is being edited
       const isEditing = Object.keys(editingEvents).some((key) => {
@@ -132,7 +132,7 @@ export function TimelineCard({
   )
 
   /**
-   * Removes an Event from a Year
+   * Remove an Event from a Year
    *
    * @param yearIndex Year Index
    * @param eventIndex Event Index
@@ -142,7 +142,7 @@ export function TimelineCard({
       if (!selectedSettlement) return
 
       const currentEntries =
-        selectedSettlement?.timeline?.[yearIndex].entries || []
+        selectedSettlement?.timeline?.[yearIndex].entries ?? []
       const inputKey = `${yearIndex}-${eventIndex}`
 
       // Remove from editingEvents first
@@ -161,7 +161,7 @@ export function TimelineCard({
       newEntries.splice(eventIndex, 1)
 
       // Create a new timeline array instead of mutating the existing one
-      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
+      const updatedTimeline = [...(selectedSettlement?.timeline ?? [])]
       updatedTimeline[yearIndex] = {
         ...selectedSettlement?.timeline?.[yearIndex],
         entries: newEntries
@@ -180,7 +180,7 @@ export function TimelineCard({
   )
 
   /**
-   * Saves an Event to the Timeline
+   * Save an Event to the Timeline
    *
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
@@ -208,8 +208,8 @@ export function TimelineCard({
       })
 
       // Save to localStorage with the updated timeline
-      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
-      const currentEntries = [...(updatedTimeline[yearIndex]?.entries || [])]
+      const updatedTimeline = [...(selectedSettlement?.timeline ?? [])]
+      const currentEntries = [...(updatedTimeline[yearIndex]?.entries ?? [])]
       currentEntries[entryIndex] = newEventValue
 
       updatedTimeline[yearIndex] = {
@@ -227,7 +227,7 @@ export function TimelineCard({
   )
 
   /**
-   * Handles updating year completion status.
+   * Update Year Completion Status
    *
    * @param yearIndex Year Index
    * @param completed Completion Status
@@ -237,7 +237,7 @@ export function TimelineCard({
       if (!selectedSettlement) return
 
       // Save to localStorage with the updated timeline
-      const updatedTimeline = [...(selectedSettlement?.timeline || [])]
+      const updatedTimeline = [...(selectedSettlement?.timeline ?? [])]
       updatedTimeline[yearIndex] = {
         ...updatedTimeline[yearIndex],
         completed
@@ -253,12 +253,12 @@ export function TimelineCard({
   )
 
   /**
-   * Handles adding a new lantern year to the timeline.
+   * Handle Adding a Lantern Year
    */
   const handleAddLanternYear = useCallback(() => {
     if (!selectedSettlement) return
 
-    const currentTimeline = selectedSettlement?.timeline || []
+    const currentTimeline = selectedSettlement?.timeline ?? []
     const updatedTimeline = [
       ...currentTimeline,
       { completed: false, entries: [] }
@@ -272,7 +272,7 @@ export function TimelineCard({
   }, [saveSelectedSettlement, selectedSettlement])
 
   /**
-   * Edits an Event in the Timeline
+   * Edit an Event in the Timeline
    *
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
@@ -301,7 +301,7 @@ export function TimelineCard({
   )
 
   /**
-   * Handles the key down event for the input element.
+   * Handle Key Down Event
    *
    * @param e Keyboard Event
    * @param yearIndex Year Index
@@ -323,7 +323,7 @@ export function TimelineCard({
   )
 
   /**
-   * Sets the input reference for the event input.
+   * Set the Input Reference for the Event Input
    *
    * @param element Input Element
    * @param yearIndex Year Index

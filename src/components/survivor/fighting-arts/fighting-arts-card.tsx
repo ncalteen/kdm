@@ -23,6 +23,7 @@ import {
   SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE,
   SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE
 } from '@/lib/messages'
+import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import {
@@ -44,7 +45,12 @@ import { PlusIcon } from 'lucide-react'
 import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-// Type for a combined fighting art item with metadata
+/**
+ * Combined Fighting Art Interface
+ *
+ * Used for handling both regular and secret fighting arts in a single list for
+ * easier management.
+ */
 export interface CombinedFightingArt {
   /** Original Index */
   originalIndex: number
@@ -69,7 +75,7 @@ interface FightingArtsCardProps {
 /**
  * Fighting Arts Card Component
  *
- * @param form Form
+ * @param props Fighting Arts Card Properties
  * @returns Fighting Arts Card Component
  */
 export function FightingArtsCard({
@@ -80,22 +86,22 @@ export function FightingArtsCard({
   const survivorIdRef = useRef<number | undefined>(undefined)
 
   // Determine survivor type from settlement data
-  const survivorType = selectedSettlement?.survivorType || SurvivorType.CORE
+  const survivorType = selectedSettlement?.survivorType ?? SurvivorType.CORE
 
   // Calculate total arts to check against limits
   const totalArts =
-    (selectedSurvivor?.fightingArts?.length || 0) +
-    (selectedSurvivor?.secretFightingArts?.length || 0)
+    (selectedSurvivor?.fightingArts?.length ?? 0) +
+    (selectedSurvivor?.secretFightingArts?.length ?? 0)
 
   // Track state for input editing
   const [disabledInputs, setDisabledInputs] = useState<{
     [key: string]: boolean
   }>(
     Object.fromEntries(
-      (selectedSurvivor?.fightingArts || [])
+      (selectedSurvivor?.fightingArts ?? [])
         .map((_, i) => [i, true])
         .concat(
-          (selectedSurvivor?.secretFightingArts || []).map((_, i) => [i, true])
+          (selectedSurvivor?.secretFightingArts ?? []).map((_, i) => [i, true])
         )
     )
   )
@@ -128,24 +134,30 @@ export function FightingArtsCard({
     })
   )
 
+  /**
+   * Add Regular Fighting Art
+   */
   const addRegularFightingArt = () => {
     setNewArtType('regular')
     setIsAddingNew(true)
   }
 
+  /**
+   * Add Secret Fighting Art
+   */
   const addSecretFightingArt = () => {
     setNewArtType('secret')
     setIsAddingNew(true)
   }
 
   /**
-   * Handles the removal of a fighting art.
+   * Remove a Fighting Art
    *
    * @param art Fighting Art to Remove
    */
   const onRemove = (art: CombinedFightingArt) => {
     if (art.type === 'regular') {
-      const updated = [...(selectedSurvivor?.fightingArts || [])]
+      const updated = [...(selectedSurvivor?.fightingArts ?? [])]
       updated.splice(art.originalIndex, 1)
 
       setDisabledInputs((prev) => {
@@ -168,12 +180,12 @@ export function FightingArtsCard({
       saveSelectedSurvivor(
         {
           fightingArts: updated,
-          secretFightingArts: selectedSurvivor?.secretFightingArts || []
+          secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
         },
         SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(false)
       )
     } else {
-      const updated = [...(selectedSurvivor?.secretFightingArts || [])]
+      const updated = [...(selectedSurvivor?.secretFightingArts ?? [])]
       updated.splice(art.originalIndex, 1)
 
       setDisabledInputs((prev) => {
@@ -195,7 +207,7 @@ export function FightingArtsCard({
 
       saveSelectedSurvivor(
         {
-          fightingArts: selectedSurvivor?.fightingArts || [],
+          fightingArts: selectedSurvivor?.fightingArts ?? [],
           secretFightingArts: updated
         },
         SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE(true)
@@ -204,10 +216,10 @@ export function FightingArtsCard({
   }
 
   /**
-   * Handles saving of a fighting art.
+   * Save a Fighting Art (New and Existing)
    *
    * @param value Fighting Art Value
-   * @param art Fighting Art (when updating existing)
+   * @param art Fighting Art (Update Only)
    */
   const onSave = (value?: string, art?: CombinedFightingArt) => {
     if (!value || value.trim() === '')
@@ -218,25 +230,25 @@ export function FightingArtsCard({
       const key = `${art.type}-${art.originalIndex}`
 
       if (art.type === 'regular') {
-        const updated = [...(selectedSurvivor?.fightingArts || [])]
+        const updated = [...(selectedSurvivor?.fightingArts ?? [])]
         updated[art.originalIndex] = value
 
         setDisabledInputs((prev) => ({ ...prev, [key]: true }))
         saveSelectedSurvivor(
           {
             fightingArts: updated,
-            secretFightingArts: selectedSurvivor?.secretFightingArts || []
+            secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, false)
         )
       } else {
-        const updated = [...(selectedSurvivor?.secretFightingArts || [])]
+        const updated = [...(selectedSurvivor?.secretFightingArts ?? [])]
         updated[art.originalIndex] = value
 
         setDisabledInputs((prev) => ({ ...prev, [key]: true }))
         saveSelectedSurvivor(
           {
-            fightingArts: selectedSurvivor?.fightingArts || [],
+            fightingArts: selectedSurvivor?.fightingArts ?? [],
             secretFightingArts: updated
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, false)
@@ -250,7 +262,7 @@ export function FightingArtsCard({
             FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE(survivorType)
           )
 
-        const newArts = [...(selectedSurvivor?.fightingArts || []), value]
+        const newArts = [...(selectedSurvivor?.fightingArts ?? []), value]
 
         setDisabledInputs((prev) => ({
           ...prev,
@@ -260,7 +272,7 @@ export function FightingArtsCard({
         saveSelectedSurvivor(
           {
             fightingArts: newArts,
-            secretFightingArts: selectedSurvivor?.secretFightingArts || []
+            secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(false, true)
         )
@@ -270,7 +282,7 @@ export function FightingArtsCard({
             SECRET_FIGHTING_ARTS_MAX_EXCEEDED_ERROR_MESSAGE(survivorType)
           )
 
-        const newArts = [...(selectedSurvivor?.secretFightingArts || []), value]
+        const newArts = [...(selectedSurvivor?.secretFightingArts ?? []), value]
 
         setDisabledInputs((prev) => ({
           ...prev,
@@ -279,7 +291,7 @@ export function FightingArtsCard({
 
         saveSelectedSurvivor(
           {
-            fightingArts: selectedSurvivor?.fightingArts || [],
+            fightingArts: selectedSurvivor?.fightingArts ?? [],
             secretFightingArts: newArts
           },
           SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE(true, true)
@@ -290,7 +302,7 @@ export function FightingArtsCard({
   }
 
   /**
-   * Enables editing a value.
+   * Edit a Fighting Art
    *
    * @param art Fighting Art to Edit
    */
@@ -301,7 +313,9 @@ export function FightingArtsCard({
     }))
 
   /**
-   * Handle toggling the canUseFightingArtsOrKnowledges checkbox
+   * Update Can Use Fighting Arts or Knowledges Status
+   *
+   * @param checked Checkbox Checked Status
    */
   const updateCanUseFightingArtsOrKnowledges = (checked: boolean) => {
     saveSelectedSurvivor(
@@ -311,36 +325,36 @@ export function FightingArtsCard({
   }
 
   /**
-   * Checks if we've reached the regular fighting arts limit
+   * Check Regular Fighting Arts Limit
    *
-   * - ARC survivors can have 1 fighting art and 1 secret fighting art
+   * - Arc survivors can have 1 fighting art and 1 secret fighting art
    * - Regular survivors can have 3 total (fighting + secret combined)
    *
-   * @returns boolean True if at limit, false otherwise
+   * @returns Regular Fighting Arts Limit Reached
    */
-  const isAtRegularFightingArtLimit = () =>
+  const isAtRegularFightingArtLimit = (): boolean =>
     survivorType === SurvivorType.ARC
-      ? (selectedSurvivor?.fightingArts || []).length >= 1
+      ? (selectedSurvivor?.fightingArts ?? []).length >= 1
       : totalArts >= 3
 
   /**
-   * Checks if we've reached the secret fighting arts limit
+   * Check Secret Fighting Arts Limit
    *
-   * - ARC survivors can have 1 fighting art and 1 secret fighting art
+   * - Arc survivors can have 1 fighting art and 1 secret fighting art
    * - Regular survivors can have 3 total (fighting + secret combined)
    *
-   * @returns boolean True if at limit, false otherwise
+   * @returns Secret Fighting Arts Limit Reached
    */
-  const isAtSecretFightingArtLimit = () =>
+  const isAtSecretFightingArtLimit = (): boolean =>
     survivorType === SurvivorType.ARC
-      ? (selectedSurvivor?.secretFightingArts || []).length >= 1
+      ? (selectedSurvivor?.secretFightingArts ?? []).length >= 1
       : totalArts >= 3
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
-   * @param artType Type of fighting art being reordered
+   * @param artType Type of Fighting Art
    */
   const handleDragEnd = (
     event: DragEndEvent,
@@ -354,13 +368,13 @@ export function FightingArtsCard({
 
       if (artType === 'regular') {
         const newOrder = arrayMove(
-          selectedSurvivor?.fightingArts || [],
+          selectedSurvivor?.fightingArts ?? [],
           oldIndex,
           newIndex
         )
         saveSelectedSurvivor({
           fightingArts: newOrder,
-          secretFightingArts: selectedSurvivor?.secretFightingArts || []
+          secretFightingArts: selectedSurvivor?.secretFightingArts ?? []
         })
 
         setDisabledInputs((prev) => {
@@ -384,12 +398,12 @@ export function FightingArtsCard({
         })
       } else {
         const newOrder = arrayMove(
-          selectedSurvivor?.secretFightingArts || [],
+          selectedSurvivor?.secretFightingArts ?? [],
           oldIndex,
           newIndex
         )
         saveSelectedSurvivor({
-          fightingArts: selectedSurvivor?.fightingArts || [],
+          fightingArts: selectedSurvivor?.fightingArts ?? [],
           secretFightingArts: newOrder
         })
 
@@ -421,7 +435,11 @@ export function FightingArtsCard({
     return <></>
 
   return (
-    <Card className="p-2 border-0 gap-0">
+    <Card
+      className={cn(
+        'p-2 border-0 gap-0',
+        !selectedSurvivor?.canUseFightingArtsOrKnowledges && 'bg-red-500/40'
+      )}>
       {/* Title */}
       <CardHeader className="p-0">
         <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">
@@ -470,11 +488,11 @@ export function FightingArtsCard({
               collisionDetection={closestCenter}
               onDragEnd={(event) => handleDragEnd(event, 'regular')}>
               <SortableContext
-                items={(selectedSurvivor?.fightingArts || []).map((_, index) =>
+                items={(selectedSurvivor?.fightingArts ?? []).map((_, index) =>
                   index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.fightingArts || []).map((art, index) => (
+                {(selectedSurvivor?.fightingArts ?? []).map((art, index) => (
                   <FightingArtItem
                     key={`regular-${index}`}
                     id={index.toString()}
@@ -517,11 +535,11 @@ export function FightingArtsCard({
               collisionDetection={closestCenter}
               onDragEnd={(event) => handleDragEnd(event, 'secret')}>
               <SortableContext
-                items={(selectedSurvivor?.secretFightingArts || []).map(
+                items={(selectedSurvivor?.secretFightingArts ?? []).map(
                   (_, index) => index.toString()
                 )}
                 strategy={verticalListSortingStrategy}>
-                {(selectedSurvivor?.secretFightingArts || []).map(
+                {(selectedSurvivor?.secretFightingArts ?? []).map(
                   (art, index) => (
                     <FightingArtItem
                       key={`secret-${index}`}

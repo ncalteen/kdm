@@ -62,7 +62,7 @@ export function MilestonesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.milestones || []).map((_, i) => [i, true])
+      (selectedSettlement?.milestones ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -79,18 +79,18 @@ export function MilestonesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.milestones || []).map((_, i) => [i, true])
+        (selectedSettlement?.milestones ?? []).map((_, i) => [i, true])
       )
     )
   }
 
   /**
-   * Handles the removal of a milestone.
+   * Handle Milestone Removal
    *
    * @param index Milestone Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.milestones || [])]
+    const current = [...(selectedSettlement?.milestones ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -109,11 +109,11 @@ export function MilestonesCard({
   }
 
   /**
-   * Handles saving a new milestone or updating an existing one.
+   * Handle Milestone Save
    *
    * @param name Milestone Name
    * @param event Event Description
-   * @param i Milestone Index (When Updating Only)
+   * @param i Milestone Index (Updates Only)
    */
   const onSave = (name?: string, event?: string, i?: number) => {
     if (!name || name.trim() === '')
@@ -122,7 +122,7 @@ export function MilestonesCard({
     if (!event || event.trim() === '')
       return toast.error(MILESTONE_MISSING_EVENT_ERROR())
 
-    const updated = [...(selectedSettlement?.milestones || [])]
+    const updated = [...(selectedSettlement?.milestones ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -148,7 +148,7 @@ export function MilestonesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering milestones.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -159,7 +159,7 @@ export function MilestonesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.milestones || [],
+        selectedSettlement?.milestones ?? [],
         oldIndex,
         newIndex
       )
@@ -183,13 +183,13 @@ export function MilestonesCard({
   }
 
   /**
-   * Handles milestone completion toggle.
+   * Handle Milestone Completion Toggle
    *
    * @param index Milestone Index
    * @param checked Completion Status
    */
   const onToggleComplete = (index: number, checked: boolean) => {
-    const updated = [...(selectedSettlement?.milestones || [])]
+    const updated = [...(selectedSettlement?.milestones ?? [])]
     updated[index] = {
       ...updated[index],
       complete: checked
@@ -234,11 +234,11 @@ export function MilestonesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.milestones || []).map(
+                  items={(selectedSettlement?.milestones ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.milestones || []).map(
+                  {(selectedSettlement?.milestones ?? []).map(
                     (milestone, index) => (
                       <MilestoneItem
                         key={index}

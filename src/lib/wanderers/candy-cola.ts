@@ -1,6 +1,9 @@
 import { Gender } from '@/lib/enums'
 import { Wanderer } from '@/schemas/wanderer'
 
+/**
+ * Candy & Cola Wanderer Data
+ */
 export const CANDY_COLA: Wanderer = {
   abilitiesAndImpairments: ['Candypop', 'Veteran'],
   accuracy: 0,

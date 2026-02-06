@@ -1,7 +1,6 @@
 'use client'
 
 import { NumericInput } from '@/components/menu/numeric-input'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -58,13 +57,10 @@ export function HuntMonsterAttributes({
         {/* Damage */}
         <div className="flex flex-row items-center gap-2">
           <Label className="text-xs w-20">Damage</Label>
-          <Input
-            id="monster-damage"
-            type="number"
+          <NumericInput
+            label="Damage"
             value={monster.damage}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-damage"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
           <NumericInput
@@ -79,31 +75,12 @@ export function HuntMonsterAttributes({
                 )
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-damage-tokens"
-              type="number"
-              value={monster.damageTokens}
-              onChange={(e) =>
-                saveMonsterData(
-                  { damageTokens: parseInt(e.target.value) },
-                  MONSTER_DAMAGE_TOKENS_UPDATED_MESSAGE(
-                    monster.damageTokens,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
-              name="monster-damage-tokens"
-            />
-          </NumericInput>
-          <Input
-            id="monster-damage-total"
-            type="number"
+            className="w-24 h-12 text-xl bg-muted!"
+          />
+          <NumericInput
+            label="Damage Total"
             value={monster.damage + monster.damageTokens}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-damage-total"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
         </div>
@@ -114,8 +91,8 @@ export function HuntMonsterAttributes({
         <div className="flex flex-row items-center gap-2">
           <Label className="text-xs w-20">Movement</Label>
           <NumericInput
-            label="Movement Base"
-            value={monster.movement}
+            label="Movement"
+            value={monster.movement ?? 1}
             onChange={(value) =>
               saveMonsterData(
                 { movement: value },
@@ -123,25 +100,8 @@ export function HuntMonsterAttributes({
               )
             }
             min={1}
-            readOnly={false}>
-            <Input
-              id="monster-movement"
-              type="number"
-              value={monster.movement}
-              onChange={(e) =>
-                saveMonsterData(
-                  { movement: parseInt(e.target.value) },
-                  MONSTER_MOVEMENT_UPDATED_MESSAGE(
-                    monster.movement,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl"
-              min="1"
-              name="monster-movement"
-            />
-          </NumericInput>
+            className="w-24 h-12 text-xl"
+          />
           <NumericInput
             label="Movement Tokens"
             value={monster.movementTokens}
@@ -154,31 +114,12 @@ export function HuntMonsterAttributes({
                 )
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-movement-tokens"
-              type="number"
-              value={monster.movementTokens}
-              onChange={(e) =>
-                saveMonsterData(
-                  { movementTokens: parseInt(e.target.value) },
-                  MONSTER_MOVEMENT_TOKENS_UPDATED_MESSAGE(
-                    monster.movementTokens,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
-              name="monster-movement-tokens"
-            />
-          </NumericInput>
-          <Input
-            id="monster-movement-total"
-            type="number"
-            value={monster.movementTokens + monster.movement}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-movement-total"
-            readOnly={true}
+            className="w-24 h-12 text-xl bg-muted!"
+          />
+          <NumericInput
+            label="Movement Total"
+            value={monster.movement + monster.movementTokens}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
         </div>
@@ -186,13 +127,10 @@ export function HuntMonsterAttributes({
         {/* Accuracy */}
         <div className="flex flex-row items-center gap-2">
           <Label className="text-xs w-20">Accuracy</Label>
-          <Input
-            id="monster-accuracy"
-            type="number"
+          <NumericInput
+            label="Accuracy"
             value={monster.accuracy}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-accuracy"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
           <NumericInput
@@ -207,31 +145,12 @@ export function HuntMonsterAttributes({
                 )
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-accuracy-tokens"
-              type="number"
-              value={monster.accuracyTokens}
-              onChange={(e) =>
-                saveMonsterData(
-                  { accuracyTokens: parseInt(e.target.value) },
-                  MONSTER_ACCURACY_TOKENS_UPDATED_MESSAGE(
-                    monster.accuracyTokens,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
-              name="monster-accuracy-tokens"
-            />
-          </NumericInput>
-          <Input
-            id="monster-accuracy-total"
-            type="number"
+            className="w-24 h-12 text-xl bg-muted!"
+          />
+          <NumericInput
+            label="Accuracy Total"
             value={monster.accuracy + monster.accuracyTokens}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-accuracy-total"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
         </div>
@@ -239,13 +158,10 @@ export function HuntMonsterAttributes({
         {/* Strength */}
         <div className="flex flex-row items-center gap-2">
           <Label className="text-xs w-20">Strength</Label>
-          <Input
-            id="monster-strength"
-            type="number"
+          <NumericInput
+            label="Strength"
             value={monster.strength}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-strength"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
           <NumericInput
@@ -260,31 +176,12 @@ export function HuntMonsterAttributes({
                 )
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-strength-tokens"
-              type="number"
-              value={monster.strengthTokens}
-              onChange={(e) => {
-                saveMonsterData(
-                  { strengthTokens: parseInt(e.target.value) },
-                  MONSTER_STRENGTH_TOKENS_UPDATED_MESSAGE(
-                    monster.strengthTokens,
-                    parseInt(e.target.value)
-                  )
-                )
-              }}
-              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
-              name="monster-strength-tokens"
-            />
-          </NumericInput>
-          <Input
-            id="monster-strength-total"
-            type="number"
+            className="w-24 h-12 text-xl bg-muted!"
+          />
+          <NumericInput
+            label="Strength Total"
             value={monster.strength + monster.strengthTokens}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-strength-total"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
         </div>
@@ -292,13 +189,10 @@ export function HuntMonsterAttributes({
         {/* Evasion */}
         <div className="flex flex-row items-center gap-2">
           <Label className="text-xs w-20">Evasion</Label>
-          <Input
-            id="monster-evasion"
-            type="number"
+          <NumericInput
+            label="Evasion"
             value={monster.evasion}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-evasion"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
           <NumericInput
@@ -313,31 +207,12 @@ export function HuntMonsterAttributes({
                 )
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-evasion-tokens"
-              type="number"
-              value={monster.evasionTokens}
-              onChange={(e) =>
-                saveMonsterData(
-                  { evasionTokens: parseInt(e.target.value) },
-                  MONSTER_EVASION_TOKENS_UPDATED_MESSAGE(
-                    monster.evasionTokens,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
-              name="monster-evasion-tokens"
-            />
-          </NumericInput>
-          <Input
-            id="monster-evasion-total"
-            type="number"
+            className="w-24 h-12 text-xl bg-muted!"
+          />
+          <NumericInput
+            label="Evasion Total"
             value={monster.evasion + monster.evasionTokens}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-evasion-total"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
         </div>
@@ -345,13 +220,10 @@ export function HuntMonsterAttributes({
         {/* Luck */}
         <div className="flex flex-row items-center gap-2">
           <Label className="text-xs w-20">Luck</Label>
-          <Input
-            id="monster-luck"
-            type="number"
+          <NumericInput
+            label="Luck"
             value={monster.luck}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-luck"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
           <NumericInput
@@ -363,31 +235,12 @@ export function HuntMonsterAttributes({
                 MONSTER_LUCK_TOKENS_UPDATED_MESSAGE(monster.luckTokens, value)
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-luck-tokens"
-              type="number"
-              value={monster.luckTokens}
-              onChange={(e) =>
-                saveMonsterData(
-                  { luckTokens: parseInt(e.target.value) },
-                  MONSTER_LUCK_TOKENS_UPDATED_MESSAGE(
-                    monster.luckTokens,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
-              name="monster-luck-tokens"
-            />
-          </NumericInput>
-          <Input
-            id="monster-luck-total"
-            type="number"
+            className="w-24 h-12 text-xl bg-muted!"
+          />
+          <NumericInput
+            label="Luck Total"
             value={monster.luck + monster.luckTokens}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-luck-total"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
         </div>
@@ -396,7 +249,7 @@ export function HuntMonsterAttributes({
         <div className="flex flex-row items-center gap-2">
           <Label className="text-xs w-20">Speed</Label>
           <NumericInput
-            label="Speed Base"
+            label="Speed"
             value={monster.speed}
             onChange={(value) =>
               saveMonsterData(
@@ -404,58 +257,24 @@ export function HuntMonsterAttributes({
                 MONSTER_SPEED_UPDATED_MESSAGE(monster.speed, value)
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-speed"
-              type="number"
-              value={monster.speed}
-              onChange={(e) =>
-                saveMonsterData(
-                  { speed: parseInt(e.target.value) },
-                  MONSTER_SPEED_UPDATED_MESSAGE(
-                    monster.speed,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              name="monster-speed"
-            />
-          </NumericInput>
+            min={1}
+            className="w-24 h-12 text-xl"
+          />
           <NumericInput
             label="Speed Tokens"
             value={monster.speedTokens}
             onChange={(value) =>
               saveMonsterData(
                 { speedTokens: value },
-                MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(monster.speed, value)
+                MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(monster.speedTokens, value)
               )
             }
-            readOnly={false}>
-            <Input
-              id="monster-speed-tokens"
-              type="number"
-              value={monster.speedTokens}
-              onChange={(e) =>
-                saveMonsterData(
-                  { speedTokens: parseInt(e.target.value) },
-                  MONSTER_SPEED_TOKENS_UPDATED_MESSAGE(
-                    monster.speed,
-                    parseInt(e.target.value)
-                  )
-                )
-              }
-              className="w-24 h-12 text-center no-spinners text-xl bg-muted!"
-              name="monster-speed-tokens"
-            />
-          </NumericInput>
-          <Input
-            id="monster-speed-total"
-            type="number"
+            className="w-24 h-12 text-xl bg-muted!"
+          />
+          <NumericInput
+            label="Speed Total"
             value={monster.speed + monster.speedTokens}
-            className="w-24 h-12 text-center no-spinners text-xl"
-            name="monster-speed-total"
-            readOnly={true}
+            className="w-24 h-12 text-xl"
             disabled={true}
           />
         </div>

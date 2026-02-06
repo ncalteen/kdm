@@ -61,7 +61,7 @@ export function LocationsCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.locations || []).map((_, i) => [i, true])
+      (selectedSettlement?.locations ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -78,18 +78,18 @@ export function LocationsCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.locations || []).map((_, i) => [i, true])
+        (selectedSettlement?.locations ?? []).map((_, i) => [i, true])
       )
     )
   }
 
   /**
-   * Handles the removal of a location.
+   * Handle Location Removal
    *
    * @param index Location Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.locations || [])]
+    const current = [...(selectedSettlement?.locations ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -108,18 +108,18 @@ export function LocationsCard({
   }
 
   /**
-   * Handles saving a new or updated location.
+   * Handle Location Save
    *
    * @param name Location Name
    * @param unlocked Location Unlocked State
-   * @param i Location Index (When Updating Only)
+   * @param i Location Index (Updates Only)
    */
   const onSave = (name?: string, unlocked?: boolean, i?: number) => {
     if (!name || name.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('location'))
 
-    const locationData = { name: name.trim(), unlocked: unlocked || false }
-    const updated = [...(selectedSettlement?.locations || [])]
+    const locationData = { name: name.trim(), unlocked: unlocked ?? false }
+    const updated = [...(selectedSettlement?.locations ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -142,13 +142,13 @@ export function LocationsCard({
   }
 
   /**
-   * Handles toggling the unlocked state of a location.
+   * Handle Location Unlocked Toggle
    *
    * @param index Location Index
    * @param unlocked New Unlocked State
    */
   const onToggleUnlocked = (index: number, unlocked: boolean) => {
-    const current = [...(selectedSettlement?.locations || [])]
+    const current = [...(selectedSettlement?.locations ?? [])]
     current[index] = { ...current[index], unlocked }
 
     saveSelectedSettlement(
@@ -158,7 +158,7 @@ export function LocationsCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -169,7 +169,7 @@ export function LocationsCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.locations || [],
+        selectedSettlement?.locations ?? [],
         oldIndex,
         newIndex
       )
@@ -225,11 +225,11 @@ export function LocationsCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.locations || []).map((_, index) =>
+                  items={(selectedSettlement?.locations ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.locations || []).map(
+                  {(selectedSettlement?.locations ?? []).map(
                     (location, index) => (
                       <LocationItem
                         key={index}

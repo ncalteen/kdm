@@ -62,7 +62,7 @@ export function PhilosophiesCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+      (selectedSettlement?.knowledges ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -72,7 +72,7 @@ export function PhilosophiesCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.knowledges || []).map((_, i) => [i, true])
+        (selectedSettlement?.knowledges ?? []).map((_, i) => [i, true])
       )
     )
   }
@@ -85,12 +85,12 @@ export function PhilosophiesCard({
   )
 
   /**
-   * Handles the removal of a philosophy.
+   * Handle Philosophy Removal
    *
    * @param index Philosophy Index
    */
   const onRemove = (index: number) => {
-    const currentPhilosophies = [...(selectedSettlement?.philosophies || [])]
+    const currentPhilosophies = [...(selectedSettlement?.philosophies ?? [])]
     currentPhilosophies.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -114,16 +114,16 @@ export function PhilosophiesCard({
   }
 
   /**
-   * Handles saving a new philosophy or updating an existing one.
+   * Handle Philosophy Save
    *
    * @param value Philosophy Value
-   * @param i Philosophy Index (When Updating Only)
+   * @param i Philosophy Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('philosophy'))
 
-    const updatedPhilosophies = [...(selectedSettlement?.philosophies || [])]
+    const updatedPhilosophies = [...(selectedSettlement?.philosophies ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -154,7 +154,7 @@ export function PhilosophiesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -165,7 +165,7 @@ export function PhilosophiesCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.philosophies || [],
+        selectedSettlement?.philosophies ?? [],
         oldIndex,
         newIndex
       )
@@ -225,11 +225,11 @@ export function PhilosophiesCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.philosophies || []).map(
+                  items={(selectedSettlement?.philosophies ?? []).map(
                     (_, index) => index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.philosophies || []).map(
+                  {(selectedSettlement?.philosophies ?? []).map(
                     (philosophy, index) => (
                       <PhilosophyItem
                         key={index}

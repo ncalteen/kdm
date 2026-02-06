@@ -18,7 +18,7 @@ import { PlusIcon } from 'lucide-react'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 
 /**
- * Data Table Properties
+ * Survivor Data Table Properties
  */
 interface DataTableProps<TData, TValue> {
   /** Column Definitions */
@@ -36,7 +36,7 @@ interface DataTableProps<TData, TValue> {
 /**
  * Survivor Data Table Component
  *
- * @param props DataTableProps
+ * @param props Survivor Data Table Properties
  * @returns Survivor Data Table Component
  */
 export function SurvivorDataTable<TData, TValue>({
@@ -77,6 +77,11 @@ export function SurvivorDataTable<TData, TValue>({
   const table = useReactTable(tableConfig)
   const { rows } = table.getRowModel()
 
+  /**
+   * Handle Filter Change
+   *
+   * @param event Filter Input Change Event
+   */
   const handleFilterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       table.getColumn('name')?.setFilterValue(event.target.value)
@@ -115,7 +120,7 @@ export function SurvivorDataTable<TData, TValue>({
                     key={header.id}
                     className={`text-left p-2 font-bold text-sm ${
                       (header.column.columnDef.meta as { className?: string })
-                        ?.className || ''
+                        ?.className ?? ''
                     }`}>
                     <div
                       {...{
@@ -144,7 +149,7 @@ export function SurvivorDataTable<TData, TValue>({
                     key={cell.id}
                     className={`p-2 align-top ${
                       (cell.column.columnDef.meta as { className?: string })
-                        ?.className || ''
+                        ?.className ?? ''
                     }`}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

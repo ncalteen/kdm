@@ -53,6 +53,9 @@ interface ResourceMonsterComboboxProps {
  * Allows selection of a monster from the unlocked quarries and nemeses in the
  * settlement. This is used when adding a MONSTER category resource to track
  * which monster the resource came from.
+ *
+ * @param props Resource Monster Combobox Component Properties
+ * @returns Resource Monster Combobox Component
  */
 export function ResourceMonsterCombobox({
   disabled,
@@ -62,9 +65,7 @@ export function ResourceMonsterCombobox({
 }: ResourceMonsterComboboxProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
 
-  /**
-   * Get available monsters from unlocked quarries and nemeses
-   */
+  // Get available monsters from unlocked quarries and nemeses
   const availableMonsters: MonsterOption[] = useMemo(() => {
     if (!selectedSettlement) return []
 
@@ -91,7 +92,7 @@ export function ResourceMonsterCombobox({
   }, [selectedSettlement])
 
   /**
-   * Handles the selection of a monster.
+   * Handle Monster Selection
    *
    * @param monsterName Monster Name
    */
@@ -112,7 +113,7 @@ export function ResourceMonsterCombobox({
           aria-expanded={open}
           className="w-full justify-between h-9"
           disabled={disabled || availableMonsters.length === 0}>
-          {selectedMonsterName || 'Select monster...'}
+          {selectedMonsterName ?? 'Select monster...'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

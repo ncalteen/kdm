@@ -1,7 +1,6 @@
 'use client'
 
 import { NumericInput } from '@/components/menu/numeric-input'
-import { Input } from '@/components/ui/input'
 import {
   MONSTER_AI_DECK_UPDATED_MESSAGE,
   MONSTER_TOUGHNESS_UPDATED_MESSAGE,
@@ -51,25 +50,8 @@ export function HuntMonsterBaseStats({
             )
           }
           min={0}
-          readOnly={false}>
-          <Input
-            id="monster-ai-deck"
-            type="number"
-            value={monster.aiDeckRemaining}
-            onChange={(e) =>
-              saveMonsterData(
-                { aiDeckRemaining: parseInt(e.target.value) },
-                MONSTER_AI_DECK_UPDATED_MESSAGE(
-                  monster.aiDeckRemaining,
-                  parseInt(e.target.value)
-                )
-              )
-            }
-            className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            min="0"
-            name="monster-ai-deck"
-          />
-        </NumericInput>
+          className="border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
       </div>
 
       {/* Wounds */}
@@ -88,25 +70,8 @@ export function HuntMonsterBaseStats({
             )
           }
           min={0}
-          readOnly={false}>
-          <Input
-            id="monster-wounds"
-            type="number"
-            value={monster.wounds}
-            onChange={(e) =>
-              saveMonsterData(
-                { wounds: parseInt(e.target.value) || 0 },
-                MONSTER_WOUND_DECK_UPDATED_MESSAGE(
-                  monster.wounds,
-                  parseInt(e.target.value)
-                )
-              )
-            }
-            className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            min="0"
-            name="monster-wounds"
-          />
-        </NumericInput>
+          className="border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
       </div>
 
       {/* Toughness */}
@@ -125,25 +90,8 @@ export function HuntMonsterBaseStats({
             )
           }
           min={0}
-          readOnly={false}>
-          <Input
-            id="monster-toughness"
-            type="number"
-            value={monster.toughness}
-            onChange={(e) =>
-              saveMonsterData(
-                { toughness: parseInt(e.target.value) },
-                MONSTER_TOUGHNESS_UPDATED_MESSAGE(
-                  monster.toughness,
-                  parseInt(e.target.value)
-                )
-              )
-            }
-            className="text-center border-0 bg-transparent p-0 no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            min="0"
-            name="monster-toughness"
-          />
-        </NumericInput>
+          className="border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
       </div>
     </div>
   )

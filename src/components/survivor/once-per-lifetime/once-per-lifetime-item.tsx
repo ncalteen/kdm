@@ -41,7 +41,7 @@ export interface NewOncePerLifetimeItemProps {
 /**
  * Once Per Lifetime Item Component
  *
- * @param props Once Per Lifetime Item Component Props
+ * @param props Once Per Lifetime Item Component Properties
  * @returns Once Per Lifetime Item Component
  */
 export function OncePerLifetimeItem({
@@ -66,11 +66,11 @@ export function OncePerLifetimeItem({
     )
 
     if (inputRef.current)
-      inputRef.current.value = selectedSurvivor?.oncePerLifetime?.[index] || ''
+      inputRef.current.value = selectedSurvivor?.oncePerLifetime?.[index] ?? ''
   }, [selectedSurvivor?.oncePerLifetime, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -150,7 +150,8 @@ export function OncePerLifetimeItem({
 /**
  * New Once Per Lifetime Item Component
  *
- * @param props New Once Per Lifetime Item Component Props
+ * @param props New Once Per Lifetime Item Component Properties
+ * @returns New Once Per Lifetime Item Component
  */
 export function NewOncePerLifetimeItem({
   onCancel,
@@ -159,7 +160,7 @@ export function NewOncePerLifetimeItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

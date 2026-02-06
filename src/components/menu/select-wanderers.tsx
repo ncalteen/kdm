@@ -54,7 +54,7 @@ export function SelectWanderers({
   }, [])
 
   /**
-   * Toggle a Wanderer Selection
+   * Toggle Wanderer Selection
    *
    * @param wandererName Wanderer Name to Toggle
    */
@@ -70,7 +70,7 @@ export function SelectWanderers({
   }
 
   /**
-   * Remove a Wanderer Selection
+   * Remove Wanderer Selection
    *
    * @param wandererName Wanderer Name to Remove
    */
@@ -79,9 +79,6 @@ export function SelectWanderers({
       onChange(propValue.filter((wanderer) => wanderer.name !== wandererName))
   }
 
-  /**
-   * Get Selected Wanderer Names
-   */
   const selectedWanderers = useMemo(
     () =>
       propValue

@@ -39,6 +39,9 @@ import type { Survivor } from '@/schemas/survivor'
 import packageJson from '../../package.json'
 import { basicHuntBoard } from './common'
 
+/**
+ * Seed Quarries by Campaign Type
+ */
 const quarryMap = {
   [CampaignType.PEOPLE_OF_THE_LANTERN]: QUARRIES.WHITE_LION,
   [CampaignType.PEOPLE_OF_THE_SUN]: QUARRIES.WHITE_LION,
@@ -47,6 +50,9 @@ const quarryMap = {
   [CampaignType.CUSTOM]: QUARRIES.WHITE_LION
 }
 
+/**
+ * Seed Nemeses by Campaign Type
+ */
 const nemesisMap = {
   [CampaignType.PEOPLE_OF_THE_LANTERN]: NEMESES.BUTCHER,
   [CampaignType.PEOPLE_OF_THE_SUN]: NEMESES.BUTCHER,
@@ -66,7 +72,7 @@ function addMonsterTimelineEntries(
   timeline: SettlementTimelineYear[],
   monsterTimeline: MonsterTimelineEntry,
   campaignType: CampaignType
-): void {
+) {
   for (const [yearStr, entries] of Object.entries(monsterTimeline)) {
     const year = Number(yearStr)
 
@@ -89,7 +95,7 @@ function addMonsterTimelineEntries(
  * Creates comprehensive test data including multiple campaigns of each type
  * with settlements, survivors, hunts, and showdowns in various states.
  */
-export function generateSeedData(): void {
+export function generateSeedData() {
   let settlementIdCounter = 1
   let survivorIdCounter = 1
   let huntIdCounter = 1
@@ -340,6 +346,7 @@ export function generateSeedData(): void {
  *
  * @param id Settlement ID
  * @param variant Variant Number
+ * @returns Settlement
  */
 function createPeopleOfTheLanternSettlement(
   id: number,
@@ -370,9 +377,9 @@ function createPeopleOfTheLanternSettlement(
         ...loc,
         unlocked: variant === 2 || loc.unlocked
       })),
-      ...(QUARRIES.WHITE_LION.locations || []),
-      ...(QUARRIES.SCREAMING_ANTELOPE.locations || []),
-      ...(QUARRIES.PHOENIX.locations || [])
+      ...QUARRIES.WHITE_LION.locations,
+      ...QUARRIES.SCREAMING_ANTELOPE.locations,
+      ...QUARRIES.PHOENIX.locations
     ],
     lostSettlements: 0,
     milestones: [
@@ -505,6 +512,7 @@ function createPeopleOfTheLanternSettlement(
  *
  * @param id Settlement ID
  * @param variant Variant Number
+ * @returns Settlement
  */
 function createPeopleOfTheSunSettlement(
   id: number,
@@ -633,6 +641,7 @@ function createPeopleOfTheSunSettlement(
  *
  * @param id Settlement ID
  * @param variant Variant Number
+ * @returns Settlement
  */
 function createPeopleOfTheStarsSettlement(
   id: number,
@@ -823,6 +832,7 @@ function createPeopleOfTheStarsSettlement(
  *
  * @param id Settlement ID
  * @param variant Variant Number
+ * @returns Settlement
  */
 function createPeopleOfTheDreamKeeperSettlement(
   id: number,
@@ -1040,6 +1050,7 @@ function createPeopleOfTheDreamKeeperSettlement(
  *
  * @param id Settlement ID
  * @param variant Variant Number
+ * @returns Settlement
  */
 function createCustomSettlement(id: number, variant: number): Settlement {
   const isArc = variant === 3
@@ -1268,7 +1279,7 @@ function createCustomSettlement(id: number, variant: number): Settlement {
  * @param settlementId Settlement ID
  * @param startId Starting Survivor ID
  * @param count Number of Survivors to Create
- * @param survivorType Type of Survivor (Core or Arc)
+ * @returns Array of Survivors
  */
 function createSurvivorsForSettlement(
   settlementId: number,
@@ -1479,6 +1490,13 @@ function createSurvivorsForSettlement(
 
 /**
  * Create Hunt
+ *
+ * @param campaignType Campaign Type
+ * @param id Hunt ID
+ * @param settlementId Settlement ID
+ * @param startSurvivorId Starting Survivor ID
+ * @param usesScouts Whether Scouts are used
+ * @returns Hunt
  */
 function createHunt(
   campaignType: CampaignType,
@@ -1536,6 +1554,14 @@ function createHunt(
 
 /**
  * Create Showdown
+ *
+ * @param campaignType Campaign Type
+ * @param id Showdown ID
+ * @param monsterType Monster Type
+ * @param settlementId Settlement ID
+ * @param startSurvivorId Starting Survivor ID
+ * @param usesScouts Whether Scouts are used
+ * @returns Showdown
  */
 function createShowdown(
   campaignType: CampaignType,
@@ -1615,6 +1641,8 @@ function createShowdown(
  * Create Custom Nemeses
  *
  * Creates sample custom nemeses for testing.
+ *
+ * @returns Custom Nemeses
  */
 function createCustomNemeses(): Campaign['customNemeses'] {
   return {
@@ -1779,6 +1807,8 @@ function createCustomNemeses(): Campaign['customNemeses'] {
  * Create Custom Quarries
  *
  * Creates sample custom quarries for testing.
+ *
+ * @returns Custom Quarries
  */
 function createCustomQuarries(): Campaign['customQuarries'] {
   return {

@@ -34,7 +34,7 @@ export function NotesCard({
   const settlementIdRef = useRef<number | undefined>(undefined)
 
   const [draft, setDraft] = useState<string | undefined>(
-    selectedSettlement?.notes || ''
+    selectedSettlement?.notes ?? ''
   )
   const [isDirty, setIsDirty] = useState<boolean>(false)
 
@@ -42,10 +42,13 @@ export function NotesCard({
   if (settlementIdRef.current !== selectedSettlement?.id) {
     settlementIdRef.current = selectedSettlement?.id
 
-    setDraft(selectedSettlement?.notes || '')
+    setDraft(selectedSettlement?.notes ?? '')
     setIsDirty(false)
   }
 
+  /**
+   * Handle Notes Save
+   */
   const handleSave = () => {
     setIsDirty(false)
 

@@ -57,7 +57,7 @@ export function GearCard({
     [key: number]: boolean
   }>(
     Object.fromEntries(
-      (selectedSettlement?.gear || []).map((_, i) => [i, true])
+      (selectedSettlement?.gear ?? []).map((_, i) => [i, true])
     )
   )
   const [isAddingNew, setIsAddingNew] = useState<boolean>(false)
@@ -74,18 +74,18 @@ export function GearCard({
 
     setDisabledInputs(
       Object.fromEntries(
-        (selectedSettlement?.gear || []).map((_, i) => [i, true])
+        (selectedSettlement?.gear ?? []).map((_, i) => [i, true])
       )
     )
   }
 
   /**
-   * Handles the removal of gear.
+   * Handle Gear Removal
    *
    * @param index Gear Index
    */
   const onRemove = (index: number) => {
-    const current = [...(selectedSettlement?.gear || [])]
+    const current = [...(selectedSettlement?.gear ?? [])]
     current.splice(index, 1)
 
     setDisabledInputs((prev) => {
@@ -104,16 +104,16 @@ export function GearCard({
   }
 
   /**
-   * Handles saving gear.
+   * Handle Gear Save
    *
    * @param value Gear Value
-   * @param i Gear Index (When Updating Only)
+   * @param i Gear Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('gear'))
 
-    const updated = [...(selectedSettlement?.gear || [])]
+    const updated = [...(selectedSettlement?.gear ?? [])]
 
     if (i !== undefined) {
       // Updating an existing value
@@ -137,7 +137,7 @@ export function GearCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering gear.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -148,7 +148,7 @@ export function GearCard({
       const oldIndex = parseInt(active.id.toString())
       const newIndex = parseInt(over.id.toString())
       const newOrder = arrayMove(
-        selectedSettlement?.gear || [],
+        selectedSettlement?.gear ?? [],
         oldIndex,
         newIndex
       )
@@ -204,11 +204,11 @@ export function GearCard({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={(selectedSettlement?.gear || []).map((_, index) =>
+                  items={(selectedSettlement?.gear ?? []).map((_, index) =>
                     index.toString()
                   )}
                   strategy={verticalListSortingStrategy}>
-                  {(selectedSettlement?.gear || []).map((gearItem, index) => (
+                  {(selectedSettlement?.gear ?? []).map((gearItem, index) => (
                     <GearItem
                       key={index}
                       id={index.toString()}

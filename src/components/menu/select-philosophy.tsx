@@ -51,17 +51,27 @@ export const SelectPhilosophy = forwardRef<
   ): ReactElement => {
     const [open, setOpen] = useState(false)
 
+    /**
+     * Handle Philosophy Selection
+     *
+     * @param currentValue Selected Philosophy Value
+     */
     const handleSelect = (currentValue: string) => {
       setOpen(false)
 
       if (onChange) onChange(currentValue)
     }
 
+    /**
+     * Handle Key Down Event
+     *
+     * @param e Keyboard Event
+     */
     const handleKeyDown = (e: KeyboardEvent) => {
       if (onKeyDown) onKeyDown(e)
     }
 
-    const availableOptions = options || Object.values(Philosophy)
+    const availableOptions = options ?? Object.values(Philosophy)
 
     const philosophyOptions = [
       { value: '', label: 'None' },
@@ -94,7 +104,7 @@ export const SelectPhilosophy = forwardRef<
               <CommandGroup>
                 {philosophyOptions.map((p) => (
                   <CommandItem
-                    key={p.value || 'none'}
+                    key={p.value ?? 'none'}
                     value={p.value}
                     onSelect={handleSelect}>
                     <Check

@@ -109,9 +109,7 @@ export function EditMonsterDialog({
     Array<{ cc: number; name: string }>
   >([])
 
-  /**
-   * Load monster data when dialog opens or monster ID changes
-   */
+  // Load monster data when dialog opens or monster ID changes
   useEffect(() => {
     if (!monsterId || !isOpen) return
 
@@ -177,7 +175,9 @@ export function EditMonsterDialog({
   }, [campaign.customNemeses, campaign.customQuarries, monsterId, isOpen])
 
   /**
-   * Handles monster type change to restrict allowed nodes.
+   * Handle Monster Type Change
+   *
+   * @param type New Monster Type
    */
   const handleMonsterTypeChange = (type: MonsterType) => {
     setMonsterType(type)
@@ -188,7 +188,7 @@ export function EditMonsterDialog({
   }
 
   /**
-   * Handles updating the monster
+   * Handle Monster Update
    */
   const handleUpdateMonster = () => {
     if (!monsterId) return

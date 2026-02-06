@@ -78,7 +78,9 @@ export function ShowdownSurvivorsCard({
   const currentIndex =
     filteredSurvivors?.findIndex((s) => s.id === selectedSurvivor?.id) ?? 0
 
-  // Navigation handlers
+  /**
+   * Handle Previous Survivor
+   */
   const handlePrevious = () => {
     if (!filteredSurvivors || filteredSurvivors.length === 0) return
     const newIndex =
@@ -86,12 +88,20 @@ export function ShowdownSurvivorsCard({
     setSelectedSurvivor(filteredSurvivors[newIndex])
   }
 
+  /**
+   * Handle Next Survivor
+   */
   const handleNext = () => {
     if (!filteredSurvivors || filteredSurvivors.length === 0) return
     const newIndex = (currentIndex + 1) % filteredSurvivors.length
     setSelectedSurvivor(filteredSurvivors[newIndex])
   }
 
+  /**
+   * Handle Survivor Dot Click
+   *
+   * @param index Dot Index
+   */
   const handleDotClick = (index: number) => {
     if (!filteredSurvivors || !filteredSurvivors[index]) return
     setSelectedSurvivor(filteredSurvivors[index])

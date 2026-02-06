@@ -58,6 +58,11 @@ export function SurvivorSelectionDrawer({
   const [lastHoveredSurvivor, setLastHoveredSurvivor] =
     useState<Survivor | null>(null)
 
+  /**
+   * Handle Survivor Toggle
+   *
+   * @param survivorId Survivor ID to Toggle Selection
+   */
   const handleSurvivorToggle = (survivorId: number) =>
     setTempSelection((prev) => {
       if (prev.includes(survivorId))
@@ -66,14 +71,25 @@ export function SurvivorSelectionDrawer({
       return prev
     })
 
+  /**
+   * Handle Survivor Hover
+   *
+   * @param survivor Survivor Being Hovered
+   */
   const handleSurvivorHover = (survivor: Survivor | null) => {
     setHoveredSurvivor(survivor)
 
     if (survivor) setLastHoveredSurvivor(survivor)
   }
 
+  /**
+   * Handle Confirm Selection
+   */
   const handleConfirm = () => onSelectionChange(tempSelection)
 
+  /**
+   * Handle Cancel Selection
+   */
   const handleCancel = () => setTempSelection(selectedSurvivors)
 
   return (
@@ -130,7 +146,7 @@ export function SurvivorSelectionDrawer({
           {!isMobile && (
             <div className="w-[450px]">
               <SurvivorDetailsPanel
-                survivor={hoveredSurvivor || lastHoveredSurvivor}
+                survivor={hoveredSurvivor ?? lastHoveredSurvivor}
                 survivors={survivors}
               />
             </div>
