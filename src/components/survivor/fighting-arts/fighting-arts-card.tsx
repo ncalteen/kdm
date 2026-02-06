@@ -23,6 +23,7 @@ import {
   SURVIVOR_FIGHTING_ART_REMOVED_MESSAGE,
   SURVIVOR_FIGHTING_ART_UPDATED_MESSAGE
 } from '@/lib/messages'
+import { cn } from '@/lib/utils'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor } from '@/schemas/survivor'
 import {
@@ -434,7 +435,11 @@ export function FightingArtsCard({
     return <></>
 
   return (
-    <Card className="p-2 border-0 gap-0">
+    <Card
+      className={cn(
+        'p-2 border-0 gap-0',
+        !selectedSurvivor?.canUseFightingArtsOrKnowledges && 'bg-red-500/40'
+      )}>
       {/* Title */}
       <CardHeader className="p-0">
         <CardTitle className="p-0 text-sm flex flex-row items-center justify-between h-8">

@@ -222,7 +222,11 @@ export function PhilosophyCard({
   }
 
   return (
-    <Card className="p-2 border-0">
+    <Card
+      className={cn(
+        'p-2 border-0',
+        !selectedSurvivor?.canUseFightingArtsOrKnowledges && 'bg-red-500/40'
+      )}>
       {/* Title */}
       <CardHeader className="p-0">
         <div className="flex flex-row justify-between">
@@ -262,7 +266,7 @@ export function PhilosophyCard({
         <div className="flex flex-col gap-1">
           <Input
             placeholder=" Neurosis..."
-            className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
+            className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 text-sm"
             value={neurosis}
             onChange={(e) => setNeurosis(e.target.value)}
             onBlur={(e) => {
@@ -277,7 +281,7 @@ export function PhilosophyCard({
           <div className="flex-grow flex flex-col gap-1">
             <Input
               placeholder=" Tenet knowledge..."
-              className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 text-sm"
+              className="border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 text-sm"
               value={tenetKnowledge}
               onChange={(e) => setTenetKnowledge(e.target.value)}
               onBlur={(e) => {
@@ -317,7 +321,7 @@ export function PhilosophyCard({
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
             placeholder=" Tenet knowledge rules..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
             value={tenetKnowledgeRules}
             onChange={(e) => setTenetKnowledgeRules(e.target.value)}
             onBlur={(e) => updateTenetKnowledgeRules(e.target.value)}
@@ -331,7 +335,7 @@ export function PhilosophyCard({
         <div className="mt-1 flex flex-col gap-1">
           <Textarea
             placeholder=" Observation conditions..."
-            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-0 h-20 overflow-y-auto text-sm"
+            className="resize-none border-0 border-b rounded-none focus-visible:ring-0 focus-visible:border-b-2 px-2 h-20 overflow-y-auto text-sm"
             value={tenetKnowledgeObservationConditions}
             onChange={(e) =>
               setTenetKnowledgeObservationConditions(e.target.value)
