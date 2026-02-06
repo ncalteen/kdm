@@ -66,7 +66,7 @@ export function CursedGearItem({
   }, [selectedSurvivor?.cursedGear, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -146,7 +146,8 @@ export function CursedGearItem({
 /**
  * New Cursed Gear Item Component
  *
- * @param props New Cursed Gear Item Component Props
+ * @param props New Cursed Gear Item Component Properties
+ * @returns New Cursed Gear Item Component
  */
 export function NewCursedGearItem({
   onCancel,
@@ -155,7 +156,7 @@ export function NewCursedGearItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

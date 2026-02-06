@@ -44,8 +44,8 @@ interface TurnCardProps {
 /**
  * Turn Card Component
  *
- * Manages turn alternation between Monster and Survivor turns.
- * During Survivor turns, tracks movement and activation usage for each survivor.
+ * Manages turn alternation between Monster and Survivor turns. During Survivor
+ * turns, tracks movement and activation usage for each survivor.
  *
  * @param props Turn Card Properties
  * @returns Turn Card Component
@@ -56,9 +56,6 @@ export function TurnCard({
   selectedShowdownMonsterIndex,
   selectedSurvivor
 }: TurnCardProps): ReactElement {
-  /**
-   * Get active survivor's turn state
-   */
   const selectedSurvivorTurnState = useMemo(() => {
     if (!selectedSurvivor?.id || !selectedShowdown) return null
 
@@ -120,6 +117,9 @@ export function TurnCard({
 
   /**
    * Update Survivor Turn State
+   *
+   * @param survivorId Survivor ID
+   * @param updates Turn State Updates
    */
   const updateSurvivorTurnState = useCallback(
     (survivorId: number, updates: Partial<ShowdownSurvivorTurnState>) => {
@@ -155,6 +155,8 @@ export function TurnCard({
 
   /**
    * Update Monster Turn State
+   *
+   * @param updates Turn State Updates
    */
   const updateMonsterTurnState = useCallback(
     (updates: Partial<ShowdownMonsterTurnState>) => {
@@ -175,9 +177,6 @@ export function TurnCard({
 
   const isMonsterTurn = selectedShowdown?.turn?.currentTurn === TurnType.MONSTER
 
-  /**
-   * Get Current Survivor Color
-   */
   const currentColor = useMemo((): ColorChoice => {
     if (isMonsterTurn || !selectedSurvivor) return ColorChoice.SLATE
 

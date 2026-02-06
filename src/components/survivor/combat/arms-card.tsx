@@ -37,8 +37,8 @@ export function ArmsCard({
   /**
    * Save to Local Storage
    *
-   * @param attrName Attribute name
-   * @param value New value
+   * @param attrName Attribute Name
+   * @param value New Value
    */
   const saveToLocalStorage = (
     attrName:

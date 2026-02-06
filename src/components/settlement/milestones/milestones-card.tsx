@@ -85,7 +85,7 @@ export function MilestonesCard({
   }
 
   /**
-   * Handles the removal of a milestone.
+   * Handle Milestone Removal
    *
    * @param index Milestone Index
    */
@@ -109,11 +109,11 @@ export function MilestonesCard({
   }
 
   /**
-   * Handles saving a new milestone or updating an existing one.
+   * Handle Milestone Save
    *
    * @param name Milestone Name
    * @param event Event Description
-   * @param i Milestone Index (When Updating Only)
+   * @param i Milestone Index (Updates Only)
    */
   const onSave = (name?: string, event?: string, i?: number) => {
     if (!name || name.trim() === '')
@@ -148,7 +148,7 @@ export function MilestonesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering milestones.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */
@@ -183,7 +183,7 @@ export function MilestonesCard({
   }
 
   /**
-   * Handles milestone completion toggle.
+   * Handle Milestone Completion Toggle
    *
    * @param index Milestone Index
    * @param checked Completion Status

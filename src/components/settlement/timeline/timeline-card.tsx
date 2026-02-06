@@ -89,7 +89,7 @@ export function TimelineCard({
   )
 
   /**
-   * Adds an Event to a Year
+   * Add an Event to a Year
    *
    * This uses the form state directly instead of the settlement context, to
    * ensure that the timeline is updated immediately without needing to
@@ -132,7 +132,7 @@ export function TimelineCard({
   )
 
   /**
-   * Removes an Event from a Year
+   * Remove an Event from a Year
    *
    * @param yearIndex Year Index
    * @param eventIndex Event Index
@@ -180,7 +180,7 @@ export function TimelineCard({
   )
 
   /**
-   * Saves an Event to the Timeline
+   * Save an Event to the Timeline
    *
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
@@ -227,7 +227,7 @@ export function TimelineCard({
   )
 
   /**
-   * Handles updating year completion status.
+   * Update Year Completion Status
    *
    * @param yearIndex Year Index
    * @param completed Completion Status
@@ -253,7 +253,7 @@ export function TimelineCard({
   )
 
   /**
-   * Handles adding a new lantern year to the timeline.
+   * Handle Addomg a Lantern Year
    */
   const handleAddLanternYear = useCallback(() => {
     if (!selectedSettlement) return
@@ -272,7 +272,7 @@ export function TimelineCard({
   }, [saveSelectedSettlement, selectedSettlement])
 
   /**
-   * Edits an Event in the Timeline
+   * Edit an Event in the Timeline
    *
    * @param yearIndex Year Index
    * @param entryIndex Event Entry Index
@@ -301,7 +301,7 @@ export function TimelineCard({
   )
 
   /**
-   * Handles the key down event for the input element.
+   * Handle Key Down Event
    *
    * @param e Keyboard Event
    * @param yearIndex Year Index
@@ -323,7 +323,7 @@ export function TimelineCard({
   )
 
   /**
-   * Sets the input reference for the event input.
+   * Set the Input Reference for the Event Input
    *
    * @param element Input Element
    * @param yearIndex Year Index

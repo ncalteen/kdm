@@ -47,7 +47,7 @@ export function HuntXPCard({
   /**
    * Update Hunt XP
    *
-   * @param index The index of the checkbox (0-based)
+   * @param index Checkbox Index (0-based)
    * @param checked Whether the checkbox is checked
    */
   const updateHuntXP = (index: number, checked: boolean) => {
@@ -64,8 +64,8 @@ export function HuntXPCard({
   /**
    * Handles right-clicking on Hunt XP checkboxes to toggle rank up milestones
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * @param index Checkbox Index (0-based)
+   * @param event Mouse Event
    */
   const updateHuntXPRankUp = (index: number, event: MouseEvent) => {
     event.preventDefault()
@@ -96,10 +96,10 @@ export function HuntXPCard({
   }
 
   /**
-   * Checks if a checkbox should be disabled
+   * Check if a Checkbox Should be Disabled
    *
-   * @param index The index of the checkbox (0-based)
-   * @returns True if the checkbox should be disabled
+   * @param index Checkbox Index (0-based)
+   * @returns Checkbox Should be Disabled
    */
   const isDisabled = (index: number) => index > (selectedSurvivor?.huntXP ?? 0)
 

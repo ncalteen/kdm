@@ -47,7 +47,10 @@ export interface TimelineRowProps {
 }
 
 /**
- * Timeline Year Row Component for virtualization
+ * Timeline Year Row Component
+ *
+ * @param props Timeline Row Properties
+ * @returns Timeline Year Row Component
  */
 export const TimelineYearRow = ({
   index,

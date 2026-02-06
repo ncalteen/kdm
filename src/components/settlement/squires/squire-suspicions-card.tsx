@@ -56,7 +56,7 @@ export function SquireSuspicionsCard({
   )
 
   /**
-   * Handles the change of suspicion levels for a squire.
+   * Handle Suspicion Level Change
    *
    * @param squireName Squire Name
    * @param level Suspicion Level

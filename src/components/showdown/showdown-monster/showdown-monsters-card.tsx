@@ -36,6 +36,9 @@ export function ShowdownMonstersCard({
   selectedShowdownMonsterIndex,
   setSelectedShowdownMonsterIndex
 }: ShowdownMonstersCardProps): ReactElement {
+  /**
+   * Handle Previous Monster
+   */
   const handlePrevious = () => {
     const length = selectedShowdown?.monsters?.length ?? 0
     if (length === 0) return
@@ -44,6 +47,9 @@ export function ShowdownMonstersCard({
     setSelectedShowdownMonsterIndex(newIndex)
   }
 
+  /**
+   * Handle Next Monster
+   */
   const handleNext = () => {
     const length = selectedShowdown?.monsters?.length ?? 0
     if (length === 0) return
@@ -52,6 +58,11 @@ export function ShowdownMonstersCard({
     setSelectedShowdownMonsterIndex(newIndex)
   }
 
+  /**
+   * Handle Monster Dot Click
+   *
+   * @param index Dot Index
+   */
   const handleDotClick = (index: number) => {
     if (!selectedShowdown?.monsters?.[index]) return
 

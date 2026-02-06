@@ -74,7 +74,7 @@ export function KnowledgeCard({
   }
 
   /**
-   * Handles observation rank changes
+   * Handle Observation Rank Change
    *
    * @param fieldName Field Name
    * @param rank Selected Rank
@@ -93,6 +93,8 @@ export function KnowledgeCard({
 
   /**
    * Update Can Use Fighting Arts or Knowledges
+   *
+   * @param checked Checkbox Checked State
    */
   const updateCanUseFightingArtsOrKnowledges = useCallback(
     (checked: boolean) => {
@@ -108,6 +110,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1
+   *
+   * @param value Knowledge 1 Value
    */
   const updateKnowledge1 = (value: string) => {
     setKnowledge1(value)
@@ -119,6 +123,9 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Observation Rank
+   *
+   * @param checked Checkbox Checked State
+   * @param index Checkbox Index (0-based)
    */
   const updateKnowledge1ObservationRank = (checked: boolean, index: number) => {
     const rank = index + 1
@@ -131,8 +138,8 @@ export function KnowledgeCard({
   /**
    * Update Knowledge 1 Rank Up Milestone
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * @param index Checkbox Index (0-based)
+   * @param event Mouse Event
    */
   const updateKnowledge1RankUp = useCallback(
     (index: number, event: MouseEvent) => {
@@ -153,6 +160,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Rules
+   *
+   * @param value Knowledge 1 Rules Value
    */
   const updateKnowledge1Rules = (value: string) => {
     setKnowledge1Rules(value)
@@ -166,6 +175,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Observation Conditions
+   *
+   * @param value Knowledge 1 Observation Conditions Value
    */
   const updateKnowledge1ObservationConditions = (value: string) => {
     setKnowledge1ObservationConditions(value)
@@ -181,6 +192,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 2
+   *
+   * @param value Knowledge 2 Value
    */
   const updateKnowledge2 = (value: string) => {
     setKnowledge2(value)
@@ -192,6 +205,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 2 Observation Rank
+   *
+   * @param checked Checkbox Checked State
    */
   const updateKnowledge2ObservationRank = (checked: boolean, index: number) => {
     const rank = index + 1
@@ -204,8 +219,8 @@ export function KnowledgeCard({
   /**
    * Update Knowledge 2 Rank Up Milestone
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * @param index Checkbox Index (0-based)
+   * @param event Mouse Event
    */
   const updateKnowledge2RankUp = useCallback(
     (index: number, event: MouseEvent) => {
@@ -226,6 +241,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 2 Rules
+   *
+   * @param value Knowledge 2 Rules Value
    */
   const updateKnowledge2Rules = (value: string) => {
     setKnowledge2Rules(value)
@@ -239,6 +256,8 @@ export function KnowledgeCard({
 
   /**
    * Update Knowledge 1 Observation Conditions
+   *
+   * @param value Knowledge 2 Observation Conditions Value
    */
   const updateKnowledge2ObservationConditions = (value: string) => {
     setKnowledge2ObservationConditions(value)

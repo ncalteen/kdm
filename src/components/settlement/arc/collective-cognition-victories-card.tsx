@@ -51,6 +51,8 @@ export function CollectiveCognitionVictoriesCard({
   /**
    * Save to Local Storage
    *
+   * @param quarries Updated Quarries
+   * @param nemeses Updated Nemeses
    * @param successMsg Success Message
    */
   const saveToLocalStorage = (

@@ -260,7 +260,8 @@ export function NemesisItem({
 /**
  * New Nemesis Item Component
  *
- * @param props New Nemesis Item Component Props
+ * @param props New Nemesis Item Component Properties
+ * @return New Nemesis Item Component
  */
 export function NewNemesisItem({
   campaign,

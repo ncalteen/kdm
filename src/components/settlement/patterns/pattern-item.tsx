@@ -69,7 +69,7 @@ export function PatternItem({
   }, [selectedSettlement?.patterns, index])
 
   /**
-   * Handle Key Down
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -149,7 +149,7 @@ export function PatternItem({
 /**
  * New Pattern Item Component
  *
- * @param props New Pattern Item Component Props
+ * @param props New Pattern Item Component Properties
  */
 export function NewPatternItem({
   onCancel,
@@ -158,7 +158,7 @@ export function NewPatternItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

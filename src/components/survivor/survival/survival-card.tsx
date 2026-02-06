@@ -207,7 +207,9 @@ export function SurvivalCard({
   )
 
   /**
-   * Update Survival Points
+   * Update Survival
+   *
+   * @param value New Survival Value
    */
   const updateSurvival = (value: number) => {
     // Enforce minimum value of 0
@@ -229,6 +231,11 @@ export function SurvivalCard({
 
   /**
    * Update Can Spend Survival Flag
+   *
+   * This is inverted logic because the checkbox is for "Cannot Spend Survival"
+   * but the survivor model has "canSpendSurvival"
+   *
+   * @param checked Checkbox Value
    */
   const updateCanSpendSurvival = (checked: boolean) =>
     saveSelectedSurvivor(
@@ -238,6 +245,8 @@ export function SurvivalCard({
 
   /**
    * Update Can Dodge Flag
+   *
+   * @param checked Checkbox Value
    */
   const updateCanDodge = (checked: boolean) =>
     saveSelectedSurvivor(
@@ -247,6 +256,8 @@ export function SurvivalCard({
 
   /**
    * Update Can Encourage Flag
+   *
+   * @param checked Checkbox Value
    */
   const updateCanEncourage = (checked: boolean) =>
     saveSelectedSurvivor(
@@ -256,6 +267,8 @@ export function SurvivalCard({
 
   /**
    * Update Can Surge Flag
+   *
+   * @param checked Checkbox Value
    */
   const updateCanSurge = (checked: boolean) =>
     saveSelectedSurvivor(
@@ -265,6 +278,8 @@ export function SurvivalCard({
 
   /**
    * Update Can Dash Flag
+   *
+   * @param checked Checkbox Value
    */
   const updateCanDash = (checked: boolean) =>
     saveSelectedSurvivor(
@@ -273,7 +288,9 @@ export function SurvivalCard({
     )
 
   /**
-   * Update Can Fist Pump Flag (Arc-specific)
+   * Update Can Fist Pump Flag (Arc)
+   *
+   * @param checked Checkbox Value
    */
   const updateCanFistPump = (checked: boolean) =>
     saveSelectedSurvivor(
@@ -282,7 +299,9 @@ export function SurvivalCard({
     )
 
   /**
-   * Update Systemic Pressure (Arc-specific)
+   * Update Systemic Pressure (Arc)
+   *
+   * @param value New Systemic Pressure Value
    */
   const updateSystemicPressure = (value: number) => {
     // Enforce minimum value of 0
@@ -296,6 +315,8 @@ export function SurvivalCard({
 
   /**
    * Update Can Endure Flag
+   *
+   * @param checked Checkbox Value
    */
   const updateCanEndure = (checked: boolean) =>
     saveSelectedSurvivor(

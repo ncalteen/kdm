@@ -51,12 +51,22 @@ export const SelectPhilosophy = forwardRef<
   ): ReactElement => {
     const [open, setOpen] = useState(false)
 
+    /**
+     * Handle Philosophy Selection
+     *
+     * @param currentValue Selected Philosophy Value
+     */
     const handleSelect = (currentValue: string) => {
       setOpen(false)
 
       if (onChange) onChange(currentValue)
     }
 
+    /**
+     * Handle Key Down Event
+     *
+     * @param e Keyboard Event
+     */
     const handleKeyDown = (e: KeyboardEvent) => {
       if (onKeyDown) onKeyDown(e)
     }

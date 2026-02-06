@@ -204,6 +204,8 @@ export function SanityCard({
 
   /**
    * Update Insanity
+   *
+   * @param value New Insanity Value
    */
   const updateInsanity = (value: number) => {
     // Enforce minimum value of 0
@@ -219,6 +221,8 @@ export function SanityCard({
 
   /**
    * Update Brain Light Damage
+   *
+   * @param checked New Brain Light Damage State
    */
   const updateBrainLightDamage = (checked: boolean) =>
     saveSelectedSurvivor(
@@ -230,6 +234,8 @@ export function SanityCard({
 
   /**
    * Update Torment (Arc)
+   *
+   * @param value New Torment Value
    */
   const updateTorment = (value: number) => {
     // Enforce minimum value of 0

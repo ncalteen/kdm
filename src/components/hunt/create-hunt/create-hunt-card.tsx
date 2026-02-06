@@ -401,7 +401,7 @@ export function CreateHuntCard({
   }
 
   /**
-   * Gets the Monster Data
+   * Get the Monster Data
    *
    * Automatically selects the correct data location based on the current
    * monster version (original, alternate, or vignette).

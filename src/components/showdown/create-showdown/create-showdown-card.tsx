@@ -464,7 +464,7 @@ export function CreateShowdownCard({
    * location based on the current monster version (original, alternate, or
    * vignette).
    *
-   * @param path Property Path (string or array)
+   * @param path Property Path
    * @param value New Value
    */
   const updateSelectedMonsterProperty = <T,>(
@@ -522,7 +522,7 @@ export function CreateShowdownCard({
    * location based on the current monster version (original, alternate, or
    * vignette).
    *
-   * @param path Property Path (string or array)
+   * @param path Property Path
    * @returns Property Value
    */
   const getSelectedMonsterProperty = (path: string | string[]) => {

@@ -31,6 +31,9 @@ interface HuntBoardProps {
  * Displays the 13-space hunt board where survivors and quarry can be positioned.
  * Survivors can be dragged between spaces. When survivors and quarry occupy the
  * same space, the hunt ends.
+ *
+ * @param props Hunt Board Component Properties
+ * @returns Hunt Board Component
  */
 export function HuntBoard({
   onHuntBoardUpdate,
@@ -58,7 +61,9 @@ export function HuntBoard({
   ]
 
   /**
-   * Handle Drag End
+   * Handle Drag End Event
+   *
+   * @param event Drag End Event
    */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -76,7 +81,11 @@ export function HuntBoard({
   }
 
   /**
-   * Handle Space Click - Cycles through event types
+   * Handle Space Click
+   *
+   * Cycles through event types.
+   *
+   * @param pos Space Position
    */
   const handleSpaceClick = (pos: number) => {
     // Skip fixed positions
@@ -96,10 +105,10 @@ export function HuntBoard({
   }
 
   /**
-   * Get Icon for Hunt Board Space based on label
+   * Get Icon for Hunt Board Space
    *
-   * @param label - The label of the space
-   * @returns ReactElement or label string
+   * @param label Space Label
+   * @returns Label Element or String
    */
   const getLabelOrIcon = (label: HuntEventType | string | null | undefined) => {
     switch (label) {

@@ -33,6 +33,9 @@ export interface ResourceTypesComboboxProps {
 
 /**
  * Resource Types Combobox Component
+ *
+ * @param props Resource Types Combobox Component Properties
+ * @returns Resource Types Combobox Component
  */
 export function ResourceTypesCombobox({
   disabled,
@@ -42,7 +45,7 @@ export function ResourceTypesCombobox({
   const [open, setOpen] = useState<boolean>(false)
 
   /**
-   * Handles the selection of a resource type.
+   * Handle Resource Type Selection
    *
    * @param type Resource Type
    */

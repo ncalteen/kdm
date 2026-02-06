@@ -50,7 +50,7 @@ export const CampaignSchema = z.object({
   /** Selected Showdown ID */
   selectedShowdownId: z.number().nullable().optional(),
   /**
-   * Selected Monster Index
+   * Selected Showdown Monster Index
    *
    * Always zero for single monster showdowns, or the index of the selected
    * monster in multi-monster showdowns.

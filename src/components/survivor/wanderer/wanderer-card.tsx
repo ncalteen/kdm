@@ -75,7 +75,7 @@ export function WandererCard({
           />
         </div>
 
-        {/* State (Aenas Only) */}
+        {/* State (Aenas) */}
         {selectedSurvivor?.name === 'Aenas' && (
           <div className="flex flex-row items-center gap-2 justify-between">
             <Label className="text-xs">State</Label>

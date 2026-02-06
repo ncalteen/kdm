@@ -80,7 +80,7 @@ export function NextDepartureCard({
   )
 
   /**
-   * Handles the removal of a next departure.
+   * Handle Next Departure Bonus Removal
    *
    * @param index Next Departure Index
    */
@@ -107,10 +107,10 @@ export function NextDepartureCard({
   }
 
   /**
-   * Handles saving a new next departure.
+   * Handle Next Departure Bonus Addition or Update
    *
    * @param value Next Departure Value
-   * @param i Next Departure Index (When Updating Only)
+   * @param i Next Departure Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -142,7 +142,7 @@ export function NextDepartureCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

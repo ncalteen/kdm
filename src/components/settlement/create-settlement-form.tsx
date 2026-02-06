@@ -113,6 +113,11 @@ export function CreateSettlementForm({
       form.setValue('wanderers', getWanderers(watchedCampaignType))
   }, [watchedCampaignType, form])
 
+  /**
+   * On Submit Handler
+   *
+   * @param values Form Values on Submit
+   */
   function onSubmit(values: NewSettlementInput) {
     try {
       // Get campaign data based on the selected campaign type

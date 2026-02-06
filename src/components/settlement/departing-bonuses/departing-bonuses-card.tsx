@@ -83,7 +83,7 @@ export function DepartingBonusesCard({
   }
 
   /**
-   * Handles the removal of a departing bonus.
+   * Handle Departing Bonus Removal
    *
    * @param index Departing Bonus Index
    */
@@ -110,10 +110,10 @@ export function DepartingBonusesCard({
   }
 
   /**
-   * Handles saving departing bonus.
+   * Handle Departing Bonus Save
    *
    * @param value Departing Bonus Value
-   * @param i Departing Bonus Index (When Updating Only)
+   * @param i Departing Bonus Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -145,7 +145,7 @@ export function DepartingBonusesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering departing bonuses.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

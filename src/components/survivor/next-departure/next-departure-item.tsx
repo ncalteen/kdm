@@ -70,7 +70,7 @@ export function NextDepartureItem({
   }, [selectedSurvivor?.nextDeparture, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -150,7 +150,8 @@ export function NextDepartureItem({
 /**
  * New Next Departure Item Component
  *
- * @param props New Next Departure Item Component Props
+ * @param props New Next Departure Item Component Properties
+ * @returns New Next Departure Item Component
  */
 export function NewNextDepartureItem({
   onCancel,
@@ -159,7 +160,7 @@ export function NewNextDepartureItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

@@ -44,7 +44,12 @@ import { PlusIcon } from 'lucide-react'
 import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-// Type for a combined fighting art item with metadata
+/**
+ * Combined Fighting Art Interface
+ *
+ * Used for handling both regular and secret fighting arts in a single list for
+ * easier management.
+ */
 export interface CombinedFightingArt {
   /** Original Index */
   originalIndex: number
@@ -69,7 +74,7 @@ interface FightingArtsCardProps {
 /**
  * Fighting Arts Card Component
  *
- * @param form Form
+ * @param props Fighting Arts Card Properties
  * @returns Fighting Arts Card Component
  */
 export function FightingArtsCard({
@@ -128,18 +133,24 @@ export function FightingArtsCard({
     })
   )
 
+  /**
+   * Add Regular Fighting Art
+   */
   const addRegularFightingArt = () => {
     setNewArtType('regular')
     setIsAddingNew(true)
   }
 
+  /**
+   * Add Secret Fighting Art
+   */
   const addSecretFightingArt = () => {
     setNewArtType('secret')
     setIsAddingNew(true)
   }
 
   /**
-   * Handles the removal of a fighting art.
+   * Remove a Fighting Art
    *
    * @param art Fighting Art to Remove
    */
@@ -204,10 +215,10 @@ export function FightingArtsCard({
   }
 
   /**
-   * Handles saving of a fighting art.
+   * Save a Fighting Art (New and Existing)
    *
    * @param value Fighting Art Value
-   * @param art Fighting Art (when updating existing)
+   * @param art Fighting Art (Update Only)
    */
   const onSave = (value?: string, art?: CombinedFightingArt) => {
     if (!value || value.trim() === '')
@@ -290,7 +301,7 @@ export function FightingArtsCard({
   }
 
   /**
-   * Enables editing a value.
+   * Edit a Fighting Art
    *
    * @param art Fighting Art to Edit
    */
@@ -301,7 +312,9 @@ export function FightingArtsCard({
     }))
 
   /**
-   * Handle toggling the canUseFightingArtsOrKnowledges checkbox
+   * Update Can Use Fighting Arts or Knowledges Status
+   *
+   * @param checked Checkbox Checked Status
    */
   const updateCanUseFightingArtsOrKnowledges = (checked: boolean) => {
     saveSelectedSurvivor(
@@ -311,36 +324,36 @@ export function FightingArtsCard({
   }
 
   /**
-   * Checks if we've reached the regular fighting arts limit
+   * Check Regular Fighting Arts Limit
    *
-   * - ARC survivors can have 1 fighting art and 1 secret fighting art
+   * - Arc survivors can have 1 fighting art and 1 secret fighting art
    * - Regular survivors can have 3 total (fighting + secret combined)
    *
-   * @returns boolean True if at limit, false otherwise
+   * @returns Regular Fighting Arts Limit Reached
    */
-  const isAtRegularFightingArtLimit = () =>
+  const isAtRegularFightingArtLimit = (): boolean =>
     survivorType === SurvivorType.ARC
       ? (selectedSurvivor?.fightingArts ?? []).length >= 1
       : totalArts >= 3
 
   /**
-   * Checks if we've reached the secret fighting arts limit
+   * Check Secret Fighting Arts Limit
    *
-   * - ARC survivors can have 1 fighting art and 1 secret fighting art
+   * - Arc survivors can have 1 fighting art and 1 secret fighting art
    * - Regular survivors can have 3 total (fighting + secret combined)
    *
-   * @returns boolean True if at limit, false otherwise
+   * @returns Secret Fighting Arts Limit Reached
    */
-  const isAtSecretFightingArtLimit = () =>
+  const isAtSecretFightingArtLimit = (): boolean =>
     survivorType === SurvivorType.ARC
       ? (selectedSurvivor?.secretFightingArts ?? []).length >= 1
       : totalArts >= 3
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
-   * @param artType Type of fighting art being reordered
+   * @param artType Type of Fighting Art
    */
   const handleDragEnd = (
     event: DragEndEvent,

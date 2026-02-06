@@ -143,7 +143,7 @@ export function ResourceItem({
   }
 
   /**
-   * Handles the amount input change for immediate saving.
+   * Handle Amount Change
    *
    * @param e Change Event
    */
@@ -455,7 +455,8 @@ export function ResourceItem({
 /**
  * New Resource Item Component
  *
- * @param props New Resource Item Component Props
+ * @param props New Resource Item Component Properties
+ * @return New Resource Item Component
  */
 export function NewResourceItem({
   onCancel,
@@ -491,7 +492,7 @@ export function NewResourceItem({
   }
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * values. If the Escape key is pressed, it calls the onCancel function.

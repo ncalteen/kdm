@@ -56,7 +56,7 @@ export function SelectSurvivorType({
   )
 
   /**
-   * Selects a survivor option and updates the state.
+   * Handle Survivor Type Selection
    *
    * @param currentValue Selected Survivor Value
    */

@@ -1,6 +1,9 @@
 import { HuntEventType } from '@/lib/enums'
 import { HuntBoard } from '@/schemas/hunt-board'
 
+/**
+ * Basic Hunt Board Configuration
+ */
 export const basicHuntBoard: HuntBoard = {
   0: undefined,
   1: HuntEventType.BASIC,

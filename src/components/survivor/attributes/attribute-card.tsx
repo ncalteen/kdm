@@ -69,8 +69,8 @@ export function AttributeCard({
    *
    * Saves to either hunt or showdown based on mode
    *
-   * @param tokenName Token attribute name
-   * @param value New value
+   * @param tokenName Token Attribute Name
+   * @param value New Value
    */
   const saveTokens = (
     tokenName:

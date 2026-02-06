@@ -86,7 +86,7 @@ export function AbilitiesAndImpairmentsCard({
   )
 
   /**
-   * Handles the removal of an ability or impairment.
+   * Handle Ability/Impairment Removal
    *
    * @param index Ability Index
    */
@@ -116,10 +116,10 @@ export function AbilitiesAndImpairmentsCard({
   }
 
   /**
-   * Handles saving a new ability or impairment.
+   * Handle Ability/Impairment Save
    *
    * @param value Ability/Impairment Value
-   * @param i Ability/Impairment Index (When Updating Only)
+   * @param i Ability/Impairment Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -150,7 +150,7 @@ export function AbilitiesAndImpairmentsCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

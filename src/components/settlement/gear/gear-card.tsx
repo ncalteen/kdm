@@ -80,7 +80,7 @@ export function GearCard({
   }
 
   /**
-   * Handles the removal of gear.
+   * Handle Gear Removal
    *
    * @param index Gear Index
    */
@@ -104,10 +104,10 @@ export function GearCard({
   }
 
   /**
-   * Handles saving gear.
+   * Handle Gear Save
    *
    * @param value Gear Value
-   * @param i Gear Index (When Updating Only)
+   * @param i Gear Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -137,7 +137,7 @@ export function GearCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering gear.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

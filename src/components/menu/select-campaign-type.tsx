@@ -55,7 +55,7 @@ export function SelectCampaignType({
   }))
 
   /**
-   * Selects a campaign option and updates the state.
+   * Select Campaign Option
    *
    * @param currentValue Selected Campaign Value
    */

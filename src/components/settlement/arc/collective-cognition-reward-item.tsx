@@ -67,7 +67,7 @@ export function RewardItem({
   const [currentCcValue, setCurrentCcValue] = useState(reward?.cc ?? 1)
 
   /**
-   * Handles the key down event for the input fields.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * values.
@@ -179,7 +179,8 @@ export function RewardItem({
 /**
  * New Reward Item Component
  *
- * @param props New Reward Item Component Props
+ * @param props New Reward Item Component Properties
+ * @returns New Reward Item Component
  */
 export function NewRewardItem({
   onCancel,
@@ -192,7 +193,7 @@ export function NewRewardItem({
   const [currentCcValue, setCurrentCcValue] = useState(1)
 
   /**
-   * Handles the key down event for the input fields.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * values. If the Escape key is pressed, it calls the onCancel function.

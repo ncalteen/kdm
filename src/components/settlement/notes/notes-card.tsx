@@ -46,6 +46,9 @@ export function NotesCard({
     setIsDirty(false)
   }
 
+  /**
+   * Handle Notes Save
+   */
   const handleSave = () => {
     setIsDirty(false)
 

@@ -83,7 +83,7 @@ export function SeedPatternsCard({
   }
 
   /**
-   * Handles the removal of a seed pattern.
+   * Handle Seed Pattern Removal
    *
    * @param index Seed Pattern Index
    */
@@ -110,10 +110,10 @@ export function SeedPatternsCard({
   }
 
   /**
-   * Handles saving a new seed pattern.
+   * Handle Seed Pattern Save
    *
    * @param value Seed Pattern Value
-   * @param i Seed Pattern Index (When Updating Only)
+   * @param i Seed Pattern Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -145,7 +145,7 @@ export function SeedPatternsCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

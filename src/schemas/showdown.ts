@@ -18,7 +18,11 @@ export const ShowdownSchema = z.object({
   level: z.enum(MonsterLevel).default(MonsterLevel.LEVEL_1),
   /** Showdown Monster(s) */
   monsters: z.array(ShowdownMonsterSchema),
-  /** Selected Scout (Required if Settlement uses Scouts) */
+  /**
+   * Selected Scout
+   *
+   * Required if the settlement uses scouts.
+   */
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),

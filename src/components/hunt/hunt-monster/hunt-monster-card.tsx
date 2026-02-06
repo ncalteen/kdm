@@ -127,6 +127,9 @@ export function HuntMonsterCard({
 
   /**
    * Save Monster Data
+   *
+   * @param updateData Partial Monster Data
+   * @param successMsg Optional Success Message
    */
   const saveMonsterData = (
     updateData: Partial<HuntMonster>,
@@ -166,6 +169,10 @@ export function HuntMonsterCard({
 
   /**
    * Save Monster Data with Traits/Moods Updates
+   *
+   * @param traits Updated Traits Array
+   * @param moods Updated Moods Array
+   * @param successMsg Optional Success Message
    */
   const saveTraitsAndMoods = (
     traits?: string[],
@@ -181,9 +188,10 @@ export function HuntMonsterCard({
   }
 
   /**
-   * Trait Operations
+   * Handle Trait Removal
+   *
+   * @param index Index of Trait to Remove
    */
-
   const onRemoveTrait = (index: number) => {
     const currentTraits = [
       ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].traits ?? [])
@@ -203,6 +211,12 @@ export function HuntMonsterCard({
     saveTraitsAndMoods(currentTraits, undefined, TRAIT_REMOVED_MESSAGE())
   }
 
+  /**
+   * Handle Trait Save
+   *
+   * @param value Trait Value
+   * @param i Trait Index (Updates Only)
+   */
   const onSaveTrait = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
@@ -231,9 +245,10 @@ export function HuntMonsterCard({
   }
 
   /**
-   * Mood Operations
+   * Handle Mood Removal
+   *
+   * @param index Index of Mood to Remove
    */
-
   const onRemoveMood = (index: number) => {
     const currentMoods = [
       ...(selectedHunt?.monsters?.[selectedHuntMonsterIndex].moods ?? [])
@@ -253,6 +268,12 @@ export function HuntMonsterCard({
     saveTraitsAndMoods(undefined, currentMoods, MOOD_REMOVED_MESSAGE())
   }
 
+  /**
+   * Handle Mood Save
+   *
+   * @param value Mood Value
+   * @param i Mood Index (Updates Only)
+   */
   const onSaveMood = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))

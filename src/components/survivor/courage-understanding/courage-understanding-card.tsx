@@ -35,7 +35,7 @@ interface CourageUnderstandingCardProps {
  * It includes checkboxes to set the level of each stat from 0 to 9. The two
  * stats are displayed side by side, separated by a vertical divider.
  *
- * @param form Form
+ * @param props Courage Understanding Card Properties
  * @returns Courage and Understanding Card Component
  */
 export function CourageUnderstandingCard({

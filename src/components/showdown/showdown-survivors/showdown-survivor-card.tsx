@@ -45,6 +45,9 @@ interface ShowdownSurvivorCardProps {
  * Survivor Card Component
  *
  * Displays updatable survivor information for showdown
+ *
+ * @param props Showdown Survivor Card Properties
+ * @returns Showdown Survivor Card Component
  */
 export function ShowdownSurvivorCard({
   saveSelectedShowdown,

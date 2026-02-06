@@ -81,7 +81,7 @@ export function SettlementSurvivorsCard({
   }, [setSelectedSurvivor, setIsCreatingNewSurvivor])
 
   /**
-   * Handles Survivor Deletion
+   * Handle Survivor Deletion
    *
    * @param survivorId Survivor ID
    */

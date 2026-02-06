@@ -33,6 +33,9 @@ export function HuntMonstersCard({
   selectedHuntMonsterIndex,
   setSelectedHuntMonsterIndex
 }: HuntMonstersCardProps): ReactElement {
+  /**
+   * Handle Previous Monster
+   */
   const handlePrevious = () => {
     const length = selectedHunt?.monsters?.length ?? 0
     if (length === 0) return
@@ -41,6 +44,9 @@ export function HuntMonstersCard({
     setSelectedHuntMonsterIndex(newIndex)
   }
 
+  /**
+   * Handle Next Monster
+   */
   const handleNext = () => {
     const length = selectedHunt?.monsters?.length ?? 0
     if (length === 0) return
@@ -49,6 +55,11 @@ export function HuntMonstersCard({
     setSelectedHuntMonsterIndex(newIndex)
   }
 
+  /**
+   * Handle Monster Dot Click
+   *
+   * @param index Dot Index
+   */
   const handleDotClick = (index: number) => {
     if (!selectedHunt?.monsters?.[index]) return
 

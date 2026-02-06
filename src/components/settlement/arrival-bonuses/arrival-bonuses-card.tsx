@@ -83,7 +83,7 @@ export function ArrivalBonusesCard({
   }
 
   /**
-   * Handles the removal of a arrival bonus.
+   * Handle Arrival Bonus Removal
    *
    * @param index Arrival Bonus Index
    */
@@ -110,10 +110,10 @@ export function ArrivalBonusesCard({
   }
 
   /**
-   * Handles saving arrival bonus.
+   * Handle Arrival Bonus Save
    *
    * @param value Arrival Bonus Value
-   * @param i Arrival Bonus Index (When Updating Only)
+   * @param i Arrival Bonus Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -145,7 +145,7 @@ export function ArrivalBonusesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering arrival bonuses.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

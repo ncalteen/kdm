@@ -14,8 +14,9 @@ import { ReactElement } from 'react'
 /**
  * Mode Toggle Component
  *
- * Provides a dropdown menu for switching between light, dark, and system theme modes.
- * The button displays a sun icon in light mode and a moon icon in dark mode.
+ * Provides a dropdown menu for switching between light, dark, and system theme
+ * modes. The button displays a sun icon in light mode and a moon icon in dark
+ * mode.
  *
  * @returns Mode Toggle Component
  */

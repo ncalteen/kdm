@@ -85,7 +85,7 @@ export function PhilosophiesCard({
   )
 
   /**
-   * Handles the removal of a philosophy.
+   * Handle Philosophy Removal
    *
    * @param index Philosophy Index
    */
@@ -114,10 +114,10 @@ export function PhilosophiesCard({
   }
 
   /**
-   * Handles saving a new philosophy or updating an existing one.
+   * Handle Philosophy Save
    *
    * @param value Philosophy Value
-   * @param i Philosophy Index (When Updating Only)
+   * @param i Philosophy Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -154,7 +154,7 @@ export function PhilosophiesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

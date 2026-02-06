@@ -60,7 +60,7 @@ export function PhilosophyItem({
   const selectRef = useRef<HTMLButtonElement>(null)
 
   /**
-   * Handles the key down event for the select field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -146,7 +146,8 @@ export function PhilosophyItem({
 /**
  * New Philosophy Item Component
  *
- * @param props New Philosophy Item Component Props
+ * @param props New Philosophy Item Component Properties
+ * @returns New Philosophy Item Component
  */
 export function NewPhilosophyItem({
   onCancel,
@@ -158,7 +159,7 @@ export function NewPhilosophyItem({
   )
 
   /**
-   * Handles the key down event for the select field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

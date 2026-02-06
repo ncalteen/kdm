@@ -7,6 +7,9 @@ import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 
 /**
  * Mood Item Component
+ *
+ * @param props Mood Item Component Properties
+ * @returns Mood Item Component
  */
 export function MoodItem({
   mood,
@@ -29,6 +32,11 @@ export function MoodItem({
     if (inputRef.current) inputRef.current.value = mood
   }, [mood])
 
+  /**
+   * Handle Key Down Event
+   *
+   * @param e Keyboard Event
+   */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
@@ -87,6 +95,9 @@ export function MoodItem({
 
 /**
  * New Mood Item Component
+ *
+ * @param props New Mood Item Component Properties
+ * @returns New Mood Item Component
  */
 export function NewMoodItem({
   onCancel,
@@ -97,6 +108,11 @@ export function NewMoodItem({
 }): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
 
+  /**
+   * Handle Key Down Event
+   *
+   * @param e Keyboard Event
+   */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()

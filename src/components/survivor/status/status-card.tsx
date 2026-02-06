@@ -70,7 +70,9 @@ export function StatusCard({
   }
 
   /**
-   * Handles name input changes - saves on Enter key press.
+   * Handle Name Input Changes
+   *
+   * Saves on Enter key press.
    *
    * @param e Keyboard Event
    * @param value Current Input Value
@@ -90,7 +92,7 @@ export function StatusCard({
   }
 
   /**
-   * Handles gender selection changes - saves immediately.
+   * Handle Gender Selection Changes
    *
    * @param gender Selected Gender
    */
@@ -101,9 +103,9 @@ export function StatusCard({
   )
 
   /**
-   * Handles toggling the dead status
+   * Handle Dead Toggle
    *
-   * @param checked Whether the checkbox is checked
+   * @param checked Checked State
    */
   const handleDeadToggle = useCallback(
     (checked: boolean) =>
@@ -115,9 +117,9 @@ export function StatusCard({
   )
 
   /**
-   * Handles toggling the retired status
+   * Handle Retired Toggle
    *
-   * @param checked Whether the checkbox is checked
+   * @param checked Checked State
    */
   const handleRetiredToggle = useCallback(
     (checked: boolean) =>

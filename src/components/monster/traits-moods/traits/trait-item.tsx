@@ -7,6 +7,9 @@ import { KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 
 /**
  * Trait Item Component
+ *
+ * @param props Trait Item Component Properties
+ * @returns Trait Item Component
  */
 export function TraitItem({
   trait,
@@ -29,6 +32,11 @@ export function TraitItem({
     if (inputRef.current) inputRef.current.value = trait
   }, [trait])
 
+  /**
+   * Handle Key Down Event
+   *
+   * @param e Keyboard Event
+   */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()
@@ -87,6 +95,9 @@ export function TraitItem({
 
 /**
  * New Trait Item Component
+ *
+ * @param props New Trait Item Component Properties
+ * @returns New Trait Item Component
  */
 export function NewTraitItem({
   onCancel,
@@ -97,6 +108,11 @@ export function NewTraitItem({
 }): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null)
 
+  /**
+   * Handle Key Down Event
+   *
+   * @param e Keyboard Event
+   */
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputRef.current) {
       e.preventDefault()

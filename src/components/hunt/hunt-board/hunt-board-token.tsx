@@ -5,6 +5,9 @@ import { useDraggable } from '@dnd-kit/core'
 import { SkullIcon, UsersIcon } from 'lucide-react'
 import { ReactElement } from 'react'
 
+/**
+ * Hunt Board Token Component Properties
+ */
 interface HuntBoardTokenProps {
   /** Token Overlap */
   overlap: boolean
@@ -16,6 +19,9 @@ interface HuntBoardTokenProps {
  * Hunt Board Token Component
  *
  * A draggable token representing the quarry or party on the hunt board.
+ *
+ * @param props Hunt Board Token Properties
+ * @returns Hunt Board Token Component
  */
 export function HuntBoardToken({
   overlap,

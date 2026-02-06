@@ -118,7 +118,7 @@ export function NemesesCard({
    * Save a Nemesis
    *
    * @param name Nemesis Name
-   * @param index Nemesis Index (When Updating Only)
+   * @param index Nemesis Index (Updates Only)
    */
   const onSave = (name: string | undefined, index?: number) => {
     const data = getNemesisDataByName(campaign, name)
@@ -169,7 +169,7 @@ export function NemesesCard({
   }
 
   /**
-   * Handles toggling nemesis levels.
+   * Toggle Nemesis Levels
    *
    * @param index Nemesis Index
    * @param level Level to Toggle

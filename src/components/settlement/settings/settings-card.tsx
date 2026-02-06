@@ -145,7 +145,9 @@ export function SettingsCard({
   )
 
   /**
-   * Handles updating the disable toasts setting
+   * Handle Disable Toasts Setting
+   *
+   * @param value New Value
    */
   const handleDisableToastsChange = (value: string) => {
     const newDisableToasts = value === 'true'
@@ -166,9 +168,9 @@ export function SettingsCard({
   }
 
   /**
-   * Handles updating the Killenium Butcher unlocked setting.
+   * Handle Updating the Killenium Butcher Unlocked Setting
    *
-   * This is set for all campaigns.
+   * @param value New Value
    */
   const handleKilleniumButcherUnlockedChange = (value: string) => {
     const unlocked = value === 'true'
@@ -194,9 +196,9 @@ export function SettingsCard({
   }
 
   /**
-   * Handles updating the Screaming Nukalope unlocked setting.
+   * Handle Updating the Screaming Nukalope Unlocked Setting
    *
-   * This is set for all campaigns.
+   * @param value New Value
    */
   const handleScreamingNukalopeUnlockedChange = (value: string) => {
     const unlocked = value === 'true'
@@ -224,9 +226,9 @@ export function SettingsCard({
   }
 
   /**
-   * Handles updating the White Gigalion unlocked setting.
+   * Handle Updating the White Gigalion Unlocked Setting
    *
-   * This is set for all campaigns.
+   * @param value New Value
    */
   const handleWhiteGigalionUnlockedChange = (value: string) => {
     const unlocked = value === 'true'
@@ -252,7 +254,9 @@ export function SettingsCard({
   }
 
   /**
-   * Handles updating the uses scouts setting
+   * Handle Updating the Uses Scouts Setting
+   *
+   * @param value New Value
    */
   const handleUsesScoutsChange = (value: string) => {
     const usesScouts = value === 'true'
@@ -268,7 +272,7 @@ export function SettingsCard({
   }
 
   /**
-   * Deletes the Selected Hunt
+   * Delete the Selected Hunt
    */
   const handleDeleteHunt = () => {
     if (!selectedSettlement?.id) return
@@ -292,7 +296,7 @@ export function SettingsCard({
   }
 
   /**
-   * Deletes the Selected Showdown
+   * Delete the Selected Showdown
    */
   const handleDeleteShowdown = () => {
     if (!selectedSettlement?.id) return
@@ -316,7 +320,7 @@ export function SettingsCard({
   }
 
   /**
-   * Deletes the Settlement
+   * Delete the Settlement
    */
   const handleDeleteSettlement = () => {
     if (!selectedSettlement?.id) return
@@ -368,7 +372,7 @@ export function SettingsCard({
   }
 
   /**
-   * Generates seed data for testing
+   * Generate Seed Data for Testing
    *
    * Only available in development mode
    */
@@ -385,9 +389,10 @@ export function SettingsCard({
   }
 
   /**
-   * Handle Loading Test Campaign Data (Development Only)
+   * Handle Loading Test Campaign Data
    *
-   * Loads campaign data from a fixture file for testing migration.
+   * Only available in development mode. Loads campaign data from a fixture file
+   * for testing migration.
    */
   const handleLoadTestData = async () => {
     if (!loadTestData || !selectedTestVersion) return

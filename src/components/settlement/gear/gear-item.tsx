@@ -66,7 +66,7 @@ export function GearItem({
   }, [selectedSettlement?.gear, index])
 
   /**
-   * Handle Key Down
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -143,7 +143,7 @@ export function GearItem({
 /**
  * New Gear Item Component
  *
- * @param props New Gear Item Component Props
+ * @param props New Gear Item Component Properties
  */
 export function NewGearItem({
   onCancel,
@@ -152,7 +152,7 @@ export function NewGearItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

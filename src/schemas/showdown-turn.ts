@@ -11,7 +11,11 @@ import { z } from 'zod'
  * Tracks whose turn it is and survivor action states.
  */
 export const ShowdownTurnSchema = z.object({
-  /** Current Turn: 'monster' or 'survivors' */
+  /**
+   * Current Turn
+   *
+   * Either 'monster' or 'survivors'. Survivors take their turns collectively.
+   */
   currentTurn: z.enum(TurnType).default(TurnType.MONSTER),
   /** Monster Turn State */
   monsterState: ShowdownMonsterTurnStateSchema.default({

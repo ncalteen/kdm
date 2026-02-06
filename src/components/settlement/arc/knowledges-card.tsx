@@ -48,6 +48,9 @@ interface KnowledgesCardProps {
 
 /**
  * Knowledges Card Component
+ *
+ * @param props Knowledges Card Properties
+ * @returns Knowledges Card Component
  */
 export function KnowledgesCard({
   saveSelectedSettlement,
@@ -84,7 +87,7 @@ export function KnowledgesCard({
   const addKnowledge = () => setIsAddingNew(true)
 
   /**
-   * Handles the removal of a knowledge.
+   * Handle Knowledge Removal
    *
    * @param index Knowledge Index
    */
@@ -111,11 +114,11 @@ export function KnowledgesCard({
   }
 
   /**
-   * Handles saving a new knowledge.
+   * Handle Knowledge Save
    *
    * @param name Knowledge Name
    * @param philosophy Philosophy
-   * @param i Knowledge Index (When Updating Only)
+   * @param i Knowledge Index (Updates Only)
    */
   const onSave = (name?: string, philosophy?: string, i?: number) => {
     if (!name || name.trim() === '')
@@ -158,7 +161,7 @@ export function KnowledgesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

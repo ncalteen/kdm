@@ -49,7 +49,8 @@ interface CollectiveCognitionRewardsCardProps {
  * Collective Cognition Rewards Card Component
  *
  * Displays and manages the collective cognition rewards for the settlement.
- * Allows adding, editing, removing, and reordering rewards with drag-and-drop functionality.
+ * Allows adding, editing, removing, and reordering rewards with drag-and-drop
+ * functionality.
  *
  * @param props Collective Cognition Rewards Card Properties
  * @returns Collective Cognition Rewards Card Component
@@ -87,7 +88,7 @@ export function CollectiveCognitionRewardsCard({
   )
 
   /**
-   * Handles the toggling of a reward's unlocked state.
+   * Handle Unlocked Toggle
    *
    * @param index Reward Index
    * @param unlocked Unlocked State
@@ -105,7 +106,7 @@ export function CollectiveCognitionRewardsCard({
   }
 
   /**
-   * Handles the removal of a reward.
+   * Handle Reward Removal
    *
    * @param index Reward Index
    */
@@ -134,11 +135,11 @@ export function CollectiveCognitionRewardsCard({
   }
 
   /**
-   * Handles saving a new reward or updating an existing one.
+   * Handle Reward Save
    *
    * @param name Reward Name
    * @param cc Collective Cognition Value
-   * @param i Reward Index (When Updating Only)
+   * @param i Reward Index (Updates Only)
    */
   const onSave = (name?: string, cc?: number, i?: number) => {
     if (!name || name.trim() === '')
@@ -179,7 +180,7 @@ export function CollectiveCognitionRewardsCard({
   }
 
   /**
-   * Handles the drag end event.
+   * Handle Drag End Event
    *
    * @param event Event
    */
@@ -216,6 +217,9 @@ export function CollectiveCognitionRewardsCard({
     }
   }
 
+  /**
+   * Add a Reward
+   */
   const addReward = () => setIsAddingNew(true)
 
   return (

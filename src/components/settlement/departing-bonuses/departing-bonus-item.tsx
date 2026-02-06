@@ -70,7 +70,7 @@ export function DepartingBonusItem({
   }, [selectedSettlement?.departingBonuses, index])
 
   /**
-   * Handle Key Down
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -150,7 +150,7 @@ export function DepartingBonusItem({
 /**
  * New Departing Bonus Item Component
  *
- * @param props New Departing Bonus Item Component Props
+ * @param props New Departing Bonus Item Component Properties
  */
 export function NewDepartingBonusItem({
   onCancel,
@@ -159,7 +159,7 @@ export function NewDepartingBonusItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

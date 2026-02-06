@@ -27,9 +27,7 @@ interface FacesInTheSkyProps {
  * Faces in the Sky Component
  *
  * This component displays the Faces in the Sky table for People of the Stars
- * survivors. The table shows the different aspects of the stars (Witch, Rust,
- * Storm, Reaper) and their relationships with different roles (Gambler,
- * Absolute, Sculptor, Goblin).
+ * survivors.
  *
  * @param props Faces In The Sky Properties
  * @returns Faces in the Sky Component

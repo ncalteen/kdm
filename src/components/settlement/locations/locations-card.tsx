@@ -84,7 +84,7 @@ export function LocationsCard({
   }
 
   /**
-   * Handles the removal of a location.
+   * Handle Location Removal
    *
    * @param index Location Index
    */
@@ -108,11 +108,11 @@ export function LocationsCard({
   }
 
   /**
-   * Handles saving a new or updated location.
+   * Handle Location Save
    *
    * @param name Location Name
    * @param unlocked Location Unlocked State
-   * @param i Location Index (When Updating Only)
+   * @param i Location Index (Updates Only)
    */
   const onSave = (name?: string, unlocked?: boolean, i?: number) => {
     if (!name || name.trim() === '')
@@ -142,7 +142,7 @@ export function LocationsCard({
   }
 
   /**
-   * Handles toggling the unlocked state of a location.
+   * Handle Location Unlocked Toggle
    *
    * @param index Location Index
    * @param unlocked New Unlocked State
@@ -158,7 +158,7 @@ export function LocationsCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

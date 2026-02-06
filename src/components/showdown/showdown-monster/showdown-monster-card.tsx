@@ -133,6 +133,9 @@ export function ShowdownMonsterCard({
 
   /**
    * Save Monster Data
+   *
+   * @param updateData Partial Monster Data to Update
+   * @param successMsg Optional Success Message
    */
   const saveMonsterData = (
     updateData: Partial<ShowdownMonster>,
@@ -172,6 +175,10 @@ export function ShowdownMonsterCard({
 
   /**
    * Save Monster Data with Traits/Moods Updates
+   *
+   * @param traits Optional Updated Traits Array
+   * @param moods Optional Updated Moods Array
+   * @param successMsg Optional Success Message
    */
   const saveTraitsAndMoods = (
     traits?: string[],
@@ -187,9 +194,10 @@ export function ShowdownMonsterCard({
   }
 
   /**
-   * Trait Operations
+   * Remove Trait
+   *
+   * @param index Trait Index
    */
-
   const onRemoveTrait = (index: number) => {
     const currentTraits = [
       ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].traits ??
@@ -210,6 +218,12 @@ export function ShowdownMonsterCard({
     saveTraitsAndMoods(currentTraits, undefined, TRAIT_REMOVED_MESSAGE())
   }
 
+  /**
+   * Save Trait
+   *
+   * @param value Trait Value
+   * @param i Trait Index (Updates Only)
+   */
   const onSaveTrait = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('trait'))
@@ -239,9 +253,10 @@ export function ShowdownMonsterCard({
   }
 
   /**
-   * Mood Operations
+   * Remove Mood
+   *
+   * @param index Mood Index
    */
-
   const onRemoveMood = (index: number) => {
     const currentMoods = [
       ...(selectedShowdown?.monsters?.[selectedShowdownMonsterIndex].moods ??
@@ -262,6 +277,12 @@ export function ShowdownMonsterCard({
     saveTraitsAndMoods(undefined, currentMoods, MOOD_REMOVED_MESSAGE())
   }
 
+  /**
+   * Save Mood
+   *
+   * @param value Mood Value
+   * @param i Mood Index (Updates Only)
+   */
   const onSaveMood = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
       return toast.error(NAMELESS_OBJECT_ERROR_MESSAGE('mood'))
@@ -291,7 +312,7 @@ export function ShowdownMonsterCard({
   }
 
   /**
-   * Handle Save Notes
+   * Save Notes
    */
   const handleSaveNotes = () => {
     if (!selectedShowdown?.monsters) return

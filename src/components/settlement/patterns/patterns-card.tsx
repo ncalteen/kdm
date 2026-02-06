@@ -87,7 +87,7 @@ export function PatternsCard({
   }
 
   /**
-   * Handles the removal of a pattern.
+   * Handle Pattern Removal
    *
    * @param index Pattern Index
    */
@@ -111,10 +111,10 @@ export function PatternsCard({
   }
 
   /**
-   * Handles saving a new pattern.
+   * Handle Pattern Save
    *
    * @param value Pattern Value
-   * @param i Pattern Index (When Updating Only)
+   * @param i Pattern Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -143,7 +143,7 @@ export function PatternsCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

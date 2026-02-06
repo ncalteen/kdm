@@ -80,7 +80,7 @@ export function CursedGearCard({
   )
 
   /**
-   * Handles the removal of a cursed gear.
+   * Handle Cursed Gear Removal
    *
    * @param index Cursed Gear Index
    */
@@ -107,10 +107,10 @@ export function CursedGearCard({
   }
 
   /**
-   * Handles saving a new cursed gear.
+   * Handle Cursed Gear Save
    *
    * @param value Cursed Gear Value
-   * @param i Cursed Gear Index (When Updating Only)
+   * @param i Cursed Gear Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -145,7 +145,7 @@ export function CursedGearCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

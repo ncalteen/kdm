@@ -260,7 +260,7 @@ export function AppSidebar({
   ])
 
   /**
-   * Handles campaign data download.
+   * Handle Campaign Data Download
    */
   const handleDownload = () => {
     try {
@@ -294,7 +294,7 @@ export function AppSidebar({
   }
 
   /**
-   * Handles the file selection and validation.
+   * Handles File Selection and Validation
    *
    * @param event File Input Change Event
    */
@@ -348,7 +348,9 @@ export function AppSidebar({
   }
 
   /**
-   * Confirms the upload and replaces the existing campaign data.
+   * Confirms Upload
+   *
+   * Replaces the existing campaign data.
    */
   const confirmUpload = () => {
     if (!uploadedData) return
@@ -375,7 +377,7 @@ export function AppSidebar({
   }
 
   /**
-   * Handles the dialog close event.
+   * Handles Dialog Close Event
    */
   const handleDialogClose = () => {
     setUploadedData(undefined)

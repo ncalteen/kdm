@@ -1,6 +1,6 @@
 'use client'
 
-import { ColorChoice, MonsterName, MonsterNode, MonsterType } from '@/lib/enums'
+import { ColorChoice, MonsterNode, MonsterType } from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { KILLENIUM_BUTCHER } from '@/lib/monsters/killenium-butcher'
 import { SCREAMING_NUKALOPE } from '@/lib/monsters/screaming-nukalope'
@@ -17,10 +17,19 @@ import { CSSProperties } from 'react'
 import { twMerge } from 'tailwind-merge'
 import * as packageInfo from '../../package.json'
 
+/**
+ * Class Names Utility
+ *
+ * @param inputs Class Values
+ * @returns Merged Class Names
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/**
+ * New Campaign Template
+ */
 export const newCampaign: Campaign = {
   customNemeses: {},
   customQuarries: {},
@@ -46,9 +55,6 @@ export const newCampaign: Campaign = {
 
 /**
  * Get Campaign
- *
- * This function is used to ensure backwards compatibility with older versions
- * of the campaign data structures.
  *
  * @returns Campaign
  */
@@ -258,7 +264,7 @@ export function canEndure(campaign: Campaign, settlementId: number): boolean {
 }
 
 /**
- * Check if Settlement Survivors are Born with Understanding
+ * Check if Settlement Survivors are Born with +1 Understanding
  *
  * This is true if the settlement has the Graves innovation.
  *
@@ -285,6 +291,10 @@ export function bornWithUnderstanding(
 
 /**
  * Get Color Style for Display
+ *
+ * @param color Color Choice
+ * @param type Style Type
+ * @returns Color Style String
  */
 export function getColorStyle(
   color: ColorChoice,
@@ -575,7 +585,7 @@ export function getCardColorStyles(color: ColorChoice): CSSProperties {
 export function getOverwhelmingDarknessLabel(
   monsterName: string | undefined
 ): string {
-  return monsterName === MonsterName.FLOWER_KNIGHT
+  return monsterName && monsterName.toLowerCase() === 'flower knight'
     ? 'The Forest Wants What it Wants'
     : 'Overwhelming Darkness'
 }
@@ -668,7 +678,6 @@ export const getQuarryDataByName = (
 
   if (!quarryData) return undefined
 
-  // Return a deep copy to prevent mutations affecting the original data
   return structuredClone(quarryData)
 }
 

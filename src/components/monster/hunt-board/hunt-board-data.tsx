@@ -56,7 +56,11 @@ export function HuntBoardData({
   ]
 
   /**
-   * Handle space click - cycles through event types
+   * Handle Space Click
+   *
+   * Cycles through event types.
+   *
+   * @param pos Space Position
    */
   const handleSpaceClick = (pos: number) => {
     // Skip fixed positions
@@ -78,7 +82,9 @@ export function HuntBoardData({
   }
 
   /**
-   * Get space styling based on event type
+   * Get Space Styling
+   *
+   * @param space Hunt Board Space
    */
   const getSpaceClass = (space: (typeof spaces)[0]) => {
     const { index, isStart, isOverwhelming, isStarvation } = space
@@ -104,7 +110,9 @@ export function HuntBoardData({
   }
 
   /**
-   * Get display label for space
+   * Get Display Label for Space
+   *
+   * @param space Hunt Board Space
    */
   const getSpaceLabel = (space: (typeof spaces)[0]) => {
     const { index, label } = space

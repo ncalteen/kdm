@@ -66,7 +66,7 @@ export function DisorderItem({
   }, [selectedSurvivor?.disorders, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and value.
@@ -146,7 +146,7 @@ export function DisorderItem({
 /**
  * New Disorder Item Component
  *
- * @param props New Disorder Item Component Props
+ * @param props New Disorder Item Component Properties
  * @returns New Disorder Item Component
  */
 export function NewDisorderItem({
@@ -156,7 +156,7 @@ export function NewDisorderItem({
   const inputRef = useRef<HTMLInputElement>(null)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * value. If the Escape key is pressed, it calls the onCancel function.

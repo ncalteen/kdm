@@ -16,8 +16,8 @@ import { ZodError } from 'zod'
  *
  * @param campaign Campaign
  * @param form Settlement Form
- * @param updateSelectedSettlement Function to Update Selected Settlement in Context
- * @param updateCampaign Function to Update Campaign in Context
+ * @param updateSelectedSettlement Callback to Update Selected Settlement Context
+ * @param updateCampaign Callback to Update Campaign Context
  */
 export function useSelectedSettlementSave(
   campaign: Campaign,

@@ -133,6 +133,12 @@ export function ResourcesCard({
     setFilterMonsterNodes([])
   }, [])
 
+  /**
+   * Handle Category Filter Change
+   *
+   * @param category Resource Category
+   * @param checked Checked Status
+   */
   const handleCategoryFilterChange = useCallback(
     (category: ResourceCategory, checked: boolean) => {
       if (checked) setFilterCategories((prev) => [...prev, category])
@@ -141,6 +147,12 @@ export function ResourcesCard({
     []
   )
 
+  /**
+   * Handle Type Filter Change
+   *
+   * @param type Resource Type
+   * @param checked Checked Status
+   */
   const handleTypeFilterChange = useCallback(
     (type: ResourceType, checked: boolean) => {
       if (checked) setFilterTypes((prev) => [...prev, type])
@@ -149,6 +161,12 @@ export function ResourcesCard({
     []
   )
 
+  /**
+   * Handle Monster Node Filter Change
+   *
+   * @param node Monster Node
+   * @param checked Checked Status
+   */
   const handleMonsterNodeFilterChange = useCallback(
     (node: MonsterNode, checked: boolean) => {
       if (checked) setFilterMonsterNodes((prev) => [...prev, node])
@@ -181,7 +199,7 @@ export function ResourcesCard({
   )
 
   /**
-   * Handles the amount change for a resource.
+   * Handle Resource Amount Change
    *
    * @param index Resource Index
    * @param amount New Amount
@@ -194,7 +212,7 @@ export function ResourcesCard({
   }
 
   /**
-   * Handles the removal of a resource.
+   * Handle Resource Removal
    *
    * @param index Resource Index
    */
@@ -218,15 +236,15 @@ export function ResourcesCard({
   }
 
   /**
-   * Handles saving a new resource.
+   * Handle Resource Save
    *
    * @param name Resource Name
    * @param category Resource Category
    * @param types Resource Types
    * @param amount Resource Amount
-   * @param i Resource Index (When Updating Only)
-   * @param monsterName Monster Name (For Monster Resources)
-   * @param monsterNode Monster Node (For Monster Resources)
+   * @param i Resource Index (Updates Only)
+   * @param monsterName Monster Name (Monster Resources)
+   * @param monsterNode Monster Node (Monster Resources)
    */
   const onSave = (
     name?: string,
@@ -281,7 +299,7 @@ export function ResourcesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering resources.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

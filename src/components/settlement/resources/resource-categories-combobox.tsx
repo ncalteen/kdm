@@ -33,6 +33,9 @@ interface ResourceCategoriesComboboxProps {
 
 /**
  * Resource Categories Combobox Component
+ *
+ * @param props Resource Categories Combobox Component Properties
+ * @returns Resource Categories Combobox Component
  */
 export function ResourceCategoriesCombobox({
   disabled,
@@ -42,7 +45,7 @@ export function ResourceCategoriesCombobox({
   const [open, setOpen] = useState<boolean>(false)
 
   /**
-   * Handles the selection of a category.
+   * Handle Category Selection
    *
    * @param category Category
    */

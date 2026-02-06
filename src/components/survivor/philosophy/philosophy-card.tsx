@@ -73,7 +73,7 @@ export function PhilosophyCard({
   }
 
   /**
-   * Handles the change of philosophy selection.
+   * Handle Philosophy Change
    *
    * @param value Value
    */
@@ -93,11 +93,13 @@ export function PhilosophyCard({
   )
 
   /**
-   * Handles right-clicking on tenet knowledge observation rank checkboxes to
-   * toggle rank up milestone
+   * Handle Right Click
    *
-   * @param index The index of the checkbox (0-based)
-   * @param event The mouse event
+   * Right-clicking on a tenet knowledge observation rank checkbox toggles the
+   * rank up milestone.
+   *
+   * @param index Checkbox Index (0-Based)
+   * @param event Mouse Event
    */
   const handleRightClick = useCallback(
     (index: number, event: MouseEvent) => {
@@ -116,6 +118,8 @@ export function PhilosophyCard({
 
   /**
    * Update Philosophy Rank
+   *
+   * @param value New Philosophy Rank
    */
   const updatePhilosophyRank = useCallback(
     (value: number) => {
@@ -132,6 +136,8 @@ export function PhilosophyCard({
 
   /**
    * Update Neurosis
+   *
+   * @param value New Neurosis Value
    */
   const updateNeurosis = (value: string) => {
     setNeurosis(value)
@@ -144,6 +150,8 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge
+   *
+   * @param value New Tenet Knowledge Value
    */
   const updateTenetKnowledge = (value: string) => {
     setTenetKnowledge(value)
@@ -156,6 +164,9 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge Observation Rank
+   *
+   * @param checked Checked Status
+   * @param index Checkbox Index (0-Based)
    */
   const updateTenetKnowledgeObservationRank = (
     checked: boolean,
@@ -184,6 +195,8 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge Rules
+   *
+   * @param value New Tenet Knowledge Rules Value
    */
   const updateTenetKnowledgeRules = (value: string) => {
     setTenetKnowledgeRules(value)
@@ -196,6 +209,8 @@ export function PhilosophyCard({
 
   /**
    * Update Tenet Knowledge Observation Conditions
+   *
+   * @param value New Tenet Knowledge Observation Conditions Value
    */
   const updateTenetKnowledgeObservationConditions = (value: string) => {
     setTenetKnowledgeObservationConditions(value)

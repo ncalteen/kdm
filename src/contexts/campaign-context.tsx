@@ -178,6 +178,8 @@ export function CampaignProvider({
 
   /**
    * Set Selected Hunt
+   *
+   * @param hunt Selected Hunt
    */
   const setSelectedHunt = (hunt: Hunt | null) => {
     setSelectedHuntState(hunt)
@@ -199,6 +201,8 @@ export function CampaignProvider({
 
   /**
    * Set Selected Hunt Monster Index
+   *
+   * @param index Selected Hunt Monster Index
    */
   const setSelectedHuntMonsterIndex = (index: number) => {
     setSelectedHuntMonsterIndexState(index)
@@ -216,6 +220,8 @@ export function CampaignProvider({
 
   /**
    * Set Selected Settlement
+   *
+   * @param settlement Selected Settlement
    */
   const setSelectedSettlement = (settlement: Settlement | null) => {
     setCampaignState((campaign) => {
@@ -247,6 +253,8 @@ export function CampaignProvider({
 
   /**
    * Set Selected Showdown
+   *
+   * @param showdown Selected Showdown
    */
   const setSelectedShowdown = (showdown: Showdown | null) => {
     setSelectedShowdownState(showdown)
@@ -268,6 +276,8 @@ export function CampaignProvider({
 
   /**
    * Set Selected Showdown Monster Index
+   *
+   * @param index Selected Showdown Monster Index
    */
   const setSelectedShowdownMonsterIndex = (index: number) => {
     setSelectedShowdownMonsterIndexState(index)
@@ -285,6 +295,8 @@ export function CampaignProvider({
 
   /**
    * Set Selected Survivor
+   *
+   * @param survivor Selected Survivor
    */
   const setSelectedSurvivor = (survivor: Survivor | null) => {
     setSelectedSurvivorState(survivor)
@@ -324,6 +336,8 @@ export function CampaignProvider({
 
   /**
    * Set Survivors
+   *
+   * @param survivors Updated Survivors List
    */
   const setSurvivors = (survivors: Survivor[]) => {
     setSurvivorsState(survivors)
@@ -338,13 +352,15 @@ export function CampaignProvider({
 
   /**
    * Set Version
+   *
+   * @param version Campaign Schema Version
    */
-  const setVersion = (v: string) => {
-    setVersionState(v)
+  const setVersion = (version: string) => {
+    setVersionState(version)
     setCampaignState((campaign) => {
       const updatedCampaign = {
         ...campaign,
-        version: v
+        version
       }
 
       saveCampaignToLocalStorage(updatedCampaign)
@@ -355,6 +371,8 @@ export function CampaignProvider({
 
   /**
    * Update Campaign
+   *
+   * @param campaign Updated Campaign Data
    */
   const updateCampaign = (campaign: Campaign) => {
     saveCampaignToLocalStorage(campaign)

@@ -56,6 +56,9 @@ interface SurvivorCardProps extends Partial<Survivor> {
  * Survivor Form Component
  *
  * This component is used to display/edit a survivor.
+ *
+ * @param props Survivor Card Props
+ * @returns Survivor Card Component
  */
 export function SurvivorCard({
   mode,

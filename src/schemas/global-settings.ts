@@ -10,11 +10,11 @@ export const GlobalSettingsSchema = z.object({
   disableToasts: z.boolean().default(false),
   /** Unlocked Special Monsters */
   unlockedMonsters: z.object({
-    /** Killenium Butcher Nemesis */
+    /** Killenium Butcher (Nemesis) */
     killeniumButcher: z.boolean().default(false),
-    /** Screaming Nukalope Quarry */
+    /** Screaming Nukalope (Quarry) */
     screamingNukalope: z.boolean().default(false),
-    /** White Gigalion Quarry */
+    /** White Gigalion (Quarry) */
     whiteGigalion: z.boolean().default(false)
   })
 })

@@ -83,7 +83,7 @@ export function InnovationsCard({
   }
 
   /**
-   * Handles the removal of an innovation.
+   * Handle Innovation Removal
    *
    * @param index Innovation Index
    */
@@ -110,10 +110,10 @@ export function InnovationsCard({
   }
 
   /**
-   * Handles saving a new innovation.
+   * Handle Innovation Save
    *
    * @param value Innovation Value
-   * @param i Innovation Index (When Updating Only)
+   * @param i Innovation Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -145,7 +145,7 @@ export function InnovationsCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

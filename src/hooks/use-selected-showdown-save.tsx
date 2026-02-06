@@ -16,8 +16,8 @@ import { ZodError } from 'zod'
  *
  * @param campaign Campaign
  * @param form React Hook Form Instance for Showdown
- * @param updateSelectedShowdown Function to Update Selected Showdown Context
- * @param updateCampaign Function to Update Campaign in Context
+ * @param updateSelectedShowdown Callback to Update Selected Showdown Context
+ * @param updateCampaign Callback to Update Campaign Context
  */
 export function useSelectedShowdownSave(
   campaign: Campaign,

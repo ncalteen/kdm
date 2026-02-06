@@ -83,7 +83,7 @@ export function MonsterVolumesCard({
   }
 
   /**
-   * Handles the removal of a monster volume.
+   * Handle Monster Volume Removal
    *
    * @param index Monster Volume Index
    */
@@ -110,10 +110,10 @@ export function MonsterVolumesCard({
   }
 
   /**
-   * Handles saving a new monster volume.
+   * Handle Monster Volume Save
    *
    * @param value Monster Volume Value
-   * @param i Monster Volume Index (When Updating Only)
+   * @param i Monster Volume Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -145,7 +145,7 @@ export function MonsterVolumesCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

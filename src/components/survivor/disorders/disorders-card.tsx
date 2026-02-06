@@ -83,7 +83,7 @@ export function DisordersCard({
   )
 
   /**
-   * Handles the removal of a disorder.
+   * Handle Disorder Removal
    *
    * @param index Disorder Index
    */
@@ -111,10 +111,10 @@ export function DisordersCard({
   }
 
   /**
-   * Handles saving a new disorder.
+   * Handle Saving a Disorder
    *
    * @param value Disorder Value
-   * @param i Disorder Index (When Updating Only)
+   * @param i Disorder Index (Updates Only)
    */
   const onSave = (value?: string, i?: number) => {
     if (!value || value.trim() === '')
@@ -152,7 +152,7 @@ export function DisordersCard({
   }
 
   /**
-   * Handles the end of a drag event for reordering values.
+   * Handle Drag End Event
    *
    * @param event Drag End Event
    */

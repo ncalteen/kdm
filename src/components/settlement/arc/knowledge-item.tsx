@@ -74,7 +74,7 @@ export function KnowledgeItem({
   }, [selectedSettlement?.knowledges, index])
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * index and values.
@@ -216,7 +216,8 @@ export function KnowledgeItem({
 /**
  * New Knowledge Item Component
  *
- * @param props New Knowledge Item Component Props
+ * @param props New Knowledge Item Component Properties
+ * @returns New Knowledge Item Component
  */
 export function NewKnowledgeItem({
   onCancel,
@@ -229,7 +230,7 @@ export function NewKnowledgeItem({
   >(undefined)
 
   /**
-   * Handles the key down event for the input field.
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, calls the onSave function with the current
    * values. If the Escape key is pressed, it calls the onCancel function.

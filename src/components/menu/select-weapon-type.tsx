@@ -48,6 +48,11 @@ export function SelectWeaponType({
 
   const [open, setOpen] = useState(false)
 
+  /**
+   * Handle Type Select
+   *
+   * @param type Selected Weapon Type
+   */
   const handleTypeSelect = (type: string) => {
     if (onChange) onChange(type)
     setOpen(false)
