@@ -1,3 +1,4 @@
+import { ScoutCampaignData } from '@/lib/campaigns/common'
 import { CustomCampaign } from '@/lib/campaigns/custom'
 import { PeopleOfTheDreamKeeper } from '@/lib/campaigns/potdk'
 import { PeopleOfTheLantern } from '@/lib/campaigns/potl'
@@ -292,6 +293,10 @@ export function createSettlementFromOptions(
       settlement.timeline[Number(yearNumber)].entries.push(
         ...wanderer.timeline[Number(yearNumber)]
       )
+
+  // If the settlement uses scouts, add the scout location data.
+  if (settlement.usesScouts)
+    settlement.locations.push(...ScoutCampaignData.locations)
 
   // Sort various settlement arrays for consistency.
   if (settlement.ccRewards)
