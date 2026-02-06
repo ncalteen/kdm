@@ -130,14 +130,19 @@ export function NemesesCard({
 
     if (index !== undefined) {
       // Updating an existing value
-      updatedNemeses[index] = createSettlementNemesisFromData(data)
+      updatedNemeses[index] = createSettlementNemesisFromData(
+        selectedSettlement,
+        data
+      )
       setDisabledInputs((prev) => ({
         ...prev,
         [index]: true
       }))
     } else {
       // Adding a new value
-      updatedNemeses.push(createSettlementNemesisFromData(data))
+      updatedNemeses.push(
+        createSettlementNemesisFromData(selectedSettlement, data)
+      )
       setDisabledInputs((prev) => ({
         ...prev,
         [updatedNemeses.length - 1]: true

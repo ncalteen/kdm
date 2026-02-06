@@ -1,6 +1,11 @@
 'use client'
 
-import { ColorChoice, MonsterNode, MonsterType } from '@/lib/enums'
+import {
+  CampaignType,
+  ColorChoice,
+  MonsterNode,
+  MonsterType
+} from '@/lib/enums'
 import { NEMESES, QUARRIES } from '@/lib/monsters'
 import { KILLENIUM_BUTCHER } from '@/lib/monsters/killenium-butcher'
 import { SCREAMING_NUKALOPE } from '@/lib/monsters/screaming-nukalope'
@@ -9,6 +14,7 @@ import { Campaign } from '@/schemas/campaign'
 import { GlobalSettingsSchema } from '@/schemas/global-settings'
 import { NemesisMonsterData } from '@/schemas/nemesis-monster-data'
 import { QuarryMonsterData } from '@/schemas/quarry-monster-data'
+import { Settlement } from '@/schemas/settlement'
 import { SettlementNemesis } from '@/schemas/settlement-nemesis'
 import { SettlementQuarry } from '@/schemas/settlement-quarry'
 import { SettlementTimelineYear } from '@/schemas/settlement-timeline-year'
@@ -688,6 +694,7 @@ export const getQuarryDataByName = (
  * @returns Settlement Nemesis
  */
 export const createSettlementNemesisFromData = (
+  selectedSettlement: Settlement | null,
   data: NemesisMonsterData
 ): SettlementNemesis => {
   const nemesis: SettlementNemesis = {
@@ -716,6 +723,20 @@ export const createSettlementNemesisFromData = (
     nemesis.level4Defeated = false
   }
   if (data.vignette) nemesis.vignette = data.vignette
+
+  // If the campaign is People of the Dream Keeper and the nemesis is The Hand,
+  // add the Suspicious trait to all levels.
+  if (
+    selectedSettlement &&
+    selectedSettlement.campaignType ===
+      CampaignType.PEOPLE_OF_THE_DREAM_KEEPER &&
+    data.name.toLowerCase() === 'the hand'
+  ) {
+    if (data.level1) nemesis.level1?.[0].traits.push('Suspicious')
+    if (data.level2) nemesis.level2?.[0].traits.push('Suspicious')
+    if (data.level3) nemesis.level3?.[0].traits.push('Suspicious')
+    if (data.level4) nemesis.level4?.[0].traits.push('Suspicious')
+  }
 
   return nemesis
 }
