@@ -478,7 +478,7 @@ describe('NemesisMonsterDataSchema', () => {
         expect(result.error.issues).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
-              message: 'Monster name is required.'
+              message: 'A nameless monster cannot be recorded.'
             })
           ])
         )
