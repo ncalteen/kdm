@@ -77,7 +77,7 @@ export function FightingArtItem({
   }, [selectedSurvivor, index, arrayName])
 
   /**
-   * Handle Ket Down Event
+   * Handle Key Down Event
    *
    * If the Enter key is pressed, it calls the onSave function with the current
    * value.

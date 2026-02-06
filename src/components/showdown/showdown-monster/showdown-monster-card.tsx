@@ -65,7 +65,7 @@ export function ShowdownMonsterCard({
   const form = useForm<ShowdownMonster>({
     resolver: zodResolver(ShowdownMonsterSchema) as Resolver<ShowdownMonster>,
     defaultValues: ShowdownMonsterSchema.parse(
-      selectedShowdown?.monsters[selectedShowdownMonsterIndex] ?? []
+      selectedShowdown?.monsters[selectedShowdownMonsterIndex] || {}
     )
   })
 

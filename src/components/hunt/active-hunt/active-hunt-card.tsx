@@ -182,7 +182,7 @@ export function ActiveHuntCard({
         ...campaign,
         hunts: campaign.hunts?.filter((hunt) => hunt.id !== selectedHunt?.id),
         survivors: campaign.survivors?.map((survivor) =>
-          selectedHunt?.survivors.includes(survivor.id)
+          selectedHunt?.survivors?.includes(survivor.id)
             ? // Reset the survivors' injuries
               {
                 ...survivor,

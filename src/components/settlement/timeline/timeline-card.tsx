@@ -253,7 +253,7 @@ export function TimelineCard({
   )
 
   /**
-   * Handle Addomg a Lantern Year
+   * Handle Adding a Lantern Year
    */
   const handleAddLanternYear = useCallback(() => {
     if (!selectedSettlement) return

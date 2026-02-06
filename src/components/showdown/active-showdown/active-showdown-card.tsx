@@ -101,7 +101,7 @@ export function ActiveShowdownCard({
         ...campaign,
         showdowns: updatedShowdowns,
         survivors: campaign.survivors?.map((survivor) =>
-          selectedShowdown?.survivors.includes(survivor.id)
+          selectedShowdown?.survivors?.includes(survivor.id)
             ? // Reset the survivors' injuries
               {
                 ...survivor,
