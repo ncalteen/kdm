@@ -136,17 +136,7 @@ export function LevelData({
           value={numericValue}
           onChange={(val: number) => updateFn(val)}
           min={0}
-          readOnly={false}>
-          <Input
-            id={`level${level}-${selectedSubMonsterIndex}-${accessor.join('-')}`}
-            type="number"
-            min="0"
-            placeholder="0"
-            value={numericValue}
-            onChange={(e) => updateFn(parseInt(e.target.value) || 0)}
-            className="text-center no-spinners"
-          />
-        </NumericInput>
+        />
       </div>
     )
   }

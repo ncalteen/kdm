@@ -13,13 +13,7 @@ import { Settlement } from '@/schemas/settlement'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CheckIcon, GripVertical, PencilIcon, TrashIcon } from 'lucide-react'
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  ReactElement,
-  useRef,
-  useState
-} from 'react'
+import { KeyboardEvent, ReactElement, useRef, useState } from 'react'
 
 /**
  * Resource Item Component Properties
@@ -95,10 +89,10 @@ export function ResourceItem({
   const amountInputRef = useRef<HTMLInputElement>(null)
 
   const [selectedCategory, setSelectedCategory] = useState<ResourceCategory>(
-    selectedSettlement?.resources?.[index].category || ResourceCategory.BASIC
+    selectedSettlement?.resources?.[index].category ?? ResourceCategory.BASIC
   )
   const [selectedTypes, setSelectedTypes] = useState<ResourceType[]>(
-    selectedSettlement?.resources?.[index].types || [ResourceType.BONE]
+    selectedSettlement?.resources?.[index].types ?? []
   )
   const [selectedMonsterName, setSelectedMonsterName] = useState<
     string | undefined
@@ -153,11 +147,8 @@ export function ResourceItem({
    *
    * @param e Change Event
    */
-  const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const amount = Number(e.target.value)
-
-    if (onAmountChange && !isNaN(amount) && amount >= 0)
-      onAmountChange(index, amount)
+  const handleAmountChange = (value: number) => {
+    if (onAmountChange && value >= 0) onAmountChange(index, value)
   }
 
   return (
@@ -205,24 +196,11 @@ export function ResourceItem({
                   <NumericInput
                     label="Resource Amount"
                     value={selectedSettlement?.resources?.[index].amount ?? 0}
-                    onChange={(value) => onAmountChange?.(index, value)}
+                    onChange={(value) => handleAmountChange(value)}
                     min={0}
-                    readOnly={false}>
-                    <Input
-                      ref={amountInputRef}
-                      type="number"
-                      min={0}
-                      placeholder="0"
-                      readOnly={isMobile}
-                      defaultValue={
-                        selectedSettlement?.resources?.[index].amount
-                      }
-                      onChange={handleAmountChange}
-                      className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      name={`resource-amount-${index}`}
-                      id={`resource-amount-${index}`}
-                    />
-                  </NumericInput>
+                    ref={amountInputRef}
+                    className="w-16 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
                 </div>
                 <div className="col-span-1 flex justify-end">
                   <Button
@@ -261,22 +239,9 @@ export function ResourceItem({
                       value={selectedSettlement?.resources?.[index].amount ?? 0}
                       onChange={(value) => onAmountChange?.(index, value)}
                       min={0}
-                      readOnly={false}>
-                      <Input
-                        ref={amountInputRef}
-                        type="number"
-                        min={0}
-                        placeholder="0"
-                        defaultValue={
-                          selectedSettlement?.resources?.[index].amount
-                        }
-                        readOnly={isMobile}
-                        onChange={handleAmountChange}
-                        className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                        name={`resource-amount-mobile-${index}`}
-                        id={`resource-amount-mobile-${index}`}
-                      />
-                    </NumericInput>
+                      className="w-16 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      ref={amountInputRef}
+                    />
                     <Button
                       type="button"
                       variant="ghost"
@@ -355,27 +320,13 @@ export function ResourceItem({
                     label="Resource Amount"
                     value={selectedSettlement?.resources?.[index].amount ?? 0}
                     onChange={(value) => {
-                      if (amountInputRef.current) {
+                      if (amountInputRef.current)
                         amountInputRef.current.value = value.toString()
-                      }
                     }}
                     min={0}
-                    readOnly={false}>
-                    <Input
-                      ref={amountInputRef}
-                      type="number"
-                      min={0}
-                      placeholder="0"
-                      readOnly={isMobile}
-                      defaultValue={
-                        selectedSettlement?.resources?.[index].amount
-                      }
-                      onChange={handleAmountChange}
-                      className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      name={`resource-amount-edit-${index}`}
-                      id={`resource-amount-edit-${index}`}
-                    />
-                  </NumericInput>
+                    className="w-16 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    ref={amountInputRef}
+                  />
                 </div>
                 <div className="col-span-1 flex justify-end">
                   <Button
@@ -430,27 +381,13 @@ export function ResourceItem({
                     label="Resource Amount"
                     value={selectedSettlement?.resources?.[index].amount ?? 0}
                     onChange={(value) => {
-                      if (amountInputRef.current) {
+                      if (amountInputRef.current)
                         amountInputRef.current.value = value.toString()
-                      }
                     }}
                     min={0}
-                    readOnly={false}>
-                    <Input
-                      ref={amountInputRef}
-                      type="number"
-                      min={0}
-                      placeholder="0"
-                      readOnly={isMobile}
-                      defaultValue={
-                        selectedSettlement?.resources?.[index].amount
-                      }
-                      onChange={handleAmountChange}
-                      className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      name={`resource-amount-mobile-edit-${index}`}
-                      id={`resource-amount-mobile-edit-${index}`}
-                    />
-                  </NumericInput>
+                    className="w-16 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    ref={amountInputRef}
+                  />
                   <Button
                     type="button"
                     variant="ghost"

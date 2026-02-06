@@ -3,9 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { COMBAT_HEAD_UPDATED_MESSAGE } from '@/lib/messages'
 import { cn } from '@/lib/utils'
 import { Survivor } from '@/schemas/survivor'
@@ -35,8 +33,6 @@ export function HeadCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: HeadCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   /**
    * Save to Local Storage
    *
@@ -71,30 +67,12 @@ export function HeadCard({
               strokeWidth={1}
             />
             <NumericInput
+              label="Head Armor"
               value={selectedSurvivor?.headArmor ?? 0}
               min={0}
-              label="Head Armor"
               onChange={(value) => saveToLocalStorage('headArmor', value)}
-              readOnly={false}>
-              <Input
-                placeholder="1"
-                type="number"
-                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                value={selectedSurvivor?.headArmor ?? '0'}
-                readOnly={isMobile}
-                onChange={
-                  !isMobile
-                    ? (e) =>
-                        saveToLocalStorage(
-                          'headArmor',
-                          parseInt(e.target.value, 10)
-                        )
-                    : undefined
-                }
-                name="head-armor"
-                id="head-armor"
-              />
-            </NumericInput>
+              className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
           <div className="mx-2 w-px bg-border h-19" />
@@ -122,12 +100,12 @@ export function HeadCard({
                   {[...Array(2)].map((_, index) => (
                     <Checkbox
                       key={index}
-                      checked={(selectedSurvivor?.headBlind || 0) > index}
+                      checked={(selectedSurvivor?.headBlind ?? 0) > index}
                       onCheckedChange={(checked) => {
-                        let newValue = selectedSurvivor?.headBlind || 0
+                        let newValue = selectedSurvivor?.headBlind ?? 0
                         if (checked) newValue = index + 1
                         else if (
-                          (selectedSurvivor?.headBlind || 0) ===
+                          (selectedSurvivor?.headBlind ?? 0) ===
                           index + 1
                         )
                           newValue = index

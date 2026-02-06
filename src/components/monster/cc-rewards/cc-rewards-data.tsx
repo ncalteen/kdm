@@ -109,23 +109,7 @@ export function CCRewardsData({
                         onCCRewardsChange(newRewards)
                       }}
                       min={0}
-                      readOnly={false}>
-                      <Input
-                        id={`cc-reward-${index + 1}-cc`}
-                        type="number"
-                        min="0"
-                        value={reward.cc}
-                        onChange={(e) => {
-                          const newRewards = [...ccRewards]
-                          newRewards[index] = {
-                            ...reward,
-                            cc: parseInt(e.target.value) || 0
-                          }
-                          onCCRewardsChange(newRewards)
-                        }}
-                        className="text-center no-spinners"
-                      />
-                    </NumericInput>
+                    />
                   )}
                 </div>
                 <div className="flex-1">
@@ -214,27 +198,7 @@ export function CCRewardsData({
                     value={newCCValue}
                     onChange={setNewCCValue}
                     min={0}
-                    readOnly={false}>
-                    <Input
-                      id="new-cc-reward-cc"
-                      type="number"
-                      min="0"
-                      placeholder="CC"
-                      value={newCCValue}
-                      onChange={(e) =>
-                        setNewCCValue(parseInt(e.target.value) || 0)
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          e.preventDefault()
-                          setIsAddingNew(false)
-                          setNewCCValue(0)
-                          setNewNameValue('')
-                        }
-                      }}
-                      className="text-center no-spinners"
-                    />
-                  </NumericInput>
+                  />
                 </div>
                 <div className="flex-1">
                   <Input

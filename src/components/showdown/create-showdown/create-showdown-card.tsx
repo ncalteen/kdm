@@ -6,7 +6,6 @@ import { SurvivorSelectionDrawer } from '@/components/survivor/survivor-selectio
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -422,7 +421,7 @@ export function CreateShowdownCard({
         type: selectedMonsterData.type,
         wounds: 0
       })),
-      scout: selectedScout || undefined,
+      scout: selectedScout ?? undefined,
       settlementId: selectedSettlement.id,
       survivorDetails,
       survivors: selectedSurvivors,
@@ -666,7 +665,7 @@ export function CreateShowdownCard({
             Type
           </Label>
           <div className="w-full px-3 py-2 text-sm border rounded-md bg-muted">
-            {selectedMonsterData?.type || 'Select a monster'}
+            {selectedMonsterData?.type ?? 'Select a monster'}
           </div>
         </div>
 
@@ -807,23 +806,8 @@ export function CreateShowdownCard({
                   updateSelectedMonsterProperty(['aiDeck', 'advanced'], value)
                 }
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-a"
-                  type="number"
-                  value={
-                    getSelectedMonsterProperty(['aiDeck', 'advanced']) ?? 0
-                  }
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'advanced'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                disabled={selectedMonsterData === undefined}
+              />
             </div>
 
             <div className="flex-1 space-y-1">
@@ -839,21 +823,8 @@ export function CreateShowdownCard({
                   updateSelectedMonsterProperty(['aiDeck', 'basic'], value)
                 }
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-b"
-                  type="number"
-                  value={getSelectedMonsterProperty(['aiDeck', 'basic']) ?? 0}
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'basic'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                disabled={selectedMonsterData === undefined}
+              />
             </div>
 
             <div className="flex-1 space-y-1">
@@ -869,23 +840,8 @@ export function CreateShowdownCard({
                   updateSelectedMonsterProperty(['aiDeck', 'legendary'], value)
                 }
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-l"
-                  type="number"
-                  value={
-                    getSelectedMonsterProperty(['aiDeck', 'legendary']) ?? 0
-                  }
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'legendary'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                disabled={selectedMonsterData === undefined}
+              />
             </div>
 
             <div className="flex-1 space-y-1">
@@ -901,23 +857,8 @@ export function CreateShowdownCard({
                   updateSelectedMonsterProperty(['aiDeck', 'overtone'], value)
                 }
                 min={0}
-                readOnly={false}>
-                <Input
-                  id="monster-ai-deck-o"
-                  type="number"
-                  value={
-                    getSelectedMonsterProperty(['aiDeck', 'overtone']) ?? 0
-                  }
-                  onChange={(e) =>
-                    updateSelectedMonsterProperty(
-                      ['aiDeck', 'overtone'],
-                      parseInt(e.target.value) ?? 0
-                    )
-                  }
-                  min="0"
-                  className="text-center no-spinners"
-                />
-              </NumericInput>
+                disabled={selectedMonsterData === undefined}
+              />
             </div>
           </div>
         </div>
@@ -937,7 +878,6 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Movement
             </Label>
-
             <NumericInput
               label="Movement"
               value={getSelectedMonsterProperty('movement') ?? 0}
@@ -945,21 +885,8 @@ export function CreateShowdownCard({
                 updateSelectedMonsterProperty('movement', value)
               }
               min={0}
-              readOnly={false}>
-              <Input
-                id="monster-movement"
-                type="number"
-                value={getSelectedMonsterProperty('movement') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'movement',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Toughness */}
@@ -969,7 +896,6 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Toughness
             </Label>
-
             <NumericInput
               label="Toughness"
               value={getSelectedMonsterProperty('toughness') ?? 0}
@@ -977,21 +903,8 @@ export function CreateShowdownCard({
                 updateSelectedMonsterProperty('toughness', value)
               }
               min={0}
-              readOnly={false}>
-              <Input
-                id="monster-toughness"
-                type="number"
-                value={getSelectedMonsterProperty('toughness') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'toughness',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Speed */}
@@ -999,7 +912,6 @@ export function CreateShowdownCard({
             <Label htmlFor="monster-speed" className="text-xs justify-center">
               Speed
             </Label>
-
             <NumericInput
               label="Speed"
               value={getSelectedMonsterProperty('speed') ?? 0}
@@ -1007,21 +919,8 @@ export function CreateShowdownCard({
                 updateSelectedMonsterProperty('speed', value)
               }
               min={0}
-              readOnly={false}>
-              <Input
-                id="monster-speed"
-                type="number"
-                value={getSelectedMonsterProperty('speed') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'speed',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Damage */}
@@ -1029,7 +928,6 @@ export function CreateShowdownCard({
             <Label htmlFor="monster-damage" className="text-xs justify-center">
               Damage
             </Label>
-
             <NumericInput
               label="Damage"
               value={getSelectedMonsterProperty('damage') ?? 0}
@@ -1037,21 +935,8 @@ export function CreateShowdownCard({
                 updateSelectedMonsterProperty('damage', value)
               }
               min={0}
-              readOnly={false}>
-              <Input
-                id="monster-damage"
-                type="number"
-                value={getSelectedMonsterProperty('damage') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'damage',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                min="0"
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
         </div>
 
@@ -1070,27 +955,14 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Movement
             </Label>
-
             <NumericInput
               label="Movement Tokens"
               value={getSelectedMonsterProperty('movementTokens') ?? 0}
               onChange={(value) =>
                 updateSelectedMonsterProperty('movementTokens', value)
               }
-              readOnly={false}>
-              <Input
-                id="monster-movement-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('movementTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'movementTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Speed */}
@@ -1100,27 +972,14 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Speed
             </Label>
-
             <NumericInput
               label="Speed Tokens"
               value={getSelectedMonsterProperty('speedTokens') ?? 0}
               onChange={(value) =>
                 updateSelectedMonsterProperty('speedTokens', value)
               }
-              readOnly={false}>
-              <Input
-                id="monster-speed-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('speedTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'speedTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Damage */}
@@ -1130,27 +989,14 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Damage
             </Label>
-
             <NumericInput
               label="Damage Tokens"
               value={getSelectedMonsterProperty('damageTokens') ?? 0}
               onChange={(value) =>
                 updateSelectedMonsterProperty('damageTokens', value)
               }
-              readOnly={false}>
-              <Input
-                id="monster-damage-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('damageTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'damageTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
         </div>
 
@@ -1162,27 +1008,14 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Accuracy
             </Label>
-
             <NumericInput
               label="Accuracy Tokens"
               value={getSelectedMonsterProperty('accuracyTokens') ?? 0}
               onChange={(value) =>
                 updateSelectedMonsterProperty('accuracyTokens', value)
               }
-              readOnly={false}>
-              <Input
-                id="monster-accuracy-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('accuracyTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'accuracyTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Strength */}
@@ -1192,27 +1025,14 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Strength
             </Label>
-
             <NumericInput
               label="Strength Tokens"
               value={getSelectedMonsterProperty('strengthTokens') ?? 0}
               onChange={(value) =>
                 updateSelectedMonsterProperty('strengthTokens', value)
               }
-              readOnly={false}>
-              <Input
-                id="monster-strength-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('strengthTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'strengthTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Evasion */}
@@ -1222,27 +1042,14 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Evasion
             </Label>
-
             <NumericInput
               label="Evasion Tokens"
               value={getSelectedMonsterProperty('evasionTokens') ?? 0}
               onChange={(value) =>
                 updateSelectedMonsterProperty('evasionTokens', value)
               }
-              readOnly={false}>
-              <Input
-                id="monster-evasion-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('evasionTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'evasionTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
 
           {/* Luck */}
@@ -1252,27 +1059,14 @@ export function CreateShowdownCard({
               className="text-xs justify-center">
               Luck
             </Label>
-
             <NumericInput
               label="Luck Tokens"
               value={getSelectedMonsterProperty('luckTokens') ?? 0}
               onChange={(value) =>
                 updateSelectedMonsterProperty('luckTokens', value)
               }
-              readOnly={false}>
-              <Input
-                id="monster-luck-tokens"
-                type="number"
-                value={getSelectedMonsterProperty('luckTokens') ?? 0}
-                onChange={(e) =>
-                  updateSelectedMonsterProperty(
-                    'luckTokens',
-                    parseInt(e.target.value) ?? 0
-                  )
-                }
-                className="text-center no-spinners"
-              />
-            </NumericInput>
+              disabled={selectedMonsterData === undefined}
+            />
           </div>
         </div>
 

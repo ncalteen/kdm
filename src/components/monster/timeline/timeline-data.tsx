@@ -109,23 +109,7 @@ export function TimelineData({
                         onTimelineDataChange(newTimelineData)
                       }}
                       min={0}
-                      readOnly={false}>
-                      <Input
-                        id={`year-${index + 1}`}
-                        type="number"
-                        min="0"
-                        value={entry.year}
-                        onChange={(e) => {
-                          const newTimelineData = [...timelineData]
-                          newTimelineData[index] = {
-                            ...entry,
-                            year: parseInt(e.target.value) || 0
-                          }
-                          onTimelineDataChange(newTimelineData)
-                        }}
-                        className="text-center no-spinners"
-                      />
-                    </NumericInput>
+                    />
                   )}
                 </div>
                 <div className="flex-1">
@@ -216,27 +200,7 @@ export function TimelineData({
                     value={newYearValue}
                     onChange={setNewYearValue}
                     min={0}
-                    readOnly={false}>
-                    <Input
-                      id="new-timeline-year"
-                      type="number"
-                      min="0"
-                      placeholder="Year"
-                      value={newYearValue}
-                      onChange={(e) =>
-                        setNewYearValue(parseInt(e.target.value) || 0)
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          e.preventDefault()
-                          setIsAddingNew(false)
-                          setNewYearValue(0)
-                          setNewEventValue('')
-                        }
-                      }}
-                      className="text-center no-spinners"
-                    />
-                  </NumericInput>
+                  />
                 </div>
                 <div className="flex-1">
                   <Input

@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { Minus, Plus } from 'lucide-react'
-import { ReactElement } from 'react'
+import { ReactElement, RefObject } from 'react'
 
 /**
  * Numeric Input Properties
@@ -32,7 +32,9 @@ interface NumericInputProps {
   /** Minimum Allowed Value (undefined for no minimum) */
   min?: number
   /** On Change Function */
-  onChange: (value: number) => void
+  onChange?: (value: number) => void
+  /** Ref Element */
+  ref?: RefObject<HTMLInputElement | null>
   /** Step Increment/Decrement */
   step?: number
   /** Current Value */
@@ -54,8 +56,9 @@ export function NumericInput({
   disabled = false,
   label,
   max,
-  min = 0,
+  min,
   onChange,
+  ref,
   step = 1,
   value
 }: NumericInputProps): ReactElement {
@@ -65,6 +68,8 @@ export function NumericInput({
    * Handle Increment
    */
   const handleIncrement = () => {
+    if (!onChange) return
+
     const newValue = value + step
 
     if (max === undefined || newValue <= max) onChange(newValue)
@@ -74,6 +79,8 @@ export function NumericInput({
    * Handle Decrement
    */
   const handleDecrement = () => {
+    if (!onChange) return
+
     const newValue = value - step
 
     if (min === undefined || newValue >= min) onChange(newValue)
@@ -86,6 +93,7 @@ export function NumericInput({
         value={value}
         disabled={disabled}
         className={cn('text-center no-spinners', className)}
+        ref={ref}
       />
     ) : (
       <Drawer>
@@ -101,6 +109,7 @@ export function NumericInput({
               value={value}
               className={cn('text-center no-spinners', className)}
               readOnly
+              ref={ref}
             />
           </div>
         </DrawerTrigger>
@@ -134,6 +143,7 @@ export function NumericInput({
                 className="w-20 h-12 text-center text-xl font-semibold focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 name={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
                 id={`${label.toLowerCase().replace(/\s+/g, '-')}-value`}
+                ref={ref}
               />
 
               {/* Increment Button */}
@@ -168,11 +178,14 @@ export function NumericInput({
     <Input
       type="number"
       value={value}
-      onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+      onChange={(e) => {
+        if (onChange) onChange(parseInt(e.target.value) ?? 0)
+      }}
       max={max}
       min={min}
       className={cn('text-center no-spinners', className)}
       disabled={disabled}
+      ref={ref}
     />
   )
 }

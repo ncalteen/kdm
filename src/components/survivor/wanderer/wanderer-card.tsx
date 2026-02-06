@@ -2,7 +2,6 @@
 
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -72,21 +71,8 @@ export function WandererCard({
                 SURVIVOR_DISPOSITION_UPDATED_MESSAGE()
               )
             }
-            readOnly={false}>
-            <Input
-              id="wanderer-disposition"
-              type="number"
-              value={selectedSurvivor?.disposition ?? 0}
-              onChange={(e) =>
-                saveSelectedSurvivor(
-                  { disposition: parseInt(e.target.value, 10) || 0 },
-                  SURVIVOR_DISPOSITION_UPDATED_MESSAGE()
-                )
-              }
-              min="0"
-              className="text-center no-spinners w-20"
-            />
-          </NumericInput>
+            className="w-20"
+          />
         </div>
 
         {/* State (Aenas Only) */}
@@ -94,7 +80,7 @@ export function WandererCard({
           <div className="flex flex-row items-center gap-2 justify-between">
             <Label className="text-xs">State</Label>
             <Select
-              value={selectedSurvivor?.state || ''}
+              value={selectedSurvivor?.state}
               onValueChange={handleStateChange}>
               <SelectTrigger id="state-select" name="state">
                 <SelectValue placeholder="Select a state" />

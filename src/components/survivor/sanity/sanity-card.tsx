@@ -3,9 +3,7 @@
 import { NumericInput } from '@/components/menu/numeric-input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { SurvivorCardMode, SurvivorType } from '@/lib/enums'
 import {
   INSANITY_MINIMUM_ERROR_MESSAGE,
@@ -71,8 +69,6 @@ export function SanityCard({
   selectedShowdown,
   selectedSurvivor
 }: SanityCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   /**
    * Save Insanity Tokens
    *
@@ -87,42 +83,36 @@ export function SanityCard({
       if (!saveSelectedShowdown || !selectedShowdown) return
 
       // Get current survivor details or create new one
-      const currentDetails = selectedShowdown.survivorDetails || []
-      const survivorDetailIndex = currentDetails.findIndex(
+      const updatedDetails = [...selectedShowdown.survivorDetails]
+      const survivorDetailIndex = selectedShowdown.survivorDetails.findIndex(
         (sd) => sd.id === selectedSurvivor.id
       )
 
-      let updatedDetails
-      if (survivorDetailIndex >= 0) {
+      if (survivorDetailIndex >= 0)
         // Update existing survivor details
-        updatedDetails = [...currentDetails]
         updatedDetails[survivorDetailIndex] = {
           ...updatedDetails[survivorDetailIndex],
           insanityTokens: value
         }
-      } else {
+      else
         // Create new survivor details entry
-        updatedDetails = [
-          ...currentDetails,
-          {
-            accuracyTokens: 0,
-            bleedingTokens: 0,
-            blockTokens: 0,
-            deflectTokens: 0,
-            evasionTokens: 0,
-            id: selectedSurvivor.id!,
-            insanityTokens: value,
-            knockedDown: false,
-            luckTokens: 0,
-            movementTokens: 0,
-            notes: '',
-            priorityTarget: false,
-            speedTokens: 0,
-            strengthTokens: 0,
-            survivalTokens: 0
-          }
-        ]
-      }
+        updatedDetails.push({
+          accuracyTokens: 0,
+          bleedingTokens: 0,
+          blockTokens: 0,
+          deflectTokens: 0,
+          evasionTokens: 0,
+          id: selectedSurvivor.id!,
+          insanityTokens: value,
+          knockedDown: false,
+          luckTokens: 0,
+          movementTokens: 0,
+          notes: '',
+          priorityTarget: false,
+          speedTokens: 0,
+          strengthTokens: 0,
+          survivalTokens: 0
+        })
 
       saveSelectedShowdown(
         {
@@ -134,37 +124,31 @@ export function SanityCard({
       if (!saveSelectedHunt || !selectedHunt) return
 
       // Get current survivor details or create new one
-      const currentDetails = selectedHunt.survivorDetails || []
-      const survivorDetailIndex = currentDetails.findIndex(
+      const updatedDetails = [...selectedHunt.survivorDetails]
+      const survivorDetailIndex = selectedHunt.survivorDetails.findIndex(
         (sd) => sd.id === selectedSurvivor.id
       )
 
-      let updatedDetails
-      if (survivorDetailIndex >= 0) {
+      if (survivorDetailIndex >= 0)
         // Update existing survivor details
-        updatedDetails = [...currentDetails]
         updatedDetails[survivorDetailIndex] = {
           ...updatedDetails[survivorDetailIndex],
           insanityTokens: value
         }
-      } else {
+      else
         // Create new survivor details entry
-        updatedDetails = [
-          ...currentDetails,
-          {
-            accuracyTokens: 0,
-            evasionTokens: 0,
-            id: selectedSurvivor.id!,
-            insanityTokens: value,
-            luckTokens: 0,
-            movementTokens: 0,
-            notes: '',
-            speedTokens: 0,
-            strengthTokens: 0,
-            survivalTokens: 0
-          }
-        ]
-      }
+        updatedDetails.push({
+          accuracyTokens: 0,
+          evasionTokens: 0,
+          id: selectedSurvivor.id!,
+          insanityTokens: value,
+          luckTokens: 0,
+          movementTokens: 0,
+          notes: '',
+          speedTokens: 0,
+          strengthTokens: 0,
+          survivalTokens: 0
+        })
 
       saveSelectedHunt(
         {
@@ -179,7 +163,7 @@ export function SanityCard({
     () =>
       selectedShowdown?.survivorDetails?.find(
         (sd) => sd.id === selectedSurvivor?.id
-      ) || {
+      ) ?? {
         accuracyTokens: 0,
         bleedingTokens: 0,
         blockTokens: 0,
@@ -203,7 +187,7 @@ export function SanityCard({
     () =>
       selectedHunt?.survivorDetails?.find(
         (sd) => sd.id === selectedSurvivor?.id
-      ) || {
+      ) ?? {
         accuracyTokens: 0,
         evasionTokens: 0,
         id: 0,
@@ -221,20 +205,15 @@ export function SanityCard({
   /**
    * Update Insanity
    */
-  const updateInsanity = (val: string) => {
-    let value = parseInt(val) || 0
-
+  const updateInsanity = (value: number) => {
     // Enforce minimum value of 0
-    if (value < 0) {
-      value = 0
-      return toast.error(INSANITY_MINIMUM_ERROR_MESSAGE())
-    }
+    if (value < 0) return toast.error(INSANITY_MINIMUM_ERROR_MESSAGE())
 
     saveSelectedSurvivor(
       {
         insanity: value
       },
-      SURVIVOR_INSANITY_UPDATED_MESSAGE(selectedSurvivor?.insanity || 0, value)
+      SURVIVOR_INSANITY_UPDATED_MESSAGE(selectedSurvivor?.insanity ?? 0, value)
     )
   }
 
@@ -252,14 +231,9 @@ export function SanityCard({
   /**
    * Update Torment (Arc)
    */
-  const updateTorment = (val: string) => {
-    let value = parseInt(val) || 0
-
+  const updateTorment = (value: number) => {
     // Enforce minimum value of 0
-    if (value < 0) {
-      value = 0
-      return toast.error(TORMENT_MINIMUM_ERROR_MESSAGE())
-    }
+    if (value < 0) return toast.error(TORMENT_MINIMUM_ERROR_MESSAGE())
 
     saveSelectedSurvivor(
       {
@@ -281,26 +255,12 @@ export function SanityCard({
                 strokeWidth={1}
               />
               <NumericInput
+                label="Insanity"
                 value={selectedSurvivor?.insanity ?? 0}
                 min={0}
-                label="Insanity"
-                onChange={(value) => updateInsanity(value.toString())}
-                readOnly={false}>
-                <Input
-                  placeholder="1"
-                  type="number"
-                  className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={selectedSurvivor?.insanity ?? '0'}
-                  readOnly={isMobile}
-                  onChange={
-                    !isMobile
-                      ? (e) => updateInsanity(e.target.value)
-                      : undefined
-                  }
-                  name="insanity"
-                  id="insanity"
-                />
-              </NumericInput>
+                onChange={(value) => updateInsanity(value)}
+                className="absolute top-[50%] left-7 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-xl sm:text-xl md:text-xl text-center p-0 !bg-transparent border-none no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
             </div>
             {displayText && <Label className="text-xs">Insanity</Label>}
           </div>
@@ -309,6 +269,7 @@ export function SanityCard({
           {mode === SurvivorCardMode.SHOWDOWN_CARD && (
             <div className="flex flex-col items-center gap-2 pt-1">
               <NumericInput
+                label="Insanity Tokens"
                 value={
                   mode === SurvivorCardMode.SHOWDOWN_CARD
                     ? survivorShowdownDetails.insanityTokens
@@ -316,30 +277,10 @@ export function SanityCard({
                       ? survivorHuntDetails.insanityTokens
                       : 0
                 }
-                label="Insanity Tokens"
+                min={0}
                 onChange={(value) => saveInsanityTokens(value)}
-                readOnly={false}>
-                <Input
-                  placeholder="0"
-                  type="number"
-                  className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
-                  value={
-                    mode === SurvivorCardMode.SHOWDOWN_CARD
-                      ? survivorShowdownDetails.insanityTokens
-                      : mode === SurvivorCardMode.HUNT_CARD
-                        ? survivorHuntDetails.insanityTokens
-                        : 0
-                  }
-                  readOnly={isMobile}
-                  onChange={
-                    !isMobile
-                      ? (e) => saveInsanityTokens(parseInt(e.target.value, 10))
-                      : undefined
-                  }
-                  name="insanity-tokens"
-                  id="insanity-tokens"
-                />
-              </NumericInput>
+                className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted!"
+              />
               <Label className="text-xs text-muted-foreground uppercase tracking-wide">
                 Tokens
               </Label>
@@ -380,26 +321,12 @@ export function SanityCard({
               <div className="flex flex-col items-center gap-1">
                 <Label className="text-xs">Torment</Label>
                 <NumericInput
+                  label="Torment"
                   value={selectedSurvivor?.torment ?? 0}
                   min={0}
-                  label="Torment"
-                  onChange={(value) => updateTorment(value.toString())}
-                  readOnly={false}>
-                  <Input
-                    placeholder="0"
-                    type="number"
-                    className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={selectedSurvivor?.torment ?? '0'}
-                    readOnly={isMobile}
-                    onChange={
-                      !isMobile
-                        ? (e) => updateTorment(e.target.value)
-                        : undefined
-                    }
-                    name="torment"
-                    id="torment"
-                  />
-                </NumericInput>
+                  onChange={(value) => updateTorment(value)}
+                  className="w-12 h-12 text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
               </div>
             )}
         </div>

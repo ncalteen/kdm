@@ -7,7 +7,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { Philosophy } from '@/lib/enums'
 import {
   PHILOSOPHY_RANK_MINIMUM_ERROR,
@@ -45,11 +44,10 @@ export function PhilosophyCard({
   saveSelectedSurvivor,
   selectedSurvivor
 }: PhilosophyCardProps): ReactElement {
-  const isMobile = useIsMobile()
-
   const survivorIdRef = useRef<number | undefined>(undefined)
 
-  // Local state for text fields to enable controlled components that update when survivor changes
+  // Local state for text fields to enable controlled components that update
+  // when survivor changes
   const [neurosis, setNeurosis] = useState(selectedSurvivor?.neurosis ?? '')
   const [tenetKnowledge, setTenetKnowledge] = useState(
     selectedSurvivor?.tenetKnowledge ?? ''
@@ -95,7 +93,8 @@ export function PhilosophyCard({
   )
 
   /**
-   * Handles right-clicking on tenet knowledge observation rank checkboxes to toggle rank up milestone
+   * Handles right-clicking on tenet knowledge observation rank checkboxes to
+   * toggle rank up milestone
    *
    * @param index The index of the checkbox (0-based)
    * @param event The mouse event
@@ -119,16 +118,12 @@ export function PhilosophyCard({
    * Update Philosophy Rank
    */
   const updatePhilosophyRank = useCallback(
-    (val: string) => {
-      const value = parseInt(val) || 0
-
+    (value: number) => {
       // Enforce minimum value of 0
       if (value < 0) return toast.error(PHILOSOPHY_RANK_MINIMUM_ERROR())
 
-      const updateData: Partial<Survivor> = { philosophyRank: value }
-
       saveSelectedSurvivor(
-        updateData,
+        { philosophyRank: value },
         SURVIVOR_PHILOSOPHY_RANK_UPDATED_MESSAGE()
       )
     },
@@ -140,6 +135,7 @@ export function PhilosophyCard({
    */
   const updateNeurosis = (value: string) => {
     setNeurosis(value)
+
     saveSelectedSurvivor(
       { neurosis: value },
       SURVIVOR_NEUROSIS_UPDATED_MESSAGE(value)
@@ -151,6 +147,7 @@ export function PhilosophyCard({
    */
   const updateTenetKnowledge = (value: string) => {
     setTenetKnowledge(value)
+
     saveSelectedSurvivor(
       { tenetKnowledge: value },
       SURVIVOR_TENET_KNOWLEDGE_UPDATED_MESSAGE(value)
@@ -166,7 +163,7 @@ export function PhilosophyCard({
   ) => {
     const newRank = checked
       ? index + 1
-      : (selectedSurvivor?.tenetKnowledgeObservationRank || 0) === index + 1
+      : (selectedSurvivor?.tenetKnowledgeObservationRank ?? 0) === index + 1
         ? index
         : undefined
 
@@ -190,6 +187,7 @@ export function PhilosophyCard({
    */
   const updateTenetKnowledgeRules = (value: string) => {
     setTenetKnowledgeRules(value)
+
     saveSelectedSurvivor(
       { tenetKnowledgeRules: value },
       SURVIVOR_TENET_KNOWLEDGE_RULES_UPDATED_MESSAGE(value)
@@ -201,6 +199,7 @@ export function PhilosophyCard({
    */
   const updateTenetKnowledgeObservationConditions = (value: string) => {
     setTenetKnowledgeObservationConditions(value)
+
     saveSelectedSurvivor(
       { tenetKnowledgeObservationConditions: value },
       SURVIVOR_TENET_KNOWLEDGE_OBSERVATION_CONDITIONS_UPDATED_MESSAGE(value)
@@ -227,27 +226,10 @@ export function PhilosophyCard({
           <NumericInput
             label="Philosophy Rank"
             value={selectedSurvivor?.philosophyRank ?? 0}
-            onChange={(value) => updatePhilosophyRank(value.toString())}
+            onChange={(value) => updatePhilosophyRank(value)}
             min={0}
-            readOnly={false}>
-            <Input
-              placeholder="0"
-              type="number"
-              className={cn(
-                'w-14 h-14 text-center no-spinners text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
-              )}
-              value={selectedSurvivor?.philosophyRank ?? '0'}
-              min={0}
-              readOnly={isMobile}
-              onChange={
-                !isMobile
-                  ? (e) => updatePhilosophyRank(e.target.value)
-                  : undefined
-              }
-              name="philosophy-rank"
-              id="philosophy-rank"
-            />
-          </NumericInput>
+            className="w-14 h-14 text-2xl sm:text-2xl md:text-2xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
         </div>
 
         {/* Rules Text */}
@@ -294,7 +276,7 @@ export function PhilosophyCard({
           <div className="flex gap-1 pt-2">
             {[...Array(9)].map((_, index) => {
               const checked =
-                (selectedSurvivor?.tenetKnowledgeObservationRank || 0) > index
+                (selectedSurvivor?.tenetKnowledgeObservationRank ?? 0) > index
               const isRankUpMilestone =
                 selectedSurvivor?.tenetKnowledgeRankUp === index
 
