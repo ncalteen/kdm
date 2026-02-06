@@ -180,7 +180,25 @@ export function ActiveHuntCard({
     try {
       updateCampaign({
         ...campaign,
-        hunts: campaign.hunts?.filter((hunt) => hunt.id !== selectedHunt?.id)
+        hunts: campaign.hunts?.filter((hunt) => hunt.id !== selectedHunt?.id),
+        survivors: campaign.survivors?.map((survivor) =>
+          selectedHunt?.survivors.includes(survivor.id)
+            ? // Reset the survivors' injuries
+              {
+                ...survivor,
+                brainLightDamage: false,
+                headHeavyDamage: false,
+                armLightDamage: false,
+                armHeavyDamage: false,
+                bodyLightDamage: false,
+                bodyHeavyDamage: false,
+                waistLightDamage: false,
+                waistHeavyDamage: false,
+                legLightDamage: false,
+                legHeavyDamage: false
+              }
+            : survivor
+        )
       })
       setSelectedHunt(null)
       setSelectedHuntMonsterIndex(0)
@@ -194,6 +212,7 @@ export function ActiveHuntCard({
   }, [
     campaign,
     selectedHunt?.id,
+    selectedHunt?.survivors,
     setSelectedHunt,
     setSelectedHuntMonsterIndex,
     updateCampaign

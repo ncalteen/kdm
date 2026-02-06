@@ -99,7 +99,25 @@ export function ActiveShowdownCard({
 
       updateCampaign({
         ...campaign,
-        showdowns: updatedShowdowns
+        showdowns: updatedShowdowns,
+        survivors: campaign.survivors?.map((survivor) =>
+          selectedShowdown?.survivors.includes(survivor.id)
+            ? // Reset the survivors' injuries
+              {
+                ...survivor,
+                brainLightDamage: false,
+                headHeavyDamage: false,
+                armLightDamage: false,
+                armHeavyDamage: false,
+                bodyLightDamage: false,
+                bodyHeavyDamage: false,
+                waistLightDamage: false,
+                waistHeavyDamage: false,
+                legLightDamage: false,
+                legHeavyDamage: false
+              }
+            : survivor
+        )
       })
 
       setSelectedShowdown(null)
@@ -115,6 +133,7 @@ export function ActiveShowdownCard({
     campaign,
     selectedSettlement?.id,
     selectedShowdown?.id,
+    selectedShowdown?.survivors,
     setSelectedShowdown,
     updateCampaign
   ])
