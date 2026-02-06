@@ -16,7 +16,7 @@ import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AvatarFallback } from '@radix-ui/react-avatar'
 import { CheckIcon } from 'lucide-react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
 
 /**
@@ -55,11 +55,21 @@ export function HuntSurvivorCard({
     (detail) => detail.id === selectedSurvivor?.id
   )
 
+  // Track survivor ID to detect changes
+  const survivorIdRef = useRef(selectedSurvivor?.id)
+
   // State for managing notes
   const [notesDraft, setNotesDraft] = useState<string>(
     survivorHuntDetails?.notes ?? ''
   )
   const [isNotesDirty, setIsNotesDirty] = useState<boolean>(false)
+
+  // Reset notes draft when survivor changes
+  if (survivorIdRef.current !== selectedSurvivor?.id) {
+    survivorIdRef.current = selectedSurvivor?.id
+    setNotesDraft(survivorHuntDetails?.notes ?? '')
+    setIsNotesDirty(false)
+  }
 
   const form = useForm<Survivor>({
     resolver: zodResolver(SurvivorSchema) as Resolver<Survivor>,
