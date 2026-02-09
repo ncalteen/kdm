@@ -44,8 +44,8 @@ export enum TabType {
   NOTES = 'notes',
   /** Settings */
   SETTINGS = 'settings',
-  /** Settlement */
-  SETTLEMENT = 'settlement',
+  /** Settlement Phase */
+  SETTLEMENT_PHASE = 'settlementPhase',
   /** Showdown */
   SHOWDOWN = 'showdown',
   /** Society */

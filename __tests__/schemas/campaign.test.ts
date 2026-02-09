@@ -292,7 +292,7 @@ describe('CampaignSchema', () => {
         TabType.MONSTERS,
         TabType.NOTES,
         TabType.SETTINGS,
-        TabType.SETTLEMENT,
+        TabType.SETTLEMENT_PHASE,
         TabType.SHOWDOWN,
         TabType.SOCIETY,
         TabType.SQUIRES,
