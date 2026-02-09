@@ -6,6 +6,7 @@ import { HuntSchema } from '@/schemas/hunt'
 import { NemesisMonsterDataSchema } from '@/schemas/nemesis-monster-data'
 import { QuarryMonsterDataSchema } from '@/schemas/quarry-monster-data'
 import { SettlementSchema } from '@/schemas/settlement'
+import { SettlementPhaseSchema } from '@/schemas/settlement-phase'
 import { ShowdownSchema } from '@/schemas/showdown'
 import { SurvivorSchema } from '@/schemas/survivor'
 import { z } from 'zod'
@@ -64,6 +65,8 @@ export const CampaignSchema = z.object({
   selectedTab: z.enum(TabType).nullable().optional(),
   /** Global Settings */
   settings: GlobalSettingsSchema,
+  /** Settlement Phases */
+  settlementPhases: z.array(SettlementPhaseSchema).nullable().optional(),
   /** Settlements */
   settlements: z.array(SettlementSchema),
   /** Showdowns */
