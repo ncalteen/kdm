@@ -44,6 +44,7 @@ import {
   LightbulbIcon,
   NotebookPenIcon,
   PawPrintIcon,
+  School2Icon,
   SchoolIcon,
   SettingsIcon,
   SkullIcon,
@@ -147,6 +148,11 @@ const navEmbark = [
     title: 'Showdown',
     tab: TabType.SHOWDOWN,
     icon: SkullIcon
+  },
+  {
+    title: 'Settlement Phase',
+    tab: TabType.SETTLEMENT_PHASE,
+    icon: School2Icon
   }
 ]
 
