@@ -403,3 +403,52 @@ export enum MonsterVersion {
   /** Vignette Monster */
   VIGNETTE = 'vignette'
 }
+
+/**
+ * Settlement Phase Steps
+ *
+ * There are more than this in the game, but these are the ones that will have
+ * an effect on the application. The full list is:
+ *
+ * 1. Set Up the Settlement
+ *    - Manual; not required in the application.
+ * 2. Survivors Return
+ *    - Heal Survivors
+ *    - Apply Departing Bonuses
+ * 3. Gain Endeavors
+ *    - +1 for Each Returning Survivor
+ * 4. Update Timeline
+ *    - Advance Timeline by 1
+ *    - Draw Settlement Event
+ *    - Trigger Story Events
+ * 5. Update the Death Count
+ *    - Automatic; not required in the application.
+ * 6. Check Milestones
+ *    - Check for Campaign Milestones
+ *    - Check for Strain Milestones
+ * 7. Develop
+ *    - Innovate
+ *    - Craft at Locations
+ *    - Spend Endeavors
+ *    - (Arc) Forum?
+ * 8. Prepare Departing Survivors
+ *    - Manual; Done during the Hunt/Showdown setup in the application.
+ * 9. Special Showdown
+ *    - Complete and Return to "Update Death Count"
+ * 10. Record & Archive Resources
+ *     - Automatic; not required in the application.
+ * 11. End Settlement Phase
+ *     - Close Settlement Phase
+ */
+export enum SettlementPhaseStep {
+  /** Survivors Return */
+  SURVIVORS_RETURN = 'Survivors Return',
+  /** Gain Endeavors */
+  GAIN_ENDEAVORS = 'Gain Endeavors',
+  /** Update Timeline */
+  UPDATE_TIMELINE = 'Update Timeline',
+  /** Check Milestones */
+  CHECK_MILESTONES = 'Check Milestones',
+  /** Develop */
+  DEVELOP = 'Develop'
+}
