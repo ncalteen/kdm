@@ -88,18 +88,20 @@ export function ActiveShowdownCard({
 
   /**
    * Handle Delete Showdown
+   *
+   * Showdown is deleted and the survivors return to the settlement. This will
+   * **not** trigger the settlement phase.
    */
   const handleDeleteShowdown = useCallback(() => {
     if (!selectedSettlement?.id) return
 
     try {
-      const updatedShowdowns = campaign.showdowns?.filter(
-        (showdown) => showdown.id !== selectedShowdown?.id
-      )
-
+      // Remove the showdown from the campaign's showdowns array.
       updateCampaign({
         ...campaign,
-        showdowns: updatedShowdowns,
+        showdowns: campaign.showdowns?.filter(
+          (showdown) => showdown.id !== selectedShowdown?.id
+        ),
         survivors: campaign.survivors?.map((survivor) =>
           selectedShowdown?.survivors?.includes(survivor.id)
             ? // Reset the survivors' injuries
@@ -119,12 +121,10 @@ export function ActiveShowdownCard({
             : survivor
         )
       })
-
       setSelectedShowdown(null)
+      setIsCancelDialogOpen(false)
 
       toast.success(SHOWDOWN_DELETED_MESSAGE())
-
-      setIsCancelDialogOpen(false)
     } catch (error) {
       console.error('Delete Showdown Error:', error)
       toast.error(ERROR_MESSAGE())
@@ -159,12 +159,11 @@ export function ActiveShowdownCard({
           End Showdown
         </Button>
         <Button
-          variant="secondary"
+          variant="default"
           size="sm"
           onClick={handleSettlementPhase}
           className="pointer-events-auto"
-          title="Begin Settlement Phase"
-          disabled={true}>
+          title="Begin Settlement Phase">
           Begin Settlement Phase <ChevronRightIcon className="size-4" />
         </Button>
       </div>
