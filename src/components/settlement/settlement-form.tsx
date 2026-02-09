@@ -39,6 +39,7 @@ import {
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -148,7 +149,7 @@ export function SettlementForm({
       <div className="flex flex-1 flex-col h-full">
         <div className="flex flex-col gap-2 py-2 px-2 flex-1">
           {/* Create Settlement Form */}
-          {!selectedSettlement && selectedTab !== 'settings' && (
+          {!selectedSettlement && selectedTab !== TabType.SETTINGS && (
             <CreateSettlementForm
               campaign={campaign}
               setSelectedSettlement={setSelectedSettlement}
@@ -157,7 +158,7 @@ export function SettlementForm({
           )}
 
           {/* Timeline Tab */}
-          {selectedSettlement && selectedTab === 'timeline' && (
+          {selectedSettlement && selectedTab === TabType.TIMELINE && (
             <div className="flex flex-col lg:flex-row gap-2">
               {/* Timeline */}
               <div className="flex-1 order-2 lg:order-1">
@@ -188,7 +189,7 @@ export function SettlementForm({
           )}
 
           {/* Monsters Tab */}
-          {selectedSettlement && selectedTab === 'monsters' && (
+          {selectedSettlement && selectedTab === TabType.MONSTERS && (
             <div className="flex flex-col pl-2 gap-2">
               <div className="flex flex-col lg:flex-row gap-2">
                 {/* Quarries */}
@@ -224,7 +225,7 @@ export function SettlementForm({
 
           {/* Squires of the Citadel Tab */}
           {selectedSettlement &&
-            selectedTab === 'squires' &&
+            selectedTab === TabType.SQUIRES &&
             selectedSettlement.campaignType ===
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <>
@@ -238,7 +239,7 @@ export function SettlementForm({
 
           {/* Survivors Tab */}
           {selectedSettlement &&
-            selectedTab === 'survivors' &&
+            selectedTab === TabType.SURVIVORS &&
             selectedSettlement.campaignType !==
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="pl-2">
@@ -282,7 +283,7 @@ export function SettlementForm({
 
           {/* Society Tab */}
           {selectedSettlement &&
-            selectedTab === 'society' &&
+            selectedTab === TabType.SOCIETY &&
             selectedSettlement.campaignType !==
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="flex flex-col gap-2 pl-2">
@@ -324,7 +325,7 @@ export function SettlementForm({
 
           {/* Society Tab - Squires of the Citadel */}
           {selectedSettlement &&
-            selectedTab === 'society' &&
+            selectedTab === TabType.SOCIETY &&
             selectedSettlement.campaignType ===
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <LocationsCard
@@ -334,7 +335,7 @@ export function SettlementForm({
             )}
 
           {/* Crafting Tab */}
-          {selectedSettlement && selectedTab === 'crafting' && (
+          {selectedSettlement && selectedTab === TabType.CRAFTING && (
             <div className="flex flex-col gap-2 pl-2">
               {/* Resources */}
               <ResourcesCard
@@ -370,7 +371,7 @@ export function SettlementForm({
 
           {/* Arc Tab */}
           {selectedSettlement &&
-            selectedTab === 'arc' &&
+            selectedTab === TabType.ARC &&
             selectedSettlement.survivorType === SurvivorType.ARC && (
               <div className="flex flex-col gap-2 pl-2">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -403,7 +404,7 @@ export function SettlementForm({
             )}
 
           {/* Notes Tab */}
-          {selectedSettlement && selectedTab === 'notes' && (
+          {selectedSettlement && selectedTab === TabType.NOTES && (
             <NotesCard
               saveSelectedSettlement={saveSelectedSettlement}
               selectedSettlement={selectedSettlement}
@@ -411,7 +412,7 @@ export function SettlementForm({
           )}
 
           {/* Settings Tab */}
-          {selectedTab === 'settings' && (
+          {selectedTab === TabType.SETTINGS && (
             <SettingsCard
               campaign={campaign}
               loadTestData={loadTestData}
@@ -428,7 +429,7 @@ export function SettlementForm({
           )}
 
           {/* Hunt Tab */}
-          {selectedSettlement && selectedTab === 'hunt' && (
+          {selectedSettlement && selectedTab === TabType.HUNT && (
             <HuntCard
               campaign={campaign}
               saveSelectedHunt={saveSelectedHunt}
@@ -449,7 +450,7 @@ export function SettlementForm({
           )}
 
           {/* Showdown Tab */}
-          {selectedSettlement && selectedTab === 'showdown' && (
+          {selectedSettlement && selectedTab === TabType.SHOWDOWN && (
             <ShowdownCard
               campaign={campaign}
               saveSelectedShowdown={saveSelectedShowdown}
