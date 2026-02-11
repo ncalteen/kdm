@@ -16,6 +16,7 @@ import {
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { Check, ChevronsUpDown, House, Plus } from 'lucide-react'
@@ -31,12 +32,16 @@ interface SettlementSwitcherProps extends ComponentProps<typeof Sidebar> {
   selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Settlement Phase */
+  selectedSettlementPhase: SettlementPhase | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Set Selected Hunt */
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlementPhase: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
@@ -58,9 +63,11 @@ export function SettlementSwitcher({
   campaign,
   selectedHunt,
   selectedSettlement,
+  selectedSettlementPhase,
   selectedShowdown,
   setSelectedHunt,
   setSelectedSettlement,
+  setSelectedSettlementPhase,
   setSelectedShowdown,
   setSelectedSurvivor
 }: SettlementSwitcherProps): ReactElement {
@@ -72,17 +79,22 @@ export function SettlementSwitcher({
    * @param settlement Settlement to select
    */
   const handleSettlementSelect = (settlement: Settlement) => {
-    const settlementHunt =
+    const hunt =
       campaign.hunts?.find((hunt) => hunt.settlementId === settlement.id) ??
       null
-    const settlementShowdown =
+    const settlementPhase =
+      campaign.settlementPhases?.find(
+        (phase) => phase.settlementId === settlement.id
+      ) ?? null
+    const showdown =
       campaign.showdowns?.find(
         (showdown) => showdown.settlementId === settlement.id
       ) ?? null
 
     setSelectedSettlement(settlement)
-    setSelectedHunt(settlementHunt)
-    setSelectedShowdown(settlementShowdown)
+    setSelectedHunt(hunt)
+    setSelectedSettlementPhase(settlementPhase)
+    setSelectedShowdown(showdown)
     setSelectedSurvivor(null)
   }
 
@@ -98,7 +110,9 @@ export function SettlementSwitcher({
                   ? 'bg-yellow-500/20 hover:bg-yellow-500/30'
                   : selectedShowdown
                     ? 'bg-red-500/20 hover:bg-red-500/30'
-                    : ''
+                    : selectedSettlementPhase
+                      ? 'bg-green-500/20 hover:bg-green-500/30'
+                      : ''
               }`}>
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <House className="size-4" />

@@ -359,10 +359,12 @@ function MainPage(): ReactElement {
             campaign={campaign}
             selectedHunt={selectedHunt}
             selectedSettlement={selectedSettlement}
+            selectedSettlementPhase={selectedSettlementPhase}
             selectedShowdown={selectedShowdown}
             selectedTab={selectedTab}
             setSelectedHunt={setSelectedHunt}
             setSelectedSettlement={setSelectedSettlement}
+            setSelectedSettlementPhase={setSelectedSettlementPhase}
             setSelectedShowdown={setSelectedShowdown}
             setSelectedSurvivor={setSelectedSurvivor}
             setSelectedTab={setSelectedTab}

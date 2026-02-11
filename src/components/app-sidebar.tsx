@@ -36,6 +36,7 @@ import { migrateCampaign } from '@/lib/migrate'
 import { Campaign, CampaignSchema } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import {
@@ -177,6 +178,8 @@ interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   selectedHunt: Hunt | null
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Settlement Phase */
+  selectedSettlementPhase: SettlementPhase | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Selected Tab */
@@ -185,6 +188,8 @@ interface AppSidebarProps extends ComponentProps<typeof Sidebar> {
   setSelectedHunt: (hunt: Hunt | null) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlementPhase: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Survivor */
@@ -205,10 +210,12 @@ export function AppSidebar({
   campaign,
   selectedHunt,
   selectedSettlement,
+  selectedSettlementPhase,
   selectedShowdown,
   selectedTab,
   setSelectedHunt,
   setSelectedSettlement,
+  setSelectedSettlementPhase,
   setSelectedShowdown,
   setSelectedSurvivor,
   setSelectedTab,
@@ -403,9 +410,11 @@ export function AppSidebar({
           campaign={campaign}
           selectedHunt={selectedHunt}
           selectedSettlement={selectedSettlement}
+          selectedSettlementPhase={selectedSettlementPhase}
           selectedShowdown={selectedShowdown}
           setSelectedHunt={setSelectedHunt}
           setSelectedSettlement={setSelectedSettlement}
+          setSelectedSettlementPhase={setSelectedSettlementPhase}
           setSelectedShowdown={setSelectedShowdown}
           setSelectedSurvivor={setSelectedSurvivor}
         />
