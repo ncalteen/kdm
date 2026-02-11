@@ -59,6 +59,8 @@ export const CampaignSchema = z.object({
   selectedShowdownMonsterIndex: z.number().default(0).optional(),
   /** Selected Settlement ID */
   selectedSettlementId: z.number().nullable().optional(),
+  /** Selected Settlement Phase ID */
+  selectedSettlementPhaseId: z.number().nullable().optional(),
   /** Selected Survivor ID */
   selectedSurvivorId: z.number().nullable().optional(),
   /** Selected Tab Name */
@@ -66,11 +68,11 @@ export const CampaignSchema = z.object({
   /** Global Settings */
   settings: GlobalSettingsSchema,
   /** Settlement Phases */
-  settlementPhases: z.array(SettlementPhaseSchema).nullable().optional(),
+  settlementPhases: z.array(SettlementPhaseSchema),
   /** Settlements */
   settlements: z.array(SettlementSchema),
   /** Showdowns */
-  showdowns: z.array(ShowdownSchema).nullable().optional(),
+  showdowns: z.array(ShowdownSchema),
   /** Survivors */
   survivors: z.array(SurvivorSchema),
   /** Version */

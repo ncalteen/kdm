@@ -9,6 +9,7 @@ import {
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import {
@@ -41,6 +42,8 @@ interface CampaignContextType {
   selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Settlement Phase */
+  selectedSettlementPhase: SettlementPhase | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Selected Showdown Monster Index */
@@ -65,6 +68,8 @@ interface CampaignContextType {
   setSelectedHuntMonsterIndex: (index: number) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlement: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Showdown Monster Index */
@@ -87,6 +92,8 @@ interface CampaignContextType {
   updateSelectedHunt: () => void
   /** Update Selected Settlement */
   updateSelectedSettlement: () => void
+  /** Update Selected Settlement Phase */
+  updateSelectedSettlementPhase: () => void
   /** Update Selected Showdown */
   updateSelectedShowdown: () => void
   /** Update Selected Survivor */
@@ -136,6 +143,14 @@ export function CampaignProvider({
       () =>
         campaign.settlements.find(
           (settlement) => settlement.id === campaign.selectedSettlementId
+        ) ?? null
+    )
+  const [selectedSettlementPhase, setSelectedSettlementPhaseState] =
+    useState<SettlementPhase | null>(
+      () =>
+        campaign.settlementPhases?.find(
+          (settlementPhase) =>
+            settlementPhase.id === campaign.selectedSettlementPhaseId
         ) ?? null
     )
   const [selectedShowdown, setSelectedShowdownState] =
@@ -233,10 +248,12 @@ export function CampaignProvider({
 
       saveCampaignToLocalStorage(updatedCampaign)
 
-      // If the selected settlement changed, also clear selected showdown
+      // If the selected settlement changed, also clear selected hunt, showdown,
+      // etc.
       if (currentSettlementId !== settlement?.id) {
         setSelectedHuntState(null)
         setSelectedHuntMonsterIndexState(0)
+        setSelectedSettlementPhaseState(null)
         setSelectedShowdownState(null)
         setSelectedShowdownMonsterIndexState(0)
         setSelectedSurvivorState(null)
@@ -249,6 +266,27 @@ export function CampaignProvider({
 
     // Stop creation mode
     if (settlement) setIsCreatingNewSettlement(false)
+  }
+
+  /**
+   * Set Selected Settlement Phase
+   *
+   * @param settlementPhase Selected Settlement Phase
+   */
+  const setSelectedSettlementPhase = (
+    settlementPhase: SettlementPhase | null
+  ) => {
+    setSelectedSettlementPhaseState(settlementPhase)
+    setCampaignState((campaign) => {
+      const updatedCampaign = {
+        ...campaign,
+        selectedSettlementPhaseId: settlementPhase?.id ?? null
+      }
+
+      saveCampaignToLocalStorage(updatedCampaign)
+
+      return updatedCampaign
+    })
   }
 
   /**
@@ -401,6 +439,17 @@ export function CampaignProvider({
     )
 
   /**
+   * Update Selected Settlement Phase
+   */
+  const updateSelectedSettlementPhase = () =>
+    setSelectedSettlementPhaseState(
+      campaign.settlementPhases.find(
+        (settlementPhase) =>
+          settlementPhase.id === campaign.selectedSettlementPhaseId
+      ) ?? null
+    )
+
+  /**
    * Update Selected Showdown
    */
   const updateSelectedShowdown = () => {
@@ -435,6 +484,7 @@ export function CampaignProvider({
         selectedHunt,
         selectedHuntMonsterIndex,
         selectedSettlement,
+        selectedSettlementPhase,
         selectedShowdown,
         selectedShowdownMonsterIndex,
         selectedSurvivor,
@@ -448,6 +498,7 @@ export function CampaignProvider({
         setSelectedHunt,
         setSelectedHuntMonsterIndex,
         setSelectedSettlement,
+        setSelectedSettlementPhase,
         setSelectedShowdown,
         setSelectedShowdownMonsterIndex,
         setSelectedSurvivor,
@@ -460,6 +511,7 @@ export function CampaignProvider({
         updateCampaign,
         updateSelectedHunt,
         updateSelectedSettlement,
+        updateSelectedSettlementPhase,
         updateSelectedShowdown,
         updateSelectedSurvivor,
 

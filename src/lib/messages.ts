@@ -1089,6 +1089,14 @@ export const SETTLEMENT_NOTES_SAVED_MESSAGE = () =>
   'As stories are shared amongst survivors, they are etched into the history of your settlement.'
 
 /**
+ * Settlement Phase Started
+ *
+ * @returns Settlement Phase Started Message
+ */
+export const SETTLEMENT_PHASE_STARTED_MESSAGE = () =>
+  'The showdown ends. Remaining survivors return to the relative safety of the settlement.'
+
+/**
  * Settlement Saved
  *
  * @returns Settlement Saved Message
