@@ -81,12 +81,10 @@ export function SurvivorCard({
         <div className="flex flex-col xl:flex-row xl:flex-wrap gap-2 w-full">
           {/* First Column - Essential Stats */}
           <div className="flex flex-col flex-1 gap-1 xl:min-w-[450px]">
-            {mode === SurvivorCardMode.SURVIVOR_CARD && (
-              <StatusCard
-                saveSelectedSurvivor={saveSelectedSurvivor}
-                selectedSurvivor={selectedSurvivor}
-              />
-            )}
+            <StatusCard
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSurvivor={selectedSurvivor}
+            />
             {selectedSurvivor?.wanderer && (
               <WandererCard
                 saveSelectedSurvivor={saveSelectedSurvivor}
