@@ -2,9 +2,11 @@
 
 import { ActiveShowdownCard } from '@/components/showdown/active-showdown/active-showdown-card'
 import { CreateShowdownCard } from '@/components/showdown/create-showdown/create-showdown-card'
+import { TabType } from '@/lib/enums'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -35,12 +37,16 @@ interface ShowdownCardProps {
   selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlementPhase: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Showdown Monster Index */
   setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
   /** Update Campaign */
   updateCampaign: (campaign: Campaign) => void
 }
@@ -61,9 +67,11 @@ export function ShowdownCard({
   selectedShowdownMonsterIndex,
   selectedSettlement,
   selectedSurvivor,
+  setSelectedSettlementPhase,
   setSelectedShowdown,
   setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
+  setSelectedTab,
   updateCampaign
 }: ShowdownCardProps): ReactElement {
   return selectedShowdown ? (
@@ -76,8 +84,10 @@ export function ShowdownCard({
       selectedSettlement={selectedSettlement}
       selectedSurvivor={selectedSurvivor}
       setSelectedShowdown={setSelectedShowdown}
+      setSelectedSettlementPhase={setSelectedSettlementPhase}
       setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
       setSelectedSurvivor={setSelectedSurvivor}
+      setSelectedTab={setSelectedTab}
       updateCampaign={updateCampaign}
     />
   ) : (
