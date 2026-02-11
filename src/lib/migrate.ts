@@ -805,6 +805,8 @@ function migrateTo0_20_0(campaign: Campaign) {
   console.log('Migrating to 0.20.0')
 
   if (!campaign.settlementPhases) campaign.settlementPhases = []
+  if (campaign.selectedSettlementPhaseId === undefined)
+    campaign.selectedSettlementPhaseId = null
 
   // Migration complete. Update version.
   campaign.version = '0.20.0'

@@ -9,10 +9,14 @@ import { z } from 'zod'
 export const SettlementPhaseSchema = z.object({
   /** Endeavors */
   endeavors: z.number().min(0).default(0),
+  /** Settlement Phase ID */
+  id: z.number(),
+  /** Returning Scout */
+  returningScout: z.number().nullable().default(null),
   /** Returning Survivors */
   returningSurvivors: z.array(z.number()),
   /** Settlement ID */
-  settlementId: z.string(),
+  settlementId: z.number(),
   /** Settlement Phase Step */
   step: z.enum(SettlementPhaseStep)
 })
