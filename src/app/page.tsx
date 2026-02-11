@@ -391,11 +391,13 @@ function MainPage(): ReactElement {
                       loadTestData={loadTestData}
                       saveSelectedHunt={saveSelectedHunt}
                       saveSelectedSettlement={saveSelectedSettlement}
+                      saveSelectedSettlementPhase={saveSelectedSettlementPhase}
                       saveSelectedShowdown={saveSelectedShowdown}
                       saveSelectedSurvivor={saveSelectedSurvivor}
                       selectedHunt={selectedHunt}
                       selectedHuntMonsterIndex={selectedHuntMonsterIndex}
                       selectedSettlement={selectedSettlement}
+                      selectedSettlementPhase={selectedSettlementPhase}
                       selectedShowdown={selectedShowdown}
                       selectedShowdownMonsterIndex={
                         selectedShowdownMonsterIndex
@@ -406,6 +408,7 @@ function MainPage(): ReactElement {
                       setSelectedHunt={setSelectedHunt}
                       setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
                       setSelectedSettlement={setSelectedSettlement}
+                      setSelectedSettlementPhase={setSelectedSettlementPhase}
                       setSelectedShowdown={setSelectedShowdown}
                       setSelectedShowdownMonsterIndex={
                         setSelectedShowdownMonsterIndex

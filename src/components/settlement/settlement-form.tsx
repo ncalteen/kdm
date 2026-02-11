@@ -61,6 +61,11 @@ interface SettlementFormProps {
     updateData: Partial<Settlement>,
     successMsg?: string
   ) => void
+  /** Save Selected Settlement Phase */
+  saveSelectedSettlementPhase: (
+    updateData: Partial<SettlementPhase>,
+    successMsg?: string
+  ) => void
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -77,6 +82,8 @@ interface SettlementFormProps {
   selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Settlement Phase */
+  selectedSettlementPhase: SettlementPhase | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Selected Showdown Monster Index */
@@ -84,7 +91,7 @@ interface SettlementFormProps {
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Selected Tab */
-  selectedTab: string
+  selectedTab: TabType
   /** Set New Survivor Being Created */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Hunt */
@@ -93,6 +100,8 @@ interface SettlementFormProps {
   setSelectedHuntMonsterIndex: (index: number) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlementPhase: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Showdown Monster Index */
@@ -117,11 +126,13 @@ export function SettlementForm({
   loadTestData,
   saveSelectedHunt,
   saveSelectedSettlement,
+  saveSelectedSettlementPhase,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
   selectedHuntMonsterIndex,
   selectedSettlement,
+  selectedSettlementPhase,
   selectedShowdown,
   selectedShowdownMonsterIndex,
   selectedSurvivor,
@@ -130,6 +141,7 @@ export function SettlementForm({
   setSelectedHunt,
   setSelectedHuntMonsterIndex,
   setSelectedSettlement,
+  setSelectedSettlementPhase,
   setSelectedShowdown,
   setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
@@ -460,9 +472,11 @@ export function SettlementForm({
               selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
+              setSelectedSettlementPhase={setSelectedSettlementPhase}
               setSelectedShowdown={setSelectedShowdown}
               setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
               setSelectedSurvivor={setSelectedSurvivor}
+              setSelectedTab={setSelectedTab}
               updateCampaign={updateCampaign}
             />
           )}
