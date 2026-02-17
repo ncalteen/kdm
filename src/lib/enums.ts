@@ -284,6 +284,8 @@ export enum TurnType {
 export enum SurvivorCardMode {
   /** Hunt Page */
   HUNT_CARD = 'hunt',
+  /** Settlement Phase Page */
+  SETTLEMENT_PHASE_CARD = 'settlementPhase',
   /** Showdown Page */
   SHOWDOWN_CARD = 'showdown',
   /** Survivor Page */
@@ -416,9 +418,10 @@ export enum MonsterVersion {
  *    - Manual; not required in the application.
  * 2. Survivors Return
  *    - Heal Survivors
- *    - Apply Departing Bonuses
+ *    - Apply Arrival Bonuses
  * 3. Gain Endeavors
  *    - +1 for Each Returning Survivor
+ *    - Death Principle may affect this.
  * 4. Update Timeline
  *    - Advance Timeline by 1
  *    - Draw Settlement Event
@@ -443,14 +446,26 @@ export enum MonsterVersion {
  *     - Close Settlement Phase
  */
 export enum SettlementPhaseStep {
+  /** Set Up Settlement */
+  SET_UP_SETTLEMENT = 'Set Up Settlement',
   /** Survivors Return */
   SURVIVORS_RETURN = 'Survivors Return',
   /** Gain Endeavors */
   GAIN_ENDEAVORS = 'Gain Endeavors',
   /** Update Timeline */
   UPDATE_TIMELINE = 'Update Timeline',
+  /** Update Death Count */
+  UPDATE_DEATH_COUNT = 'Update Death Count',
   /** Check Milestones */
   CHECK_MILESTONES = 'Check Milestones',
   /** Develop */
-  DEVELOP = 'Develop'
+  DEVELOP = 'Develop',
+  /** Prepare Departing Survivors */
+  PREPARE_DEPARTING_SURVIVORS = 'Prepare Departing Survivors',
+  /** Special Showdown */
+  SPECIAL_SHOWDOWN = 'Special Showdown',
+  /** Record and Archive Resources */
+  RECORD_AND_ARCHIVE_RESOURCES = 'Record and Archive Resources',
+  /** End Settlement Phase */
+  END_SETTLEMENT_PHASE = 'End Settlement Phase'
 }
