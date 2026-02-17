@@ -483,6 +483,22 @@ export function SettlementForm({
               updateCampaign={updateCampaign}
             />
           )}
+
+          {/* Settlement Phase Tab */}
+          {selectedSettlement && selectedTab === TabType.SETTLEMENT_PHASE && (
+            <SettlementPhaseCard
+              campaign={campaign}
+              saveSelectedSettlement={saveSelectedSettlement}
+              saveSelectedSettlementPhase={saveSelectedSettlementPhase}
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSettlement={selectedSettlement}
+              selectedSettlementPhase={selectedSettlementPhase}
+              selectedSurvivor={selectedSurvivor}
+              setSelectedSurvivor={setSelectedSurvivor}
+              setSelectedTab={setSelectedTab}
+              updateCampaign={updateCampaign}
+            />
+          )}
         </div>
       </div>
     </>
