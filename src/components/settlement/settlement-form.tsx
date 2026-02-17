@@ -1,6 +1,7 @@
 'use client'
 
 import { HuntCard } from '@/components/hunt/hunt-card'
+import { SettlementPhaseCard } from '@/components/settlement-phase/settlement-phase-card'
 import { CollectiveCognitionRewardsCard } from '@/components/settlement/arc/collective-cognition-rewards-card'
 import { CollectiveCognitionVictoriesCard } from '@/components/settlement/arc/collective-cognition-victories-card'
 import { KnowledgesCard } from '@/components/settlement/arc/knowledges-card'
