@@ -153,7 +153,9 @@ export function SettlementForm({
     <>
       <OverviewCard
         campaign={campaign}
+        saveSelectedSettlementPhase={saveSelectedSettlementPhase}
         selectedSettlement={selectedSettlement}
+        selectedSettlementPhase={selectedSettlementPhase}
         updateCampaign={updateCampaign}
       />
 

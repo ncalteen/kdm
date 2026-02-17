@@ -16,6 +16,7 @@ import {
 } from '@/lib/messages'
 import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { ReactElement, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 
@@ -25,8 +26,15 @@ import { toast } from 'sonner'
 interface OverviewCardProps {
   /** Campaign */
   campaign: Campaign
+  /** Save Selected Settlement Phase */
+  saveSelectedSettlementPhase: (
+    updateData: Partial<SettlementPhase>,
+    successMsg?: string
+  ) => void
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Settlement Phase */
+  selectedSettlementPhase: SettlementPhase | null
   /** Update Campaign */
   updateCampaign: (campaign: Campaign) => void
 }
@@ -42,7 +50,9 @@ interface OverviewCardProps {
  */
 export function OverviewCard({
   campaign,
+  saveSelectedSettlementPhase,
   selectedSettlement,
+  selectedSettlementPhase,
   updateCampaign
 }: OverviewCardProps): ReactElement {
   // Calculate current population from living survivors
@@ -328,6 +338,37 @@ export function OverviewCard({
               </div>
             </>
           )}
+
+          {/* Endeavors (Settlement Phase Only) */}
+          {selectedSettlementPhase &&
+            selectedSettlement?.id ===
+              selectedSettlementPhase?.settlementId && (
+              <>
+                <Separator
+                  orientation="vertical"
+                  className="mx-2 data-[orientation=vertical]:h-12"
+                />
+
+                <div className="flex flex-col items-center gap-1">
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    className="w-12 h-12 text-center no-spinners text-xl sm:text-xl md:text-xl focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    defaultValue={selectedSettlementPhase?.endeavors ?? 0}
+                    key={`endeavors-${selectedSettlement?.id}-${selectedSettlementPhase?.endeavors}`}
+                    onBlur={(e) =>
+                      saveSelectedSettlementPhase({
+                        endeavors: parseInt(e.target.value, 10)
+                      })
+                    }
+                    name="endeavors-desktop"
+                    id="endeavors-desktop"
+                  />
+                  <Label className="text-center text-xs">Endeavors</Label>
+                </div>
+              </>
+            )}
         </div>
 
         {/* Mobile/Tablet Layout */}
