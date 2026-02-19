@@ -238,6 +238,7 @@ export function ActiveHuntCard({
         monsters: selectedHunt.monsters,
         scout: selectedHunt.scout,
         settlementId: selectedHunt.settlementId,
+        specialShowdown: false,
         survivorDetails: selectedHunt.survivorDetails.map((survivor) => ({
           accuracyTokens: survivor.accuracyTokens,
           bleedingTokens: 0,
