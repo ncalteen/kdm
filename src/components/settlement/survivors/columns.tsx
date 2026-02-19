@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
-import { Avatar } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TabType } from '@/lib/enums'
@@ -25,7 +25,8 @@ import {
   ShieldOffIcon,
   SkullIcon,
   Trash2Icon,
-  UserRoundSearchIcon
+  UserRoundSearchIcon,
+  UserXIcon
 } from 'lucide-react'
 
 /**
@@ -163,8 +164,14 @@ export const createColumns = ({
           </AlertDialog>
           <div className="text-left text-sm pl-2 flex gap-2 items-center">
             <Avatar
-              className={`h-6 w-6 ${getColorStyle(row.original.color, 'bg')}`}
-            />
+              className={`h-6 w-6 ${getColorStyle(row.original.color, 'bg')}`}>
+              <AvatarFallback className="bg-transparent">
+                {(row.original.dead && <SkullIcon className="h-3 w-3" />) ||
+                  (row.original.retired && !row.original.dead && (
+                    <UserXIcon className="h-3 w-3" />
+                  ))}
+              </AvatarFallback>
+            </Avatar>
             {row.getValue('name')}
           </div>
           {row.original.wanderer && (

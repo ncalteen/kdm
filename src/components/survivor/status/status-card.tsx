@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -150,8 +150,16 @@ export function StatusCard({
                   onContextMenu={(e) => {
                     e.preventDefault() // Prevent default right-click menu
                     setIsColorPickerOpen(true)
-                  }}
-                />
+                  }}>
+                  <AvatarFallback className="bg-transparent">
+                    {(selectedSurvivor?.dead && (
+                      <SkullIcon className="h-4 w-4" />
+                    )) ||
+                      (selectedSurvivor?.retired && !selectedSurvivor?.dead && (
+                        <UserXIcon className="h-4 w-4" />
+                      ))}
+                  </AvatarFallback>
+                </Avatar>
               </PopoverTrigger>
               <PopoverContent className="w-64 p-2">
                 <div className="grid grid-cols-6 gap-1">
