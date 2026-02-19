@@ -185,7 +185,7 @@ export function ResourceItem({
                 <div className="col-span-2">
                   <Badge variant="default">{selectedCategory}</Badge>
                 </div>
-                <div className="flex flex-wrap gap-1 col-span-5">
+                <div className="flex flex-wrap gap-1 col-span-4">
                   {selectedTypes.map((type) => (
                     <Badge key={type} variant="secondary" className="text-xs">
                       {type}
@@ -202,7 +202,7 @@ export function ResourceItem({
                     className="w-16 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
-                <div className="col-span-1 flex justify-end">
+                <div className="col-span-2 flex justify-end">
                   <Button
                     type="button"
                     variant="ghost"
@@ -291,7 +291,7 @@ export function ResourceItem({
                 </div>
                 {selectedCategory === ResourceCategory.MONSTER ? (
                   <>
-                    <div className="col-span-3">
+                    <div className="col-span-2">
                       <ResourceTypesCombobox
                         selectedTypes={selectedTypes}
                         onChange={setSelectedTypes}
@@ -306,7 +306,7 @@ export function ResourceItem({
                     </div>
                   </>
                 ) : (
-                  <div className="col-span-5">
+                  <div className="col-span-4">
                     <ResourceTypesCombobox
                       selectedTypes={selectedTypes}
                       onChange={setSelectedTypes}
@@ -326,7 +326,7 @@ export function ResourceItem({
                     ref={amountInputRef}
                   />
                 </div>
-                <div className="col-span-1 flex justify-end">
+                <div className="col-span-2 flex justify-end">
                   <Button
                     type="button"
                     variant="ghost"
@@ -546,7 +546,7 @@ export function NewResourceItem({
                     onChange={setCategory}
                   />
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-2">
                   <ResourceTypesCombobox
                     selectedTypes={types}
                     onChange={setTypes}
@@ -573,7 +573,7 @@ export function NewResourceItem({
                     className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
-                <div className="col-span-1 flex justify-end">
+                <div className="col-span-2 flex justify-end">
                   <Button
                     type="button"
                     variant="ghost"
