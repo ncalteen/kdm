@@ -121,9 +121,7 @@ export function MilestoneItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">{milestone.name}</span>
-        </div>
+        <span className="ml-1 text-sm">{milestone.name}</span>
       ) : (
         <Input
           ref={nameRef}
@@ -138,7 +136,7 @@ export function MilestoneItem({
         {isDisabled ? (
           <Badge variant="secondary" className="h-8 w-40">
             <BookOpenIcon className="h-4 w-4" />
-            {milestone.event}
+            <span className="text-xs">{milestone.event}</span>
           </Badge>
         ) : (
           <Input

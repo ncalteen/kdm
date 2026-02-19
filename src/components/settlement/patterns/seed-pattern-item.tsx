@@ -98,11 +98,9 @@ export function SeedPatternItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSettlement?.seedPatterns?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSettlement?.seedPatterns?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

@@ -124,9 +124,7 @@ export function RewardItem({
 
       {/* Reward Name Input */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">{reward.name}</span>
-        </div>
+        <span className="text-sm ml-1">{reward.name}</span>
       ) : (
         <Input
           ref={nameInputRef}

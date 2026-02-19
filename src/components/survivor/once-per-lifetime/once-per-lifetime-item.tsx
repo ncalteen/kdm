@@ -99,11 +99,9 @@ export function OncePerLifetimeItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSurvivor?.oncePerLifetime?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSurvivor?.oncePerLifetime?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

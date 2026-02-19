@@ -98,11 +98,9 @@ export function ArrivalBonusItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSettlement?.arrivalBonuses?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSettlement?.arrivalBonuses?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

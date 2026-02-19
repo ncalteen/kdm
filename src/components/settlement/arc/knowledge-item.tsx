@@ -114,21 +114,17 @@ export function KnowledgeItem({
           </div>
 
           {/* Knowledge Name */}
-          <div className="flex ml-1">
-            <span className="text-sm">
-              {selectedSettlement?.knowledges?.[index].name ?? ''}
-            </span>
-          </div>
+          <span className="text-sm ml-1">
+            {selectedSettlement?.knowledges?.[index].name ?? ''}
+          </span>
 
           <div className="flex items-center gap-1 ml-auto">
             {/* Philosophy Badge */}
-            <div className="flex ml-1">
-              <span className="text-xs">
-                <Badge variant="outline">
-                  {selectedSettlement?.knowledges?.[index].philosophy ?? 'None'}
-                </Badge>
-              </span>
-            </div>
+            <span className="text-xs ml-1">
+              <Badge variant="outline">
+                {selectedSettlement?.knowledges?.[index].philosophy ?? 'None'}
+              </Badge>
+            </span>
 
             {/* Interaction Buttons */}
             <Button

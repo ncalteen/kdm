@@ -99,11 +99,9 @@ export function MonsterVolumeItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSettlement?.monsterVolumes?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSettlement?.monsterVolumes?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

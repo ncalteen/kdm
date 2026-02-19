@@ -81,7 +81,7 @@ export function SettlementPhaseSurvivorCard({
 
   return (
     <Card className="w-full min-w-[430px] border-0 p-0">
-      <CardContent className="px-2">
+      <CardContent className="p-0">
         <SurvivorCard
           mode={SurvivorCardMode.SETTLEMENT_PHASE_CARD}
           saveSelectedSurvivor={saveSelectedSurvivor}

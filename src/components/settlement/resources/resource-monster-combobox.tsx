@@ -113,7 +113,9 @@ export function ResourceMonsterCombobox({
           aria-expanded={open}
           className="w-full justify-between h-9"
           disabled={disabled || availableMonsters.length === 0}>
-          {selectedMonsterName ?? 'Select monster...'}
+          <span className="truncate">
+            {selectedMonsterName ?? 'Select monster...'}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

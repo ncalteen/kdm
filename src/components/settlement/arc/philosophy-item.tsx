@@ -90,11 +90,9 @@ export function PhilosophyItem({
 
       {/* Select Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSettlement?.philosophies?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSettlement?.philosophies?.[index]}
+        </span>
       ) : (
         <SelectPhilosophy
           ref={selectRef}

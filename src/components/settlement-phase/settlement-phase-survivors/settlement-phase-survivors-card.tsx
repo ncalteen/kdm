@@ -104,7 +104,7 @@ export function SettlementPhaseSurvivorsCard({
   }
 
   return (
-    <div className="p-0">
+    <div>
       <div className="survivor_carousel_controls min-w-[430px] grid-cols-3">
         <div className="survivor_carousel_buttons">
           <Button
