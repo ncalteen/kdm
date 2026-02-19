@@ -42,6 +42,7 @@ export const newCampaign: Campaign = {
   hunts: [],
   selectedHuntId: undefined,
   selectedSettlementId: undefined,
+  selectedSettlementPhaseId: undefined,
   selectedShowdownId: undefined,
   selectedSurvivorId: undefined,
   selectedTab: undefined,
@@ -54,6 +55,7 @@ export const newCampaign: Campaign = {
     }
   }),
   settlements: [],
+  settlementPhases: [],
   showdowns: [],
   survivors: [],
   version: packageInfo.version
@@ -137,6 +139,25 @@ export function getNextShowdownId(campaign: Campaign): number {
   return !campaign.showdowns || campaign.showdowns.length === 0
     ? 1
     : Math.max(...campaign.showdowns.map((showdown) => showdown.id)) + 1
+}
+
+/**
+ * Calculate Next Settlement Phase ID
+ *
+ * If this is the first settlement phase, return 1. Otherwise, return the latest
+ * settlement phase ID + 1.
+ *
+ * @param campaign Campaign
+ * @returns Next Settlement Phase ID
+ */
+export function getNextSettlementPhaseId(campaign: Campaign): number {
+  return !campaign.settlementPhases || campaign.settlementPhases.length === 0
+    ? 1
+    : Math.max(
+        ...campaign.settlementPhases.map(
+          (settlementPhase) => settlementPhase.id
+        )
+      ) + 1
 }
 
 /**

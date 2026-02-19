@@ -44,8 +44,8 @@ export enum TabType {
   NOTES = 'notes',
   /** Settings */
   SETTINGS = 'settings',
-  /** Settlement */
-  SETTLEMENT = 'settlement',
+  /** Settlement Phase */
+  SETTLEMENT_PHASE = 'settlementPhase',
   /** Showdown */
   SHOWDOWN = 'showdown',
   /** Society */
@@ -284,6 +284,8 @@ export enum TurnType {
 export enum SurvivorCardMode {
   /** Hunt Page */
   HUNT_CARD = 'hunt',
+  /** Settlement Phase Page */
+  SETTLEMENT_PHASE_CARD = 'settlementPhase',
   /** Showdown Page */
   SHOWDOWN_CARD = 'showdown',
   /** Survivor Page */
@@ -389,7 +391,9 @@ export enum SchemaVersion {
   /** Version 0.17.0 */
   V0_17_0 = '0.17.0',
   /** Version 0.18.0 */
-  V0_18_0 = '0.18.0'
+  V0_18_0 = '0.18.0',
+  /** Version 0.19.0 */
+  V0_19_0 = '0.19.0'
 }
 
 /**
@@ -402,4 +406,76 @@ export enum MonsterVersion {
   ALTERNATE = 'alternate',
   /** Vignette Monster */
   VIGNETTE = 'vignette'
+}
+
+/**
+ * Settlement Phase Steps
+ *
+ * There are more than this in the game, but these are the ones that will have
+ * an effect on the application. The full list is:
+ *
+ * 1. Set Up the Settlement
+ *    - Manual; not required in the application.
+ * 2. Survivors Return
+ *    - Heal Survivors
+ *    - Apply Arrival Bonuses
+ * 3. Gain Endeavors
+ *    - +1 for Each Returning Survivor
+ *    - Death Principle may affect this.
+ * 4. Update Timeline
+ *    - Advance Timeline by 1
+ *    - Draw Settlement Event
+ *    - Trigger Story Events
+ * 5. Update the Death Count
+ *    - Automatic; not required in the application.
+ * 6. Check Milestones
+ *    - Check for Campaign Milestones
+ *    - Check for Strain Milestones
+ * 7. Develop
+ *    - Innovate
+ *    - Craft at Locations
+ *    - Spend Endeavors
+ *    - (Arc) Forum?
+ * 8. Prepare Departing Survivors
+ *    - Manual; Done during the Hunt/Showdown setup in the application.
+ * 9. Special Showdown
+ *    - Complete and Return to "Update Death Count"
+ * 10. Record & Archive Resources
+ *     - Automatic; not required in the application.
+ * 11. End Settlement Phase
+ *     - Close Settlement Phase
+ */
+export enum SettlementPhaseStep {
+  /** Set Up Settlement */
+  SET_UP_SETTLEMENT = 'Set Up Settlement',
+  /** Survivors Return */
+  SURVIVORS_RETURN = 'Survivors Return',
+  /** Gain Endeavors */
+  GAIN_ENDEAVORS = 'Gain Endeavors',
+  /** Update Timeline */
+  UPDATE_TIMELINE = 'Update Timeline',
+  /** Update Death Count */
+  UPDATE_DEATH_COUNT = 'Update Death Count',
+  /** Check Milestones */
+  CHECK_MILESTONES = 'Check Milestones',
+  /** Develop */
+  DEVELOP = 'Develop',
+  /** Prepare Departing Survivors */
+  PREPARE_DEPARTING_SURVIVORS = 'Prepare Departing Survivors',
+  /** Special Showdown */
+  SPECIAL_SHOWDOWN = 'Special Showdown',
+  /** Record and Archive Resources */
+  RECORD_AND_ARCHIVE_RESOURCES = 'Record and Archive Resources',
+  /** End Settlement Phase */
+  END_SETTLEMENT_PHASE = 'End Settlement Phase'
+}
+
+/**
+ * Showdown Types
+ */
+export enum ShowdownType {
+  /** Regular Showdown */
+  REGULAR = 'Regular',
+  /** Special Showdown */
+  SPECIAL = 'Special'
 }

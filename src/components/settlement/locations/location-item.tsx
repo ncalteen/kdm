@@ -115,11 +115,9 @@ export function LocationItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSettlement?.locations?.[index].name ?? ''}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSettlement?.locations?.[index].name ?? ''}
+        </span>
       ) : (
         <Input
           ref={inputRef}

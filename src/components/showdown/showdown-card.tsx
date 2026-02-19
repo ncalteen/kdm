@@ -1,10 +1,13 @@
 'use client'
 
+import { DepartingBonusesCard } from '@/components/settlement/departing-bonuses/departing-bonuses-card'
 import { ActiveShowdownCard } from '@/components/showdown/active-showdown/active-showdown-card'
 import { CreateShowdownCard } from '@/components/showdown/create-showdown/create-showdown-card'
+import { TabType } from '@/lib/enums'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -15,6 +18,11 @@ import { ReactElement } from 'react'
 interface ShowdownCardProps {
   /** Campaign */
   campaign: Campaign
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -35,12 +43,16 @@ interface ShowdownCardProps {
   selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlementPhase: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Showdown Monster Index */
   setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
   /** Update Campaign */
   updateCampaign: (campaign: Campaign) => void
 }
@@ -54,6 +66,7 @@ interface ShowdownCardProps {
  */
 export function ShowdownCard({
   campaign,
+  saveSelectedSettlement,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
@@ -61,9 +74,11 @@ export function ShowdownCard({
   selectedShowdownMonsterIndex,
   selectedSettlement,
   selectedSurvivor,
+  setSelectedSettlementPhase,
   setSelectedShowdown,
   setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
+  setSelectedTab,
   updateCampaign
 }: ShowdownCardProps): ReactElement {
   return selectedShowdown ? (
@@ -76,20 +91,32 @@ export function ShowdownCard({
       selectedSettlement={selectedSettlement}
       selectedSurvivor={selectedSurvivor}
       setSelectedShowdown={setSelectedShowdown}
+      setSelectedSettlementPhase={setSelectedSettlementPhase}
       setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
       setSelectedSurvivor={setSelectedSurvivor}
+      setSelectedTab={setSelectedTab}
       updateCampaign={updateCampaign}
     />
   ) : (
-    <CreateShowdownCard
-      campaign={campaign}
-      saveSelectedShowdown={saveSelectedShowdown}
-      selectedHunt={selectedHunt}
-      selectedSettlement={selectedSettlement}
-      selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
-      setSelectedShowdown={setSelectedShowdown}
-      setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
-      setSelectedSurvivor={setSelectedSurvivor}
-    />
+    <div className="mt-10 flex flex-wrap items-start justify-center gap-4">
+      <div className="order-2 md:order-1">
+        <CreateShowdownCard
+          campaign={campaign}
+          saveSelectedShowdown={saveSelectedShowdown}
+          selectedHunt={selectedHunt}
+          selectedSettlement={selectedSettlement}
+          selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
+          setSelectedShowdown={setSelectedShowdown}
+          setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
+          setSelectedSurvivor={setSelectedSurvivor}
+        />
+      </div>
+      <div className="w-[400px] order-1 md:order-2">
+        <DepartingBonusesCard
+          saveSelectedSettlement={saveSelectedSettlement}
+          selectedSettlement={selectedSettlement}
+        />
+      </div>
+    </div>
   )
 }

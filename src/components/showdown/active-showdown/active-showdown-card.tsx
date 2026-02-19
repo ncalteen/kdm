@@ -14,9 +14,16 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { ERROR_MESSAGE, SHOWDOWN_DELETED_MESSAGE } from '@/lib/messages'
+import { SettlementPhaseStep, TabType } from '@/lib/enums'
+import {
+  ERROR_MESSAGE,
+  SETTLEMENT_PHASE_STARTED_MESSAGE,
+  SHOWDOWN_DELETED_MESSAGE
+} from '@/lib/messages'
+import { getNextSettlementPhaseId } from '@/lib/utils'
 import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ChevronRightIcon, XIcon } from 'lucide-react'
@@ -47,12 +54,16 @@ interface ActiveShowdownCardProps {
   selectedSettlement: Settlement | null
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlementPhase: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Showdown Monster Index */
   setSelectedShowdownMonsterIndex: (index: number) => void
   /** Set Selected Survivor */
   setSelectedSurvivor: (survivor: Survivor | null) => void
+  /** Set Selected Tab */
+  setSelectedTab: (tab: TabType) => void
   /** Update Campaign */
   updateCampaign: (campaign: Campaign) => void
 }
@@ -71,9 +82,11 @@ export function ActiveShowdownCard({
   selectedShowdownMonsterIndex,
   selectedSettlement,
   selectedSurvivor,
+  setSelectedSettlementPhase,
   setSelectedShowdown,
   setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
+  setSelectedTab,
   updateCampaign
 }: ActiveShowdownCardProps): ReactElement {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState<boolean>(false)
@@ -88,18 +101,20 @@ export function ActiveShowdownCard({
 
   /**
    * Handle Delete Showdown
+   *
+   * Showdown is deleted and the survivors return to the settlement. This will
+   * **not** trigger the settlement phase.
    */
   const handleDeleteShowdown = useCallback(() => {
     if (!selectedSettlement?.id) return
 
     try {
-      const updatedShowdowns = campaign.showdowns?.filter(
-        (showdown) => showdown.id !== selectedShowdown?.id
-      )
-
+      // Remove the showdown from the campaign's showdowns array.
       updateCampaign({
         ...campaign,
-        showdowns: updatedShowdowns,
+        showdowns: campaign.showdowns?.filter(
+          (showdown) => showdown.id !== selectedShowdown?.id
+        ),
         survivors: campaign.survivors?.map((survivor) =>
           selectedShowdown?.survivors?.includes(survivor.id)
             ? // Reset the survivors' injuries
@@ -119,12 +134,10 @@ export function ActiveShowdownCard({
             : survivor
         )
       })
-
       setSelectedShowdown(null)
+      setIsCancelDialogOpen(false)
 
       toast.success(SHOWDOWN_DELETED_MESSAGE())
-
-      setIsCancelDialogOpen(false)
     } catch (error) {
       console.error('Delete Showdown Error:', error)
       toast.error(ERROR_MESSAGE())
@@ -139,11 +152,61 @@ export function ActiveShowdownCard({
   ])
 
   /**
-   * Handle Settlement Phase Transition
+   * Handle Proceed to Settlement Phase Transition
    */
-  const handleSettlementPhase = useCallback(() => {
-    console.log('TODO: Settlement Phase Transition')
-  }, [])
+  const handleProceedToSettlementPhase = useCallback(() => {
+    if (!selectedSettlement || !selectedShowdown) return
+
+    try {
+      // Create the settlement phase from the current showdown
+      const settlementPhase: SettlementPhase = {
+        endeavors: 0,
+        id: getNextSettlementPhaseId(campaign),
+        returningScout: selectedShowdown.scout ?? null,
+        returningSurvivors: selectedShowdown.survivors,
+        settlementId: selectedSettlement.id,
+        // If this is a special showdown, return to the settlement phase at the
+        // 'Update Death Count' step.
+        step: selectedShowdown.specialShowdown
+          ? SettlementPhaseStep.UPDATE_DEATH_COUNT
+          : SettlementPhaseStep.SURVIVORS_RETURN
+      }
+
+      // Remove the showdown and add the settlement phase
+      const updatedShowdowns = campaign.showdowns.filter(
+        (showdown) => showdown.id !== selectedShowdown.id
+      )
+      const updatedSettlementPhases = [
+        ...campaign.settlementPhases,
+        settlementPhase
+      ]
+
+      updateCampaign({
+        ...campaign,
+        showdowns: updatedShowdowns,
+        settlementPhases: updatedSettlementPhases
+      })
+
+      setSelectedShowdown(null)
+      setSelectedShowdownMonsterIndex(0)
+      setSelectedSettlementPhase(settlementPhase)
+      setSelectedTab(TabType.SETTLEMENT_PHASE)
+
+      toast.success(SETTLEMENT_PHASE_STARTED_MESSAGE())
+    } catch (error) {
+      console.error('Settlement Phase Creation Error:', error)
+      toast.error(ERROR_MESSAGE())
+    }
+  }, [
+    campaign,
+    selectedSettlement,
+    selectedShowdown,
+    setSelectedSettlementPhase,
+    setSelectedShowdown,
+    setSelectedShowdownMonsterIndex,
+    setSelectedTab,
+    updateCampaign
+  ])
 
   return (
     <div className="flex flex-col gap-2 h-full relative">
@@ -159,13 +222,15 @@ export function ActiveShowdownCard({
           End Showdown
         </Button>
         <Button
-          variant="secondary"
+          variant="default"
           size="sm"
-          onClick={handleSettlementPhase}
+          onClick={handleProceedToSettlementPhase}
           className="pointer-events-auto"
-          title="Begin Settlement Phase"
-          disabled={true}>
-          Begin Settlement Phase <ChevronRightIcon className="size-4" />
+          title="Settlement Phase">
+          {selectedShowdown?.specialShowdown
+            ? 'Return to Settlement Phase'
+            : 'Begin Settlement Phase'}
+          <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 

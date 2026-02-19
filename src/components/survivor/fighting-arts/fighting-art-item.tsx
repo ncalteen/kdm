@@ -113,11 +113,9 @@ export function FightingArtItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSurvivor?.[arrayName]?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSurvivor?.[arrayName]?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

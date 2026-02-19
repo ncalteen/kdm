@@ -99,11 +99,9 @@ export function NextDepartureItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSurvivor?.nextDeparture?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSurvivor?.nextDeparture?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

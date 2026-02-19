@@ -8,6 +8,7 @@ import { Form } from '@/components/ui/form'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { useCampaign } from '@/contexts/campaign-context'
 import { useSelectedHuntSave } from '@/hooks/use-selected-hunt-save'
+import { useSelectedSettlementPhaseSave } from '@/hooks/use-selected-settlement-phase-save'
 import { useSelectedSettlementSave } from '@/hooks/use-selected-settlement-save'
 import { useSelectedShowdownSave } from '@/hooks/use-selected-showdown-save'
 import { useSelectedSurvivorSave } from '@/hooks/use-selected-survivor-save'
@@ -16,6 +17,10 @@ import { migrateCampaign } from '@/lib/migrate'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt, HuntSchema } from '@/schemas/hunt'
 import { Settlement, SettlementSchema } from '@/schemas/settlement'
+import {
+  SettlementPhase,
+  SettlementPhaseSchema
+} from '@/schemas/settlement-phase'
 import { Showdown, ShowdownSchema } from '@/schemas/showdown'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -127,6 +132,7 @@ function MainPage(): ReactElement {
     setSelectedHunt,
     setSelectedHuntMonsterIndex,
     setSelectedSettlement,
+    setSelectedSettlementPhase,
     setSelectedShowdown,
     setSelectedShowdownMonsterIndex,
     setSelectedSurvivor,
@@ -136,6 +142,7 @@ function MainPage(): ReactElement {
     updateCampaign,
     updateSelectedHunt,
     updateSelectedSettlement,
+    updateSelectedSettlementPhase,
     updateSelectedShowdown,
     updateSelectedSurvivor,
 
@@ -158,6 +165,14 @@ function MainPage(): ReactElement {
         (settlement) => settlement.id === campaign.selectedSettlementId
       ) ?? null,
     [campaign.settlements, campaign.selectedSettlementId]
+  )
+  const selectedSettlementPhase = useMemo(
+    () =>
+      campaign.settlementPhases?.find(
+        (settlementPhase) =>
+          settlementPhase.id === campaign.selectedSettlementPhaseId
+      ) ?? null,
+    [campaign.settlementPhases, campaign.selectedSettlementPhaseId]
   )
   const selectedShowdown = useMemo(
     () =>
@@ -199,6 +214,14 @@ function MainPage(): ReactElement {
     [selectedSettlement]
   )
 
+  const settlementPhaseFormConfig = useMemo(
+    () => ({
+      resolver: zodResolver(SettlementPhaseSchema) as Resolver<SettlementPhase>,
+      defaultValues: selectedSettlementPhase ?? undefined
+    }),
+    [selectedSettlementPhase]
+  )
+
   const showdownFormConfig = useMemo(
     () => ({
       resolver: zodResolver(ShowdownSchema) as Resolver<Showdown>,
@@ -226,17 +249,25 @@ function MainPage(): ReactElement {
   // Initialize the form data from the context
   const huntForm = useForm<Hunt>(huntFormConfig)
   const settlementForm = useForm<Settlement>(settlementFormConfig)
+  const settlementPhaseForm = useForm<SettlementPhase>(
+    settlementPhaseFormConfig
+  )
   const showdownForm = useForm<Showdown>(showdownFormConfig)
   const survivorForm = useForm<Survivor>(survivorFormConfig)
 
   // Reset forms when selected entities change to keep form data in sync
   useEffect(() => {
+    if (selectedHunt) huntForm.reset(selectedHunt)
+  }, [selectedHunt, huntForm])
+
+  useEffect(() => {
     if (selectedSettlement) settlementForm.reset(selectedSettlement)
   }, [selectedSettlement, settlementForm])
 
   useEffect(() => {
-    if (selectedHunt) huntForm.reset(selectedHunt)
-  }, [selectedHunt, huntForm])
+    if (selectedSettlementPhase)
+      settlementPhaseForm.reset(selectedSettlementPhase)
+  }, [selectedSettlementPhase, settlementPhaseForm])
 
   useEffect(() => {
     if (selectedShowdown) showdownForm.reset(selectedShowdown)
@@ -257,6 +288,12 @@ function MainPage(): ReactElement {
     campaign,
     settlementForm,
     updateSelectedSettlement,
+    updateCampaign
+  )
+  const { saveSelectedSettlementPhase } = useSelectedSettlementPhaseSave(
+    campaign,
+    settlementPhaseForm,
+    updateSelectedSettlementPhase,
     updateCampaign
   )
   const { saveSelectedShowdown } = useSelectedShowdownSave(
@@ -296,6 +333,8 @@ function MainPage(): ReactElement {
           return await import('../../__fixtures__/campaigns/0.14.0.json')
         case SchemaVersion.V0_15_0:
           return await import('../../__fixtures__/campaigns/0.15.0.json')
+        case SchemaVersion.V0_19_0:
+          return await import('../../__fixtures__/campaigns/0.19.0.json')
         default:
           return null
       }
@@ -320,10 +359,12 @@ function MainPage(): ReactElement {
             campaign={campaign}
             selectedHunt={selectedHunt}
             selectedSettlement={selectedSettlement}
+            selectedSettlementPhase={selectedSettlementPhase}
             selectedShowdown={selectedShowdown}
             selectedTab={selectedTab}
             setSelectedHunt={setSelectedHunt}
             setSelectedSettlement={setSelectedSettlement}
+            setSelectedSettlementPhase={setSelectedSettlementPhase}
             setSelectedShowdown={setSelectedShowdown}
             setSelectedSurvivor={setSelectedSurvivor}
             setSelectedTab={setSelectedTab}
@@ -350,11 +391,13 @@ function MainPage(): ReactElement {
                       loadTestData={loadTestData}
                       saveSelectedHunt={saveSelectedHunt}
                       saveSelectedSettlement={saveSelectedSettlement}
+                      saveSelectedSettlementPhase={saveSelectedSettlementPhase}
                       saveSelectedShowdown={saveSelectedShowdown}
                       saveSelectedSurvivor={saveSelectedSurvivor}
                       selectedHunt={selectedHunt}
                       selectedHuntMonsterIndex={selectedHuntMonsterIndex}
                       selectedSettlement={selectedSettlement}
+                      selectedSettlementPhase={selectedSettlementPhase}
                       selectedShowdown={selectedShowdown}
                       selectedShowdownMonsterIndex={
                         selectedShowdownMonsterIndex
@@ -365,6 +408,7 @@ function MainPage(): ReactElement {
                       setSelectedHunt={setSelectedHunt}
                       setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
                       setSelectedSettlement={setSelectedSettlement}
+                      setSelectedSettlementPhase={setSelectedSettlementPhase}
                       setSelectedShowdown={setSelectedShowdown}
                       setSelectedShowdownMonsterIndex={
                         setSelectedShowdownMonsterIndex

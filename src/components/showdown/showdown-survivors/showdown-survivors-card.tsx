@@ -8,7 +8,7 @@ import { Campaign } from '@/schemas/campaign'
 import { Settlement } from '@/schemas/settlement'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
+import { ArrowLeftIcon, ArrowRightIcon, SkullIcon } from 'lucide-react'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 /**
@@ -147,13 +147,14 @@ export function ShowdownSurvivorsCard({
                 }}
                 onClick={() => handleDotClick(index)}>
                 <AvatarFallback className="font-bold text-lg text-white bg-transparent">
-                  {survivor.name
-                    ? survivor.name
+                  {(survivor?.dead && <SkullIcon className="h-4 w-4" />) ||
+                    (survivor.name &&
+                      survivor.name
                         .split(' ')
                         .map((n) => n[0])
                         .join('')
-                        .slice(0, 2)
-                    : '??'}
+                        .slice(0, 2)) ||
+                    '??'}
                 </AvatarFallback>
               </Avatar>
             )

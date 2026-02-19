@@ -98,11 +98,11 @@ export function QuarryItem({
 
       {/* Quarry Selection */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <Label className="text-sm" htmlFor={`quarry-unlocked-${index}`}>
-            {quarry.name}
-          </Label>
-        </div>
+        <Label
+          className="text-sm truncate ml-1"
+          htmlFor={`quarry-unlocked-${index}`}>
+          {quarry.name}
+        </Label>
       ) : (
         <Select
           value={selectedQuarryName}

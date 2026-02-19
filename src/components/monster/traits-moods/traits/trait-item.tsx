@@ -47,9 +47,7 @@ export function TraitItem({
   return (
     <div className="flex items-center gap-2">
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">{trait}</span>
-        </div>
+        <span className="text-sm ml-1">{trait}</span>
       ) : (
         <Input
           ref={inputRef}

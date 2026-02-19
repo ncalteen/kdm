@@ -32,7 +32,7 @@ import { ReactElement, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 /**
- * Arrival Bonuses Card Card Properties
+ * Arrival Bonuses Card Properties
  */
 interface ArrivalBonusesCardProps {
   /** Save Selected Settlement */
@@ -47,7 +47,7 @@ interface ArrivalBonusesCardProps {
 /**
  * Arrival Bonuses Card Component
  *
- * @param props Arrival Bonuses Card Card Properties
+ * @param props Arrival Bonuses Card Properties
  * @returns Arrival Bonuses Card Component
  */
 export function ArrivalBonusesCard({

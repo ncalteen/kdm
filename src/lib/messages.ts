@@ -1089,6 +1089,31 @@ export const SETTLEMENT_NOTES_SAVED_MESSAGE = () =>
   'As stories are shared amongst survivors, they are etched into the history of your settlement.'
 
 /**
+ * Settlement Phase Ended
+ *
+ * @returns Settlement Phase Ended Message
+ */
+export const SETTLEMENT_PHASE_ENDED_MESSAGE = () =>
+  'The settlement phase ends. Survivors prepare to venture into the darkness once more.'
+
+/**
+ * Settlement Phase Started
+ *
+ * @returns Settlement Phase Started Message
+ */
+export const SETTLEMENT_PHASE_STARTED_MESSAGE = () =>
+  'The showdown ends. Remaining survivors return to the relative safety of the settlement.'
+
+/**
+ * Settlement Phase Step Updated
+ *
+ * @param stepTitle Step Title
+ * @returns Settlement Phase Step Updated Message
+ */
+export const SETTLEMENT_PHASE_STEP_UPDATED_MESSAGE = (stepTitle: string) =>
+  `Settlement phase moved to the ${stepTitle} step.`
+
+/**
  * Settlement Saved
  *
  * @returns Settlement Saved Message
@@ -1683,6 +1708,14 @@ export const SURVIVOR_NOT_FOUND_MESSAGE = () =>
   'Survivor not found in campaign data.'
 
 /**
+ * Survivor Notes Updated
+ *
+ * @returns Survivor Notes Updated Message
+ */
+export const SURVIVOR_NOTES_SAVED_MESSAGE = () =>
+  'The survivor shares their tales, adding to the settlement chronicles.'
+
+/**
  * Survivor On Hunt Error
  *
  * @returns Survivor On Hunt Error Message
@@ -1930,6 +1963,13 @@ export const SURVIVOR_WEAPON_PROFICIENCY_UPDATED_MESSAGE = () =>
  */
 export const SURVIVOR_WEAPON_TYPE_UPDATED_MESSAGE = () =>
   'The survivor turns their focus to a new weapon.'
+
+/**
+ * Survivors Healed
+ *
+ * @returns Survivors Healed Message
+ */
+export const SURVIVORS_HEALED_MESSAGE = () => 'Survivors healed.'
 
 /**
  * Survivors Moved on the Hunt Board

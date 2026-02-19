@@ -119,11 +119,11 @@ export function NemesisItem({
 
       {/* Nemesis Selection */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <Label className="text-sm" htmlFor={`nemesis-unlocked-${index}`}>
-            {nemesis.name}
-          </Label>
-        </div>
+        <Label
+          className="text-sm truncate ml-1"
+          htmlFor={`nemesis-unlocked-${index}`}>
+          {nemesis.name}
+        </Label>
       ) : (
         <Select
           value={selectedNemesisName}

@@ -3,14 +3,28 @@
 import { cn } from '@/lib/utils'
 import { ComponentProps } from 'react'
 
-function Table({ className, ...props }: ComponentProps<'table'>) {
+interface TableProps extends ComponentProps<'table'> {
+  /** Show vertical borders between table cells */
+  showVerticalBorders?: boolean
+}
+
+function Table({
+  className,
+  showVerticalBorders = false,
+  ...props
+}: TableProps) {
   return (
     <div
       data-slot="table-container"
       className="relative w-full overflow-x-auto">
       <table
         data-slot="table"
-        className={cn('w-full caption-bottom text-sm', className)}
+        className={cn(
+          'w-full caption-bottom text-sm',
+          showVerticalBorders &&
+            '[&_th:not(:last-child)]:border-r [&_td:not(:last-child)]:border-r',
+          className
+        )}
         {...props}
       />
     </div>

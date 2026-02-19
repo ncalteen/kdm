@@ -1,20 +1,16 @@
 'use client'
 
 import { SurvivorCard } from '@/components/survivor/survivor-card'
-import { Avatar } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { SurvivorCardMode } from '@/lib/enums'
 import { HUNT_NOTES_SAVED_MESSAGE } from '@/lib/messages'
-import { getCardColorStyles, getColorStyle } from '@/lib/utils'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
 import { Survivor, SurvivorSchema } from '@/schemas/survivor'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AvatarFallback } from '@radix-ui/react-avatar'
 import { CheckIcon } from 'lucide-react'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { Resolver, useForm } from 'react-hook-form'
@@ -105,44 +101,7 @@ export function HuntSurvivorCard({
   if (!selectedSurvivor) return <></>
 
   return (
-    <Card
-      className="w-full min-w-[430px] border-2 rounded-xl pt-0 pb-2 gap-2 transition-all duration-200 hover:shadow-lg"
-      style={{
-        ...getCardColorStyles(selectedSurvivor.color),
-        borderColor: 'var(--card-border-color)'
-      }}>
-      <CardHeader
-        className="flex items-center gap-3 p-2 rounded-t-lg"
-        style={{ backgroundColor: 'var(--card-header-bg)' }}>
-        {/* Header with Avatar and Name */}
-        <Avatar
-          className={`h-12 w-12 border-2 ${getColorStyle(selectedSurvivor.color, 'bg')} items-center justify-center cursor-pointer`}>
-          <AvatarFallback className="font-bold text-lg text-white">
-            {selectedSurvivor.name
-              ? selectedSurvivor.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .slice(0, 2)
-              : '??'}
-          </AvatarFallback>
-        </Avatar>
-
-        <div className="text-left flex-1 min-w-0">
-          <div className="font-semibold text-sm truncate">
-            {selectedSurvivor.name}{' '}
-            {selectedHunt?.scout === selectedSurvivor.id && (
-              <Badge variant="secondary" className="mt-1 text-xs">
-                Scout
-              </Badge>
-            )}
-          </div>
-          <div className="text-xs text-muted-foreground">
-            {selectedSurvivor.gender}
-          </div>
-        </div>
-      </CardHeader>
-
+    <Card className="w-full min-w-[430px] border-0 p-0">
       <CardContent className="px-2">
         <SurvivorCard
           mode={SurvivorCardMode.HUNT_CARD}

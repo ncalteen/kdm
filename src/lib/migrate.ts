@@ -73,6 +73,7 @@ export function migrateCampaign(campaign: Campaign): Campaign {
   if (campaign.version === '0.16.0') migrateTo0_17_0(campaign)
   if (campaign.version === '0.17.0') migrateTo0_18_0(campaign)
   if (campaign.version === '0.18.0') migrateTo0_19_0(campaign)
+  if (campaign.version === '0.19.0') migrateTo0_20_0(campaign)
 
   return campaign
 }
@@ -585,6 +586,7 @@ function migrateTo0_14_0(campaign: Campaign) {
   // Iterate over showdowns and restructure
   const updatedShowdowns: Showdown[] = []
   for (const showdown of campaign.showdowns ?? []) {
+    // @ts-expect-error -- Old Schema
     const updatedShowdown = {
       ambush: showdown.ambush,
       id: showdown.id,
@@ -793,4 +795,27 @@ function migrateTo0_19_0(campaign: Campaign) {
 
   // Migration complete. Update version.
   campaign.version = '0.19.0'
+}
+
+/**
+ * Migration logic from version 0.19.0 to 0.20.0
+ *
+ * @param campaign Campaign to Migrate
+ */
+function migrateTo0_20_0(campaign: Campaign) {
+  console.log('Migrating to 0.20.0')
+
+  if (!campaign.settlementPhases) campaign.settlementPhases = []
+  if (campaign.selectedSettlementPhaseId === undefined)
+    campaign.selectedSettlementPhaseId = null
+
+  // Iterate over showdowns and add the specialShowdown property if it doesn't
+  // exist.
+  campaign.showdowns = (campaign.showdowns ?? []).map((showdown) => {
+    if (showdown.specialShowdown === undefined) showdown.specialShowdown = false
+    return showdown
+  })
+
+  // Migration complete. Update version.
+  campaign.version = '0.20.0'
 }

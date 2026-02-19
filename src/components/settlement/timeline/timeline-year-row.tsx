@@ -152,10 +152,14 @@ export const TimelineYearRow = ({
           </div>
         )}
 
-        {/* Add Event Button for mobile when no events */}
-        {entries.length === 0 &&
-          !selectedSettlement?.timeline?.[index].completed && (
-            <div className="flex justify-end sm:hidden">
+        {/* Empty state */}
+        {entries.length === 0 && (
+          <div className="flex justify-between gap-2">
+            <div className="text-xs text-muted-foreground italic leading-none">
+              No events recorded.
+            </div>
+
+            {!selectedSettlement?.timeline?.[index].completed && (
               <Button
                 type="button"
                 variant="outline"
@@ -163,12 +167,13 @@ export const TimelineYearRow = ({
                 onClick={() => {
                   addEventToYear(index)
                 }}
-                className="h-6 px-2 text-xs">
+                className="h-6 px-2 text-xs sm:hidden">
                 <PlusCircleIcon className="h-3 w-3" />
                 <span className="text-xs hidden">Add Event</span>
               </Button>
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
         {/* Edit Event Input Fields */}
         {sortedIndices.map((entryIndex: number) =>
@@ -209,12 +214,6 @@ export const TimelineYearRow = ({
               </Button>
             </div>
           ) : null
-        )}
-
-        {entries.length === 0 && (
-          <div className="text-xs text-muted-foreground italic leading-none">
-            No events recorded.
-          </div>
         )}
       </div>
 

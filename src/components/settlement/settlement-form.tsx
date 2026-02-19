@@ -1,6 +1,7 @@
 'use client'
 
 import { HuntCard } from '@/components/hunt/hunt-card'
+import { SettlementPhaseCard } from '@/components/settlement-phase/settlement-phase-card'
 import { CollectiveCognitionRewardsCard } from '@/components/settlement/arc/collective-cognition-rewards-card'
 import { CollectiveCognitionVictoriesCard } from '@/components/settlement/arc/collective-cognition-victories-card'
 import { KnowledgesCard } from '@/components/settlement/arc/knowledges-card'
@@ -39,6 +40,7 @@ import {
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
 import { Settlement } from '@/schemas/settlement'
+import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Showdown } from '@/schemas/showdown'
 import { Survivor } from '@/schemas/survivor'
 import { ReactElement } from 'react'
@@ -60,6 +62,11 @@ interface SettlementFormProps {
     updateData: Partial<Settlement>,
     successMsg?: string
   ) => void
+  /** Save Selected Settlement Phase */
+  saveSelectedSettlementPhase: (
+    updateData: Partial<SettlementPhase>,
+    successMsg?: string
+  ) => void
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -76,6 +83,8 @@ interface SettlementFormProps {
   selectedHuntMonsterIndex: number
   /** Selected Settlement */
   selectedSettlement: Settlement | null
+  /** Selected Settlement Phase */
+  selectedSettlementPhase: SettlementPhase | null
   /** Selected Showdown */
   selectedShowdown: Showdown | null
   /** Selected Showdown Monster Index */
@@ -83,7 +92,7 @@ interface SettlementFormProps {
   /** Selected Survivor */
   selectedSurvivor: Survivor | null
   /** Selected Tab */
-  selectedTab: string
+  selectedTab: TabType
   /** Set New Survivor Being Created */
   setIsCreatingNewSurvivor: (isCreating: boolean) => void
   /** Set Selected Hunt */
@@ -92,6 +101,8 @@ interface SettlementFormProps {
   setSelectedHuntMonsterIndex: (index: number) => void
   /** Set Selected Settlement */
   setSelectedSettlement: (settlement: Settlement | null) => void
+  /** Set Selected Settlement Phase */
+  setSelectedSettlementPhase: (settlementPhase: SettlementPhase | null) => void
   /** Set Selected Showdown */
   setSelectedShowdown: (showdown: Showdown | null) => void
   /** Set Selected Showdown Monster Index */
@@ -116,11 +127,13 @@ export function SettlementForm({
   loadTestData,
   saveSelectedHunt,
   saveSelectedSettlement,
+  saveSelectedSettlementPhase,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
   selectedHuntMonsterIndex,
   selectedSettlement,
+  selectedSettlementPhase,
   selectedShowdown,
   selectedShowdownMonsterIndex,
   selectedSurvivor,
@@ -129,6 +142,7 @@ export function SettlementForm({
   setSelectedHunt,
   setSelectedHuntMonsterIndex,
   setSelectedSettlement,
+  setSelectedSettlementPhase,
   setSelectedShowdown,
   setSelectedShowdownMonsterIndex,
   setSelectedSurvivor,
@@ -139,7 +153,9 @@ export function SettlementForm({
     <>
       <OverviewCard
         campaign={campaign}
+        saveSelectedSettlementPhase={saveSelectedSettlementPhase}
         selectedSettlement={selectedSettlement}
+        selectedSettlementPhase={selectedSettlementPhase}
         updateCampaign={updateCampaign}
       />
 
@@ -148,7 +164,7 @@ export function SettlementForm({
       <div className="flex flex-1 flex-col h-full">
         <div className="flex flex-col gap-2 py-2 px-2 flex-1">
           {/* Create Settlement Form */}
-          {!selectedSettlement && selectedTab !== 'settings' && (
+          {!selectedSettlement && selectedTab !== TabType.SETTINGS && (
             <CreateSettlementForm
               campaign={campaign}
               setSelectedSettlement={setSelectedSettlement}
@@ -157,7 +173,7 @@ export function SettlementForm({
           )}
 
           {/* Timeline Tab */}
-          {selectedSettlement && selectedTab === 'timeline' && (
+          {selectedSettlement && selectedTab === TabType.TIMELINE && (
             <div className="flex flex-col lg:flex-row gap-2">
               {/* Timeline */}
               <div className="flex-1 order-2 lg:order-1">
@@ -188,7 +204,7 @@ export function SettlementForm({
           )}
 
           {/* Monsters Tab */}
-          {selectedSettlement && selectedTab === 'monsters' && (
+          {selectedSettlement && selectedTab === TabType.MONSTERS && (
             <div className="flex flex-col pl-2 gap-2">
               <div className="flex flex-col lg:flex-row gap-2">
                 {/* Quarries */}
@@ -224,7 +240,7 @@ export function SettlementForm({
 
           {/* Squires of the Citadel Tab */}
           {selectedSettlement &&
-            selectedTab === 'squires' &&
+            selectedTab === TabType.SQUIRES &&
             selectedSettlement.campaignType ===
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <>
@@ -238,7 +254,7 @@ export function SettlementForm({
 
           {/* Survivors Tab */}
           {selectedSettlement &&
-            selectedTab === 'survivors' &&
+            selectedTab === TabType.SURVIVORS &&
             selectedSettlement.campaignType !==
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="pl-2">
@@ -282,7 +298,7 @@ export function SettlementForm({
 
           {/* Society Tab */}
           {selectedSettlement &&
-            selectedTab === 'society' &&
+            selectedTab === TabType.SOCIETY &&
             selectedSettlement.campaignType !==
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <div className="flex flex-col gap-2 pl-2">
@@ -324,7 +340,7 @@ export function SettlementForm({
 
           {/* Society Tab - Squires of the Citadel */}
           {selectedSettlement &&
-            selectedTab === 'society' &&
+            selectedTab === TabType.SOCIETY &&
             selectedSettlement.campaignType ===
               CampaignType.SQUIRES_OF_THE_CITADEL && (
               <LocationsCard
@@ -334,7 +350,7 @@ export function SettlementForm({
             )}
 
           {/* Crafting Tab */}
-          {selectedSettlement && selectedTab === 'crafting' && (
+          {selectedSettlement && selectedTab === TabType.CRAFTING && (
             <div className="flex flex-col gap-2 pl-2">
               {/* Resources */}
               <ResourcesCard
@@ -370,7 +386,7 @@ export function SettlementForm({
 
           {/* Arc Tab */}
           {selectedSettlement &&
-            selectedTab === 'arc' &&
+            selectedTab === TabType.ARC &&
             selectedSettlement.survivorType === SurvivorType.ARC && (
               <div className="flex flex-col gap-2 pl-2">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -403,7 +419,7 @@ export function SettlementForm({
             )}
 
           {/* Notes Tab */}
-          {selectedSettlement && selectedTab === 'notes' && (
+          {selectedSettlement && selectedTab === TabType.NOTES && (
             <NotesCard
               saveSelectedSettlement={saveSelectedSettlement}
               selectedSettlement={selectedSettlement}
@@ -411,7 +427,7 @@ export function SettlementForm({
           )}
 
           {/* Settings Tab */}
-          {selectedTab === 'settings' && (
+          {selectedTab === TabType.SETTINGS && (
             <SettingsCard
               campaign={campaign}
               loadTestData={loadTestData}
@@ -428,10 +444,11 @@ export function SettlementForm({
           )}
 
           {/* Hunt Tab */}
-          {selectedSettlement && selectedTab === 'hunt' && (
+          {selectedSettlement && selectedTab === TabType.HUNT && (
             <HuntCard
               campaign={campaign}
               saveSelectedHunt={saveSelectedHunt}
+              saveSelectedSettlement={saveSelectedSettlement}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
               selectedHuntMonsterIndex={selectedHuntMonsterIndex}
@@ -449,9 +466,10 @@ export function SettlementForm({
           )}
 
           {/* Showdown Tab */}
-          {selectedSettlement && selectedTab === 'showdown' && (
+          {selectedSettlement && selectedTab === TabType.SHOWDOWN && (
             <ShowdownCard
               campaign={campaign}
+              saveSelectedSettlement={saveSelectedSettlement}
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
@@ -459,9 +477,27 @@ export function SettlementForm({
               selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
               selectedSettlement={selectedSettlement}
               selectedSurvivor={selectedSurvivor}
+              setSelectedSettlementPhase={setSelectedSettlementPhase}
               setSelectedShowdown={setSelectedShowdown}
               setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
               setSelectedSurvivor={setSelectedSurvivor}
+              setSelectedTab={setSelectedTab}
+              updateCampaign={updateCampaign}
+            />
+          )}
+
+          {/* Settlement Phase Tab */}
+          {selectedSettlement && selectedTab === TabType.SETTLEMENT_PHASE && (
+            <SettlementPhaseCard
+              campaign={campaign}
+              saveSelectedSettlement={saveSelectedSettlement}
+              saveSelectedSettlementPhase={saveSelectedSettlementPhase}
+              saveSelectedSurvivor={saveSelectedSurvivor}
+              selectedSettlement={selectedSettlement}
+              selectedSettlementPhase={selectedSettlementPhase}
+              selectedSurvivor={selectedSurvivor}
+              setSelectedSurvivor={setSelectedSurvivor}
+              setSelectedTab={setSelectedTab}
               updateCampaign={updateCampaign}
             />
           )}

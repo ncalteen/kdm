@@ -95,11 +95,9 @@ export function DisorderItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSurvivor?.disorders?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSurvivor?.disorders?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

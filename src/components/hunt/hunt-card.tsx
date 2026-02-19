@@ -2,6 +2,7 @@
 
 import { ActiveHuntCard } from '@/components/hunt/active-hunt/active-hunt-card'
 import { CreateHuntCard } from '@/components/hunt/create-hunt/create-hunt-card'
+import { DepartingBonusesCard } from '@/components/settlement/departing-bonuses/departing-bonuses-card'
 import { TabType } from '@/lib/enums'
 import { Campaign } from '@/schemas/campaign'
 import { Hunt } from '@/schemas/hunt'
@@ -18,6 +19,11 @@ interface HuntCardProps {
   campaign: Campaign
   /** Save Selected Hunt */
   saveSelectedHunt: (updateData: Partial<Hunt>, successMsg?: string) => void
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
   /** Save Selected Survivor */
   saveSelectedSurvivor: (
     updateData: Partial<Survivor>,
@@ -58,6 +64,7 @@ interface HuntCardProps {
 export function HuntCard({
   campaign,
   saveSelectedHunt,
+  saveSelectedSettlement,
   saveSelectedSurvivor,
   selectedHunt,
   selectedHuntMonsterIndex,
@@ -90,15 +97,25 @@ export function HuntCard({
       updateCampaign={updateCampaign}
     />
   ) : (
-    <CreateHuntCard
-      campaign={campaign}
-      saveSelectedHunt={saveSelectedHunt}
-      selectedHuntMonsterIndex={selectedHuntMonsterIndex}
-      selectedSettlement={selectedSettlement}
-      selectedShowdown={selectedShowdown}
-      setSelectedHunt={setSelectedHunt}
-      setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
-      setSelectedSurvivor={setSelectedSurvivor}
-    />
+    <div className="mt-10 flex flex-wrap items-start justify-center gap-4">
+      <div className="order-2 md:order-1">
+        <CreateHuntCard
+          campaign={campaign}
+          saveSelectedHunt={saveSelectedHunt}
+          selectedHuntMonsterIndex={selectedHuntMonsterIndex}
+          selectedSettlement={selectedSettlement}
+          selectedShowdown={selectedShowdown}
+          setSelectedHunt={setSelectedHunt}
+          setSelectedHuntMonsterIndex={setSelectedHuntMonsterIndex}
+          setSelectedSurvivor={setSelectedSurvivor}
+        />
+      </div>
+      <div className="w-[400px] order-1 md:order-2">
+        <DepartingBonusesCard
+          saveSelectedSettlement={saveSelectedSettlement}
+          selectedSettlement={selectedSettlement}
+        />
+      </div>
+    </div>
   )
 }

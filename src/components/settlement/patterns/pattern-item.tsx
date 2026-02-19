@@ -98,11 +98,9 @@ export function PatternItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSettlement?.patterns?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSettlement?.patterns?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

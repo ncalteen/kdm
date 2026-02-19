@@ -227,8 +227,7 @@ export function ActiveHuntCard({
    * Handle Proceed to Showdown
    */
   const handleProceedToShowdown = useCallback(() => {
-    if (!selectedSettlement?.id || !selectedHunt?.id || !selectedHunt?.level)
-      return
+    if (!selectedSettlement || !selectedHunt) return
 
     try {
       // Create showdown from current hunt
@@ -239,6 +238,7 @@ export function ActiveHuntCard({
         monsters: selectedHunt.monsters,
         scout: selectedHunt.scout,
         settlementId: selectedHunt.settlementId,
+        specialShowdown: false,
         survivorDetails: selectedHunt.survivorDetails.map((survivor) => ({
           accuracyTokens: survivor.accuracyTokens,
           bleedingTokens: 0,
@@ -272,7 +272,7 @@ export function ActiveHuntCard({
       const updatedHunts = campaign.hunts?.filter(
         (hunt) => hunt.id !== selectedHunt.id
       )
-      const updatedShowdowns = [...(campaign.showdowns ?? []), showdown]
+      const updatedShowdowns = [...campaign.showdowns, showdown]
 
       updateCampaign({
         ...campaign,
@@ -294,7 +294,7 @@ export function ActiveHuntCard({
     }
   }, [
     campaign,
-    selectedSettlement?.id,
+    selectedSettlement,
     selectedHunt,
     selectedHuntMonsterIndex,
     ambushType,

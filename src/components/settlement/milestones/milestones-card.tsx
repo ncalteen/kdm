@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/milestones/milestone-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import {
   MILESTONE_COMPLETED_MESSAGE,
   MILESTONE_MISSING_EVENT_ERROR,
@@ -240,22 +241,25 @@ export function MilestonesCard({
                   strategy={verticalListSortingStrategy}>
                   {(selectedSettlement?.milestones ?? []).map(
                     (milestone, index) => (
-                      <MilestoneItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        milestone={milestone}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={(i, name, event) => onSave(name, event, i)}
-                        onEdit={() =>
-                          setDisabledInputs((prev) => ({
-                            ...prev,
-                            [index]: false
-                          }))
-                        }
-                        onToggleComplete={onToggleComplete}
-                      />
+                      <div key={index}>
+                        <MilestoneItem
+                          id={index.toString()}
+                          index={index}
+                          milestone={milestone}
+                          onRemove={onRemove}
+                          isDisabled={!!disabledInputs[index]}
+                          onSave={(i, name, event) => onSave(name, event, i)}
+                          onEdit={() =>
+                            setDisabledInputs((prev) => ({
+                              ...prev,
+                              [index]: false
+                            }))
+                          }
+                          onToggleComplete={onToggleComplete}
+                        />
+
+                        <Separator className="my-1" />
+                      </div>
                     )
                   )}
                 </SortableContext>

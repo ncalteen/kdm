@@ -95,11 +95,9 @@ export function CursedGearItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSurvivor?.cursedGear?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSurvivor?.cursedGear?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}

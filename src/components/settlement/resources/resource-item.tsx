@@ -185,7 +185,7 @@ export function ResourceItem({
                 <div className="col-span-2">
                   <Badge variant="default">{selectedCategory}</Badge>
                 </div>
-                <div className="flex flex-wrap gap-1 col-span-5">
+                <div className="flex flex-wrap gap-1 col-span-4">
                   {selectedTypes.map((type) => (
                     <Badge key={type} variant="secondary" className="text-xs">
                       {type}
@@ -202,7 +202,7 @@ export function ResourceItem({
                     className="w-16 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
-                <div className="col-span-1 flex justify-end">
+                <div className="col-span-2 flex justify-end">
                   <Button
                     type="button"
                     variant="ghost"
@@ -259,17 +259,15 @@ export function ResourceItem({
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="flex justify-start gap-2">
                   <Badge variant="default" className="text-xs">
                     {selectedCategory}
                   </Badge>
-                  <div className="flex flex-wrap gap-1 pr-22">
-                    {selectedTypes.map((type) => (
-                      <Badge key={type} variant="secondary" className="text-xs">
-                        {type}
-                      </Badge>
-                    ))}
-                  </div>
+                  {selectedTypes.map((type) => (
+                    <Badge key={type} variant="secondary" className="text-xs">
+                      {type}
+                    </Badge>
+                  ))}
                 </div>
               </div>
             )
@@ -293,7 +291,7 @@ export function ResourceItem({
                 </div>
                 {selectedCategory === ResourceCategory.MONSTER ? (
                   <>
-                    <div className="col-span-3">
+                    <div className="col-span-2">
                       <ResourceTypesCombobox
                         selectedTypes={selectedTypes}
                         onChange={setSelectedTypes}
@@ -308,7 +306,7 @@ export function ResourceItem({
                     </div>
                   </>
                 ) : (
-                  <div className="col-span-5">
+                  <div className="col-span-4">
                     <ResourceTypesCombobox
                       selectedTypes={selectedTypes}
                       onChange={setSelectedTypes}
@@ -328,7 +326,7 @@ export function ResourceItem({
                     ref={amountInputRef}
                   />
                 </div>
-                <div className="col-span-1 flex justify-end">
+                <div className="col-span-2 flex justify-end">
                   <Button
                     type="button"
                     variant="ghost"
@@ -421,28 +419,30 @@ export function ResourceItem({
                   </Button>
                 </div>
               </div>
-              <div className="space-y-1 flex flex-row gap-1">
-                <div className="flex-1">
+              <div className="grid grid-cols-3 gap-1">
+                <div className="min-w-0">
                   <ResourceCategoriesCombobox
                     selectedCategory={selectedCategory}
                     onChange={setSelectedCategory}
                   />
                 </div>
-                <div className="flex-1">
+                <div className="min-w-0">
                   <ResourceTypesCombobox
                     selectedTypes={selectedTypes}
                     onChange={setSelectedTypes}
                   />
                 </div>
-                {selectedCategory === ResourceCategory.MONSTER && (
-                  <div className="flex-1">
+                <div className="min-w-0">
+                  {selectedCategory === ResourceCategory.MONSTER ? (
                     <ResourceMonsterCombobox
                       selectedMonsterName={selectedMonsterName}
                       selectedSettlement={selectedSettlement}
                       onChange={handleMonsterChange}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="h-9" aria-hidden="true" />
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -546,7 +546,7 @@ export function NewResourceItem({
                     onChange={setCategory}
                   />
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-2">
                   <ResourceTypesCombobox
                     selectedTypes={types}
                     onChange={setTypes}
@@ -573,7 +573,7 @@ export function NewResourceItem({
                     className="w-16 text-center no-spinners focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
-                <div className="col-span-1 flex justify-end">
+                <div className="col-span-2 flex justify-end">
                   <Button
                     type="button"
                     variant="ghost"
@@ -663,28 +663,30 @@ export function NewResourceItem({
                   </Button>
                 </div>
               </div>
-              <div className="space-y-1 flex flex-row gap-1">
-                <div className="flex-1">
+              <div className="grid grid-cols-3 gap-1">
+                <div className="min-w-0">
                   <ResourceCategoriesCombobox
                     selectedCategory={category}
                     onChange={setCategory}
                   />
                 </div>
-                <div className="flex-1">
+                <div className="min-w-0">
                   <ResourceTypesCombobox
                     selectedTypes={types}
                     onChange={setTypes}
                   />
                 </div>
-                {category === ResourceCategory.MONSTER && (
-                  <div className="flex-1">
+                <div className="min-w-0">
+                  {category === ResourceCategory.MONSTER ? (
                     <ResourceMonsterCombobox
                       selectedMonsterName={monsterName}
                       selectedSettlement={selectedSettlement}
                       onChange={handleMonsterChange}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="h-9" aria-hidden="true" />
+                  )}
+                </div>
               </div>
             </div>
           )}

@@ -6,6 +6,7 @@ import {
 } from '@/components/settlement/principles/principle-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import {
   NAMELESS_OBJECT_ERROR_MESSAGE,
   PRINCIPLE_OPTION_SELECTED_MESSAGE,
@@ -293,22 +294,25 @@ export function PrinciplesCard({
                   strategy={verticalListSortingStrategy}>
                   {(selectedSettlement?.principles ?? []).map(
                     (principle, index) => (
-                      <PrincipleItem
-                        key={index}
-                        id={index.toString()}
-                        index={index}
-                        principle={principle}
-                        onRemove={onRemove}
-                        isDisabled={!!disabledInputs[index]}
-                        onSave={onSave}
-                        onEdit={() =>
-                          setDisabledInputs((prev) => ({
-                            ...prev,
-                            [index]: false
-                          }))
-                        }
-                        handleOptionSelect={handleOptionSelect}
-                      />
+                      <div key={index}>
+                        <PrincipleItem
+                          id={index.toString()}
+                          index={index}
+                          principle={principle}
+                          onRemove={onRemove}
+                          isDisabled={!!disabledInputs[index]}
+                          onSave={onSave}
+                          onEdit={() =>
+                            setDisabledInputs((prev) => ({
+                              ...prev,
+                              [index]: false
+                            }))
+                          }
+                          handleOptionSelect={handleOptionSelect}
+                        />
+
+                        <Separator className="my-1" />
+                      </div>
                     )
                   )}
                 </SortableContext>

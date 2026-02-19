@@ -99,11 +99,9 @@ export function DepartingBonusItem({
 
       {/* Input Field */}
       {isDisabled ? (
-        <div className="flex ml-1">
-          <span className="text-sm">
-            {selectedSettlement?.departingBonuses?.[index]}
-          </span>
-        </div>
+        <span className="text-sm ml-1">
+          {selectedSettlement?.departingBonuses?.[index]}
+        </span>
       ) : (
         <Input
           ref={inputRef}
