@@ -113,35 +113,37 @@ export function PrincipleItem({
               <div className="col-span-4 text-sm text-left font-bold">
                 {principle.name}
               </div>
-              <div className="col-span-4 flex items-center gap-2">
-                <Checkbox
-                  id={`principle-${index}-option-1`}
-                  checked={principle.option1Selected}
-                  onCheckedChange={(checked) => {
-                    if (checked) handleOptionSelect(index, 1)
-                  }}
-                />
-                <Label
-                  className="text-xs text-left"
-                  htmlFor={`principle-${index}-option-1`}>
-                  {principle.option1Name}
-                </Label>
-              </div>
-              <div className="col-span-4 flex items-center gap-2">
-                <Checkbox
-                  id={`principle-${index}-option-2`}
-                  checked={principle.option2Selected}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      handleOptionSelect(index, 2)
-                    }
-                  }}
-                />
-                <Label
-                  className="text-xs text-left"
-                  htmlFor={`principle-${index}-option-2`}>
-                  {principle.option2Name}
-                </Label>
+              <div className="col-span-8 flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`principle-${index}-option-1`}
+                    checked={principle.option1Selected}
+                    onCheckedChange={(checked) => {
+                      if (checked) handleOptionSelect(index, 1)
+                    }}
+                  />
+                  <Label
+                    className="text-sm text-left"
+                    htmlFor={`principle-${index}-option-1`}>
+                    {principle.option1Name}
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`principle-${index}-option-2`}
+                    checked={principle.option2Selected}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        handleOptionSelect(index, 2)
+                      }
+                    }}
+                  />
+                  <Label
+                    className="text-sm text-left"
+                    htmlFor={`principle-${index}-option-2`}>
+                    {principle.option2Name}
+                  </Label>
+                </div>
               </div>
             </div>
           ) : (

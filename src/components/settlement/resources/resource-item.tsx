@@ -259,17 +259,15 @@ export function ResourceItem({
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="flex justify-start gap-2">
                   <Badge variant="default" className="text-xs">
                     {selectedCategory}
                   </Badge>
-                  <div className="flex flex-wrap gap-1 pr-22">
-                    {selectedTypes.map((type) => (
-                      <Badge key={type} variant="secondary" className="text-xs">
-                        {type}
-                      </Badge>
-                    ))}
-                  </div>
+                  {selectedTypes.map((type) => (
+                    <Badge key={type} variant="secondary" className="text-xs">
+                      {type}
+                    </Badge>
+                  ))}
                 </div>
               </div>
             )
@@ -421,28 +419,30 @@ export function ResourceItem({
                   </Button>
                 </div>
               </div>
-              <div className="space-y-1 flex flex-row gap-1">
-                <div className="flex-1">
+              <div className="grid grid-cols-3 gap-1">
+                <div className="min-w-0">
                   <ResourceCategoriesCombobox
                     selectedCategory={selectedCategory}
                     onChange={setSelectedCategory}
                   />
                 </div>
-                <div className="flex-1">
+                <div className="min-w-0">
                   <ResourceTypesCombobox
                     selectedTypes={selectedTypes}
                     onChange={setSelectedTypes}
                   />
                 </div>
-                {selectedCategory === ResourceCategory.MONSTER && (
-                  <div className="flex-1">
+                <div className="min-w-0">
+                  {selectedCategory === ResourceCategory.MONSTER ? (
                     <ResourceMonsterCombobox
                       selectedMonsterName={selectedMonsterName}
                       selectedSettlement={selectedSettlement}
                       onChange={handleMonsterChange}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="h-9" aria-hidden="true" />
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -663,28 +663,30 @@ export function NewResourceItem({
                   </Button>
                 </div>
               </div>
-              <div className="space-y-1 flex flex-row gap-1">
-                <div className="flex-1">
+              <div className="grid grid-cols-3 gap-1">
+                <div className="min-w-0">
                   <ResourceCategoriesCombobox
                     selectedCategory={category}
                     onChange={setCategory}
                   />
                 </div>
-                <div className="flex-1">
+                <div className="min-w-0">
                   <ResourceTypesCombobox
                     selectedTypes={types}
                     onChange={setTypes}
                   />
                 </div>
-                {category === ResourceCategory.MONSTER && (
-                  <div className="flex-1">
+                <div className="min-w-0">
+                  {category === ResourceCategory.MONSTER ? (
                     <ResourceMonsterCombobox
                       selectedMonsterName={monsterName}
                       selectedSettlement={selectedSettlement}
                       onChange={handleMonsterChange}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="h-9" aria-hidden="true" />
+                  )}
+                </div>
               </div>
             </div>
           )}
