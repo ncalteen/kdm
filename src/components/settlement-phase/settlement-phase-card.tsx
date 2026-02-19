@@ -4,11 +4,9 @@ import { SettlementPhaseActionsCard } from '@/components/settlement-phase/settle
 import { SettlementPhaseBoard } from '@/components/settlement-phase/settlement-phase-board/settlement-phase-board'
 import { SettlementPhaseResultsCard } from '@/components/settlement-phase/settlement-phase-results/settlement-phase-results-card'
 import { SettlementPhaseSurvivorsCard } from '@/components/settlement-phase/settlement-phase-survivors/settlement-phase-survivors-card'
-import { KnowledgesCard } from '@/components/settlement/arc/knowledges-card'
 import { ArrivalBonusesCard } from '@/components/settlement/arrival-bonuses/arrival-bonuses-card'
 import { DepartingBonusesCard } from '@/components/settlement/departing-bonuses/departing-bonuses-card'
 import { GearCard } from '@/components/settlement/gear/gear-card'
-import { InnovationsCard } from '@/components/settlement/innovations/innovations-card'
 import { LocationsCard } from '@/components/settlement/locations/locations-card'
 import { MilestonesCard } from '@/components/settlement/milestones/milestones-card'
 import { PrinciplesCard } from '@/components/settlement/principles/principles-card'
@@ -21,6 +19,7 @@ import {
   EmptyMedia,
   EmptyTitle
 } from '@/components/ui/empty'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { settlementPhaseSteps } from '@/lib/common'
 import { SettlementPhaseStep, SurvivorType, TabType } from '@/lib/enums'
 import { SETTLEMENT_PHASE_STEP_UPDATED_MESSAGE } from '@/lib/messages'
@@ -30,6 +29,13 @@ import { SettlementPhase } from '@/schemas/settlement-phase'
 import { Survivor } from '@/schemas/survivor'
 import { CircleOffIcon } from 'lucide-react'
 import { ReactElement, useCallback } from 'react'
+import { CollectiveCognitionRewardsCard } from '../settlement/arc/collective-cognition-rewards-card'
+import { CollectiveCognitionVictoriesCard } from '../settlement/arc/collective-cognition-victories-card'
+import { KnowledgesCard } from '../settlement/arc/knowledges-card'
+import { PhilosophiesCard } from '../settlement/arc/philosophies-card'
+import { InnovationsCard } from '../settlement/innovations/innovations-card'
+import { PatternsCard } from '../settlement/patterns/patterns-card'
+import { SeedPatternsCard } from '../settlement/patterns/seed-patterns-card'
 
 /**
  * Settlement Phase Card Properties
@@ -253,34 +259,88 @@ export function SettlementPhaseCard({
         innovations, locations, resources, etc.
       */}
       {selectedSettlementPhase?.step === SettlementPhaseStep.DEVELOP && (
-        <>
-          <InnovationsCard
-            saveSelectedSettlement={saveSelectedSettlement}
-            selectedSettlement={selectedSettlement}
-          />
+        <div className="flex flex-col gap-2 pl-2">
+          <Tabs defaultValue="innovate" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="innovate">Innovate</TabsTrigger>
+              <TabsTrigger value="craft">Craft</TabsTrigger>
+              {selectedSettlement?.survivorType === SurvivorType.ARC && (
+                <TabsTrigger value="ponder">Ponder</TabsTrigger>
+              )}
+            </TabsList>
 
-          <LocationsCard
-            saveSelectedSettlement={saveSelectedSettlement}
-            selectedSettlement={selectedSettlement}
-          />
+            <TabsContent value="innovate" className="mt-2">
+              <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  <InnovationsCard
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
 
-          <ResourcesCard
-            saveSelectedSettlement={saveSelectedSettlement}
-            selectedSettlement={selectedSettlement}
-          />
+                  <LocationsCard
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
+                </div>
+              </div>
+            </TabsContent>
 
-          <GearCard
-            saveSelectedSettlement={saveSelectedSettlement}
-            selectedSettlement={selectedSettlement}
-          />
+            <TabsContent value="craft" className="mt-2">
+              <div className="flex flex-col gap-2">
+                <ResourcesCard
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
+                />
 
-          {selectedSettlement?.survivorType === SurvivorType.ARC && (
-            <KnowledgesCard
-              saveSelectedSettlement={saveSelectedSettlement}
-              selectedSettlement={selectedSettlement}
-            />
-          )}
-        </>
+                <GearCard
+                  saveSelectedSettlement={saveSelectedSettlement}
+                  selectedSettlement={selectedSettlement}
+                />
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  <PatternsCard
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
+
+                  <SeedPatternsCard
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="ponder" className="mt-2">
+              <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  <CollectiveCognitionVictoriesCard
+                    campaign={campaign}
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
+
+                  <CollectiveCognitionRewardsCard
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  <PhilosophiesCard
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
+
+                  <KnowledgesCard
+                    saveSelectedSettlement={saveSelectedSettlement}
+                    selectedSettlement={selectedSettlement}
+                  />
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       )}
 
       {/*
@@ -339,6 +399,7 @@ export function SettlementPhaseCard({
       {[
         SettlementPhaseStep.SURVIVORS_RETURN,
         SettlementPhaseStep.GAIN_ENDEAVORS,
+        SettlementPhaseStep.UPDATE_DEATH_COUNT,
         SettlementPhaseStep.CHECK_MILESTONES
       ].includes(selectedSettlementPhase?.step) && (
         <SettlementPhaseSurvivorsCard
