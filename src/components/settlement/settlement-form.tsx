@@ -448,6 +448,7 @@ export function SettlementForm({
             <HuntCard
               campaign={campaign}
               saveSelectedHunt={saveSelectedHunt}
+              saveSelectedSettlement={saveSelectedSettlement}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}
               selectedHuntMonsterIndex={selectedHuntMonsterIndex}
@@ -468,6 +469,7 @@ export function SettlementForm({
           {selectedSettlement && selectedTab === TabType.SHOWDOWN && (
             <ShowdownCard
               campaign={campaign}
+              saveSelectedSettlement={saveSelectedSettlement}
               saveSelectedShowdown={saveSelectedShowdown}
               saveSelectedSurvivor={saveSelectedSurvivor}
               selectedHunt={selectedHunt}

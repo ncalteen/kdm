@@ -564,7 +564,7 @@ export function CreateShowdownCard({
   }
 
   return (
-    <Card className="w-[400px] mt-10 mx-auto">
+    <Card className="w-[400px]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <SkullIcon className="h-5 w-5" />

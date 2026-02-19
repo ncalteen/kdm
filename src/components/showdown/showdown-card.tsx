@@ -1,5 +1,6 @@
 'use client'
 
+import { DepartingBonusesCard } from '@/components/settlement/departing-bonuses/departing-bonuses-card'
 import { ActiveShowdownCard } from '@/components/showdown/active-showdown/active-showdown-card'
 import { CreateShowdownCard } from '@/components/showdown/create-showdown/create-showdown-card'
 import { TabType } from '@/lib/enums'
@@ -17,6 +18,11 @@ import { ReactElement } from 'react'
 interface ShowdownCardProps {
   /** Campaign */
   campaign: Campaign
+  /** Save Selected Settlement */
+  saveSelectedSettlement: (
+    updateData: Partial<Settlement>,
+    successMsg?: string
+  ) => void
   /** Save Selected Showdown */
   saveSelectedShowdown: (
     updateData: Partial<Showdown>,
@@ -60,6 +66,7 @@ interface ShowdownCardProps {
  */
 export function ShowdownCard({
   campaign,
+  saveSelectedSettlement,
   saveSelectedShowdown,
   saveSelectedSurvivor,
   selectedHunt,
@@ -91,15 +98,25 @@ export function ShowdownCard({
       updateCampaign={updateCampaign}
     />
   ) : (
-    <CreateShowdownCard
-      campaign={campaign}
-      saveSelectedShowdown={saveSelectedShowdown}
-      selectedHunt={selectedHunt}
-      selectedSettlement={selectedSettlement}
-      selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
-      setSelectedShowdown={setSelectedShowdown}
-      setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
-      setSelectedSurvivor={setSelectedSurvivor}
-    />
+    <div className="mt-10 flex flex-wrap items-start justify-center gap-4">
+      <div className="order-2 md:order-1">
+        <CreateShowdownCard
+          campaign={campaign}
+          saveSelectedShowdown={saveSelectedShowdown}
+          selectedHunt={selectedHunt}
+          selectedSettlement={selectedSettlement}
+          selectedShowdownMonsterIndex={selectedShowdownMonsterIndex}
+          setSelectedShowdown={setSelectedShowdown}
+          setSelectedShowdownMonsterIndex={setSelectedShowdownMonsterIndex}
+          setSelectedSurvivor={setSelectedSurvivor}
+        />
+      </div>
+      <div className="w-[400px] order-1 md:order-2">
+        <DepartingBonusesCard
+          saveSelectedSettlement={saveSelectedSettlement}
+          selectedSettlement={selectedSettlement}
+        />
+      </div>
+    </div>
   )
 }
