@@ -471,6 +471,24 @@ export function OverviewCard({
               />
             </div>
           )}
+
+          {/* Endeavors (Settlement Phase Only) */}
+          {selectedSettlementPhase &&
+            selectedSettlement?.id ===
+              selectedSettlementPhase?.settlementId && (
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">Endeavors</Label>
+                <NumericInput
+                  label="Endeavors"
+                  value={selectedSettlementPhase?.endeavors ?? 0}
+                  min={0}
+                  onChange={(value) =>
+                    saveSelectedSettlementPhase({ endeavors: value })
+                  }
+                  className="w-16 h-8 text-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </div>
+            )}
         </div>
       </CardContent>
     </Card>
