@@ -151,13 +151,20 @@ export function SettlementPhaseCard({
         Dynamically updates to show available actions in each step in the
         settlement phase.
       */}
-      <SettlementPhaseActionsCard
-        campaign={campaign}
-        selectedSettlement={selectedSettlement}
-        selectedSettlementPhase={selectedSettlementPhase}
-        setSelectedTab={setSelectedTab}
-        updateCampaign={updateCampaign}
-      />
+      {[
+        SettlementPhaseStep.SURVIVORS_RETURN,
+        SettlementPhaseStep.UPDATE_DEATH_COUNT,
+        SettlementPhaseStep.SPECIAL_SHOWDOWN,
+        SettlementPhaseStep.END_SETTLEMENT_PHASE
+      ].includes(selectedSettlementPhase.step) && (
+        <SettlementPhaseActionsCard
+          campaign={campaign}
+          selectedSettlement={selectedSettlement}
+          selectedSettlementPhase={selectedSettlementPhase}
+          setSelectedTab={setSelectedTab}
+          updateCampaign={updateCampaign}
+        />
+      )}
 
       {/* 
         Depending on the settlement phase step, display additional components as
