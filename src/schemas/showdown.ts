@@ -26,6 +26,8 @@ export const ShowdownSchema = z.object({
   scout: z.number().optional(),
   /** Settlement ID */
   settlementId: z.number().int().min(0),
+  /** Special Showdown */
+  specialShowdown: z.boolean().default(false),
   /** Survivor Showdown Details */
   survivorDetails: z.array(ShowdownSurvivorDetailsSchema).default([]),
   /** Selected Survivors */
