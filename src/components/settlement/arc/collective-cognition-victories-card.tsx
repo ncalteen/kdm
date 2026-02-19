@@ -79,7 +79,7 @@ export function CollectiveCognitionVictoriesCard({
       <CardContent className="p-1 pb-2 pt-0">
         <div className="flex flex-col">
           <div>
-            <Table>
+            <Table showVerticalBorders>
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-sm font-bold">Quarry</TableHead>
@@ -105,12 +105,12 @@ export function CollectiveCognitionVictoriesCard({
 
                   return (
                     <TableRow key={index}>
-                      <TableCell className="text-sm text-left pl-5">
+                      <TableCell className="text-sm text-left pl-4">
                         {monsterData?.name ?? 'Unnamed Quarry'}
                       </TableCell>
-                      <TableCell className="text-center">
-                        {monsterData?.prologue && (
-                          <div className="flex justify-center">
+                      <TableCell className="text-center p-0">
+                        <div className="flex items-center justify-center gap-1">
+                          {monsterData?.prologue && (
                             <Checkbox
                               checked={
                                 selectedSettlement?.quarries?.[index]
@@ -137,11 +137,11 @@ export function CollectiveCognitionVictoriesCard({
                               id={`quarries-${index}-ccPrologue`}
                               name={`quarries.${index}.ccPrologue`}
                             />
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex justify-center">
+                      <TableCell className="text-center p-0">
+                        <div className="flex items-center justify-center gap-1">
                           <Checkbox
                             checked={
                               selectedSettlement?.quarries?.[index].ccLevel1 ??
@@ -170,12 +170,12 @@ export function CollectiveCognitionVictoriesCard({
                           />
                         </div>
                       </TableCell>
-                      <TableCell className="text-center" colSpan={2}>
-                        <div className="flex flex-row justify-center gap-2">
+                      <TableCell className="text-center p-0" colSpan={2}>
+                        <div className="flex flex-row items-center justify-center gap-1">
                           {(quarry.ccLevel2 ?? [false, false]).map(
                             (checked, lvl2Index) => (
                               <div
-                                className="flex justify-center"
+                                className="flex items-center justify-center"
                                 key={`ccLevel2-${lvl2Index}`}>
                                 <Checkbox
                                   checked={
@@ -215,13 +215,13 @@ export function CollectiveCognitionVictoriesCard({
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-center" colSpan={3}>
-                        <div className="flex flex-row justify-center gap-2">
+                      <TableCell className="text-center p-0" colSpan={3}>
+                        <div className="flex flex-row items-center justify-center gap-1">
                           {(quarry.ccLevel3 ?? [false, false, false]).map(
                             (checked, lvl3Index) => (
                               <div
                                 key={`ccLevel3-${lvl3Index}`}
-                                className="flex justify-center">
+                                className="flex items-center justify-center">
                                 <Checkbox
                                   checked={
                                     selectedSettlement?.quarries?.[index]
@@ -266,7 +266,7 @@ export function CollectiveCognitionVictoriesCard({
           </div>
 
           <div className="pt-1">
-            <Table>
+            <Table showVerticalBorders>
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-sm font-bold">Nemesis</TableHead>
@@ -285,7 +285,7 @@ export function CollectiveCognitionVictoriesCard({
               <TableBody>
                 {(selectedSettlement?.nemeses ?? []).map((nemesis, index) => (
                   <TableRow key={index}>
-                    <TableCell className="text-sm text-left pl-5">
+                    <TableCell className="text-sm text-left pl-4">
                       {(() => {
                         const monsterData = getNemesisDataByName(
                           campaign,
@@ -295,8 +295,8 @@ export function CollectiveCognitionVictoriesCard({
                         return monsterData?.name ?? 'Unnamed Nemesis'
                       })()}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center">
+                    <TableCell className="text-center p-0">
+                      <div className="flex items-center justify-center gap-1">
                         <Checkbox
                           checked={
                             selectedSettlement?.nemeses?.[index].ccLevel1 ??
@@ -325,8 +325,8 @@ export function CollectiveCognitionVictoriesCard({
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center">
+                    <TableCell className="text-center p-0">
+                      <div className="flex items-center justify-center gap-1">
                         <Checkbox
                           checked={
                             selectedSettlement?.nemeses?.[index].ccLevel2 ??
@@ -355,8 +355,8 @@ export function CollectiveCognitionVictoriesCard({
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center">
+                    <TableCell className="text-center p-0">
+                      <div className="flex items-center justify-center gap-1">
                         <Checkbox
                           checked={
                             selectedSettlement?.nemeses?.[index].ccLevel3 ??
