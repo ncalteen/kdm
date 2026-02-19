@@ -6,6 +6,7 @@ import { SurvivorSelectionDrawer } from '@/components/survivor/survivor-selectio
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -15,7 +16,13 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { AmbushType, MonsterLevel, MonsterVersion, TurnType } from '@/lib/enums'
+import {
+  AmbushType,
+  MonsterLevel,
+  MonsterVersion,
+  ShowdownType,
+  TurnType
+} from '@/lib/enums'
 import {
   ERROR_MESSAGE,
   HUNT_ALREADY_ACTIVE_ERROR_MESSAGE,
@@ -94,6 +101,8 @@ export function CreateShowdownCard({
   const [selectedMonsterVersion, setSelectedMonsterVersion] =
     useState<MonsterVersion>(MonsterVersion.ORIGINAL)
   const [selectedScout, setSelectedScout] = useState<number | null>(null)
+  const [selectedShowdownType, setSelectedShowdownType] =
+    useState<ShowdownType>(ShowdownType.REGULAR)
   const [selectedSurvivors, setSelectedSurvivors] = useState<number[]>([])
   const [selectedMonsterData, setSelectedMonsterData] = useState<
     QuarryMonsterData | NemesisMonsterData | undefined
@@ -290,6 +299,16 @@ export function CreateShowdownCard({
   }
 
   /**
+   * Handle Showdown Type Selection
+   *
+   * Sets the chosen showdown type.
+   *
+   * @param type Showdown Type Selection
+   */
+  const handleShowdownTypeSelection = (type: ShowdownType) =>
+    setSelectedShowdownType(type)
+
+  /**
    * Handle Showdown Creation
    *
    * Validates the current selections and creates a new showdown if valid.
@@ -424,6 +443,7 @@ export function CreateShowdownCard({
       })),
       scout: selectedScout ?? undefined,
       settlementId: selectedSettlement.id,
+      specialShowdown: selectedShowdownType === ShowdownType.SPECIAL,
       survivorDetails,
       survivors: selectedSurvivors,
       turn: {
@@ -450,6 +470,7 @@ export function CreateShowdownCard({
     setSelectedMonsterLevel(MonsterLevel.LEVEL_1)
     setSelectedMonsterVersion(MonsterVersion.ORIGINAL)
     setAvailableLevels([])
+    setSelectedShowdownType(ShowdownType.REGULAR)
     setSelectedSurvivors([])
     setSelectedSurvivor(null)
     setSelectedScout(null)
@@ -683,6 +704,23 @@ export function CreateShowdownCard({
               </Select>
             </div>
           )}
+
+        {/* Special Showdown */}
+        <div className="flex items-center justify-between pt-2">
+          <Label className="text-left whitespace-nowrap min-w-[90px]">
+            Special Showdown?
+          </Label>
+
+          <Checkbox
+            id="special-showdown-checkbox"
+            checked={selectedShowdownType === ShowdownType.SPECIAL}
+            onCheckedChange={(checked) =>
+              handleShowdownTypeSelection(
+                checked ? ShowdownType.SPECIAL : ShowdownType.REGULAR
+              )
+            }
+          />
+        </div>
 
         <Separator className="my-2" />
 
