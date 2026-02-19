@@ -165,7 +165,11 @@ export function ActiveShowdownCard({
         returningScout: selectedShowdown.scout ?? null,
         returningSurvivors: selectedShowdown.survivors,
         settlementId: selectedSettlement.id,
-        step: SettlementPhaseStep.SURVIVORS_RETURN
+        // If this is a special showdown, return to the settlement phase at the
+        // 'Update Death Count' step.
+        step: selectedShowdown.specialShowdown
+          ? SettlementPhaseStep.UPDATE_DEATH_COUNT
+          : SettlementPhaseStep.SURVIVORS_RETURN
       }
 
       // Remove the showdown and add the settlement phase
@@ -222,8 +226,11 @@ export function ActiveShowdownCard({
           size="sm"
           onClick={handleProceedToSettlementPhase}
           className="pointer-events-auto"
-          title="Begin Settlement Phase">
-          Begin Settlement Phase <ChevronRightIcon className="size-4" />
+          title="Settlement Phase">
+          {selectedShowdown?.specialShowdown
+            ? 'Return to Settlement Phase'
+            : 'Begin Settlement Phase'}
+          <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 
