@@ -331,6 +331,7 @@ export function generateSeedData() {
         whiteGigalion: false
       }
     },
+    settlementPhases: [],
     settlements,
     showdowns,
     survivors,
@@ -1605,6 +1606,7 @@ function createShowdown(
     })),
     scout: usesScouts ? startSurvivorId + 4 : undefined,
     settlementId,
+    specialShowdown: false,
     survivorDetails: survivors.map((survivorId, index) => ({
       accuracyTokens: 0,
       bleedingTokens: 0,

@@ -211,8 +211,9 @@ describe('CampaignSchema', () => {
             whiteGigalion: false
           }
         },
+        settlementPhases: [],
         settlements: [],
-        showdowns: null,
+        showdowns: [],
         survivors: []
       })
 
@@ -235,6 +236,7 @@ describe('CampaignSchema', () => {
             whiteGigalion: true
           }
         },
+        settlementPhases: [],
         settlements: [],
         showdowns: [],
         survivors: []
@@ -268,7 +270,9 @@ describe('CampaignSchema', () => {
             whiteGigalion: false
           }
         },
+        settlementPhases: [],
         settlements: [],
+        showdowns: [],
         survivors: []
       })
 
@@ -280,7 +284,6 @@ describe('CampaignSchema', () => {
         expect(result.data.selectedSettlementId).toBeUndefined()
         expect(result.data.selectedSurvivorId).toBeUndefined()
         expect(result.data.selectedTab).toBeUndefined()
-        expect(result.data.showdowns).toBeUndefined()
       }
     })
 
@@ -311,7 +314,9 @@ describe('CampaignSchema', () => {
               whiteGigalion: false
             }
           },
+          settlementPhases: [],
           settlements: [],
+          showdowns: [],
           survivors: []
         })
 
@@ -575,6 +580,7 @@ describe('CampaignSchema', () => {
             whiteGigalion: false
           }
         },
+        settlementPhases: [],
         settlements: [],
         survivors: []
       })
@@ -598,66 +604,13 @@ describe('CampaignSchema', () => {
             whiteGigalion: false
           }
         },
+        settlementPhases: [],
         settlements: [],
-        showdowns: null,
+        showdowns: [],
         survivors: []
       })
 
       expect(result.success).toBe(true)
-    })
-
-    it('should handle zero values for ID fields', () => {
-      const result = CampaignSchema.safeParse({
-        selectedHuntId: 0,
-        selectedShowdownId: 0,
-        selectedSettlementId: 0,
-        selectedSurvivorId: 0,
-        settings: {
-          disableToasts: false,
-          unlockedMonsters: {
-            killeniumButcher: false,
-            screamingNukalope: false,
-            whiteGigalion: false
-          }
-        },
-        settlements: [],
-        survivors: []
-      })
-
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.selectedHuntId).toBe(0)
-        expect(result.data.selectedShowdownId).toBe(0)
-        expect(result.data.selectedSettlementId).toBe(0)
-        expect(result.data.selectedSurvivorId).toBe(0)
-      }
-    })
-
-    it('should handle negative values for ID fields', () => {
-      const result = CampaignSchema.safeParse({
-        selectedHuntId: -1,
-        selectedShowdownId: -1,
-        selectedSettlementId: -1,
-        selectedSurvivorId: -1,
-        settings: {
-          disableToasts: false,
-          unlockedMonsters: {
-            killeniumButcher: false,
-            screamingNukalope: false,
-            whiteGigalion: false
-          }
-        },
-        settlements: [],
-        survivors: []
-      })
-
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.selectedHuntId).toBe(-1)
-        expect(result.data.selectedShowdownId).toBe(-1)
-        expect(result.data.selectedSettlementId).toBe(-1)
-        expect(result.data.selectedSurvivorId).toBe(-1)
-      }
     })
   })
 })

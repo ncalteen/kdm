@@ -22,7 +22,8 @@
     "format:write": "prettier --write '**'",
     "lint": "eslint .",
     "start": "next start",
-    "test": "vitest"
+    "test": "vitest",
+    "all": "npm run format:check && npm run lint && npm run ci-test && npm run build"
   },
   "license": "MIT",
   "dependencies": {
