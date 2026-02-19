@@ -48,6 +48,15 @@ export function SettlementPhaseBoard({
     }
   }
 
+  /**
+   * Handle Click Event
+   *
+   * @param event Click Event
+   */
+  const handleClick = (index: number) => {
+    if (index >= 0 && index <= 10) onPositionUpdate(index)
+  }
+
   return (
     <Card className="p-0 w-full min-w-[430px]">
       <CardContent className="p-0 w-full overflow-x-auto">
@@ -60,7 +69,8 @@ export function SettlementPhaseBoard({
                 className="relative w-[75px] sm:w-[85px] md:w-[90px] h-[75px] sm:h-[85px] md:h-[90px] flex-shrink-0 flex items-center justify-center">
                 <SettlementPhaseBoardSpace
                   index={space.index}
-                  label={space.step}>
+                  label={space.step}
+                  onClick={() => handleClick(space.index)}>
                   {space.icon && <space.icon className="w-4 h-4 mt-1" />}
                 </SettlementPhaseBoardSpace>
 
