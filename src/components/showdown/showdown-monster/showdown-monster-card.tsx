@@ -356,6 +356,12 @@ export function ShowdownMonsterCard({
             <Badge variant="outline" className="text-xs">
               Level {selectedShowdown?.level.replace('level', '') ?? 'Unknown'}
             </Badge>
+
+            {selectedShowdown?.specialShowdown && (
+              <Badge variant="destructive" className="text-xs ml-2">
+                Special Showdown
+              </Badge>
+            )}
           </div>
 
           {/* Knocked Down Status */}
