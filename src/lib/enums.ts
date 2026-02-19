@@ -469,3 +469,13 @@ export enum SettlementPhaseStep {
   /** End Settlement Phase */
   END_SETTLEMENT_PHASE = 'End Settlement Phase'
 }
+
+/**
+ * Showdown Types
+ */
+export enum ShowdownType {
+  /** Regular Showdown */
+  REGULAR = 'Regular',
+  /** Special Showdown */
+  SPECIAL = 'Special'
+}
