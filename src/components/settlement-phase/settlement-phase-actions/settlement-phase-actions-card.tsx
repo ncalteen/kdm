@@ -132,8 +132,10 @@ export function SettlementPhaseActionsCard({
     <Card className="p-0 border-0 flex items-center">
       <CardContent className="p-1 pb-0 text-xs">
         {/* Heal Returning Survivors */}
-        {selectedSettlementPhase?.step ===
-          SettlementPhaseStep.SURVIVORS_RETURN && (
+        {(selectedSettlementPhase?.step ===
+          SettlementPhaseStep.SURVIVORS_RETURN ||
+          selectedSettlementPhase?.step ===
+            SettlementPhaseStep.UPDATE_DEATH_COUNT) && (
           <Button
             className="h-12 w-60"
             variant="default"
