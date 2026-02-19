@@ -54,7 +54,7 @@ export function SettlementPhaseResultsCard({
     survivor.name?.trim() || `Survivor #${survivor.id}`
 
   return (
-    <Card className="p-0 border-0 flex items-center">
+    <Card className="p-0 px-2 border-0 flex items-center">
       <CardContent className="p-1 pb-0 text-xs w-full space-y-2 flex flex-row justify-between">
         <div>
           <p className="font-semibold">

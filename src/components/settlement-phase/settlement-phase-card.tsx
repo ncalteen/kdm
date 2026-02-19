@@ -122,7 +122,7 @@ export function SettlementPhaseCard({
     )
 
   return (
-    <>
+    <div className="flex flex-col gap-2 h-full">
       {/*
         Settlement Phase Results
 
@@ -411,6 +411,6 @@ export function SettlementPhaseCard({
           setSelectedSurvivor={setSelectedSurvivor}
         />
       )}
-    </>
+    </div>
   )
 }

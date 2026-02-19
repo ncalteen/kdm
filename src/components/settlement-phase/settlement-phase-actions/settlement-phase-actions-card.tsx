@@ -129,8 +129,8 @@ export function SettlementPhaseActionsCard({
   }
 
   return (
-    <Card className="p-0 border-0 flex items-center">
-      <CardContent className="p-1 pb-0 text-xs">
+    <Card className="p-0 py-2 border-0 flex items-center">
+      <CardContent className="text-xs">
         {/* Heal Returning Survivors */}
         {(selectedSettlementPhase?.step ===
           SettlementPhaseStep.SURVIVORS_RETURN ||
