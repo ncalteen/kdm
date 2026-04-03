@@ -1,6 +1,7 @@
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'
+import { DeprecationWarningDialog } from '@/components/deprecation-warning-dialog'
 import { MigrationAlertDialog } from '@/components/migration-alert-dialog'
 import { SettlementForm } from '@/components/settlement/settlement-form'
 import { SiteHeader } from '@/components/side-header'
@@ -116,6 +117,9 @@ function MainPageContent(): ReactElement {
  * @returns Main Page Component
  */
 function MainPage(): ReactElement {
+  const [isDeprecationDialogOpen, setIsDeprecationDialogOpen] =
+    useState<boolean>(true)
+
   const {
     campaign,
 
@@ -371,7 +375,11 @@ function MainPage(): ReactElement {
             updateCampaign={updateCampaign}
           />
           <SidebarInset>
-            {migrationStatus.migrate && (
+            <DeprecationWarningDialog
+              open={isDeprecationDialogOpen}
+              onAcknowledge={() => setIsDeprecationDialogOpen(false)}
+            />
+            {migrationStatus.migrate && !isDeprecationDialogOpen && (
               <MigrationAlertDialog
                 campaign={campaign}
                 current={migrationStatus.current}
