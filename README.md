@@ -4,6 +4,13 @@
 ![Continuous Delivery](https://github.com/ncalteen/kdm/actions/workflows/continuous-delivery.yml/badge.svg)
 ![Linter](https://github.com/ncalteen/kdm/actions/workflows/linter.yml/badge.svg)
 
+> [!IMPORTANT]
+>
+> This application has been deprecated in favor of
+> [KD: M - Archivist](https://archivist.monster) and will no longer
+> be accessible. For questions, please refer to the new
+> [GitHub repository](https://github.com/ncalteen/kdm-app).
+
 _In a place of stone faces, nameless survivors stand together. They have
 nothing. Only a lantern to light their struggle._
 
